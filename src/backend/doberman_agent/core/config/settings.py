@@ -137,7 +137,7 @@ class MinioConf(BaseModel):
     access_key: str | None = Field(default="minioadmin", description="minio Username")
     secret_key: str | None = Field(default="minioadmin", description="minio Passwords")
     public_bucket: str | None = Field(
-        default="doberman_agent",
+        default="doberman-agent",
         description="Store permanent files by defaultbucket. Files can be permanently accessed by anonymous users",
     )
     tmp_bucket: str | None = Field(
