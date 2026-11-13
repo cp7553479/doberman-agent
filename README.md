@@ -51,6 +51,23 @@ docker compose logs -f backend backend_worker
 - [系统架构](docs/architecture/01-architecture-overview.md)
 - [Python SDK](src/doberman-agent-sdk/README.md) · [开发者 CLI](src/doberman-agent-cli/README.md)
 
+## 示例、模板与辅助资料
+
+| 类别 | 入口 | 用途 |
+|---|---|---|
+| 示例与原型 | [表单问卷](examples/apps/form-survey/) · [应用工场与服务账号原型](features/v3.0.0/000-prd1-discovery/ui-demo/) | 演示托管应用契约，以及平台交互与企业集成场景。 |
+| 评测工具 | [任务模式评测执行器](tools/taskmode_eval/README.md) | 10 个文件提供环境准备、执行、产物抽取、判分和历史基线比较；手工运行，客户用例材料存放在仓库外。 |
+| 导入工具 | [首钢组织与人员导入 CLI](src/backend/scripts/shougang_init_org_users.py) | 按首钢 Excel 字段约定手工导入部门和人员，支持 `--dry-run`。 |
+| 回归样例 | [思源 PPT 会话](src/frontend/client/src/components/Linsight/Execution/__fixtures__/linsightSieyuanPptHistory.json) · [步骤折叠测试](src/frontend/client/src/components/Linsight/Execution/stepFold.test.ts) · [旁白测试](src/frontend/client/src/components/Linsight/Execution/narration.realSession.test.ts) | 用真实会话验证执行时间线、步骤折叠与旁白渲染。 |
+| 回归样例 | [读图辅助测试](src/backend/test/common/test_image_view_loop.py) · [读图编排测试](src/backend/test/common/test_image_view_react_loop.py) | 内含首钢手册片段，验证图片定位、选择与多模态读图流程。 |
+| 预览测试 | [XLS](src/frontend/config/fixtures/spreadsheet.xls) · [XLSX](src/frontend/config/fixtures/spreadsheet.xlsx) · [F089 夹具](features/v3.0.0/089-shared-preview-citation/browser-smoke/fixtures/) | 表格解析，以及文档、图片、音频和引用预览的测试输入。 |
+| PPT 模板 | [五套模板](src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-pptx/templates/) · [制作配方](src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-pptx/references/pptx-cookbook.md) | PPT 技能使用红韵、蓝图、经营、深空、课堂模板生成可编辑演示文稿。 |
+| 初始化资料 | [应用模板](src/backend/doberman_agent/database/data/template.json) · [工具](src/backend/doberman_agent/database/data/t_gpts_tools.json) · [工具分类](src/backend/doberman_agent/database/data/t_gpts_tools_type.json) · [报告模板](src/backend/doberman_agent/database/data/0254d1808a5247d2a3ee0d0011819acb.docx) | 平台初始化使用的预置应用、工具与报告文档。 |
+| 前端资料 | [评测 CSV](src/frontend/platform/public/template.csv) · [数据集 JSON](src/frontend/platform/public/dataset.json) · [模型配置 PDF](src/frontend/platform/public/doc.pdf) · [空白 Word](src/frontend/platform/public/empty.docx) | 评测与数据集页面的下载样例、模型配置说明和报告编辑起始文档。 |
+| 运行资源 | [品牌图标](src/frontend/client/public/assets/sg-logo.png) · [ASR 音频](src/backend/doberman_agent/llm/domain/services/asr_example.wav) | 当前品牌图片资源，以及语音识别模型连通性探测的输入音频。 |
+| 权限参考 | [权限字典](Claude%20outputs/doberman-agent-3.0-beta1-permission-dictionary/permission-dictionary.html) · [MySQL 查询](Claude%20outputs/doberman-agent-3.0-beta1-permission-dictionary/permission_config_queries.mysql.sql) · [DM8 查询](Claude%20outputs/doberman-agent-3.0-beta1-permission-dictionary/permission_config_queries.dm8.sql) | 适用于 3.0.0-beta1 的权限表、字段与手工查询参考。 |
+| 产品与研发文档 | [PRD](docs/PRD/) · [SDD](features/) · [技术博客](docs/blog/) · [多租户指南](docs/customer-guides/多租户产品使用说明.md) | 产品需求、设计与验证、技术讲解和使用说明；企业案例记录功能需求来源及验证场景。 |
+
 ## 贡献
 
 欢迎通过 [Pull Request](https://github.com/cp7553479/doberman-agent/pulls) 提交改进。参与项目请遵循 [行为准则](CODE_OF_CONDUCT.md)。
