@@ -63,15 +63,15 @@ Docker 兼容构建与 K8s 兼容组装的前置不同：
 
 - Docker 通过 Engine Build API 按平台模板构建，固定基础镜像为本机 `python:3.11-slim`，不使用运行 profile 的 `app-python` 镜像。离线模式下构建网络为 `none`。必须先准备这个精确基础引用；导入另一个标签不代表已经满足。
 - K8s source-image 从当前语言默认 profile 冻结运行环境并经受限 OCI 组装推送，仍须满足 profile、离线依赖、仓库及安装报告条件。`delivery.profile` 不是 source-image 的合法 manifest 字段。
-- Python fixture 顶层导入真实 `bisheng_sdk`，并实际调用 SDK/附件接口。空 `requirements.txt` 加裸 Python 不能运行它；仅设置平台 simple index 地址也不能补齐禁网构建的依赖。
+- Python fixture 顶层导入真实 `doberman_agent_sdk`，并实际调用 SDK/附件接口。空 `requirements.txt` 加裸 Python 不能运行它；仅设置平台 simple index 地址也不能补齐禁网构建的依赖。
 
-为此新增显式 `--source-wheelhouse DIR`。它只读取操作者提供的本地材料，不执行 wheel 代码、不调用 pip、不访问网络，也不读取或复制开发机 venv。脚本校验每个 wheel 的 SHA-256、纯 Python 标签、固定版本、完整集合、常规文件和许可证，拒绝 native wheel、`.pth`、软链接、路径穿越、文件覆盖及超限内容。SDK wheel 必须与本仓库 `bisheng_sdk-0.1.1-py3-none-any.whl` 完全一致。
+为此新增显式 `--source-wheelhouse DIR`。它只读取操作者提供的本地材料，不执行 wheel 代码、不调用 pip、不访问网络，也不读取或复制开发机 venv。脚本校验每个 wheel 的 SHA-256、纯 Python 标签、固定版本、完整集合、常规文件和许可证，拒绝 native wheel、`.pth`、软链接、路径穿越、文件覆盖及超限内容。SDK wheel 必须与本仓库 `doberman_agent_sdk-0.1.1-py3-none-any.whl` 完全一致。
 
 本轮夹具只支持下列已准备的材料组合，不是通用依赖解析器；不能据此保证其他版本组合兼容：
 
 | 分发包 | 固定版本 |
 |---|---|
-| bisheng-sdk | 0.1.1 |
+| doberman-agent-sdk | 0.1.1 |
 | httpx | 0.28.1 |
 | httpcore | 1.0.9 |
 | h11 | 0.16.0 |
@@ -80,7 +80,7 @@ Docker 兼容构建与 K8s 兼容组装的前置不同：
 | certifi | 2026.10.19 |
 | typing_extensions | 4.16.0 |
 
-在已验收、固定镜像身份的 Python preparer 中，从 `/opt/bisheng/wheelhouse` 只读提取这些原始 `py3-none-any.whl` 到操作者的专用材料目录。可以由操作者创建一个不启动的临时容器并 `docker cp`，随后仅删除记录的那个容器 ID；不要从任意 `site-packages`、开发 venv 或公网补包。保留来源镜像 digest/config ID、原生平台和材料 SHA 作为证据。
+在已验收、固定镜像身份的 Python preparer 中，从 `/opt/doberman-agent/wheelhouse` 只读提取这些原始 `py3-none-any.whl` 到操作者的专用材料目录。可以由操作者创建一个不启动的临时容器并 `docker cp`，随后仅删除记录的那个容器 ID；不要从任意 `site-packages`、开发 venv 或公网补包。保留来源镜像 digest/config ID、原生平台和材料 SHA 作为证据。
 
 目录格式如下；哈希必须从实际文件计算，占位符不能使用：
 
@@ -88,7 +88,7 @@ Docker 兼容构建与 K8s 兼容组装的前置不同：
 source-wheelhouse/
 ├── source-vendor.json
 └── wheels/
-    ├── bisheng_sdk-0.1.1-py3-none-any.whl
+    ├── doberman_agent_sdk-0.1.1-py3-none-any.whl
     └── ...其余七个固定 wheel
 ```
 
@@ -97,13 +97,13 @@ source-wheelhouse/
   "format": "f059-source-wheelhouse-v1",
   "python": "3.11",
   "wheels": {
-    "wheels/bisheng_sdk-0.1.1-py3-none-any.whl": "sha256:<actual file digest>",
+    "wheels/doberman_agent_sdk-0.1.1-py3-none-any.whl": "sha256:<actual file digest>",
     "wheels/httpx-0.28.1-py3-none-any.whl": "sha256:<actual file digest>"
   }
 }
 ```
 
-上面的 JSON 仅展示两项写法，实际必须列齐八项。八个 wheel 保持原始字节（含 `.dist-info`、证书和许可证），放入 `_vendor/wheels/`，通过 Python zipimport 加载，不在构建时展开或安装。SDK wheel 未携带许可证文件，脚本另外将仓库的 Apache-2.0 `LICENSE` 放到 `_vendor/licenses/bisheng-sdk/LICENSE`，不修改 wheel 本身。目录和文件不得经过软链接。
+上面的 JSON 仅展示两项写法，实际必须列齐八项。八个 wheel 保持原始字节（含 `.dist-info`、证书和许可证），放入 `_vendor/wheels/`，通过 Python zipimport 加载，不在构建时展开或安装。SDK wheel 未携带许可证文件，脚本另外将仓库的 Apache-2.0 `LICENSE` 放到 `_vendor/licenses/doberman-agent-sdk/LICENSE`，不修改 wheel 本身。目录和文件不得经过软链接。
 
 ```bash
 python scripts/bootstrap_f059_acceptance.py \
@@ -164,7 +164,7 @@ Python `items` 是真实 SQLite 表，重启仅 `INSERT OR IGNORE`，不会覆�
 
 可选模型/检索：准备包时附加真实 `--model-name` 和可重复的 `--knowledge-id`。这会写入 manifest 的真实 capability 声明，并增加 `/sdk/model`、`/sdk/retrieve` 场景检查。模型必须已有可调用配置，知识库需有 owner 可见权限与已入库内容；不要为通过验收伪造模型或返回常量。默认未配置时接口明确返回 409，suite 不将这些可选检查计为已测。
 
-- 检索实际使用 `bisheng_sdk.retrieve.search`。
+- 检索实际使用 `doberman_agent_sdk.retrieve.search`。
 - 模型使用 SDK 的身份上下文和运行期真实 `OPENAI_BASE_URL`、`OPENAI_API_KEY`，向 OpenAI 兼容端点发送实际请求并转发访问者 OBO。SDK 公开模块没有 model 方法，不虚构 SDK 接口。
 - SDK 本地附件烟测只证明本地目录后端；平台附件、OBO、egress、权限拒绝链路必须由实际应用入口 E2E 另外证明。
 

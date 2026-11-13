@@ -67,7 +67,7 @@
 | F054 T098：legacy systemd 宿主入口规则 | tasks 仍未完成；egress legacy 防火墙代码仅有 DOCKER-USER 路径，未见该模块的 INPUT 规则实现 | 明确仍支持的 legacy systemd 形态，补 INPUT 拒绝与实际允许/拒绝配对；不能用 K8s NetworkPolicy 实证替代 |
 | F054 T099：错误 OBO 配置时入口拒绝 | `_issue_obo_token` 缺 secret 或与 JWT secret 相同时返回 None；入口仍可返回不带 OBO 的材料，而代码已经有 OBO reader；任务仍未完成 | 在正式/预览入口落实对应拒绝语义并做配置正反例；本轮未修改这项历史合同 |
 
-证据：[F055 密钥决议](../../features/v3.0.0/055-app-publish-pipeline/tasks.md)、[manifest validator](../../src/backend/bisheng/app_publish/domain/services/manifest_validator.py)、[F056 查询面决议](../../features/v3.0.0/056-app-square-governance/tasks.md)、[F054 安全待办](../../features/v3.0.0/054-app-domain-runtime/tasks.md)、[入口身份代码](../../src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py)、[legacy 防火墙](../../src/runtime-manager/runtime_manager/egress.py)。以上是静态核查，未新执行攻击或故障注入。
+证据：[F055 密钥决议](../../features/v3.0.0/055-app-publish-pipeline/tasks.md)、[manifest validator](../../src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py)、[F056 查询面决议](../../features/v3.0.0/056-app-square-governance/tasks.md)、[F054 安全待办](../../features/v3.0.0/054-app-domain-runtime/tasks.md)、[入口身份代码](../../src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py)、[legacy 防火墙](../../src/runtime-manager/runtime_manager/egress.py)。以上是静态核查，未新执行攻击或故障注入。
 
 ## 4. 测试进度：已有真实证据
 

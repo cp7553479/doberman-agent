@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
-from bisheng.workstation.domain.schemas.chat import APIChatCompletion
+from doberman_agent.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
+from doberman_agent.workstation.domain.schemas.chat import APIChatCompletion
 
 
 def test_daily_schema_is_internal_schema_minus_exactly_two_fields():

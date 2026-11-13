@@ -11,9 +11,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.database.models.department import DepartmentDao
-from bisheng.department.domain.services import department_service as m
-from bisheng.department.domain.services.department_service import DepartmentService
+from doberman_agent.database.models.department import DepartmentDao
+from doberman_agent.department.domain.services import department_service as m
+from doberman_agent.department.domain.services.department_service import DepartmentService
 
 
 def _user(user_id=10, user_role=None, tenant_id=5):

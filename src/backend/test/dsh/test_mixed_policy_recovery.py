@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-from bisheng.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
-from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
-from bisheng.dsh.domain.services.admin_policy import DshAdminService
+from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+from doberman_agent.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
+from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
+from doberman_agent.dsh.domain.services.admin_policy import DshAdminService
 from test.dsh.test_automatic_quota_recovery import connect
 from test.dsh.test_policy_repository import sql_store  # noqa: F401
 from test.dsh.test_quota_admission import quota, running  # noqa: F401

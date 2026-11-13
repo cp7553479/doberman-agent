@@ -1,4 +1,4 @@
-"""The fifteen BiSheng cases. A missing process, model, or baseline is 未测, not a pass."""
+"""The fifteen doberman-agent cases. A missing process, model, or baseline is 未测, not a pass."""
 
 from __future__ import annotations
 
@@ -365,7 +365,7 @@ def test_s011(api, task_sum):
 
 
 def test_s026():
-    from bisheng_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
+    from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
 
     notice = BaseExecutor.absolute_path_advisory('open("/output/路径测试.txt", "w")')
     assert notice
@@ -433,8 +433,8 @@ def test_s016(api, task_sum):
             "其他租户文件未测。受保护资源没有样本，该组未测。整条不算通过。"
         )
     assert secret not in logs[2]
-    other = os.environ.get("BISHENG_RELEASE_OTHER_TENANT_FILE")
-    marker = os.environ.get("BISHENG_RELEASE_OTHER_TENANT_MARKER")
+    other = os.environ.get("DOBERMAN_AGENT_RELEASE_OTHER_TENANT_FILE")
+    marker = os.environ.get("DOBERMAN_AGENT_RELEASE_OTHER_TENANT_MARKER")
     if not other or not marker:
         pytest.skip("宿主文件、目录和私有变量已核对。其他租户文件未测。受保护资源没有样本，该组未测。整条不算通过。")
     with _mode(api, "container"):
@@ -445,7 +445,7 @@ def test_s016(api, task_sum):
 
 
 def test_s027():
-    baseline_path = os.environ.get("BISHENG_RELEASE_BASELINE")
+    baseline_path = os.environ.get("DOBERMAN_AGENT_RELEASE_BASELINE")
     if not baseline_path:
         pytest.skip("未测：没有升级前基线，不默认四个入口都要通过")
     client = open_api()

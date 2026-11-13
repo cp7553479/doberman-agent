@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
@@ -10,8 +10,8 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: mocks.translate })
 vi.mock('@/controllers/API/finetune', () => ({ getLinsightModelEnvelope: mocks.load, updateLinsightModelConfig: mocks.save }));
 vi.mock('@/controllers/request', () => ({ showApiError: mocks.notice }));
 vi.mock('@/pages/ModelPage/manage', () => ({ useModel: () => ({ llmOptions: [], embeddings: [], asrModel: [], ttsModel: [] }) }));
-vi.mock('@bisheng/ui', async importOriginal => {
-  const actual = await importOriginal<typeof import('@bisheng/ui')>();
+vi.mock('@doberman-agent/ui', async importOriginal => {
+  const actual = await importOriginal<typeof import('@doberman-agent/ui')>();
   return { ...actual, toast: { show: mocks.toast } };
 });
 vi.mock('@/pages/ModelPage/manage/UserSelectableModels', () => ({ UserSelectableModels: (props: unknown) => { mocks.managementProps = props; return null; } }));

@@ -62,7 +62,7 @@ def _patch_session_factory(session):
             raise
 
     return patch(
-        'bisheng.database.models.tenant.get_async_db_session',
+        'doberman_agent.database.models.tenant.get_async_db_session',
         _fake_factory,
     )
 
@@ -71,7 +71,7 @@ def _patch_session_factory(session):
 class TestAbulkUpdateTenantIdAtomicity:
 
     async def test_happy_path_commits_and_returns_rowcounts(self):
-        from bisheng.database.models.tenant import TenantDao
+        from doberman_agent.database.models.tenant import TenantDao
 
         session = _FakeSession([3, 2, 0])  # 3 tables, different rowcounts
         with _patch_session_factory(session):
@@ -91,7 +91,7 @@ class TestAbulkUpdateTenantIdAtomicity:
         Atomicity pin: previously per-table ``try/except`` swallowed the
         error and committed the earlier tables. That contradicts AC-04a.
         """
-        from bisheng.database.models.tenant import TenantDao
+        from doberman_agent.database.models.tenant import TenantDao
 
         boom = RuntimeError('simulated DB failure on 2nd table')
         session = _FakeSession([5, boom, 99])  # second table blows up
@@ -115,7 +115,7 @@ class TestAbulkUpdateTenantIdAtomicity:
         """OperationalError ("no such table") must propagate just like any other."""
         from sqlalchemy.exc import OperationalError
 
-        from bisheng.database.models.tenant import TenantDao
+        from doberman_agent.database.models.tenant import TenantDao
 
         err = OperationalError(
             statement='UPDATE ghost_table ...',
@@ -136,7 +136,7 @@ class TestAbulkUpdateTenantIdAtomicity:
 
     async def test_empty_table_list_is_noop(self):
         """Empty input is a valid, trivially atomic no-op."""
-        from bisheng.database.models.tenant import TenantDao
+        from doberman_agent.database.models.tenant import TenantDao
 
         session = _FakeSession([])
         with _patch_session_factory(session):

@@ -7,10 +7,10 @@ import httpx
 import pytest
 from sqlmodel import select
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError, DshUpstreamErrorError
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError, DshUpstreamErrorError
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 from test.dsh import test_content_safety_merge, test_model_service, test_models_api
 from test.dsh.test_content_safety_merge import (
     assert_external_unknowns,
@@ -31,7 +31,7 @@ async def test_generic_http_id_reaches_model_runtime_without_gateway_dependency(
     app, _, runtime, _, _ = app_setup
     request_id = str(uuid4())
     runtime.complete = AsyncMock(return_value={"synthetic": True})
-    payload = {"model": "bisheng:42", "stream": stream}
+    payload = {"model": "doberman_agent:42", "stream": stream}
     payload.update(
         {"input": [{"role": "user", "content": "synthetic"}]}
         if protocol == "responses"
@@ -68,7 +68,7 @@ async def test_absent_invalid_or_ambiguous_http_id_generates_one_server_id(app_s
         response = await client.post(
             "/api/v1/dsh/chat/completions",
             headers=headers,
-            json={"model": "bisheng:42", "messages": [{"role": "user", "content": "synthetic"}]},
+            json={"model": "doberman_agent:42", "messages": [{"role": "user", "content": "synthetic"}]},
         )
     actual = response.headers["X-Request-ID"]
     assert response.status_code == 200 and str(UUID(actual)) == actual and UUID(actual).int != 0
@@ -85,7 +85,7 @@ async def test_real_chat_usage_and_response_share_supplied_id(app_setup, stream)
         response = await client.post(
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test", "X-Request-ID": request_id},
-            json={"model": "bisheng:42", "messages": [{"role": "user", "content": "synthetic"}], "stream": stream},
+            json={"model": "doberman_agent:42", "messages": [{"role": "user", "content": "synthetic"}], "stream": stream},
         )
     assert response.status_code == 200 and response.headers["X-Request-ID"] == request_id
     assert request_id in response.text
@@ -97,7 +97,7 @@ async def test_real_chat_usage_and_response_share_supplied_id(app_setup, stream)
 async def test_error_envelope_keeps_id_without_bypassing_auth_or_admission(app_setup, failure):
     app, runtime, _, llm, ledger = app_setup
     request_id = str(uuid4())
-    payload = {"model": "bisheng:42", "messages": [{"role": "user", "content": "synthetic"}]}
+    payload = {"model": "doberman_agent:42", "messages": [{"role": "user", "content": "synthetic"}]}
     if failure == "validation":
         payload["forged"] = 1
     elif failure == "authentication":
@@ -153,7 +153,7 @@ async def test_supplied_id_does_not_override_existing_admission_rejection(app_se
         response = await client.post(
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test", "X-Request-ID": request_id},
-            json={"model": "bisheng:42", "messages": [{"role": "user", "content": "synthetic"}]},
+            json={"model": "doberman_agent:42", "messages": [{"role": "user", "content": "synthetic"}]},
         )
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "quota_unavailable"

@@ -1,12 +1,12 @@
 import { getSpaceMembershipAction } from "./spaceMembershipAction";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { KnowledgeSpaceFolderArt } from "./KnowledgeSpaceFolderArt";
 
 import { KnowledgeSpace } from "~/api/knowledge";
 import { KnowledgeSpaceIcon } from "~/components/illustrations";
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { ActionMenuLoadingRow } from "~/components/ActionMenu";
 import { useConfirm } from "~/Providers";
 import { useLocalize } from "~/hooks";

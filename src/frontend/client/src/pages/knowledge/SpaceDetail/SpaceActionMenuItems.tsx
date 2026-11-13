@@ -1,6 +1,6 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeSpace } from "~/api/knowledge";
-import { DropdownItem, DropdownSub, DropdownSeparator } from "@bisheng/ui";
+import { DropdownItem, DropdownSub, DropdownSeparator } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 
 export interface SpaceActionMenuItemsProps {

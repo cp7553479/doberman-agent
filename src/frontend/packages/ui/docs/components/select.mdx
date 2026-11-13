@@ -6,7 +6,7 @@ statusNote: 桌面端已落地；手机档底部面板（§9）待做，业务�
 
 # 选择器 Select
 
-从一组给定的选项里挑出一个或几个值，挑完把结果显示在框里。组件库 `@bisheng/ui` 导出 **`Select`**，用 `options` 传选项。规范全文见「文档 → 组件规范 → 选择器 Select」。
+从一组给定的选项里挑出一个或几个值，挑完把结果显示在框里。组件库 `@doberman-agent/ui` 导出 **`Select`**，用 `options` 传选项。规范全文见「文档 → 组件规范 → 选择器 Select」。
 
 **壳把规范写死的部分**：描边形态的触发器就是输入框的外壳——24 / 32 / 40 三档、灰描边 + 灰阴影环聚焦、错误 / 警告 / 只读 / 禁用照搬输入框；展开画法同聚焦、下箭头翻转。面板与下拉菜单共用一套：页面底色 + 浮层投影、12px 圆角、6px 内边距、选项行固定 32px（small 触发器点开也是 32px）、最高 8 行后滚动、深色下补 1px 描边；面板在下方左对齐、放不下翻到上方、**不盖住触发器**。单选选中项右侧品牌色 ✓ + 字重 500、**不铺底色**（底色只给悬停）；多选左侧复选框、选了不关面板。这些没有 prop。
 
@@ -18,7 +18,7 @@ statusNote: 桌面端已落地；手机档底部面板（§9）待做，业务�
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 const OPTIONS = [
   { value: 'latest', label: '最新' },
@@ -43,7 +43,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Input, Select } from '@bisheng/ui';
+import { Input, Select } from '@doberman-agent/ui';
 
 const OPTIONS = [
   { value: 'day', label: '按天' },
@@ -69,8 +69,8 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Select } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Select } from '@doberman-agent/ui';
 
 const OPTIONS = [
   { value: 'gpt', label: 'GPT-4o', description: '通用对话，响应快', group: '云端模型', icon: <Outlined.Application /> },
@@ -90,7 +90,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 const OPTIONS = ['产品手册', '售后 FAQ', '合同模板', '员工手册', '技术白皮书', '竞品分析'].map((label, i) => ({
   value: i,
@@ -121,7 +121,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 const CITIES = ['北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '武汉', '西安', '苏州', '重庆', '天津'].map(
   (label) => ({ value: label, label }),
@@ -141,7 +141,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -157,7 +157,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 const OPTIONS = [{ value: 'a', label: '默认模型' }, { value: 'b', label: '备用模型' }];
 
@@ -177,8 +177,8 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Select } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Select } from '@doberman-agent/ui';
 
 const MODELS = [
   { value: 'default', label: '默认模型' },
@@ -204,7 +204,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 
 const OPTIONS = [{ value: 'a', label: '全部空间' }, { value: 'b', label: '我创建的' }, { value: 'c', label: '我加入的' }];
 

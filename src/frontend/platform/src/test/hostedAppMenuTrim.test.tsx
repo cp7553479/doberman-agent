@@ -36,8 +36,8 @@ vi.mock("i18next", () => ({
 
 // `*.svg?react` has no svgr plugin under vitest; this icon is on the render path.
 vi.mock("@/components/bs-icons/user", () => ({ UserIcon: () => null }))
-vi.mock("bisheng-icons", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("bisheng-icons")>()
+vi.mock("@doberman-agent/icons", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@doberman-agent/icons")>()
   return { ...actual, Outlined: { ...actual.Outlined, Setting: () => null } }
 })
 

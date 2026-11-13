@@ -5,7 +5,7 @@ component: Tag
 
 # 标签 Tag
 
-给一个对象**贴一个词**：它是什么类型、处在什么状态、属于哪个分类。贴的是「属性」，不是操作——要触发动作用[按钮](/components/button)，要说「有多少 / 有没有新的」用[徽标](/components/badge)。组件库 `@bisheng/ui` 导出 **`Tag`**。规范全文见「文档 → 组件规范 → 标签 Tag」。
+给一个对象**贴一个词**：它是什么类型、处在什么状态、属于哪个分类。贴的是「属性」，不是操作——要触发动作用[按钮](/components/button)，要说「有多少 / 有没有新的」用[徽标](/components/badge)。组件库 `@doberman-agent/ui` 导出 **`Tag`**。规范全文见「文档 → 组件规范 → 标签 Tag」。
 
 **壳把规范写死的部分**：只有**浅底深字**一种画法，没有描边款、实底款、灰底款；圆角 4px（带头像时切胶囊）；两档高度 20 / 24，字号 12、字重 400——选中态也不加粗（加粗会让标签变宽跳位）；展示型**没有悬停态**（变色暗示可点，点了没反应就是骗了一次）；可关闭的 × 点了立即移除、不弹二次确认；可选中标签固定灰底起步、选中变品牌 7% 底，且不与语义色组合；状态点跟字同色、**不做呼吸动画**；触屏上可选中标签统一升到 24px、热区 ≥44px。这些没有 prop。产品口径：**一个对象最多贴 3 个**，多出来的收进详情。
 
@@ -15,7 +15,7 @@ component: Tag
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -34,7 +34,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -50,7 +50,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 12, justifyItems: 'start' }}>
@@ -72,7 +72,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 12, justifyItems: 'start' }}>
@@ -91,7 +91,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => {
   const [items, setItems] = React.useState(['产品手册', '接口文档', '常见问题']);
@@ -119,7 +119,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 const OPTIONS = ['运行中', '已完成', '已停止', '草稿'];
 
@@ -150,8 +150,8 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Tag } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 
 const Face = () => (
   <span
@@ -186,7 +186,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -202,7 +202,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>

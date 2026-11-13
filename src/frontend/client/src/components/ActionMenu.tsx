@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize } from "~/hooks";
 
 /** Placeholder row shown while a menu's items are still being resolved (e.g. a

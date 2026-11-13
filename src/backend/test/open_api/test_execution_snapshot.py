@@ -1,12 +1,12 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids
-from bisheng.open_api.domain.context import OpenApiExecutionSnapshot, OpenApiPrincipal
-from bisheng.open_api.domain.services.execution_context import restore_execution_context
-from bisheng.open_api.domain.services.tenant_setting_service import TenantPatPolicy, TenantSettingService
-from bisheng.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
-from bisheng.permission.application.identity import get_current_permission_actor
+from doberman_agent.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids
+from doberman_agent.open_api.domain.context import OpenApiExecutionSnapshot, OpenApiPrincipal
+from doberman_agent.open_api.domain.services.execution_context import restore_execution_context
+from doberman_agent.open_api.domain.services.tenant_setting_service import TenantPatPolicy, TenantSettingService
+from doberman_agent.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
+from doberman_agent.permission.application.identity import get_current_permission_actor
 
 
 def principal() -> OpenApiPrincipal:
@@ -44,7 +44,7 @@ def test_snapshot_channel_is_closed_enum():
 
 def test_worker_context_is_restored_and_reset(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     payload = OpenApiExecutionSnapshot.from_principal(principal(), trace_id="trace-1").model_dump()
@@ -84,7 +84,7 @@ def test_public_v3_snapshot_carries_operator_privileges(monkeypatch):
     """The async leg must authorize against the same facts as the handshake."""
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     payload = guest_snapshot().model_dump(mode="json")
@@ -99,7 +99,7 @@ def test_service_account_snapshot_cannot_gain_super_admin(monkeypatch):
     """A forged snapshot must not buy privilege on the service-account path."""
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     payload = guest_snapshot(
@@ -117,7 +117,7 @@ def test_legacy_snapshot_without_privilege_fields_still_validates(monkeypatch):
     """Covers messages already queued when the new fields shipped."""
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     payload = guest_snapshot().model_dump(mode="json")
@@ -146,7 +146,7 @@ def test_public_v3_snapshot_ignores_the_pat_data_scope(monkeypatch):
     """The PAT narrowing must not reach a guest run the handshake admitted."""
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     monkeypatch.setattr(TenantSettingService, "get_policy_sync", staticmethod(narrowed_pat_policy))
@@ -159,7 +159,7 @@ def test_v2_pat_snapshot_rereads_the_data_scope(monkeypatch):
     """F066: a narrowing applied after enqueue still binds the queued v2 run."""
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     monkeypatch.setattr(TenantSettingService, "get_policy_sync", staticmethod(narrowed_pat_policy))

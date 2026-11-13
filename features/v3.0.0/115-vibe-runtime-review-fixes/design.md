@@ -237,7 +237,7 @@ manager `/v2/apps/{app_id}/status` 使用相同语义，保留内部 app/generat
 - F048 `SqlPermissionControlState.source_read_stamp` 经仓储读取继承链的模式/Grant版本，`read_effective_action_sources` 完整分页后再次复核模式与Catalog。业务摘要在名称、负责人资格查完后再读一次来源，变化返回 unavailable。
 - `AppPublishCurrentVisibilityService` 由原审批门禁后的 app Handler 调用，超时预算5秒；目标 app/tenant 校验先于删除态和目录读取。DTO 使用 `userset_relation`（含 subtree_member），两端按成员、管理员、含下级分别显示。
 - 新建 endpoint 只使用验证过的真实所属租户，async create 在模型和重名检查后、首个写入前重验会话及资格；Web 专用 `expected_tenant_id` 不扩展共享 KnowledgeCreate。
-- 管理异常页重复展开、显式刷新均重查，旧异步响应用序号丢弃；管理租户切换沿既有 `bisheng:management-scope-changed` 全页重载清空内存。客户端真实父层为 `ApprovalPane.tsx`，刷新仍调用原详情 API。
+- 管理异常页重复展开、显式刷新均重查，旧异步响应用序号丢弃；管理租户切换沿既有 `doberman-agent:management-scope-changed` 全页重载清空内存。客户端真实父层为 `ApprovalPane.tsx`，刷新仍调用原详情 API。
 - 知识库表单缺少所属租户时阻止提交并提示刷新重开，不推测为1；服务端单租户 user/info 已有确认的1语义时才可发送1。新建与复制条件已分开。
 - manager 状态采用显式 no_execution/execution_missing/current；已停止执行体不保留失败探活相位，归属变化或平台资源读取失败不伪装成执行体丢失。K8s专用只读observe_status仅将精确Pod 404识别为丢失；原observe生命周期入口不变，Service/Endpoint等依赖失败仍不可确认。
 - 未新增表、权限动作或外部依赖。新增10993及三语产物已落地；E2E脚本仅显式开启后访问真实环境，创建另需写入开关，清理校验精确名称、人员和租户。

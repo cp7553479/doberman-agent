@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { useDebounce, useLocalize } from '~/hooks';
 import { useToastContext } from '~/Providers';
 import { NotificationSeverity } from '~/common';

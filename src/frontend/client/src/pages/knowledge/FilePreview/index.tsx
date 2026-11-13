@@ -4,7 +4,7 @@
  * Width: 100% — the parent controls sizing.
  * AI assistant and split-pane logic live in the parent (FilePreviewPage).
  */
-import { usePdfDocument } from "@bisheng/file-viewers/pdf";
+import { usePdfDocument } from "@doberman-agent/file-viewers/pdf";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";

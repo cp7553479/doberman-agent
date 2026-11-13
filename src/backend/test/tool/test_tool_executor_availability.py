@@ -5,15 +5,15 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.tool.domain.services.executor import ToolExecutor
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.tool.domain.services.executor import ToolExecutor
 
 
 class ToolAvailabilityRuntimeTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.availability = SimpleNamespace(ensure_enabled=AsyncMock(), ensure_enabled_sync=Mock())
         self.service = patch(
-            "bisheng.tool.domain.services.executor.UserToolAvailabilityService", return_value=self.availability
+            "doberman_agent.tool.domain.services.executor.UserToolAvailabilityService", return_value=self.availability
         )
         self.service.start()
         self.addCleanup(self.service.stop)

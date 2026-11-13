@@ -47,7 +47,7 @@ def test_layer_contains_only_fixed_layout_with_platform_entrypoint(tree):
         assert "app/main.py" in names and "opt/venv/bin/python" in names
         assert not any(n.startswith("run/") or n.startswith("etc/passwd") for n in names)
         assert archive.getmember("opt/venv/bin/python").linkname == "/usr/local/bin/python3.11"
-        entry = archive.extractfile("usr/local/bin/bisheng-app-entrypoint").read()
+        entry = archive.extractfile("usr/local/bin/doberman-agent-app-entrypoint").read()
         assert b"UVICORN_ROOT_PATH" in entry and b"exec" in entry
         assert all(item.uid == item.gid == 10001 for item in archive.getmembers())
 
@@ -494,5 +494,5 @@ def test_assembled_image_preserves_dependency_and_system_binary_paths(tree, lang
     assert (
         path == "PATH=/opt/venv/bin:/app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     )
-    assert mutation[mutation.index("--entrypoint") + 1] == "/usr/local/bin/bisheng-app-entrypoint"
+    assert mutation[mutation.index("--entrypoint") + 1] == "/usr/local/bin/doberman-agent-app-entrypoint"
     assert mutation[mutation.index("--user") + 1] == "10001:10001"

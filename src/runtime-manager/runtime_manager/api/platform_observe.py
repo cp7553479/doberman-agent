@@ -39,7 +39,7 @@ def record(app_id):
         return service, scope, {"observation": service.runtime.observe(ref)}
     data = service.docker.inspect_container(ref)
     labels = data.get("Config", {}).get("Labels", {})
-    if labels.get("bisheng.runtime.node") != service.config.node_id or labels.get(OP_LABEL) != scope["operation_id"]:
+    if labels.get("doberman-agent.runtime.node") != service.config.node_id or labels.get(OP_LABEL) != scope["operation_id"]:
         raise NotFoundError("Execution assignment mismatch")
     return service, scope, data
 
@@ -74,10 +74,10 @@ def _current_status(app_id):
             raw = service.docker.inspect_container(ref)
             labels = raw.get("Config", {}).get("Labels", {})
             if (
-                labels.get("bisheng.app.id") != app_id
-                or labels.get("bisheng.runtime.node") != service.config.node_id
+                labels.get("doberman-agent.app.id") != app_id
+                or labels.get("doberman-agent.runtime.node") != service.config.node_id
                 or labels.get(OP_LABEL) != scope.get("operation_id")
-                or labels.get("bisheng.managed") != "v2"
+                or labels.get("doberman-agent.managed") != "v2"
             ):
                 raise BackendUnavailableError("Execution assignment mismatch")
         observation = (

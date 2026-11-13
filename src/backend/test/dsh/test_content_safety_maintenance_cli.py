@@ -21,17 +21,17 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import OperationalError
 from sqlmodel import Session, SQLModel, select
 
-from bisheng.core.context import tenant as context
-from bisheng.core.database import tenant_filter
-from bisheng.database.models.tenant import Tenant
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.repositories import content_safety
-from bisheng.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
+from doberman_agent.core.context import tenant as context
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.repositories import content_safety
+from doberman_agent.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
 from test.dsh.content_safety_fixtures import SafetyIdentity, safety_database
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 from test.dsh.test_content_safety_repository import decoded, tenant_session, wire_hash
@@ -75,9 +75,9 @@ def cli_engine(tmp_path):
 
 @pytest.fixture
 def cli(monkeypatch, cli_engine, capfd):
-    from bisheng.common.services import config_service
-    from bisheng.core import database
-    from bisheng.core.context import manager as app_context
+    from doberman_agent.common.services import config_service
+    from doberman_agent.core import database
+    from doberman_agent.core.context import manager as app_context
 
     configured = SimpleNamespace(database_url=str(cli_engine.url), multi_tenant=SimpleNamespace(enabled=True))
     opened = []

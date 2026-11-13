@@ -5,7 +5,7 @@ component: Alert
 
 # 警告提示 Alert
 
-**嵌在页面里的一条提示**，说明「这个页面或这块区域当前处在什么状态」：配置还没完成、额度快用完了、这项功能暂不可用。它不浮起来、不挡页面、**不会自己消失**，状态解除或用户关掉才走。组件库 `@bisheng/ui` 导出 **`Alert`**。规范全文见「文档 → 组件规范 → 警告提示 Alert」。
+**嵌在页面里的一条提示**，说明「这个页面或这块区域当前处在什么状态」：配置还没完成、额度快用完了、这项功能暂不可用。它不浮起来、不挡页面、**不会自己消失**，状态解除或用户关掉才走。组件库 `@doberman-agent/ui` 导出 **`Alert`**。规范全文见「文档 → 组件规范 → 警告提示 Alert」。
 
 **它是 JSX 挂载式的，没有 `alert.warning(…)` 这种命令式写法**——轻提示和通知提醒报的是「刚发生的一件事」，适合随手一调；警告提示报的是「现在还成立的一种状态」，显隐天然由业务 state 说了算。
 
@@ -20,7 +20,7 @@ component: Alert
 靠**图标 + 浅色底**区分语义，每种类型必须带图标——颜色分不清的用户靠图标读语义。拿不准用哪种就用 `info`（默认）。不做「加载中」类型。
 
 ```tsx
-import { Alert } from '@bisheng/ui';
+import { Alert } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 720 }}>
@@ -37,7 +37,7 @@ export default () => (
 只有一句话要说的时候**不要硬凑标题**：此时提示条正好 40px 高、文字垂直居中。一旦给了标题，或者正文长到换行，就自动换成上下 12px 内边距、高度随内容长。
 
 ```tsx
-import { Alert } from '@bisheng/ui';
+import { Alert } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 720 }}>
@@ -58,7 +58,7 @@ export default () => (
 **一块区域只放一条。** 两条叠着就没人读了；有两件事要说，合成一条或只说最要紧的那件。
 
 ```tsx
-import { Alert } from '@bisheng/ui';
+import { Alert } from '@doberman-agent/ui';
 
 export default () => (
   <div
@@ -81,7 +81,7 @@ export default () => (
 **最多两个**，固定在右侧，`actions[0]` 是主动作（品牌色）。按钮必须是**处理这个状态的实际动作**——「去配置」「查看节点」「重试」，**不许是「关闭」「知道了」**，那是关闭按钮的事。**点了操作按钮提示不会自己消失**：状态还在，撤不撤由业务说。失败和警告要么在正文里说下一步，要么配一个操作按钮。
 
 ```tsx
-import { Alert, toast } from '@bisheng/ui';
+import { Alert, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 720 }}>
@@ -109,7 +109,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Alert, Button, toast } from '@bisheng/ui';
+import { Alert, Button, toast } from '@doberman-agent/ui';
 
 export default () => {
   const [visible, setVisible] = React.useState(true);
@@ -142,7 +142,7 @@ export default () => {
 **标题 1 行、正文最多 2 行**，超出截断加省略号，不做展开——两行说不完，把细节放到操作按钮指向的页面去，不是把提示写长。被截断的完整文案挂在原生 `title` 上兜底（没截断的不挂，免得平白多一个浏览器气泡）。
 
 ```tsx
-import { Alert, toast } from '@bisheng/ui';
+import { Alert, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 560 }}>

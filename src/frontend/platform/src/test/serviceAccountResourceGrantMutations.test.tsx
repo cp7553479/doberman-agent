@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import {
   listServiceAccountGrantableResourcesApi,
   listServiceAccountKeysApi,
@@ -35,8 +35,8 @@ vi.mock("@/controllers/request", async (importOriginal) => ({
     request.catch(() => false),
 }))
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   message: vi.fn(),
   toast: vi.fn(),

@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
 
 
 def _executor(sandbox) -> E2bCodeExecutor:

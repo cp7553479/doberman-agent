@@ -14,9 +14,9 @@ from types import SimpleNamespace
 
 import pytest
 
-import bisheng.channel.domain.services.channel_service as channel_service_module
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.services.channel_service import ChannelService
+import doberman_agent.channel.domain.services.channel_service as channel_service_module
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.services.channel_service import ChannelService
 
 
 @pytest.fixture(autouse=True)

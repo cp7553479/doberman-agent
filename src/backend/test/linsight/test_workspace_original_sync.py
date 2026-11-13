@@ -18,7 +18,7 @@ import os
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 SVID = "sv-followup"
 
@@ -33,7 +33,7 @@ class _Obj:
 def _minio(objects: dict[str, bytes]) -> MagicMock:
     """MinIO stand-in whose listing and reads are backed by one dict."""
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
 
     def _list(bucket, prefix="", recursive=True):
         return iter([_Obj(k, len(v)) for k, v in objects.items() if k.startswith(prefix)])
@@ -58,7 +58,7 @@ async def test_original_synced_from_workspace_and_baselined(tmp_path):
     task = _task(str(tmp_path))
 
     with patch(
-        "bisheng.linsight.domain.task_exec.get_minio_storage",
+        "doberman_agent.linsight.domain.task_exec.get_minio_storage",
         AsyncMock(return_value=_minio(objects)),
     ):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))
@@ -79,7 +79,7 @@ async def test_sync_is_idempotent_for_already_prefetched_files(tmp_path):
     task = _task(str(tmp_path))
     minio = _minio(objects)
 
-    with patch("bisheng.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=minio)):
+    with patch("doberman_agent.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=minio)):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))
 
     assert (tmp_path / "uploads" / "data.xlsx").read_bytes() == b"already here"
@@ -95,7 +95,7 @@ async def test_output_synced_from_workspace_and_baselined(tmp_path):
     task = _task(str(tmp_path))
 
     with patch(
-        "bisheng.linsight.domain.task_exec.get_minio_storage",
+        "doberman_agent.linsight.domain.task_exec.get_minio_storage",
         AsyncMock(return_value=_minio(objects)),
     ):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))
@@ -113,7 +113,7 @@ async def test_large_tool_results_synced_from_workspace_and_baselined(tmp_path):
     task = _task(str(tmp_path))
 
     with patch(
-        "bisheng.linsight.domain.task_exec.get_minio_storage",
+        "doberman_agent.linsight.domain.task_exec.get_minio_storage",
         AsyncMock(return_value=_minio(objects)),
     ):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))
@@ -128,7 +128,7 @@ async def test_sync_failure_never_blocks_the_turn(tmp_path):
     task = _task(str(tmp_path))
 
     with patch(
-        "bisheng.linsight.domain.task_exec.get_minio_storage",
+        "doberman_agent.linsight.domain.task_exec.get_minio_storage",
         AsyncMock(side_effect=RuntimeError("minio down")),
     ):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))  # must not raise
@@ -139,7 +139,7 @@ async def test_sync_failure_never_blocks_the_turn(tmp_path):
 async def test_previous_deliverable_reaches_executor_and_baseline(tmp_path):
     objects = {f"workspace/{SVID}/output/report.xlsx": b"PK\x03\x04previous-result"}
     task = _task(str(tmp_path))
-    with patch("bisheng.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=_minio(objects))):
+    with patch("doberman_agent.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=_minio(objects))):
         await task._sync_workspace_originals(SimpleNamespace(id=SVID))
     local = tmp_path / "output" / "report.xlsx"
     assert local.read_bytes() == objects[f"workspace/{SVID}/output/report.xlsx"]

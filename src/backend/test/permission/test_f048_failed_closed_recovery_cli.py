@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import get_current_tenant_id
+from doberman_agent.core.context.tenant import get_current_tenant_id
 from scripts import recover_f048_failed_closed_projection as cli
 
 

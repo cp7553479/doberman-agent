@@ -1,7 +1,7 @@
-import { Pagination, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Button, SearchInput } from '@bisheng/ui';
-import { Segmented, Select, Tooltip as SharedTooltip, Switch, Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Pagination, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
+import { Segmented, Select, Tooltip as SharedTooltip, Switch, Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 

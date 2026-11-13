@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Pagination, Button, SearchInput, notification } from '@bisheng/ui';
+import { Pagination, Button, SearchInput, notification } from '@doberman-agent/ui';
 
 import { checkSassUrl } from "@/components/bs-comp/FileView";
 import { LoadingIcon } from "@/components/bs-icons/loading";
@@ -91,7 +91,7 @@ export default function DataSetPage() {
                     </TableBody>
                 </Table>
             </div>
-            <div className="bisheng-table-footer px-6 bg-background-login">
+            <div className="doberman_agent-table-footer px-6 bg-background-login">
                 <div className="ml-auto">
                     <Pagination locale={paginationLocale}
                         current={page}

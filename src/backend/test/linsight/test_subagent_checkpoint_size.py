@@ -21,7 +21,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 
-from bisheng.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services import agent_factory
 
 SUBAGENT_STEPS = 20
 
@@ -99,7 +99,7 @@ async def test_factory_passes_deep_agent_state(monkeypatch: pytest.MonkeyPatch):
         captured.update(kwargs)
         return SimpleNamespace(name="agent")
 
-    from bisheng.core.config.settings import LinsightConf
+    from doberman_agent.core.config.settings import LinsightConf
 
     monkeypatch.setattr("deepagents.create_deep_agent", fake_create_deep_agent)
     monkeypatch.setattr(agent_factory, "_resolve_model", AsyncMock(return_value=(SimpleNamespace(), False)))

@@ -5,19 +5,19 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
 
 
 @pytest.fixture
 def recovery():
-    from bisheng.app_runtime.domain.models.runtime_delivery import (
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import (
         RuntimeDelivery,
         RuntimeExecutionFact,
         RuntimeOperation,
         RuntimeRoute,
     )
-    from bisheng.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService as Policy
-    from bisheng.app_runtime.domain.services.runtime_protocol import content_digest
+    from doberman_agent.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService as Policy
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import content_digest
 
     app = SimpleNamespace(id="target", tenant_id=3, state="online", current_version_id="approved")
     route = SimpleNamespace(

@@ -1,13 +1,13 @@
 """BaseErrorCode fills the placeholders of its class message template."""
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.knowledge import (
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.knowledge import (
     KnowledgeMetadataFieldConflictError,
     KnowledgeMetadataFieldNotExistError,
     KnowledgeMetadataValueTypeConvertError,
 )
-from bisheng.common.errcode.linsight import SkillGitHubUrlInvalidError
-from bisheng.common.errcode.server import AsrTranscriptionFailedError, NoAsrModelConfigError
+from doberman_agent.common.errcode.linsight import SkillGitHubUrlInvalidError
+from doberman_agent.common.errcode.server import AsrTranscriptionFailedError, NoAsrModelConfigError
 
 
 def test_kwargs_fill_the_template():

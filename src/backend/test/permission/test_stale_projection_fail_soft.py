@@ -7,15 +7,15 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
     PermissionVersionConflictError,
 )
-from bisheng.permission.application import control_state as control_state_module
-from bisheng.permission.application.control_state import SqlPermissionControlState
-from bisheng.permission.application.sql_runtime import SqlPermissionScopeFence
-from bisheng.permission.domain.schemas.f048 import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.application import control_state as control_state_module
+from doberman_agent.permission.application.control_state import SqlPermissionControlState
+from doberman_agent.permission.application.sql_runtime import SqlPermissionScopeFence
+from doberman_agent.permission.domain.schemas.f048 import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import (
     F048PermissionService,
     PermissionActor,
 )
@@ -179,7 +179,7 @@ async def test_ensure_readable_error_carries_diagnostic_fields():
 
     with (
         patch(
-            "bisheng.permission.application.sql_runtime.get_async_db_session",
+            "doberman_agent.permission.application.sql_runtime.get_async_db_session",
             return_value=mock_ctx,
         ),
         pytest.raises(PermissionPublishNotReadyError) as exc_info,
@@ -220,7 +220,7 @@ async def test_scope_fence_batch_reads_permission_state_once():
     mock_ctx.__aexit__ = AsyncMock(return_value=None)
 
     with patch(
-        "bisheng.permission.application.sql_runtime.get_async_db_session",
+        "doberman_agent.permission.application.sql_runtime.get_async_db_session",
         return_value=mock_ctx,
     ):
         decisions = await SqlPermissionScopeFence().ensure_readable_batch((good, missing))
@@ -262,7 +262,7 @@ async def test_decision_fence_keeps_non_current_projection_readable(
     mock_ctx.__aexit__ = AsyncMock(return_value=None)
 
     with patch(
-        "bisheng.permission.application.sql_runtime.get_async_db_session",
+        "doberman_agent.permission.application.sql_runtime.get_async_db_session",
         return_value=mock_ctx,
     ):
         assert await SqlPermissionScopeFence().ensure_readable(target) is requires_higher_consistency
@@ -288,7 +288,7 @@ async def test_decision_fence_still_rejects_pending_projection():
 
     with (
         patch(
-            "bisheng.permission.application.sql_runtime.get_async_db_session",
+            "doberman_agent.permission.application.sql_runtime.get_async_db_session",
             return_value=mock_ctx,
         ),
         pytest.raises(PermissionPublishNotReadyError),
@@ -424,7 +424,7 @@ async def test_reconcile_repairs_root_parent_mismatch():
     # permission runtime (OpenFGA, catalog, etc.), we validate the query
     # logic and the _compute_correct_parent helper directly, and the repair
     # path is covered by the unit tests above.
-    from bisheng.knowledge.domain.services.stale_projection_reconciler import (
+    from doberman_agent.knowledge.domain.services.stale_projection_reconciler import (
         _compute_correct_parent,
     )
 

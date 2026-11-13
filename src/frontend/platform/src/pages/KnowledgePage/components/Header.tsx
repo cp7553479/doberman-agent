@@ -1,8 +1,8 @@
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 
 import { updateKnowledgeApi } from "@/controllers/API";
 import { showApiError } from "@/controllers/request";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeTooltip } from "./KnowledgeTooltip";
 
 import { useEffect,useState } from "react";

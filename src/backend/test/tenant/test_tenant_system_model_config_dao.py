@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.llm.domain.models.tenant_system_model_config import (
+from doberman_agent.llm.domain.models.tenant_system_model_config import (
     TenantSystemModelConfig,
     TenantSystemModelConfigDao,
 )
@@ -71,7 +71,7 @@ async def test_aresolve_returns_own_row_when_present():
     own = _mk_row(5, 'knowledge_llm', '{"k": 1}')
     session = _mk_session_returning([own])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -87,7 +87,7 @@ async def test_aresolve_root_tenant_no_fallback_loop():
     """When tenant_id == Root, aresolve must not recurse to look up Root again."""
     session = _mk_session_returning([None])  # own absent
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -104,7 +104,7 @@ async def test_aresolve_returns_empty_when_root_also_unset():
     """AC-07: Child has no row + Root has no row → empty + not blocked."""
     session = _mk_session_returning([None, None])  # own None, root None
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -120,10 +120,10 @@ async def test_aresolve_inherits_root_when_share_enabled():
     root_row = _mk_row(1, 'knowledge_llm', '{"shared": true}')
     session = _mk_session_returning([None, root_row])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ), patch(
-        'bisheng.database.models.tenant.TenantDao.aget_by_id',
+        'doberman_agent.database.models.tenant.TenantDao.aget_by_id',
         new=AsyncMock(return_value=_mk_root_tenant(share=True)),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -140,10 +140,10 @@ async def test_aresolve_blocks_when_root_share_disabled():
     root_row = _mk_row(1, 'knowledge_llm', '{"private": true}')
     session = _mk_session_returning([None, root_row])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ), patch(
-        'bisheng.database.models.tenant.TenantDao.aget_by_id',
+        'doberman_agent.database.models.tenant.TenantDao.aget_by_id',
         new=AsyncMock(return_value=_mk_root_tenant(share=False)),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -161,10 +161,10 @@ async def test_aresolve_treats_empty_string_as_unset():
     root = _mk_row(1, 'knowledge_llm', '{"r": 1}')
     session = _mk_session_returning([own_empty, root])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ), patch(
-        'bisheng.database.models.tenant.TenantDao.aget_by_id',
+        'doberman_agent.database.models.tenant.TenantDao.aget_by_id',
         new=AsyncMock(return_value=_mk_root_tenant(share=True)),
     ):
         value, inherited, blocked = await TenantSystemModelConfigDao.aresolve(
@@ -181,7 +181,7 @@ async def test_aresolve_treats_empty_string_as_unset():
 async def test_aupsert_inserts_when_row_absent():
     session = _mk_session_returning([None])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ):
         result = await TenantSystemModelConfigDao.aupsert(
@@ -199,7 +199,7 @@ async def test_aupsert_updates_when_row_present():
     existing = _mk_row(5, 'knowledge_llm', '{"old": 1}')
     session = _mk_session_returning([existing])
     with patch(
-        'bisheng.llm.domain.models.tenant_system_model_config.get_async_db_session',
+        'doberman_agent.llm.domain.models.tenant_system_model_config.get_async_db_session',
         _session_context(session),
     ):
         result = await TenantSystemModelConfigDao.aupsert(

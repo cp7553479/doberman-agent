@@ -12,7 +12,7 @@
 
 ## 2. 数据和部署边界
 
-一个毕昇环境对应一套相互配对的毕昇/Gateway 数据库及 Redis 存储空间。K8s Pod、节点、域名和 IP 不是数据主键，也不是授权边界。同环境多副本共享存储和既有用户同步 Secret；独立环境通过数据库、Redis 实例/DB 或现有基础设施隔离，不在业务表中增加环境字段。当前 Redis Cluster 尚未实现，不能依赖切换 Redis DB 来声称支持 Cluster。
+一个doberman-agent环境对应一套相互配对的doberman-agent/Gateway 数据库及 Redis 存储空间。K8s Pod、节点、域名和 IP 不是数据主键，也不是授权边界。同环境多副本共享存储和既有用户同步 Secret；独立环境通过数据库、Redis 实例/DB 或现有基础设施隔离，不在业务表中增加环境字段。当前 Redis Cluster 尚未实现，不能依赖切换 Redis DB 来声称支持 Cluster。
 
 若两个部署故意连接同一套数据库与 Redis，它们属于同一环境、共用一份席位池；不能在同一存储空间套用两个独立配额。同一 License 可复用不表示认证 Secret 也应跨环境复用，各独立环境应使用各自的用户同步 Secret。
 
@@ -21,12 +21,12 @@
 | Gateway `gt_dsh_seat` | 删除 installation_id；主键 seat_id 保留，唯一键改为 user_id；tenant_id 保留用于归属及权限校验 |
 | Gateway 会话与刷新记录 | 保留 session_id、seat_id 关联；删除 JOIN/查询中的安装 ID 条件，不改变撤销及刷新轮换语义 |
 | Gateway `gt_dsh_operation` | 删除 installation_id；operation_id 在当前数据库全局唯一，保留动作、actor、目标、预期版本及 payload 摘要约束 |
-| 毕昇模型额度、调用明细、月用量 | 既有表已按租户/用户/模型保存，不重建、不另加明细表 |
+| doberman-agent模型额度、调用明细、月用量 | 既有表已按租户/用户/模型保存，不重建、不另加明细表 |
 | Redis | 授权、票据、Nonce 使用 `{dsh}:...`；额度账本原有 `dsh_quota:{tenant:user}:...` 已无安装标识，保留前缀及用量；不得用 License ID、指纹或安装标识分区 |
 | 对象存储恢复证据 | 固定 DSH 业务目录，保留 run_id/epoch、证据摘要和审批约束；移除 installation_id 字段及路径分段，不取消丢账恢复校验 |
 | 模型遥测 | app_type 保持 DSH_DESKTOP，app_id 固定为 dsh，不从 License 或安装标识生成 |
 
-全环境 ASSIGNED 席位数由同一数据库事务控制，不能在各 Pod 内独立计数。删除索引前缀后重新验证 MySQL SERIALIZABLE 的并发行为和 DM 表锁路径；DM 不要求本轮实机测试，但建表与业务写法必须兼容。毕昇侧不增加手写业务 SQL。
+全环境 ASSIGNED 席位数由同一数据库事务控制，不能在各 Pod 内独立计数。删除索引前缀后重新验证 MySQL SERIALIZABLE 的并发行为和 DM 表锁路径；DM 不要求本轮实机测试，但建表与业务写法必须兼容。doberman-agent侧不增加手写业务 SQL。
 
 更换 License 只更新能力、有效期和上限。授权 jti/digest 可保留用于状态展示和审计，不能作为业务数据归属、查询过滤条件或 Redis 主键前缀。降配超限继续按现设计阻断并由管理员处理，不自动释放席位。
 
@@ -34,10 +34,10 @@
 
 公开客户端不持有 HMAC Secret；双方仍使用现有用户同步 Secret，原用户同步协议不变。
 
-- HKDF-SHA256：salt=UTF-8("bisheng-dsh-v1")，info=UTF-8(purpose)，输出 32 字节。purpose 保持 bisheng-to-gateway-v1、gateway-to-bisheng-v1、dsh-access-v1；删除原 info 中的安装 ID 和冒号。服务请求使用派生结果的小写 hex UTF-8，access token 使用原始 32 字节结果。
+- HKDF-SHA256：salt=UTF-8("doberman-agent-dsh-v1")，info=UTF-8(purpose)，输出 32 字节。purpose 保持 doberman-agent-to-gateway-v1、gateway-to-doberman-agent-v1、dsh-access-v1；删除原 info 中的安装 ID 和冒号。服务请求使用派生结果的小写 hex UTF-8，access token 使用原始 32 字节结果。
 - 内部签名 canonical 为 `method + "\n" + path + "\n" + SHA256(body).hexdigest() + "\n" + key_id + "\n" + timestamp + "\n" + nonce`，末尾无换行；保留现有路径规范化、时间窗及 Nonce 原子防重放。
 - 删除 `X-DSH-Installation-Id`，保留 X-DSH-Key-Id、X-DSH-Timestamp、X-DSH-Nonce、X-DSH-Signature；信任仅从固定方向的配置密钥建立。
-- access token 固定 HS256、typ=bisheng-dsh-access+jwt、kid=dsh-access-v1、iss=bisheng-dsh、aud=bisheng-dsh-model；声明保留 iss/aud/sub/tenant_id/seat_id/session_id/grant_version/iat/exp/jti，删除 installation_id。
+- access token 固定 HS256、typ=doberman-agent-dsh-access+jwt、kid=dsh-access-v1、iss=doberman-agent-dsh、aud=doberman-agent-dsh-model；声明保留 iss/aud/sub/tenant_id/seat_id/session_id/grant_version/iat/exp/jti，删除 installation_id。
 - 保留 PKCE S256、随机短期 ticket、原子一次性消费、用户和租户强校验、在线席位/会话校验；不增加 ticket 签名格式。
 
 | 内部接口/对象 | 变化 |
@@ -60,7 +60,7 @@ Gateway 不再依赖 installation-id 或 replica-id 初始化组件。退出所�
 3. 检查旧安装标识下是否存在重复 user_id、冲突席位/会话或重复幂等动作。若多套测试数据曾混用，先确认归属，不能简单删除字段合并。
 4. 删除部署配置中的 installation_id / installation-id 和 replica-id；Gateway 严格拒绝未知 DSH 配置，不能保留旧字段。直接更新建表脚本及目标表结构、索引；保持 seat_id、user_id、模型额度、历史用量及审计。Redis 账本、投影位置、去重/幂等状态迁移并核对数量和金额无关的 Token 合计，不将已有用量归零。
 5. 清退旧 access/refresh 对应会话及未完成授权事务，保留会话历史和席位；新登录可使用已分配席位。本次不兼容旧测试凭证、旧 HMAC 或旧 DSH License。
-6. 生成 schema 2 测试 License，配套切换 Gateway 与毕昇 API/Worker；验证本地 License 和共享席位计数，核对额度账本及 Redis 恢复证据，再恢复准入。毕昇部署按用户安排执行。
+6. 生成 schema 2 测试 License，配套切换 Gateway 与doberman-agent API/Worker；验证本地 License 和共享席位计数，核对额度账本及 Redis 恢复证据，再恢复准入。doberman-agent部署按用户安排执行。
 
 回滚应在暂停 DSH 后恢复匹配的旧代码、表结构、Redis 状态和 License。新环境已有调用后不能直接覆盖旧备份，须先保全并核对新用量和操作记录。
 

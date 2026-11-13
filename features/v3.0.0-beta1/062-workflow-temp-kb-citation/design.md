@@ -297,7 +297,7 @@ F054 AC-16 / AC-17（「工作流 Agent 检索临时文件不得登记溯源」�
   - 404 `reason=expired` 显示「来源已失效」，不再显示「暂无权限」。
   - 三语文案「临时知识库」；platform 去掉硬编码「网页」「文档」时不得只改一处。
 - **手动**（本地起前后端 + 连 test 环境中间件）：
-  1. 后端：`cd src/backend && export config=config.yaml && uv run uvicorn bisheng.main:app --port 7860`
+  1. 后端：`cd src/backend && export config=config.yaml && uv run uvicorn doberman_agent.main:app --port 7860`
   2. 工作台：`cd src/frontend && pnpm dev:client`（`:4001`，base `/workspace`）
   3. 平台：`cd src/frontend/platform && pnpm start -- --host 0.0.0.0`（`:3001`）
   4. 工作流输入节点选「解析并存入临时知识库」，RAG 只绑该临时库，上传一份 PDF 提问 → 角标可点、右侧有引用段、能打开原文。

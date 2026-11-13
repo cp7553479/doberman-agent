@@ -1,4 +1,4 @@
-"""Sandbox runner protocol. These checks do not pass a BiSheng case."""
+"""Sandbox runner protocol. These checks do not pass a doberman-agent case."""
 
 from __future__ import annotations
 

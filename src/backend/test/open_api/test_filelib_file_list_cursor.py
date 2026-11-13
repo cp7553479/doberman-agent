@@ -19,13 +19,13 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy.pool import StaticPool
 
-import bisheng.knowledge.domain.models.knowledge_file as kf_module
-from bisheng.common.cursor import encode_cursor
-from bisheng.common.errcode.knowledge import KnowledgeInvalidCursorError
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.services import knowledge_service as ks_module
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
+import doberman_agent.knowledge.domain.models.knowledge_file as kf_module
+from doberman_agent.common.cursor import encode_cursor
+from doberman_agent.common.errcode.knowledge import KnowledgeInvalidCursorError
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.services import knowledge_service as ks_module
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
 
 KNOWLEDGE_ID = 7
 OTHER_KNOWLEDGE_ID = 8
@@ -176,9 +176,9 @@ async def test_non_positive_page_size_is_http_400(monkeypatch, page_size):
     from fastapi import Depends, FastAPI
     from httpx import ASGITransport, AsyncClient
 
-    from bisheng.open_api.api import dependencies
-    from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-    from bisheng.open_endpoints.api.endpoints import filelib
+    from doberman_agent.open_api.api import dependencies
+    from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+    from doberman_agent.open_endpoints.api.endpoints import filelib
     from test.open_api.test_dependencies import service_account_principal
 
     app = FastAPI()

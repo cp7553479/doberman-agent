@@ -1,7 +1,7 @@
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm"
-import { Tag, notification } from "@bisheng/ui"
-import { Button } from "@bisheng/ui"
-import { Input, Textarea } from "@bisheng/ui"
+import { Tag, notification } from "@doberman-agent/ui"
+import { Button } from "@doberman-agent/ui"
+import { Input, Textarea } from "@doberman-agent/ui"
 import {
   Table,
   TableBody,

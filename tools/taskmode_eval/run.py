@@ -1,7 +1,7 @@
 """Batch runner: submit eval cases to task mode through the v2 open API.
 
 Usage (on 114, from the pack directory):
-  PY=/opt/bisheng/src/backend/.venv/bin/python
+  PY=/opt/doberman-agent/src/backend/.venv/bin/python
   $PY -I harness/run.py --cases core --repeat 1 --concurrency 3 [--run-id NAME] [--resume]
 
 For each case x repeat it uploads the inputs, submits with run_mode=task/execution=async,

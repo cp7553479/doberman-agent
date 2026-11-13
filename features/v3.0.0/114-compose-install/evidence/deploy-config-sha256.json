@@ -10,8 +10,8 @@
   "docker/nginx/conf.d/default.conf": "b75135dc8ec3f4c06b7e64096f7f044dc804ccaa631a13da5bb4a191f199c9d4",
   "docker/nginx/conf.d/websocket.conf": "2255f65cde423b65aca3d4b7f191f627c6850b1d96909087d9a6dd59c336a9ab",
   "docker/nginx/nginx.conf": "602ed78d0e08a745e8a72a1e751d9f534f61059f42af49f171884ce7100f3787",
-  "docker/bisheng/config/config.yaml": "8d81f5551bd4b2685a805fdd87082f6542ab7aa5c51c03f8ed817fb4e77b6577",
-  "docker/bisheng/entrypoint.sh": "87c399dea4e4d2d731c23c98760b98994c0b77646d343997aa5807b8af15c671",
+  "docker/doberman-agent/config/config.yaml": "8d81f5551bd4b2685a805fdd87082f6542ab7aa5c51c03f8ed817fb4e77b6577",
+  "docker/doberman-agent/entrypoint.sh": "87c399dea4e4d2d731c23c98760b98994c0b77646d343997aa5807b8af15c671",
   "docker/mysql/conf/my.cnf": "85a42b02a7b10e8daf9899be6d314617d564b8183fa52c28be3d86da45fcadb5",
   "docker/redis/redis.conf": "ac7d3b58db76b87c878ffbb8978d483195ac694b37cacc0aced6768894518d4d"
 }

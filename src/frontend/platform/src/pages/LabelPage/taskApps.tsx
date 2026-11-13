@@ -1,13 +1,13 @@
 // @ts-strict-ignore
-import { Pagination, Button, Select } from '@bisheng/ui';
+import { Pagination, Button, Select } from '@doberman-agent/ui';
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import ColFilterUser from "@/components/bs-comp/tableComponent/ColFilterUser";
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table";
-import { Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { getMarkChatsApi } from "@/controllers/API/log";
 import { useTable } from "@/util/hook";
 import { useState } from "react";
@@ -137,7 +137,7 @@ export default function TaskApps() {
                     </TableFooter>
                 </Table>
             </div>
-            <div className="bisheng-table-footer bg-background-login px-2">
+            <div className="doberman_agent-table-footer bg-background-login px-2">
                 <Pagination locale={paginationLocale}
                     className="float-right justify-end w-full mr-6"
                     current={page}

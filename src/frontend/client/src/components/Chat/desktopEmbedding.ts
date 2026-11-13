@@ -11,6 +11,6 @@ if (typeof window !== 'undefined') {
   const embedded = isDesktopEmbedded();
   if (typeof document !== 'undefined') {
     // CSS uses the same host identity as layout hooks, including narrow desktop panes.
-    document.documentElement.dataset.bishengSurface = embedded ? 'desktop' : 'web';
+    document.documentElement.dataset.dobermanAgentSurface = embedded ? 'desktop' : 'web';
   }
 }

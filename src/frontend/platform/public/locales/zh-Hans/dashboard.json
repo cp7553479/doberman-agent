@@ -4,7 +4,7 @@
   "noValue": "暂无",
   "removeSelectedValue": "移除 {{value}}",
   "chartSelector": {
-    "title": "关{{bisheng}}联图表配置$t(bs:menu.user)",
+    "title": "关{{doberman_agent}}联图表配置$t(bs:menu.user)",
     "selectCharts": "选择关联图表",
     "selectAll": "全选",
     "unSelectAll": "取消全选",

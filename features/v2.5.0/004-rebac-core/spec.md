@@ -42,12 +42,12 @@
 - AD-04: 列表 API 权限级别用 BatchCheck（owner→can_manage→can_edit→can_read），admin 短路返回 owner
 
 **关键文件（预判）**:
-- 新建: `src/backend/bisheng/core/openfga/client.py`
-- 新建: `src/backend/bisheng/permission/`（完整 DDD 模块：api/ + domain/）
-- 新建: `src/backend/bisheng/database/models/failed_tuple.py`
-- 修改: `src/backend/bisheng/user/domain/services/auth.py`（LoginUser 五级链路）
+- 新建: `src/backend/doberman_agent/core/openfga/client.py`
+- 新建: `src/backend/doberman_agent/permission/`（完整 DDD 模块：api/ + domain/）
+- 新建: `src/backend/doberman_agent/database/models/failed_tuple.py`
+- 修改: `src/backend/doberman_agent/user/domain/services/auth.py`（LoginUser 五级链路）
 - 修改: `docker/docker-compose.yml`（OpenFGA 服务）
-- 修改: `src/backend/bisheng/core/context/manager.py`（FGAClient 初始化）
+- 修改: `src/backend/doberman_agent/core/context/manager.py`（FGAClient 初始化）
 
 **关联不变量**: INV-2, INV-3, INV-4, INV-5, INV-7, INV-12
 
@@ -55,7 +55,7 @@
 
 ## 1. 概述与用户故事
 
-F004 是 v2.5 权限体系改造的核心基础设施。它将 OpenFGA 作为 ReBAC 引擎集成到 BiSheng 后端，提供统一的权限检查、资源授权、缓存和双写补偿能力。后续 F005-F008 均依赖此 Feature 提供的 PermissionService 接口。
+F004 是 v2.5 权限体系改造的核心基础设施。它将 OpenFGA 作为 ReBAC 引擎集成到 doberman-agent 后端，提供统一的权限检查、资源授权、缓存和双写补偿能力。后续 F005-F008 均依赖此 Feature 提供的 PermissionService 接口。
 
 ### 用户故事
 
@@ -131,7 +131,7 @@ F004 是 v2.5 权限体系改造的核心基础设施。它将 OpenFGA 作为 Re
 ### AC-08: Docker Compose OpenFGA 服务
 
 - [ ] `docker/docker-compose.yml` 包含 `openfga` 服务定义
-- [ ] 使用 MySQL 存储引擎（复用 bisheng-mysql）
+- [ ] 使用 MySQL 存储引擎（复用 doberman-agent-mysql）
 - [ ] 健康检查配置：`/healthz` 端点
 - [ ] 端口映射：8080(HTTP), 8081(gRPC), 3000(Playground)
 

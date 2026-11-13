@@ -1,4 +1,4 @@
-import type { CitationServices } from '@bisheng/chat/citations';
+import type { CitationServices } from '@doberman-agent/chat/citations';
 import { getCitationDetail,getCitationUnresolvedReason,resolveCitationDetails } from '~/api/chatApi';
 import { getCitationAccessScope } from '~/api/citationScope';
 import { useLocalize } from '~/hooks';

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Textarea } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Textarea } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { Dialog,DialogTrigger } from "@/components/bs-ui/dialog";

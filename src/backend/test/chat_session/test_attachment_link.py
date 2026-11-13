@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
-from bisheng.chat_session.domain.chat import ChatSessionService
+from doberman_agent.chat_session.domain.chat import ChatSessionService
 
 OWNER_ID = 7
 STRANGER_ID = 99
@@ -24,7 +24,7 @@ STRANGER_ID = 99
 @pytest.fixture(autouse=True)
 def not_found_response(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.NotFoundError",
+        "doberman_agent.chat_session.domain.chat.NotFoundError",
         SimpleNamespace(
             http_exception=lambda: HTTPException(status_code=404),
         ),
@@ -45,8 +45,8 @@ def _message(files):
 @pytest.fixture
 def storage():
     client = MagicMock()
-    client.get_share_link = AsyncMock(return_value="/bisheng/chat/7/abc.png?sig=fresh")
-    with patch("bisheng.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=client)):
+    client.get_share_link = AsyncMock(return_value="/doberman_agent/chat/7/abc.png?sig=fresh")
+    with patch("doberman_agent.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=client)):
         yield client
 
 
@@ -63,11 +63,11 @@ def conversation():
     files = [{"file_id": "f1", "filename": "a.png", "object_name": "chat/7/abc.png"}]
     with (
         patch(
-            "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+            "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
             AsyncMock(return_value=session),
         ),
         patch(
-            "bisheng.chat_session.domain.chat.WorkflowFileRepository.attachment_messages",
+            "doberman_agent.chat_session.domain.chat.WorkflowFileRepository.attachment_messages",
             AsyncMock(return_value=[_message(files)]),
         ),
     ):
@@ -78,7 +78,7 @@ class TestResolveAttachmentUrl:
     async def test_owner_gets_a_fresh_link(self, storage, conversation):
         url = await ChatSessionService.resolve_attachment_url("c1", "f1", _user(OWNER_ID))
 
-        assert url == "/bisheng/chat/7/abc.png?sig=fresh"
+        assert url == "/doberman_agent/chat/7/abc.png?sig=fresh"
         # Signed for the object the server recorded, nothing else.
         assert storage.get_share_link.await_args.args[0] == "chat/7/abc.png"
 
@@ -105,14 +105,14 @@ class TestResolveAttachmentUrl:
             api_subject_type=None,
             is_delete=False,
         )
-        legacy = [{"file_id": "f1", "filename": "a.png", "filepath": "/bisheng-tmp/a.png"}]
+        legacy = [{"file_id": "f1", "filename": "a.png", "filepath": "/doberman-agent-tmp/a.png"}]
         with (
             patch(
-                "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+                "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
                 AsyncMock(return_value=session),
             ),
             patch(
-                "bisheng.chat_session.domain.chat.WorkflowFileRepository.attachment_messages",
+                "doberman_agent.chat_session.domain.chat.WorkflowFileRepository.attachment_messages",
                 AsyncMock(return_value=[_message(legacy)]),
             ),
             pytest.raises(HTTPException),
@@ -124,7 +124,7 @@ class TestResolveAttachmentUrl:
     async def test_missing_conversation_is_refused(self, storage):
         with (
             patch(
-                "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+                "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
                 AsyncMock(return_value=None),
             ),
             pytest.raises(HTTPException),

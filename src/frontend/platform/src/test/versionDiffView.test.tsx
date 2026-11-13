@@ -1,10 +1,10 @@
-import { VersionDiffView, classifyDiffLine } from "@bisheng/file-viewers"
+import { VersionDiffView, classifyDiffLine } from "@doberman-agent/file-viewers"
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 /**
  * The cross-app diff presentation (F055 AC-41 / T064). It lives in
- * `@bisheng/file-viewers` because the platform's version tab and the client's
+ * `@doberman-agent/file-viewers` because the platform's version tab and the client's
  * review view must render the *same* component, and the two SPAs share no
  * `src/`. It is exercised from here because platform's vitest setup mocks
  * `react-i18next` to echo keys back, which makes the assertions read as the

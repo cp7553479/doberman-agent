@@ -4,7 +4,7 @@ import { hydrateStreamChatCitations } from './hydrateStreamChatCitations';
 /**
  * Direct API calls for the AI chat system.
  */
-import { isApiError, normalizeApiError } from "@bisheng/api-client";
+import { isApiError, normalizeApiError } from "@doberman-agent/api-client";
 import { readCitationFailure } from "~/api/citationFailure";
 import http from "~/api/request";
 import { normalizeHistoryMediaFiles } from "~/utils/mediaAttachmentUtils";
@@ -33,8 +33,8 @@ const API = {
 };
 
 // --- Types ---
-export type { ChatCitation, ChatCitationItem } from '@bisheng/chat/citations';
-import type { ChatCitation } from '@bisheng/chat/citations';
+export type { ChatCitation, ChatCitationItem } from '@doberman-agent/chat/citations';
+import type { ChatCitation } from '@doberman-agent/chat/citations';
 
 function citationCacheKey(id: string, scope = getCitationAccessScope()) { return JSON.stringify([scope,id]); }
 const citationDetailMemoryCache: Record<string, ChatCitation> = {};

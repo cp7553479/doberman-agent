@@ -4,15 +4,15 @@ from unittest.mock import AsyncMock
 from fastapi import APIRouter, FastAPI
 from starlette.testclient import TestClient
 
-from bisheng.common.schemas.api import PageData
-from bisheng.knowledge.domain.schemas.knowledge_space_tag_library_schema import (
+from doberman_agent.common.schemas.api import PageData
+from doberman_agent.knowledge.domain.schemas.knowledge_space_tag_library_schema import (
     KnowledgeSpaceTagLibraryDetail,
     KnowledgeSpaceTagLibraryListItem,
 )
 
 
 def _mount_app(fake_service) -> FastAPI:
-    from bisheng.knowledge.api.endpoints import knowledge_space_tag_library as ep
+    from doberman_agent.knowledge.api.endpoints import knowledge_space_tag_library as ep
 
     app = FastAPI()
     api = APIRouter(prefix="/api/v1")

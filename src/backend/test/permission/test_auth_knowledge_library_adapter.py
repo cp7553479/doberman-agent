@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.user.domain.services import auth as auth_mod
+from doberman_agent.user.domain.services import auth as auth_mod
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def test_sync_access_check_accepts_legacy_and_new_knowledge_targets(login_user, 
         AsyncMock(side_effect=lambda relation, object_type, object_id: object_type == 'knowledge_space'),
     )
     monkeypatch.setattr(
-        'bisheng.permission.domain.services.owner_service._run_async_safe',
+        'doberman_agent.permission.domain.services.owner_service._run_async_safe',
         lambda coro: asyncio.run(coro),
     )
 

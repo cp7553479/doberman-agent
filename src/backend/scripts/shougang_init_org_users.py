@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""首钢组织与人员初始化脚本（Excel → BiSheng）
+"""首钢组织与人员初始化脚本（Excel → doberman-agent）
 
 约定（与 PRD 对齐）：
 - 部门：BM.xlsx 中 SID、上级组织 SID、组织全称；部门 ``external_id`` = str(SID)。
@@ -145,25 +145,25 @@ async def _run(args: argparse.Namespace) -> int:
         print(f"Dry-run: would import ~{ry_ok} users (with phone).", flush=True)
         return 0
 
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.manager import close_app_context, initialize_app_context
-    from bisheng.core.context.tenant import (
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.manager import close_app_context, initialize_app_context
+    from doberman_agent.core.context.tenant import (
         DEFAULT_TENANT_ID,
         bypass_tenant_filter,
         current_tenant_id,
         set_current_tenant_id,
     )
-    from bisheng.database.constants import DefaultRole
-    from bisheng.database.models.tenant import TenantDao
-    from bisheng.database.models.department import Department, DepartmentDao, UserDepartmentDao
-    from bisheng.user.domain.models.user import User, UserDao
-    from bisheng.department.domain.services.department_change_handler import (
+    from doberman_agent.database.constants import DefaultRole
+    from doberman_agent.database.models.tenant import TenantDao
+    from doberman_agent.database.models.department import Department, DepartmentDao, UserDepartmentDao
+    from doberman_agent.user.domain.models.user import User, UserDao
+    from doberman_agent.department.domain.services.department_change_handler import (
         DepartmentChangeHandler,
     )
-    from bisheng.permission.domain.services.legacy_rbac_sync_service import (
+    from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (
         LegacyRBACSyncService,
     )
-    from bisheng.utils import md5_hash
+    from doberman_agent.utils import md5_hash
 
     await initialize_app_context(config=settings)
 
@@ -174,7 +174,7 @@ async def _run(args: argparse.Namespace) -> int:
             tenant = await TenantDao.aget_by_id(DEFAULT_TENANT_ID)
             if tenant is None or tenant.root_dept_id is None:
                 print(
-                    "Default tenant or root_dept_id missing. Run BiSheng init first.",
+                    "Default tenant or root_dept_id missing. Run doberman-agent init first.",
                     file=sys.stderr,
                 )
                 return 1
@@ -299,7 +299,7 @@ async def _run(args: argparse.Namespace) -> int:
                     )
 
                     try:
-                        from bisheng.user.domain.services.user import UserService
+                        from doberman_agent.user.domain.services.user import UserService
 
                         await UserService._ensure_user_default_tenant_association(
                             int(user.user_id),
@@ -342,7 +342,7 @@ async def _run(args: argparse.Namespace) -> int:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Shougang BM/RY → BiSheng org & users")
+    p = argparse.ArgumentParser(description="Shougang BM/RY → doberman-agent org & users")
     p.add_argument(
         "--bm",
         default=r"c:\Users\30388\Desktop\BM.xlsx",

@@ -10,8 +10,8 @@ from contextlib import asynccontextmanager
 
 import pytest
 
-import bisheng.knowledge.domain.services.data_scope_resolver as resolver_module
-from bisheng.knowledge.domain.services.data_scope_resolver import KnowledgeDataScopeResolver
+import doberman_agent.knowledge.domain.services.data_scope_resolver as resolver_module
+from doberman_agent.knowledge.domain.services.data_scope_resolver import KnowledgeDataScopeResolver
 
 
 @pytest.fixture
@@ -20,16 +20,16 @@ async def knowledge_db(monkeypatch):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.common.models.space_channel_member import (
+    from doberman_agent.common.models.space_channel_member import (
         BusinessTypeEnum,
         MembershipStatusEnum,
         SpaceChannelMember,
         UserRoleEnum,
     )
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.knowledge.domain.models.department_knowledge_space import DepartmentKnowledgeSpace
-    from bisheng.knowledge.domain.models.knowledge import Knowledge
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.knowledge.domain.models.department_knowledge_space import DepartmentKnowledgeSpace
+    from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",
@@ -51,10 +51,10 @@ async def knowledge_db(monkeypatch):
             await session.close()
 
     for module_name in (
-        "bisheng.knowledge.domain.models.knowledge",
-        "bisheng.knowledge.domain.models.knowledge_file",
-        "bisheng.common.models.space_channel_member",
-        "bisheng.knowledge.domain.models.department_knowledge_space",
+        "doberman_agent.knowledge.domain.models.knowledge",
+        "doberman_agent.knowledge.domain.models.knowledge_file",
+        "doberman_agent.common.models.space_channel_member",
+        "doberman_agent.knowledge.domain.models.department_knowledge_space",
     ):
         module = importlib.import_module(module_name)
         monkeypatch.setattr(module, "get_async_db_session", session_factory)
@@ -89,7 +89,7 @@ async def knowledge_db(monkeypatch):
         await session.commit()
 
     yield session_factory
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     current_tenant_id.reset(tenant_token)
     await engine.dispose()
@@ -140,7 +140,7 @@ async def test_files_are_judged_by_parent_not_by_file_creator(knowledge_db):
 
 
 async def test_ownership_is_memoised_per_request(knowledge_db, monkeypatch):
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
 
     resolver = KnowledgeDataScopeResolver()
     first = await resolver.owned_ids(holder_user_id=5, tenant_id=1, resource_type="knowledge_library")

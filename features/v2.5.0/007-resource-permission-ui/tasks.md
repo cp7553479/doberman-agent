@@ -107,7 +107,7 @@
 - [x] **T003**: 后端 get_resource_permissions 富化
   **文件**:
   - `src/backend/test/test_permission_enrichment.py`（新建，先写）
-  - `src/backend/bisheng/permission/domain/services/permission_service.py`（修改）
+  - `src/backend/doberman_agent/permission/domain/services/permission_service.py`（修改）
   **注意**: 此修改为 F004 `PermissionService` 的兼容性增强（不改变方法签名，仅填充 `ResourcePermissionItem` 已有的可选字段），已在 spec AD-09 中确认。影响范围仅限 `get_resource_permissions()` 一个方法。
   **测试**（先写）:
   ```python

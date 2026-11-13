@@ -6,10 +6,10 @@
 
 ## 已核实缺陷
 
-1. Desktop 已序列化 `reasoning_effort`，但主进程白名单不接受。Bisheng `DshChatRequest` 也未接受，`DshChatAdapter` 未校验和传参，模型列表未声明档位。
+1. Desktop 已序列化 `reasoning_effort`，但主进程白名单不接受。doberman-agent `DshChatRequest` 也未接受，`DshChatAdapter` 未校验和传参，模型列表未声明档位。
 2. Harness 提供 `GenerateOptions.sessionId`，企业适配器未使用。Sub2API 的 `GenerateSessionHash` 优先读取 `session_id` 请求头；当前内容推导无法保证压缩前后稳定。
 3. 企业适配器图片超限使用不可恢复错误，没有接入公开的 `IMAGE_OFFLOAD_REQUIRED` / `failure.offloadImages`。
-4. Bisheng 只有 Chat Completions 企业端点。底层 `ChatOpenAIReasoning` 支持构造上游 Responses 请求，不代表企业 API、SSE 和 Harness 持久化已经支持 Responses。
+4. doberman-agent 只有 Chat Completions 企业端点。底层 `ChatOpenAIReasoning` 支持构造上游 Responses 请求，不代表企业 API、SSE 和 Harness 持久化已经支持 Responses。
 
 ## 待确认范围与建议
 
@@ -22,9 +22,9 @@
 
 ### 对话身份
 
-- 建议新增受控请求头 `x-dsh-conversation-id` 和 `x-dsh-request-purpose`；用途仅 `chat`、`compaction`、`session-title`，格式及长度在 Desktop 和 Bisheng 双重校验。不放开任意头或任意 JSON extra。
+- 建议新增受控请求头 `x-dsh-conversation-id` 和 `x-dsh-request-purpose`；用途仅 `chat`、`compaction`、`session-title`，格式及长度在 Desktop 和 doberman-agent 双重校验。不放开任意头或任意 JSON extra。
 - 普通对话使用 Harness sessionId，历史压缩和 system/tools 变化不改变 ID。辅助请求使用同一 Harness ID 加用途形成不同亲和作用域；没有 ID 的辅助调用不伪造为普通对话。
-- Bisheng 以已认证 principal 的租户和用户，加模型 ID、用途和对话 ID 派生稳定摘要，只把摘要作为上游 `session_id`，不透传登录凭据或登录 session_id。不以客户端头中的租户/用户作为可信来源。
+- doberman-agent 以已认证 principal 的租户和用户，加模型 ID、用途和对话 ID 派生稳定摘要，只把摘要作为上游 `session_id`，不透传登录凭据或登录 session_id。不以客户端头中的租户/用户作为可信来源。
 - 旧客户端不带头时维持旧行为；旧服务端忽略新头，仍可请求。账号限流、故障切换、上游策略变化不保证缓存命中。
 
 ### 原生 Responses
@@ -37,7 +37,7 @@
 
 ## 验收证据要求
 
-- 思考深度：真实 Desktop serializer → broker validator → Bisheng schema/adapter → 实际 SDK 构造出的供应商请求；默认、显式、缺省、非法、未声明、流式工具续轮及旧客户端兼容。
+- 思考深度：真实 Desktop serializer → broker validator → doberman-agent schema/adapter → 实际 SDK 构造出的供应商请求；默认、显式、缺省、非法、未声明、流式工具续轮及旧客户端兼容。
 - 对话身份：多轮/压缩/辅助用途、租户用户隔离、非法/重复头、旧客户端；确认最终头被当前 Sub2API 识别而非只检查客户端输出。
 - 图片：实际请求版本大小与重复 occurrence；超大单图/累计/工具图；由 Harness 卸载事件驱动重新派生请求并重试，取消可退出；原有大小和视觉限制不放宽。
 - Responses：真实受控链路、工具两轮、encrypted_content 原样回放、计量、错误取消、租户/授权/配额失败。Mock 供应商不等于真实上游或正式安装包验收。

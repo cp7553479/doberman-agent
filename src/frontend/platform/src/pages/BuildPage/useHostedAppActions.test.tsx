@@ -4,7 +4,7 @@ import { useHostedAppActions } from "./useHostedAppActions"
 
 const mocks = vi.hoisted(() => ({ confirm: vi.fn(), stop: vi.fn(), resume: vi.fn(), remove: vi.fn(), notify: vi.fn(), t: (key: string) => key }))
 vi.mock("@/components/bs-ui/alertDialog/useConfirm", () => ({ bsConfirm: mocks.confirm }))
-vi.mock("@bisheng/ui", () => ({ notification: { open: mocks.notify } }))
+vi.mock("@doberman-agent/ui", () => ({ notification: { open: mocks.notify } }))
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: mocks.t }) }))
 vi.mock("@/controllers/API/hostedApp", () => ({
   stopHostedAppApi: mocks.stop, resumeHostedAppApi: mocks.resume,

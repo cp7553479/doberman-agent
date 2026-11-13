@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { Notifier, Toaster, notification, toast } from '@bisheng/ui';
+import { Notifier, Toaster, notification, toast } from '@doberman-agent/ui';
 import { Sheet, SheetContent, SheetTitle } from './index';
 
 afterEach(cleanup);

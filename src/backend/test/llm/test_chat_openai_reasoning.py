@@ -2,8 +2,8 @@ import unittest
 
 from langchain_core.messages import AIMessageChunk, HumanMessage
 
-from bisheng.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
-from bisheng.core.ai.llm.chat_openai_reasoning import ChatOpenAIReasoning
+from doberman_agent.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
+from doberman_agent.core.ai.llm.chat_openai_reasoning import ChatOpenAIReasoning
 
 
 class TestChatOpenAIReasoning(unittest.TestCase):

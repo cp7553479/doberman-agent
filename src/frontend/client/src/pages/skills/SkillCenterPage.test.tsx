@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -66,7 +66,7 @@ jest.mock('~/hooks', () => ({
   },
 }));
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
-jest.mock('bisheng-icons', () => {
+jest.mock('@doberman-agent/icons', () => {
   const icons = new Proxy({}, { get: () => () => null });
   return { Outlined: icons, Filled: icons, Colored: icons };
 });

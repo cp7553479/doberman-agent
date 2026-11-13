@@ -1,5 +1,5 @@
-import { Outlined } from "bisheng-icons";
-// `ShieldCheck` stays on lucide: bisheng-icons has no shield / verified glyph
+import { Outlined } from "@doberman-agent/icons";
+// `ShieldCheck` stays on lucide: @doberman-agent/icons has no shield / verified glyph
 // (PeopleSafe and SafeRetrieval carry other meanings).
 import { ShieldCheck } from "lucide-react";
 import { useState } from "react";

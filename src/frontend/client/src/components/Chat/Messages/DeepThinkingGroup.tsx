@@ -15,7 +15,7 @@
  * surfaces are deliberately isomorphic with — see Linsight/Execution/
  * GroupHeaderLabel.tsx for the full reasoning.
  */
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import {
     memo,
     useCallback,

@@ -1,5 +1,5 @@
-import { Button } from '@bisheng/ui';
-import { Segmented, Tag } from "@bisheng/ui";
+import { Button } from '@doberman-agent/ui';
+import { Segmented, Tag } from "@doberman-agent/ui";
 // F035: skill detail — bundle file tree on the left, file content on the
 // right. SKILL.md gets a Preview/Source toggle; bundle assets are read-only.
 // Visual tokens mirror the Claude Design `renderSkillDetail` spec: a clean
@@ -9,7 +9,7 @@ import { Segmented, Tag } from "@bisheng/ui";
 import { Sheet, SheetContent, SheetTitle } from "@/components/bs-ui/sheet";
 
 import { SkillDetail, skillApi } from "@/controllers/API/linsight";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown, { type Components } from "react-markdown";

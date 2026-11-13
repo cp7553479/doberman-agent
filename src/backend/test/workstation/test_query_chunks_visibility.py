@@ -21,8 +21,8 @@ from unittest.mock import MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.api.services.workstation import WorkStationService
-from bisheng.api.v1.schema.chat_schema import UseKnowledgeBaseParam
+from doberman_agent.api.services.workstation import WorkStationService
+from doberman_agent.api.v1.schema.chat_schema import UseKnowledgeBaseParam
 
 
 def _make_doc(file_id: int, content: str = "") -> Document:
@@ -54,7 +54,7 @@ async def test_filter_visible_space_kb_ids_drops_no_view_space(monkeypatch):
         return space_id == 1
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.is_space_visible",
         fake_is_space_visible,
     )
@@ -86,7 +86,7 @@ async def test_filter_visible_space_kb_ids_admin_bypasses(monkeypatch):
         return True
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.is_space_visible",
         fake_is_space_visible,
     )
@@ -117,7 +117,7 @@ async def test_post_filter_kb_docs_drops_inaccessible_files(monkeypatch):
         return {1, 3}
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_retrievable_files",
         fake_post,
     )
@@ -141,7 +141,7 @@ async def test_post_filter_kb_docs_empty_when_nothing_permitted(monkeypatch):
         return set()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_retrievable_files",
         fake_post,
     )
@@ -166,7 +166,7 @@ async def test_post_filter_kb_docs_admin_still_drops_non_primary(monkeypatch):
         return {1}
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_retrievable_files",
         fake_post,
     )
@@ -191,7 +191,7 @@ async def test_post_filter_kb_docs_no_docs_short_circuits(monkeypatch):
         return set()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_retrievable_files",
         fake_post,
     )
@@ -222,7 +222,7 @@ async def test_post_filter_kb_docs_org_bucket_passthrough(monkeypatch):
         return set()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_retrievable_files",
         fake_post,
     )
@@ -274,20 +274,20 @@ async def test_query_chunks_org_kb_uses_use_permission_and_bypasses_legacy_auth(
             pass
 
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service."
+        "doberman_agent.workstation.domain.services.workstation_service."
         "KnowledgePermissionService.filter_knowledge_ids_by_action_async",
         fake_filter_ids,
     )
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service.KnowledgeRag.get_multi_knowledge_vectorstore",
+        "doberman_agent.workstation.domain.services.workstation_service.KnowledgeRag.get_multi_knowledge_vectorstore",
         fake_get_vectorstore,
     )
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service.KnowledgeRetrieverTool",
+        "doberman_agent.workstation.domain.services.workstation_service.KnowledgeRetrieverTool",
         FakeKnowledgeRetrieverTool,
     )
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service.MultiRetriever",
+        "doberman_agent.workstation.domain.services.workstation_service.MultiRetriever",
         FakeMultiRetriever,
     )
 
@@ -323,12 +323,12 @@ async def test_query_chunks_org_kb_init_failure_is_reported(monkeypatch):
         raise RuntimeError("embedding init failed")
 
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service."
+        "doberman_agent.workstation.domain.services.workstation_service."
         "KnowledgePermissionService.filter_knowledge_ids_by_action_async",
         fake_filter_ids,
     )
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service.KnowledgeRag.get_multi_knowledge_vectorstore",
+        "doberman_agent.workstation.domain.services.workstation_service.KnowledgeRag.get_multi_knowledge_vectorstore",
         fake_get_vectorstore,
     )
 

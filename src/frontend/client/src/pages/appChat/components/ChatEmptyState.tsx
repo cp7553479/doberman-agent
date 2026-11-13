@@ -1,4 +1,4 @@
-import { StateView } from '@bisheng/ui';
+import { StateView } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { ArticleQAIllustration } from '~/components/illustrations';
 

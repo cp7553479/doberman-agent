@@ -2,8 +2,8 @@
 import { Select,SelectContent,SelectTrigger } from "@/components/bs-ui/select";
 import { cname } from "@/components/bs-ui/utils";
 import { FlowTooltip as Tip } from "@/pages/BuildPage/flow/FlowTooltip";
-import { Checkbox } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { cloneDeep } from "lodash-es";
 
 import { acceptsImages } from "@/util/fileAcceptUtils";

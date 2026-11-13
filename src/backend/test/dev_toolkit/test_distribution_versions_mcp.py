@@ -12,8 +12,8 @@ import json
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.services.config_service import settings
-from bisheng.dev_toolkit.api.endpoints.distribution import router
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.dev_toolkit.api.endpoints.distribution import router
 
 
 def build_app() -> FastAPI:
@@ -43,8 +43,8 @@ async def test_versions_mcp_url_falls_back_to_the_forwarded_headers(monkeypatch)
     """Behind nginx the backend sees the internal upstream, not what the user typed."""
 
     monkeypatch.setattr(settings.open_api, "public_base_url", "")
-    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "bisheng.corp.example.com"})
-    assert payload["mcp"]["url"] == "https://bisheng.corp.example.com/api/v2/mcp"
+    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "doberman_agent.corp.example.com"})
+    assert payload["mcp"]["url"] == "https://doberman-agent.corp.example.com/api/v2/mcp"
 
 
 async def test_versions_carries_the_model_face_base_url(monkeypatch):
@@ -68,25 +68,25 @@ async def test_the_model_and_mcp_addresses_share_one_origin(monkeypatch):
     """Two addresses, one derivation — a second origin would be a second bug."""
 
     monkeypatch.setattr(settings.open_api, "public_base_url", "")
-    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "bisheng.corp.example.com"})
-    assert payload["model"]["base_url"] == "https://bisheng.corp.example.com/api/v2/model/v1"
-    assert payload["mcp"]["url"].startswith("https://bisheng.corp.example.com/")
+    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "doberman_agent.corp.example.com"})
+    assert payload["model"]["base_url"] == "https://doberman-agent.corp.example.com/api/v2/model/v1"
+    assert payload["mcp"]["url"].startswith("https://doberman-agent.corp.example.com/")
 
 
 async def test_versions_carries_the_platform_base_url_every_other_address_is_built_on(monkeypatch):
     """AC-44's 平台地址 and installer link must not come from a second source.
 
     The panel shows five addresses side by side and an administrator forwards
-    all five at once. Two of them (`bisheng login <地址>` and the installer link)
+    all five at once. Two of them (`doberman-agent login <地址>` and the installer link)
     would otherwise be built from the browser's origin, which on a path-prefix
     deployment is missing the prefix the other three carry — a login command
     that 404s printed directly under an MCP address that works.
     """
 
-    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/bisheng")
+    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/doberman_agent")
     payload = await versions()
     base = payload["platform"]["base_url"]
-    assert base == "https://portal.example.com/bisheng"
+    assert base == "https://portal.example.com/doberman_agent"
     # Same prefix as the two addresses the panel does not build itself.
     assert payload["mcp"]["url"] == f"{base}/api/v2/mcp"
     assert payload["model"]["base_url"] == f"{base}/api/v2/model/v1"
@@ -100,8 +100,8 @@ async def test_the_platform_base_url_follows_the_browsers_own_request_when_uncon
     """
 
     monkeypatch.setattr(settings.open_api, "public_base_url", "")
-    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "bisheng.corp.example.com"})
-    assert payload["platform"]["base_url"] == "https://bisheng.corp.example.com"
+    payload = await versions({"X-Forwarded-Proto": "https", "X-Forwarded-Host": "doberman_agent.corp.example.com"})
+    assert payload["platform"]["base_url"] == "https://doberman-agent.corp.example.com"
 
 
 async def test_the_versions_payload_carries_no_credential_material():
@@ -120,7 +120,7 @@ def test_the_address_is_absent_where_the_open_capability_layer_is_not_deployed()
 
     import inspect
 
-    from bisheng.api import router as router_module
+    from doberman_agent.api import router as router_module
 
     source = inspect.getsource(router_module)
     assert "if settings.open_platform.enabled:" in source

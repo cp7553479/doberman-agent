@@ -8,11 +8,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from bisheng.common.errcode.knowledge_space import SpaceCreationRequestConflictError
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import InitialPermissionsRequest
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.common.errcode.knowledge_space import SpaceCreationRequestConflictError
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import InitialPermissionsRequest
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 
 
 class _Adapter:
@@ -106,32 +106,32 @@ def _creation_patches(space: Knowledge):
     return (
         patch.object(KnowledgeSpaceService, "_is_square_preview_space", return_value=False),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
             new_callable=AsyncMock,
             return_value=0,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
             new_callable=AsyncMock,
             return_value=SimpleNamespace(embedding_model=SimpleNamespace(id=3)),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base",
             return_value=space,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_insert_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_insert_member",
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "KnowledgeAuditTelemetryService.audit_create_knowledge_space",
             new_callable=AsyncMock,
         ),
         # Creation quota is role-configurable; stub the lookup so these tests
         # stay about the permission/creation flow rather than the quota engine.
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
             new_callable=AsyncMock,
             return_value=50,
         ),
@@ -151,7 +151,7 @@ async def test_legacy_payload_preserves_original_response_and_side_effects() -> 
         patches[5] as audit,
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
         ) as lookup,
     ):
@@ -181,7 +181,7 @@ async def test_released_public_space_creation_does_not_sync_public_reader() -> N
         patches[5],
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
         ),
     ):
@@ -212,7 +212,7 @@ async def test_new_payload_persists_hash_preserves_auto_tag_and_applies_grants()
         patches[5],
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -223,7 +223,7 @@ async def test_new_payload_persists_hash_preserves_auto_tag_and_applies_grants()
             return_value=(True, 19),
         ) as tags,
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
             new_callable=AsyncMock,
             side_effect=lambda value: value,
         ),
@@ -261,7 +261,7 @@ async def test_owner_failure_propagates_without_attempting_initial_grants() -> N
         patches[5],
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -289,7 +289,7 @@ async def test_initial_grant_failure_is_returned_as_partial_success() -> None:
         patches[5],
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -320,7 +320,7 @@ async def test_initial_target_resolution_failure_is_returned_as_partial_success(
         patches[5],
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -356,15 +356,15 @@ async def test_same_key_retry_resumes_permissions_without_business_side_effects(
     with (
         patch.object(KnowledgeSpaceService, "_is_square_preview_space", return_value=False),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             return_value=existing,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base"
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base"
         ) as create,
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_insert_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_insert_member",
             new_callable=AsyncMock,
         ) as member,
     ):
@@ -386,7 +386,7 @@ async def test_same_key_with_different_payload_conflicts_before_owner() -> None:
     service = _service(adapter, _InitialGrants())
     existing = _space(request_id="req-1", payload_hash="x" * 64)
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
         new_callable=AsyncMock,
         return_value=existing,
     ):
@@ -418,14 +418,14 @@ async def test_unique_key_race_loads_winner_and_skips_duplicate_side_effects() -
         patches[1],
         patches[2],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService.create_knowledge_base",
             side_effect=IntegrityError("duplicate", None, Exception("duplicate")),
         ),
         patches[4] as member,
         patches[5] as audit,
         patches[6],
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aget_by_creation_request",
             new_callable=AsyncMock,
             side_effect=lookups,
         ),

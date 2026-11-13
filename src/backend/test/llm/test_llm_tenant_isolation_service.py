@@ -20,12 +20,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.llm.domain.services.llm import LLMService
 
 
-DAO = 'bisheng.llm.domain.services.llm.LLMDao'
-CONTEXT = 'bisheng.llm.domain.services.llm'
-SUPER_CHECK = 'bisheng.llm.domain.services.llm._check_is_global_super'
+DAO = 'doberman_agent.llm.domain.services.llm.LLMDao'
+CONTEXT = 'doberman_agent.llm.domain.services.llm'
+SUPER_CHECK = 'doberman_agent.llm.domain.services.llm._check_is_global_super'
 
 
 def _mk_operator(user_id: int = 1):
@@ -43,7 +43,7 @@ def _mock_tenant_dao():
     ``with`` block — those overrides win because they sit inside this
     fixture's scope."""
     with patch(
-        'bisheng.database.models.tenant.TenantDao.aget_by_id',
+        'doberman_agent.database.models.tenant.TenantDao.aget_by_id',
         new=AsyncMock(return_value=None),
     ):
         yield
@@ -157,7 +157,7 @@ async def test_super_admin_with_scope_acts_as_child():
                   new=AsyncMock(return_value=[shared])), \
             patch(f'{DAO}.aget_model_by_server_ids',
                   new=AsyncMock(return_value=[])), \
-            patch('bisheng.database.models.tenant.TenantDao.aget_by_id',
+            patch('doberman_agent.database.models.tenant.TenantDao.aget_by_id',
                   new=AsyncMock(return_value=fake_root_tenant)):
         result = await LLMService.get_all_llm(operator=_mk_operator())
 
@@ -181,7 +181,7 @@ async def test_child_user_llm_list_runs_own_query_under_strict_filter():
     ``WHERE tenant_id = leaf`` and cannot silently return Root rows.
     Without this, the FGA ``shared_with`` check below is architected
     away (own already covers every Root server)."""
-    from bisheng.core.context.tenant import is_strict_tenant_filter
+    from doberman_agent.core.context.tenant import is_strict_tenant_filter
 
     own = _mk_server(10, tenant_id=5, name='own')
     seen_strict = {}
@@ -391,9 +391,9 @@ async def test_mount_child_preview_shared_llm_list():
                new=AsyncMock(return_value=[shared, unshared, leaf])), \
             patch(f'{DAO}.aget_model_by_server_ids',
                   new=AsyncMock(return_value=[])), \
-            patch('bisheng.llm.domain.services.llm.ResourceShareService.list_sharing_children',
+            patch('doberman_agent.llm.domain.services.llm.ResourceShareService.list_sharing_children',
                   new=AsyncMock(side_effect=_list_children)), \
-            patch('bisheng.llm.domain.services.llm._check_is_global_super',
+            patch('doberman_agent.llm.domain.services.llm._check_is_global_super',
                   new=AsyncMock(return_value=True)):
         result = await LLMService.get_all_llm(only_shared=True, operator=operator)
 
@@ -407,7 +407,7 @@ async def test_mount_child_preview_forbidden_for_non_super_admin():
     from fastapi import HTTPException
 
     operator = MagicMock(user_id=42)
-    with patch('bisheng.llm.domain.services.llm._check_is_global_super',
+    with patch('doberman_agent.llm.domain.services.llm._check_is_global_super',
                new=AsyncMock(return_value=False)):
         with pytest.raises(HTTPException) as excinfo:
             await LLMService.get_all_llm(only_shared=True, operator=operator)
@@ -432,7 +432,7 @@ def test_api_key_hash_is_16_char_sha256_prefix():
     """AC-12: audit payload stores only sha256[:16] of the key; plaintext
     never appears in the hash or in a round-tripped form."""
     import hashlib
-    from bisheng.llm.domain.services.llm import _llm_api_key_hash
+    from doberman_agent.llm.domain.services.llm import _llm_api_key_hash
 
     key = 'sk-supersecret-abc-1234567890'
     config = {'openai_api_key': key}
@@ -448,7 +448,7 @@ def test_api_key_hash_is_16_char_sha256_prefix():
 def test_api_key_hash_returns_none_when_no_key_field():
     """Missing key → None so the audit row can distinguish 'no key' from
     'rotated / empty string'."""
-    from bisheng.llm.domain.services.llm import _llm_api_key_hash
+    from doberman_agent.llm.domain.services.llm import _llm_api_key_hash
     assert _llm_api_key_hash(None) is None
     assert _llm_api_key_hash({}) is None
     assert _llm_api_key_hash({'openai_api_key': ''}) is None
@@ -457,7 +457,7 @@ def test_api_key_hash_returns_none_when_no_key_field():
 
 def test_api_key_hash_accepts_alternative_field_name():
     """``config.api_key`` is the generic alias — also fingerprint it."""
-    from bisheng.llm.domain.services.llm import _llm_api_key_hash
+    from doberman_agent.llm.domain.services.llm import _llm_api_key_hash
     assert _llm_api_key_hash({'api_key': 'abc123'}) is not None
 
 

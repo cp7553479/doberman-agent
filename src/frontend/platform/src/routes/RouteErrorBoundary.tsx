@@ -1,6 +1,6 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useRouteError } from "react-router-dom";
 

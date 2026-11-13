@@ -333,7 +333,7 @@ describe('applyHtmlViewerTabIdentity', () => {
     beforeEach(() => {
         (global as any).__APP_ENV__ = { ...origEnv, BASE_URL: '/workspace' };
         document.head.innerHTML = '';
-        document.title = 'BISHENG';
+        document.title = 'doberman-agent';
         delete (window as any).BRAND_CONFIG;
     });
 
@@ -358,7 +358,7 @@ describe('applyHtmlViewerTabIdentity', () => {
     it('falls back to the bundled default favicon when no brand favicon is configured', () => {
         applyHtmlViewerTabIdentity('<html><head><title>Report</title></head></html>');
 
-        expect(favicon()?.getAttribute('href')).toBe('/workspace/assets/bisheng/favicon.ico');
+        expect(favicon()?.getAttribute('href')).toBe('/workspace/assets/doberman-agent/favicon.ico');
     });
 
     // brand-runtime.js may have already created the icon link; reuse it instead of
@@ -386,7 +386,7 @@ describe('applyHtmlViewerTabIdentity', () => {
     it('leaves the brand title in place when the report has no <title>', () => {
         applyHtmlViewerTabIdentity('<html><body><p>no head title</p></body></html>');
 
-        expect(document.title).toBe('BISHENG');
+        expect(document.title).toBe('doberman-agent');
     });
 });
 

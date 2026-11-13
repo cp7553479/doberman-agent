@@ -67,7 +67,7 @@ def create_app(config=None):
             yield
 
     application = FastAPI(
-        title="BiSheng runtime manager",
+        title="DobermanAgent runtime manager",
         version=__version__,
         docs_url=None,
         redoc_url=None,

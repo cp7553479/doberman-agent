@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui'
+import { Button } from '@doberman-agent/ui'
 import { getModelListApi } from '@/controllers/API/finetune'
 import { userContext } from '@/contexts/userContext'
 import { useDshBrowserConfig } from '@/hooks/useDshBrowserConfig'

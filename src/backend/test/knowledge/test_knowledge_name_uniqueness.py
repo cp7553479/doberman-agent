@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager, contextmanager
 
 import pytest
 
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
 
 
 def test_get_knowledge_by_name_scopes_duplicate_check_by_type(db_session, monkeypatch):

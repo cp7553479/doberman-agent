@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.tool import ToolMcpRequestError, ToolMcpTimeoutError
-from bisheng.tool.domain.services import tool as tool_mod
-from bisheng.tool.domain.services.tool import ToolServices, _flatten_mcp_error
+from doberman_agent.common.errcode.tool import ToolMcpRequestError, ToolMcpTimeoutError
+from doberman_agent.tool.domain.services import tool as tool_mod
+from doberman_agent.tool.domain.services.tool import ToolServices, _flatten_mcp_error
 
 
 def test_flatten_mcp_error_unwraps_exception_group():

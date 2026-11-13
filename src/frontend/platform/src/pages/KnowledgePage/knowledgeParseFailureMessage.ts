@@ -1,4 +1,4 @@
-import { resolveErrorMessageTemplate } from '@bisheng/api-client';
+import { resolveErrorMessageTemplate } from '@doberman-agent/api-client';
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 const ASR_ERROR_CODES = new Set([10014, 10015, 10016, 10017, 10018, 10019]);

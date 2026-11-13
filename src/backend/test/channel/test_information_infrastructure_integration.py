@@ -2,13 +2,13 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.channel.domain.models.channel_info_source import ChannelInfoSource
-from bisheng.channel.domain.repositories.implementations.information_article_sync_state_repository_impl import (
+from doberman_agent.channel.domain.models.channel_info_source import ChannelInfoSource
+from doberman_agent.channel.domain.repositories.implementations.information_article_sync_state_repository_impl import (
     InformationArticleSyncStateRepositoryImpl,
 )
-from bisheng.core.config.settings import CeleryConf, IntelligenceCenterConf
-from bisheng.core.database import tenant_filter
-from bisheng.tenant.domain.services import tenant_mount_service
+from doberman_agent.core.config.settings import CeleryConf, IntelligenceCenterConf
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.tenant.domain.services import tenant_mount_service
 
 
 def test_channel_info_source_contains_public_sync_state_columns():
@@ -47,15 +47,15 @@ def test_information_defaults_and_custom_schedule_override_are_preserved():
 def test_legacy_information_beat_entries_are_removed_without_touching_custom_tasks():
     legacy = {
         "sync_information_article": {
-            "task": "bisheng.worker.information.article.sync_information_article",
+            "task": "doberman_agent.worker.information.article.sync_information_article",
             "schedule": 42.0,
         },
         "sync_information_article_hourly": {
-            "task": "bisheng.worker.information.article.sync_information_article",
+            "task": "doberman_agent.worker.information.article.sync_information_article",
             "schedule": 84.0,
         },
         "reconcile_information_subscriptions": {
-            "task": "bisheng.worker.information.reconcile.reconcile_all_tenants",
+            "task": "doberman_agent.worker.information.reconcile.reconcile_all_tenants",
             "schedule": 126.0,
         },
         "custom_task": {"task": "custom.task", "schedule": 168.0},

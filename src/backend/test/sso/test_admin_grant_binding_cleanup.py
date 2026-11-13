@@ -19,14 +19,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.sso_sync.domain.services import login_sync_service as mod
-from bisheng.sso_sync.domain.services.login_sync_service import LoginSyncService
+from doberman_agent.sso_sync.domain.services import login_sync_service as mod
+from doberman_agent.sso_sync.domain.services.login_sync_service import LoginSyncService
 
 
 @pytest.fixture()
 def space_cleanup(monkeypatch):
     """Patch the lazy-imported binding cleanup on its source class."""
-    from bisheng.knowledge.domain.services import (
+    from doberman_agent.knowledge.domain.services import (
         department_knowledge_space_service as ks_module,
     )
 

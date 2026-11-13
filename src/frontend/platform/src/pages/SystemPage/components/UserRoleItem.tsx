@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Select } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Select } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";

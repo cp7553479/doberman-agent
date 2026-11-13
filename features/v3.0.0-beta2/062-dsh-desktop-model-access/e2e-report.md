@@ -8,7 +8,7 @@
 
 ```text
 cwd: B/src/backend
-PYTHONPATH=. /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m pytest \
+PYTHONPATH=. /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m pytest \
   --confcutdir=test/dsh test/dsh/test_dsh_e2e.py test/dsh/test_dsh_e2e_guards.py -q -rs
 ```
 
@@ -18,7 +18,7 @@ PYTHONPATH=. /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m p
 - 7 个 live 用例均因 `DSH_E2E_RUN` 未开启而 SKIP。当前没有已明确配置的完整独立 Nginx HTTPS/Gateway/Python/SSO 与专用四身份 manifest，也没有 DSH Desktop 版本或实际模型样本。
 - 未探测默认 localhost、未使用 helpers 的默认 API_BASE/admin 密码、未访问正式环境、未创建或撤销真实账号席位。
 - 原父级 test/conftest 会在收集前初始化应用服务与 config.yaml；可运行命令明确用 `--confcutdir=test/dsh`，避免把本地服务 premock 带入 live harness。
-- 部署 BiSheng SHA、Gateway SHA、配置版本、测试 License 摘要和真实 request_id：**未取得**。未来运行的 manifest/JUnit 可记录操作者提供的部署版本与服务端 request_id；不能将输入的 SHA 当作已在线证明。
+- 部署 doberman-agent SHA、Gateway SHA、配置版本、测试 License 摘要和真实 request_id：**未取得**。未来运行的 manifest/JUnit 可记录操作者提供的部署版本与服务端 request_id；不能将输入的 SHA 当作已在线证明。
 
 ## Live harness 用例
 

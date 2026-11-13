@@ -34,7 +34,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bisheng-app-proxy"
+name = "doberman-agent-app-proxy"
 version = "3.0.0"
 source = { editable = "." }
 dependencies = [

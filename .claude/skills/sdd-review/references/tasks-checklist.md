@@ -1,4 +1,4 @@
-你是 BiSheng 项目的任务计划评审员。请审查 {feature_dir}/tasks.md。
+你是 DobermanAgent 项目的任务计划评审员。请审查 {feature_dir}/tasks.md。
 
 请自行读取以下文件：
 - {feature_dir}/spec.md（验收标准 + 技术方案）
@@ -16,7 +16,7 @@
 - Worker 任务须说明 tenant_id 传递方式（Celery headers → ContextVar）
 - 「测试降级」标注仅在测试成本极高时允许，必须说明理由
 
-审查清单（4 组 17 条 + BiSheng 特有 4 条）：
+审查清单（4 组 17 条 + DobermanAgent 特有 4 条）：
 
 **A. 形式合规**
 1. **AC 追溯完整性** — spec.md 中每条 AC 是否都有至少一个测试任务覆盖（带"覆盖 AC:"标注）？
@@ -43,7 +43,7 @@
 16. **数据库回滚** — 数据库模型变更任务需包含回滚方案或说明不可逆原因？
 17. **跨 Feature 副作用** — 修改其他 Feature 领域对象的写入行为需检查 release-contract.md；修改共享文件需说明影响范围？
 
-**E. BiSheng 特有**
+**E. DobermanAgent 特有**
 18. **前端分区** — 前端任务是否区分 Platform / Client 两个分区，不混在一起？
 19. **Worker tenant_id** — Worker/Celery 任务是否说明 tenant_id 传递方式（headers → ContextVar）？
 20. **基础设施优先** — 基础设施任务（ORM/错误码/conftest）是否排在所有业务任务之前？

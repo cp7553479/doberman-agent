@@ -14,8 +14,8 @@ can reach or a console page for a feature that is off.
 
 from __future__ import annotations
 
-from bisheng.core.config.open_platform import OpenApiConf
-from bisheng.open_api.domain.schemas.personal_token import PersonalTokenSettingResponse
+from doberman_agent.core.config.open_platform import OpenApiConf
+from doberman_agent.open_api.domain.schemas.personal_token import PersonalTokenSettingResponse
 
 
 def test_a_deployment_that_says_nothing_gets_both_surfaces() -> None:

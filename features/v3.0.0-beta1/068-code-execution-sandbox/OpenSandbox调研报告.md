@@ -3,7 +3,7 @@
 > 调研日期：2026-09-20
 > 对象：github.com/opensandbox-group/OpenSandbox（阿里开源，Apache 2.0，CNCF Landscape 收录）
 > 方法：通读仓库 README、架构文档（docs/architecture）、execd/server/egress 组件文档、Kubernetes CRD 文档、安全容器运行时指南、Helm 部署文档、Python SDK 文档、code-interpreter 示例
-> 背景：为 bisheng 3.0 沙箱能力建设与 PTC 落地提供参考
+> 背景：为 doberman-agent 3.0 沙箱能力建设与 PTC 落地提供参考
 
 ---
 
@@ -17,7 +17,7 @@
 6. [部署与运维成本](#六部署与运维成本)
 7. [Docker Compose 与 K8s 支持](#七docker-compose-与-k8s-支持)
 8. [信创系统与硬件支持](#八信创系统与硬件支持)
-9. [总结与对 bisheng 的建议](#九总结与对-bisheng-的建议)
+9. [总结与对 doberman-agent 的建议](#九总结与对-doberman-agent-的建议)
 
 ---
 
@@ -346,7 +346,7 @@ helm install opensandbox manifests/charts/opensandbox --set fast-sandbox.enabled
 
 ---
 
-## 九、总结与对 bisheng 的建议
+## 九、总结与对 doberman-agent 的建议
 
 ### 优势
 
@@ -364,9 +364,9 @@ helm install opensandbox manifests/charts/opensandbox --set fast-sandbox.enabled
 4. 信创无官方认证，合规需自证；
 5. 项目迭代快（版本统一跳变到 1.x+），API 稳定性需按 release 锁定。
 
-### 对 bisheng 3.0 的落地建议
+### 对 doberman-agent 3.0 的落地建议
 
-1. **不重复造轮子的选项**：直接集成 OpenSandbox（Docker 模式起步，K8s 模式扩展），bisheng 的沙箱执行器对接其生命周期 API + execd API；或经其 MCP Server 快速验证 PTC 场景；
+1. **不重复造轮子的选项**：直接集成 OpenSandbox（Docker 模式起步，K8s 模式扩展），doberman-agent 的沙箱执行器对接其生命周期 API + execd API；或经其 MCP Server 快速验证 PTC 场景；
 2. **接口设计对齐其协议形状**：生命周期（create/pause/resume/snapshot/renew/destroy）与执行（/command /code /files）分离的两级 API，控制面不管执行流量；
 3. **补齐它没有的**：artifacts 自动收集层（约定目录 + 回传对象存储）；
 4. **池化直接照抄**：bufferMin/Max + poolMin/Max + 分批扩缩 + 429 背压五个机制搬过来即可覆盖多数容量场景；

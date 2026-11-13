@@ -1,7 +1,7 @@
 import pytest
 
-from bisheng.common.services.config_service import settings
-from bisheng.open_api.domain.scopes import (
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.open_api.domain.scopes import (
     ALWAYS_ISSUABLE_OPEN_API_SCOPE_CODES,
     LOCAL_DEV_TOOLKIT_SCOPE_CODES,
     OPEN_API_SCOPES,

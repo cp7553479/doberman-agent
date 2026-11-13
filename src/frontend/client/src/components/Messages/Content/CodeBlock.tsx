@@ -7,7 +7,7 @@ import LogContent from '~/components/Chat/Messages/Content/Parts/LogContent';
 import ResultSwitcher from '~/components/Messages/Content/ResultSwitcher';
 import { useToolCallsMapContext, useMessageContext } from '~/Providers';
 import RunCode from '~/components/Messages/Content/RunCode';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import useLocalize from '~/hooks/useLocalize';
 import { useScrollRevealRef } from '~/hooks';
 import cn from '~/utils/cn';

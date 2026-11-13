@@ -951,7 +951,7 @@ HTTP 状态：`200`。
     "id": 456,
     "knowledge_id": 123,
     "questions": [
-      "什么是毕昇？"
+      "什么是doberman-agent？"
     ],
     "answers": [
       "企业级大模型应用平台"
@@ -1156,7 +1156,7 @@ HTTP 状态：`200`。
       "id": 456,
       "knowledge_id": 123,
       "questions": [
-        "什么是毕昇？"
+        "什么是doberman-agent？"
       ],
       "answers": [
         "企业级大模型应用平台"
@@ -1478,7 +1478,7 @@ HTTP 状态：`201`。
 curl -X POST '$BASE/api/v2/filelib/add_qa' \
   -H 'Authorization: Bearer <API_KEY>' \
   -H 'Content-Type: application/json' \
-  --data '{"knowledge_id":123,"data":[{"question":"什么是毕昇？","answer":["企业级大模型应用平台"],"extra":{}}]}'
+  --data '{"knowledge_id":123,"data":[{"question":"什么是doberman-agent？","answer":["企业级大模型应用平台"],"extra":{}}]}'
 ```
 
 #### 成功响应
@@ -1513,7 +1513,7 @@ HTTP 状态：`200`。
       "id": 456,
       "knowledge_id": 123,
       "questions": [
-        "什么是毕昇？"
+        "什么是doberman-agent？"
       ],
       "answers": [
         "企业级大模型应用平台"
@@ -1561,7 +1561,7 @@ HTTP 状态：`200`。
 curl -X POST '$BASE/api/v2/filelib/add_relative_qa' \
   -H 'Authorization: Bearer <API_KEY>' \
   -H 'Content-Type: application/json' \
-  --data '{"knowledge_id":123,"data":{"id":"456","relative_questions":["毕昇是什么？"]}}'
+  --data '{"knowledge_id":123,"data":{"id":"456","relative_questions":["doberman-agent是什么？"]}}'
 ```
 
 #### 成功响应
@@ -1595,7 +1595,7 @@ HTTP 状态：`200`。
     "id": 456,
     "knowledge_id": 123,
     "questions": [
-      "什么是毕昇？"
+      "什么是doberman-agent？"
     ],
     "answers": [
       "企业级大模型应用平台"
@@ -2126,7 +2126,7 @@ HTTP 状态：`200`。
 curl -X POST '$BASE/api/v2/filelib/update_qa' \
   -H 'Authorization: Bearer <API_KEY>' \
   -H 'Content-Type: application/json' \
-  --data '{"id":456,"question":"什么是毕昇平台？","answer":["企业级大模型应用平台"]}'
+  --data '{"id":456,"question":"什么是doberman-agent平台？","answer":["企业级大模型应用平台"]}'
 ```
 
 #### 成功响应
@@ -2958,7 +2958,7 @@ HTTP 状态：`200`。
   "status_message": "SUCCESS",
   "data": {
     "flowId": null,
-    "file_path": "bisheng/tmp/example.pdf",
+    "file_path": "doberman-agent/tmp/example.pdf",
     "relative_path": null,
     "file_name": "example.pdf",
     "repeat": false,

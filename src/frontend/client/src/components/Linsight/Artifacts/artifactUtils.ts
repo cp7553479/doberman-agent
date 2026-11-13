@@ -416,7 +416,7 @@ export function openHtmlArtifactViewer(file: ArtifactFile, versionId: string): v
 export function applyHtmlViewerTabIdentity(htmlContent: string): void {
     const faviconUrl =
         window.BRAND_CONFIG?.assets?.favicon?.url ||
-        `${__APP_ENV__.BASE_URL}/assets/bisheng/favicon.ico`;
+        `${__APP_ENV__.BASE_URL}/assets/doberman-agent/favicon.ico`;
     let iconLink = document.head.querySelector<HTMLLinkElement>("link[rel~='icon']");
     if (!iconLink) {
         iconLink = document.createElement('link');

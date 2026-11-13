@@ -1,6 +1,6 @@
 import { locationContext } from "@/contexts/locationContext";
 import { FIXED_ROLE_VALUES, selectableRoleValues } from "./approverSources";
-import { Button, Input, Select } from '@bisheng/ui';
+import { Button, Input, Select } from '@doberman-agent/ui';
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";

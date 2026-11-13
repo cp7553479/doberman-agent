@@ -1,4 +1,4 @@
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { generateUUID } from "@/components/bs-ui/utils"
 import { mutateResourceGrantsApi, type ResourcePermissionContext, type PermissionResourceType, type PermissionGrantMutationChange } from "@/controllers/API/permission"
 import { captureAndAlertRequestErrorHoc } from "@/controllers/request"

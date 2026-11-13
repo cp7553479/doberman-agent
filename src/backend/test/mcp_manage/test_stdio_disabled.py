@@ -4,15 +4,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.tool import ToolMcpStdioError
-from bisheng.core.config.settings import McpConf
-from bisheng.mcp_manage.clients.sse import SseClient
-from bisheng.mcp_manage.clients.streamable import StreamableClient
-from bisheng.mcp_manage.constant import McpClientType
-from bisheng.mcp_manage.manager import ClientManager
-from bisheng.tool.domain.services import tool as tool_mod
-from bisheng.tool.domain.services.executor import ToolExecutor
-from bisheng.tool.domain.services.tool import ToolServices
+from doberman_agent.common.errcode.tool import ToolMcpStdioError
+from doberman_agent.core.config.settings import McpConf
+from doberman_agent.mcp_manage.clients.sse import SseClient
+from doberman_agent.mcp_manage.clients.streamable import StreamableClient
+from doberman_agent.mcp_manage.constant import McpClientType
+from doberman_agent.mcp_manage.manager import ClientManager
+from doberman_agent.tool.domain.services import tool as tool_mod
+from doberman_agent.tool.domain.services.executor import ToolExecutor
+from doberman_agent.tool.domain.services.tool import ToolServices
 
 _COMMAND_SCHEMA = '{"mcpServers":{"local-tool":{"command":"python","args":["tool_server.py"]}}}'
 _TYPED_STDIO_SCHEMA = '{"mcpServers":{"local-tool":{"type":"stdio","command":"python"}}}'

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Tabs,Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs,Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 

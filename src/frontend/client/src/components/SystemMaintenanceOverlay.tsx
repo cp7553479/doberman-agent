@@ -1,4 +1,4 @@
-import { formatErrorTime } from "@bisheng/ui";
+import { formatErrorTime } from "@doberman-agent/ui";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/Button";
 import { SystemMaintenanceIllustration } from "~/components/illustrations";

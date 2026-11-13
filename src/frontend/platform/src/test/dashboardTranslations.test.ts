@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import { describe, expect, it } from 'vitest';
 
 const frontend = path.resolve(__dirname, '../../..');
-const definitions = readFileSync(path.resolve(frontend, '../backend/bisheng/telemetry_search/domain/init_dataset.py'), 'utf8');
+const definitions = readFileSync(path.resolve(frontend, '../backend/doberman_agent/telemetry_search/domain/init_dataset.py'), 'utf8');
 // These are the keys the selector receives from the backend, rather than literal t() calls.
 const datasets = [...definitions.matchAll(/dataset_code\s*=\s*["']([^"']+)/g)].map(match => match[1]);
 const fields = [...definitions.matchAll(/(?:MetricConfig|DimensionConfig)\([\s\S]*?\bfield\s*=\s*["']([^"']+)/g)].map(match => match[1]);

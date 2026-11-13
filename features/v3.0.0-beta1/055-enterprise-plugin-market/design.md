@@ -8,18 +8,18 @@ API endpoint → MarketService → MarketRepository → SQLModel，MinIO 制品�
 
 插件 ID 稳定，版本 ID 与 ZIP SHA-256 绑定；插件记录维护 current_version_id、disabled、deleted、revision。删除在 CAS 事务中置 deleted=true、清空当前版本并记录后台操作；普通列表和详情过滤 deleted，策略继续返回曾发布版本以支持已有安装。导入校验成功后，在同一个事务中创建不可变版本、设置当前版本、更新展示元数据、递增 revision、记录前后状态，导入任务置为 completed。版本属性 published_once 记录曾发布资格，映射既有物理列 reviewed；保持现有数据结构与历史资格。导入任务以 tenant_id + digest 幂等，当前可用插件重复导入返回原任务并保留版本；已删除、旧下架或旧禁用记录的明确重导入重新校验并恢复当前版本；失败保持原状态。validating 任务可在服务恢复后继续。旧 pending 任务对应的版本可由管理员重新导入恢复。
 
-制品对象键为 `dsh-market/{tenant_id}/{sha256}.zip`，使用当前 BISHENG 的 MinIO bucket/config。生产环境配置持久化对象存储与数据库备份；全量历史保留。当前没有租户容量配额与自动清理任务。
+制品对象键为 `dsh-market/{tenant_id}/{sha256}.zip`，使用当前 doberman-agent 的 MinIO bucket/config。生产环境配置持久化对象存储与数据库备份；全量历史保留。当前没有租户容量配额与自动清理任务。
 
 ## 身份和权限
 
-- 桌面与 SPA 传递 BISHENG 签名 JWT（Bearer），也兼容现有 HttpOnly Cookie。验证 JWT、token_version，再构造 LoginUser。
+- 桌面与 SPA 传递 doberman-agent 签名 JWT（Bearer），也兼容现有 HttpOnly Cookie。验证 JWT、token_version，再构造 LoginUser。
 - 员工目录、下载、同步从已验证 JWT 的租户与用户派生范围；管理视图不影响员工范围。
 - 管理端使用现有 check_tenant_admin 应用协议；普通及全局管理员均以登录身份的 tenant_id 为当前市场范围。
 - `X-DSH-Market-Tenant` 作为登录租户一致性检查，和 actor.tenant_id 不同即拒绝。管理路由移出 AdminScopeMiddleware，market_actor/market_admin 显式关闭管理视图标志并设置仅含登录租户的可见范围。
 - 市场属于租户分发设置，采用租户管理员/员工二层权限；对象没有个人所有者、共享关系或继承授权，无需新增 FGA 资源类型及 tuple 投影。
 - 所有读写显式添加 tenant_id 谓词，写操作同时校验 revision。JSON 字段使用 JsonType，SQL 避免绑定 MySQL 专属操作。
 
-在 `feat/bisheng-work-110` 上，Desktop 使用毕昇原生桌面会话；市场通过已有在线会话校验用户和租户，也保留平台登录 JWT / HttpOnly Cookie 的既有入口。不依赖 Gateway、席位或独立市场签名私钥。客户端和前端均无法获取对象存储管理凭证。
+在 `feat/doberman-agent-work-110` 上，Desktop 使用doberman-agent原生桌面会话；市场通过已有在线会话校验用户和租户，也保留平台登录 JWT / HttpOnly Cookie 的既有入口。不依赖 Gateway、席位或独立市场签名私钥。客户端和前端均无法获取对象存储管理凭证。
 
 ## API v1
 
@@ -45,7 +45,7 @@ API endpoint → MarketService → MarketRepository → SQLModel，MinIO 制品�
 
 ## 在线会话与发布快照
 
-分发不使用独立签名密钥。`BISHENG_DSH_MARKET_SIGNING_KEY` 不再读取；能力声明不返回 `public_key` 或 `lease_seconds`。员工目录、制品和同步沿用本分支的原生桌面会话或平台登录身份校验；不新增席位校验。管理员身份和工作台接口保持原边界。
+分发不使用独立签名密钥。`DOBERMAN_AGENT_DSH_MARKET_SIGNING_KEY` 不再读取；能力声明不返回 `public_key` 或 `lease_seconds`。员工目录、制品和同步沿用本分支的原生桌面会话或平台登录身份校验；不新增席位校验。管理员身份和工作台接口保持原边界。
 
 `/sync` 直接返回 `{tenant_id, user_id, device_id, synced_at, policies}`。`policies` 含各插件 disabled、revision、current_version_id 及曾发布版本摘要。`synced_at` 为服务端秒级时间。响应禁止缓存。
 

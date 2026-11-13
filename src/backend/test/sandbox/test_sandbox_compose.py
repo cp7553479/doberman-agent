@@ -13,9 +13,9 @@ import yaml
 from serve import build_app
 
 _REPO = Path(__file__).resolve().parents[4]
-_DOCKERFILE = _REPO / "docker" / "bisheng-sandbox" / "Dockerfile"
+_DOCKERFILE = _REPO / "docker" / "doberman-agent-sandbox" / "Dockerfile"
 _COMPOSE = _REPO / "docker" / "docker-compose.yml"
-_HELM_VALUES = _REPO / "docker" / "helm" / "bisheng-sandbox" / "values.yaml"
+_HELM_VALUES = _REPO / "docker" / "helm" / "doberman-agent-sandbox" / "values.yaml"
 _RUNNER_CAPS = {"SETUID", "SETGID", "CHOWN", "DAC_OVERRIDE", "KILL"}
 _COPY_IN_TOTAL_DEFAULT = "536870912"
 
@@ -55,7 +55,7 @@ def test_dockerfile_is_single_multiarch_image_without_platform_payload():
     joined = "\n".join(copies)
     assert "config.yaml" not in joined
     assert "entrypoint.sh" not in joined
-    assert "bisheng/" not in joined
+    assert "doberman_agent/" not in joined
 
 
 def test_compose_named_runners_and_hardening():

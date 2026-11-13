@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.sandbox import SandboxUnreachableError
-from bisheng.core.config.settings import SandboxConf
-from bisheng_langchain.gpts.tools.code_interpreter.factory import build_code_executor
+from doberman_agent.common.errcode.sandbox import SandboxUnreachableError
+from doberman_agent.core.config.settings import SandboxConf
+from doberman_agent_langchain.gpts.tools.code_interpreter.factory import build_code_executor
 
 
 def _patch_page(monkeypatch: pytest.MonkeyPatch, conf: SandboxConf):
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         lambda: conf,
     )
 
@@ -25,7 +25,7 @@ def test_container_uses_page_conf_not_deployment(monkeypatch: pytest.MonkeyPatch
         return page
 
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         fake,
     )
     executor = build_code_executor(
@@ -42,7 +42,7 @@ def test_container_uses_page_conf_not_deployment(monkeypatch: pytest.MonkeyPatch
 def test_built_executor_keeps_its_snapshot(monkeypatch: pytest.MonkeyPatch):
     holder = {"conf": SandboxConf(endpoints=["http://a:8080"], token="t1")}
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         lambda: holder["conf"],
     )
     executor = build_code_executor("container")
@@ -63,7 +63,7 @@ def test_local_and_e2b_do_not_read_sandbox_conf(monkeypatch: pytest.MonkeyPatch)
         raise AssertionError("sandbox conf should not be read")
 
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         boom,
     )
     build_code_executor("local")

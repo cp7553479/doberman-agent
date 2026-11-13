@@ -1,6 +1,6 @@
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 
 import { locationContext } from "@/contexts/locationContext";
 import {
@@ -69,7 +69,7 @@ export default function FileTypeSelect({ data, onChange, i18nPrefix }: FileTypeS
 
     return (
         <div className='node-item flex gap-4 items-center mb-4'>
-            <Label className="bisheng-label min-w-28">
+            <Label className="doberman_agent-label min-w-28">
                 {label}
             </Label>
             <Select

@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.commercial_license.domain.services.etl_sync import etl_license_info_url, sync_etl_license
+from doberman_agent.commercial_license.domain.services.etl_sync import etl_license_info_url, sync_etl_license
 
 
 def test_strips_predict_path_to_origin():

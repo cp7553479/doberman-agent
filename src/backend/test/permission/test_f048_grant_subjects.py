@@ -12,11 +12,11 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.permission.api.endpoints.grant_subjects import (
+from doberman_agent.permission.api.endpoints.grant_subjects import (
     GRANT_SUBJECT_RESOURCE_TYPES,
 )
-from bisheng.permission.api.router import router
-from bisheng.permission.domain.services.grant_subject_service import GrantSubjectScope
+from doberman_agent.permission.api.router import router
+from doberman_agent.permission.domain.services.grant_subject_service import GrantSubjectScope
 
 EXPECTED_ROUTES = {
     "/permissions/resources/{resource_type}/{resource_id}/grant-subjects/users",
@@ -53,7 +53,7 @@ def test_resource_types_cover_every_grantable_container() -> None:
 async def test_a_caller_without_manage_permission_is_refused(monkeypatch) -> None:
     """The predicate is the resource's `manage_permission`, nothing else."""
 
-    from bisheng.permission.api.endpoints import grant_subjects
+    from doberman_agent.permission.api.endpoints import grant_subjects
 
     async def resolve_actor(login_user):
         del login_user
@@ -84,7 +84,7 @@ async def test_a_caller_without_manage_permission_is_refused(monkeypatch) -> Non
 
 
 async def test_an_unknown_resource_type_is_refused() -> None:
-    from bisheng.permission.api.endpoints import grant_subjects
+    from doberman_agent.permission.api.endpoints import grant_subjects
 
     response = await grant_subjects.list_grant_subject_users(
         resource_type="not_a_resource",
@@ -99,7 +99,7 @@ async def test_an_unknown_resource_type_is_refused() -> None:
     [("knowledge_library", None), ("workflow", None), ("folder", None)],
 )
 async def test_only_a_knowledge_space_can_be_department_bound(resource_type, expected) -> None:
-    from bisheng.permission.domain.services import grant_subject_service
+    from doberman_agent.permission.domain.services import grant_subject_service
 
     assert await grant_subject_service.resolve_department_space_path(resource_type, "1") is expected
 
@@ -120,8 +120,8 @@ async def test_the_department_answers_carry_the_org_tree_shape(monkeypatch) -> N
     hierarchy as unrelated top-level rows.
     """
 
-    from bisheng.department.domain.services import department_service as org
-    from bisheng.permission.domain.services import grant_subject_service
+    from doberman_agent.department.domain.services import department_service as org
+    from doberman_agent.permission.domain.services import grant_subject_service
 
     node = org._dept_node_dict(
         type(
@@ -159,7 +159,7 @@ async def test_a_department_bound_space_reveals_nothing_outside_its_subtree(monk
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.permission.domain.services import grant_subject_service
+    from doberman_agent.permission.domain.services import grant_subject_service
 
     directory = SimpleNamespace(
         candidate_department_path=AsyncMock(return_value={"roots": [], "total_matches": 0, "truncated": False})

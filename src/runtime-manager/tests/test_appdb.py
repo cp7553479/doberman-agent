@@ -520,7 +520,7 @@ class TestSingleEntry:
         """AC-56 / D10-C — inside the manager, ``appdb.py`` is the only module touching SQLite.
 
         The backend half of this promise (no ``sqlite3`` import under
-        ``bisheng/app_runtime``, every data call through ``orchestrator_client``)
+        ``doberman-agent/app_runtime``, every data call through ``orchestrator_client``)
         is ``test_app_data_service.py``; this side pins that the file has one
         reader in this process and that reader is reached through the HMAC RPC.
         """

@@ -18,7 +18,7 @@ import ast
 from pathlib import Path
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
-PACKAGE_ROOT = BACKEND_ROOT / "bisheng"
+PACKAGE_ROOT = BACKEND_ROOT / "doberman_agent"
 
 
 def _is_boolean_literal(node: ast.expr) -> bool:

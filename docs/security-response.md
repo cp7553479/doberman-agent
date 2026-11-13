@@ -30,7 +30,7 @@
 
 要查的三个地方：
 
-1. `https://github.com/dataelement/bisheng/security/advisories` —— 草稿公告**不会**给 issue 订阅者发通知，只有仓库管理员能看到，最容易漏的就是这里
+1. `https://github.com/cp7553479/doberman-agent/security/advisories` —— 草稿公告**不会**给 issue 订阅者发通知，只有仓库管理员能看到，最容易漏的就是这里
 2. 仓库 issue 列表里带安全字样的新条目
 3. Dependabot 告警（当前 264 条，另行排期，不走本流程）
 

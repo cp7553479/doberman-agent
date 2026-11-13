@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for BiSheng backend tests.
+"""Shared pytest fixtures for doberman-agent backend tests.
 
 Provides:
 - Import chain pre-mocking (module-level, runs at import time)
@@ -17,7 +17,7 @@ Created by F000-test-infrastructure. Expanded from F001 minimal conftest.
 """
 
 # ---------------------------------------------------------------------------
-# Module-level pre-mock: must run BEFORE any deep bisheng imports.
+# Module-level pre-mock: must run BEFORE any deep doberman_agent imports.
 # This is idempotent and safe alongside F001's per-file pre-mocking.
 # ---------------------------------------------------------------------------
 from test.fixtures.mock_services import premock_import_chain
@@ -34,7 +34,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session
 
-from bisheng.core.config.multi_tenant import MultiTenantConf
+from doberman_agent.core.config.multi_tenant import MultiTenantConf
 from test.fixtures.table_definitions import create_all_tables
 
 # ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@ def _local_code_tests_stay_unisolated(monkeypatch):
     isolation_mode themselves and do not read this attribute.
     """
     try:
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.common.services.config_service import settings
     except Exception:
         return
     conf = getattr(settings, "sandbox_conf", None)
@@ -69,9 +69,9 @@ def mock_settings(monkeypatch):
     mock.jwt_secret = "test-secret"
     mock.cookie_conf = MagicMock()
     mock.cookie_conf.jwt_token_expire_time = 86400
-    mock.cookie_conf.jwt_iss = "bisheng"
+    mock.cookie_conf.jwt_iss = "doberman_agent"
 
-    monkeypatch.setattr("bisheng.common.services.config_service.settings", mock)
+    monkeypatch.setattr("doberman_agent.common.services.config_service.settings", mock)
     return mock
 
 
@@ -182,7 +182,7 @@ def tenant_context():
             tenant_context(2)  # set tenant_id=2
             ...
     """
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     tokens = []
 
@@ -193,7 +193,7 @@ def tenant_context():
     yield _set
 
     # Reset all tokens in reverse order
-    from bisheng.core.context.tenant import current_tenant_id as _ctx_var
+    from doberman_agent.core.context.tenant import current_tenant_id as _ctx_var
 
     for token in reversed(tokens):
         _ctx_var.reset(token)
@@ -205,7 +205,7 @@ def bypass_tenant():
 
     Useful for setup/teardown data insertion without tenant filtering.
     """
-    from bisheng.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
 
     with bypass_tenant_filter():
         yield
@@ -267,8 +267,8 @@ def test_client(monkeypatch):
         yield
 
     try:
-        monkeypatch.setattr("bisheng.main.lifespan", _noop_lifespan)
-        from bisheng.main import create_app
+        monkeypatch.setattr("doberman_agent.main.lifespan", _noop_lifespan)
+        from doberman_agent.main import create_app
 
         app = create_app()
     except Exception:

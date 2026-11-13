@@ -9,7 +9,7 @@ import pytest
 
 
 def worker_module(monkeypatch):
-    from bisheng.worker import main
+    from doberman_agent.worker import main
 
     registrations = {}
 
@@ -20,8 +20,8 @@ def worker_module(monkeypatch):
 
         return register
 
-    monkeypatch.setattr(main, "bisheng_celery", SimpleNamespace(task=task))
-    path = Path(__file__).parents[2] / "bisheng/worker/knowledge/space_delete.py"
+    monkeypatch.setattr(main, "doberman_agent_celery", SimpleNamespace(task=task))
+    path = Path(__file__).parents[2] / "doberman_agent/worker/knowledge/space_delete.py"
     spec = importlib.util.spec_from_file_location("space_delete_worker_under_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -54,7 +54,7 @@ def test_cleanup_error_reaches_celery_retry(monkeypatch):
 
 
 def test_recovery_schedule_and_queue_preserve_existing_configuration(monkeypatch):
-    from bisheng.common.services import config_service
+    from doberman_agent.common.services import config_service
 
     monkeypatch.setattr(
         config_service,
@@ -67,23 +67,23 @@ def test_recovery_schedule_and_queue_preserve_existing_configuration(monkeypatch
             ),
         ),
     )
-    path = Path(__file__).parents[2] / "bisheng/worker/config.py"
+    path = Path(__file__).parents[2] / "doberman_agent/worker/config.py"
     spec = importlib.util.spec_from_file_location("delete_worker_config_under_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.task_routes["existing-task"] == {"queue": "existing"}
-    assert module.task_routes["bisheng.worker.knowledge.space_delete.*"] == {"queue": "knowledge_celery"}
+    assert module.task_routes["doberman_agent.worker.knowledge.space_delete.*"] == {"queue": "knowledge_celery"}
     assert module.beat_schedule["existing-scan"] == {"schedule": 10}
     assert module.beat_schedule["knowledge-space-delete-recovery"] == {
-        "task": "bisheng.worker.knowledge.space_delete.dispatch_pending_deletes",
+        "task": "doberman_agent.worker.knowledge.space_delete.dispatch_pending_deletes",
         "schedule": 60.0,
     }
 
 
 def test_delete_model_is_discovered_for_schema_creation_and_tenant_filter():
-    from bisheng.core.database.model_discovery import discover_sqlmodel_module_names
-    from bisheng.core.database.tenant_filter import _TENANT_AWARE_MODEL_MODULES
+    from doberman_agent.core.database.model_discovery import discover_sqlmodel_module_names
+    from doberman_agent.core.database.tenant_filter import _TENANT_AWARE_MODEL_MODULES
 
-    name = "bisheng.knowledge.domain.models.knowledge_space_delete_job"
+    name = "doberman_agent.knowledge.domain.models.knowledge_space_delete_job"
     assert name in discover_sqlmodel_module_names()
     assert name in _TENANT_AWARE_MODEL_MODULES

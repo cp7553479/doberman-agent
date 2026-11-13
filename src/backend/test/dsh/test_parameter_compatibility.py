@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock, Mock
 import httpx
 import pytest
 
-from bisheng.common.errcode.dsh import DshInvalidRequestError, DshUnsupportedParameterError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
-from bisheng.dsh.infrastructure.chat_adapter import DshChatAdapter
-from bisheng.dsh.infrastructure.model_capabilities import model_capabilities
-from bisheng.llm.domain import utils as llm_utils
-from bisheng.llm.domain.llm.llm import BishengLLM
-from bisheng.llm.domain.models import LLMModel, LLMServer
+from doberman_agent.common.errcode.dsh import DshInvalidRequestError, DshUnsupportedParameterError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
+from doberman_agent.dsh.infrastructure.chat_adapter import DshChatAdapter
+from doberman_agent.dsh.infrastructure.model_capabilities import model_capabilities
+from doberman_agent.llm.domain import utils as llm_utils
+from doberman_agent.llm.domain.llm.llm import DobermanAgentLLM
+from doberman_agent.llm.domain.models import LLMModel, LLMServer
 from test.dsh.test_model_service import service_setup  # noqa: F401
 from test.dsh.test_models_api import app_setup  # noqa: F401
 
@@ -41,7 +41,7 @@ from test.dsh.test_models_api import app_setup  # noqa: F401
 def test_registered_openai_adapters_accept_completion_limit(provider):
     """AC-18: Native and compatible OpenAI clients accept the token alias."""
     caps = model_capabilities(SimpleNamespace(config={}), SimpleNamespace(type=provider))
-    body = DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], max_completion_tokens=6500)
+    body = DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], max_completion_tokens=6500)
     execution = DshChatAdapter().prepare(body, object(), caps)
     assert caps.max_completion_tokens and execution.parameters == {"max_completion_tokens": 6500}
 
@@ -50,7 +50,7 @@ def test_registered_openai_adapters_accept_completion_limit(provider):
 def test_unverified_adapters_still_reject_completion_limit(provider):
     """AC-18: A different SDK protocol does not inherit OpenAI parameters."""
     caps = model_capabilities(SimpleNamespace(config={}), SimpleNamespace(type=provider))
-    body = DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], max_completion_tokens=6500)
+    body = DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], max_completion_tokens=6500)
     with pytest.raises(DshUnsupportedParameterError):
         DshChatAdapter().prepare(body, object(), caps)
 
@@ -59,9 +59,9 @@ def test_unverified_adapters_still_reject_completion_limit(provider):
 def provider_setup(app_setup, monkeypatch):  # noqa: F811
     app, _runtime, runtime, _llm, ledger = app_setup
     # Replace external legacy observers; retain the governed DSH service and ledger.
-    monkeypatch.setattr(llm_utils, "bisheng_model_limit_check", AsyncMock())
+    monkeypatch.setattr(llm_utils, "doberman_agent_model_limit_check", AsyncMock())
     monkeypatch.setattr(llm_utils, "upload_telemetry_log", Mock())
-    monkeypatch.setattr(BishengLLM, "update_model_status", AsyncMock())
+    monkeypatch.setattr(DobermanAgentLLM, "update_model_status", AsyncMock())
 
     def configure(upstream, provider):
         model = LLMModel(
@@ -81,7 +81,7 @@ def provider_setup(app_setup, monkeypatch):  # noqa: F811
         runtime.model.model_loader = AsyncMock(return_value=(model, server))
         runtime.model.capabilities_for = model_capabilities
         runtime.model.llm_builder = lambda model, server, principal, request: (
-            BishengLLM.get_class_instance_from_snapshot(
+            DobermanAgentLLM.get_class_instance_from_snapshot(
                 model_info=model,
                 server_info=server,
                 app_id="e2e-dsh-token-alias",
@@ -129,7 +129,7 @@ def supplier_response(request):
 @pytest.mark.parametrize("stream", [False, True])
 @pytest.mark.parametrize("limit", [6500, 9000])
 @pytest.mark.parametrize("input_field", ["max_tokens", "max_completion_tokens"])
-async def test_http_through_bisheng_wrapper_to_supplier_wire(
+async def test_http_through_doberman_agent_wrapper_to_supplier_wire(
     provider_setup, provider, wire_field, stream, limit, input_field
 ):
     """AC-18, AC-20, AC-21: Verify SDK wire, JSON/SSE output and settled usage."""
@@ -143,10 +143,10 @@ async def test_http_through_bisheng_wrapper_to_supplier_wire(
     async with httpx.AsyncClient(transport=httpx.MockTransport(supplier)) as upstream:
         configure(upstream, provider)
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app), base_url="https://bisheng.invalid"
+            transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.invalid"
         ) as client:
             body = {
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "hi"}],
                 input_field: limit,
                 "stream": stream,
@@ -194,7 +194,7 @@ async def test_http_through_bisheng_wrapper_to_supplier_wire(
 def test_qwen_model_output_limit_still_checked(input_field):
     """AC-18: Aliases cannot bypass the configured model output limit."""
     caps = model_capabilities(SimpleNamespace(config={}), SimpleNamespace(type="qwen"))
-    body = DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], **{input_field: 101})
+    body = DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], **{input_field: 101})
     with pytest.raises(DshInvalidRequestError):
         DshChatAdapter().prepare(body, object(), caps, max_output_tokens=100)
 
@@ -203,6 +203,6 @@ def test_qwen_model_output_limit_still_checked(input_field):
 def test_explicitly_unsupported_sampling_still_rejected(field, value):
     """AC-18: Retain independent parameter capability checks."""
     caps = ChatCapabilities(**{field: False}, max_completion_tokens=True)
-    body = DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], **{field: value})
+    body = DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], **{field: value})
     with pytest.raises(DshUnsupportedParameterError):
         DshChatAdapter().prepare(body, object(), caps)

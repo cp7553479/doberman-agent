@@ -282,8 +282,8 @@ class Cluster:
             body["status"] = {
                 "phase": "Succeeded"
                 if (
-                    body["metadata"]["labels"]["runtime.bisheng.io/purpose"].startswith("prepare")
-                    or body["metadata"]["labels"]["runtime.bisheng.io/purpose"] == "image-check"
+                    body["metadata"]["labels"]["runtime.doberman-agent.io/purpose"].startswith("prepare")
+                    or body["metadata"]["labels"]["runtime.doberman-agent.io/purpose"] == "image-check"
                 )
                 else "Running",
                 "podIP": "10.233.0.10",
@@ -390,12 +390,12 @@ class Cluster:
     def logs(self, pod_name, **kwargs):
         assert "since" not in kwargs
         pod = self.objects["pods", pod_name]
-        purpose = pod["metadata"]["labels"]["runtime.bisheng.io/purpose"]
+        purpose = pod["metadata"]["labels"]["runtime.doberman-agent.io/purpose"]
         if purpose == "image-check":
             document = json.loads(
                 next(e["value"] for e in pod["spec"]["containers"][0]["env"] if e["name"] == "IMAGE_CHECK_PLAN")
             )
-            return "BISHENG_RUNTIME_RESULT " + json.dumps(
+            return "DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(
                 {"images": [{**t, "image_id": t["image_id"] or "sha256:" + "a" * 64} for t in document["targets"]]}
             )
         if purpose == "prepare-install":
@@ -415,7 +415,7 @@ class Cluster:
                     "platform": document["profile"]["platform"],
                     "startup": {"command": ["python", "main.py"]},
                 }
-            return "BISHENG_RUNTIME_RESULT " + json.dumps(result)
+            return "DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result)
         return "fixture app log"
 
 
@@ -507,7 +507,7 @@ def runtime(tmp_path, monkeypatch):
                 "environment_key": "c" * 64,
                 "startup": {"command": ["python", "main.py"]},
             },
-            "runtime_env": {"BISHENG_APP_TOKEN": "fixture-business-token"},
+            "runtime_env": {"DOBERMAN_AGENT_APP_TOKEN": "fixture-business-token"},
             "tier": {"memory_mb": 512, "cpu_millicores": 250},
             "port": 8080,
             "health": {"path": "/health", "start_period": 1, "interval": 1, "retries": 1},
@@ -740,7 +740,7 @@ def test_async_cleanup_never_deletes_same_name_replacement_uid(runtime, resource
 @pytest.fixture
 def bundle_delivery_contract():
     # Load the real, standalone manifest schema without installing backend services.
-    source = Path(__file__).resolve().parents[2] / "backend/bisheng/app_publish/domain/schemas/app_manifest.py"
+    source = Path(__file__).resolve().parents[2] / "backend/doberman_agent/app_publish/domain/schemas/app_manifest.py"
     name = "f059_test_bundle_delivery_contract"
     spec = importlib.util.spec_from_file_location(name, source)
     module = importlib.util.module_from_spec(spec)

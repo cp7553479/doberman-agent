@@ -10,7 +10,7 @@ import pytest
 from runtime_manager.config import Config, load_config
 from runtime_manager.k8s_config import KubernetesConfig, KubernetesConfigurationError
 
-NAMESPACE = "bisheng-runtime-apps"
+NAMESPACE = "doberman-agent-runtime-apps"
 UID = "22222222-2222-4222-8222-222222222222"
 
 
@@ -190,7 +190,7 @@ def test_list_paginates_a_single_snapshot(client_factory):
         )
 
     client = client_factory(handler)
-    result = client.list("pods", label_selector="bisheng.managed=v2")
+    result = client.list("pods", label_selector="doberman-agent.managed=v2")
     assert [x["metadata"]["name"] for x in result["items"]] == ["app-1", "app-2"]
     assert result["metadata"]["resourceVersion"] == "20"
     assert calls[1].url.params["continue"] == "next"

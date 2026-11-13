@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 /**
  * F035: INLINE workspace panel for the chat-embedded task mode. Replaces the
  * legacy right-side drawer (WorkspaceDrawer + FilePreviewPanel) with a card
@@ -13,8 +13,8 @@ import { Tooltip as SharedTooltip } from '@bisheng/ui';
  *              the report it is being checked against.
  * State lives in useWorkspacePanel; the parent (ChatView) owns the layout.
  */
-import { Segmented } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Segmented } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { useEffect, useState } from 'react';
 import type { ChatCitation } from '~/api/chatApi';
 

@@ -4,7 +4,7 @@ Two things are pinned here that ``test_build`` does not cover:
 
 * **The security baseline is one baseline, not three.** Every runtime renders
   to a non-root ``USER``, an exec-form ``ENTRYPOINT`` as the last instruction,
-  the shared ``/usr/local/bin/bisheng-healthcheck`` probe path that
+  the shared ``/usr/local/bin/doberman-agent-healthcheck`` probe path that
   ``lifecycle.build_container_payload`` hard-codes, and classic-builder syntax
   only. A new template that forgets one of these fails here, before 114 ever
   builds it.
@@ -89,20 +89,20 @@ def test_security_baseline_is_identical_across_runtimes(runtime, tmp_path):
     assert instructions[0] == f"FROM {BASE_IMAGES[runtime]}"
     # Non-root, and never back to root afterwards.
     user_lines = [line for line in instructions if line.startswith("USER ")]
-    assert user_lines == ["USER bisheng"]
+    assert user_lines == ["USER doberman-agent"]
     assert "10001" in dockerfile  # the fixed uid the data volume is chowned for
     # exec-form entrypoint as the last instruction: pid 1 is the app, SIGTERM lands.
-    assert instructions[-1] == 'ENTRYPOINT ["/usr/local/bin/bisheng-app-entrypoint"]'
+    assert instructions[-1] == 'ENTRYPOINT ["/usr/local/bin/doberman-agent-app-entrypoint"]'
     assert not any(line.startswith("CMD ") for line in instructions)
     # The probe path lifecycle.build_container_payload hard-codes, in every image.
     assert any(
-        line.startswith("HEALTHCHECK") and line.endswith('CMD ["/usr/local/bin/bisheng-healthcheck"]')
+        line.startswith("HEALTHCHECK") and line.endswith('CMD ["/usr/local/bin/doberman-agent-healthcheck"]')
         for line in instructions
     )
     assert f"EXPOSE {PORT}" in instructions
-    assert f"PORT={PORT}" in dockerfile and f"BISHENG_APP_PORT={PORT}" in dockerfile
+    assert f"PORT={PORT}" in dockerfile and f"DOBERMAN_AGENT_APP_PORT={PORT}" in dockerfile
     # AC-17: /data is the one persistent writable path, owned by the app user.
-    assert "chown bisheng:bisheng /data" in dockerfile
+    assert "chown doberman-agent:doberman-agent /data" in dockerfile
     # Instructions only — the header comment is allowed to *mention* the forbidden syntax.
     body = "\n".join(instructions)
     for token in BUILDKIT_ONLY:
@@ -112,14 +112,14 @@ def test_security_baseline_is_identical_across_runtimes(runtime, tmp_path):
 
 @pytest.mark.parametrize("runtime", sorted(BASE_IMAGES))
 def test_entrypoint_contract_is_identical_across_runtimes(runtime, tmp_path):
-    """Same variable names as ``bisheng dev`` (INV-32), same exec discipline."""
+    """Same variable names as ``doberman-agent dev`` (INV-32), same exec discipline."""
     files = _render(runtime, _tree(tmp_path / runtime, _minimal_source(runtime)))
     entrypoint = files["entrypoint.sh"]
 
     assert entrypoint.startswith("#!/bin/sh\n")
     assert "set -eu" in entrypoint
-    assert "BISHENG_APP_BASE_PATH" in entrypoint
-    assert f"BISHENG_APP_PORT:-{PORT}" in entrypoint
+    assert "DOBERMAN_AGENT_APP_BASE_PATH" in entrypoint
+    assert f"DOBERMAN_AGENT_APP_PORT:-{PORT}" in entrypoint
     assert 'exec "$@"' in entrypoint  # an explicit command (probe, debug) wins
     assert "exec " in entrypoint
 
@@ -131,9 +131,9 @@ def test_every_runtime_ships_exactly_one_probe(runtime, tmp_path):
 
     assert len(probes) == 1, files.keys()
     probe = files[probes[0]]
-    assert "BISHENG_APP_HEALTH_PATH" in probe
+    assert "DOBERMAN_AGENT_APP_HEALTH_PATH" in probe
     assert "127.0.0.1" in probe
-    assert f"COPY {probes[0]} /usr/local/bin/bisheng-healthcheck" in files["Dockerfile"]
+    assert f"COPY {probes[0]} /usr/local/bin/doberman-agent-healthcheck" in files["Dockerfile"]
 
 
 @pytest.mark.parametrize("runtime", sorted(BASE_IMAGES))
@@ -194,8 +194,8 @@ def test_node_with_lockfile_uses_npm_ci_omit_dev(tmp_path):
     # The registry arrives as a build arg the Dockerfile declares, under a name
     # npm does *not* read from the environment (an empty NPM_CONFIG_REGISTRY
     # would mean "registry is empty", not "default").
-    assert 'ARG BISHENG_NPM_REGISTRY=""' in dockerfile
-    assert '${BISHENG_NPM_REGISTRY:+--registry "$BISHENG_NPM_REGISTRY"}' in dockerfile
+    assert 'ARG DOBERMAN_AGENT_NPM_REGISTRY=""' in dockerfile
+    assert '${DOBERMAN_AGENT_NPM_REGISTRY:+--registry "$DOBERMAN_AGENT_NPM_REGISTRY"}' in dockerfile
     assert "NPM_CONFIG_REGISTRY" not in dockerfile.replace("# Deliberately not named NPM_CONFIG_REGISTRY", "")
 
 
@@ -255,12 +255,12 @@ def test_node_build_script_installs_dev_deps_then_prunes(tmp_path):
     dockerfile = render_build_context("node20", {"port": PORT, **facts})["Dockerfile"]
     instructions = _dockerfile_instructions(dockerfile)
     install = next(i for i, line in enumerate(instructions) if "npm ci --include=dev" in line)
-    copy_all = next(i for i, line in enumerate(instructions) if line == "COPY --chown=bisheng:bisheng . /app")
+    copy_all = next(i for i, line in enumerate(instructions) if line == "COPY --chown=doberman-agent:doberman-agent . /app")
     build = next(i for i, line in enumerate(instructions) if "npm run build" in line)
     assert install < copy_all < build, instructions
     assert "npm prune --omit=dev" in instructions[build]
     # Build args stay build-time only: the build step runs before USER drops.
-    assert instructions.index("USER bisheng") > build
+    assert instructions.index("USER doberman-agent") > build
 
 
 def test_node_dev_only_dependencies_still_install_for_a_build(tmp_path):
@@ -288,7 +288,7 @@ def test_node_entrypoint_start_resolution_order(tmp_path):
     """Most explicit first, and every winner is exec'd (pid 1 is the app)."""
     entrypoint = _render("node20", _tree(tmp_path / "app", _minimal_source("node20")))["entrypoint.sh"]
     order = [
-        entrypoint.index("BISHENG_APP_START"),
+        entrypoint.index("DOBERMAN_AGENT_APP_START"),
         entrypoint.index("/app/Procfile"),
         entrypoint.index("pkg_field scripts.start"),
         entrypoint.index("pkg_field main"),
@@ -301,7 +301,7 @@ def test_node_entrypoint_start_resolution_order(tmp_path):
     assert "npm start" not in entrypoint.split("# Start command resolution")[1].split("if [", 1)[1]
     # D5.2: the base path reaches the app under both the contract name and the
     # conventional node spelling.
-    assert 'export BASE_PATH="$BISHENG_APP_BASE_PATH"' in entrypoint
+    assert 'export BASE_PATH="$DOBERMAN_AGENT_APP_BASE_PATH"' in entrypoint
     assert "/app/node_modules/.bin" in entrypoint
     assert "exit 78" in entrypoint
 
@@ -352,7 +352,7 @@ def test_python_probe_judges_like_the_publish_probe(tmp_path, status, healthy):
         files = _render("python3.11", _tree(tmp_path / "app", _minimal_source("python3.11")))
         probe = tmp_path / "healthcheck.py"
         probe.write_text(files["healthcheck.py"])
-        env = {"BISHENG_APP_PORT": str(server.server_address[1]), "BISHENG_APP_HEALTH_PATH": "/"}
+        env = {"DOBERMAN_AGENT_APP_PORT": str(server.server_address[1]), "DOBERMAN_AGENT_APP_HEALTH_PATH": "/"}
         result = subprocess.run([sys.executable, str(probe)], env=env, capture_output=True, timeout=10)
     finally:
         server.shutdown()
@@ -381,7 +381,7 @@ def test_static_root_detection(tmp_path, files, expected_root):
     facts = source_facts("static", tree)
     assert facts == {"static_root": expected_root}
     dockerfile = render_build_context("static", {"port": PORT, **facts})["Dockerfile"]
-    assert f"COPY --chown=bisheng:bisheng {expected_root}/ /app/www/" in dockerfile
+    assert f"COPY --chown=doberman-agent:doberman-agent {expected_root}/ /app/www/" in dockerfile
 
 
 def test_static_without_an_index_names_the_fix(tmp_path):
@@ -390,7 +390,7 @@ def test_static_without_an_index_names_the_fix(tmp_path):
         source_facts("static", tree)
     message = str(excinfo.value)
     assert "index.html" in message
-    assert "dist/" in message and "!dist/" in message and ".bishengignore" in message
+    assert "dist/" in message and "!dist/" in message and ".doberman-agentignore" in message
 
 
 def test_static_nginx_config_survives_a_read_only_rootfs(tmp_path):
@@ -412,9 +412,9 @@ def test_static_nginx_config_survives_a_read_only_rootfs(tmp_path):
     assert "listen __PORT__;" in conf  # substituted at start, from the injected PORT
 
     entrypoint = files["entrypoint.sh"]
-    assert 'sed "s|__PORT__|$PORT|g" /etc/bisheng/nginx.conf.tmpl > /tmp/nginx/nginx.conf' in entrypoint
+    assert 'sed "s|__PORT__|$PORT|g" /etc/doberman-agent/nginx.conf.tmpl > /tmp/nginx/nginx.conf' in entrypoint
     assert "exec nginx -c /tmp/nginx/nginx.conf -g 'daemon off;'" in entrypoint
-    assert "COPY nginx.conf /etc/bisheng/nginx.conf.tmpl" in files["Dockerfile"]
+    assert "COPY nginx.conf /etc/doberman-agent/nginx.conf.tmpl" in files["Dockerfile"]
 
 
 def test_static_nginx_config_keeps_the_app_under_its_prefix(tmp_path):
@@ -425,7 +425,7 @@ def test_static_nginx_config_keeps_the_app_under_its_prefix(tmp_path):
     assert "port_in_redirect off;" in conf
     assert "server_tokens off;" in conf
     # The rendered build files sit next to the app when the root is served.
-    for name in ("Dockerfile", "entrypoint\\.sh", "nginx\\.conf", "healthcheck\\.sh", "bisheng-app\\.yaml"):
+    for name in ("Dockerfile", "entrypoint\\.sh", "nginx\\.conf", "healthcheck\\.sh", "doberman-agent-app\\.yaml"):
         assert name in conf
     assert "location ~ /\\." in conf
     assert "try_files $uri $uri/ /index.html;" in conf

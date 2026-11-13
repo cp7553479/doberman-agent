@@ -8,10 +8,10 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
-from bisheng.dsh.domain.services.admin_policy import DshAdminService
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
+from doberman_agent.dsh.domain.services.admin_policy import DshAdminService
 from test.dsh.test_policy_repository import NOW, sql_store  # noqa: F401
 from test.dsh.test_quota_admission import quota as real_quota  # noqa: F401
 from test.dsh.test_quota_admission import running
@@ -164,7 +164,7 @@ async def test_revoked_permission_after_commit_preserves_authorized_intent(servi
 
 
 async def test_two_operations_cannot_replace_pending_owner(service_factory):
-    from bisheng.common.errcode.dsh import DshOperationInProgressError
+    from doberman_agent.common.errcode.dsh import DshOperationInProgressError
 
     service, _state, _quota = service_factory(quota=QuotaDouble("block"))
     await service.update_policy(model_id=2, user_id=20, actor_user_id=90, request=request())
@@ -294,7 +294,7 @@ async def test_production_callback_exceptions_close_only_definitive_rejections(s
 
     from fastapi import HTTPException
 
-    from bisheng.common.errcode.dsh import DshModelNotAllowedError
+    from doberman_agent.common.errcode.dsh import DshModelNotAllowedError
 
     service, state, quota = service_factory(quota=QuotaDouble("block"))
     await service.update_policy(model_id=2, user_id=20, actor_user_id=90, request=request())

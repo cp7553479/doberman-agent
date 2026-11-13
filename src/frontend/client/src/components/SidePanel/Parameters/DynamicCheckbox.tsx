@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { OptionTypes } from '~/types/chat';
 import type { DynamicSettingProps } from '~/types/chat';
 import { Label, HoverCard, HoverCardTrigger } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { TranslationKeys, useLocalize, useParameterEffects } from '~/hooks';
 import { useChatContext } from '~/Providers';
 import OptionHover from './OptionHover';

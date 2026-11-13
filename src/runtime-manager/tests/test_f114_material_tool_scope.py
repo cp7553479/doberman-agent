@@ -27,7 +27,7 @@ def test_private_pack_uses_verified_scope_and_never_silently_retries(monkeypatch
             calls.append(request)
             return Response(json.dumps({"status_code": 200, "data": {"app_id": "app"}}).encode())
 
-    monkeypatch.setenv("BISHENG_MANAGEMENT_TOKEN", "not-a-real-session")
+    monkeypatch.setenv("DOBERMAN_AGENT_MANAGEMENT_TOKEN", "not-a-real-session")
     monkeypatch.setattr(materials.urllib.request, "build_opener", lambda *args: Opener())
     pack = tmp_path / "pack.tar.gz"
     pack.write_bytes(b"not-uploaded-to-network")

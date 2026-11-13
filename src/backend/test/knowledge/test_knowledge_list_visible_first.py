@@ -24,15 +24,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge import KnowledgeSpaceListNotSupportedError
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.common.errcode.knowledge import KnowledgeSpaceListNotSupportedError
+from doberman_agent.knowledge.domain.models.knowledge import (
     Knowledge,
     KnowledgeState,
     KnowledgeTypeEnum,
 )
-from bisheng.knowledge.domain.services import knowledge_service as ks_mod
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.permission.domain.schemas import (
+from doberman_agent.knowledge.domain.services import knowledge_service as ks_mod
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.permission.domain.schemas import (
     VisibilityEnumerationStatus,
     VisibleObjectEnumerationResult,
 )
@@ -296,7 +296,7 @@ async def test_handler_rejects_knowledge_space_type() -> None:
     because the resource-type mismatch was only detected inside F048 target
     resolution, which super_admin bypassed.
     """
-    from bisheng.knowledge.api.endpoints import knowledge as endpoint
+    from doberman_agent.knowledge.api.endpoints import knowledge as endpoint
 
     with pytest.raises(Exception) as excinfo:
         await endpoint.get_knowledge(

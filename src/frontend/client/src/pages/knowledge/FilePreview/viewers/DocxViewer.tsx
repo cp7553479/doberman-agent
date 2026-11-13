@@ -1,5 +1,5 @@
-import { DocxViewer as SharedDocxViewer } from '@bisheng/file-viewers/docx';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { DocxViewer as SharedDocxViewer } from '@doberman-agent/file-viewers/docx';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 interface DocxViewerProps { fileUrl: string; zoomLevel: number }
 export function DocxViewer({ fileUrl, zoomLevel }: DocxViewerProps) {
   const locale = usePreviewLocale();

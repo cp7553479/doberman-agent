@@ -1,6 +1,6 @@
 # Kubernetes 开源应用托管层
 
-本 Chart 只安装 runtime-manager、app-proxy、egress-proxy 和独立 admission 进程。毕昇 backend、Celery、MySQL/DM8、Redis、MinIO、OpenFGA 继续按平台原有方式部署。所有模块开源，无商业额度或许可证执行点。
+本 Chart 只安装 runtime-manager、app-proxy、egress-proxy 和独立 admission 进程。doberman-agent backend、Celery、MySQL/DM8、Redis、MinIO、OpenFGA 继续按平台原有方式部署。所有模块开源，无商业额度或许可证执行点。
 
 目标验收版本为 Kubernetes 1.28.15，支持 Linux amd64/arm64 独立执行域。Chart 渲染和单元测试不是集群实测；每个环境都必须执行下述真实探测及业务 E2E。单节点 local PV 不提供跨节点恢复或高可用承诺。
 
@@ -82,17 +82,17 @@ Helm release 存在独立 installer namespace，避免 manager 所在 namespace 
 
 ```sh
 kubectl create namespace runtime-installer
-kubectl create namespace bisheng-runtime-system
-kubectl label namespace bisheng-runtime-system app.kubernetes.io/managed-by=Helm
-kubectl annotate namespace bisheng-runtime-system meta.helm.sh/release-name=bisheng-runtime meta.helm.sh/release-namespace=runtime-installer
+kubectl create namespace doberman-agent-runtime-system
+kubectl label namespace doberman-agent-runtime-system app.kubernetes.io/managed-by=Helm
+kubectl annotate namespace doberman-agent-runtime-system meta.helm.sh/release-name=doberman-agent-runtime meta.helm.sh/release-namespace=runtime-installer
 ```
 
 execution 如需预置 pull/registry Secret，也按同样方式创建并登记 ownership。然后由安全文件创建既有 Secret、公开 CA ConfigMap，配置持久证书；升级时不随机重生成 CA/种子。
 
 ```sh
 helm lint deploy/kubernetes/app-runtime -f /secure/deploy/runtime-values.yaml
-helm template bisheng-runtime deploy/kubernetes/app-runtime -n runtime-installer -f /secure/deploy/runtime-values.yaml > /secure/deploy/runtime-rendered.yaml
-helm upgrade --install bisheng-runtime deploy/kubernetes/app-runtime -n runtime-installer -f /secure/deploy/runtime-values.yaml --wait --timeout 5m
+helm template doberman-agent-runtime deploy/kubernetes/app-runtime -n runtime-installer -f /secure/deploy/runtime-values.yaml > /secure/deploy/runtime-rendered.yaml
+helm upgrade --install doberman-agent-runtime deploy/kubernetes/app-runtime -n runtime-installer -f /secure/deploy/runtime-values.yaml --wait --timeout 5m
 ```
 
 不要用 `helm --wait` 成功代替运行域 ready；服务可启动但尚未通过探测时，backend 必须拒绝业务执行。manager 按只读描述读取数据，无 `kubectl`、Docker CLI 或 docker.sock 依赖。
@@ -117,25 +117,25 @@ local PV 节点失效时数据不能自动跟随新节点。Retain 的 scratch/p
 
 当前默认 bundle 路径不构建新 OCI 镜像：backend 分发版本化源码/依赖，helper 在 Pod 的独立卷中物化；runtime 挂载只读代码/环境运行。完整 image 路径直接启动冻结镜像；兼容 source-image 路径额外需要可推送内网仓库和 assembler，缺少只阻断这一路径。发行清单中的 config image_id、单平台 manifest digest、multiarch index 和 tag 含义不同，不互相替代。
 
-自定义 bundle 运行镜像必须实现对应的启动器合同：Python 包含冻结版本的解释器；Node 20 保留 `/usr/local/bin/docker-entrypoint.sh` 的标准参数处理；static 保留 `/opt/bisheng/entrypoint.sh`，按 `PORT` 在可写 `/tmp` 生成 nginx 配置。代码和依赖挂载只读、应用以 profile 冻结的非特权 UID/GID 运行。任意自定义镜像若不满足这些合同，应走完整 image 模式，由它自己的 ENTRYPOINT/CMD 决定启动方式。
+自定义 bundle 运行镜像必须实现对应的启动器合同：Python 包含冻结版本的解释器；Node 20 保留 `/usr/local/bin/docker-entrypoint.sh` 的标准参数处理；static 保留 `/opt/doberman-agent/entrypoint.sh`，按 `PORT` 在可写 `/tmp` 生成 nginx 配置。代码和依赖挂载只读、应用以 profile 冻结的非特权 UID/GID 运行。任意自定义镜像若不满足这些合同，应走完整 image 模式，由它自己的 ENTRYPOINT/CMD 决定启动方式。
 
 ## 5. 安装验证工具
 
 使用同版本 Python 3.11+ runtime-manager 依赖、kubectl 和既有 installer kubeconfig。默认只读；启用 `--live` 才创建本次 `preflight-*` canary。工具不改变 kube-system、节点代理、Docker daemon 或现有业务应用；安装者需可 impersonate manager ServiceAccount，以真测 namespace RBAC，而非用管理员身份假装 manager。
 
 ```sh
-python scripts/verify_k8s_runtime.py --context <context> --control-namespace bisheng-runtime-system --execution-namespace bisheng-runtime-apps --probe-plan /secure/deploy/runtime-probes.json
-python scripts/verify_k8s_runtime.py --context <context> --control-namespace bisheng-runtime-system --execution-namespace bisheng-runtime-apps --probe-plan /secure/deploy/runtime-probes.json --live --write-report
+python scripts/verify_k8s_runtime.py --context <context> --control-namespace doberman-agent-runtime-system --execution-namespace doberman-agent-runtime-apps --probe-plan /secure/deploy/runtime-probes.json
+python scripts/verify_k8s_runtime.py --context <context> --control-namespace doberman-agent-runtime-system --execution-namespace doberman-agent-runtime-apps --probe-plan /secure/deploy/runtime-probes.json --live --write-report
 ```
 
 probe plan 为安装者本地文件，不放任何 secret：
 
 ```json
 {
-  "installation_id": "bisheng-runtime",
-  "webhook_name": "bisheng-runtime-runtime",
+  "installation_id": "doberman-agent-runtime",
+  "webhook_name": "doberman-agent-runtime-runtime",
   "node_name": "dedicated-worker",
-  "node_id": "bisheng-k8s-amd64",
+  "node_id": "doberman-agent-k8s-amd64",
   "platform_origin": "https://platform.internal",
   "platform_ca_file": "/secure/deploy/platform-ca.crt",
   "storage_size_mb": 1024,
@@ -182,7 +182,7 @@ canary 通过受保护的 ConfigMap 声明固定模板，plan 只有 1 小时以
 有效期 24 小时，由**外部运维身份**每 6 小时重复真实验证并原子更新：
 
 ```sh
-python scripts/verify_k8s_runtime.py --context <context> --control-namespace bisheng-runtime-system --execution-namespace bisheng-runtime-apps --probe-plan /secure/deploy/runtime-probes.json --live --write-report --repeat-seconds 21600
+python scripts/verify_k8s_runtime.py --context <context> --control-namespace doberman-agent-runtime-system --execution-namespace doberman-agent-runtime-apps --probe-plan /secure/deploy/runtime-probes.json --live --write-report --repeat-seconds 21600
 ```
 
 将该进程纳入客户现有运维监督，失败退出时告警并修复；不新增具有安装者权限的集群常驻 Pod。工具不会在用户机器擅自安装定时任务。报告失效/探测失败后必需基线 fail closed；不存在跳过隔离的开关。刷新只创建预检资源、更新报告，不重装 Chart或删除业务资源。

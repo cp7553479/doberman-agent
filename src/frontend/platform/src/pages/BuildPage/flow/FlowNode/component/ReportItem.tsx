@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
 
 import { Dialog,DialogContent,DialogTrigger } from '@/components/bs-ui/dialog';
@@ -44,7 +44,7 @@ export default function ReportItem({ nodeId, data, onChange, onValidate, i18nPre
 
     return (
         <div className='node-item mb-4 nodrag' data-key={data.key}>
-            <Label className='bisheng-label'>
+            <Label className='doberman_agent-label'>
                 {data.required && <span className='text-red-500'>*</span>}
                 {t(`${i18nPrefix}label`)}
             </Label>

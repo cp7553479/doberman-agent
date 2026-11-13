@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from "@bisheng/ui";
+import { Radio, RadioGroup } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 import { RefreshCcw, SquarePlus, X } from "lucide-react";
 import { useRef, useState, type KeyboardEvent } from "react";

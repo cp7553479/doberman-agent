@@ -2,7 +2,7 @@ import filenamify from 'filenamify';
 import { useEffect, useState } from 'react';
 import type { TConversation } from '~/types/chat';
 import { OGDialog, Button, Input, Label, Dropdown } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import OGDialogTemplate from '~/components/ui/OGDialogTemplate';
 import { useLocalize, useExportConversation } from '~/hooks';
 

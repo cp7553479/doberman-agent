@@ -6,13 +6,13 @@ import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk
 from pydantic import ValidationError
 
-from bisheng.common.errcode.dsh import DshUnsupportedParameterError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
-from bisheng.dsh.infrastructure.chat_adapter import DshChatAdapter
+from doberman_agent.common.errcode.dsh import DshUnsupportedParameterError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
+from doberman_agent.dsh.infrastructure.chat_adapter import DshChatAdapter
 
 
 def request(**kwargs):
-    return DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hello"}], **kwargs)
+    return DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hello"}], **kwargs)
 
 
 @pytest.mark.parametrize(
@@ -43,10 +43,10 @@ def test_tool_multiturn_ids_and_string_arguments():
         {"role": "tool", "tool_call_id": "c1", "content": "ok"},
         {"role": "user", "content": "continue"},
     ]
-    assert DshChatRequest(model="bisheng:42", messages=messages).model_id == 42
+    assert DshChatRequest(model="doberman_agent:42", messages=messages).model_id == 42
     messages[1]["tool_call_id"] = "another"
     with pytest.raises(ValidationError):
-        DshChatRequest(model="bisheng:42", messages=messages)
+        DshChatRequest(model="doberman_agent:42", messages=messages)
 
 
 class FakeLLM:
@@ -102,7 +102,7 @@ def test_capabilities_refuse_unverified_extensions():
     with pytest.raises(DshUnsupportedParameterError):
         DshChatAdapter().prepare(request(max_completion_tokens=5), FakeLLM(), ChatCapabilities())
     body = DshChatRequest(
-        model="bisheng:42", messages=[{"role": "assistant", "content": "x", "reasoning_content": "r"}]
+        model="doberman_agent:42", messages=[{"role": "assistant", "content": "x", "reasoning_content": "r"}]
     )
     with pytest.raises(DshUnsupportedParameterError):
         DshChatAdapter().prepare(body, FakeLLM(), ChatCapabilities())
@@ -118,7 +118,7 @@ async def test_missing_usage_is_unknown_not_zero():
 
 
 async def test_incomplete_tool_arguments_never_become_success():
-    from bisheng.common.errcode.dsh import DshUpstreamErrorError
+    from doberman_agent.common.errcode.dsh import DshUpstreamErrorError
 
     class Incomplete(FakeLLM):
         async def astream(self, messages, **kwargs):

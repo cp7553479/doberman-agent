@@ -1,10 +1,10 @@
 import { ApiRequestFailure } from '~/components/ApiRequestFailure';
 import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardPortal } from '~/components/ui/HoverCard';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useState, useEffect, useRef, type MouseEvent } from "react";
 import { Button } from "~/components/ui/Button";
-import { Checkbox } from '@bisheng/ui';
-import { SearchInput } from "@bisheng/ui";
+import { Checkbox } from '@doberman-agent/ui';
+import { SearchInput } from "@doberman-agent/ui";
 import { truncateName, type InformationSource } from "~/api/channels";
 import { cn } from "~/utils";
 import { useLocalize, usePrefersMobileLayout } from "~/hooks";

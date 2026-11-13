@@ -29,11 +29,11 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.common.errcode.permission import (  # noqa: E402
+from doberman_agent.common.errcode.permission import (  # noqa: E402
     PermissionMigrationBlockedError,
 )
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     close_app_context,
     initialize_app_context,
 )

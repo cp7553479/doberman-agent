@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalActionLog,
     ApprovalException,
     ApprovalInstance,
@@ -14,19 +14,19 @@ from bisheng.approval.domain.models.approval_instance import (
     ApprovalTask,
     ApprovalTaskStatus,
 )
-from bisheng.approval.domain.models.approval_scenario import (
+from doberman_agent.approval.domain.models.approval_scenario import (
     ApprovalFlowDefinition,
     ApprovalFlowVersion,
     ApprovalNodeDefinition,
     ApprovalRouteRule,
     ApprovalScenario,
 )
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
-from bisheng.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
-from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
-from bisheng.approval.domain.services.approval_scenario_admin_service import ApprovalScenarioAdminService
-from bisheng.common.errcode.approval import (
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
+from doberman_agent.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
+from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
+from doberman_agent.approval.domain.services.approval_scenario_admin_service import ApprovalScenarioAdminService
+from doberman_agent.common.errcode.approval import (
     ApprovalFlowInUseByRoutesError,
     ApprovalRequestPermissionDeniedError,
 )
@@ -270,7 +270,7 @@ async def test_admin_service_lists_and_creates_scenarios(monkeypatch: pytest.Mon
     monkeypatch.setattr(ApprovalScenarioRepository, 'update_node_definition', AsyncMock(return_value=node))
     monkeypatch.setattr(ApprovalQueryRepository, 'list_open_exceptions', AsyncMock(return_value=[exception]))
     monkeypatch.setattr(
-        'bisheng.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2',
+        'doberman_agent.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2',
         AsyncMock(),
     )
 

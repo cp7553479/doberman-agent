@@ -5,7 +5,7 @@ component: Radio
 
 # 单选框 Radio
 
-一组**全部摊开可见**的选项里**只选一个**,结果随表单提交才生效;选项 2~7 个用单选框,再多摊不开换下拉选择。**选中后点已选项不会取消**——需要「一个都不选」的合法状态,就明确加一项「无 / 不需要」。组件库 `@bisheng/ui` 导出 **`RadioGroup`**、**`Radio`** 与 **`RadioCard`**(卡片式)。规范全文见「文档 → 组件规范 → 单选框 Radio」。
+一组**全部摊开可见**的选项里**只选一个**,结果随表单提交才生效;选项 2~7 个用单选框,再多摊不开换下拉选择。**选中后点已选项不会取消**——需要「一个都不选」的合法状态,就明确加一项「无 / 不需要」。组件库 `@doberman-agent/ui` 导出 **`RadioGroup`**、**`Radio`** 与 **`RadioCard`**(卡片式)。规范全文见「文档 → 组件规范 → 单选框 Radio」。
 
 **壳把规范写死的部分**:圆圈与复选框方块同一套 14 / 16 / 18 阶梯,选中品牌色实心 + 白色内点(直径 = 外圈 − 8);按钮组形态走按钮的 24 / 32 / 40 高度阶梯;方向键在组内移动、Tab 只进出组一次;触屏整行热区 ≥44px。这些没有 prop。
 
@@ -14,7 +14,7 @@ component: Radio
 选项文案写并列同构的名词或短语(「按天 / 按周 / 按月」),读者扫一遍就能比出差别。有安全的默认值就预选它;没有就一项都不预选。
 
 ```tsx
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <RadioGroup defaultValue="week">
@@ -30,7 +30,7 @@ export default () => (
 圆圈 14 / 16 / 18,内点 6 / 8 / 10;`size` 写在 `RadioGroup` 上,整组统一。
 
 ```tsx
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 16 }}>
@@ -55,7 +55,7 @@ export default () => (
 文案长就竖排(横排 16px、竖排 8px 间距,窄屏自动转竖排);说明是一行次要文字,规则同复选框。
 
 ```tsx
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <RadioGroup direction="vertical" defaultValue="auto">
@@ -70,7 +70,7 @@ export default () => (
 筛选条、视图切换这类**高频切换**用按钮组——大热区 + 状态高亮;它是单选的另一张皮,不是一排按钮。选中项品牌色文字 + 品牌浅底 + 整圈淡品牌描边(100 档同卡片式,结构 antd 同构),**不做实心**——切换器不和主按钮抢视线。选项文字 2~4 个字,放不下就回到圆点或下拉。
 
 ```tsx
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 16, justifyItems: 'start' }}>
@@ -92,7 +92,7 @@ export default () => (
 带标题 + 描述的方案选择,卡壳同复选框卡片式(圆角 12、最小高 48、选中浅底 + 淡品牌描边),仅选中互斥。
 
 ```tsx
-import { RadioCard, RadioGroup } from '@bisheng/ui';
+import { RadioCard, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <RadioGroup
@@ -110,7 +110,7 @@ export default () => (
 禁用与按钮 disabled 同一套 token;整组禁用写在 `RadioGroup`,单项禁用写在 `Radio`。组校验错误提示放组下方、用危险色,由调用方渲染;圆圈本身不变红。
 
 ```tsx
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 16 }}>

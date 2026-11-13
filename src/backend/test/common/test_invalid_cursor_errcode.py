@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.knowledge import KnowledgeInvalidCursorError
-from bisheng.common.errcode.flow import AppInvalidCursorError
-from bisheng.common.errcode.knowledge_space import KnowledgeSpaceInvalidCursorError
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.knowledge import KnowledgeInvalidCursorError
+from doberman_agent.common.errcode.flow import AppInvalidCursorError
+from doberman_agent.common.errcode.knowledge_space import KnowledgeSpaceInvalidCursorError
 
 
 _CURSOR_ERROR_CLASSES = [
@@ -34,7 +34,7 @@ def test_error_msg_is_set(error_cls, _):
 
 def test_codes_unique_within_each_module_file():
     """Make sure the new code does not clash with an existing one in the same file."""
-    errcode_dir = Path(__file__).resolve().parents[2] / "bisheng" / "common" / "errcode"
+    errcode_dir = Path(__file__).resolve().parents[2] / "doberman_agent" / "common" / "errcode"
     pattern = re.compile(r"Code(?:\s*:\s*int)?\s*=\s*(\d+)")
 
     for module_name in ("knowledge", "flow", "knowledge_space"):

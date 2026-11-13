@@ -5,7 +5,7 @@ keeping primitive adapters: see [direct import plan](direct-import-plan.md).
 
 Scope: platform only. No client/shared library implementation changes, package
 installation or dependency removal. Keep accepted button/input/notice adapters:
-they delegate to @bisheng/ui and preserve existing call contracts.
+they delegate to @doberman-agent/ui and preserve existing call contracts.
 
 Removed8 unused legacy UI files,35 unreferenced local icon implementation files
 and35 SVG assets used exclusively by those deleted icons (78 files total).

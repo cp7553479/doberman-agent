@@ -21,11 +21,11 @@ import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.admin_scope import AdminScopeTenantNotFoundError
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.admin_scope import AdminScopeTenantNotFoundError
 
 
-ENDPOINT_MOD = 'bisheng.admin.api.endpoints.tenant_scope'
+ENDPOINT_MOD = 'doberman_agent.admin.api.endpoints.tenant_scope'
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ def normal_user():
 
 def _build_app(login_user):
     """Mount only the F019 admin router — smallest possible surface."""
-    from bisheng.admin.api.router import router as admin_router
+    from doberman_agent.admin.api.router import router as admin_router
 
     app = FastAPI()
     app.include_router(admin_router, prefix='/api/v1')

@@ -32,7 +32,7 @@ existent call site would add dead code.
   ```python
   # At the end of a future RoleService.revoke_super_admin(user_id):
   try:
-      from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+      from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
       await TenantScopeService.clear_on_role_revoke(user_id)
   except Exception as exc:  # noqa: BLE001
       logger.debug('admin_scope clear on role revoke failed: %s', exc)

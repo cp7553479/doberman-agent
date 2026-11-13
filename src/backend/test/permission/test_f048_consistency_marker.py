@@ -6,9 +6,9 @@ import asyncio
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.permission.application import sql_runtime
-from bisheng.permission.application.sql_runtime import (
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.permission.application import sql_runtime
+from doberman_agent.permission.application.sql_runtime import (
     HIGHER_CONSISTENCY,
     RECENT_CATALOG_MARKER,
     RECENT_MARKER_SENTINEL,
@@ -16,7 +16,7 @@ from bisheng.permission.application.sql_runtime import (
     SqlProjectionFinalizer,
     SqlProjectionScopeGuard,
 )
-from bisheng.permission.domain.services.projection_plan import ProjectionPlan
+from doberman_agent.permission.domain.services.projection_plan import ProjectionPlan
 
 
 class _Redis:

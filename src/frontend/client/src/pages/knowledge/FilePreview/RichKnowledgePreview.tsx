@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { MarkdownViewer as SharedMarkdownViewer } from '@bisheng/file-viewers/markdown';
-import { MediaTranscriptTabs as SharedMediaTranscriptTabs } from '@bisheng/file-viewers/transcript';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { MarkdownViewer as SharedMarkdownViewer } from '@doberman-agent/file-viewers/markdown';
+import { MediaTranscriptTabs as SharedMediaTranscriptTabs } from '@doberman-agent/file-viewers/transcript';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 import type { ReactNode } from "react";
 import type { KnowledgeFilePreview } from "~/api/knowledge";
 import { useLocalize } from "~/hooks";

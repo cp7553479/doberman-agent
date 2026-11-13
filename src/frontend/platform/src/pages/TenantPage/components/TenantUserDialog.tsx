@@ -1,5 +1,5 @@
-import { Pagination, Button, SearchInput, notification } from '@bisheng/ui';
-import { Tag } from "@bisheng/ui";
+import { Pagination, Button, SearchInput, notification } from '@doberman-agent/ui';
+import { Tag } from "@doberman-agent/ui";
 import { useSubjectTable } from "@/components/bs-comp/selectComponent/useSubjectTable";
 import { SubjectSearchStatus } from "@/components/bs-comp/selectComponent/SubjectSearchStatus";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";

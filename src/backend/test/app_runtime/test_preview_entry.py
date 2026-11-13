@@ -36,7 +36,7 @@ OTHER_USER_ID = 91202
 
 @pytest.fixture(autouse=True)
 def _runtime_layer_on(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True)
     monkeypatch.setattr(settings.app_runtime, "obo_secret", "preview-obo-secret-not-the-jwt-one")
@@ -59,7 +59,7 @@ async def session_token(monkeypatch):
     session, which is why the decode is stubbed and the four helpers it feeds
     are left real.
     """
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     def _decode(token):
         if not token or token == "bad":
@@ -84,7 +84,7 @@ async def session_token(monkeypatch):
 @pytest.fixture()
 async def preview_session(app_db, app_factory, approver):
     """``await preview_session(approver_user_id=…, expired=…)`` → (app, version, row)."""
-    from bisheng.app_publish.domain.models.app_preview_session import (
+    from doberman_agent.app_publish.domain.models.app_preview_session import (
         PREVIEW_STATUS_RUNNING,
         AppPreviewSession,
         AppPreviewSessionDao,
@@ -109,7 +109,7 @@ async def preview_session(app_db, app_factory, approver):
 
 
 async def _authorize(session_id: str, token: str | None):
-    from bisheng.app_runtime.domain.services.entry_authz_service import authorize_preview_entry
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import authorize_preview_entry
 
     return await authorize_preview_entry(session=session_id, access_token=token, request_id="req-1")
 
@@ -152,7 +152,7 @@ async def test_the_owner_enters_a_preview_they_raised_themselves(preview_session
 
     verdict = await _authorize(row.id, session_token(app_owner.user_id))
     assert verdict["decision"] == "allow" and verdict["app_id"] == app.id
-    assert verdict["headers"]["X-BiSheng-User-Id"] == str(app_owner.user_id)
+    assert verdict["headers"]["X-Doberman-Agent-User-Id"] == str(app_owner.user_id)
 
     assert (await _authorize(row.id, session_token(APPROVER_USER_ID)))["decision"] == "not_found"
 
@@ -184,7 +184,7 @@ async def test_an_expired_session_is_not_found(preview_session, session_token):
 
 
 async def test_a_reclaimed_session_is_not_found(app_db, preview_session, session_token):
-    from bisheng.app_publish.domain.models.app_preview_session import AppPreviewSessionDao
+    from doberman_agent.app_publish.domain.models.app_preview_session import AppPreviewSessionDao
 
     _app, _version, row = await preview_session()
     async with app_db() as session:
@@ -206,7 +206,7 @@ async def test_no_session_hands_off_to_login(preview_session):
 
 async def test_the_runtime_layer_switch_answers_first(preview_session, session_token, monkeypatch):
     """AC-30 / AC-62 — an environment without the layer never bounces anyone to login."""
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     _app, _version, row = await preview_session()
     monkeypatch.setattr(settings.app_runtime, "enabled", False)
@@ -215,7 +215,7 @@ async def test_the_runtime_layer_switch_answers_first(preview_session, session_t
 
 
 async def test_a_deleted_application_is_not_found(app_db, preview_session, session_token):
-    from bisheng.database.models.app import App
+    from doberman_agent.database.models.app import App
 
     app, _version, row = await preview_session()
     async with app_db() as session:
@@ -231,7 +231,7 @@ async def test_a_deleted_application_is_not_found(app_db, preview_session, sessi
 
 async def test_a_failing_session_lookup_is_a_refusal_not_a_pass(preview_session, session_token, monkeypatch):
     """AC-12 — "could not decide" never means "let them in"."""
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     _app, _version, row = await preview_session()
 
@@ -255,11 +255,11 @@ async def test_the_injected_identity_is_the_approver_not_the_owner(preview_sessi
     verdict = await _authorize(row.id, session_token(APPROVER_USER_ID))
 
     material = verdict["headers"]
-    assert material["X-BiSheng-User-Id"] == str(APPROVER_USER_ID)
-    assert material["X-BiSheng-User-Id"] != str(app_owner.user_id)
-    assert material["X-BiSheng-App-Id"] == app.id
-    assert material["X-BiSheng-Tenant-Id"] == str(ROOT_TENANT_ID)
-    assert material["X-BiSheng-Subject-Kind"] == "human"
+    assert material["X-Doberman-Agent-User-Id"] == str(APPROVER_USER_ID)
+    assert material["X-Doberman-Agent-User-Id"] != str(app_owner.user_id)
+    assert material["X-Doberman-Agent-App-Id"] == app.id
+    assert material["X-Doberman-Agent-Tenant-Id"] == str(ROOT_TENANT_ID)
+    assert material["X-Doberman-Agent-Subject-Kind"] == "human"
 
 
 async def test_an_obo_token_is_issued_for_the_approver(preview_session, session_token):
@@ -267,8 +267,8 @@ async def test_an_obo_token_is_issued_for_the_approver(preview_session, session_
 
     import jwt
 
-    from bisheng.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
+    from doberman_agent.common.services.config_service import settings
 
     app, _version, row = await preview_session()
 
@@ -297,7 +297,7 @@ async def test_an_obo_token_is_issued_for_the_approver(preview_session, session_
 
 async def test_a_preview_visit_is_not_recorded_as_an_application_access(preview_session, session_token, monkeypatch):
     """AC-38 counts visits to an application; a trial of an unshipped version is not one."""
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     recorded: list[dict] = []
     monkeypatch.setattr(entry_authz_service, "schedule_access_record", lambda **kwargs: recorded.append(kwargs))
@@ -332,8 +332,8 @@ async def test_the_internal_endpoint_is_hmac_signed_and_answers_200_for_a_refusa
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.app_runtime.api.router import router
-    from bisheng.app_runtime.domain.services.hmac_auth import verify_proxy_hmac
+    from doberman_agent.app_runtime.api.router import router
+    from doberman_agent.app_runtime.domain.services.hmac_auth import verify_proxy_hmac
 
     _app, _version, row = await preview_session()
     api = FastAPI()
@@ -361,7 +361,7 @@ async def test_preview_obo_configuration_refuses_without_identity(
     preview_session, session_token, monkeypatch, bad_secret
 ):
     """覆盖 AC: AC-71, AC-73. No successful anonymous preview fallback."""
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         settings.app_runtime, "obo_secret", settings.jwt_secret if bad_secret == "session" else bad_secret

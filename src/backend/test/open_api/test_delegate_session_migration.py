@@ -1,7 +1,7 @@
 from sqlalchemy import Index
 
-from bisheng.database.models.session import MessageSession
-from bisheng.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
 
 
 def test_delegate_scope_table_has_only_typed_scope_contract():

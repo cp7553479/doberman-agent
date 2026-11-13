@@ -23,7 +23,7 @@ import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from bisheng.core.database.connection import DatabaseConnectionManager
+from doberman_agent.core.database.connection import DatabaseConnectionManager
 
 
 # ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ async def test_async_session_rolls_back_on_cancellederror():
 
 
 async def test_touch_session_completes_write_despite_cancellation(monkeypatch):
-    from bisheng.database.models import session as session_module
+    from doberman_agent.database.models import session as session_module
 
     events: list[str] = []
 

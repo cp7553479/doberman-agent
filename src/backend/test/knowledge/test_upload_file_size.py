@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceFileSizeLimitError
-from bisheng.knowledge.domain import upload_file_size as module
-from bisheng.knowledge.domain.services.knowledge_utils import KnowledgeUtils
+from doberman_agent.common.errcode.knowledge_space import SpaceFileSizeLimitError
+from doberman_agent.knowledge.domain import upload_file_size as module
+from doberman_agent.knowledge.domain.services.knowledge_utils import KnowledgeUtils
 
 
 class TestKnowledgeUploadFileSize:

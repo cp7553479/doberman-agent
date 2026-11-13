@@ -7,7 +7,7 @@ import './i18n';
 // @ts-ignore
 import "./style/index.css";
 // Shared tokens must win over legacy platform variables such as --radius.
-import '@bisheng/ui/tokens.css';
+import '@doberman-agent/ui/tokens.css';
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createPlatformQueryClient } from "./queryClient";
 import { installPlatformThemeBridge } from './utils/platformThemeBridge';

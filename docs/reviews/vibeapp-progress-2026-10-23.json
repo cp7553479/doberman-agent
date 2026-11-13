@@ -57,13 +57,13 @@
         "**T021**: `[MVP-核心]` 114 部署与 MVP-核心闭环手动验证清单（演示剧本步 5–6）"
       ]
     },
-    "057-bisheng-sdk": {
+    "057-doberman-agent-sdk": {
       "complete": 42,
       "total": 45,
       "pending": [
         "**T032**: 114 构建期真机验证〔1.5h，`needs_114`〕",
         "**T040**: 评测跑分（模型判定）并回填〔1.5h〕",
-        "**T042**: 114 手动验证（`/e2e-test features/v3.0.0/057-bisheng-sdk`）〔3h，`needs_114`〕"
+        "**T042**: 114 手动验证（`/e2e-test features/v3.0.0/057-doberman-agent-sdk`）〔3h，`needs_114`〕"
       ]
     },
     "059-k8s-runtime-backend": {

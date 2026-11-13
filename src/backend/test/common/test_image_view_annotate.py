@@ -3,7 +3,7 @@
 Covers AC: AC-01, AC-08
 """
 
-from bisheng.common.image_view.annotate import (
+from doberman_agent.common.image_view.annotate import (
     ImageIdLineConverter,
     ImageRegistry,
     annotate,

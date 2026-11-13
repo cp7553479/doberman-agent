@@ -9,11 +9,11 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import AsyncAdaptedQueuePool
 
-from bisheng.common.errcode.permission import PermissionInvalidResourceError
-from bisheng.permission.application import business_authorization as business
-from bisheng.permission.application.resource_authorization import ResourceAuthorizationRegistry
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError
+from doberman_agent.permission.application import business_authorization as business
+from doberman_agent.permission.application.resource_authorization import ResourceAuthorizationRegistry
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 class _LoadingPort:

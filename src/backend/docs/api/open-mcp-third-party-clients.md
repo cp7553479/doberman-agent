@@ -1,6 +1,6 @@
-# 第三方客户端接入 BISHENG MCP 指南
+# 第三方客户端接入 DOBERMAN_AGENT MCP 指南
 
-本文面向需要在 IDE、编码助手、智能体平台或自研 MCP Host 中接入 BISHENG 的
+本文面向需要在 IDE、编码助手、智能体平台或自研 MCP Host 中接入 DOBERMAN_AGENT 的
 管理员和开发者。服务端工具合同、错误格式和上传限制请同时参阅
 [Open MCP 接入指南](./open-mcp.md)。
 
@@ -9,11 +9,11 @@
 
 ## 1. 接入信息
 
-向 BISHENG 管理员获取以下信息：
+向 DOBERMAN_AGENT 管理员获取以下信息：
 
 | 配置项 | 示例 | 说明 |
 |---|---|---|
-| MCP URL | `https://bisheng.example.com/api/v2/mcp` | 必须是完整地址，不要改成 `/sse` |
+| MCP URL | `https://doberman-agent.example.com/api/v2/mcp` | 必须是完整地址，不要改成 `/sse` |
 | Transport | Streamable HTTP | 本服务不是 stdio，也不是旧版 SSE 双端点 |
 | API Key | `bs-sak-<redacted>` | 推荐使用服务账号 API Key |
 | Scope | `knowledge:read`、`knowledge:write` | 决定客户端能发现哪些工具 |
@@ -25,10 +25,10 @@ MCP 客户端必须满足以下条件才能直连：
 2. 能在 `initialize`、`tools/list` 和每次 `tools/call` 请求中持续发送自定义 HTTP Header。
 3. 能发送 `Authorization: Bearer <credential>`。
 4. 能处理 MCP `structuredContent`、`TextContent` 和 `isError=true` 工具错误。
-5. 能访问 BISHENG 地址并信任其 HTTPS 证书链。
+5. 能访问 DOBERMAN_AGENT 地址并信任其 HTTPS 证书链。
 
 只支持 stdio、只支持旧版 SSE、不能配置请求头，或者只接受 OAuth 登录的客户端，
-不能直接连接本版 BISHENG MCP。
+不能直接连接本版 DOBERMAN_AGENT MCP。
 
 ## 2. 权限准备
 
@@ -61,21 +61,21 @@ Key 的 scope 只控制“哪些 MCP 工具可见”，资源授权控制“具�
 
 `bs-pat-...` 个人访问令牌按持有人权限执行，并且本期只允许以下三个只读工具：
 
-- `bisheng_knowledge_list`
-- `bisheng_knowledge_retrieve`
-- `bisheng_knowledge_file_list`
+- `doberman_agent_knowledge_list`
+- `doberman_agent_knowledge_retrieve`
+- `doberman_agent_knowledge_file_list`
 
 需要写入能力或服务器到服务器集成时，不要使用 PAT，应使用服务账号 API Key。
 
 ### 2.3 委托模式
 
-代表指定 BISHENG 平台用户执行时，在所有 MCP HTTP 请求中增加：
+代表指定 DOBERMAN_AGENT 平台用户执行时，在所有 MCP HTTP 请求中增加：
 
 ```http
-X-On-Behalf-Of: <BISHENG_PLATFORM_USER_ID>
+X-On-Behalf-Of: <DOBERMAN_AGENT_PLATFORM_USER_ID>
 ```
 
-该值必须是已加入当前 Key 委托范围的 BISHENG 平台用户 ID。不要直接填第三方系统的
+该值必须是已加入当前 Key 委托范围的 DOBERMAN_AGENT 平台用户 ID。不要直接填第三方系统的
 用户 ID；如两边用户 ID 不一致，应由受信任的接入网关先完成身份映射。
 
 只要 Key 包含 `delegate` scope，每个请求就必须携带 `X-On-Behalf-Of`；需要同时支持
@@ -91,11 +91,11 @@ X-On-Behalf-Of: <BISHENG_PLATFORM_USER_ID>
 ```json
 {
   "mcpServers": {
-    "bisheng": {
+    "doberman_agent": {
       "type": "streamable-http",
-      "url": "https://bisheng.example.com/api/v2/mcp",
+      "url": "https://doberman-agent.example.com/api/v2/mcp",
       "headers": {
-        "Authorization": "Bearer <BISHENG_API_KEY>"
+        "Authorization": "Bearer <DOBERMAN_AGENT_API_KEY>"
       }
     }
   }
@@ -103,30 +103,30 @@ X-On-Behalf-Of: <BISHENG_PLATFORM_USER_ID>
 ```
 
 如果客户端只接受 `type: "http"`，可以使用 `http`；它在这些客户端中表示
-Streamable HTTP。不要把 BISHENG MCP 配置成 `stdio` 或 `/sse`。
+Streamable HTTP。不要把 DOBERMAN_AGENT MCP 配置成 `stdio` 或 `/sse`。
 
 ## 4. 常见客户端配置
 
 以下示例基于对应客户端在 2026-09-18 的官方文档。客户端升级后若字段发生变化，
-以客户端当前官方文档为准，但 BISHENG URL、Bearer Header 和权限语义不变。
+以客户端当前官方文档为准，但 DOBERMAN_AGENT URL、Bearer Header 和权限语义不变。
 
 ### 4.1 Claude Code
 
 推荐把地址和 Key 放入环境变量，再在项目根目录 `.mcp.json` 或用户配置中引用：
 
 ```bash
-export BISHENG_MCP_URL='https://bisheng.example.com/api/v2/mcp'
-export BISHENG_API_KEY='bs-sak-<redacted>'
+export DOBERMAN_AGENT_MCP_URL='https://doberman-agent.example.com/api/v2/mcp'
+export DOBERMAN_AGENT_API_KEY='bs-sak-<redacted>'
 ```
 
 ```json
 {
   "mcpServers": {
-    "bisheng": {
+    "doberman_agent": {
       "type": "http",
-      "url": "${BISHENG_MCP_URL}",
+      "url": "${DOBERMAN_AGENT_MCP_URL}",
       "headers": {
-        "Authorization": "Bearer ${BISHENG_API_KEY}"
+        "Authorization": "Bearer ${DOBERMAN_AGENT_API_KEY}"
       }
     }
   }
@@ -136,7 +136,7 @@ export BISHENG_API_KEY='bs-sak-<redacted>'
 检查连接：
 
 ```bash
-claude mcp get bisheng
+claude mcp get doberman_agent
 claude mcp list
 ```
 
@@ -151,10 +151,10 @@ claude mcp list
 ```json
 {
   "mcpServers": {
-    "bisheng": {
-      "url": "https://bisheng.example.com/api/v2/mcp",
+    "doberman_agent": {
+      "url": "https://doberman-agent.example.com/api/v2/mcp",
       "headers": {
-        "Authorization": "Bearer <BISHENG_API_KEY>"
+        "Authorization": "Bearer <DOBERMAN_AGENT_API_KEY>"
       }
     }
   }
@@ -162,7 +162,7 @@ claude mcp list
 ```
 
 重载 MCP 后，在 Cursor 的 MCP 设置或 Output 中确认服务已连接，并检查工具列表。
-如果全局和项目配置存在同名 `bisheng`，项目配置会覆盖全局配置；排障时应检查是否
+如果全局和项目配置存在同名 `doberman_agent`，项目配置会覆盖全局配置；排障时应检查是否
 连接到了旧配置。
 
 ### 4.3 Visual Studio Code / GitHub Copilot
@@ -175,24 +175,24 @@ VS Code 可以通过 secret input 避免把 Key 明文写入配置。使用用�
   "inputs": [
     {
       "type": "promptString",
-      "id": "bisheng-api-key",
-      "description": "BISHENG service-account API Key",
+      "id": "doberman-agent-api-key",
+      "description": "DOBERMAN_AGENT service-account API Key",
       "password": true
     }
   ],
   "servers": {
-    "bisheng": {
+    "doberman_agent": {
       "type": "http",
-      "url": "https://bisheng.example.com/api/v2/mcp",
+      "url": "https://doberman-agent.example.com/api/v2/mcp",
       "headers": {
-        "Authorization": "Bearer ${input:bisheng-api-key}"
+        "Authorization": "Bearer ${input:doberman-agent-api-key}"
       }
     }
   }
 }
 ```
 
-在命令面板执行 `MCP: List Servers`，启动 `bisheng` 后检查工具列表。工作区配置首次
+在命令面板执行 `MCP: List Servers`，启动 `doberman_agent` 后检查工具列表。工作区配置首次
 使用时可能要求用户确认信任。
 
 ### 4.4 Codex CLI / Codex 桌面端
@@ -200,13 +200,13 @@ VS Code 可以通过 secret input 避免把 Key 明文写入配置。使用用�
 在 `~/.codex/config.toml` 中配置 URL，通过环境变量提供 Bearer Token：
 
 ```toml
-[mcp_servers.bisheng]
-url = "https://bisheng.example.com/api/v2/mcp"
-bearer_token_env_var = "BISHENG_API_KEY"
+[mcp_servers.doberman_agent]
+url = "https://doberman-agent.example.com/api/v2/mcp"
+bearer_token_env_var = "DOBERMAN_AGENT_API_KEY"
 ```
 
 ```bash
-export BISHENG_API_KEY='bs-sak-<redacted>'
+export DOBERMAN_AGENT_API_KEY='bs-sak-<redacted>'
 ```
 
 桌面端或 IDE 扩展不一定继承 shell 环境；应按客户端的密钥环境配置方式设置变量并
@@ -219,31 +219,31 @@ Open WebUI 的 MCP 连接由管理员统一配置：
 1. 进入 `Settings > Admin > Integrations`。
 2. 新增 External Tool Server。
 3. Type 选择 **MCP (Streamable HTTP)**，不要选择 OpenAPI。
-4. Server URL 填写 `https://bisheng.example.com/api/v2/mcp`。
+4. Server URL 填写 `https://doberman-agent.example.com/api/v2/mcp`。
 5. 在自定义 Headers 中填写：
 
    ```json
    {
-     "Authorization": "Bearer <BISHENG_API_KEY>"
+     "Authorization": "Bearer <DOBERMAN_AGENT_API_KEY>"
    }
    ```
 
 6. 保存并执行连接验证，然后通过访问控制限定可以使用该工具连接的用户或用户组。
 
 一个 Open WebUI 连接使用一把服务账号 Key 时，所有获准使用该连接的用户共享这一个
-BISHENG 服务账号身份和权限边界。不要把 Open WebUI 的 `{{USER_ID}}` 直接作为
-`X-On-Behalf-Of`；它不是天然可信的 BISHENG 平台用户 ID。需要逐用户权限时，应通过
+DOBERMAN_AGENT 服务账号身份和权限边界。不要把 Open WebUI 的 `{{USER_ID}}` 直接作为
+`X-On-Behalf-Of`；它不是天然可信的 DOBERMAN_AGENT 平台用户 ID。需要逐用户权限时，应通过
 受信任网关完成用户映射，或为不同权限边界配置不同的服务账号连接。
 
 ### 4.6 Claude、Claude Desktop 自定义连接器
 
 Claude 和 Claude Desktop 的远程自定义连接器目前面向无认证或 OAuth 认证服务，且
 Claude Desktop 不会把远程服务的 `claude_desktop_config.json` 配置作为连接器加载。
-BISHENG 本期提供的是静态 Bearer API Key，不提供 MCP OAuth 授权服务器，因此不能按
+DOBERMAN_AGENT 本期提供的是静态 Bearer API Key，不提供 MCP OAuth 授权服务器，因此不能按
 当前官方“Settings > Connectors”流程直接接入。
 
-如确需接入，应在 BISHENG 前部署经过安全评审的 OAuth-to-Bearer 网关，由网关完成
-OAuth 身份校验、用户到 BISHENG 主体的映射和 Key 保管。不要使用把长期 Key 暴露给
+如确需接入，应在 DOBERMAN_AGENT 前部署经过安全评审的 OAuth-to-Bearer 网关，由网关完成
+OAuth 身份校验、用户到 DOBERMAN_AGENT 主体的映射和 Key 保管。不要使用把长期 Key 暴露给
 公共代理的临时桥接方案。
 
 ### 4.7 其他客户端或自研 MCP Host
@@ -262,12 +262,12 @@ OAuth 身份校验、用户到 BISHENG 主体的映射和 Key 保管。不要使
 
 ## 5. 连通性验证
 
-在把问题归因于第三方客户端之前，先从可访问 BISHENG 的机器运行服务端随附脚本：
+在把问题归因于第三方客户端之前，先从可访问 DOBERMAN_AGENT 的机器运行服务端随附脚本：
 
 ```bash
 cd src/backend
-export BISHENG_MCP_URL='https://bisheng.example.com/api/v2/mcp'
-export BISHENG_API_KEY='bs-sak-<redacted>'
+export DOBERMAN_AGENT_MCP_URL='https://doberman-agent.example.com/api/v2/mcp'
+export DOBERMAN_AGENT_API_KEY='bs-sak-<redacted>'
 .venv/bin/python scripts/verify_open_mcp.py --expected-profile full
 ```
 
@@ -280,7 +280,7 @@ export BISHENG_API_KEY='bs-sak-<redacted>'
 ```bash
 .venv/bin/python scripts/verify_open_mcp.py \
   --expected-profile full \
-  --call-tool bisheng_knowledge_list \
+  --call-tool doberman_agent_knowledge_list \
   --arguments-json '{"type":0,"page_size":1}'
 ```
 
@@ -291,7 +291,7 @@ export BISHENG_API_KEY='bs-sak-<redacted>'
 | `401` | 未发送 Bearer、Key 格式错误、Key 已撤销或过期 | 检查客户端是否在每次请求中发送 Header；重新签发 Key |
 | `403` | scope 不足、服务账号禁用、委托不允许或资源权限不足 | 区分工具 scope 与具体资源授权，按最小权限补齐 |
 | `404` | URL 写错、网关未转发 `/api/v2/mcp` | 使用完整 MCP URL，检查反向代理路由 |
-| `413` | MCP 请求体或上传内容超过限制 | 减小请求；检查网关和 BISHENG body 上限是否一致 |
+| `413` | MCP 请求体或上传内容超过限制 | 减小请求；检查网关和 DOBERMAN_AGENT body 上限是否一致 |
 | 能连接但工具数量少 | Key 只有 `knowledge:read`，或使用了 PAT | 对照当前 Key scope 和凭据类型 |
 | `tools/list` 成功、调用时认证失败 | 客户端后续请求丢失 Authorization Header | 升级客户端并抓取仅含 Header 名称的日志确认 |
 | 客户端尝试连接 `/sse` | 配置成旧版 SSE transport | 改为 Streamable HTTP 和 `/api/v2/mcp` |

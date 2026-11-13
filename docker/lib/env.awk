@@ -86,7 +86,7 @@ END {
     if (MODE == "get") {
         printf "%s", values[KEY]
     } else if (MODE == "set") {
-        value = ENVIRON["BISHENG_ENV_VALUE"]
+        value = ENVIRON["DOBERMAN_AGENT_ENV_VALUE"]
         if (value ~ /[\r\n]/) fail(KEY)
         for (i = 1; i <= NR; i++) {
             if (names[i] == KEY) print KEY "=" encode(value)

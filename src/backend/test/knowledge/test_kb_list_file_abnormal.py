@@ -6,22 +6,22 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.common.schemas.api import PageInfiniteCursorData
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models import knowledge_file as knowledge_file_module
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.common.schemas.api import PageInfiniteCursorData
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models import knowledge_file as knowledge_file_module
+from doberman_agent.knowledge.domain.models.knowledge import (
     Knowledge,
     KnowledgeDao,
     KnowledgeState,
     KnowledgeTypeEnum,
 )
-from bisheng.knowledge.domain.models.knowledge_file import (
+from doberman_agent.knowledge.domain.models.knowledge_file import (
     ABNORMAL_FILE_STATUSES,
     KnowledgeFileDao,
     KnowledgeFileStatus,
 )
-from bisheng.knowledge.domain.services import knowledge_service as ks_mod
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.domain.services import knowledge_service as ks_mod
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
 
 
 class _EmptyResult:

@@ -1,5 +1,5 @@
-import { toast } from '@bisheng/ui';
-import { PdfViewer as SharedPdfViewer, type PdfViewerProps } from '@bisheng/file-viewers/pdf';
+import { toast } from '@doberman-agent/ui';
+import { PdfViewer as SharedPdfViewer, type PdfViewerProps } from '@doberman-agent/file-viewers/pdf';
 import { useLocalize } from '~/hooks';
 
 export function PdfViewer(props: Omit<PdfViewerProps, 'loadingText' | 'onRenderError'>) {

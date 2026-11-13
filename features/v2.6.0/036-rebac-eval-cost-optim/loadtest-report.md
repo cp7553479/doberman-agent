@@ -2,7 +2,7 @@
 
 **日期**: 2026-06-15 · **环境**: 109(`192.168.106.109`,达梦 + OpenFGA-on-DM)· **被测接口**: `GET /api/v1/knowledge/space/57/children`
 **分支**: `worktree-feat+2.6.0+036-rebac-eval-cost-optim`(从 `feat/2.6.0-beta4` 切出)
-**部署方式**: 把改动的两个文件 `docker cp` 进 `bisheng-backend-dm` 容器(原文件备份为 `.f036bak`),`docker restart` 加载;压测后已**还原为原始代码**。
+**部署方式**: 把改动的两个文件 `docker cp` 进 `doberman-agent-backend-dm` 容器(原文件备份为 `.f036bak`),`docker restart` 加载;压测后已**还原为原始代码**。
 
 ---
 
@@ -62,5 +62,5 @@ for r in $(seq 1 6); do for i in $(seq 1 20); do
   (curl -s -m120 -o /dev/null -w '%{time_total}\n' -H "Cookie: $TK" \
    'http://localhost:7865/api/v1/knowledge/space/57/children?page_size=20' >> /tmp/t) & done; wait; done
 sort -n /tmp/t | awk '{a[NR]=$1} END{print "p50="a[int(NR*.5)]" p95="a[int(NR*.95)]" max="a[NR]}'
-# flag 切换：sed 改 BS_REBAC_CHILD_FASTPATH 默认值 + docker restart bisheng-backend-dm
+# flag 切换：sed 改 BS_REBAC_CHILD_FASTPATH 默认值 + docker restart doberman-agent-backend-dm
 ```

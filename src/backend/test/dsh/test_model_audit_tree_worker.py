@@ -5,10 +5,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.database.models.tenant import Tenant
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
-from bisheng.dsh.domain.services.model_audit_tree import DshAuditTreeProjectionService
-from bisheng.worker.dsh.model_audit_tree import register_audit_tree_tasks
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.dsh.domain.services.model_audit_tree import DshAuditTreeProjectionService
+from doberman_agent.worker.dsh.model_audit_tree import register_audit_tree_tasks
 from test.dsh.model_audit_fixtures import audit_database, audit_session
 from test.dsh.test_model_audit_tree import add, finish
 from test.dsh.test_model_audit_worker import Tasks

@@ -17,12 +17,12 @@
 
 | 核查入口 | 已确认的现状 |
 |---|---|
-| `src/bisheng-cli/bisheng_cli/cli.py`、`commands/deploy.py` | deploy 没有发布说明选项；上传表单只有包、目标应用与结构变更确认 |
-| `src/backend/bisheng/app_publish/api/endpoints/deploy.py` | 发布接收接口没有发布说明输入 |
-| `src/backend/bisheng/app_publish/domain/schemas/app_manifest.py` | description 是应用介绍，未知声明字段被拒绝，不能直接往 YAML 写一个未支持的发布说明字段 |
-| `src/backend/bisheng/app_publish/domain/models/app_deployment.py` | 发布尝试负责跨进程管线进度，没有发布说明资产 |
-| `src/backend/bisheng/database/models/app_version.py`、`app_publish/domain/services/version_service.py` | 正式版本为只增不改的快照，尚无发布说明 |
-| `src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`、`app_publish_scenario_handler.py` | 审批内容先构建快照，再由场景适配为业务详情；目前不包含发布说明 |
+| `src/doberman-agent-cli/doberman_agent_cli/cli.py`、`commands/deploy.py` | deploy 没有发布说明选项；上传表单只有包、目标应用与结构变更确认 |
+| `src/backend/doberman_agent/app_publish/api/endpoints/deploy.py` | 发布接收接口没有发布说明输入 |
+| `src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py` | description 是应用介绍，未知声明字段被拒绝，不能直接往 YAML 写一个未支持的发布说明字段 |
+| `src/backend/doberman_agent/app_publish/domain/models/app_deployment.py` | 发布尝试负责跨进程管线进度，没有发布说明资产 |
+| `src/backend/doberman_agent/database/models/app_version.py`、`app_publish/domain/services/version_service.py` | 正式版本为只增不改的快照，尚无发布说明 |
+| `src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`、`app_publish_scenario_handler.py` | 审批内容先构建快照，再由场景适配为业务详情；目前不包含发布说明 |
 | `src/frontend/client/src/components/approval/AppPublishDetailPanel.tsx` | 审批详情由 client 专用业务面板展示，不是 platform 版本列表 |
 | `src/frontend/platform/src/pages/BuildPage/hostedApp/publish/VersionListCard.tsx` | platform 版本列表目前展示版本号、类型、时间和结果 |
 | `src/backend/AGENTS.md` 的 CLI 包装合同 | backend 分发的是仓库内提交的 CLI wheel，仅改 CLI 源码不足以交付 |

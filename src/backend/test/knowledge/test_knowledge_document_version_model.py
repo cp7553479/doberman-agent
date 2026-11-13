@@ -1,5 +1,5 @@
 """Tests for the KnowledgeDocumentVersion SQLModel."""
-from bisheng.knowledge.domain.models.knowledge_document_version import (
+from doberman_agent.knowledge.domain.models.knowledge_document_version import (
     KnowledgeDocumentVersion,
     KnowledgeDocumentVersionBase,
 )

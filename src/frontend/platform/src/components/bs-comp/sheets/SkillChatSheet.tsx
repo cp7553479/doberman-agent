@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, SearchInput } from '@bisheng/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 import { AssistantIcon, SkillIcon } from "@/components/bs-icons";
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 import { getChatOnlineApi } from "@/controllers/API/assistant";
 import { useDebounce } from "@/util/hook";

@@ -91,13 +91,13 @@
 | 复审意见 | 最初等级 | 用户裁定与最终处理 |
 |---|---|---|
 | 默认相对时间窗口与游标指纹的续页行为 | medium | 沿用现有分页，不增加固定筛选范围、冻结窗口游标或查询会话；保留默认 7 天、最大 31 天及显式条件校验。该意见撤回，不作为阻塞项 |
-| 不同版本事件的身份冻结和请求级绑定 | 初报 high，后说明属于需要错误上报前提的防御性缺口 | 毕昇是可信身份来源，接受其返回信息变化，不新增独立绑定表或跨事件身份冻结；来源认证、权限边界及同事件幂等继续保留。该意见撤回，不作为阻塞项 |
+| 不同版本事件的身份冻结和请求级绑定 | 初报 high，后说明属于需要错误上报前提的防御性缺口 | doberman-agent是可信身份来源，接受其返回信息变化，不新增独立绑定表或跨事件身份冻结；来源认证、权限边界及同事件幂等继续保留。该意见撤回，不作为阻塞项 |
 
 本次仅同步评审决定并复核文档一致性，未执行业务测试或迁移，未新增 tasks、代码或部署操作。两项取舍的确认不替代对完整 design 的用户确认。
 
 ## 7. HMAC 配置确认与 profile 定义
 
-用户明确使用现有相同 HMAC 密钥配置。design §3.4、§4.3、§4.7、§4.10、§4.11、§6.2 已同步：Gateway 使用 bisheng.gateway-hmac-secret，backend 使用 sso_sync.gateway_hmac_secret，两端值一致；签名头和 METHOD/PATH/raw body 规则沿用现有实现，移除 DSH 独立密钥变量、密钥登记表及独立 key_id 协议。接收端仍独立处理正文、时间窗口、幂等和租户上下文，不将 SSO 正文回放或租户 bypass 接到 DSH 模型路径。
+用户明确使用现有相同 HMAC 密钥配置。design §3.4、§4.3、§4.7、§4.10、§4.11、§6.2 已同步：Gateway 使用 doberman_agent.gateway-hmac-secret，backend 使用 sso_sync.gateway_hmac_secret，两端值一致；签名头和 METHOD/PATH/raw body 规则沿用现有实现，移除 DSH 独立密钥变量、密钥登记表及独立 key_id 协议。接收端仍独立处理正文、时间窗口、幂等和租户上下文，不将 SSO 正文回放或租户 bypass 接到 DSH 模型路径。
 
 源码复核：desktop_principal 调用 DshAccessService.authenticate 验证 Token、当前身份及会话；GET /dsh/profile 再调用 IdentityService.profile 读取当前用户和租户资料，返回 user 与 tenant。design §4.4 已注明 profile 是服务端成功验证后的返回信息，缓存对象是该验证结果，Gateway 用 tenant.id 选择租户策略。
 

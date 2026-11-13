@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshToolArgumentsInvalidError, DshToolUnsupportedError
-from bisheng.tool.domain.services.saved_schema import SavedToolSchema, validate_destination
+from doberman_agent.common.errcode.dsh import DshToolArgumentsInvalidError, DshToolUnsupportedError
+from doberman_agent.tool.domain.services.saved_schema import SavedToolSchema, validate_destination
 
 
 def saved_schema(properties=None, **schema_options):

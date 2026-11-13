@@ -12,18 +12,18 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.worker.knowledge import file_worker
+from doberman_agent.worker.knowledge import file_worker
 
 
 @pytest.fixture(autouse=True)
 def _fair_enabled(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
+        "doberman_agent.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
         True,
     )
     # Keep the heartbeat thread from doing anything real in unit tests.
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler.start_parse_heartbeat",
+        "doberman_agent.worker.knowledge.scheduler.start_parse_heartbeat",
         lambda *a, **kw: lambda: None,
     )
     yield
@@ -42,9 +42,9 @@ def test_duplicate_parse_skipped_when_lock_held(monkeypatch):
     sched.acquire_parse_lock.return_value = None  # someone else is parsing
     sched.complete_file = complete
     sched.release_file = release
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.FileScheduler", lambda: sched)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.FileScheduler", lambda: sched)
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler.trigger_dispatch_task",
+        "doberman_agent.worker.knowledge.scheduler.trigger_dispatch_task",
         MagicMock(delay=trigger),
     )
 
@@ -63,15 +63,15 @@ def test_parse_lock_released_after_parse(monkeypatch):
 
     db_file = MagicMock(user_id=42)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
         lambda ids: [db_file],
     )
 
     sched = MagicMock()
     sched.acquire_parse_lock.return_value = "tok-123"
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.FileScheduler", lambda: sched)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.FileScheduler", lambda: sched)
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler.trigger_dispatch_task",
+        "doberman_agent.worker.knowledge.scheduler.trigger_dispatch_task",
         MagicMock(delay=MagicMock()),
     )
 

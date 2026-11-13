@@ -71,8 +71,8 @@ i18n.use(Backend)
         interpolation: {
             escapeValue: false, // react already safes from xss
             defaultVariables: {
-                bisheng: config.brandName?.en || 'BISHENG',
-                bishengZh: config.brandName?.zh || 'BISHENG',
+                doberman_agent: config.brandName?.en || 'doberman-agent',
+                dobermanAgentZh: config.brandName?.zh || 'doberman-agent',
                 linsight: config.linsightAgentName?.en || 'Linsight',
                 linsightZh: config.linsightAgentName?.zh || '灵思',
                 linsightFull: 'Linsight',

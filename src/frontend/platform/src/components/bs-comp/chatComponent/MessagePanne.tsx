@@ -1,8 +1,8 @@
 // @ts-strict-ignore
 import { PlatformConversationMessages } from '@/components/bs-comp/appChat/PlatformConversationMessages';
 import { useEffect, useRef } from 'react';
-import { SuggestedQuestions, useConversationScroll } from '@bisheng/chat';
-import { messagesForPresentation } from '@bisheng/chat/core';
+import { SuggestedQuestions, useConversationScroll } from '@doberman-agent/chat';
+import { messagesForPresentation } from '@doberman-agent/chat/core';
 import { useMessageStore } from './messageStore';
 
 export default function MessagePanne({ canExecute = false, mark = false, logo, useName, guideWord, questions = [], loadMore,chat, version,onMarkClick = undefined }) {

@@ -32,16 +32,16 @@
 
 - [x] **T001**: `ChannelInfoSourceRepository.delete_by_ids`
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/channel_info_source_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/channel_info_source_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/channel_info_source_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/channel_info_source_repository_impl.py`
   **逻辑**: 新增 `async def delete_by_ids(self, source_ids: list[str]) -> None`：按 `id IN (...)` 删除元数据行（对账 `to_unsub` 清理用）。空列表直接返回，不发 SQL。
   **约束**: 依赖多租户自动注入（`channel_info_source` 含 `tenant_id`），调用方保证已处于目标租户上下文。无 DDL / 无表结构变更，无需迁移与回滚。
   **依赖**: 无
 
 - [x] **T002**: `ChannelRepository.find_all_referenced_source_ids`
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/channel_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/channel_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/channel_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/channel_repository_impl.py`
   **逻辑**: 新增 `async def find_all_referenced_source_ids(self) -> set[str]`：读取当前租户所有 `channel.source_list` 列，在 Python 内展开求并集，返回去重 source_id 集合（即对账的 `desired`）。**不**用 `JSON_CONTAINS` / `JSON_EXTRACT`——只 `SELECT source_list`（JSON 列原样取出）后内存展开，DM8 兼容。
   **约束**: 多租户自动注入；对账批量调用一次，可接受全表读 `source_list` 列。无 DDL，无需迁移与回滚。
   **依赖**: 无
@@ -50,7 +50,7 @@
 
 - [x] **T003**: 同步订阅判据 + dismiss/update 不退订 —— 单测（红）
   **文件**: `src/backend/test/channel/test_channel_source_subscription.py`（新建），并改 `src/backend/test/channel/test_channel_relation_compat.py`
-  **逻辑/用例**（mock `bisheng_information_client`、`channel_info_source_repository`、`channel_repository`）：
+  **逻辑/用例**（mock `doberman_agent_information_client`、`channel_info_source_repository`、`channel_repository`）：
   - `test_create_subscribes_only_missing_sources`：`source_list=[A,B]`，`channel_info_source.find_by_ids` 返回 `[A]` → 断言 `subscribe_information_source` 仅以 `['B']` 调用一次 → **AC-01**
   - `test_create_skips_subscribe_when_all_present`：全部已在 `channel_info_source` → `subscribe` 不被调用 → **AC-02**
   - `test_create_aborts_before_persist_on_limit`：对缺失源 subscribe 抛 `InformationSourceSubscriptionLimitError(19007)` → 频道/membership/owner 元组均未写 → **AC-03**（迁移自既有 `test_channel_relation_compat.py::test_create_channel_aborts_before_persist_when_subscription_limit_exceeded`，并把其 `channel_repository` mock 从 `find_channels_by_source_id` 改为 `channel_info_source.find_by_ids` 语义）
@@ -64,12 +64,12 @@
   **依赖**: 无（针对现有 service 签名写红测）
 
 - [x] **T004**: Service 改造 —— 订阅判据切 `channel_info_source` + 删同步退订（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   **跨 Feature 提示**: 本文件与 F026-channel-active-authorization 共享，但二者领域解耦（F026 拥有频道授权/`space_channel_member` channel 字段写行为，F031 拥有 `channel_info_source` 订阅生命周期；已在 release-contract 表1登记）。本任务只改 `create_channel` / `update_channel` / `dismiss_channel` 三个方法内的**信息源订阅副作用**，不碰授权相关代码。
   **逻辑**:
   1. `create_channel`：删除现有 `find_channels_by_source_id` 判据；改为 `existing = channel_info_source.find_by_ids(source_list)` → `missing = dict.fromkeys(source_list) 中不在 existing 的` → `if missing: subscribe(missing)`（**仍在持久化频道之前**，保留 19007 中止不变量）→ 用 `missing` 拉元数据并 `batch_add`。`missing` 同时驱动「订阅」与「元数据补行」，去掉重复的 find_by_ids。
   2. `update_channel`：`to_add` 用 `channel_info_source.find_by_ids` 求缺失子集后仅订阅缺失；**删除 `unsubscribe_information_source(to_remove)` 调用**；`to_remove` 仅体现在 `channel.source_list` 更新与 `source_list_changed` 标记上；保留既有元数据同步块。
-  3. `dismiss_channel`：**删除** 末尾 `unsubscribe_information_source(channel.source_list)` 调用块（连同其 `get_bisheng_information_client()` 局部获取，若仅此处使用）。
+  3. `dismiss_channel`：**删除** 末尾 `unsubscribe_information_source(channel.source_list)` 调用块（连同其 `get_doberman-agent_information_client()` 局部获取，若仅此处使用）。
   4. `find_channels_by_source_id` 方法保留（不删），本特性仅不再在订阅判据中使用它。
   **测试**: T003 全部通过。
   **覆盖 AC**: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08
@@ -89,7 +89,7 @@
   **依赖**: T001, T002
 
 - [x] **T006**: 对账 service 方法 —— 实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   **逻辑**: 新增 `async def reconcile_information_subscriptions(self) -> dict`（运行在调用方注入的某租户上下文内）：
   - `desired = channel_repository.find_all_referenced_source_ids()`（T002）
   - `current = { s.id for s in 全量 channel_info_source }`（用现有 `get_by_page` 全量取或按需在 T001 同文件补 `find_all()`；以单次扫拿全量 id 为准）
@@ -113,7 +113,7 @@
 
 - [x] **T008**: `reconcile_all_tenants` Celery Beat 任务（薄包装）+ 调度注册（绿）
   **文件**:
-  - `src/backend/bisheng/worker/information/reconcile.py`（新建）
+  - `src/backend/doberman_agent/worker/information/reconcile.py`（新建）
   - Beat 调度配置（参考 `worker/information/article.py` 注册方式 + `worker/config.py`）
   **逻辑**: 定义 `reconcile_all_tenants` 任务：遍历活跃租户 → 逐租户 `set_current_tenant_id(tenant_id)`（ContextVar，Beat 内部迭代注入，非 Celery headers 传参）后构造 `ChannelService` 并 `await reconcile_information_subscriptions()` → 汇总/记日志。**任务体不含业务逻辑**，仅租户遍历 + 调用 service（worker → service → repo 分层）。
   **约束**:

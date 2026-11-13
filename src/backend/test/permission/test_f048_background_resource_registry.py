@@ -29,16 +29,16 @@ from unittest.mock import Mock
 
 import pytest
 
-from bisheng.api.services import f048_permission_runtime as runtime_module
-from bisheng.permission.application.resource_authorization import (
+from doberman_agent.api.services import f048_permission_runtime as runtime_module
+from doberman_agent.permission.application.resource_authorization import (
     ResourceAuthorizationRegistry,
 )
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 # Every process that runs business code (tool init, resource checks).
 BACKGROUND_ENTRYPOINTS = (
-    BACKEND_ROOT / "bisheng" / "linsight" / "worker.py",
-    BACKEND_ROOT / "bisheng" / "worker" / "main.py",
+    BACKEND_ROOT / "doberman_agent" / "linsight" / "worker.py",
+    BACKEND_ROOT / "doberman_agent" / "worker" / "main.py",
 )
 
 

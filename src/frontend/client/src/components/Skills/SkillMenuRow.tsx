@@ -1,5 +1,5 @@
-import { Outlined } from 'bisheng-icons';
-import { Tooltip } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Tooltip } from '@doberman-agent/ui';
 import { DropdownMenuItem } from '~/components/ui';
 import { useLocalize } from '~/hooks';
 import { useIsClipped } from '~/hooks/useIsClipped';

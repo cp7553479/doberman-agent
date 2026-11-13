@@ -1,6 +1,6 @@
 import { Label } from "@/components/bs-ui/label";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -9,7 +9,7 @@ export default function SwitchItem({ data, onChange, i18nPrefix }) {
     const { t } = useTranslation('flow')
 
     return <div className='node-item mb-4 flex justify-between' data-key={data.key}>
-        <Label className="flex items-center bisheng-label">
+        <Label className="flex items-center doberman_agent-label">
             {t(`${i18nPrefix}label`)}
             {data.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}
         </Label>

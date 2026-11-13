@@ -3,8 +3,8 @@
 - **特性**：F111 / v3.0.0
 - **关联**：[spec.md](./spec.md) · [design.md](./design.md) · [任务评审](./tasks-review.md)
 - **日期**：2026-10-23
-- **工作分支**：feat/bisheng-work-dsh-guardrails
-- **当前范围**：用户已授权持续按依赖实施至 T132，逐项测试、自审后更新状态；允许多 agent 并行。核心实现与配对自审已推进至 Wave 32，T119/T120的MySQL子项已独立通过；完整E2E、容量与演练仍待环境/前驱，DM8实测按用户决定保留待验收，用户已追加授权合入最新 feat/bisheng-work-120-main 并推送，经 Drone 构建后仅部署 109 DSH13001，再启动客户端联调；其他环境禁止变更。
+- **工作分支**：feat/doberman-agent-work-dsh-guardrails
+- **当前范围**：用户已授权持续按依赖实施至 T132，逐项测试、自审后更新状态；允许多 agent 并行。核心实现与配对自审已推进至 Wave 32，T119/T120的MySQL子项已独立通过；完整E2E、容量与演练仍待环境/前驱，DM8实测按用户决定保留待验收，用户已追加授权合入最新 feat/doberman-agent-work-120-main 并推送，经 Drone 构建后仅部署 109 DSH13001，再启动客户端联调；其他环境禁止变更。
 
 本轮追加限制（2026-10-27）：统一请求编号在两仓 `codex/dsh-unified-request-id` 上实现；不提交、不推送、不部署，不沿用此前其他改动的发布授权。B 基线 e59b249a3，G 基线 c999f9bf。
 
@@ -21,11 +21,11 @@
 
 | 标识 | 执行工作树 | 当前执行基线 |
 |---|---|---|
-| B | /Users/zhangguoqing/.codex/worktrees/f111-work120-delivery/bisheng | work120集成3cc9de9298；原feature工作树保留 |
-| G | /Users/zhangguoqing/works/bisheng-gateway.worktrees/dsh-guardrails | main2995df6f起步，当前已推64f602be |
-| D | /Users/zhangguoqing/works/bisheng-work.worktrees/dsh-guardrails | main01e09d0起步，当前已推3e8486c |
+| B | /Users/zhangguoqing/.codex/worktrees/f111-work120-delivery/doberman-agent | work120集成3cc9de9298；原feature工作树保留 |
+| G | /Users/zhangguoqing/works/doberman-agent-gateway.worktrees/dsh-guardrails | main2995df6f起步，当前已推64f602be |
+| D | /Users/zhangguoqing/works/doberman-agent-work.worktrees/dsh-guardrails | main01e09d0起步，当前已推3e8486c |
 
-每项文件路径相对该项执行工作树，目标文件逐一列出；不存在的路径是拟新增文件，不声称已实现。原三个仓库的功能分支均为 feat/bisheng-work-dsh-guardrails；B交付在独立codex/f111-work120-delivery正常合入并推送work120目标，G同步同名work120及唯一DSH标签，D仍推原feature分支；G/D 于 2026-10-23 获取 main 后创建并核对远端 SHA，未复用原业务分支。原工作区和已有 worktree 均保留，禁止仓库级 stash/reset/restore/clean。
+每项文件路径相对该项执行工作树，目标文件逐一列出；不存在的路径是拟新增文件，不声称已实现。原三个仓库的功能分支均为 feat/doberman-agent-work-dsh-guardrails；B交付在独立codex/f111-work120-delivery正常合入并推送work120目标，G同步同名work120及唯一DSH标签，D仍推原feature分支；G/D 于 2026-10-23 获取 main 后创建并核对远端 SHA，未复用原业务分支。原工作区和已有 worktree 均保留，禁止仓库级 stash/reset/restore/clean。
 
 原设计评审核查基线保留在 design §4.1，作为历史依据。Gateway 新 main 与原核查提交文件树一致；Desktop 新 main 有变化，Chat 的 content_filter 分支与 Responses 的 UPSTREAM_ERROR 分支仍存在，但这不替代完整兼容性复核。各实现任务开始前须对新基线重读所涉及模块、目录规则和测试；该基线调整没有完成或勾选任何实现任务。
 
@@ -33,7 +33,7 @@
 
 类别为基础设施、后端 Domain、后端 API、前端 Platform、Worker，另将外部 Gateway/Desktop 明确标出。**前端 Client（src/frontend/client）本期无业务实现任务**，共享错误文案生成物按构建同步验证；Desktop 不是这个 SPA。Platform 按当前用户根 AGENTS 采用 @tanstack/react-query v4，仅补直接依赖和本特性局部Provider，不全站迁移；不沿旧模板新建 DAO、用 Zustand 替代 Client Recoil 或引入 react-query v3。
 
-已确认边界：复用现有 HMAC 密钥和签名头配置，不新增独立密钥/key_id；profile 是 backend 校验 DSH Token、当前用户/租户和会话后的 user/tenant 返回，缓存最长 30 秒；接受毕昇可信身份变化，不增加跨事件身份冻结表；分页沿既有方式，默认 7 天/最多 31 天，不冻结默认相对窗口。backend 模型鉴权、额度和计量不感知 Gateway。
+已确认边界：复用现有 HMAC 密钥和签名头配置，不新增独立密钥/key_id；profile 是 backend 校验 DSH Token、当前用户/租户和会话后的 user/tenant 返回，缓存最长 30 秒；接受doberman-agent可信身份变化，不增加跨事件身份冻结表；分页沿既有方式，默认 7 天/最多 31 天，不冻结默认相对窗口。backend 模型鉴权、额度和计量不感知 Gateway。
 
 环境验收按方言和链路分别记账：T119 的 MySQL 子闸门经独立实际验证通过后，可推进 T120 的 MySQL SQL 验证与不依赖 DM8 的准备；缺少 Linux DM8 不视为产品测试失败，也不视为通过，T119/T120 整体仍保持未完成。实际失败仍阻断依赖，完整 E2E、容量和交付验收不得以组件或单方言结果代替。此约定落实用户“DM8 实测保留待验收”和“环境阻断保留未完成、继续独立工作”，不改变功能或验收标准。
 
@@ -101,7 +101,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/models/content_safety_event.py`（拟新增）；`src/backend/bisheng/core/database/tenant_filter.py`（既有，显式登记事件模型）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/models/content_safety_event.py`（拟新增）；`src/backend/doberman_agent/core/database/tenant_filter.py`（既有，显式登记事件模型）。
 
   **逻辑与上下文**：新增 dsh_content_safety_event，采用现有租户基类、BigInteger、JsonType；唯一 source_id/event_id 和 source_id/gateway_request_id/event_version，包含两个请求编号、审计关联、阶段快照、有限命中摘要、原始与接收时间。增加详情、未关联、请求事件及清理索引；不建身份冻结表，不保存正文或凭据。
 
@@ -115,7 +115,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/models/model_audit_request.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/models/model_audit_request.py`（既有）。
 
   **逻辑与上下文**：新增 MODEL/EXTERNAL_SAFETY 来源、可空 model_entered/model_started_at、source/Gateway 请求关联、输入/输出状态及版本、三个单调命中标志、六态汇总、安全投影版本和已投影命中标志。外部条目的 mode/session/模型结果/交付/结算可空；来源条件约束替换旧 mode CHECK。旧行默认 MODEL、UNREPORTED、无已知命中。
 
@@ -129,7 +129,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/models/model_audit_conversation.py`（既有）；`src/backend/bisheng/dsh/domain/models/model_audit_tree.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/models/model_audit_conversation.py`（既有）；`src/backend/doberman_agent/dsh/domain/models/model_audit_tree.py`（既有）。
 
   **逻辑与上下文**：会话增加 sensitive_hit_count/has_sensitive_hit；目录节点增加 own/branch 命中请求计数及安全汇总水位。沿用现有 dirty、租约与代际发布字段，不新增第二套树。
 
@@ -143,7 +143,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/models/model_audit_setting.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/models/model_audit_setting.py`（既有）。
 
   **逻辑与上下文**：在既有审计 setting 增加每租户 audit_deleted_before 和有限清理进度，默认空；与 mode/version 字段分离。只声明字段，不实施自动清理、不默认设置 30 天保留。
 
@@ -157,7 +157,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/schemas/content_safety.py`（拟新增）；`src/backend/bisheng/dsh/domain/schemas/model_audit.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/schemas/content_safety.py`（拟新增）；`src/backend/doberman_agent/dsh/domain/schemas/model_audit.py`（既有）。
 
   **逻辑与上下文**：声明 ContentSafetyEnvelope(sent_at,event)、严格 v1 Event 和 Receipt；stage_results 为 input/output 状态映射，stage_versions 为对应非负版本（未观测为 0，状态改变取当前 event_version，未改变保持原值）；ID 正十进制 int64 字符串/UUID、64 KiB、深度 16、摘要最多 20 项、合法枚举及清理后的四个会话字段。AuditRequestMetadata 增加外部来源、可空模型字段、六态安全结果及详情状态；不增加 key_id。
 
@@ -171,7 +171,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/schemas/model_audit_group.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/schemas/model_audit_group.py`（既有）。
 
   **逻辑与上下文**：扩展既有组/树查询类型，并在同文件新增当前缺失的响应 DTO，包含 has_sensitive_hit、INPUT/OUTPUT/BOTH、六态结果、去重命中计数、安全 readiness、水位及 scan_limited；BOTH 是交集。保持原模型异常数语义。
 
@@ -185,7 +185,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/common/errcode/dsh.py`（既有）。
+  **文件**：`src/backend/doberman_agent/common/errcode/dsh.py`（既有）。
 
   **逻辑与上下文**：实施前扫描全仓 Code 字面量，确认候选 26170–26175 未占用后登记接收鉴权、事件非法、事件冲突、事件过期、接收不可用及超限。只扩展既有 261 模块；ClientCode content_blocked/check_unavailable 不借用账号或额度错误。
 
@@ -199,7 +199,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 基础设施；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/v3_0_0_f111_dsh_content_safety.py`（拟新增）；`src/backend/bisheng/core/database/alembic_helpers/online.py`（既有，复用大小写兼容的约束检查）。
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f111_dsh_content_safety.py`（拟新增）；`src/backend/doberman_agent/core/database/alembic_helpers/online.py`（既有，复用大小写兼容的约束检查）。
 
   **逻辑与上下文**：实时运行 alembic heads 确认单 head，再生成 f111_dsh_content_safety revision；只对既有审计主表、setting、会话/树增列、索引及来源 CHECK 做幂等 DDL。新事件整表由模型发现 create_all 创建；禁止 revision 内回填、清理或 SELECT 后写。使用 online helpers 和 DM8 适配。
 
@@ -243,7 +243,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/main/java/com/dataelem/gateway/config/DshSafetyProperties.java`（拟新增）；`src/main/java/com/dataelem/gateway/dto/DshSafetyContext.java`（拟新增）。
 
-  **逻辑与上下文**：定义默认关闭、固定 backend namespace/source-id、32 MiB 请求/累计响应、Responses 8 MiB 单事件、64 MiB 编码额度、16 检查/8 续读、30 秒续读、词表/编译/队列预算；上下文携带验证身份与策略快照。HMAC 只引用既有 BishengConfig 配置，不增加独立密钥。
+  **逻辑与上下文**：定义默认关闭、固定 backend namespace/source-id、32 MiB 请求/累计响应、Responses 8 MiB 单事件、64 MiB 编码额度、16 检查/8 续读、30 秒续读、词表/编译/队列预算；上下文携带验证身份与策略快照。HMAC 只引用既有 DobermanAgentConfig 配置，不增加独立密钥。
 
   **验证**：参数绑定有合法范围；不通过扩大 200 MB 全局 codec 绕过额度；明示实际堆放大仍需压测。
 
@@ -311,7 +311,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 既有 DTO 消费端兼容修复；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py`（仅 metadata 序列化）；`src/backend/test/dsh/test_model_audit_groups.py`（专项兼容回归）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py`（仅 metadata 序列化）；`src/backend/test/dsh/test_model_audit_groups.py`（专项兼容回归）。
 
   **逻辑与上下文**：Wave 1 回归发现既有 metadata 对 DTO 全字段直接 getattr ORM，新增别名/阶段映射字段导致 AttributeError。先保留红测证据并添加旧 MODEL 默认/UNKNOWN、EXTERNAL_SAFETY 可空状态回归，再显式映射新增字段；明细未实际查询时不声称 AVAILABLE，不逐行查询事件，不实施后续完整筛选功能。
 
@@ -513,7 +513,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/common/utils/hmac_signature.py`（拟新增）；`src/backend/bisheng/sso_sync/domain/services/hmac_auth.py`（既有）。
+  **文件**：`src/backend/doberman_agent/common/utils/hmac_signature.py`（拟新增）；`src/backend/doberman_agent/sso_sync/domain/services/hmac_auth.py`（既有）。
 
   **逻辑与上下文**：公开 compute_hmac_signature(method,path,raw,secret) 与常量时间比较的无业务副作用 helper；旧 SSO compute_signature 委托该 helper，保留原依赖行为。共享文件影响限签名计算，不接入 DSH 模型认证，不更换密钥或全局 tenant bypass。
 
@@ -527,7 +527,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/services/content_safety_states.py`（拟新增）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/services/content_safety_states.py`（拟新增）。
 
   **逻辑与上下文**：实现 reduce_safety(existing,event) 纯函数：任一已知命中→BLOCKED；否则 ERROR→UNREPORTED→两方向 DISABLED→至少一个 PASSED→NOT_APPLICABLE。阶段版本只更新可确认事实，旧命中仍累积；同版本异事实诊断，不加身份冻结。
 
@@ -543,7 +543,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/main/java/com/dataelem/gateway/client/DshProfileClient.java`（拟新增）；`src/main/java/com/dataelem/gateway/dto/DshSafetyContext.java`（既有，允许可信身份的 Token 到期未知并禁止缓存）。
 
-  **逻辑与上下文**：实现 fetchIdentity(authorization,deadline)；只信任 backend 成功校验 Token/用户/租户/会话后返回的 user/tenant，不把 JWT payload 当已验证身份。目标复用固定 bisheng-api-url，客户端不启用通用 DEBUG 头日志，无重定向/自动重试。
+  **逻辑与上下文**：实现 fetchIdentity(authorization,deadline)；只信任 backend 成功校验 Token/用户/租户/会话后返回的 user/tenant，不把 JWT payload 当已验证身份。目标复用固定 doberman-agent-api-url，客户端不启用通用 DEBUG 头日志，无重定向/自动重试。
 
   **验证**：通过配对任务 T055 的全部断言；保留相邻现有测试。
 
@@ -671,7 +671,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/content_safety.py`（拟新增）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/content_safety.py`（拟新增）。
 
   **逻辑与上下文**：提供 append_event(session,event,payload_hash)、lookup_receipt 和 retention_guard；SELECT 使用严格租户上下文，UPDATE/DELETE 显式 tenant/id/version。相同来源事件去重；Repository 不提交调用者事务，唯一键竞争向外传播 IntegrityError，由 T030 的事务所有者退出失败事务后新事务重读，不建立全局身份绑定表。
 
@@ -788,7 +788,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/content_safety_projection.py`（拟新增）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/content_safety_projection.py`（拟新增）。
 
   **逻辑与上下文**：提供 merge_audit(session,event) 与标记 dirty：输入以 Gateway UUID 创建外部行，输出用模型响应 UUID；外部 NULL/NOT_CAPTURED/NOT_APPLICABLE，缺用量为 null。started_at 首次固定，真实模型起点另存；已有主行按自身归属关联。安全命中不写 dsh_model_call 或额度。
 
@@ -904,7 +904,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_write.py`（既有）；`src/backend/bisheng/dsh/domain/services/model_audit_writer.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py`（既有）；`src/backend/doberman_agent/dsh/domain/services/model_audit_writer.py`（既有）。
 
   **逻辑与上下文**：在 upsert_request 的既有身份校验边界支持外部来源的已确认事实补齐，原 writer 同事务补 mode 并提升来源；保存模型实际起点，不写安全列。仅调整审计写入，不修改模型执行、凭证或用量真相。
 
@@ -1034,7 +1034,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/schemas/model_audit_status.py`（既有）；`src/backend/bisheng/dsh/domain/services/model_audit_states.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/schemas/model_audit_status.py`（既有）；`src/backend/doberman_agent/dsh/domain/services/model_audit_states.py`（既有）。
 
   **逻辑与上下文**：状态派生先区分 MODEL/EXTERNAL_SAFETY；外部不要求原文密钥与模型终态，停滞扫描只处理真实模型条目。安全 dirty 独立于 audit_status 变化，不能用原模型异常数表达安全命中。
 
@@ -1048,7 +1048,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_conversations.py`（既有）；`src/backend/bisheng/dsh/domain/services/model_audit_projection.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_conversations.py`（既有）；`src/backend/doberman_agent/dsh/domain/services/model_audit_projection.py`（既有）。
 
   **逻辑与上下文**：按 group_indexed_sensitive_hit 与当前请求状态计算 delta，维护 sensitive_hit_count/has_sensitive_hit 和树 dirty。领取/完成显式 tenant/id/lease，条目计数与模型调用次数分开；批次最多 200，返回持久进度。
 
@@ -1178,7 +1178,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/services/content_safety_ingest.py`（拟新增）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/services/content_safety_ingest.py`（拟新增）。
 
   **逻辑与上下文**：实现 ingest(event,verified_source)：规范事件摘要、调用事件与主投影 Repository 的同一事务，唯一键竞争时退出失败事务并以新 Session 开完整短事务重读去重/重归并，提交后生成 Receipt。区分事实追加与主行唯一冲突；新事务严格租户重读仍不可见的跨租户主键/关联占用，保存事实为UNASSOCIATED而不无限重试或开启bypass。线程执行前后建立/恢复严格 profile_scope；不按当前用户退出或调租拒绝历史事件，不主动调用 Gateway。
 
@@ -1192,7 +1192,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py`（既有）；`src/backend/bisheng/dsh/domain/repositories/content_safety_queries.py`（拟新增）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py`（既有）；`src/backend/doberman_agent/dsh/domain/repositories/content_safety_queries.py`（拟新增）。
 
   **逻辑与上下文**：主列表只读主摘要并 bulk 查用量/姓名；输出模型执行成功与内容 BLOCKED 可并存。提供请求事件和未关联事件的 limit+1/keyset 查询，不逐行读事件、不全历史 COUNT。默认窗口沿既有分页，不新增冻结要求；模型调用与实际用量仍取 dsh_model_call。
 
@@ -1206,7 +1206,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_tree_build.py`（既有）；`src/backend/bisheng/dsh/domain/repositories/model_audit_hierarchy.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_tree_build.py`（既有）；`src/backend/doberman_agent/dsh/domain/repositories/model_audit_hierarchy.py`（既有）。
 
   **逻辑与上下文**：扩展现有树构建摘要和安全 readiness，不为安全检查建立新树；持久租约与批次重建、一次发布完整代际。历史租户枚举只返回 pending tenant IDs，具体构建回到严格租户范围。
 
@@ -1294,7 +1294,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 API；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/content_safety_runtime.py`（拟新增）；`src/backend/bisheng/common/errcode/dsh.py`（既有，来源租户范围拒绝复用认证业务码并区分 HTTP 403）。
+  **文件**：`src/backend/doberman_agent/dsh/content_safety_runtime.py`（拟新增）；`src/backend/doberman_agent/common/errcode/dsh.py`（既有，来源租户范围拒绝复用认证业务码并区分 HTTP 403）。
 
   **逻辑与上下文**：提供 get_content_safety_service 与 verify_source(raw,headers,method,path)：从 settings.sso_sync 取既有 gateway_hmac_secret/signature_header，默认 X-Signature，时间窗口 ±300 秒。无独立密钥变量/key_id，用户 Token 不能代替服务签名。独立按需组装，不初始化 model runtime。
 
@@ -1396,7 +1396,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 API；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/api/endpoints/content_safety_events.py`（拟新增）；`src/backend/bisheng/dsh/api/router.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/api/endpoints/content_safety_events.py`（拟新增）；`src/backend/doberman_agent/dsh/api/router.py`（既有）。
 
   **逻辑与上下文**：注册 POST /api/v1/internal/dsh/content-safety-events；Endpoint 只限长读取、调用 verifier/DTO/Service，返回直接 receipt 对象及 DSH 错误 envelope，不包平台 resp_200，不使用 SSO request._receive 回放。
 
@@ -1412,7 +1412,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/main/resources/application.yml`（既有）；`docker/gateway/config/application.yml`（既有）。
 
-  **逻辑与上下文**：增加独立DSH路由与默认关闭属性，精确Chat/Responses POST、URI对齐bisheng-api-url；不把新密钥值写入示例，不扩大200MB codec。保留原应用/WS路径和既有限流；部署入口封闭另由验收证明。
+  **逻辑与上下文**：增加独立DSH路由与默认关闭属性，精确Chat/Responses POST、URI对齐doberman-agent-api-url；不把新密钥值写入示例，不扩大200MB codec。保留原应用/WS路径和既有限流；部署入口封闭另由验收证明。
 
   **验证**：通过配对任务 T091 的全部断言；保留相邻现有测试。
 
@@ -1484,7 +1484,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 API；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/utils/http_middleware.py`（既有）。
+  **文件**：`src/backend/doberman_agent/utils/http_middleware.py`（既有）。
 
   **逻辑与上下文**：仅对精确 POST 接收路径跳过浏览器 JWT 准入，转专用服务认证；不把 internal/dsh 前缀加入 TENANT_CHECK_EXEMPT_PATHS。签名验证后使用事件租户的严格上下文，保护其他 API/DSH 认证行为。
 
@@ -1614,7 +1614,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py`（既有）。
 
   **逻辑与上下文**：page沿可选now端口在仓储内部计算默认窗口；fingerprint仅绑定用户显式筛选，隐式时间不写入游标，保留旧内部调用无now语义。复用已实现的未关联事件时间窗口约束，不增加Service SQL。
 
@@ -1656,7 +1656,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 API；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/services/model_audit_queries.py`（既有）；`src/backend/bisheng/dsh/api/endpoints/model_audit_admin.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/services/model_audit_queries.py`（既有）；`src/backend/doberman_agent/dsh/api/endpoints/model_audit_admin.py`（既有）。
 
   **逻辑与上下文**：沿用现有 audit 管理授权，传递安全过滤和 DTO；新增 GET /requests/{id}/content-safety-events、GET /content-safety-events，扩展 /requests、详情和 query-readiness。Service 只编排 Repository，Endpoint 不写 ORM，不增加 Gateway 查询 RPC。
 
@@ -1672,7 +1672,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/main/java/com/dataelem/gateway/client/ContentSafetyEventClient.java`（拟新增）。
 
-  **逻辑与上下文**：固定目标 POST /api/v1/internal/dsh/content-safety-events，复用 BishengConfig.gatewayHmacSecret 与 signatureHeader；包装 sent_at/event，METHOD/PATH/raw字节HMAC，小写hex；独立无凭据日志客户端，3秒超时。超时/5xx/429与未就绪继续退避，明确拒绝隔离且不ACK。
+  **逻辑与上下文**：固定目标 POST /api/v1/internal/dsh/content-safety-events，复用 DobermanAgentConfig.gatewayHmacSecret 与 signatureHeader；包装 sent_at/event，METHOD/PATH/raw字节HMAC，小写hex；独立无凭据日志客户端，3秒超时。超时/5xx/429与未就绪继续退避，明确拒绝隔离且不ACK。
 
   **验证**：通过配对任务 T079 的全部断言；保留相邻现有测试。
 
@@ -1760,7 +1760,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/frontend/platform/package.json`（既有）；`src/frontend/pnpm-lock.yaml`（既有，生成）。
 
-  **逻辑与上下文**：按现行根AGENTS仅补本仓已有@bisheng/ui workspace:^本地直接依赖，保留全部第三方锁定版本与旧UI/state依赖。不引入新第三方UI库。
+  **逻辑与上下文**：按现行根AGENTS仅补本仓已有@doberman-agent/ui workspace:^本地直接依赖，保留全部第三方锁定版本与旧UI/state依赖。不引入新第三方UI库。
 
   **验证**：离线依赖解析成功、锁文件无无关升级、现有Platform类型/目标lint通过。
 
@@ -1786,7 +1786,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_conversations.py`（既有）；`src/backend/bisheng/dsh/domain/repositories/model_audit_tree_queries.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_conversations.py`（既有）；`src/backend/doberman_agent/dsh/domain/repositories/model_audit_tree_queries.py`（既有）。
 
   **逻辑与上下文**：会话/目录安全筛选以汇总索引产生候选，按有界请求核验完整条件；达到预算返回 scan_limited，区分全量计数与已实际计算的筛选计数。仅修改查询方法，保留前驱投影增量逻辑。
 
@@ -1814,7 +1814,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 API；仓库 B。
 
-  **文件**：`src/backend/bisheng/dsh/domain/services/model_audit_queries.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/services/model_audit_queries.py`（既有）。
 
   **逻辑与上下文**：仅组/树/组内请求实际查询向既有Repo端口传self.now()；Service不注默认上下界、不解析或签发游标，不改原内部无now查询。location保持独立定位语义。
 
@@ -1986,7 +1986,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_hierarchy.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_hierarchy.py`（既有）。
 
   **逻辑与上下文**：tree_pending_tenants新增可选include_group_pending=False，原默认不变，True时同一有界元数据扫描包含Request.group_index_pending。仅跨租户读取待处理租户编号，处理仍由Worker回到严格作用域，无正文/事实全聚合。
 
@@ -2000,7 +2000,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · Worker；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/worker/dsh/content_safety.py`（拟新增）；`src/backend/bisheng/worker/dsh/registry.py`（既有）。
+  **文件**：`src/backend/doberman_agent/worker/dsh/content_safety.py`（拟新增）；`src/backend/doberman_agent/worker/dsh/registry.py`（既有）。
 
   **逻辑与上下文**：注册 dsh.project_content_safety 与有界扫描任务，使用默认 celery 队列。投递 args 中 tenant_id 且 headers={tenant_id:同值}，task_prerun headers→ContextVar，任务核对参数并进入严格 profile_scope，finally 恢复；SQL 线程重新建作用域。跨租户枚举只取 dirty IDs，不能只取 active tenant。
 
@@ -2158,7 +2158,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **文件**：`src/test/java/com/dataelem/gateway/config/DshSafetyBeansConfigurationTest.java`（拟新增）。
 
-  **逻辑与上下文**：以真实Spring Context验证profile/cache/policy/request manager/两个filter/事件client/dispatcher/telemetry实际组装、单例所有权和close生命周期；完整配置但检查关闭仍可管理策略及投递历史事实；无新配置不初始化新依赖、不影响旧模型/审计，capabilities明确不可用。配置沿现有Bisheng/Redis/IO预算，不另造密钥或回传目标。测试不得仅手工new对象代替容器接线。
+  **逻辑与上下文**：以真实Spring Context验证profile/cache/policy/request manager/两个filter/事件client/dispatcher/telemetry实际组装、单例所有权和close生命周期；完整配置但检查关闭仍可管理策略及投递历史事实；无新配置不初始化新依赖、不影响旧模型/审计，capabilities明确不可用。配置沿现有doberman-agent/Redis/IO预算，不另造密钥或回传目标。测试不得仅手工new对象代替容器接线。
 
   **验证**：G: mvn -Dtest=DshSafetyBeansConfigurationTest test；缺组装形成实际红测，相邻旧启动/路由对照保留。
 
@@ -2172,7 +2172,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · Worker；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/worker/config.py`（既有）；`src/backend/bisheng/dsh/audit_admin_runtime.py`（既有）。
+  **文件**：`src/backend/doberman_agent/worker/config.py`（既有）；`src/backend/doberman_agent/dsh/audit_admin_runtime.py`（既有）。
 
   **逻辑与上下文**：把扫描任务加入既有 Beat 配置，审计 query-readiness 暴露安全进度。worker tenant_id 始终通过 Celery headers→ContextVar，实际处理再建严格作用域；新回传配置不成为原 DSH runtime 启动依赖。
 
@@ -2232,7 +2232,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B；目标约 30 分钟。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/content_safety_maintenance.py`（拟新增）；`src/backend/bisheng/dsh/domain/repositories/model_audit_setting.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/content_safety_maintenance.py`（拟新增）；`src/backend/doberman_agent/dsh/domain/repositories/model_audit_setting.py`（既有）。
 
   **逻辑与上下文**：提供 rebuild_batch 与 purge_batch 的有界 Repository 操作；明细窗口必须由已确认运维参数提供。按 tenant/id/版本更新；默认不开放离散裸删，需要时先 tombstone；事实不可回放后不承诺重建。
 
@@ -2294,7 +2294,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **逻辑与上下文**：只增加组件行为测试：CAS冲突保草稿、Gateway不可达、非法空id不崩溃、六态与未知用量、BOTH交集文案、明细清理、显式筛选清游标；使用mock API与现有测试工具，不把mock当E2E。
 
-  **验证**：B: cd src/frontend && pnpm --filter bisheng test -- src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx。
+  **验证**：B: cd src/frontend && pnpm --filter doberman-agent test -- src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx。
 
   **覆盖 AC**: AC-02、AC-07、AC-09、AC-10、AC-34、AC-44、AC-45、AC-46、AC-49、AC-51、AC-56。
 
@@ -2376,7 +2376,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/model_audit_write.py`（既有）；`src/backend/bisheng/dsh/domain/repositories/content_safety.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py`（既有）；`src/backend/doberman_agent/dsh/domain/repositories/content_safety.py`（既有）。
 
   **逻辑与上下文**：复用T052 SettingRepository.lock_retention()建立/锁定租户水位行，先setting再request；不存在主行且started_at早于水位禁止重建，已有有效主可继续接收事实。冲突由原caller新事务重试，不在Repo commit、旁路Session或扩大tenant scope；不改变原模型鉴权/额度/计量或原生审计身份规则。
 
@@ -2404,7 +2404,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端 Domain；仓库 B。
 
-  **文件**：`src/backend/bisheng/dsh/domain/repositories/content_safety_queries.py`（既有）。
+  **文件**：`src/backend/doberman_agent/dsh/domain/repositories/content_safety_queries.py`（既有）。
 
   **逻辑与上下文**：仅两UUID显式filter校验完整UUID并lower，cursor绑定同一规范值；保留tenant/query/time语义、索引谓词不在列上调用lower，不改变已确认默认分页窗口取舍。
 
@@ -2582,7 +2582,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **逻辑与上下文**：在前端质量节记录三语言源键与backend错误码覆盖，按唯一生成流程更新api_errors生成物；手改文件仍限本任务声明范围，生成物由命令统一产生并在交付diff单列，不手改。对触及旧硬编码的实现执行提取，对已修复旧违规按规则prune。
 
-  **验证**：B: cd src/frontend && pnpm locales:build；pnpm check-i18n；pnpm --filter @bisheng/locales check；pnpm lint；pnpm typecheck；必要时各app pnpm lint:prune。不得修改suppression扩大基线或新增ts-ignore。
+  **验证**：B: cd src/frontend && pnpm locales:build；pnpm check-i18n；pnpm --filter @doberman-agent/locales check；pnpm lint；pnpm typecheck；必要时各app pnpm lint:prune。不得修改suppression扩大基线或新增ts-ignore。
 
   **覆盖 AC**: AC-03、AC-44、AC-56。
 
@@ -2644,7 +2644,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：基础设施 · 仓库B交付worktree。
 
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/v3_0_0_f111_dsh_content_safety.py`；`src/backend/test/database/test_alembic_dsh_main_upgrade.py`。
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f111_dsh_content_safety.py`；`src/backend/test/database/test_alembic_dsh_main_upgrade.py`。
 
   **逻辑与验证**：真实组合图已RED为两个head；F111未对受支持环境发布、109当前work110，接到target真实f062_credit_multiplier；保留已发布revision哈希，实际head及迁移回归、双库静态可移植自审。
 
@@ -2654,7 +2654,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
   **类型**：实现 · 后端API；仓库B交付worktree。
 
-  **文件**：`src/backend/bisheng/dsh/api/router.py`；`src/backend/bisheng/utils/http_middleware.py`。
+  **文件**：`src/backend/doberman_agent/dsh/api/router.py`；`src/backend/doberman_agent/utils/http_middleware.py`。
 
   **逻辑与验证**：逐块合并，保留target全部capabilities/skills/work/credits/web-session路由和身份校验、F111精确HMAC回传路由；原登录/strict scope及接收中间件配对回归。
 
@@ -2788,13 +2788,13 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
 
 - [x] **T197 离线模型治理元数据快照与鉴权配对**
 
-  **类型**：兼容修复/测试。**文件**：`src/backend/bisheng/llm/domain/services/llm.py`；`src/backend/test/dsh/test_model_visibility_metadata.py`。
+  **类型**：兼容修复/测试。**文件**：`src/backend/doberman_agent/llm/domain/services/llm.py`；`src/backend/test/dsh/test_model_visibility_metadata.py`。
 
   **逻辑与验证**：真实源码确认管理visibility复用调用快照，offline被拒，无法在上线前配置私有范围；新增独立治理元数据读取，复用既有tenant/Root FGA/provider归属校验，模型调用快照继续要求online。先RED后GREEN覆盖offline治理、调用拒绝及跨租户边界。**依赖**：T179。
 
 - [x] **T198 管理可见性接入治理快照**
 
-  **类型**：兼容修复/测试。**文件**：`src/backend/bisheng/dsh/api/endpoints/unified_policy.py`；`src/backend/test/dsh/test_model_visibility_metadata.py`。
+  **类型**：兼容修复/测试。**文件**：`src/backend/doberman_agent/dsh/api/endpoints/unified_policy.py`；`src/backend/test/dsh/test_model_visibility_metadata.py`。
 
   **逻辑与验证**：仅在既有admin authorize/profile_scope后用治理快照，允许offline GET/PUT visibility后再上线；CAS和模型调用鉴权不变，不制造默认公开可用窗口。精确API配对与相邻回归。**依赖**：T197。
 
@@ -2866,7 +2866,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
   **类型**：测试。**目标文件**：B `src/backend/test/dsh/test_unified_request_id.py`。
   **覆盖 AC**：AC-62、AC-63。**逻辑与验证**：双协议/两种流模式透传、缺失/非法/多值/零 UUID 回退；真实 Chat 服务响应/错误/计量共用 ID；鉴权不被绕过；无响应头安全事实按会话关联摘要且不伪造模型/用量。
 - [x] **T213 backend 通用 HTTP UUID 复用**
-  **类型**：实现。**目标文件**：B `src/backend/bisheng/dsh/api/responses.py`。
+  **类型**：实现。**目标文件**：B `src/backend/doberman_agent/dsh/api/responses.py`。
   **逻辑与验证**：唯一规范非零 UUID 转小写复用，其他情况生成；沿既有 request.state 下传，不引入 Gateway 配置。**依赖**：T212。
 - [x] **T214 Gateway 透传和无响应头关联回归**
   **类型**：测试。**目标文件**：G `src/test/java/com/dataelem/gateway/client/DshModelProxyClientTest.java`；`src/test/java/com/dataelem/gateway/service/DshSafetyRequestManagerTest.java`。
@@ -2935,16 +2935,16 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
   **类型**：测试。**目标文件**：src/backend/test/dsh/test_content_safety_matched_words.py。
   **逻辑与验证**：AC-66；旧NULL、有界方向/UTF8校验、仓储元数据和幂等哈希。**依赖**：无。
 - [x] **T234 backend词值DTO与可空ORM字段**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/schemas/content_safety.py；src/backend/bisheng/dsh/domain/models/content_safety_event.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/schemas/content_safety.py；src/backend/doberman_agent/dsh/domain/models/content_safety_event.py。
   **逻辑与验证**：可选v1加法字段，匹配词合计20/每词256，旧NULL不反推。**依赖**：T233。
 - [x] **T235 事件追加与归并词值一致性**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/repositories/content_safety.py；src/backend/bisheng/dsh/domain/repositories/content_safety_projection.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/repositories/content_safety.py；src/backend/doberman_agent/dsh/domain/repositories/content_safety_projection.py。
   **逻辑与验证**：保存规范JSON，重试比对快照，不覆盖原始wire哈希语义。**依赖**：T234。
 - [x] **T236 授权事件详情返回词值**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/repositories/content_safety_queries.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/repositories/content_safety_queries.py。
   **逻辑与验证**：沿既有租户/请求权限返回新字段；主列表无事件JOIN/N+1。**依赖**：T235。
 - [x] **T237 幂等词值列DDL及离线回归**
-  **类型**：基础设施/测试。**目标文件**：src/backend/bisheng/core/database/alembic/versions/v3_0_0_f111_matched_words.py；src/backend/test/dsh/test_matched_words_migration.py。
+  **类型**：基础设施/测试。**目标文件**：src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f111_matched_words.py；src/backend/test/dsh/test_matched_words_migration.py。
   **逻辑与验证**：AC-66；唯一head、可空JsonType、旧数据保留、重复升级和拒绝破坏性回退。**依赖**：T234。
 - [x] **T238 前端词值类型及严格API解析**
   **类型**：实现。**目标文件**：src/frontend/platform/src/types/dshContentSafety.ts；src/frontend/platform/src/controllers/API/dshContentSafety.ts。
@@ -2978,15 +2978,15 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
   **逻辑与验证**：AC-60、AC-67、标题AC-T04、AC-T05；11个场景覆盖输入阻断/检查通过、先标题后回传、重复/乱序、范围隔离、读模式失败、名称超时/坏值、名称快照和原生名称优先、两项关闭无新摘要/标题及正文存储为空。旧逻辑OFF反例RED，最终相关310PASS。**依赖**：T244。
 
 - [x] **T246 OFF模式按保留检查摘要接收标题**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/services/model_audit_title.py；src/backend/bisheng/dsh/domain/repositories/model_audit_title.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/services/model_audit_title.py；src/backend/doberman_agent/dsh/domain/repositories/model_audit_title.py。
   **逻辑与验证**：配对T245；读失败仍DISABLED，OFF只有同本人/租户且关联可信安全来源、至少一阶段实际检查的既有摘要可维护标题；不创建请求或读正文，不引入Gateway实时配置依赖。保留标题CAS和事务边界。**依赖**：T245。
 
 - [x] **T247 外部摘要保存名称快照**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/repositories/content_safety_projection.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/repositories/content_safety_projection.py。
   **逻辑与验证**：配对T245；随摘要保存可选名称及其摘要，后到仅补空值、不覆盖非空或原生名称；无新增执行/用量事实和正文记录。**依赖**：T245。
 
 - [x] **T248 复用受控模型元数据读取并完成接线**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/services/content_safety_ingest.py；src/backend/bisheng/dsh/content_safety_runtime.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/services/content_safety_ingest.py；src/backend/doberman_agent/dsh/content_safety_runtime.py。
   **逻辑与验证**：配对T245；原租户/Root共享校验和离线模型元数据，200ms可选读取包含于2秒总预算，失败不丢检查事实；生产装配与租户scope回归通过。**依赖**：T245、T247。
 
 ### Wave 49 — 2026-10-28 审计界面简化
@@ -3114,7 +3114,7 @@ Wave 由依赖图最长路径计算；实施中发现的必要兼容补齐按已
   **覆盖 AC**：AC-75。实际HTTP及隔离SQL验证辅助请求在limit前过滤，NULL用途保留、跨页不漏不重、外层统计和原始事实不变。**依赖**：T269。
 
 - [x] **T277 会话内查询限定过滤**
-  **类型**：实现。**目标文件**：src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py；src/backend/bisheng/dsh/domain/services/model_audit_queries.py。
+  **类型**：实现。**目标文件**：src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py；src/backend/doberman_agent/dsh/domain/services/model_audit_queries.py。
   **逻辑与验证**：配对T276；仅groups(key)启用内部排除标记，WHERE先过滤、cursor绑定范围，其他查询/计数不动，不加表。**依赖**：T276。
 
 - [x] **T278 移除请求卡片类型标签**
@@ -3237,7 +3237,7 @@ AC-73 → T272、T273、T279；AC-74 → T270、T279；AC-75 → T272、T276、T
 
 2026-10-23：Wave 6 三项实现全部完成，累计 43 / 135。主 agent 对最终代码重新运行13类195项Gateway回归全部通过；独立Redis缓存27断言及策略Lua/广播验证通过，仍不代表多进程预算、双库或E2E验收。进入Wave7前置测试。
 
-2026-10-23：Wave7发现T066仅返回Void，无法为既定updated_by提供可信操作者；新增必要兼容补齐T135（2文件，原授权链不变），T068依赖它且仍只两文件。总任务135项；capabilities明确带目标tenant_id并实时管理授权，Origin复用既有bisheng.homeUrl，不新增配置或backend RPC。
+2026-10-23：Wave7发现T066仅返回Void，无法为既定updated_by提供可信操作者；新增必要兼容补齐T135（2文件，原授权链不变），T068依赖它且仍只两文件。总任务135项；capabilities明确带目标tenant_id并实时管理授权，Origin复用既有doberman-agent.homeUrl，不新增配置或backend RPC。
 
 2026-10-23：Wave7五项全部完成，累计48 / 135。Gateway三组新测试语法/定向预期RED通过自审；主agent集中MavenRED仅待实现Verifier/Scanner等缺类；backend主agent组合23预期RED+72既有PASS；T135真实本地HTTP11/11PASS。进入Wave8四项配对实现。
 

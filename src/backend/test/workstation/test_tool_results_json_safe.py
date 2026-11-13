@@ -19,7 +19,7 @@ import json
 
 from langchain_core.documents import Document
 
-from bisheng.workstation.domain.services.chat_service import _parse_tool_results
+from doberman_agent.workstation.domain.services.chat_service import _parse_tool_results
 
 
 def test_list_of_documents_is_json_serialisable():

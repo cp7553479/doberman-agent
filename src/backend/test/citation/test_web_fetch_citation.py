@@ -3,14 +3,14 @@
 import json
 from types import SimpleNamespace
 
-from bisheng.citation.domain.schemas.citation_schema import CitationType
-from bisheng.citation.domain.services.citation_handle_service import (
+from doberman_agent.citation.domain.schemas.citation_schema import CitationType
+from doberman_agent.citation.domain.services.citation_handle_service import (
     attach_web_url_markers,
     drop_web_citation_keys,
     item_identity,
     rewrite_web_results_with_handles,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     FETCHED_PAGE_ITEM_ID,
     FetchedPageCitationRegistry,
     annotate_fetched_page_with_citation,

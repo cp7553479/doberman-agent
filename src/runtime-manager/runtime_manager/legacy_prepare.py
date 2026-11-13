@@ -42,7 +42,7 @@ def prepare_image(config, platform, docker, operation, *, checkpoint, report):
             max_bytes=limits.get("unpacked", 200 * 1024 * 1024),
             max_entries=limits.get("entries", 20000),
         )
-    if not (source / "bisheng-app.yaml").exists():
+    if not (source / "doberman-agent-app.yaml").exists():
         children = list(source.iterdir())
         if len(children) == 1 and children[0].is_dir():
             source = children[0]

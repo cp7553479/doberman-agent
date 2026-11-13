@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.open_mcp.contracts import KnowledgeFileUploadInput
-from bisheng.open_mcp.upload import (
+from doberman_agent.open_mcp.contracts import KnowledgeFileUploadInput
+from doberman_agent.open_mcp.upload import (
     McpUploadError,
     prepared_upload,
     validate_outbound_url,
@@ -16,7 +16,7 @@ from bisheng.open_mcp.upload import (
 
 @pytest.mark.asyncio
 async def test_prepared_base64_upload_decodes_and_removes_temporary_file(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_name="f067.txt",
@@ -28,7 +28,7 @@ async def test_prepared_base64_upload_decodes_and_removes_temporary_file(monkeyp
         temporary_directory = temporary_path.parent
         assert file_name == "f067.txt"
         assert temporary_path.read_bytes() == b"hello mcp"
-        assert temporary_directory.name.startswith("bisheng-open-mcp-")
+        assert temporary_directory.name.startswith("doberman-agent-open-mcp-")
         assert temporary_path.name == f"{hashlib.sha256(b'hello mcp').hexdigest()}_f067.txt"
 
     assert not temporary_path.exists()
@@ -37,7 +37,7 @@ async def test_prepared_base64_upload_decodes_and_removes_temporary_file(monkeyp
 
 @pytest.mark.asyncio
 async def test_prepared_base64_upload_rejects_invalid_and_cleans_up(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_name="f067.txt",
@@ -51,7 +51,7 @@ async def test_prepared_base64_upload_rejects_invalid_and_cleans_up(monkeypatch)
 
 @pytest.mark.asyncio
 async def test_prepared_base64_upload_enforces_decoded_size(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 3)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 3)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_name="f067.txt",
@@ -65,7 +65,7 @@ async def test_prepared_base64_upload_enforces_decoded_size(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_prepared_base64_upload_rejects_non_basename_file_name(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_name="../f067.txt",
@@ -79,7 +79,7 @@ async def test_prepared_base64_upload_rejects_non_basename_file_name(monkeypatch
 
 @pytest.mark.asyncio
 async def test_prepared_upload_bounds_multibyte_staged_file_name(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_name=f"{'😀' * 60}.txt",
@@ -100,7 +100,7 @@ async def test_prepared_upload_bounds_multibyte_staged_file_name(monkeypatch):
     ],
 )
 async def test_outbound_url_rejects_unsafe_shape(monkeypatch, url, message):
-    monkeypatch.setattr("bisheng.open_mcp.upload._minio_share_origin", lambda: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._minio_share_origin", lambda: None)
 
     with pytest.raises(McpUploadError, match=message):
         await validate_outbound_url(
@@ -112,13 +112,13 @@ async def test_outbound_url_rejects_unsafe_shape(monkeypatch, url, message):
 
 @pytest.mark.asyncio
 async def test_outbound_url_rejects_private_dns_resolution(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload._minio_share_origin", lambda: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._minio_share_origin", lambda: None)
 
     async def _private_address(host, port):
         assert (host, port) == ("files.example", 443)
         return {"127.0.0.1"}
 
-    monkeypatch.setattr("bisheng.open_mcp.upload._resolve_addresses", _private_address)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._resolve_addresses", _private_address)
 
     with pytest.raises(McpUploadError, match="prohibited network address"):
         await validate_outbound_url(
@@ -130,12 +130,12 @@ async def test_outbound_url_rejects_private_dns_resolution(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_outbound_url_accepts_allowlisted_public_https(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload._minio_share_origin", lambda: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._minio_share_origin", lambda: None)
 
     async def _public_address(host, port):
         return {"93.184.216.34"}
 
-    monkeypatch.setattr("bisheng.open_mcp.upload._resolve_addresses", _public_address)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._resolve_addresses", _public_address)
 
     url = "https://files.example/f.txt"
     assert (
@@ -160,7 +160,7 @@ def test_callback_url_is_not_part_of_the_mcp_upload_contract():
 
 @pytest.mark.asyncio
 async def test_prepared_base64_rejects_data_after_padding_across_chunks(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024 * 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024 * 1024)
     encoded = "A" * (65536 - 4) + "YQ==" + "YQ=="
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
@@ -175,7 +175,7 @@ async def test_prepared_base64_rejects_data_after_padding_across_chunks(monkeypa
 
 @pytest.mark.parametrize("address", ["127.0.0.1", "169.254.169.254", "100.64.0.1"])
 def test_non_global_addresses_are_not_public(address):
-    from bisheng.open_mcp.upload import _is_public_ip
+    from doberman_agent.open_mcp.upload import _is_public_ip
 
     assert _is_public_ip(address) is False
 
@@ -220,12 +220,12 @@ async def test_file_url_download_pins_approved_ip_and_preserves_host_and_sni(mon
             captured.update({"method": method, "url": str(url), **kwargs})
             yield _Response()
 
-    monkeypatch.setattr("bisheng.open_mcp.upload._minio_share_origin", lambda: None)
-    monkeypatch.setattr("bisheng.open_mcp.upload._resolve_addresses", _addresses)
-    monkeypatch.setattr("bisheng.open_mcp.upload.httpx.AsyncClient", _Client)
-    monkeypatch.setattr("bisheng.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._minio_share_origin", lambda: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._resolve_addresses", _addresses)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.httpx.AsyncClient", _Client)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload.get_max_upload_bytes", lambda _: 1024)
     monkeypatch.setattr(
-        "bisheng.open_mcp.upload.settings.open_mcp.file_url_allowed_hosts",
+        "doberman_agent.open_mcp.upload.settings.open_mcp.file_url_allowed_hosts",
         ["files.example"],
     )
     source = KnowledgeFileUploadInput(
@@ -249,7 +249,7 @@ async def test_file_url_decodes_path_before_choosing_safe_base_name(monkeypatch)
         assert file_name == "f067.txt"
         Path(path).write_bytes(b"f067")
 
-    monkeypatch.setattr("bisheng.open_mcp.upload._download_to_file", _download)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._download_to_file", _download)
     source = KnowledgeFileUploadInput(
         knowledge_id=67,
         file_url="https://files.example/nested%2Ff067.txt",
@@ -275,11 +275,11 @@ async def test_file_url_rejects_nul_in_decoded_file_name():
 @pytest.mark.asyncio
 async def test_minio_private_http_exception_requires_exact_scheme_host_and_port(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_mcp.upload._minio_share_origin",
+        "doberman_agent.open_mcp.upload._minio_share_origin",
         lambda: ("http", "minio.internal", 9000),
     )
     monkeypatch.setattr(
-        "bisheng.open_mcp.upload._resolve_addresses",
+        "doberman_agent.open_mcp.upload._resolve_addresses",
         AsyncMock(return_value={"10.0.0.8"}),
     )
 
@@ -300,9 +300,9 @@ async def test_minio_private_http_exception_requires_exact_scheme_host_and_port(
 
 @pytest.mark.asyncio
 async def test_mixed_public_and_private_dns_answers_are_rejected(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.upload._minio_share_origin", lambda: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.upload._minio_share_origin", lambda: None)
     monkeypatch.setattr(
-        "bisheng.open_mcp.upload._resolve_addresses",
+        "doberman_agent.open_mcp.upload._resolve_addresses",
         AsyncMock(return_value={"93.184.216.34", "127.0.0.1"}),
     )
 

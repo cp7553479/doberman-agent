@@ -315,9 +315,9 @@ cd src/backend
 uv run pytest test/knowledge/test_knowledge_list_visible_first.py test/permission/test_f048_list_action_cost.py
 
 cd src/frontend
-pnpm --filter bisheng test -- f051KnowledgeListLazyActions
-pnpm --filter bisheng lint
-pnpm --filter bisheng typecheck
+pnpm --filter doberman-agent test -- f051KnowledgeListLazyActions
+pnpm --filter doberman-agent lint
+pnpm --filter doberman-agent typecheck
 ```
 
 真实页面使用 platform `/filelib`。至少准备三类同租户账号：仅 visible、具备 edit、具备

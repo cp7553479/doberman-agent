@@ -6,7 +6,7 @@
 **关联 PRD**: 《3.0 beta2》§5.2 日常模式和任务模式安全内容审查
 **优先级**: P1
 **所属版本**: v3.0.0-beta1
-**依赖**: 既有 `sensitive_word` 租户词表（知识空间 / 频道已用）· 工作台首页配置页 · 日常/任务统一入口 `POST /api/v1/workstation/chat/completions` · 商业版开关 `BISHENG_PRO` / `appConfig.isPro`
+**依赖**: 既有 `sensitive_word` 租户词表（知识空间 / 频道已用）· 工作台首页配置页 · 日常/任务统一入口 `POST /api/v1/workstation/chat/completions` · 商业版开关 `DOBERMAN_AGENT_PRO` / `appConfig.isPro`
 
 > **范围边界**
 > - **本次纳入**：
@@ -105,4 +105,4 @@
 - 版本契约: [../release-contract.md](../release-contract.md)
 - PRD: 本地《3.0 beta2》§5.2
 - 工作流审查（商业版 Gateway）: `docs/architecture/11-gateway.md` §6
-- 既有租户词表: `src/backend/bisheng/sensitive_word/`
+- 既有租户词表: `src/backend/doberman_agent/sensitive_word/`

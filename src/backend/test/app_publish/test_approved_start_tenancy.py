@@ -5,12 +5,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_publish.application.release_tenancy import ApprovedReleaseSource
-from bisheng.app_publish.domain.services.publish_online_service import PublishOnlineService
-from bisheng.app_runtime.application.approved_release import start_approved_release
-from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-from bisheng.common.errcode.app_factory import AppNotFoundError, AppStateConflictError
-from bisheng.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
+from doberman_agent.app_publish.application.release_tenancy import ApprovedReleaseSource
+from doberman_agent.app_publish.domain.services.publish_online_service import PublishOnlineService
+from doberman_agent.app_runtime.application.approved_release import start_approved_release
+from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+from doberman_agent.common.errcode.app_factory import AppNotFoundError, AppStateConflictError
+from doberman_agent.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
 
 
 def source():
@@ -49,7 +49,7 @@ async def test_approved_start_uses_verified_source_without_an_owner_login(monkey
 
 
 async def test_manual_publish_refuses_moved_owner_before_legacy_migration(monkeypatch):
-    from bisheng.app_publish.domain.services import publish_online_service as online
+    from doberman_agent.app_publish.domain.services import publish_online_service as online
 
     monkeypatch.setattr(PublishOnlineService, "_load_app", AsyncMock(return_value=app()))
     migrate = AsyncMock(side_effect=AssertionError("Migration ran before human tenancy admission"))
@@ -61,7 +61,7 @@ async def test_manual_publish_refuses_moved_owner_before_legacy_migration(monkey
 
 
 async def test_failed_approval_qualification_does_not_stage_but_still_cleans_preview(monkeypatch):
-    from bisheng.app_publish.domain.services import publish_online_service as online
+    from doberman_agent.app_publish.domain.services import publish_online_service as online
 
     row = app()
     row.state = "stopped"
@@ -101,9 +101,9 @@ async def test_refused_approval_persists_failure_even_when_preview_cleanup_fails
     app_factory, deployment_factory, publish_db, monkeypatch
 ):
     """覆盖 AC: AC-12、AC-13、AC-14; cleanup never replaces the eligibility error."""
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_online_service as online
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_online_service as online
+    from doberman_agent.database.models.app import AppDao
 
     row, version = await app_factory(state="online")
     async with publish_db() as session:

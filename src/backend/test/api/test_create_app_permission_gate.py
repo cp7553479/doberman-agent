@@ -13,9 +13,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastapi import HTTPException
 
-from bisheng.user.domain.services.auth import LoginUser
+from doberman_agent.user.domain.services.auth import LoginUser
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _user(is_admin: bool) -> MagicMock:

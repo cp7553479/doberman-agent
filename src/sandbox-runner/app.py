@@ -1,4 +1,4 @@
-"""Isolation-environment runner HTTP app. Must not import bisheng."""
+"""Isolation-environment runner HTTP app. Must not import doberman_agent."""
 
 from __future__ import annotations
 

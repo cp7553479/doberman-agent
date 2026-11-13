@@ -1,6 +1,6 @@
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
-from bisheng.main import app
+from doberman_agent.main import app
 
 EXPECTED_HTTP = {
     ("GET", "/api/v3/assistant/info/{assistant_id}"),

@@ -13,7 +13,7 @@ deepagents 适配层关键技术假设的可运行验证。**不在 CI 跑**（�
 ## 运行
 
 ```bash
-# 从 src/backend 运行（脚本自带 sys.path 引导，模型类脚本需 bisheng 包）
+# 从 src/backend 运行（脚本自带 sys.path 引导，模型类脚本需 doberman_agent 包）
 cd src/backend
 uv run python scripts/035-linsight-deepagents/poc_p1_backend_injection.py
 uv run python scripts/035-linsight-deepagents/poc_p2_subgraph_streaming.py

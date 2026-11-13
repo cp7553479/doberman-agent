@@ -1,6 +1,6 @@
-# @bisheng/ui
+# @doberman-agent/ui
 
-BiSheng 前端共享组件库,同时服务 `client` 与 `platform` 两个应用。
+DobermanAgent 前端共享组件库,同时服务 `client` 与 `platform` 两个应用。
 
 ## 铁律(permanent contract)
 
@@ -16,11 +16,11 @@ BiSheng 前端共享组件库,同时服务 `client` 与 `platform` 两个应用�
 ## 形态
 
 - **源码直出**:`exports` 指向 TS 源码,由消费方(两个 app 各自的 Vite)编译。
-  不预编译、不发 npm;workspace 内 `"@bisheng/ui": "workspace:*"` 直连,改动即时热更新。
+  不预编译、不发 npm;workspace 内 `"@doberman-agent/ui": "workspace:*"` 直连,改动即时热更新。
 - **token 双层契约**:`src/styles/tokens.css`(原始层 + 语义层 CSS 变量)+
   `tailwind-preset.cjs`(把语义 token 映射成 Tailwind 类)。组件只允许消费语义层
   (`text-text-1`、`bg-fill-2`、`bg-blue-500`、`btn-*`),禁止硬编码色值。
-- 图标一律用 `bisheng-icons` npm 包,不在本包内新增图标组件。
+- 图标一律用 `@doberman-agent/icons` npm 包,不在本包内新增图标组件。
 
 ## 开发
 
@@ -36,8 +36,8 @@ pnpm typecheck      # 本包内运行 — 严格 TS 检查(strict: true)
 
 ## 消费方接入
 
-1. `"@bisheng/ui": "workspace:*"` 加入 dependencies。
+1. `"@doberman-agent/ui": "workspace:*"` 加入 dependencies。
 2. tailwind config `content` 加入 `'../packages/ui/src/**/*.{ts,tsx}'`
    (否则组件里的 class 不会被生成)。
 3. app 全局样式确保 token 变量可用:client 的 `style.css` 目前已内含同一份
-   token(历史原因,保持同步);platform 接入时直接 `@import '@bisheng/ui/tokens.css'`。
+   token(历史原因,保持同步);platform 接入时直接 `@import '@doberman-agent/ui/tokens.css'`。

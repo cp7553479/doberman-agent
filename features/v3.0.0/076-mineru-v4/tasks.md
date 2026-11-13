@@ -18,7 +18,7 @@
 ## Wave 1：配置与现有路由
 
 - [x] **T001 配置模型与默认示例（基础设施）**
-  **文件**：`src/backend/bisheng/core/config/settings.py`、`src/backend/bisheng/initdb_config.yaml`
+  **文件**：`src/backend/doberman_agent/core/config/settings.py`、`src/backend/doberman_agent/initdb_config.yaml`
   **逻辑**：增加独立 `MineruV4Conf`、默认未启用的配置块、`request_kwargs` 映射校验及解析服务参数；`KnowledgeConfig` 声明 `mineru_v4` 的图片能力，旧 `mineru` 与默认 `etl4lm` 保持行为。额外参数只作创建任务顶层 JSON 字段，保留键冲突报错；API Key 仅配置环境变量名。见 design §3 决策 1、6。
   **依赖**：无。
 
@@ -29,7 +29,7 @@
   **依赖**：T001。
 
 - [x] **T003 OFD 专用队列路由实现（Worker）**
-  **文件**：`src/backend/bisheng/worker/knowledge/scheduler.py`
+  **文件**：`src/backend/doberman_agent/worker/knowledge/scheduler.py`
   **逻辑**：`needs_ocr_queue()` 将 OFD 与 PDF 同列；仅判断队列配置及解析能力，不在 scheduler 固定最终 Loader。保持既有 Celery tenant_id headers → Worker ContextVar 传递方式。当前分支已做该定向修复，复核后打勾。
   **依赖**：T002。
 
@@ -42,7 +42,7 @@
   **依赖**：T001。
 
 - [x] **T005 V1 HTTP 客户端实现（实现）**
-  **文件**：`src/backend/bisheng/knowledge/rag/pipeline/loader/mineru_v4_client.py`
+  **文件**：`src/backend/doberman_agent/knowledge/rag/pipeline/loader/mineru_v4_client.py`
   **逻辑**：`httpx` 客户端执行 `/v1/uploads`、字节上传/完成、`POST /v1/parse/jobs`、轮询、下载 ZIP；按源控制认证，校验响应与状态并施加阶段/总超时。`request_kwargs` 仅合入建任务 JSON，不承载传输参数。详见 design §3 决策 2、6。
   **依赖**：T004。
 
@@ -53,7 +53,7 @@
   **依赖**：T005。
 
 - [x] **T007 Middle JSON/ZIP Loader 实现（实现）**
-  **文件**：`src/backend/bisheng/knowledge/rag/pipeline/loader/mineru_v4.py`
+  **文件**：`src/backend/doberman_agent/knowledge/rag/pipeline/loader/mineru_v4.py`
   **逻辑**：调用 T005 客户端，把 ZIP 内 Middle JSON 和图片转成现有 `Document`、`bbox_list`、平铺 `local_image_dir`、`preview_file_path` 契约；安全解包、按完整子目录路径替换图片最终 URL 后再计算 indexes；`retain_images=0` 时不暂存图片或生成失效引用；不复用旧 `pdf_info` 结构，不写跨节点本地状态。见 design §3 决策 3、§4.2。
   **依赖**：T006。
 
@@ -66,7 +66,7 @@
   **依赖**：T007。
 
 - [x] **T009 提供方接线实现（实现）**
-  **文件**：`src/backend/bisheng/knowledge/rag/base_file_pipeline.py`、`src/backend/bisheng/knowledge/domain/models/knowledge_file.py`
+  **文件**：`src/backend/doberman_agent/knowledge/rag/base_file_pipeline.py`、`src/backend/doberman_agent/knowledge/domain/models/knowledge_file.py`
   **逻辑**：新增 `ParseType.MINERU_V4`；在唯一 PDF Loader 选择入口构建 T007 Loader，并确保其图片/OFD 委托路径一致。仅在新提供方显式选择时失败即报错，旧版及其他提供方保持原行为；DB 文件记录新解析来源。
   **依赖**：T008。
 
@@ -106,7 +106,7 @@
 
 ## 实际偏差记录
 
-- 离线集成测试放在 `test/knowledge/`，覆盖 V1 协议到 `Document`；无目标服务与毕昇中间件，真实 API/页面验收记录于 `e2e-checklist.md`。
+- 离线集成测试放在 `test/knowledge/`，覆盖 V1 协议到 `Document`；无目标服务与doberman-agent中间件，真实 API/页面验收记录于 `e2e-checklist.md`。
 - 前端 typecheck 通过；全量 lint 命中本分支已有的 Platform 93 项、Client 21 项遗留报错，未修改 suppressions。
 
 ## 实施与评审结果

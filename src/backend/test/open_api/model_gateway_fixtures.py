@@ -15,16 +15,16 @@ from typing import Any
 from fastapi import APIRouter, Depends, FastAPI
 from langchain_core.messages import AIMessage, AIMessageChunk
 
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.endpoints.model_gateway import router as model_gateway_router
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.endpoints.model_gateway import router as model_gateway_router
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
 
 
 def build_model_face_app() -> FastAPI:
     """A standalone app carrying exactly the v2 contract the real one does.
 
-    ``bisheng.main.app`` evaluates ``open_platform.enabled`` at import time, so a
+    ``doberman_agent.main.app`` evaluates ``open_platform.enabled`` at import time, so a
     test that flips the switch afterwards gets the mounting decision made before
     it ran. Building the router here is how both states are testable in one
     process.
@@ -124,8 +124,8 @@ def model_row(
 def install_catalog(monkeypatch, servers: list, models: list, *, fail_with: Exception | None = None) -> None:
     """Point the catalog at in-memory rows (or make the read fail)."""
 
-    from bisheng.llm.domain.services import model_catalog
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services import model_catalog
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     model_catalog.invalidate_catalog()
 
@@ -149,8 +149,8 @@ def install_catalog(monkeypatch, servers: list, models: list, *, fail_with: Exce
 
 
 @dataclass
-class FakeBishengLLM:
-    """Scripted stand-in for ``BishengLLM`` with the surface the face uses."""
+class FakeDobermanAgentLLM:
+    """Scripted stand-in for ``DobermanAgentLLM`` with the surface the face uses."""
 
     stream_script: list[Any] = field(default_factory=list)
     invoke_result: Any = None
@@ -186,14 +186,14 @@ class FakeBishengLLM:
             raise RuntimeError("upstream vanished mid-stream")
 
 
-def install_fake_llm(monkeypatch, fake: FakeBishengLLM) -> FakeBishengLLM:
-    from bisheng.llm.domain.services.llm import LLMService
+def install_fake_llm(monkeypatch, fake: FakeDobermanAgentLLM) -> FakeDobermanAgentLLM:
+    from doberman_agent.llm.domain.services.llm import LLMService
 
-    async def get_bisheng_llm(**kwargs):
+    async def get_doberman_agent_llm(**kwargs):
         fake.init_kwargs = kwargs
         return fake
 
-    monkeypatch.setattr(LLMService, "get_bisheng_llm", staticmethod(get_bisheng_llm))
+    monkeypatch.setattr(LLMService, "get_doberman_agent_llm", staticmethod(get_doberman_agent_llm))
     return fake
 
 
@@ -226,7 +226,7 @@ def usage_chunk(*, prompt: int, completion: int, finish_reason: str = "stop") ->
 def capture_records(monkeypatch) -> list:
     """Collect enqueued ``ModelCallRecord`` rows instead of writing them."""
 
-    from bisheng.open_api.domain.services import model_gateway_service
+    from doberman_agent.open_api.domain.services import model_gateway_service
 
     rows: list = []
     monkeypatch.setattr(
@@ -238,7 +238,7 @@ def capture_records(monkeypatch) -> list:
 
 
 __all__ = [
-    "FakeBishengLLM",
+    "FakeDobermanAgentLLM",
     "build_model_face_app",
     "capture_records",
     "hosted_app_principal",

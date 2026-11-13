@@ -1,5 +1,5 @@
 import { showApiError } from "~/api/request";
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { refreshChannelState, useChannelStateRefresh } from "./hooks/useChannelStateRefresh";
 import { useLocalize, useScrollRevealRef } from "~/hooks";
 import { NoPermissionIllustration } from "~/components/illustrations";

@@ -5,8 +5,8 @@ from urllib.parse import urlparse
 import pytest
 import redis
 
-from bisheng.common.services.config_service import settings
-from bisheng.worker.knowledge import scheduler as s
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.worker.knowledge import scheduler as s
 
 _parsed = urlparse(settings.redis_url)
 REDIS_HOST = _parsed.hostname or "localhost"
@@ -39,10 +39,10 @@ def _conf(cap, **overrides):
 @pytest.fixture
 def redis_conn():
     conn = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_TEST_DB, decode_responses=True)
-    for k in conn.keys("{bisheng_fs}:*"):
+    for k in conn.keys("{doberman_agent_fs}:*"):
         conn.delete(k)
     yield conn
-    for k in conn.keys("{bisheng_fs}:*"):
+    for k in conn.keys("{doberman_agent_fs}:*"):
         conn.delete(k)
 
 

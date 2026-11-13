@@ -1,10 +1,10 @@
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
 
 import { Label } from "@/components/bs-ui/label";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
-import { Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { Type } from "lucide-react";
 import { useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -279,7 +279,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
     // text form
     const InputForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -306,7 +306,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             {errors.displayName && <p className="text-red-500 text-sm">{errors.displayName}</p>}
         </div>
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("variableName")}
                 <QuestionTooltip content={t("variableNameTooltip")} />
             </Label>
@@ -314,7 +314,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             {errors.variableName && <p className="text-red-500 text-sm">{errors.variableName}</p>}
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -324,7 +324,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
     // select from
     const SelectForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -332,7 +332,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             {errors.displayName && <p className="text-red-500 text-sm">{errors.displayName}</p>}
         </div>
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("variableName")}
                 <QuestionTooltip content={t("variableNameTooltip")} />
             </Label>
@@ -340,19 +340,19 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             {errors.variableName && <p className="text-red-500 text-sm">{errors.variableName}</p>}
         </div>
         <div>
-            <Label className="bisheng-label">{t("options")}</Label>
+            <Label className="doberman_agent-label">{t("options")}</Label>
             <DragOptions edit scroll options={formData.options} onChange={updateOptions} />
             {errors.options && <p className="text-red-500 text-sm">{errors.options}</p>}
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('allowMultipleSelect')}</Label>
+            <Label className="doberman_agent-label">{t('allowMultipleSelect')}</Label>
             <Switch
                 checked={formData.allowMultiple}
                 onCheckedChange={(checked) => setFormData({ ...formData, allowMultiple: checked })}
             />
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -362,7 +362,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
     // file form
     const FileForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -371,7 +371,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
         </div>
 
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -379,7 +379,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
         </div>
 
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('allowUploadMultipleFiles')}</Label>
+            <Label className="doberman_agent-label">{t('allowUploadMultipleFiles')}</Label>
             <Switch
                 checked={formData.isMultiple}
                 onCheckedChange={(checked) => setFormData({ ...formData, isMultiple: checked })}
@@ -390,7 +390,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             value: formData.fileType,
         }} onChange={(fileType) => setFormData({ ...formData, fileType })} />
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t('tempKnowledgeBaseName')}
                 <QuestionTooltip content={t('tempKnowledgeBaseNameTip')} />
             </Label>
@@ -399,7 +399,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
         </div>
 
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t('fileContentVarName')}
                 <QuestionTooltip content={t('fileContentVarTip')} />
             </Label>
@@ -420,7 +420,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             onChange={(fileContentSize: number) => setFormData({ ...formData, fileContentSize })}
         />
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t('filePathVarName')}
                 <QuestionTooltip content={t('filePathVarTip')} />
             </Label>
@@ -428,7 +428,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
             {errors.filepath && <p className="text-red-500 text-sm">{errors.filepath}</p>}
         </div>
         {formData.fileType !== 'file' && <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t('uploadImageFile')}
                 <QuestionTooltip content={t('uploadImageFileTip')} />
             </Label>
@@ -440,7 +440,7 @@ export function LegacyInputFormEditor({ nodeId, nodeData, initialData, onSubmit,
     return (
         <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
-                <Label className="bisheng-label">{t("formType")}</Label>
+                <Label className="doberman_agent-label">{t("formType")}</Label>
                 <div className="grid grid-cols-3 gap-4 mt-2">
                     <Button className={`flex flex-col h-auto w-full min-w-0 gap-1 py-2 ${formData.formType === FormType.Text ? "border-primary/40 bg-[#DFE9FD] text-primary" : ""}`} type="button" variant="outlined" onClick={() => handleChangeFormType(FormType.Text)} color="default">
                         <Type size={18} />

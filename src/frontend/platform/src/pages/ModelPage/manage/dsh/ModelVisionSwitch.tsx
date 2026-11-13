@@ -1,8 +1,8 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import request from "@/controllers/request";
-import { Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 

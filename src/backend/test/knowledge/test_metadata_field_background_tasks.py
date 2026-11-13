@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.knowledge.domain.services import knowledge_metadata_service as module
-from bisheng.knowledge.domain.services.knowledge_metadata_service import KnowledgeMetadataService
+from doberman_agent.knowledge.domain.services import knowledge_metadata_service as module
+from doberman_agent.knowledge.domain.services.knowledge_metadata_service import KnowledgeMetadataService
 
 
 def _file(file_id: int, user_metadata):

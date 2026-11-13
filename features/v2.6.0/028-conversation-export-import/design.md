@@ -159,7 +159,7 @@ import-to-knowledge 路径相同，最后一步改为：渲染成 docx 临时文
 | 8 | 有的来源把 PUA marker 字面化成 `` 这种 6 字符串（非真正的码点） | strip 漏掉，marker 残留在正文 | 兜底同时处理真实 PUA 码点和字面化的 6 字符串 |
 | 9 | 兜底 strip 的 `\s*` 不能吃换行 | 吃掉 `ul` 项之间的分隔，多个列表项被粘连 | strip 正则用不含换行的空白类，别用 `\s*` |
 | 10 | WenQuanYi / Liberation 字体没有 emoji 字形，docx 路径不会自动 fallback | docx 里 emoji 显示成豆腐块 | docx 路径预替换 emoji 为 `●`（chromium 路径不受影响） |
-| 14 | 答案里的图片是 `/bisheng/knowledge/images/...` 根相对路径（前端 nginx 代理路径，后端无此代理）；且 MinIO 返回 `application/octet-stream` | docx/pdf 渲染时图片抓不到(被当不支持 scheme 丢)或扩展名猜成 `.bin` → pandoc 嵌不进 → docx 无图（txt/md 只输出链接文本不受影响） | `_fetch_image_bytes` 相对路径补 `get_minio_share_host()` 再抓；content-type 为泛型时用 URL 后缀兜底扩展名 |
+| 14 | 答案里的图片是 `/doberman-agent/knowledge/images/...` 根相对路径（前端 nginx 代理路径，后端无此代理）；且 MinIO 返回 `application/octet-stream` | docx/pdf 渲染时图片抓不到(被当不支持 scheme 丢)或扩展名猜成 `.bin` → pandoc 嵌不进 → docx 无图（txt/md 只输出链接文本不受影响） | `_fetch_image_bytes` 相对路径补 `get_minio_share_host()` 再抓；content-type 为泛型时用 URL 后缀兜底扩展名 |
 | 13 | 平台 `process_one_file` 按**内容 md5/文件名**去重(重复内容→旧文件标 FAILED、不新建);F028 的 `(1)` 改名是文件名级,绕不过 md5 内容去重 | 重导同一会话内容一致 → md5 命中 → 被当重复拒收，知识空间"只看到一份"，`(1)` 永不出现 | F028 导入给 `add_file`/`process_one_file` 传 `skip_dedup=True` 强制新建（已用 `_resolve_unique_filename` 保证文件名唯一） |
 | 12 | 工作流/助手答案落库 category 是 `stream_msg`/`output_msg`（文本在 JSON `msg` 字段），QA 答案是 `{"content":...}`，工作流提问是 `is_bot=1` 的纯字符串 | 后端 `_extract_answer_text` 旧版只认 `answer`/`agent_answer` → 工作流/助手导出**答案整块空** | `_extract_answer_text` 统一处理 `stream_msg`/`output_msg`/`agent_answer`（取 msg+events）+ `{"content"}` + 纯字符串，丢弃 `reasoning_answer`/`input`/thinking/tool |
 | 11 | **实时会话中前端消息 id 是临时值，不是真实 DB 主键**：daily 路径提问消息曾被钉死成临时 UUID（`useAiChat.onCreated` 用 `messageId: userMessageId` 覆盖了 `created` 事件带回的真实 id）；workflow 路径答案消息在 `end` 缺 `message_id` 时保留合成 id `unique_id+output_key` | 导出按 `parseInt(messageId)` 取整数 id：UUID→NaN 被丢（提问整轮丢失，导出只剩答案）；纯数字合成 id→发出去后端查无此 id 报 12060「消息不存在」。刷新后走历史接口才映射成真实 id，所以"刷新后正确" | daily：`useAiChat.onCreated` 改为用 `created` 事件的真实 `messageId` 回填，`onFinal` 同步按真实 id 匹配。workflow 路径同类问题（answer 合成 id）尚未修，见 §8 短板 |
@@ -202,7 +202,7 @@ import-to-knowledge 路径相同，最后一步改为：渲染成 docx 临时文
   ```
 - **API e2e（9 个）**：契约层，需要 backend + admin token。命令：
   ```bash
-  cd src/backend && E2E_ADMIN_PASSWORD='Bisheng@top1' uv run pytest test/e2e/test_e2e_conversation_export.py -v
+  cd src/backend && E2E_ADMIN_PASSWORD='doberman-agent@top1' uv run pytest test/e2e/test_e2e_conversation_export.py -v
   ```
 - **手动 UI 验证**：[e2e-checklist.md](./e2e-checklist.md)（覆盖 UI 类 AC + 真实导出视觉巡检）
 - **可观测**：失败走标准错误码 + service 内 `logger.exception`；目前没有专门的 Prometheus 指标（短板，见 §8）

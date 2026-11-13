@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { ConversationComposer } from '@bisheng/chat';
-import { Button, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { ConversationComposer } from '@doberman-agent/chat';
+import { Button, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 

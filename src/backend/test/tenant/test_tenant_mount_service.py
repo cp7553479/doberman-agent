@@ -23,7 +23,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.tenant_tree import (
+from doberman_agent.common.errcode.tenant_tree import (
     TenantTreeMigratePermissionError,
     TenantTreeMigrateSourceError,
     TenantTreeMountConflictError,
@@ -38,7 +38,7 @@ class TestDefaultTenantCode:
     operator-facing tenant_code field)."""
 
     def test_default_tenant_code_format(self):
-        from bisheng.tenant.domain.services.tenant_mount_service import default_tenant_code
+        from doberman_agent.tenant.domain.services.tenant_mount_service import default_tenant_code
         assert default_tenant_code(3) == 't3'
         assert default_tenant_code(42) == 't42'
         # Generated value must satisfy the schema regex so it round-trips
@@ -47,13 +47,13 @@ class TestDefaultTenantCode:
         assert re.match(r'^[a-zA-Z][a-zA-Z0-9_-]{1,63}$', default_tenant_code(7))
 
     def test_request_accepts_omitted_code(self):
-        from bisheng.tenant.domain.schemas.tenant_schema import MountTenantRequest
+        from doberman_agent.tenant.domain.schemas.tenant_schema import MountTenantRequest
         req = MountTenantRequest(tenant_name='Finance')
         assert req.tenant_code is None
         assert req.tenant_name == 'Finance'
 
     def test_request_still_validates_explicit_code(self):
-        from bisheng.tenant.domain.schemas.tenant_schema import MountTenantRequest
+        from doberman_agent.tenant.domain.schemas.tenant_schema import MountTenantRequest
         from pydantic import ValidationError
         # leading digit violates the pattern
         with pytest.raises(ValidationError):
@@ -114,25 +114,25 @@ def _mk_tenant(tid=2, code='child', parent_tenant_id=1, status='active'):
 class TestMountChild:
 
     async def test_happy_path_creates_child_and_sets_mount(self, super_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
         dept = _mk_dept(dept_id=7, parent_id=1, is_tenant_root=0, path='/1/7/')
         new_tenant = _mk_tenant(tid=2, code='acme')
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
             new_callable=AsyncMock, return_value=None,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantDao.acreate_tenant',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantDao.acreate_tenant',
             new_callable=AsyncMock, return_value=new_tenant,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aset_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aset_mount',
             new_callable=AsyncMock,
         ) as set_mount, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             result = await TenantMountService.mount_child(
@@ -150,7 +150,7 @@ class TestMountChild:
         assert audit_kwargs['metadata']['tenant_code'] == 'acme'
 
     async def test_non_super_rejected(self, child_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
         with pytest.raises(TenantTreeMigratePermissionError):
             await TenantMountService.mount_child(
@@ -160,11 +160,11 @@ class TestMountChild:
 
     async def test_root_dept_rejected(self, super_admin):
         """AC-03: parent_id=None (root department) cannot be mounted."""
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=1, parent_id=None, path='/1/')
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ):
             with pytest.raises(TenantTreeRootDeptMountError):
@@ -175,11 +175,11 @@ class TestMountChild:
 
     async def test_already_mounted_rejected(self, super_admin):
         """re-mounting the same department → 22002 MountConflict."""
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=2, path='/1/7/')
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ):
             with pytest.raises(TenantTreeMountConflictError):
@@ -190,15 +190,15 @@ class TestMountChild:
 
     async def test_nested_under_existing_child_rejected(self, super_admin):
         """AC-03: INV-T1 2-layer lock → 22001 Nesting."""
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=20, parent_id=7, is_tenant_root=0, path='/1/7/20/')
         ancestor_mount = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=2)
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
             new_callable=AsyncMock, return_value=ancestor_mount,
         ):
             with pytest.raises(TenantTreeNestingForbiddenError):
@@ -216,11 +216,11 @@ class TestMountChild:
 class TestUnmountChild:
 
     async def test_no_mount_point_raises(self, super_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=7, is_tenant_root=0, mounted_tenant_id=None)
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ):
             with pytest.raises(TenantTreeMountConflictError):
@@ -234,23 +234,23 @@ class TestUnmountChild:
         Should be idempotent — clear the stale flag, skip resource
         migration / tenant archive, return success with stale_flag_cleared.
         """
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=None)
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
             new_callable=AsyncMock,
         ) as migrate, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantDao.aupdate_tenant',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantDao.aupdate_tenant',
             new_callable=AsyncMock,
         ) as archive, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aunset_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aunset_mount',
             new_callable=AsyncMock,
         ) as unset, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             result = await TenantMountService.unmount_child(
@@ -272,23 +272,23 @@ class TestUnmountChild:
 
     async def test_unmount_migrates_resources_archives_and_unsets(self, super_admin):
         """v2.5.1 唯一路径：迁移资源到 Root + 归档 Child + 清挂载点。"""
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
         dept = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=2)
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
             new_callable=AsyncMock, return_value={'flow': 3, 'knowledge': 2},
         ) as migrate, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantDao.aupdate_tenant',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantDao.aupdate_tenant',
             new_callable=AsyncMock, return_value=_mk_tenant(tid=2, status='archived'),
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aunset_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aunset_mount',
             new_callable=AsyncMock,
         ) as unset, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             result = await TenantMountService.unmount_child(
@@ -313,7 +313,7 @@ class TestUnmountChild:
 class TestMigrateResourcesFromRoot:
 
     async def test_non_super_rejected(self, child_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
         with pytest.raises(TenantTreeMigratePermissionError):
             await TenantMountService.migrate_resources_from_root(
@@ -323,7 +323,7 @@ class TestMigrateResourcesFromRoot:
 
     async def test_non_root_source_reports_failed(self, super_admin):
         """A resource whose tenant_id != 1 lands in ``failed`` with code 22011."""
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
         resource_rows = [
             {'id': 100, 'tenant_id': 1},  # good
@@ -331,14 +331,14 @@ class TestMigrateResourcesFromRoot:
             {'id': 102, 'tenant_id': 1},  # good
         ]
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._fetch_resource_tenant_ids',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._fetch_resource_tenant_ids',
             new_callable=AsyncMock,
             return_value={r['id']: r['tenant_id'] for r in resource_rows},
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._update_resource_tenant_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._update_resource_tenant_id',
             new_callable=AsyncMock,
         ) as update, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             result = await TenantMountService.migrate_resources_from_root(
@@ -392,30 +392,30 @@ def _stub_session():
 class TestMountChildSubtreeSync:
 
     async def test_mount_invokes_subtree_sync_and_records_counts(self, super_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         dept = _mk_dept(dept_id=7, parent_id=1, is_tenant_root=0, path='/1/7/')
         _, fake_session = _stub_session()
 
         sync_result = {'synced': [101, 102, 103], 'failed': [(104, 'boom')]}
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_ancestors_with_mount',
             new_callable=AsyncMock, return_value=None,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.get_async_db_session',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.get_async_db_session',
             fake_session,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_mounted',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_mounted',
             new_callable=AsyncMock, return_value=[],
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
+            'doberman_agent.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
             new_callable=AsyncMock, return_value=sync_result,
         ) as sync_mock, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             await TenantMountService.mount_child(
@@ -440,8 +440,8 @@ class TestUnmountChildSubtreeSync:
         Verified here by ordering: dept session execute (which clears the
         flag) is awaited before _safe_sync_subtree.
         """
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         dept = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=2, path='/1/7/')
         existing_tenant = _mk_tenant(tid=2, code='acme', status='active')
@@ -457,25 +457,25 @@ class TestUnmountChildSubtreeSync:
             return sync_result
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
             new_callable=AsyncMock, return_value={'flow': 1},
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantDao.aget_by_id',
             new_callable=AsyncMock, return_value=existing_tenant,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.get_async_db_session',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.get_async_db_session',
             fake_session,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_unmounted',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_unmounted',
             new_callable=AsyncMock,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
+            'doberman_agent.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
             side_effect=_sync_capture,
         ) as sync_mock, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ) as audit:
             result = await TenantMountService.unmount_child(
@@ -495,32 +495,32 @@ class TestUnmountChildSubtreeSync:
         assert meta['failed_user_count'] == 0
 
     async def test_unmount_sync_failure_does_not_block_main_flow(self, super_admin):
-        from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+        from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
         dept = _mk_dept(dept_id=7, is_tenant_root=1, mounted_tenant_id=2, path='/1/7/')
         existing_tenant = _mk_tenant(tid=2, code='acme', status='active')
         _, fake_session = _stub_session()
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.DepartmentDao.aget_by_id',
             new_callable=AsyncMock, return_value=dept,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._migrate_child_resources_to_root',
             new_callable=AsyncMock, return_value={},
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantDao.aget_by_id',
             new_callable=AsyncMock, return_value=existing_tenant,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.get_async_db_session',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.get_async_db_session',
             fake_session,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_unmounted',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.TenantMountService._on_child_unmounted',
             new_callable=AsyncMock,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
+            'doberman_agent.tenant.domain.services.tenant_mount_service._safe_sync_subtree',
             new_callable=AsyncMock, return_value={'synced': [], 'failed': []},
         ) as sync_mock, patch(
-            'bisheng.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
+            'doberman_agent.tenant.domain.services.tenant_mount_service.AuditLogDao.ainsert_v2',
             new_callable=AsyncMock,
         ):
             # Should not raise, sync_mock returning empty result is enough.
@@ -536,17 +536,17 @@ class TestUnmountChildSubtreeSync:
 class TestSafeSyncSubtreeWrapper:
 
     async def test_no_path_short_circuits(self):
-        from bisheng.tenant.domain.services.tenant_mount_service import _safe_sync_subtree
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.services.tenant_mount_service import _safe_sync_subtree
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         result = await _safe_sync_subtree(None, UserTenantSyncTrigger.MOUNT_BACKFILL)
         assert result == {'synced': [], 'failed': []}
 
     async def test_dispatch_failure_returns_empty_shape(self, monkeypatch):
         """If the underlying service raises, wrapper logs and returns empty."""
-        from bisheng.tenant.domain.services.tenant_mount_service import _safe_sync_subtree
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
-        from bisheng.tenant.domain.services import user_tenant_sync_service as uts_module
+        from doberman_agent.tenant.domain.services.tenant_mount_service import _safe_sync_subtree
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.services import user_tenant_sync_service as uts_module
 
         async def _boom(*args, **kwargs):
             raise RuntimeError('service unavailable')

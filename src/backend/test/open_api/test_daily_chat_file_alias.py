@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
-from bisheng.open_api.domain.services import daily_chat_service as service_module
-from bisheng.open_api.domain.services.daily_chat_service import OpenDailyChatService
+from doberman_agent.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
+from doberman_agent.open_api.domain.services import daily_chat_service as service_module
+from doberman_agent.open_api.domain.services.daily_chat_service import OpenDailyChatService
 
 CONFIG = {"models": [{"id": "7"}], "tools": []}
 URL = "http://minio.test/tmp-bucket/open-api/sa-1/a.txt"

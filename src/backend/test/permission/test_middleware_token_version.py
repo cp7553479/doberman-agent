@@ -18,7 +18,7 @@ here; we test the pure functions (`_validate_token_version`,
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.utils import http_middleware as hm
+from doberman_agent.utils import http_middleware as hm
 
 # -------------------------------------------------------------------------
 # _compute_visible_tenant_ids
@@ -51,16 +51,16 @@ class TestComputeVisibleTenantIds:
 def _swap_user_dao(aget_token_version_mock):
     """Install a stub UserDao with an AsyncMock ``aget_token_version``.
 
-    ``bisheng.user.domain.models.user`` is pre-mocked by conftest, so we
+    ``doberman_agent.user.domain.models.user`` is pre-mocked by conftest, so we
     poke into the existing MagicMock via sys.modules instead of importing
     it (which would trigger a real import and fail).
     """
     import sys
 
-    user_mod = sys.modules.get("bisheng.user.domain.models.user")
+    user_mod = sys.modules.get("doberman_agent.user.domain.models.user")
     if user_mod is None:
         user_mod = MagicMock()
-        sys.modules["bisheng.user.domain.models.user"] = user_mod
+        sys.modules["doberman_agent.user.domain.models.user"] = user_mod
     stub_dao = MagicMock()
     stub_dao.aget_token_version = aget_token_version_mock
     user_mod.UserDao = stub_dao
@@ -99,10 +99,10 @@ def _patch_login_method(allow_multi_login=True, *, side_effect=None):
     """Install a stub ``settings.aget_system_login_method`` on the premocked module."""
     import sys
 
-    cfg_mod = sys.modules.get("bisheng.common.services.config_service")
+    cfg_mod = sys.modules.get("doberman_agent.common.services.config_service")
     if cfg_mod is None:
         cfg_mod = MagicMock()
-        sys.modules["bisheng.common.services.config_service"] = cfg_mod
+        sys.modules["doberman_agent.common.services.config_service"] = cfg_mod
     settings_mock = MagicMock()
     if side_effect is not None:
         settings_mock.aget_system_login_method = AsyncMock(side_effect=side_effect)
@@ -118,10 +118,10 @@ def _patch_session_redis(current_token, *, side_effect=None):
     """Install a stub Redis client that returns ``current_token`` for session GET."""
     import sys
 
-    redis_mod = sys.modules.get("bisheng.core.cache.redis_manager")
+    redis_mod = sys.modules.get("doberman_agent.core.cache.redis_manager")
     if redis_mod is None:
         redis_mod = MagicMock()
-        sys.modules["bisheng.core.cache.redis_manager"] = redis_mod
+        sys.modules["doberman_agent.core.cache.redis_manager"] = redis_mod
     redis = MagicMock()
     if side_effect is not None:
         redis.aget = AsyncMock(side_effect=side_effect)
@@ -255,7 +255,7 @@ class TestApplyTokenVersionAndVisible:
                 self._build_request(),
                 "fake-token",
             )
-            from bisheng.core.context.tenant import get_visible_tenant_ids
+            from doberman_agent.core.context.tenant import get_visible_tenant_ids
 
             return result, get_visible_tenant_ids()
 
@@ -293,7 +293,7 @@ class TestApplyTokenVersionAndVisible:
                 self._build_request(),
                 "fake-token",
             )
-            from bisheng.core.context.tenant import get_visible_tenant_ids
+            from doberman_agent.core.context.tenant import get_visible_tenant_ids
 
             return result, get_visible_tenant_ids()
 

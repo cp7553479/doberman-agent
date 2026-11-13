@@ -17,31 +17,31 @@ import json
 
 import pytest
 
-from bisheng.common.errcode.app_factory import (
+from doberman_agent.common.errcode.app_factory import (
     AppDataForbiddenError,
     AppDataNotReadyError,
     AppLogForbiddenError,
     AppNotFoundError,
 )
-from bisheng.common.errcode.app_publish import (
+from doberman_agent.common.errcode.app_publish import (
     AppNotOwnedBySubjectError,
     AppPublishOwnerOnlyError,
     AppPublishRuntimeLayerDisabledError,
 )
-from bisheng.common.errcode.mcp_face import McpAppNotOwnedError
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_mcp import registry
-from bisheng.open_mcp.result import error_result_from_exception
-from bisheng.open_mcp.tools import execute_tool
+from doberman_agent.common.errcode.mcp_face import McpAppNotOwnedError
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_mcp import registry
+from doberman_agent.open_mcp.result import error_result_from_exception
+from doberman_agent.open_mcp.tools import execute_tool
 
 APP_ID = "app-owned-by-the-key"
 APP_TOOLS = {
-    "bisheng_app_status",
-    "bisheng_app_logs",
-    "bisheng_app_db_tables",
-    "bisheng_app_db_schema",
-    "bisheng_app_db_rows",
-    "bisheng_app_db_row_update",
+    "doberman_agent_app_status",
+    "doberman_agent_app_logs",
+    "doberman_agent_app_db_tables",
+    "doberman_agent_app_db_schema",
+    "doberman_agent_app_db_rows",
+    "doberman_agent_app_db_row_update",
 }
 
 
@@ -69,7 +69,7 @@ def as_principal(monkeypatch):
     """
 
     def install(value: OpenApiPrincipal) -> None:
-        monkeypatch.setattr("bisheng.open_mcp.tools.apps.get_current_open_api_principal", lambda: value)
+        monkeypatch.setattr("doberman_agent.open_mcp.tools.apps.get_current_open_api_principal", lambda: value)
 
     return install
 
@@ -83,9 +83,9 @@ def runtime_on(monkeypatch):
 def services(monkeypatch):
     """Programmable stand-ins for the three services the tools call."""
 
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
-    from bisheng.app_runtime.domain.services.app_data_service import AppDataService
-    from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
+    from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
     calls: list[tuple[str, dict]] = []
     responses: dict[str, object] = {
@@ -124,7 +124,7 @@ def services(monkeypatch):
 
 async def test_status_returns_the_runtime_view_and_the_full_rejection_reason(as_principal, services):
     as_principal(principal())
-    result = await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+    result = await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
 
     assert result.app_id == APP_ID
     assert result.instance["phase"] == "running"
@@ -135,8 +135,8 @@ async def test_status_and_logs_go_through_the_credential_door(as_principal, serv
     """``entry="mcp"``, not a second owner comparison in the tool."""
 
     as_principal(principal())
-    await execute_tool("bisheng_app_status", {"app_id": APP_ID})
-    await execute_tool("bisheng_app_logs", {"app_id": APP_ID})
+    await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
+    await execute_tool("doberman_agent_app_logs", {"app_id": APP_ID})
 
     entries = {name: call["kwargs"].get("entry") for name, call in services.calls}
     assert entries["get_instance"] == "mcp"
@@ -146,7 +146,7 @@ async def test_status_and_logs_go_through_the_credential_door(as_principal, serv
 
 async def test_the_actor_is_the_keys_resource_owner_and_carries_no_privilege(as_principal, services):
     as_principal(principal())
-    await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+    await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
 
     actor = dict(services.calls)["get_instance"]["kwargs"]["actor"]
     assert actor.user_id == 12  # resource_owner_user_id, not the service account id
@@ -160,7 +160,7 @@ async def test_logs_carry_the_two_fields_that_explain_an_empty_answer(as_princip
     as_principal(principal())
     services.responses["get_logs"] = {"lines": []}
     services.responses["runtime_hint"] = {"app_state": "pending_capacity", "pending_reason": "capacity"}
-    result = await execute_tool("bisheng_app_logs", {"app_id": APP_ID})
+    result = await execute_tool("doberman_agent_app_logs", {"app_id": APP_ID})
 
     assert result.model_dump() == {"lines": [], "app_state": "pending_capacity", "pending_reason": "capacity"}
 
@@ -180,7 +180,7 @@ async def test_every_not_yours_reason_gives_one_identical_answer(as_principal, s
     as_principal(principal())
     services.responses["get_instance"] = failure
     with pytest.raises(McpAppNotOwnedError) as refused:
-        await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
 
     assert refused.value.code == 26305
     assert refused.value.kwargs == {"app_id": APP_ID}
@@ -193,7 +193,7 @@ async def test_the_refusal_never_names_an_owner(as_principal, services):
         details={"app_id": APP_ID, "owner_user_name": "someone-else", "reason": "not_visible"},
     )
     with pytest.raises(McpAppNotOwnedError) as refused:
-        await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
 
     rendered = error_result_from_exception(refused.value).content[0].text
     assert "someone-else" not in rendered
@@ -205,11 +205,11 @@ async def test_the_refusal_never_names_an_owner(as_principal, services):
 
 async def test_the_data_tools_pass_straight_through_to_the_data_service(as_principal, services):
     as_principal(principal())
-    tables = await execute_tool("bisheng_app_db_tables", {"app_id": APP_ID})
-    schema = await execute_tool("bisheng_app_db_schema", {"app_id": APP_ID, "table": "users"})
-    rows = await execute_tool("bisheng_app_db_rows", {"app_id": APP_ID, "table": "users"})
+    tables = await execute_tool("doberman_agent_app_db_tables", {"app_id": APP_ID})
+    schema = await execute_tool("doberman_agent_app_db_schema", {"app_id": APP_ID, "table": "users"})
+    rows = await execute_tool("doberman_agent_app_db_rows", {"app_id": APP_ID, "table": "users"})
     updated = await execute_tool(
-        "bisheng_app_db_row_update",
+        "doberman_agent_app_db_row_update",
         {"app_id": APP_ID, "table": "users", "key": "7", "values": {"name": "n"}},
     )
 
@@ -223,7 +223,7 @@ async def test_the_data_tools_add_no_second_owner_check_and_no_entry(as_principa
     """``AppDataService`` builds owner-only in; a tool-level copy would drift."""
 
     as_principal(principal())
-    await execute_tool("bisheng_app_db_tables", {"app_id": APP_ID})
+    await execute_tool("doberman_agent_app_db_tables", {"app_id": APP_ID})
 
     kwargs = dict(services.calls)["list_tables"]["kwargs"]
     assert "entry" not in kwargs
@@ -240,7 +240,7 @@ async def test_an_application_with_no_database_yet_is_not_called_somebody_elses(
     as_principal(principal())
     services.responses["list_tables"] = AppDataNotReadyError(app_id=APP_ID)
     with pytest.raises(AppDataNotReadyError) as refused:
-        await execute_tool("bisheng_app_db_tables", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_db_tables", {"app_id": APP_ID})
     assert refused.value.code == 16163
 
 
@@ -248,7 +248,7 @@ async def test_a_data_permission_refusal_is_the_same_not_yours_answer(as_princip
     as_principal(principal())
     services.responses["list_tables"] = AppDataForbiddenError(app_id=APP_ID)
     with pytest.raises(McpAppNotOwnedError) as refused:
-        await execute_tool("bisheng_app_db_tables", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_db_tables", {"app_id": APP_ID})
     assert refused.value.kwargs == {"app_id": APP_ID}
 
 
@@ -261,9 +261,9 @@ async def test_a_key_with_no_resource_owner_gets_the_same_one_answer(as_principa
 
     as_principal(principal(owner=None))
     with pytest.raises(McpAppNotOwnedError) as status:
-        await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
     with pytest.raises(McpAppNotOwnedError) as logs:
-        await execute_tool("bisheng_app_logs", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_logs", {"app_id": APP_ID})
 
     assert status.value.to_dict() == logs.value.to_dict()
     assert "resource_owner_missing" not in json.dumps(status.value.to_dict(), ensure_ascii=False)
@@ -273,7 +273,7 @@ async def test_a_key_with_no_resource_owner_gets_the_same_one_answer(as_principa
 
 
 def test_the_registry_offers_no_ddl_tool():
-    """Schema is declared in ``bisheng-app.yaml`` and changed through the pipeline."""
+    """Schema is declared in ``doberman-agent-app.yaml`` and changed through the pipeline."""
 
     names = set(registry.TOOL_REGISTRY)
     assert not any(verb in name for name in names for verb in ("create_table", "alter", "drop", "truncate"))
@@ -291,8 +291,8 @@ def test_a_delegated_key_never_sees_the_local_development_tools():
     listed = {tool.name for tool in registry.list_tools_for(delegated)}
 
     assert not (APP_TOOLS & listed)
-    assert "bisheng_org_tree" not in listed
-    assert not registry.TOOL_REGISTRY["bisheng_app_status"].visible_to(delegated)
+    assert "doberman_agent_org_tree" not in listed
+    assert not registry.TOOL_REGISTRY["doberman_agent_app_status"].visible_to(delegated)
 
 
 def test_personal_tokens_never_see_the_app_tools():
@@ -309,7 +309,7 @@ async def test_without_the_runtime_layer_a_direct_call_is_refused(monkeypatch, a
     monkeypatch.setattr(registry.settings.app_runtime, "enabled", False)
     as_principal(principal())
     with pytest.raises(AppPublishRuntimeLayerDisabledError):
-        await execute_tool("bisheng_app_status", {"app_id": APP_ID})
+        await execute_tool("doberman_agent_app_status", {"app_id": APP_ID})
     assert services.calls == []
 
 
@@ -318,7 +318,7 @@ def test_the_tools_never_reach_the_orchestrator_directly():
 
     import pathlib
 
-    source = (pathlib.Path(__file__).resolve().parents[2] / "bisheng" / "open_mcp" / "tools" / "apps.py").read_text(
+    source = (pathlib.Path(__file__).resolve().parents[2] / "doberman_agent" / "open_mcp" / "tools" / "apps.py").read_text(
         encoding="utf-8"
     )
     assert "orchestrator_client" not in source
@@ -326,6 +326,6 @@ def test_the_tools_never_reach_the_orchestrator_directly():
 
 
 def test_personal_tokens_cannot_hold_the_scope_these_tools_need():
-    from bisheng.open_api.domain.services.personal_token_service import PERSONAL_TOKEN_SCOPE
+    from doberman_agent.open_api.domain.services.personal_token_service import PERSONAL_TOKEN_SCOPE
 
     assert PERSONAL_TOKEN_SCOPE == "knowledge:read"

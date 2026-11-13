@@ -1,8 +1,8 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
-import { RadioGroup, Radio } from '@bisheng/ui';
+import { RadioGroup, Radio } from '@doberman-agent/ui';
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 

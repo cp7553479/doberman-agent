@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client'
+import { normalizeApiError } from '@doberman-agent/api-client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createContext } from 'react'
@@ -12,8 +12,8 @@ vi.mock('@/controllers/API/dashboard', () => ({ updateDashboard: mock.save, publ
 vi.mock('react-router-dom', () => ({ useNavigate: () => mock.navigate }))
 vi.mock('@/contexts/userContext', () => ({ userContext: createContext({ user: {} }) }))
 vi.mock('./ComponentPicker', () => ({ default: ({ children }: { children: React.ReactNode }) => children }))
-vi.mock('@bisheng/ui', async (importOriginal) => ({
-    ...await importOriginal<typeof import('@bisheng/ui')>(), notification: { open: mock.notice },
+vi.mock('@doberman-agent/ui', async (importOriginal) => ({
+    ...await importOriginal<typeof import('@doberman-agent/ui')>(), notification: { open: mock.notice },
 }))
 
 const dashboard: Dashboard = {

@@ -1,16 +1,16 @@
 import { lazy,Suspense,useMemo } from 'react';
-import type { CitationFileProps } from '@bisheng/chat/citation-views';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
-import { TextViewer } from '@bisheng/file-viewers/text';
-import { MarkdownViewer } from '@bisheng/file-viewers/markdown';
-import { HtmlViewer } from '@bisheng/file-viewers/html-viewer';
-import { ImageViewer } from '@bisheng/file-viewers/image';
-import { MediaViewer } from '@bisheng/file-viewers/media';
+import type { CitationFileProps } from '@doberman-agent/chat/citation-views';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
+import { TextViewer } from '@doberman-agent/file-viewers/text';
+import { MarkdownViewer } from '@doberman-agent/file-viewers/markdown';
+import { HtmlViewer } from '@doberman-agent/file-viewers/html-viewer';
+import { ImageViewer } from '@doberman-agent/file-viewers/image';
+import { MediaViewer } from '@doberman-agent/file-viewers/media';
 import { PlatformPdfPreview } from '../preview/PlatformPdfPreview';
 import { checkSassUrl } from '../preview/previewUrl';
 import type { PdfLabels } from '../preview/pdfEditing';
-const DocxViewer=lazy(()=>import('@bisheng/file-viewers/docx').then(module=>({default:module.DocxViewer})));
-const ExcelPreview=lazy(()=>import('@bisheng/file-viewers').then(module=>({default:module.ExcelPreview})));
+const DocxViewer=lazy(()=>import('@doberman-agent/file-viewers/docx').then(module=>({default:module.DocxViewer})));
+const ExcelPreview=lazy(()=>import('@doberman-agent/file-viewers').then(module=>({default:module.ExcelPreview})));
 export function PlatformCitationFile({fileName,fileType,fileUrl,transcriptUrl,highlightBboxes,targetBBox,allowDownload}:CitationFileProps) {
  const locale=usePreviewLocale();
  const labels=useMemo(()=>highlightBboxes.reduce<PdfLabels>((map,box,index)=>{(map[box.page+1]??=[]).push({id:String(index),label:box.bbox,active:true});return map;},{}),[highlightBboxes]);

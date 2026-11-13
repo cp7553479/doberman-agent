@@ -7,18 +7,18 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode import open_api as errors
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.common.schemas.api import PageInfiniteCursorData
-from bisheng.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
-from bisheng.open_api.domain.services.task_mode_service import OpenTaskModeService
+from doberman_agent.common.errcode import open_api as errors
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.common.schemas.api import PageInfiniteCursorData
+from doberman_agent.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
+from doberman_agent.open_api.domain.services.task_mode_service import OpenTaskModeService
 from test.open_api.task_mode_support import CONFIG, LOGIN_USER, delegated_principal, sa_principal
 
 
 @pytest.fixture
 def workbench(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.llm.domain.services.LLMService.get_workbench_llm",
+        "doberman_agent.llm.domain.services.LLMService.get_workbench_llm",
         AsyncMock(return_value=SimpleNamespace(linsight_default_model_id="7")),
     )
 
@@ -34,7 +34,7 @@ async def test_task_config_lists_models_default_tools_and_skills(task_mode_seams
 
 async def test_default_model_outside_the_list_is_not_advertised(task_mode_seams, monkeypatch):
     monkeypatch.setattr(
-        "bisheng.llm.domain.services.LLMService.get_workbench_llm",
+        "doberman_agent.llm.domain.services.LLMService.get_workbench_llm",
         AsyncMock(return_value=SimpleNamespace(linsight_default_model_id="99")),
     )
     config = await OpenTaskModeService.task_config(sa_principal(), LOGIN_USER)
@@ -106,9 +106,9 @@ def visible_spaces(monkeypatch, task_mode_seams):
     }
     visible = SimpleNamespace(object_ids=["1", "2", "3", "4"], error=None)
     runtime = SimpleNamespace(list_visible_objects=AsyncMock(return_value=visible))
-    monkeypatch.setattr("bisheng.permission.application.access.get_f048_runtime", AsyncMock(return_value=runtime))
+    monkeypatch.setattr("doberman_agent.permission.application.access.get_f048_runtime", AsyncMock(return_value=runtime))
     monkeypatch.setattr(
-        "bisheng.permission.application.identity.resolve_permission_actor", AsyncMock(return_value=SimpleNamespace())
+        "doberman_agent.permission.application.identity.resolve_permission_actor", AsyncMock(return_value=SimpleNamespace())
     )
     return runtime
 
@@ -133,9 +133,9 @@ async def test_spaces_are_the_visible_ones_paged_and_searchable(visible_spaces):
 
 async def test_space_enumeration_failure_is_not_an_empty_list(task_mode_seams, monkeypatch):
     runtime = SimpleNamespace(list_visible_objects=AsyncMock(side_effect=PermissionServiceUnavailableError()))
-    monkeypatch.setattr("bisheng.permission.application.access.get_f048_runtime", AsyncMock(return_value=runtime))
+    monkeypatch.setattr("doberman_agent.permission.application.access.get_f048_runtime", AsyncMock(return_value=runtime))
     monkeypatch.setattr(
-        "bisheng.permission.application.identity.resolve_permission_actor", AsyncMock(return_value=SimpleNamespace())
+        "doberman_agent.permission.application.identity.resolve_permission_actor", AsyncMock(return_value=SimpleNamespace())
     )
     with pytest.raises(PermissionServiceUnavailableError):
         await OpenTaskModeService.list_knowledge(
@@ -152,7 +152,7 @@ async def test_libraries_use_the_use_action(task_mode_seams, monkeypatch):
         return PageInfiniteCursorData(data=[row], page_size=10, has_more=False, next_cursor=None)
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service.KnowledgeService.get_knowledge", _get_knowledge
+        "doberman_agent.knowledge.domain.services.knowledge_service.KnowledgeService.get_knowledge", _get_knowledge
     )
     page = await OpenTaskModeService.list_knowledge(
         None, sa_principal(), LOGIN_USER, knowledge_type="library", name="d", cursor=None, page_size=500
@@ -164,7 +164,7 @@ async def test_libraries_use_the_use_action(task_mode_seams, monkeypatch):
 
 
 async def test_unknown_knowledge_type_is_rejected(task_mode_seams):
-    from bisheng.common.errcode.knowledge import KnowledgeTypeNotSupportedError
+    from doberman_agent.common.errcode.knowledge import KnowledgeTypeNotSupportedError
 
     with pytest.raises(KnowledgeTypeNotSupportedError):
         await OpenTaskModeService.list_knowledge(

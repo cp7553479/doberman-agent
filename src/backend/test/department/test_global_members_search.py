@@ -24,8 +24,8 @@ for _mod in ("celery", "celery.schedules", "celery.app", "celery.app.task"):
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
 
-from bisheng.department.domain.services.department_service import DepartmentService
-from bisheng.database.models.department import DepartmentDao
+from doberman_agent.department.domain.services.department_service import DepartmentService
+from doberman_agent.database.models.department import DepartmentDao
 
 _DDL = [
     """CREATE TABLE IF NOT EXISTS department (
@@ -104,7 +104,7 @@ def _session_patch(engine):
             yield session
 
     return patch(
-        "bisheng.department.domain.repositories.management_search_repository.get_async_db_session",
+        "doberman_agent.department.domain.repositories.management_search_repository.get_async_db_session",
         _factory,
     )
 
@@ -286,7 +286,7 @@ async def test_external_id_wildcards_are_literal(engine):
 
 
 async def test_department_search_uses_external_id_not_department_code(engine):
-    from bisheng.department.domain.repositories.management_search_repository import ManagementSearchRepository
+    from doberman_agent.department.domain.repositories.management_search_repository import ManagementSearchRepository
 
     await _seed_dept(engine, did=10, dept_id="jia0100", name="Name unrelated", path="/10/")
     await _seed_dept(engine, did=11, dept_id="BS@target", name="zzz", path="/10/11/")

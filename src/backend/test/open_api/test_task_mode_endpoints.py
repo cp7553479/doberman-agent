@@ -14,10 +14,10 @@ from fastapi import APIRouter, Depends, FastAPI
 from fastapi.responses import PlainTextResponse
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.schemas.task_mode import OpenTaskStatus, OpenTaskSubmitted, OpenTaskView
-from bisheng.open_endpoints.api.endpoints import workstation as endpoints
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.schemas.task_mode import OpenTaskStatus, OpenTaskSubmitted, OpenTaskView
+from doberman_agent.open_endpoints.api.endpoints import workstation as endpoints
 from test.open_api.task_mode_support import sa_principal
 
 TASK_BODY = {
@@ -57,7 +57,7 @@ def calls(monkeypatch):
         return {"models": [], "tools": []}
 
     view = OpenTaskView(task_id="svid-1", status=OpenTaskStatus.RUNNING)
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", _validate_bearer)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", _validate_bearer)
     monkeypatch.setattr(endpoints, "get_open_api_operator_async", AsyncMock(return_value=SimpleNamespace(user_id=12)))
     monkeypatch.setattr(endpoints.OpenTaskModeService, "submit", _submit)
     monkeypatch.setattr(endpoints.OpenTaskModeService, "task_config", _task_config)
@@ -200,10 +200,10 @@ async def test_missing_chat_invoke_is_403(app, calls, path, method):
 async def test_personal_access_token_cannot_reach_task_mode(app, calls, monkeypatch):
     # PAT capability switched on at both layers, so the scope check is what rejects it.
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.settings", SimpleNamespace(open_api=SimpleNamespace(pat_enabled=True))
+        "doberman_agent.open_api.api.dependencies.settings", SimpleNamespace(open_api=SimpleNamespace(pat_enabled=True))
     )
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.TenantSettingService.get_policy",
+        "doberman_agent.open_api.api.dependencies.TenantSettingService.get_policy",
         AsyncMock(return_value=SimpleNamespace(enabled=True, data_scope="all_visible")),
     )
     calls.principal = sa_principal().model_copy(

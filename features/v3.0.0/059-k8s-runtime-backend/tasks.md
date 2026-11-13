@@ -39,14 +39,14 @@
 
 - [x] **T002** — 资源账本、材料授权与控制器字段
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`
   **逻辑/验收**：按 design 6.2 定义资源 UID/停止证据、委托公钥/范围及 Node controller 租约字段、Transfer 授权字段；继承已有租户记录，使用 JsonType/跨库类型；新 36-char 标识仅用于新增路径，保留旧 ID。
   **覆盖 AC:** AC-13、AC-15、AC-47、AC-48
   **依赖:** 无
 
 - [x] **T003** — Schema 扩展与租户登记
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/f059_runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/domain/models/__init__.py`
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/domain/models/__init__.py`
   **逻辑/验收**：在真实单 head 后追加扩展 DDL；在已注册的 models 包导入新表以进入租户发现。旧数据回填另列运维前置，不在 revision 做读写变换。降级前由独立运维前置检查停用 K8s/无新引用，未满足则拒绝；revision 只撤列等 DDL，不执行数据回填/清理；保留原 Docker 字段。
   **覆盖 AC:** AC-15、AC-39、AC-40、AC-48、AC-56
   **依赖:** T002
@@ -60,14 +60,14 @@
 
 - [x] **T073** — F086 字节计数器继承与迁移汇合
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/f059_merge_f086_heads.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_merge_f086_heads.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
   **逻辑/验收**：继承F086 667546bb77的Vibe专有BIGINT修复；模型在通用发布线上不存在。显式merge revision保留两个原parent，恢复单head；静态守卫明确历史授权NULL/待绑定UID NULL，其他约束不放宽；DM8仅静态。
   **覆盖 AC:** AC-15、AC-39、AC-48、AC-56
   **依赖:** T003
 
 - [x] **T074** — 发布线继承的迁移图汇合
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/f059_merge_release_heads.py`
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_merge_release_heads.py`
   **逻辑/验收**：合并已授权发布线9d156f261c后，实际出现f059_merge_f086_heads、asr_rt_model_type、merge_skill_center_heads三条head；新增空merge revision保留三条原父链，不改表/数据、不重写历史；以已有单head门禁和模型/账本回归验证。降级只回到原分叉。
   **覆盖 AC:** AC-39、AC-48、AC-56
   **依赖:** T073
@@ -157,7 +157,7 @@
 
 - [x] **T015** — 平台资源账本 Repository
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
   **逻辑/验收**：以现有内存/SQLite fixture 验租户范围、资源意图幂等/UID绑定、CAS epoch、容量预占和 cleanup 生命周期；Repository 事务内完成并发控制，业务 Service 不拼 ORM SQL；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-08、AC-13、AC-15、AC-35、AC-48、AC-49、AC-52
   **依赖:** T002、T003、T014
@@ -173,7 +173,7 @@
 
 - [x] **T017** — 控制器租约和资源事实 Service
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`
   **逻辑/验收**：claim/renew holder/expected_epoch，验证固定执行域与有效操作、Service提交资源意图并结束SQL事务，manager随后调用 K8s；错 UID、过期控制器、越界、提前释放拒绝，终态后的只读收尾计划可续办；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-03、AC-07、AC-08、AC-13、AC-14、AC-48、AC-49、AC-52
   **依赖:** T015、T016
@@ -189,7 +189,7 @@
 
 - [x] **T019** — 内部控制 API 接入
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/api/router.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/api/router.py`
   **逻辑/验收**：注册 controllers/resources/observations/admission plans；沿用独立服务 HMAC/角色和序列化，API→Service→Repository；admission 只读，非角色/重放/跨域拒绝；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-03、AC-04、AC-13、AC-14、AC-15、AC-48
   **依赖:** T017、T018
@@ -205,7 +205,7 @@
 
 - [x] **T021** — material-v1 编码与验签
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_protocol.py`、`src/runtime-manager/runtime_manager/material_protocol.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_protocol.py`、`src/runtime-manager/runtime_manager/material_protocol.py`
   **逻辑/验收**：对同一 414-byte 固定向量验 11 行编码与真实 Ed25519 互验；覆盖原始 body/ticket/method/path/offset、重复头/query、nonce 与时钟界限。双方实现固定 wire contract，不从 backend import manager；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-15、AC-46、AC-47
   **依赖:** T004、T020
@@ -221,7 +221,7 @@
 
 - [x] **T023** — 材料委托和续期 Service
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_service.py`、`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_service.py`、`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`
   **逻辑/验收**：从操作/部署/预览推导范围并绑定 UID/公钥；operation 终态失效，deployment-init 按当前 serving/候选冻结引用续取；旧 ticket 不独立续期，撤销/跨租户/错材料/Redis未知拒绝；正式部署的expires_at允许NULL，含义为逐次检查当前归属；operation/预览分别保留操作/会话期限。仅调整未发布新表声明，无数据或已发布父链变更；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-15、AC-27、AC-46、AC-47、AC-48
   **依赖:** T015、T021、T022
@@ -237,7 +237,7 @@
 
 - [x] **T025** — 范围化分块材料传输
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_transfer_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_artifact_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_transfer_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_artifact_service.py`
   **逻辑/验收**：复用对象存储和持久 offset；exchange 同范围轮换票据，单块 16MiB，重复同字节幂等/错摘要拒绝，分块下载与 finalize 内容/SQL确认；接口到期和响应丢失可查，无 MinIO 直链；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-26、AC-28、AC-29、AC-42、AC-46、AC-47、AC-51
   **依赖:** T023、T024
@@ -253,7 +253,7 @@
 
 - [x] **T076** — 材料根路径多租户中间件接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/utils/http_middleware.py`
+  **文件**：`src/backend/doberman_agent/utils/http_middleware.py`
   **逻辑/验收**：仅新增材料根路径到可信内部请求前缀，并排除浏览器凭据解析；授权Service逐次清除ambient bypass/admin后验证租户/UID，不扩大其他路径。保持平台已有JWT/DSH语义；配对测试及L1后完成。
   **覆盖 AC:** AC-15、AC-47、AC-48
   **依赖:** T025、T075
@@ -269,7 +269,7 @@
 
 - [x] **T027** — 材料 workload HTTP API
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_material.py`、`src/backend/bisheng/main.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_material.py`、`src/backend/doberman_agent/main.py`
   **逻辑/验收**：material-v1固定P直接注册为main根路由，不继承/api/v1前缀；按 design 6.2.1 完整方法/头/响应/错误注册 exchange、status、content、finalize；使用 workload 身份依赖，拒绝 manager/app/OBO 身份互换，流式阶段重新检查期限/撤销；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-15、AC-28、AC-46、AC-47、AC-51
   **依赖:** T025、T019、T026
@@ -303,7 +303,7 @@
 
 - [x] **T078** — 依赖缓存选择与材料授权接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_material_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_service.py`
   **逻辑/验收**：resolve/confirm在操作行锁下持久选中结果，授权复查同范围SQL计划和材料；禁止任意引用扩大授权、终态写入或更换输入键。保持旧Docker内容确认合同。配对测试及L1后完成。
   **覆盖 AC:** AC-15、AC-25、AC-28、AC-29、AC-46、AC-47
   **依赖:** T023、T029、T077
@@ -335,7 +335,7 @@
 
 - [x] **T080** — K8s节点与控制事实接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py`
   **逻辑/验收**：扩展兼容心跳/node plan、K8s控制器事实闸口、停止与ready事实校验；保留Docker合同。探测失效阻断新建，清理不被同一状态锁死；内部未知异常安全503。配对测试和L1后完成。
   **覆盖 AC:** AC-03、AC-07、AC-08、AC-13、AC-14、AC-30、AC-31、AC-48、AC-49、AC-52
   **依赖:** T019、T031、T079
@@ -433,7 +433,7 @@
 
 - [x] **T082** — 数据会话账本及部署资源开销接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`
   **逻辑/验收**：Repository在node/assignment锁下登记内部数据操作及helper预占，不改active_operation_id/generation；生命周期新提交及claim检查未清理data归属，数据claim校验原范围；unknown保留互斥。终态且清理确认后释放。OperationService按K8s实际sidecar计入正式Pod资源、保留Docker预算；不做集群I/O。
   **覆盖 AC:** AC-04、AC-05、AC-33、AC-34、AC-35、AC-36、AC-43、AC-48、AC-49、AC-50、AC-52
   **依赖:** T041、T080、T081
@@ -449,7 +449,7 @@
 
 - [x] **T043** — owner 数据会话业务协调
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`
   **逻辑/验收**：在原权限/确认/审计后创建内部 kind=data；不改 serving代次/App态，数据/迁移/停用/部署互斥；事务先提交再唤醒，在线复用helper，停用冷启动也计入60秒，超时不等于cleanup；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-15、AC-35、AC-36、AC-37、AC-43、AC-48、AC-49、AC-50
   **依赖:** T017、T041、T042
@@ -473,7 +473,7 @@
 
 - [x] **T085** — 顺序维护资源 DDL
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/f059_resource_phases.py`
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_resource_phases.py`
   **逻辑/验收**：实际单head f059_merge_release_heads之后追加DDL，移除operation/kind/name唯一约束；保留资源ref主键及真实UID唯一约束。降级须运维先确认历史无重名，revision不删历史、不读写业务数据；MySQL/DM8条件DDL及单head静态验证。
   **覆盖 AC:** AC-15、AC-35、AC-48、AC-49、AC-56
   **依赖:** T074
@@ -488,7 +488,7 @@
 
 - [x] **T084** — 顺序资源意图与历史保留
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
   **逻辑/验收**：按资源ref幂等登记；固定生产名的新ref须先确认旧Pod stopped及cleanup complete，保留所有UID历史，非生产重名拒绝。移除模型旧唯一intent约束，保留UID唯一；事务内检查，不在锁内调用集群API。
   **覆盖 AC:** AC-08、AC-15、AC-33、AC-35、AC-48、AC-49、AC-50
   **依赖:** T085、T083
@@ -504,7 +504,7 @@
 
 - [x] **T087** — 对象存储 Range 流式下载接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_object_store.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_material_transfer_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_object_store.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_transfer_service.py`
   **逻辑/验收**：使用MinIO get_object offset/length和定长流，不从头跳过；backend继续独占存储凭据，连接finally释放，原授权/offset/完整性合同保持。
   **覆盖 AC:** AC-26、AC-28、AC-29、AC-46、AC-47、AC-51
   **依赖:** T025、T086
@@ -536,7 +536,7 @@
 
 - [x] **T049** — backend 数据动作签发及路由
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_grant_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_kubernetes.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_grant_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_kubernetes.py`
   **逻辑/验收**：原业务Service重新核验actor及当前data操作/UID后本地签发；不向manager提供通用签发API。data操作和查询结果授权原地失效，非owner、重放、错UID拒绝；管理身份不能自签；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-15、AC-36、AC-37、AC-43、AC-48
   **依赖:** T043、T047、T048
@@ -552,7 +552,7 @@
 
 - [x] **T089** — K8s 兼容源码 profile 协调接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`
   **逻辑/验收**：仅K8s source-image复用现有全局profile解析、冻结架构与材料归属；保持Docker和完整镜像原语义。环境注入/审批仍由原业务Owner负责。
   **覆盖 AC:** AC-01、AC-24、AC-25、AC-27、AC-28、AC-42、AC-54
   **依赖:** T049、T088
@@ -568,7 +568,7 @@
 
 - [x] **T091** — 数据恢复协调与导出短缓存
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`
   **逻辑/验收**：原数据Service先验证owner；恢复原操作结果创建新result只读会话和新request_id，不重放写。K8s导出经有界分块落缓存供响应，错误/取消回收，审计按文件大小记录；不让backend访问SQLite。
   **覆盖 AC:** AC-15、AC-36、AC-37、AC-43、AC-48、AC-50
   **依赖:** T049、T090
@@ -584,7 +584,7 @@
 
 - [x] **T093** — 数据恢复和流式导出 API 接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/api/endpoints/apps.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/apps.py`
   **逻辑/验收**：只委托AppDataService，不在Endpoint执行账本/存储逻辑；公开业务读取结果用统一信封，CSV短缓存FileResponse带BackgroundTask回收；保持原bytes路径。
   **覆盖 AC:** AC-15、AC-36、AC-37、AC-43、AC-48、AC-50
   **依赖:** T091、T092
@@ -635,7 +635,7 @@
 
 - [x] **T097** — backend purge 范围和删除授权
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
   **逻辑/验收**：只接受显式destroy+purge_volume的固定生产位置；由执行事实证明purge完成及全部writer停止清理后，授予原PVC条件删除。
   **覆盖 AC:** AC-35、AC-48、AC-49、AC-50、AC-52
   **依赖:** T053、T096
@@ -707,7 +707,7 @@
 
 - [x] **T095** — 活跃材料候选 Repository 查询
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
   **逻辑/验收**：Repository联查材料与资源记录提供material_policy_candidates(node_id,now)，不在Service写SQL；跨租户仅供已验证egress角色的node范围投影，最多10000活动候选、超限拒绝，不删除历史。
   **覆盖 AC:** AC-15、AC-23、AC-46、AC-47、AC-48、AC-53
   **依赖:** T055、T094
@@ -723,7 +723,7 @@
 
 - [x] **T057** — 材料用途的出站投影
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_policy_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_policy_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`
   **逻辑/验收**：material代理身份由当前材料授权投影，独立于完成的prepare；只放行后台材料TLS端点和范围，撤销5秒上界，业务凭据不冒用；入口路由继续backendSQL投影不依赖manager；通过配对测试后完成 L1 task-review。
   **覆盖 AC:** AC-07、AC-12、AC-15、AC-21、AC-23、AC-46、AC-47、AC-53
   **依赖:** T023、T055、T056
@@ -857,7 +857,7 @@
 
 - [x] **T110** — 删除维护轻量容量预占
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`
   **逻辑/验收**：保持原子节点锁，purge只为受限helper预占；不免除容量控制。
   **覆盖 AC:** AC-11、AC-18、AC-48
   **依赖:** T109
@@ -1000,7 +1000,7 @@
 
 - [x] **T129** — helper 及 PVC 作用域校验接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/test/app_runtime/test_runtime_kubernetes_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/test/app_runtime/test_runtime_kubernetes_service.py`
   **逻辑/验收**：允许固定storage-guard；所有production/scratch按app/op冻结PVC，跨app同namespace卷仍拒绝；更新旧最小fixture。
   **覆盖 AC:** AC-03、AC-33、AC-34、AC-48
   **依赖:** T097
@@ -1030,8 +1030,8 @@
 
 - [x] **T133** — SDK 平台地址变量接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`
-  **逻辑/验收**：v2增加BISHENG_PLATFORM_API_BASE并保留旧key；不改变模型/附件身份，不以测试mock代替SDK实际调用。
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`
+  **逻辑/验收**：v2增加doberman-agent_PLATFORM_API_BASE并保留旧key；不改变模型/附件身份，不以测试mock代替SDK实际调用。
   **覆盖 AC:** AC-36、AC-46、AC-56
   **依赖:** T132
   **配对:** T132
@@ -1162,7 +1162,7 @@
 
 - [x] **T150** — 运行记录租户默认值修订
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`
   **逻辑/验收**：ScopedRuntimeRecord默认None且nullable=False/index=True；复用before_flush上下文注入，不改变既有DB约束，不修改公共Linsight模型。
   **覆盖 AC:** AC-15、AC-48、AC-54、AC-56
   **依赖:** T149
@@ -1596,7 +1596,7 @@
 
 - [x] **T201** — backend按阶段消费已解析profile
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`
   **逻辑/验收**：prepare仅读payload.profile，其他阶段仅读resolved_delivery.profile；非法delivery/profile固定RuntimeConflict，不以stale对象fallback扩大镜像白名单；image/purge无profile合同保持。
   **覆盖 AC:** AC-04、AC-13、AC-15、AC-24、AC-25、AC-36、AC-48、AC-55
   **依赖:** T200、T202
@@ -1636,7 +1636,7 @@
 
 - [x] **T208** — 资源账本单次创建与未创建围栏
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`、`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`、`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`
   **逻辑/验收**：现有observed_state存versioned creation，CAS begin/rejected/fence/not_created；明确403且fence后fresh404才确认无执行体，不伪造UID；未知持久阻塞；锁读populate_existing，无新DDL。
   **覆盖 AC:** AC-13、AC-14、AC-48、AC-49、AC-52
   **依赖:** T207、T214
@@ -1651,7 +1651,7 @@
 
 - [x] **T212** — 创建收尾Service与只读准入接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`
   **逻辑/验收**：动作按字段范围校验，新增四个内部观察；not_created和stopped各自校验，所有Pod确认后才能释放预占；准入只给started新意图CREATE。
   **覆盖 AC:** AC-13、AC-14、AC-48、AC-49、AC-52
   **依赖:** T207、T208、T211
@@ -1659,7 +1659,7 @@
 
 - [x] **T213** — 签名观察API创建动作输入
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_kubernetes.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_kubernetes.py`
   **逻辑/验收**：严格schema声明创建动作/attempt/status，exclude_unset避免默认字段进入其它动作；独立manager鉴权不变，无外部deploy API变更。
   **覆盖 AC:** AC-13、AC-14、AC-48、AC-49、AC-52
   **依赖:** T207、T212
@@ -1826,7 +1826,7 @@
 
 - [x] **T231** — 取消数据会话的签发与RPC围栏
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_grant_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`、`src/runtime-manager/runtime_manager/k8s_data_executor.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_grant_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`、`src/runtime-manager/runtime_manager/k8s_data_executor.py`
   **逻辑/验收**：后端签发事务与ready读取核取消；manager当前操作校验拒绝取消后的新动作，不伪造回滚/停止或释放未知写入者。
   **覆盖 AC:** AC-33、AC-36、AC-43、AC-48、AC-49、AC-55
   **依赖:** T230
@@ -1922,7 +1922,7 @@
 
 - [x] **T243** — 离线数据Pod预占100m CPU
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
   **逻辑/验收**：仅offline可信tier与实际容量预占由25m调100m；原同步响应、60秒期限、票据、并发和停止释放规则不变。
   **覆盖 AC:** AC-18、AC-33、AC-43、AC-48、AC-49、AC-55
   **依赖:** T242
@@ -2088,7 +2088,7 @@
 
 - [x] **T261** — 平台保留报告未知的历史事实并阻止当前释放
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`
   **逻辑/验收**：仅可信旧同基线+严格report-only元数据保留历史标记，节点blocked；实际失败/基线变更仍降级。首次停止须当前对应保护true，已确认幂等与not_created不变；不回填旧false。
   **覆盖 AC:** AC-07、AC-30、AC-31、AC-35、AC-40、AC-48、AC-49、AC-52、AC-55
   **依赖:** T260
@@ -2117,7 +2117,7 @@
 
 - [x] **T264** — CLI v2 容量错误码配对
   **类型**：测试
-  **文件**：`src/bisheng-cli/tests/test_errors.py`、`src/bisheng-cli/tests/test_command_deploy_wait.py`
+  **文件**：`src/doberman-agent-cli/tests/test_errors.py`、`src/doberman-agent-cli/tests/test_command_deploy_wait.py`
   **逻辑/验收**：通过真实 error_from_platform 和 deploy failure 处理复现 v2 16125 被降为 exit19；覆盖16125与既有16226均为exit14、其他未知码继续降级，验证脱敏输出及原响应语义。
   **覆盖 AC:** AC-02、AC-08
   **依赖:** T261
@@ -2125,7 +2125,7 @@
 
 - [x] **T265** — CLI 兼容 v2 容量不足并同步分发 wheel
   **类型**：实现
-  **文件**：`src/bisheng-cli/bisheng_cli/errors.py`、`src/backend/bisheng/dev_toolkit/artifacts/bisheng_cli-3.0.0-py3-none-any.whl`、`src/backend/bisheng/dev_toolkit/artifacts/manifest.json`
+  **文件**：`src/doberman-agent-cli/doberman_agent_cli/errors.py`、`src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_cli-3.0.0-py3-none-any.whl`、`src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json`
   **逻辑/验收**：仅将既有16125映射EXIT_CAPACITY并复用容量提示；不改backend返回码或对外协议。按现有pack_cli_wheel.sh重建实际分发目录的wheel并同步manifest.cli.sha256，SDK物料不变，校验源码与wheel errors.py一致，并运行CLI相关回归。
   **覆盖 AC:** AC-02、AC-08
   **依赖:** T264
@@ -2179,7 +2179,7 @@
 
 - [x] **T271** — 接通显式恢复后的服务实例注册
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`
   **逻辑/验收**：仅为resume_after_restore=true且同操作恢复结果已持久的合法启动阶段接通serve，复用已有资源冻结/租约/旧writer停止保护；不改材料、路由、SDK、schema或Docker。
   **覆盖 AC:** AC-05、AC-13、AC-15、AC-47、AC-48、AC-49、AC-50、AC-52
   **依赖:** T270

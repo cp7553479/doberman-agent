@@ -7,10 +7,10 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.permission.api.endpoints import grant_subjects
-from bisheng.permission.domain.services.grant_subject_service import GrantSubjectScope
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.permission.api.endpoints import grant_subjects
+from doberman_agent.permission.domain.services.grant_subject_service import GrantSubjectScope
 
 PICKERS = [
     (

@@ -83,15 +83,15 @@ L1/L2：按 task-review/code-review 检查未提交增量的分层、边界、�
 
 ---
 
-2026-10-15 合并 `feat/bisheng-work-103` 及单迁移头修复的最新证据见 [分支合并验证](./merge-validation-20261015.md)。以下保留 2026-10-14 开发验收的历史快照，不代表合并后已重新部署或完成全面门禁。
+2026-10-15 合并 `feat/doberman-agent-work-103` 及单迁移头修复的最新证据见 [分支合并验证](./merge-validation-20261015.md)。以下保留 2026-10-14 开发验收的历史快照，不代表合并后已重新部署或完成全面门禁。
 
 日期：2026-10-14。结论：功能代码、本机隔离存储及双端代码联调通过；发布验收 **PARTIAL**。未提交、推送、合并或部署。
 
 ## 1 环境与证据边界
 
-- 服务端工作树：`bisheng/.worktrees/feat-3.0.0-dsh-audit`，分支 `feat/3.0.0-dsh-audit`，原开发基线 `eb41b17868dfd706b93fc4df27d8d09ed10960ee`。当前本地 `origin/feat/3.0.0` 已前移至 `e058f58eb8d03cf582725d31e194eeeb16fce205`；没有自动合入或覆盖用户工作，发布前须同步发布线后再回归。
-- 客户端：`bisheng-work/.worktrees/feat-3.0.0-dsh-audit`，同名分支，独立 agent 基于 `origin/main=3f6f010b280e7e095a13f59d8e3faae2c6223ab2` 开发。
-- 根据用户授权启用本机 OrbStack，使用已缓存 MySQL 8.0、Redis 7.2、MinIO 镜像创建唯一命名、loopback 端口、`bisheng.test=dsh-audit` 标签的独立容器。数据库、私有测试 bucket、密钥和合成身份均临时生成，不使用业务库或生产凭证。
+- 服务端工作树：`doberman-agent/.worktrees/feat-3.0.0-dsh-audit`，分支 `feat/3.0.0-dsh-audit`，原开发基线 `eb41b17868dfd706b93fc4df27d8d09ed10960ee`。当前本地 `origin/feat/3.0.0` 已前移至 `e058f58eb8d03cf582725d31e194eeeb16fce205`；没有自动合入或覆盖用户工作，发布前须同步发布线后再回归。
+- 客户端：`doberman-agent-work/.worktrees/feat-3.0.0-dsh-audit`，同名分支，独立 agent 基于 `origin/main=3f6f010b280e7e095a13f59d8e3faae2c6223ab2` 开发。
+- 根据用户授权启用本机 OrbStack，使用已缓存 MySQL 8.0、Redis 7.2、MinIO 镜像创建唯一命名、loopback 端口、`doberman_agent.test=dsh-audit` 标签的独立容器。数据库、私有测试 bucket、密钥和合成身份均临时生成，不使用业务库或生产凭证。
 - `test/dsh/audit_local_server.py` + `model_audit_harness.py` 使用真实 DSH route/service/adapter/queue/writer/repository/AES-GCM/MinIO 代码；身份、模型、准入与用量事件生产者是合成设施。真实平台 JWT/OpenFGA/Gateway、供应商响应、正式 Electron 窗口不在此证据范围内。
 - Python/ruff 复用主检出 venv 的安装，导入当前工作树源代码；主检出 config.yaml 只读用于 import，不修改配置，不连接其业务存储。外部回归明确使用独立 `dsh_test_` 库和测试 Redis 索引。
 

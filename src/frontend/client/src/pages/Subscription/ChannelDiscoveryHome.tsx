@@ -2,7 +2,7 @@ import { refreshChannelState } from "./hooks/useChannelStateRefresh";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { TransitionEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize, useWorkbenchMenuNames } from "~/hooks";
 import { useToastContext } from "~/Providers";
 import { NotificationSeverity } from "~/common";

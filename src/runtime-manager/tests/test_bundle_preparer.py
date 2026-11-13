@@ -133,7 +133,7 @@ def test_code_only_release_reuses_frozen_materials_and_venv(tmp_path):
     preparer = BundlePreparer(config, platform, runner=runner)
     source = tmp_path / "source"
     source.mkdir()
-    (source / "bisheng-app.yaml").write_text("manifest_version: 2")
+    (source / "doberman-agent-app.yaml").write_text("manifest_version: 2")
     (source / "requirements.txt").write_text("")
     results = []
     for n in [1, 2]:

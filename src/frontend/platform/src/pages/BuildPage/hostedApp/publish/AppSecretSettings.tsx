@@ -1,7 +1,7 @@
 import { bsConfirm } from '@/components/bs-ui/alertDialog/useConfirm'
 import { generateUUID } from '@/components/bs-ui/utils'
 import { getHostedAppErrorMessage } from '@/controllers/API/hostedApp'
-import { Button } from '@bisheng/ui'
+import { Button } from '@doberman-agent/ui'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppSecrets } from '../hooks/useAppSecrets'

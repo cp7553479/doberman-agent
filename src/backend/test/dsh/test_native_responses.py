@@ -10,18 +10,18 @@ import pytest
 from openai import AsyncOpenAI
 from pydantic import ValidationError
 
-from bisheng.common.errcode.dsh import DshUnsupportedParameterError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities
-from bisheng.dsh.domain.schemas.conversation import ConversationHint
-from bisheng.dsh.domain.schemas.reasoning import reasoning_declaration
-from bisheng.dsh.domain.schemas.responses import DshResponsesRequest
+from doberman_agent.common.errcode.dsh import DshUnsupportedParameterError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities
+from doberman_agent.dsh.domain.schemas.conversation import ConversationHint
+from doberman_agent.dsh.domain.schemas.reasoning import reasoning_declaration
+from doberman_agent.dsh.domain.schemas.responses import DshResponsesRequest
 from test.dsh.test_enterprise_protocol import DECLARATION
 from test.dsh.test_model_service import principal, service_setup  # noqa: F401
 from test.dsh.test_models_api import app_setup  # noqa: F401
 
 
 def body(**changes):
-    return {"model": "bisheng:42", "input": [{"role": "user", "content": "hi"}], **changes}
+    return {"model": "doberman_agent:42", "input": [{"role": "user", "content": "hi"}], **changes}
 
 
 def result(status="completed", usage=True):
@@ -113,7 +113,7 @@ async def test_sdk_wire_and_shared_settlement(app_setup, stream, status, known_u
             responses=True, reasoning=reasoning_declaration(DECLARATION)
         )
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app), base_url="https://bisheng.invalid"
+            transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.invalid"
         ) as client:
             response = await client.post(
                 "/api/v1/dsh/responses",
@@ -147,7 +147,7 @@ async def test_sdk_wire_and_shared_settlement(app_setup, stream, status, known_u
         assert "opaque-encrypted-content" in response.text
     else:
         assert response.json()["output"] == final["output"]
-        assert response.json()["model"] == "bisheng:42"
+        assert response.json()["model"] == "doberman_agent:42"
     assert ledger.events[-1].status == (
         "USAGE_UNKNOWN" if not known_usage else "FAILED" if status == "failed" else "SUCCEEDED"
     )
@@ -177,7 +177,7 @@ def test_full_tool_reasoning_history_roundtrip():
 
 @pytest.mark.parametrize("fault", ["eof", "type", "sequence", "oversize", "close", "before_start"])
 async def test_native_faults_close_supplier_and_settle_once(service_setup, fault, monkeypatch):  # noqa: F811
-    from bisheng.dsh.infrastructure import responses_adapter
+    from doberman_agent.dsh.infrastructure import responses_adapter
 
     service, _, ledger, *_ = service_setup
     closed = []
@@ -238,7 +238,7 @@ async def test_native_faults_close_supplier_and_settle_once(service_setup, fault
 
 
 async def test_raw_supplier_limit_precedes_sdk_json_decode(service_setup, monkeypatch):  # noqa: F811
-    from bisheng.dsh.infrastructure import responses_adapter
+    from doberman_agent.dsh.infrastructure import responses_adapter
 
     service, _, ledger, *_ = service_setup
     closed = []
@@ -274,7 +274,7 @@ async def test_raw_supplier_limit_precedes_sdk_json_decode(service_setup, monkey
 
 async def test_unknown_events_and_missing_sequence_do_not_fail_stream():
     """Suppliers add event types and proxies may drop sequence_number."""
-    from bisheng.dsh.infrastructure.responses_adapter import ResponsesExecution
+    from doberman_agent.dsh.infrastructure.responses_adapter import ResponsesExecution
 
     terminal = {
         "status": "completed",

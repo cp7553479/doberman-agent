@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.database.models.message import ChatMessage
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 
 def _session(*, svid: str = "SV-1", chat_id: str = "chat-1", answer: str = "最终答案"):
@@ -82,7 +82,7 @@ async def test_partial_persists_citations(completion_task):
 
 async def test_failure_does_not_persist_citations(completion_task, monkeypatch: pytest.MonkeyPatch):
     task, _msg = completion_task
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     monkeypatch.setattr(
         te,
@@ -105,7 +105,7 @@ async def test_persist_report_citations_reads_md_and_calls_helper(tmp_path, monk
         return []
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
         fake_persist,
     )
     task = LinsightWorkflowTask()
@@ -126,7 +126,7 @@ async def test_persist_report_citations_swallows_helper_errors(monkeypatch: pyte
         raise RuntimeError("redis down")
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
         boom,
     )
     task = LinsightWorkflowTask()
@@ -134,7 +134,7 @@ async def test_persist_report_citations_swallows_helper_errors(monkeypatch: pyte
 
 
 async def test_persist_report_citations_attaches_sources_to_output_result(monkeypatch: pytest.MonkeyPatch):
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         CitationRegistryItemSchema,
         CitationType,
         RagCitationItemSchema,
@@ -161,7 +161,7 @@ async def test_persist_report_citations_attaches_sources_to_output_result(monkey
         return [item]
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
         fake_persist,
     )
     task = LinsightWorkflowTask()
@@ -181,13 +181,13 @@ async def test_persist_report_citations_attaches_sources_to_output_result(monkey
 async def test_persist_report_citations_leaves_answer_untouched(tmp_path, monkeypatch: pytest.MonkeyPatch):
     """The report file is the cited deliverable; its marked paragraphs are no
     longer copied onto the answer, and the task turn is not re-persisted."""
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         CitationRegistryItemSchema,
         CitationType,
         RagCitationItemSchema,
         RagCitationPayloadSchema,
     )
-    from bisheng.citation.domain.services.citation_prompt_helper import (
+    from doberman_agent.citation.domain.services.citation_prompt_helper import (
         CITATION_END_MARKER,
         CITATION_START_MARKER,
     )
@@ -211,7 +211,7 @@ async def test_persist_report_citations_leaves_answer_untouched(tmp_path, monkey
         return [item]
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
         fake_persist,
     )
     persist_message = AsyncMock()

@@ -21,12 +21,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.api.endpoints import linsight as endpoint
-from bisheng.linsight.domain.models.linsight_session_version import (
+from doberman_agent.linsight.api.endpoints import linsight as endpoint
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersion,
     SessionVersionStatusEnum,
 )
-from bisheng.linsight.domain.services import state_message_manager, workbench_impl
+from doberman_agent.linsight.domain.services import state_message_manager, workbench_impl
 
 
 def _session(*, status=SessionVersionStatusEnum.NOT_STARTED):
@@ -54,11 +54,11 @@ def patched_endpoint(monkeypatch):
     # F073: the termination body moved into LinsightWorkbenchImpl.terminate.
     monkeypatch.setattr(workbench_impl, "get_redis_client", AsyncMock(return_value=SimpleNamespace()))
 
-    # LinsightQueue is imported function-locally from bisheng.linsight.worker;
+    # LinsightQueue is imported function-locally from doberman_agent.linsight.worker;
     # inject a stub module so the heavy worker import chain is never loaded.
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.LinsightQueue = lambda *a, **k: SimpleNamespace(remove=AsyncMock())
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
 
     monkeypatch.setattr(
         state_message_manager,

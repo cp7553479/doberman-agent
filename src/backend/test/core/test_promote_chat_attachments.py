@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.core.storage.chat_attachment import (
+from doberman_agent.core.storage.chat_attachment import (
     CHAT_OBJECT_PREFIX,
     promote_chat_attachments,
     temp_object_name_from_url,
@@ -23,23 +23,23 @@ from bisheng.core.storage.chat_attachment import (
 @pytest.fixture
 def storage():
     client = MagicMock()
-    client.bucket = "bisheng"
-    client.tmp_bucket = "bisheng-tmp"
+    client.bucket = "doberman_agent"
+    client.tmp_bucket = "doberman-agent-tmp"
     client.copy_object = AsyncMock()
-    with patch("bisheng.core.storage.chat_attachment.get_minio_storage", AsyncMock(return_value=client)):
+    with patch("doberman_agent.core.storage.chat_attachment.get_minio_storage", AsyncMock(return_value=client)):
         yield client
 
 
 class TestPromoteChatAttachments:
     async def test_copies_temp_object_and_records_permanent_name(self, storage):
         # AC-01 — after this the file no longer depends on the temp bucket.
-        files = [{"file_id": "f1", "filename": "a.png", "filepath": "/bisheng-tmp/abc.png"}]
+        files = [{"file_id": "f1", "filename": "a.png", "filepath": "/doberman-agent-tmp/abc.png"}]
 
         promoted = await promote_chat_attachments(files, user_id=7)
 
         storage.copy_object.assert_awaited_once()
         kwargs = storage.copy_object.await_args.kwargs
-        assert kwargs["source_bucket"] == "bisheng-tmp"
+        assert kwargs["source_bucket"] == "doberman-agent-tmp"
         assert kwargs["source_object"] == "abc.png"
         assert kwargs["dest_object"].startswith(f"{CHAT_OBJECT_PREFIX}7/")
         assert promoted[0]["object_name"] == kwargs["dest_object"]
@@ -58,8 +58,8 @@ class TestPromoteChatAttachments:
         # Sending the message matters more than any single attachment.
         storage.copy_object.side_effect = [Exception("gone"), None]
         files = [
-            {"file_id": "f1", "filename": "a.png", "filepath": "/bisheng-tmp/a.png"},
-            {"file_id": "f2", "filename": "b.png", "filepath": "/bisheng-tmp/b.png"},
+            {"file_id": "f1", "filename": "a.png", "filepath": "/doberman-agent-tmp/a.png"},
+            {"file_id": "f2", "filename": "b.png", "filepath": "/doberman-agent-tmp/b.png"},
         ]
 
         promoted = await promote_chat_attachments(files, user_id=7)
@@ -70,7 +70,7 @@ class TestPromoteChatAttachments:
     async def test_workflow_chat_names_the_link_file_url(self, storage):
         # Each upload path spells the link field differently; workflow chat says
         # file_url, and reading only `filepath` silently promoted nothing.
-        files = [{"file_id": "f1", "file_name": "a.png", "file_url": "/bisheng-tmp/abc.png"}]
+        files = [{"file_id": "f1", "file_name": "a.png", "file_url": "/doberman-agent-tmp/abc.png"}]
 
         promoted = await promote_chat_attachments(files, user_id=7)
 
@@ -78,7 +78,7 @@ class TestPromoteChatAttachments:
         assert promoted[0]["object_name"].startswith(f"{CHAT_OBJECT_PREFIX}7/")
 
     async def test_extension_is_carried_over_from_the_display_name(self, storage):
-        files = [{"file_id": "f1", "filename": "报告.PDF", "filepath": "/bisheng-tmp/xyz.pdf"}]
+        files = [{"file_id": "f1", "filename": "报告.PDF", "filepath": "/doberman-agent-tmp/xyz.pdf"}]
 
         promoted = await promote_chat_attachments(files, user_id=7)
 
@@ -93,9 +93,9 @@ class TestPromoteChatAttachments:
         # Sending must survive a storage outage: the worst outcome allowed here
         # is an attachment that can't be viewed later, never a message the user
         # cannot send at all.
-        files = [{"file_id": "f1", "filename": "a.png", "filepath": "/bisheng-tmp/a.png"}]
+        files = [{"file_id": "f1", "filename": "a.png", "filepath": "/doberman-agent-tmp/a.png"}]
         with patch(
-            "bisheng.core.storage.chat_attachment.get_minio_storage",
+            "doberman_agent.core.storage.chat_attachment.get_minio_storage",
             AsyncMock(side_effect=RuntimeError("minio down")),
         ):
             assert await promote_chat_attachments(files, user_id=7) == files
@@ -105,23 +105,23 @@ class TestTempObjectNameFromUrl:
     """The link we issued at upload is what tells us the object to move."""
 
     def test_presigned_link_with_query_string(self):
-        url = "/bisheng-tmp/abc.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=604800"
-        assert temp_object_name_from_url(url, "bisheng-tmp") == "abc.png"
+        url = "/doberman-agent-tmp/abc.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=604800"
+        assert temp_object_name_from_url(url, "doberman-agent-tmp") == "abc.png"
 
     def test_link_that_still_carries_the_host(self):
-        url = "http://minio:9000/bisheng-tmp/abc.png?X-Amz-Expires=1"
-        assert temp_object_name_from_url(url, "bisheng-tmp") == "abc.png"
+        url = "http://minio:9000/doberman-agent-tmp/abc.png?X-Amz-Expires=1"
+        assert temp_object_name_from_url(url, "doberman-agent-tmp") == "abc.png"
 
     def test_tenant_prefixed_object_keeps_its_full_key(self):
-        url = "/bisheng-tmp/tenant_acme/abc.png"
-        assert temp_object_name_from_url(url, "bisheng-tmp") == "tenant_acme/abc.png"
+        url = "/doberman-agent-tmp/tenant_acme/abc.png"
+        assert temp_object_name_from_url(url, "doberman-agent-tmp") == "tenant_acme/abc.png"
 
     def test_percent_encoded_name_is_decoded(self):
-        url = "/bisheng-tmp/%E6%8A%A5%E5%91%8A.pdf"
-        assert temp_object_name_from_url(url, "bisheng-tmp") == "报告.pdf"
+        url = "/doberman-agent-tmp/%E6%8A%A5%E5%91%8A.pdf"
+        assert temp_object_name_from_url(url, "doberman-agent-tmp") == "报告.pdf"
 
     def test_link_outside_the_temp_bucket_is_not_ours_to_move(self):
-        assert temp_object_name_from_url("/bisheng/knowledge/abc.png", "bisheng-tmp") is None
+        assert temp_object_name_from_url("/doberman_agent/knowledge/abc.png", "doberman-agent-tmp") is None
 
     def test_blank_link(self):
-        assert temp_object_name_from_url("", "bisheng-tmp") is None
+        assert temp_object_name_from_url("", "doberman-agent-tmp") is None

@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.permission.application.relation_api import (
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.permission.application.relation_api import (
     PermissionObject,
     PermissionRelation,
     PermissionRelationApplication,
@@ -118,7 +118,7 @@ async def test_crash_safe_changes_translate_only_inside_permission_module() -> N
     )
 
     with patch(
-        "bisheng.permission.domain.services.permission_service.PermissionService.batch_write_tuples",
+        "doberman_agent.permission.domain.services.permission_service.PermissionService.batch_write_tuples",
         new=AsyncMock(),
     ) as batch_write:
         await permissions.apply_changes(changes, crash_safe=True)
@@ -151,7 +151,7 @@ async def test_getter_waits_for_process_runtime_and_returns_protocol() -> None:
     runtime = SimpleNamespace(components=SimpleNamespace(relations=relations))
 
     with patch(
-        "bisheng.permission.application.process_runtime.get_f048_process_runtime",
+        "doberman_agent.permission.application.process_runtime.get_f048_process_runtime",
         new=AsyncMock(return_value=runtime),
     ) as get_runtime:
         resolved = await get_permission_relation_api()
@@ -163,7 +163,7 @@ async def test_getter_waits_for_process_runtime_and_returns_protocol() -> None:
 async def test_getter_translates_runtime_initialization_failure() -> None:
     with (
         patch(
-            "bisheng.permission.application.process_runtime.get_f048_process_runtime",
+            "doberman_agent.permission.application.process_runtime.get_f048_process_runtime",
             new=AsyncMock(side_effect=RuntimeError("not ready")),
         ),
         pytest.raises(PermissionServiceUnavailableError),
@@ -176,7 +176,7 @@ async def test_tenant_admin_query_uses_permission_application_protocol() -> None
     permissions.check = AsyncMock(return_value=True)
 
     with patch(
-        "bisheng.permission.application.relation_api.get_permission_relation_api",
+        "doberman_agent.permission.application.relation_api.get_permission_relation_api",
         new=AsyncMock(return_value=permissions),
     ):
         assert await is_tenant_admin(7, 5) is True

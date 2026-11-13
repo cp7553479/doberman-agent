@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.channel.domain.services.f048_channel_permission import (
+from doberman_agent.channel.domain.services.f048_channel_permission import (
     build_channel_membership_idempotency_key,
 )
-from bisheng.permission.domain.models.projection import PermissionProjectionOperation
+from doberman_agent.permission.domain.models.projection import PermissionProjectionOperation
 
 _CHANNEL_ID = "70b0130ff3344001b368891803520eee"  # ids are 32 hex characters
 

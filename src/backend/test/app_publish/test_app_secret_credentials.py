@@ -7,11 +7,11 @@ from sqlmodel import select
 
 
 async def test_candidate_and_issue_audit_rollback_with_caller(publish_engine, publish_db, app_factory):
-    from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubject
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
-    from bisheng.database.models.audit_log import AuditLog
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubject
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
+    from doberman_agent.database.models.audit_log import AuditLog
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
 
     async with publish_engine.begin() as connection:
         await connection.run_sync(lambda conn: RuntimeCredentialBinding.__table__.create(conn, checkfirst=True))
@@ -38,9 +38,9 @@ async def test_candidate_and_issue_audit_rollback_with_caller(publish_engine, pu
 async def test_candidate_is_returned_from_flushed_rows_without_new_session(
     publish_engine, publish_db, app_factory, monkeypatch
 ):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
-    from bisheng.open_api.domain.services.credential_service import CredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
+    from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
     async with publish_engine.begin() as connection:
         await connection.run_sync(lambda conn: RuntimeCredentialBinding.__table__.create(conn, checkfirst=True))

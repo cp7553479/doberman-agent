@@ -1,4 +1,4 @@
-import type { BishengConfig } from '~/@types/chat';
+import type { DobermanAgentConfig } from '~/@types/chat';
 
 type StandaloneFlowType = 'workflow' | 'assistant';
 
@@ -10,7 +10,7 @@ export async function loadStandaloneAutoRerunOnOpen(
 
   try {
     const response = await loadConfig();
-    const config = (response as { data?: BishengConfig } | null)?.data;
+    const config = (response as { data?: DobermanAgentConfig } | null)?.data;
     const configuredValue = config?.workflow?.auto_rerun_on_open;
     return typeof configuredValue === 'boolean' ? configuredValue : false;
   } catch {

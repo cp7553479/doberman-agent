@@ -11,7 +11,7 @@ session bridge) is deferred to T06 ``UserTenantSyncService`` tests which
 exercise ``aget_token_version`` / ``aincrement_token_version`` end-to-end
 in a service-level context where the full cache manager wiring is mocked
 coherently. Bringing those mocks into this DAO-only file clashes with the
-conftest ``premock_import_chain`` (the ``bisheng.user.domain.models.user``
+conftest ``premock_import_chain`` (the ``doberman_agent.user.domain.models.user``
 path is pre-mocked there; reimporting it here causes SQLModel metadata
 double-registration + redis.asyncio submodule-import chain failures).
 

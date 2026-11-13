@@ -10,7 +10,7 @@ This directory holds **manual maintenance, migration, and one-off operational sc
 
 **All scripts MUST be executed from `src/backend/` (the backend root).**
 
-Relative paths in shell wrappers (`scripts/foo.py`, `bisheng/script/foo.py`) and the `PYTHONPATH="./"` convention below both depend on this. Running from anywhere else will break imports.
+Relative paths in shell wrappers (`scripts/foo.py`, `doberman_agent/script/foo.py`) and the `PYTHONPATH="./"` convention below both depend on this. Running from anywhere else will break imports.
 
 ```bash
 cd src/backend/
@@ -21,7 +21,7 @@ bash scripts/<your_script>.sh [args...]
 
 ## 2. Python Import Path
 
-**Shell wrappers MUST set `PYTHONPATH="./"`** before invoking Python. This adds the backend root to `sys.path` so `from bisheng.xxx import ...` resolves against the local source tree — no `pip install -e .` required.
+**Shell wrappers MUST set `PYTHONPATH="./"`** before invoking Python. This adds the backend root to `sys.path` so `from doberman_agent.xxx import ...` resolves against the local source tree — no `pip install -e .` required.
 
 Minimal template:
 
@@ -40,7 +40,7 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
 ```
 
 This makes the script robust to direct `python` invocation while the `.sh` wrapper continues to rely on `PYTHONPATH`.
@@ -112,7 +112,7 @@ A script must run against the **same environment the live service runs against**
 
 ### 6.1 Config file (`config` env var)
 
-The service and every script resolve config through `os.getenv('config', 'config.yaml')` (see `bisheng/common/services/config_service.py`). **Export the same `config` the running service uses** before invoking the script, or you will load the wrong YAML (wrong DB / Milvus / Redis endpoints):
+The service and every script resolve config through `os.getenv('config', 'config.yaml')` (see `doberman_agent/common/services/config_service.py`). **Export the same `config` the running service uses** before invoking the script, or you will load the wrong YAML (wrong DB / Milvus / Redis endpoints):
 
 ```bash
 export config=config.yaml      # must match the value the API/Celery process runs with
@@ -123,18 +123,18 @@ python scripts/<your_script>.py
 Always import the shared settings singleton — never re-parse the YAML yourself:
 
 ```python
-from bisheng.common.services.config_service import settings  # YAML → env → DB → Redis, identical to the service
+from doberman_agent.common.services.config_service import settings  # YAML → env → DB → Redis, identical to the service
 ```
 
 ### 6.2 App context (infra clients)
 
-The API service builds its runtime context in the FastAPI lifespan via `initialize_app_context(config=settings)` (`bisheng/main.py`). A bare script does **not** — only the lazily-registered **database** context exists. So raw DB reads/writes work without any setup, but anything that needs another engine — **OpenFGA/ReBAC**, **Redis** caches, **Milvus**, **Elasticsearch** — will fail (e.g. `FGAClient not available`) until you initialize the full context yourself.
+The API service builds its runtime context in the FastAPI lifespan via `initialize_app_context(config=settings)` (`doberman_agent/main.py`). A bare script does **not** — only the lazily-registered **database** context exists. So raw DB reads/writes work without any setup, but anything that needs another engine — **OpenFGA/ReBAC**, **Redis** caches, **Milvus**, **Elasticsearch** — will fail (e.g. `FGAClient not available`) until you initialize the full context yourself.
 
 If your script touches anything beyond the database, mirror the lifespan: initialize at startup, **always** close on teardown.
 
 ```python
-from bisheng.common.services.config_service import settings
-from bisheng.core.context.manager import close_app_context, initialize_app_context
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.core.context.manager import close_app_context, initialize_app_context
 
 async def _main() -> int:
     await initialize_app_context(config=settings)   # DB + OpenFGA + Redis + Milvus + ES, same as the service
@@ -159,7 +159,7 @@ Reference script that does this correctly:
 Scripts run **outside** the FastAPI request lifecycle, so the automatic tenant filter has no active tenant context. If your script touches tenant-scoped tables:
 
 ```python
-from bisheng.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.context.tenant import bypass_tenant_filter
 
 with bypass_tenant_filter():
     # cross-tenant reads/writes here
@@ -225,7 +225,7 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-# from bisheng.* imports here
+# from doberman_agent.* imports here
 
 async def run(args) -> int: ...
 

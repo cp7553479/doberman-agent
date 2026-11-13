@@ -1,11 +1,11 @@
 // @ts-strict-ignore
 import { getSpaceMembershipAction } from "./spaceMembershipAction";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { KnowledgeSpace } from "~/api/knowledge";
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { ActionMenuLoadingRow } from "~/components/ActionMenu";
 import { useConfirm } from "~/Providers";
 import { useLocalize } from "~/hooks";

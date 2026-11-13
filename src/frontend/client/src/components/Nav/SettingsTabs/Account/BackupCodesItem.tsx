@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import React, { useState } from 'react';
 import { RefreshCcw, ShieldX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

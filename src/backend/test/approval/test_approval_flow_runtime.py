@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalActionLog,
     ApprovalException,
     ApprovalExceptionType,
@@ -20,16 +20,16 @@ from bisheng.approval.domain.models.approval_instance import (
     ApprovalTask,
     ApprovalTaskStatus,
 )
-from bisheng.approval.domain.models.approval_scenario import (
+from doberman_agent.approval.domain.models.approval_scenario import (
     ApprovalFlowDefinition,
     ApprovalFlowVersion,
     ApprovalNodeDefinition,
     ApprovalRouteRule,
     ApprovalScenario,
 )
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
-from bisheng.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
+from doberman_agent.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
 
 
 @pytest_asyncio.fixture
@@ -65,15 +65,15 @@ async def patched_runtime_repositories(approval_runtime_engine, monkeypatch):
             yield session
 
     monkeypatch.setattr(
-        'bisheng.approval.domain.repositories.approval_scenario_repository.get_async_db_session',
+        'doberman_agent.approval.domain.repositories.approval_scenario_repository.get_async_db_session',
         _factory,
     )
     monkeypatch.setattr(
-        'bisheng.approval.domain.repositories.approval_instance_repository.get_async_db_session',
+        'doberman_agent.approval.domain.repositories.approval_instance_repository.get_async_db_session',
         _factory,
     )
     monkeypatch.setattr(
-        'bisheng.approval.domain.repositories.approval_query_repository.get_async_db_session',
+        'doberman_agent.approval.domain.repositories.approval_query_repository.get_async_db_session',
         _factory,
     )
     yield

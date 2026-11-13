@@ -3,21 +3,21 @@ from types import SimpleNamespace
 import pytest
 from sqlmodel import select
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     ServiceAccountManagementScopeChangedError,
     ServiceAccountNameTakenError,
     ServiceAccountNotFoundError,
     ServiceAccountOwnerInvalidError,
 )
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT, ApiCredential
-from bisheng.open_api.domain.models.service_account import ServiceAccount
-from bisheng.open_api.domain.schemas.credential import KeyIssueRequest
-from bisheng.open_api.domain.schemas.service_account import ServiceAccountCreate, ServiceAccountUpdate
-from bisheng.open_api.domain.services.credential_service import CredentialService
-from bisheng.open_api.domain.services.service_account_service import ServiceAccountService
-from bisheng.user.domain.models.user import User
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT, ApiCredential
+from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest
+from doberman_agent.open_api.domain.schemas.service_account import ServiceAccountCreate, ServiceAccountUpdate
+from doberman_agent.open_api.domain.services.credential_service import CredentialService
+from doberman_agent.open_api.domain.services.service_account_service import ServiceAccountService
+from doberman_agent.user.domain.models.user import User
 
 
 async def seed_user(open_api_db, user_id: int, tenant_id: int, *, deleted: bool = False):

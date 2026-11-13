@@ -5,7 +5,7 @@ Mirrors the F034 ``relation_model_backfill`` test style: only the pure
 idempotent and benign, covered by startup self-heal.
 """
 
-from bisheng.llm.domain.services.linsight_default_model_backfill import (
+from doberman_agent.llm.domain.services.linsight_default_model_backfill import (
     transform_linsight_llm_config,
 )
 

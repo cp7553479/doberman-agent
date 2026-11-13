@@ -1,10 +1,10 @@
 {/* 工作档头（站点不渲染）：
 设计系统 · 图标部分 v1 定稿 · 2026-07-16
-参考 antd 图标设计原则（准确 / 简单 / 节奏 / 愉悦），基于 bisheng-icons 库现状制定。
+参考 antd 图标设计原则（准确 / 简单 / 节奏 / 愉悦），基于 @doberman-agent/icons 库现状制定。
 与 00-总纲.md（§七 图标规则）、组件-Button按钮.md（§3.2/3.3 按钮内 icon）、基础-色彩规范.mdx 配套。现状扫描见文末附录 A（仅迁移参考）。
 本页 2026-07-21 由 .md 转 .mdx（为内嵌 SVG 示意图）；.md 时代靠 strip-internal-loader 隐藏的内部段落，现改用 MDX 注释包裹，源文件仍是单一事实源。 */}
 
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 
 export const IconFile = Outlined.File;
 export const IconFileImage = Outlined.FileImage;
@@ -189,7 +189,7 @@ export const FigRhythm = () => (
 
 | 项 | 内容 |
 |---|---|
-| 库 | `bisheng-icons`（npm 包，源自 bisheng-design-system → github.com/dataelement/bisheng-icon） |
+| 库 | `@doberman-agent/icons`（本地 workspace 包，保留原始 MIT 许可证） |
 | 管理方式 | Figma 插件管理设计源 → 自动生成 React 组件 → semver 发版。图标的增改只发生在 Figma，代码侧只升版本 |
 | 规模（v0.2.22） | 131 个：Outlined 116（线性，主力）/ Filled 8（实心）/ Colored 7（多色，文件类型/文件夹） |
 | 三风格 | Outlined 为主力；Filled、Colored 按图标自身语义选用（Colored 自带固有色，不参与着色） |
@@ -232,10 +232,10 @@ export const FigRhythm = () => (
 
 ### 2.1 选用优先级
 
-1. **bisheng-icons 优先**：语义在库里已有就必须用它。`import { Outlined } from 'bisheng-icons'` → `<Outlined.Delete />`。
-2. **lucide-react 只作兜底**：库里没有对应语义才用，并留 `// TODO(bisheng-icons)` 记号；库补齐后由设计师点名换回。
+1. **@doberman-agent/icons 优先**：语义在库里已有就必须用它。`import { Outlined } from '@doberman-agent/icons'` → `<Outlined.Delete />`。
+2. **lucide-react 只作兜底**：库里没有对应语义才用，并留 `// TODO(@doberman-agent/icons)` 记号；库补齐后由设计师点名换回。
 3. **禁止新增手写 SVG 图标组件**；存量 `components/icons/` 只减不增。例外：需要品牌主题化多色着色的图形（参照 `FolderIcon`，用 `rgb(var(--brand-NNN))` 内联 style）。
-4. 升级 bisheng-icons 后**必须清 Vite 预构建缓存**：`npm run dev -- --force`（总纲 §七 pitfall，否则白屏）。
+4. 升级 @doberman-agent/icons 后**必须清 Vite 预构建缓存**：`npm run dev -- --force`（总纲 §七 pitfall，否则白屏）。
 
 ### 2.2 尺寸阶梯
 
@@ -283,12 +283,12 @@ export const FigRhythm = () => (
 
 1. **设计师**在 Figma 图标库按照绘制规范绘制（先确认库内无同语义图标）→ 插件发布。
 2. 库侧自动生成组件、semver 发版。
-3. 项目 `npm install bisheng-icons@latest` → `npm run dev -- --force` → 画廊目检新图标。
+3. 项目 `npm install @doberman-agent/icons@latest` → `npm run dev -- --force` → 画廊目检新图标。
 4. 库补齐了某语义后，由设计师点名把对应的 lucide 兜底逐批换回（不自动批量替换）。
 
 {/* ## 4. 迁移（给实现窗口）——站点不渲染
 
-- 高频 lucide → bisheng-icons 映射（迁移时逐个目检字形）：`X→Outlined.Close`、`Check→Check`、`Plus→Plus`、`Search→Search`、`ChevronLeft/Right/Down/Up→Left/Right/Down/Up`、`ListFilter→Filter`、`Loader2→Loading`、`Download→Download`、`Copy→Copy`、`InfoIcon→Info`、`EarthIcon→Earth`、`ArrowUpDown→Sort`。
+- 高频 lucide → @doberman-agent/icons 映射（迁移时逐个目检字形）：`X→Outlined.Close`、`Check→Check`、`Plus→Plus`、`Search→Search`、`ChevronLeft/Right/Down/Up→Left/Right/Down/Up`、`ListFilter→Filter`、`Loader2→Loading`、`Download→Download`、`Copy→Copy`、`InfoIcon→Info`、`EarthIcon→Earth`、`ArrowUpDown→Sort`。
 - 迁移节奏照总纲：设计师逐批点名、每批一笔提交；优先动高频通用图标（用量见附录 A.2）。
 - 尺寸写法顺手统一：`h-4 w-4` 等新旧写法迁移时改为 `size-4` 单类（等值，纯写法收敛）。
 */}
@@ -302,7 +302,7 @@ export const FigRhythm = () => (
 | 项 | 数据 |
 |---|---|
 | lucide-react | 159 个文件引用，126 种图标 |
-| bisheng-icons | 39 个文件引用 |
+| @doberman-agent/icons | 39 个文件引用 |
 | 手写 SVG 图标组件 | `components/icons/` 10 个（FolderIcon 为品牌主题化模板，保留）；另 illustrations/ 为插画不算图标 |
 
 ### A.2 lucide 高频 top（import 次数）
@@ -331,15 +331,15 @@ X 20 · Plus 11 · ChevronLeft 10 · Check 10 · Search 9 · ChevronDown 7 · Li
 
 | 日期 | 改了什么 | 影响文件 | 提交 |
 |---|---|---|---|
-| 2026-07-16 | 建档：antd 图标设计原则调研 + bisheng-icons 库指纹实测 + 两库用量/尺寸写法扫描；产出绘制/使用/流程/迁移四段规范 v1 草稿 | 本文件、00-总纲看板 | 不提交（文档夹已 gitignore） |
+| 2026-07-16 | 建档：antd 图标设计原则调研 + @doberman-agent/icons 库指纹实测 + 两库用量/尺寸写法扫描；产出绘制/使用/流程/迁移四段规范 v1 草稿 | 本文件、00-总纲看板 | 不提交（文档夹已 gitignore） |
 | 2026-07-16 | 设计师过待确认清单：尺寸阶梯（含 12px 档）通过；20px 存量暂不重分类；库缺口补图标暂不管；三风格不作硬性分工；新增 §3.2.1 线宽×尺寸对照表（14–24 默认 2 不覆盖，12→2.5、≥32→1.5 两端补偿）。清单清空删除，v1 定稿 | 本文件、00-总纲看板 | 不提交 |
 | 2026-07-16 | 对照 TDesign 式「磅数次线性」表复核 §3.2.1：24px 维持等比 2px、12px 维持补偿 1.25px（设计师二次确认）；§2 视觉平衡条吸收「复杂度校正 ≤±0.25px」上限 | 本文件 | 不提交 |
 | 2026-07-16 | 删 18px 档（设计师定：大概率用不到），阶梯收为五档 12/14/16/20/24，档名顺移（lg=20、xl=24）。⚠️ 与按钮规范 §3.2/3.3「large 按钮 icon 18px」存在冲突，待设计师定 large 按钮内 icon 改用 16 或 20 | 本文件 |  不提交 |
 | 2026-07-16 | 新增 32px（2xl）档：超大展示场景，strokeWidth 统一降 1.5；阶梯定为六档 12/14/16/20/24/32。large 按钮内 icon 定为 16px，按钮规范 §3.2/3.3 同步改（18px 冲突消除，全文无 18px 残留） | 本文件、组件-Button按钮.md | 不提交 |
 | 2026-07-21 | 文档站页面规整：原 §1「图标库（单一来源）」不再展示（留档于注释）；章节号 2–5 顺移为 1–4，§引用同步更新；「Figma 侧/代码侧」改「设计侧/研发侧」；「出血位」改「安全边距」。为内嵌 SVG 将本页 .md → .mdx，内部段落改用 MDX 注释隐藏 | 本文件、00-总纲.md（链接改 .mdx） | 不提交 |
 | 2026-07-21 | 绘制规范补齐 6 组 SVG 示意图（安全边距网格 / 撑满 ✓✗ / 圆头圆角 / 像素对齐 / 基本形+同外框 / 视觉平衡 / 命名，输出卫生不配图）；Kinyoo 反馈落地：说明文字统一底对齐+居中，✓✗ 对比组左右分散排布 | 本文件 | 不提交 |
-| 2026-07-21 | 成对图统一「两等宽半栏各自居中」模板（新增 half 列容器 + Pair 组件），上下 6 组左右列垂直对齐；「形式与韵律」右侧改用真实 File/FileImage/FileWord（共用文件外框最真实的例子），「命名」两例改用真实 Delete 图标——首次在规范 mdx 内嵌 bisheng-icons，rspress.config 加 `bisheng-icons` alias（**唯一进仓库的改动**） | 本文件、rspress.config.ts | rspress.config 提交 / 本文件不提交 |
+| 2026-07-21 | 成对图统一「两等宽半栏各自居中」模板（新增 half 列容器 + Pair 组件），上下 6 组左右列垂直对齐；「形式与韵律」右侧改用真实 File/FileImage/FileWord（共用文件外框最真实的例子），「命名」两例改用真实 Delete 图标——首次在规范 mdx 内嵌 @doberman-agent/icons，rspress.config 加 `@doberman-agent/icons` alias（**唯一进仓库的改动**） | 本文件、rspress.config.ts | rspress.config 提交 / 本文件不提交 |
 | 2026-07-21 | Kinyoo 定：删「视觉平衡」整点（文本+插图+FigBalance 组件全删）；「命名」去插图（删 FigNaming/NameCard），正文改为命名规范条目列表（大驼峰/区分字段后缀、按语义不按形状、禁特殊符号、禁数字与顺序编号、同类不重复） | 本文件 | 不提交 |
 | 2026-07-21 | 章节标题去括号后缀：绘制规范（设计侧）/使用规范（研发侧）/选用优先级（总纲 §七）→ 去掉括号；FigRhythm 左侧圆方三角应用视觉补偿（overshoot）：方形为基准、圆直径 48、三角上下溢出更多，加两条虚线标基准，图注改为说明视觉补偿 | 本文件 | 不提交 |
-| 2026-07-28 | 微调 FigRhythm 三形至圆Ø45/方44/等边三角(底52高45)；左半栏结构对齐右半栏（图形+独立 span 标签，两侧图形与小标签水平对齐）；§3 步骤 1「按 §1 绘制」改「按照绘制规范绘制」；绘制规范新增「不使用 mask」条（mask/clipPath 唯一 id 冲突 + 干扰 currentColor）。⚠️ 注：本文件已随 docs 迁入 packages/ui/docs 成为 **git 跟踪**文件（@bisheng/ui 包），上方各行"不提交"口径已过期 | 本文件 | 提交 |
+| 2026-07-28 | 微调 FigRhythm 三形至圆Ø45/方44/等边三角(底52高45)；左半栏结构对齐右半栏（图形+独立 span 标签，两侧图形与小标签水平对齐）；§3 步骤 1「按 §1 绘制」改「按照绘制规范绘制」；绘制规范新增「不使用 mask」条（mask/clipPath 唯一 id 冲突 + 干扰 currentColor）。⚠️ 注：本文件已随 docs 迁入 packages/ui/docs 成为 **git 跟踪**文件（@doberman-agent/ui 包），上方各行"不提交"口径已过期 | 本文件 | 提交 |
 */}

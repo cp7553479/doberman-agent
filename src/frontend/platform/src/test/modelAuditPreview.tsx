@@ -1,6 +1,6 @@
 // Development-only fixture: actual audit components, synthetic identity and loopback proxy.
-import { Button } from "@bisheng/ui";
-import { Input } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
+import { Input } from "@doberman-agent/ui";
 import { userContext } from "@/contexts/userContext";
 import { ModelAuditPanel } from "@/pages/SystemPage/dsh/ModelAuditPanel";
 import "@/style/index.css";

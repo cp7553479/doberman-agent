@@ -11,7 +11,7 @@
     },
     "calls": [
       {
-        "model": "bisheng:2",
+        "model": "doberman-agent:2",
         "stream": false,
         "limit": 8192,
         "http_status": 200,
@@ -35,7 +35,7 @@
         }
       },
       {
-        "model": "bisheng:2",
+        "model": "doberman-agent:2",
         "stream": true,
         "limit": 8192,
         "http_status": 200,
@@ -59,7 +59,7 @@
         }
       },
       {
-        "model": "bisheng:3",
+        "model": "doberman-agent:3",
         "stream": false,
         "limit": 6500,
         "http_status": 429,
@@ -80,7 +80,7 @@
   "earlier_verified_calls": [
     {
       "request_id": "36ded2db-f861-4c55-bbc5-fb1fcf70c30c",
-      "model": "bisheng:2",
+      "model": "doberman-agent:2",
       "stream": false,
       "max_completion_tokens": 6500,
       "upstream_max_tokens": 6500,
@@ -90,7 +90,7 @@
     },
     {
       "request_id": "337f4fca-ce7a-4a78-b5f6-de23e11b104a",
-      "model": "bisheng:2",
+      "model": "doberman-agent:2",
       "stream": true,
       "max_completion_tokens": 6500,
       "upstream_max_tokens": 6500,

@@ -10,7 +10,7 @@ BASE = {"name": "example", "runtime": "python3.11", "port": 8080}
 
 @pytest.fixture
 def manifest_validator(monkeypatch):
-    from bisheng.app_publish.domain.services import manifest_validator
+    from doberman_agent.app_publish.domain.services import manifest_validator
 
     async def tier(_code):
         return SimpleNamespace(code="light")
@@ -20,7 +20,7 @@ def manifest_validator(monkeypatch):
 
 
 async def test_new_input_defaults_to_bundle_but_stored_document_stays_legacy(manifest_validator):
-    from bisheng.app_publish.domain.schemas.app_manifest import AppManifest
+    from doberman_agent.app_publish.domain.schemas.app_manifest import AppManifest
 
     outcome = await manifest_validator.validate_manifest(yaml.safe_dump(BASE))
     assert outcome.manifest.manifest_version == 2
@@ -38,7 +38,7 @@ async def test_explicit_legacy_input_keeps_source_image(manifest_validator):
 
 @pytest.mark.parametrize("version", [None, 0, -1, 3, "unknown"])
 async def test_invalid_explicit_version_is_not_a_default(manifest_validator, version):
-    from bisheng.common.errcode.app_publish import AppManifestInvalidError
+    from doberman_agent.common.errcode.app_publish import AppManifestInvalidError
 
     with pytest.raises(AppManifestInvalidError):
         await manifest_validator.validate_manifest(yaml.safe_dump({**BASE, "manifest_version": version}))

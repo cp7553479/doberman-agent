@@ -5,13 +5,13 @@ import json
 
 import pytest
 
-from bisheng.dsh.audit_runtime import ModelAuditRuntime
-from bisheng.dsh.config import DshSettings
+from doberman_agent.dsh.audit_runtime import ModelAuditRuntime
+from doberman_agent.dsh.config import DshSettings
 from test.dsh.test_model_audit_flow import ADMIN, BASE, LOCAL_ADMIN, call, fixture
 
 
 def bind_production_modes(harness, monkeypatch, active_id):
-    import bisheng.dsh.audit_admin_runtime as composition
+    import doberman_agent.dsh.audit_admin_runtime as composition
 
     monkeypatch.setattr(composition, "authorize_admin", harness.authorize)
     monkeypatch.setattr(composition, "repository_scope", harness.scope)

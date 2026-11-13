@@ -47,7 +47,7 @@
 
 每个仓库都发布以下 9 个镜像的 `:<version>-amd64`、`:<version>-arm64`：
 
-| 镜像名（统一 bisheng- 前缀） | 用途 | 另有 `:<version>` 双架构索引 |
+| 镜像名（统一 doberman-agent- 前缀） | 用途 | 另有 `:<version>` 双架构索引 |
 | --- | --- | --- |
 | runtime-manager | 编排服务，也用于 egress/admission 角色 | 有 |
 | app-proxy | 应用入口 | 有 |
@@ -62,12 +62,12 @@
 例如 release 为 `v3.0.0`：
 
 ```text
-dataelement/bisheng-runtime-manager:v3.0.0-amd64
-dataelement/bisheng-runtime-manager:v3.0.0-arm64
-dataelement/bisheng-runtime-manager:v3.0.0
-cr.dataelem.com/dataelement/bisheng-runtime-manager:v3.0.0-amd64
-cr.dataelem.com/dataelement/bisheng-runtime-manager:v3.0.0-arm64
-cr.dataelem.com/dataelement/bisheng-runtime-manager:v3.0.0
+cp7553479/doberman-agent-runtime-manager:v3.0.0-amd64
+cp7553479/doberman-agent-runtime-manager:v3.0.0-arm64
+cp7553479/doberman-agent-runtime-manager:v3.0.0
+cr.dataelem.com/cp7553479/doberman-agent-runtime-manager:v3.0.0-amd64
+cr.dataelem.com/cp7553479/doberman-agent-runtime-manager:v3.0.0-arm64
+cr.dataelem.com/cp7553479/doberman-agent-runtime-manager:v3.0.0
 ```
 
 不发布 latest。其他版本号不会自动填补 `.env.example` 中的 `v3.0.0`，部署时需匹配

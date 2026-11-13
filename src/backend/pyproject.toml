@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "3.0.0-beta6"
-description = "BISHENG backend service"
+description = "DOBERMAN_AGENT backend service"
 readme = "README.md"
 license = "Apache 2.0"
 requires-python = ">=3.11"
@@ -103,7 +103,7 @@ dependencies = [
     "arxiv>=2.4.0",
     "simhash>=2.1.2",
     # Previously available transitively; the LangChain 1.x dependency graph no
-    # longer pulls it in, but bisheng.user / sso_sync import it directly.
+    # longer pulls it in, but doberman_agent.user / sso_sync import it directly.
     "rsa>=4.9",
     "deepagents>=0.6.12,<0.7",
     "pypinyin>=0.55.0",
@@ -167,7 +167,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["bisheng", "bisheng_langchain"]
+known-first-party = ["doberman_agent", "doberman_agent_langchain"]
 
 [tool.ruff.format]
 quote-style = "double"

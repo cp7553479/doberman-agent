@@ -137,7 +137,7 @@
 
 ### 4.1 后端数据流与三层 scoping（改造前 → 改造后）
 
-**platform 部门管理树**（`bisheng/department/`）：
+**platform 部门管理树**（`doberman-agent/department/`）：
 - 改造前：`DepartmentService.aget_tree`（`department_service.py:411`）一次性 `select(Department).where(status in [active,archived])` 取全量 → 内存建树 → 按 scoping 过滤 → 返回 `DepartmentTreeNode[]`。
 - 三层 scoping（须复刻）：
   - 系统管理员 `_is_admin`（`:79`）→ 全树。
@@ -151,7 +151,7 @@
   - `GET /departments/{id}/path-tree` — 根→该 id 的剪枝树（定位/回显）。
   - DAO 复用 `aget_children`(`:357`) / `aget_subtree`(`:378`) / `aget_by_ids`(`:283`)；`has_children` 批量统计。
 
-**client 授权部门列表**（`bisheng/permission/api/endpoints/resource_permission.py`）：
+**client 授权部门列表**（`doberman-agent/permission/api/endpoints/resource_permission.py`）：
 - `get_grant_subject_departments`（`:1427`）→ `_list_knowledge_space_grant_departments`（`:830`）：取**租户 `root_dept_id` 子树**（`path LIKE root_dept.path%`），系统租户时再排除子租户挂载子树（`~path LIKE child_mount%`），可选 `restrict_dept_ids`（F033）收敛 → 建树返回。成员数统计已删（决策 11）。
 - 频道授权 `ChannelAuthorizationService.list_grant_departments`（`channel_authorization_service.py:211`）**直接复用**同一 helper（`restrict_dept_ids=None`）→ 改一处覆盖两端。
 - 改造后：为该端点族新增"取子层 / 搜索 / 定位"变体，scoping 用其自身的"租户子树 + F033"逻辑（**不复用 platform 的 admin scoping**，决策 3）。
@@ -256,11 +256,11 @@
 
 ### 7.1 手动验证（5 万部门压测环境，可操作）
 
-- **环境**：host `192.168.106.105`（`root` / `dataelem`）；后端容器 `bisheng-backend-dm`，代码根 `/app`，服务用默认 `config.yaml`（=`/app/bisheng/config.yaml`）；租户 1、`root_dept_id=1`；已灌 5 万 `source=loadtest` 部门 + 15 万用户。前端：client `http://192.168.106.105:3001/workspace`。登录账号：压测本地用户统一密码 `Test@1234ab`（如 `压测用户_0000000`），或现有管理员账号。
+- **环境**：host `192.168.106.105`（`root` / `dataelem`）；后端容器 `doberman-agent-backend-dm`，代码根 `/app`，服务用默认 `config.yaml`（=`/app/doberman-agent/config.yaml`）；租户 1、`root_dept_id=1`；已灌 5 万 `source=loadtest` 部门 + 15 万用户。前端：client `http://192.168.106.105:3001/workspace`。登录账号：压测本地用户统一密码 `Test@1234ab`（如 `压测用户_0000000`），或现有管理员账号。
 - **后端分段计时范式**（容器内、与服务同 config，**实证定位"哪一步慢"**，已用它定位 member_count 66s / jsonable_encoder 1.4s）：
   ```bash
   cat timing_script.py | SSHPASS='dataelem' sshpass -e ssh -o StrictHostKeyChecking=no root@192.168.106.105 \
-    'docker exec -i -e config=config.yaml -e PYTHONPATH=/app bisheng-backend-dm /app/.venv/bin/python - 2>/dev/null'
+    'docker exec -i -e config=config.yaml -e PYTHONPATH=/app doberman-agent-backend-dm /app/.venv/bin/python - 2>/dev/null'
   ```
   脚本里 `initialize_app_context(config=settings)` + `bypass_tenant_filter()` + `set_current_tenant_id(1)` 后，对 `aget_tree` / 新 children / search / `_list_knowledge_space_grant_departments` 分步 `time.perf_counter()` 计时。
 - **端点直测**（带登录 token）：

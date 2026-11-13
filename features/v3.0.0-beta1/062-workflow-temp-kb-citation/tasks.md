@@ -33,7 +33,7 @@
 ### Wave 1 — 无依赖，可并行（基础设施 + 基线 + i18n）
 
 - [x] **T001**: 新增 `temp` 来源类型与载荷 schema
-  **文件**: `src/backend/bisheng/citation/domain/schemas/citation_schema.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/schemas/citation_schema.py`
   **逻辑**: `CitationType` 增加 `TEMP = "temp"`；新增 `TempCitationItemSchema` 与 `TempCitationPayloadSchema`（字段形状见 design §4.3：`documentId` 为 UUID **字符串**、`objectName`、`documentName`、`snippet`、`items[]` 含可空 `bbox`/`page`/`chunkIndex`；**不含**整数 `knowledgeId`）。`CitationSourcePayload` 联合类型扩为四种。**不改** `message_citation` 表（`citation_type` 已是 `varchar(32)`）——**无 DDL、无 Alembic，因而无需回滚方案**。
   **设计依据**: design §3 决策 1 / 决策 7
   **依赖**: 无
@@ -71,7 +71,7 @@
   **依赖**: T001
 
 - [x] **T007**: 注册服务支持 temp 来源 + load/group 分支
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_registry_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_registry_service.py`
   **逻辑**: 新增 `TEMP_PREFIX = "tempsearch_"`、`generate_temp_citation_id`、`build_temp_registry`（按 `document_id` 分组，一项一文件）。`_load_source_payload` **必须**加 `CitationType.TEMP` 分支（design 坑 11：未知类型今天走 Web schema）。`_group_registry_items` 同样加 temp 分支，禁止掉进 `else` 的 web 分组。`dump_source_payload` 类型并入 `TempCitationPayloadSchema`。不 invent 整数 documentId。
   **跨 Feature 影响**: 该文件是 F029 / F054 的 citation 注册入口；只增量第四种类型，既有 rag / web / article 构建逻辑一字不改。
   **设计依据**: design §3 决策 1 · §5 坑 11
@@ -86,7 +86,7 @@
   **依赖**: 无
 
 - [x] **T009**: 输入节点每文件唯一 UUID，文件级 metadata 不带 bbox
-  **文件**: `src/backend/bisheng/workflow/nodes/input/input.py`
+  **文件**: `src/backend/doberman_agent/workflow/nodes/input/input.py`
   **逻辑**: `parse_upload_file` 把 `generate_uuid()` **移入** `for one_file_url in value` 循环；文件级 dict 只留身份字段（`document_id` / `document_name` / `knowledge_id` / 时间戳），**删除** `"bbox": ""` 以及任何 `page` / `chunk_index` 键，避免 `one.update(...)` 盖掉管线产出。不写 `knowledge_file`，不改向量 schema。**不得单独合入**：每文件唯一 id 而不改 T010 的 retriever，其余文件会从召回里消失。
   **跨 Feature 影响**: 输入节点是工作流共用入口——只改 ingest 路径的 identity 生成，`extract_text` / `keep_raw` 的输出变量规则不变。
   **设计依据**: design §3 决策 2 / 决策 6 · §5 坑 4、坑 10
@@ -95,7 +95,7 @@
   **依赖**: T008
 
 - [x] **T010**: `init_file_retriever` 收集全部 id，召回后回填原件定位
-  **文件**: `src/backend/bisheng/workflow/common/knowledge.py`
+  **文件**: `src/backend/doberman_agent/workflow/common/knowledge.py`
   **逻辑**: `init_file_retriever` 遍历该变量 metadata **列表全部** `document_id`（禁止 `file_metadata[0]`）。召回后按图状态里 `document_id → file_path`（与 `file_path` 输出按下标对齐）回填到 `Document.metadata`，供 T007 登记使用。不改 `knowledge` / `space` 路径。
   **跨 Feature 影响**: `RagUtils` 为 RAG 节点与知识检索节点共用；正式库 `init_knowledge_retriever` 一行不改。
   **设计依据**: design §3 决策 2 · §5 坑 5、坑 10
@@ -112,7 +112,7 @@
   **依赖**: T007
 
 - [x] **T012**: prompt helper：temp 标注 + 收集；rag 护栏保持拒绝 UUID
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_prompt_helper.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_prompt_helper.py`
   **逻辑**: 新增 `_is_temp_file_document`（`knowledge_id` 非整数 + `document_id` 为 UUID 字符串，见 design 坑 1）。新增 `annotate_temp_documents_with_citations` / `collect_temp_citation_registry_items`，形态对齐 rag / article。`_is_citable_rag_document` **继续拒绝 UUID**，不要为了出角标而放开。标注 / 收集包一层 try/except，失败记 warning、回退为不带该条 key。
   **跨 Feature 影响**: 所有调用 annotate_rag 的入口（工作流 / 日常 / 助手）不受影响，除非它们开始改调新函数。
   **设计依据**: design §3 决策 5 · §5 坑 1、坑 7
@@ -127,7 +127,7 @@
   **依赖**: T007
 
 - [x] **T014**: RAG / 知识检索 `type=tmp` 走 temp 标注
-  **文件**: `src/backend/bisheng/workflow/nodes/rag/rag.py`, `src/backend/bisheng/workflow/nodes/knowledge_retriever/knowledge_retriever.py`
+  **文件**: `src/backend/doberman_agent/workflow/nodes/rag/rag.py`, `src/backend/doberman_agent/workflow/nodes/knowledge_retriever/knowledge_retriever.py`
   **逻辑**: `_knowledge_type` 为 knowledge / space 时仍 `annotate_rag` + `collect_rag`。`tmp`（`init_file_retriever` 那条）改调 `annotate_temp` + `collect_temp`。不要继续对 UUID 文档空转 rag annotate（会留下空 `<chunk_id>`，诱使模型幻觉 `knowledgesearch_*`）。
   **跨 Feature 影响**: 两文件是工作流检索入口；正式库 / 知识空间分支零行为变化。
   **设计依据**: design §3 决策 5 · §5 坑 6、坑 7
@@ -136,7 +136,7 @@
   **依赖**: T010, T012
 
 - [x] **T015**: Agent 恢复包装 ephemeral 工具，wrapper 走 temp
-  **文件**: `src/backend/bisheng/workflow/nodes/agent/agent.py`
+  **文件**: `src/backend/doberman_agent/workflow/nodes/agent/agent.py`
   **逻辑**: `_wrap_citation_tool` **删除**「`ephemeral_source=True` 则原样返回」的 skip；ephemeral 工具同样包进 `WorkflowCitationToolWrapper`。`_format_knowledge_results` / `_aformat_knowledge_results`：若 `self.tool.ephemeral_source`，走 `annotate_temp` + `collect_temp`，否则仍走 rag。只恢复包装不够——wrapper 今天无条件 `annotate_rag`，UUID 仍会被护栏跳过。保留 `ephemeral_source` 标记位（语义从「跳过」改为「走 temp」）。
   **跨 Feature 影响**: `executor.py` 继续给 tmp 工具打 `ephemeral_source=True`，本任务不改 executor。正式知识库工具包装路径不变。
   **设计依据**: design §3 决策 5 · §5 坑 6、坑 8
@@ -159,7 +159,7 @@
   **依赖**: T007
 
 - [x] **T018**: 答案落库前补齐 `objectName` 并刷新 cache
-  **文件**: `src/backend/bisheng/worker/workflow/redis_callback.py`；如提升/刷新 cache 不宜内联，第二文件放 `src/backend/bisheng/citation/domain/services/citation_prompt_helper.py`（例如 `attach_temp_object_names`），**禁止**再开第三文件或新前缀模块。
+  **文件**: `src/backend/doberman_agent/worker/workflow/redis_callback.py`；如提升/刷新 cache 不宜内联，第二文件放 `src/backend/doberman_agent/citation/domain/services/citation_prompt_helper.py`（例如 `attach_temp_object_names`），**禁止**再开第三文件或新前缀模块。
   **类别**: Worker（既有回调，**不新开** Celery 任务）
   **tenant_id**: 不新增传递。`RedisCallback.__init__` 已从 `worker/workflow/tasks.py` `_execute_workflow` 的 `Flow.tenant_id` 注入（F022 INV-T18）；本任务只在 `save_chat_message` 里、`save_message_citations_sync` 之前，对**实际引用**的 temp 项复用 `promote_chat_attachments_sync` 已写出的 `chat/{user_id}/{uuid}.ext`，对不上再对那一个文件调用现有提升，写入 payload `objectName` 后调用既有 `save_citations_sync` / cache 刷新。未引用文件不提升。提升失败记 warning，不让问答失败。
   **跨 Feature 影响**: 该回调是全部工作流消息落库入口——只处理 `citation_type=temp` 的引用项；问题消息的 F043 提升原逻辑不动。
@@ -169,7 +169,7 @@
   **依赖**: T016
 
 - [x] **T019**: resolve 服务 temp 分支：会话归属 + 现签，跳过 `view_file`
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_resolve_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py`
   **逻辑**: `_enrich_item` 增加 `CitationType.TEMP` 分支：校验 payload、按 `objectName` 现签 `previewUrl`/`downloadUrl`（不把预签名写入 cache/库）。闸门：无登录 → `forbidden`；有登录则 `MessageSessionDao.async_get_one(chat_id)` 且 `session.user_id == login_user.user_id`，否则 `forbidden`；对象没了 → `expired`。无 `chat_id` 的调试运行：仅放行当前登录执行用户。temp **不要**加入 `_is_anonymous_readable`。**不要**走 `_permitted_file_ids` / INV-7。超管不单开后门。
   **跨 Feature 影响**: 该文件是 F029/F054 解析入口；rag / article / web 分支与匿名安全序（除插入 temp 会话检查外）不改。已登录用户的 INV-7 两档一字不改。
   **设计依据**: design §3 决策 3 · §5 坑 3

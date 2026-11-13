@@ -1,6 +1,6 @@
 import { Info } from "lucide-react";
 import useLocalize from "~/hooks/useLocalize";
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 const enum SourceType {
     /** 无溯源 */

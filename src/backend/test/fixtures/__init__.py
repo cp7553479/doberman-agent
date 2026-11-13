@@ -1,4 +1,4 @@
-"""Shared test fixtures for BiSheng backend tests.
+"""Shared test fixtures for doberman-agent backend tests.
 
 Provides centralized import chain pre-mocking, SQLite table definitions,
 external service mocks (Redis/MinIO/OpenFGA), and test data factories.

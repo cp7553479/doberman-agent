@@ -1,5 +1,5 @@
 import type { ApiKeyItem } from "@/types/api/openApi"
-import { Alert } from "@bisheng/ui"
+import { Alert } from "@doberman-agent/ui"
 import { useTranslation } from "react-i18next"
 import { splitGrantKeys } from "./resourceGrantUtils"
 

@@ -1,4 +1,4 @@
-import { Button, Select } from '@bisheng/ui';
+import { Button, Select } from '@doberman-agent/ui';
 
 import { DialogClose, DialogFooter } from "@/components/bs-ui/dialog";
 import { Label } from "@/components/bs-ui/label";
@@ -83,7 +83,7 @@ export function WebFetchForm({ formData, onSubmit }: WebFetchFormProps) {
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-                <Label htmlFor="web-fetch-engine" className="bisheng-label">{t("webFetchEngine")}</Label>
+                <Label htmlFor="web-fetch-engine" className="doberman_agent-label">{t("webFetchEngine")}</Label>
                 <Select
                     {...selectLabels}
                     id="web-fetch-engine"

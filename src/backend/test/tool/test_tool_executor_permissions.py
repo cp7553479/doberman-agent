@@ -3,10 +3,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.common.errcode.permission import PermissionFGAUnavailableError
-from bisheng.tool.domain.const import ToolPresetType
-from bisheng.tool.domain.services.executor import ToolExecutor, ToolInitializationError
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.common.errcode.permission import PermissionFGAUnavailableError
+from doberman_agent.tool.domain.const import ToolPresetType
+from doberman_agent.tool.domain.services.executor import ToolExecutor, ToolInitializationError
 
 
 @pytest.mark.asyncio
@@ -14,11 +14,11 @@ async def test_preset_tool_execution_still_checks_exact_use_action(monkeypatch):
     check_action = AsyncMock(return_value=True)
     check_global_super = AsyncMock(return_value=True)
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.check_business_action",
+        "doberman_agent.tool.domain.services.executor.check_business_action",
         check_action,
     )
     monkeypatch.setattr(
-        "bisheng.utils.http_middleware._check_is_global_super",
+        "doberman_agent.utils.http_middleware._check_is_global_super",
         check_global_super,
     )
     tool_type = SimpleNamespace(
@@ -47,11 +47,11 @@ async def test_preset_tool_execution_never_falls_back_when_fga_fails(
 ):
     check_action = AsyncMock(side_effect=PermissionFGAUnavailableError())
     monkeypatch.setattr(
-        "bisheng.utils.http_middleware._check_is_global_super",
+        "doberman_agent.utils.http_middleware._check_is_global_super",
         AsyncMock(return_value=False),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.check_business_action",
+        "doberman_agent.tool.domain.services.executor.check_business_action",
         check_action,
     )
     tool_type = SimpleNamespace(
@@ -75,11 +75,11 @@ async def test_init_by_tool_ids_can_skip_unauthorized_tools(monkeypatch):
     type_two = SimpleNamespace(id=20)
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
         AsyncMock(return_value=[tool_one, tool_two]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
         AsyncMock(return_value=[type_one, type_two]),
     )
 
@@ -112,11 +112,11 @@ async def test_init_by_tool_ids_still_raises_by_default(monkeypatch):
     tool_type = SimpleNamespace(id=20)
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
         AsyncMock(return_value=[tool]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
         AsyncMock(return_value=[tool_type]),
     )
 
@@ -141,11 +141,11 @@ async def test_init_by_tool_ids_error_includes_tool_identity(monkeypatch):
     tool_type = SimpleNamespace(id=30)
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_list_by_ids",
         AsyncMock(return_value=[tool]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_all_tool_type",
         AsyncMock(return_value=[tool_type]),
     )
     monkeypatch.setattr(ToolExecutor, "_ensure_use_permission_async", AsyncMock())
@@ -174,11 +174,11 @@ async def test_init_by_tool_id_error_includes_tool_identity(monkeypatch):
     tool_type = SimpleNamespace(id=40)
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_one_tool",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_one_tool",
         AsyncMock(return_value=tool),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.GptsToolsDao.aget_one_tool_type",
+        "doberman_agent.tool.domain.services.executor.GptsToolsDao.aget_one_tool_type",
         AsyncMock(return_value=tool_type),
     )
     monkeypatch.setattr(ToolExecutor, "_ensure_use_permission_async", AsyncMock())

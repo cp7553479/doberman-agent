@@ -362,7 +362,7 @@ def main():
         client = None if document.get("action") == "purge" else client_from_identity()
         try:
             result = run_maintenance(document, client)
-            print("BISHENG_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
+            print("DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
         finally:
             if client is not None:
                 client.close()

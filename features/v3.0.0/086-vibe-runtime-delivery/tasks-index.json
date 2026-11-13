@@ -3,7 +3,7 @@
     "id": "T001",
     "title": "平台持久对象模型",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py"
+      "src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py"
     ],
     "logic": "定义profile/default、artifact、delivery、operation、assignment、reservation、node、fact、route、policy和transfer。使用JsonType/共享时间默认/关系唯一键，应用对象保留原Owner；新表由model discovery建表，回退先停止新控制写入并保留表和资产，不破坏性drop。",
     "ac": [
@@ -23,8 +23,8 @@
     "id": "T002",
     "title": "模型发现注册",
     "files": [
-      "src/backend/bisheng/core/database/tenant_filter.py",
-      "src/backend/bisheng/app_runtime/domain/models/__init__.py"
+      "src/backend/doberman_agent/core/database/tenant_filter.py",
+      "src/backend/doberman_agent/app_runtime/domain/models/__init__.py"
     ],
     "logic": "通过领域包导入模型，租户表在过滤器初始化前注册；全局目录无tenant_id，明确超管入口，应用表保持自动隔离。",
     "ac": [
@@ -43,7 +43,7 @@
     "id": "T003",
     "title": "平台运行交付配置",
     "files": [
-      "src/backend/bisheng/core/config/app_runtime.py"
+      "src/backend/doberman_agent/core/config/app_runtime.py"
     ],
     "logic": "在已有app_runtime子键增加内部服务身份、文件限额/回收及协议设置，默认fail-closed；不新增YAML顶级键，保留旧配置可加载。",
     "ac": [
@@ -105,7 +105,7 @@
     "id": "T006",
     "title": "平台操作/容量Repository",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py"
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py"
     ],
     "logic": "SQL事务约束幂等键/请求摘要、node预算锁/预占、app归属CAS、事实顺序和路由提交；隔离未知执行体，确认停止后释放；不在Service写ORM。",
     "ac": [
@@ -153,7 +153,7 @@
     "id": "T008",
     "title": "版本2服务身份与重放保护",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_protocol.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_protocol.py",
       "src/runtime-manager/runtime_manager/platform_protocol.py"
     ],
     "logic": "签名绑定method/path/query/body摘要/时间/nonce/key_id；平台nonce持久端口fail-closed，不同服务动作隔离；上传用范围session，manager禁止任意URL。",
@@ -203,8 +203,8 @@
     "id": "T010",
     "title": "平台产物传输",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_artifact_service.py",
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_object_store.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_artifact_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_object_store.py"
     ],
     "logic": "streaming限额及hash、MinIO私有桶、upload/finalize/status幂等、代码/依赖/快照各独立上限；内容和元数据确认后verified；确认不明保护快照。",
     "ac": [
@@ -260,8 +260,8 @@
     "id": "T012",
     "title": "环境目录和授权边界",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py",
-      "src/backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py"
     ],
     "logic": "不可变环境修订/平台镜像记录/默认CAS；超管管理全局、自然人owner管理私包，验证私包app/tenant；精确冻结平台和启动约定，拒绝可变tag假摘要。",
     "ac": [
@@ -317,8 +317,8 @@
     "id": "T014",
     "title": "内部操作与投影API",
     "files": [
-      "src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py",
-      "src/backend/bisheng/app_runtime/api/router.py"
+      "src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py",
+      "src/backend/doberman_agent/app_runtime/api/router.py"
     ],
     "logic": "注册internal/app-runtime/v2操作/claim/facts/传输/路由/policy接口，endpoint依赖服务，按节点与scope过滤；日志status仍由F054包装；内部路由不依赖JWT租户header，验服务身份后建立scope。",
     "ac": [
@@ -370,8 +370,8 @@
     "id": "T016",
     "title": "backend附件SDK兼容",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/app_storage_service.py",
-      "src/backend/bisheng/app_runtime/api/endpoints/app_storage.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/app_storage_service.py",
+      "src/backend/doberman_agent/app_runtime/api/endpoints/app_storage.py"
     ],
     "logic": "实现旧SDKobjects/meta/list/put/get/delete与错误信封，backend唯一MinIO访问；正式/preview独立作用域、大小、token撤销、跨app拒绝。",
     "ac": [
@@ -420,8 +420,8 @@
     "id": "T018",
     "title": "新版清单与旧模式兼容",
     "files": [
-      "src/backend/bisheng/app_publish/domain/schemas/app_manifest.py",
-      "src/backend/bisheng/app_publish/domain/services/manifest_validator.py"
+      "src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py",
+      "src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py"
     ],
     "logic": "v2源码默认bundle、显式source-image、完整image判别，v1继续旧构建；image按运行契约不走源码模板过滤，未知字段/冲突启动拒绝。",
     "ac": [
@@ -445,7 +445,7 @@
     "id": "T019",
     "title": "CLI应用包交付合同与失败测试",
     "files": [
-      "src/bisheng-cli/tests/test_delivery_v2.py"
+      "src/doberman-agent-cli/tests/test_delivery_v2.py"
     ],
     "logic": "init默认v2，保留v1打包和状态轮询；包不带开发机venv/node_modules，锁/前端输入保留；清晰协议不兼容。；测试只调用真实模块，mock外部端口，不用占位模块替代实现。",
     "ac": [
@@ -466,8 +466,8 @@
     "id": "T020",
     "title": "CLI应用包交付",
     "files": [
-      "src/bisheng-cli/bisheng_cli/project.py",
-      "src/bisheng-cli/bisheng_cli/packaging.py"
+      "src/doberman-agent-cli/doberman_agent_cli/project.py",
+      "src/doberman-agent-cli/doberman_agent_cli/packaging.py"
     ],
     "logic": "init默认v2，保留v1打包和状态轮询；包不带开发机venv/node_modules，锁/前端输入保留；清晰协议不兼容。",
     "ac": [
@@ -783,7 +783,7 @@
     "id": "T032",
     "title": "F055交付准备接线",
     "files": [
-      "src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py"
+      "src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py"
     ],
     "logic": "F055 的协议2 prepare/probe 接线放在 PublishPipelineService，经 RuntimeDeliveryCoordinator，不改协议1 precheck 的 URL 合同；Celery 仍使用原任务的 tenant headers→ContextVar。v1描述在协议2映射source-image；v2不在协议1静默发布。",
     "ac": [
@@ -833,8 +833,8 @@
     "id": "T034",
     "title": "版本冻结与凭据代际",
     "files": [
-      "src/backend/bisheng/app_publish/domain/services/version_service.py",
-      "src/backend/bisheng/app_publish/domain/services/app_credential_service.py"
+      "src/backend/doberman_agent/app_publish/domain/services/version_service.py",
+      "src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py"
     ],
     "logic": "delivery组合冻结，原四要素不变；候选只隔离凭据，切换生效/撤旧≤5秒，外部撤权不延迟；无重复签发/审批。",
     "ac": [
@@ -890,8 +890,8 @@
     "id": "T036",
     "title": "F054/F055安全上线",
     "files": [
-      "src/backend/bisheng/app_publish/domain/services/publish_online_service.py",
-      "src/backend/bisheng/app_runtime/domain/services/app_state_service.py"
+      "src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py"
     ],
     "logic": "在停旧/DDL前原子预占，SQLite维护单写/快照确认，ready事实后事务切路由与原状态；失败/容量不足/停用恢复保持真实阶段；worker tenant_id随headers恢复。",
     "ac": [
@@ -1048,8 +1048,8 @@
     "id": "T042",
     "title": "环境导入及owner维护API",
     "files": [
-      "src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py"
+      "src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py"
     ],
     "logic": "顶级profile/default/base-import路由，app私包和restore接口；owner自然人业务guard先于管理员短路、expected generation/恢复损失确认及审计，服务账号不能独立发起。",
     "ac": [
@@ -1346,8 +1346,8 @@
     "id": "T054",
     "title": "CLI可分发wheel及锁定依赖",
     "files": [
-      "src/backend/bisheng/dev_toolkit/artifacts/bisheng_cli-3.0.0-py3-none-any.whl",
-      "src/backend/bisheng/dev_toolkit/artifacts/manifest.json"
+      "src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_cli-3.0.0-py3-none-any.whl",
+      "src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json"
     ],
     "logic": "重建并分发CLI wheel及manifest，保留SDK0.1.1工件；打包脚本干净环境安装/生产入口成功，不执行git add/commit/push。",
     "ac": [
@@ -1550,7 +1550,7 @@
     "id": "T058",
     "title": "发布交付协调器",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py"
     ],
     "ac": [
       5,
@@ -1573,8 +1573,8 @@
     "id": "T059",
     "title": "凭据保护与执行代际读取",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_payload.py",
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_credential_repository.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_payload.py",
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_credential_repository.py"
     ],
     "ac": [
       39,
@@ -1592,8 +1592,8 @@
     "id": "T060",
     "title": "路由和出站投影业务",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_egress_service.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_egress_service.py"
     ],
     "ac": [
       39,
@@ -1615,8 +1615,8 @@
     "id": "T061",
     "title": "存量与离线内容校验业务",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_upgrade_service.py",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_offline_package.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_upgrade_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_offline_package.py"
     ],
     "ac": [
       7,
@@ -1639,8 +1639,8 @@
     "id": "T062",
     "title": "控制客户端与范围回收",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_control_client.py",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_cleanup_service.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_control_client.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_cleanup_service.py"
     ],
     "ac": [
       6,
@@ -1797,8 +1797,8 @@
     "id": "T070",
     "title": "审批预览与授权接线",
     "files": [
-      "src/backend/bisheng/app_publish/domain/services/preview_instance_service.py",
-      "src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py"
+      "src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py"
     ],
     "ac": [
       9,
@@ -1818,7 +1818,7 @@
     "id": "T071",
     "title": "SDK中间件与创建入口约束",
     "files": [
-      "src/backend/bisheng/utils/http_middleware.py",
+      "src/backend/doberman_agent/utils/http_middleware.py",
       "src/backend/test/app_runtime/test_runtime_layer_switch.py"
     ],
     "ac": [
@@ -1859,8 +1859,8 @@
     "id": "T073",
     "title": "数据恢复审计登记",
     "files": [
-      "src/backend/bisheng/database/models/audit_log.py",
-      "src/backend/bisheng/app_runtime/domain/constants.py"
+      "src/backend/doberman_agent/database/models/audit_log.py",
+      "src/backend/doberman_agent/app_runtime/domain/constants.py"
     ],
     "ac": [
       45,
@@ -2077,7 +2077,7 @@
     "id": "T084",
     "title": "CLI及版本交付登记",
     "files": [
-      "src/bisheng-cli/README.md",
+      "src/doberman-agent-cli/README.md",
       "features/v3.0.0/release-contract.md"
     ],
     "ac": [
@@ -2119,8 +2119,8 @@
     "id": "T086",
     "title": "平台执行事实与旧RPC适配",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py",
-      "src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py"
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py",
+      "src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py"
     ],
     "ac": [
       6,
@@ -2145,7 +2145,7 @@
     "id": "T087",
     "title": "CLI既有入口回归适配",
     "files": [
-      "src/bisheng-cli/tests/test_cli.py"
+      "src/doberman-agent-cli/tests/test_cli.py"
     ],
     "ac": [
       11,
@@ -2164,8 +2164,8 @@
     "id": "T088",
     "title": "CLI命令分发接线",
     "files": [
-      "src/bisheng-cli/bisheng_cli/cli.py",
-      "src/bisheng-cli/bisheng_cli/main.py"
+      "src/doberman-agent-cli/doberman_agent_cli/cli.py",
+      "src/doberman-agent-cli/doberman_agent_cli/main.py"
     ],
     "ac": [
       11,
@@ -2202,7 +2202,7 @@
     "id": "T090",
     "title": "后台租户上下文执行边界",
     "files": [
-      "src/backend/bisheng/core/context/tenant.py",
+      "src/backend/doberman_agent/core/context/tenant.py",
       "src/backend/test/tenant/test_tenant_execution_scope.py"
     ],
     "ac": [
@@ -2218,7 +2218,7 @@
     "id": "T091",
     "title": "系统资源启动投影租户绑定",
     "files": [
-      "src/backend/bisheng/permission/application/system_resource_reconcile.py",
+      "src/backend/doberman_agent/permission/application/system_resource_reconcile.py",
       "src/backend/test/permission/test_f048_system_resource_reconcile.py"
     ],
     "ac": [
@@ -2236,7 +2236,7 @@
     "id": "T092",
     "title": "首次管理员仪表盘投影上下文",
     "files": [
-      "src/backend/bisheng/api/services/f048_preset_dashboard_bootstrap.py",
+      "src/backend/doberman_agent/api/services/f048_preset_dashboard_bootstrap.py",
       "src/backend/test/permission/test_f048_preset_dashboard_bootstrap.py"
     ],
     "ac": [
@@ -2254,7 +2254,7 @@
     "id": "T093",
     "title": "字节计数范围与模型规范检查",
     "files": [
-      "src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py",
+      "src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py",
       "src/backend/test/app_runtime/test_runtime_model_contracts.py"
     ],
     "ac": [
@@ -2273,7 +2273,7 @@
     "id": "T094",
     "title": "已有运行时字节字段扩容迁移",
     "files": [
-      "src/backend/bisheng/core/database/alembic/versions/f086_runtime_byte_counters.py",
+      "src/backend/doberman_agent/core/database/alembic/versions/f086_runtime_byte_counters.py",
       "src/backend/test/app_runtime/test_runtime_model_contracts.py"
     ],
     "ac": [

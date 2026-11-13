@@ -68,14 +68,14 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T01**: 错误码注册 + spec / release-contract / CLAUDE.md 同步修订
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/tenant_tree.py` — 11 个错误码类 `22001-22011`
+  - `src/backend/doberman_agent/common/errcode/tenant_tree.py` — 11 个错误码类 `22001-22011`
   **文件（修改）**:
   - `features/v2.5.1/release-contract.md` — 表 3 模块编码：`190 tenant_tree F011` → `220 tenant_tree F011`；INV-T11 的 `19008` → `22008`
   - `features/v2.5.1/011-tenant-tree-model/spec.md` — §9 错误码清单全部重排；AC-03 `19001`→`22001`；AC-04d `19010`/`19011`→`22010`/`22011`；AC-11 / AC-15 / §5.5 / INV-T11 / §3 / §8 中所有 `190xx` 引用同步替换
   - `CLAUDE.md` — "错误码模块编码"清单补 `220=tenant_tree`（在 180=knowledge_space 之后）
   **逻辑**:
   ```python
-  # src/backend/bisheng/common/errcode/tenant_tree.py
+  # src/backend/doberman_agent/common/errcode/tenant_tree.py
   from .base import BaseErrorCode
 
   # Tenant tree module error codes, module code: 220
@@ -135,7 +135,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T02**: Tenant ORM 扩展 + DAO 新方法 + DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/tenant.py` — 在 `Tenant` SQLModel 追加两字段；扩展 `TenantDao`
+  - `src/backend/doberman_agent/database/models/tenant.py` — 在 `Tenant` SQLModel 追加两字段；扩展 `TenantDao`
   **文件（新建）**:
   - `src/backend/test/test_tenant_tree_dao.py` — DAO 新方法测试
   **逻辑**:
@@ -181,7 +181,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T03**: UserTenant ORM 扩展（is_active NULL/1）+ DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/tenant.py` — `UserTenant` 新增 `is_active` + 更换唯一约束；`UserTenantDao` 新增 `aget_active_user_tenant`
+  - `src/backend/doberman_agent/database/models/tenant.py` — `UserTenant` 新增 `is_active` + 更换唯一约束；`UserTenantDao` 新增 `aget_active_user_tenant`
   **文件（新建）**:
   - `src/backend/test/test_user_tenant_leaf.py` — 唯一叶子 DAO 测试
   **逻辑**:
@@ -227,7 +227,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T04**: Department ORM 扩展（is_tenant_root / mounted_tenant_id）+ DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/department.py` — `Department` 新增两字段 + `DepartmentDao.aget_mount_point`
+  - `src/backend/doberman_agent/database/models/department.py` — `Department` 新增两字段 + `DepartmentDao.aget_mount_point`
   **文件（修改）**:
   - `src/backend/test/test_department_dao.py` — 追加挂载点相关测试（不重写既有 F002 测试）
   **逻辑**:
@@ -271,7 +271,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T05**: AuditLog ORM 扩展 + DAO v2 + DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/audit_log.py` — `AuditLog` 追加 7 字段；`AuditLogDao` 新增 v2 方法
+  - `src/backend/doberman_agent/database/models/audit_log.py` — `AuditLog` 追加 7 字段；`AuditLogDao` 新增 v2 方法
   **文件（新建）**:
   - `src/backend/test/test_audit_log_v2.py` — v2 方法测试
   **逻辑**:
@@ -342,7 +342,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T06**: Alembic 迁移脚本 + SQLite table_definitions 同步
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f011_tenant_tree.py`
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f011_tenant_tree.py`
   **文件（修改）**:
   - `src/backend/test/fixtures/table_definitions.py` — 同步 `TABLE_TENANT` / `TABLE_USER_TENANT` / `TABLE_DEPARTMENT` / `TABLE_AUDIT_LOG` 的 DDL，使 SQLite 测试环境字段对齐
   **逻辑**:
@@ -421,9 +421,9 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T07**: TenantService Root 保护 + 废弃 CRUD 改 410 Gone
   **文件（修改）**:
-  - `src/backend/bisheng/tenant/domain/services/tenant_service.py` — `aupdate_status` / `adelete_tenant` 前置 Root 校验
-  - `src/backend/bisheng/tenant/api/endpoints/tenant_crud.py` — `POST /tenants` endpoint 改 410 Gone 响应
-  - `src/backend/bisheng/tenant/api/endpoints/user_tenant.py` — `POST /user/switch-tenant` 改 410 Gone
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_service.py` — `aupdate_status` / `adelete_tenant` 前置 Root 校验
+  - `src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py` — `POST /tenants` endpoint 改 410 Gone 响应
+  - `src/backend/doberman_agent/tenant/api/endpoints/user_tenant.py` — `POST /user/switch-tenant` 改 410 Gone
   **文件（新建）**:
   - `src/backend/test/test_tenant_service_root_protect.py`
   **逻辑**:
@@ -472,7 +472,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T08**: TenantMountService（挂载 / 解绑策略 A/B/C / 资源下沉）+ Service 测试
   **文件（新建）**:
-  - `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`
   - `src/backend/test/test_tenant_mount_service.py`
   **逻辑**:
   - **`TenantMountService` classmethods**（全部 async，事务内完成；sync 版不需要）:
@@ -516,7 +516,7 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T09**: DepartmentDeletionHandler（孤儿集中入口）+ 测试
   **文件（新建）**:
-  - `src/backend/bisheng/tenant/domain/services/department_deletion_handler.py`
+  - `src/backend/doberman_agent/tenant/domain/services/department_deletion_handler.py`
   - `src/backend/test/test_department_deletion_handler.py`
   **逻辑**:
   - **`DepartmentDeletionHandler.on_deleted(dept_id, deletion_source)`**（spec §5.4.1 签名）:
@@ -542,11 +542,11 @@ T01 (错误码 + spec/release-contract/CLAUDE.md 同步)
 
 - [x] **T10**: API 端点 + 路由注册 + 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/tenant/api/endpoints/tenant_mount.py` — 4 个新端点
-  - `src/backend/bisheng/tenant/api/schemas/mount_schema.py` — 请求/响应 Pydantic DTO
+  - `src/backend/doberman_agent/tenant/api/endpoints/tenant_mount.py` — 4 个新端点
+  - `src/backend/doberman_agent/tenant/api/schemas/mount_schema.py` — 请求/响应 Pydantic DTO
   - `src/backend/test/test_tenant_mount_api.py` — TestClient 集成测试
   **文件（修改）**:
-  - `src/backend/bisheng/tenant/api/router.py` — 注册 tenant_mount 子路由
+  - `src/backend/doberman_agent/tenant/api/router.py` — 注册 tenant_mount 子路由
   **逻辑**:
   - **Schemas**（`mount_schema.py`）:
     ```python

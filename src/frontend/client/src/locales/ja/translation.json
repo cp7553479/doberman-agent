@@ -1,6 +1,6 @@
 {
   "admin": "管理者",
-  "bisheng": "{{bisheng}}",
+  "doberman_agent": "{{doberman_agent}}",
   "cancel": "キャンセル",
   "com_a11y_ai_composing": "AI は返信を作成中です。",
   "com_a11y_end": "AI の返信が完了しました。",
@@ -30,7 +30,7 @@
   "com_account_info_username_suffix": "（ユーザー名）",
   "com_addAnything": "何でも追加",
   "com_agents_allow_editing": "他のユーザーによるアシスタントの編集を許可する",
-  "com_agents_by_librechat": "BISHENG 提供",
+  "com_agents_by_librechat": "doberman-agent 提供",
   "com_agents_code_interpreter": "有効にすると、エージェントはコードインタプリタ API を安全に使用して生成コードを実行し、ファイル処理も行えます。有効な API キーが必要です。",
   "com_agents_code_interpreter_title": "コードインタプリタ API",
   "com_agents_create_error": "エージェントの更新中にエラーが発生しました。",
@@ -47,7 +47,7 @@
   "com_agents_update_error": "エージェントの更新中にエラーが発生しました。",
   "com_app_center_description": "ここから業務に必要なエージェントを選択して生産・作業を進められます～",
   "com_app_center_title": "アプリセンター",
-  "com_app_center_welcome": "$t(bisheng) のエージェントを探す",
+  "com_app_center_welcome": "$t(doberman_agent) のエージェントを探す",
   "com_app_explore_end_of_list": "—— ここまでです ——",
   "com_app_explore_loading_more": "エージェントを読み込み中...",
   "com_app_explore_no_agents": "該当するエージェントがありません",
@@ -361,7 +361,7 @@
   "com_inputfiles_exceed_limit": "ファイル：{{0}} は {{1}}M を超えたため削除しました",
   "com_inputfiles_upload_failed": "ファイルのアップロードに失敗：{{0}}",
   "com_invite_apply_access": "ここをクリックして体験申請",
-  "com_invite_desc": "BISHENG 提供の招待コードを入力して、$t(linsight) を始めましょう。",
+  "com_invite_desc": "doberman-agent 提供の招待コードを入力して、$t(linsight) を始めましょう。",
   "com_invite_no_code_tip": "招待コードがありませんか？",
   "com_invite_placeholder": "入力してください",
   "com_invite_please_input_code": "招待コードを入力してください",
@@ -389,7 +389,7 @@
   "com_label_save": "保存",
   "com_linsight_add_skill": "スキルを追加",
   "com_linsight_exit_task_mode": "詳細リサーチを終了",
-  "com_linsight_input_placeholder": "タスク目標を入力して $t(bisheng)$t(linsight) にお任せください",
+  "com_linsight_input_placeholder": "タスク目標を入力して $t(doberman_agent)$t(linsight) にお任せください",
   "com_linsight_awaiting_reply": "上記の質問に回答してタスクを続行してください",
   "com_linsight_skill_empty": "利用可能なスキルはありません",
   "com_linsight_skill_search": "スキルを検索",
@@ -571,7 +571,7 @@
   "com_notifications_action_app_publish_deploy_failed": "「{{target}}」の審査は承認されましたが、起動に失敗したため未公開です。実行ログを確認のうえ、アプリ詳細ページから手動で公開してください",
   "com_notifications_action_app_stopped_by_admin": "あなたのアプリ「{{target}}」は管理者によりオフラインにされました。アクセス入口にはオフラインの案内が表示されます",
   "com_notifications_action_app_resumed_by_admin": "あなたのアプリ「{{target}}」は管理者により再びオンラインにされました",
-  "com_notifications_action_app_publish_iteration_failed": "「{{target}}」の審査は承認されましたが、新しいバージョンは公開できませんでした。稼働中のバージョンは影響を受けていません。修正のうえ再度 bisheng deploy を実行してください",
+  "com_notifications_action_app_publish_iteration_failed": "「{{target}}」の審査は承認されましたが、新しいバージョンは公開できませんでした。稼働中のバージョンは影響を受けていません。修正のうえ再度 doberman_agent deploy を実行してください",
   "com_notifications_action_approval_instance_cancelled": "あなたの「{{target}}」審査申請はキャンセルされました",
   "com_notifications_action_menu_grant_revoked": "メニュー「{{target}}」へのアクセス権限は取り消されました",
   "com_notifications_action_revoked_channel_admin": "チャンネル「{{target}}」の管理者ではなくなりました",
@@ -2380,7 +2380,7 @@
     "copy_failed": "コピーに失敗しました。もう一度お試しください。",
     "copy_key": "API Key をコピー",
     "copy_send_all": "まとめてコピーして AI アシスタントへ",
-    "copy_send_all_body": "このキーを $t(bisheng) ナレッジ検索スキルに保存してください。スキルのディレクトリで次を実行します：\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\nシェルの設定ファイルや環境変数ファイルにキーを書き込まないでください。",
+    "copy_send_all_body": "このキーを $t(doberman_agent) ナレッジ検索スキルに保存してください。スキルのディレクトリで次を実行します：\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\nシェルの設定ファイルや環境変数ファイルにキーを書き込まないでください。",
     "copy_send_all_done": "コピーしました。AI アシスタントに貼り付ければ設定完了です",
     "delete": "キーを削除",
     "delete_confirmation": "削除すると AI アシスタントはプラットフォームのナレッジにアクセスできなくなります。いつでも再生成できます。",
@@ -2391,7 +2391,7 @@
     "expires_label": "有効期限",
     "get_key": "キーを生成",
     "guide_title": "AI アシスタントと連携",
-    "install_prompt": "$t(bisheng) ナレッジ検索スキルをインストールしてください。\nスキルのダウンロード先：{{skillPackUrl}}\nAPI Key の取得ページ：{{tokenPageUrl}}",
+    "install_prompt": "$t(doberman_agent) ナレッジ検索スキルをインストールしてください。\nスキルのダウンロード先：{{skillPackUrl}}\nAPI Key の取得ページ：{{tokenPageUrl}}",
     "install_step": "ステップ 1：インストール指示をコピーして AI アシスタントに送信",
     "key_label": "API Key",
     "key_step": "ステップ 2：キーを生成し、AI アシスタントに送って設定を完了",
@@ -2753,7 +2753,7 @@
     "tool_enabled_setting": "ツールを有効にする",
     "availability_failed": "保存できませんでした。もう一度お試しください。",
     "web_search_setting": "ウェブ検索を有効にする",
-    "eyebrow": "BISHENG · 企業機能",
+    "eyebrow": "doberman-agent · 企業機能",
     "title": "ツールとスキル",
     "description": "企業のツールと専門知識を業務に活用します。現在のアカウントの権限に従います。",
     "all": "すべて",
@@ -2805,15 +2805,15 @@
     "scenario_inventory": "在庫照会"
   },
   "com_builtin_skills": {
-    "bisheng-docx": {
+    "doberman_agent-docx": {
       "name": "Word 文書作成",
       "description": "報告書、提案書、議事録、通知、契約書の草案、履歴書などの Word 文書（.docx）を作成・閲覧・編集します。見出し、目次、ページ番号、表、グラフを整え、納品前にレイアウトを確認します。"
     },
-    "bisheng-pptx": {
+    "doberman_agent-pptx": {
       "name": "PowerPoint プレゼンテーション作成",
       "description": "会社紹介、業務報告、プロジェクト提案、製品発表、研修用の PowerPoint プレゼンテーション（.pptx）を作成・閲覧・編集します。提供された .pptx または .potx テンプレートを使用し、納品前にスライドのレイアウトを確認します。"
     },
-    "bisheng-xlsx": {
+    "doberman_agent-xlsx": {
       "name": "Excel スプレッドシート作成",
       "description": "データ表、集計表、予算表、財務モデル、見積書、台帳などの Excel ブック（.xlsx）を作成・編集します。.xlsx、.xls、.csv データの読み込みと整形、数式や書式の設定を行い、納品前にブックを再計算して確認します。"
     }

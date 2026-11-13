@@ -17,7 +17,7 @@
  */
 import { useEffect, useRef } from "react";
 import { SSE } from "sse.js";
-import { hideStreamingCitations, type ChatCitation } from "@bisheng/chat/citations";
+import { hideStreamingCitations, type ChatCitation } from "@doberman-agent/chat/citations";
 
 export interface StreamChatSSESubmission {
     /** SSE endpoint URL (absolute) */

@@ -1,5 +1,5 @@
-import type { CitationServices } from '@bisheng/chat/citations';
-import { createCitationUtilities } from '@bisheng/chat/citations';
+import type { CitationServices } from '@doberman-agent/chat/citations';
+import { createCitationUtilities } from '@doberman-agent/chat/citations';
 import { useTranslation } from 'react-i18next';
 import { getCitationDetail,getCitationUnresolvedReason,resolveCitationDetails } from '@/controllers/API';
 import { getCitationAccessScope } from '@/controllers/citationScope';

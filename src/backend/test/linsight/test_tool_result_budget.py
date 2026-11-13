@@ -14,7 +14,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 
-from bisheng.linsight.domain.services.context_budget import ToolResultBudgetMiddleware, estimate_text_tokens
+from doberman_agent.linsight.domain.services.context_budget import ToolResultBudgetMiddleware, estimate_text_tokens
 
 USABLE_INPUT = 20_000  # → 2000-token budget per result
 
@@ -117,7 +117,7 @@ def test_write_file_result_is_never_touched():
 
 
 def test_factory_mounts_the_budget_only_for_a_known_window():
-    from bisheng.linsight.domain.services.agent_factory import _result_budget
+    from doberman_agent.linsight.domain.services.agent_factory import _result_budget
 
     assert _result_budget(StateBackend(), {"usable_input": None}) == []
     (mounted,) = _result_budget(StateBackend(), {"usable_input": 50_000})

@@ -56,7 +56,7 @@ T001 (errcode + release-contract)
 
 - [x] **T001**: 错误码 230xx + release-contract 注册
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/user_group.py` — 230xx 错误码
+  - `src/backend/doberman_agent/common/errcode/user_group.py` — 230xx 错误码
   **文件（修改）**:
   - `features/v2.5.0/release-contract.md` — 注册模块编码 230
   **逻辑**:
@@ -76,10 +76,10 @@ T001 (errcode + release-contract)
 
 - [x] **T002**: Group/UserGroup ORM 扩展 + 新增 async DAO + Alembic 迁移 + DAO 单元测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/group.py` — Group ORM 扩展 + GroupDao 新增 async 方法
-  - `src/backend/bisheng/database/models/user_group.py` — UserGroupDao 新增 async 方法
+  - `src/backend/doberman_agent/database/models/group.py` — Group ORM 扩展 + GroupDao 新增 async 方法
+  - `src/backend/doberman_agent/database/models/user_group.py` — UserGroupDao 新增 async 方法
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f003_user_group.py` — Alembic 迁移
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f003_user_group.py` — Alembic 迁移
   - `src/backend/test/test_user_group_dao.py` — DAO 单元测试
   **逻辑**:
   - **Group ORM 变更**（`database/models/group.py`）:
@@ -234,10 +234,10 @@ T001 (errcode + release-contract)
 
 - [x] **T004**: GroupChangeHandler — TupleOperation DTO + 事件方法 + 日志 stub + 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/user_group/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/domain/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/domain/services/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/domain/services/group_change_handler.py` — TupleOperation + GroupChangeHandler
+  - `src/backend/doberman_agent/user_group/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/domain/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/domain/services/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/domain/services/group_change_handler.py` — TupleOperation + GroupChangeHandler
   - `src/backend/test/test_group_change_handler.py` — 单元测试
   **逻辑**:
   - `TupleOperation` dataclass（与 F002 DepartmentChangeHandler 相同结构，独立定义不导入）:
@@ -272,8 +272,8 @@ T001 (errcode + release-contract)
 
 - [x] **T005**: Pydantic DTO（请求/响应 Schema）
   **文件（新建）**:
-  - `src/backend/bisheng/user_group/domain/schemas/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/domain/schemas/user_group_schema.py` — Pydantic DTO
+  - `src/backend/doberman_agent/user_group/domain/schemas/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/domain/schemas/user_group_schema.py` — Pydantic DTO
   **逻辑**:
   - `UserGroupCreate(BaseModel)`: group_name(str, Field(min_length=1, max_length=128)), visibility(str='public', Field(pattern='^(public|private)$')), remark(Optional[str]=None), admin_user_ids(Optional[List[int]]=None)
   - `UserGroupUpdate(BaseModel)`: group_name(Optional[str]=None, Field(min_length=1, max_length=128)), visibility(Optional[str]=None, Field(pattern='^(public|private)$')), remark(Optional[str]=None)
@@ -288,7 +288,7 @@ T001 (errcode + release-contract)
 
 - [x] **T006**: UserGroupService + Service 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/user_group/domain/services/user_group_service.py` — 核心业务逻辑
+  - `src/backend/doberman_agent/user_group/domain/services/user_group_service.py` — 核心业务逻辑
   - `src/backend/test/test_user_group_service.py` — Service 单元测试
   **逻辑**:
   - **辅助函数**（模块级）:
@@ -322,7 +322,7 @@ T001 (errcode + release-contract)
       5. `await GroupDao.aupdate(group)` → 返回 dict
     - `adelete_group(group_id: int, login_user)`:
       1. `_check_permission(login_user)`
-      2. `from bisheng.database.models.group import DefaultGroup`; `if group_id == DefaultGroup: raise UserGroupDefaultProtectedError()`
+      2. `from doberman_agent.database.models.group import DefaultGroup`; `if group_id == DefaultGroup: raise UserGroupDefaultProtectedError()`
       3. `group = await GroupDao.aget_by_id(group_id)`，不存在 raise UserGroupNotFoundError
       4. `count = await UserGroupDao.aget_group_member_count(group_id)`; `if count > 0: raise UserGroupHasMembersError()`
       5. `await GroupDao.adelete(group_id)`
@@ -353,7 +353,7 @@ T001 (errcode + release-contract)
       7. 如 to_remove: `ops = GroupChangeHandler.on_admin_removed(group_id, list(to_remove))` + `execute(ops)`
       8. 返回新 admin 列表
     - `acreate_default_group(tenant_id: int, creator_user_id: int) -> Group`:
-      1. `from bisheng.core.context.tenant import bypass_tenant_filter`
+      1. `from doberman_agent.core.context.tenant import bypass_tenant_filter`
       2. `with bypass_tenant_filter():`
       3. INSERT Group(group_name='Default user group', visibility='public', tenant_id=tenant_id, create_user=creator_user_id)
       4. 返回 group（供 init_data / F010 调用）
@@ -387,19 +387,19 @@ T001 (errcode + release-contract)
 
 - [x] **T007**: API 端点 + 路由注册 + init_data
   **文件（新建）**:
-  - `src/backend/bisheng/user_group/api/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/api/router.py` — 路由聚合
-  - `src/backend/bisheng/user_group/api/endpoints/__init__.py` — 空 init
-  - `src/backend/bisheng/user_group/api/endpoints/user_group.py` — CRUD 5 端点
-  - `src/backend/bisheng/user_group/api/endpoints/user_group_member.py` — 成员 4 端点
+  - `src/backend/doberman_agent/user_group/api/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/api/router.py` — 路由聚合
+  - `src/backend/doberman_agent/user_group/api/endpoints/__init__.py` — 空 init
+  - `src/backend/doberman_agent/user_group/api/endpoints/user_group.py` — CRUD 5 端点
+  - `src/backend/doberman_agent/user_group/api/endpoints/user_group_member.py` — 成员 4 端点
   **文件（修改）**:
-  - `src/backend/bisheng/api/router.py` — 注册 user_group_router
-  - `src/backend/bisheng/common/init_data.py` — 新增 `_init_default_user_group(session)`
+  - `src/backend/doberman_agent/api/router.py` — 注册 user_group_router
+  - `src/backend/doberman_agent/common/init_data.py` — 新增 `_init_default_user_group(session)`
   **逻辑**:
   - **router.py**:
     ```python
-    from bisheng.user_group.api.endpoints.user_group import router as user_group_crud_router
-    from bisheng.user_group.api.endpoints.user_group_member import router as user_group_member_router
+    from doberman_agent.user_group.api.endpoints.user_group import router as user_group_crud_router
+    from doberman_agent.user_group.api.endpoints.user_group_member import router as user_group_member_router
 
     router = APIRouter(prefix='/user-groups', tags=['UserGroup'])
     router.include_router(user_group_crud_router)
@@ -419,12 +419,12 @@ T001 (errcode + release-contract)
   - 所有端点用 `try/except BaseErrorCode as e: return e.return_resp()` 捕获业务异常
   - **api/router.py 注册**:
     ```python
-    from bisheng.user_group.api.router import router as user_group_router
+    from doberman_agent.user_group.api.router import router as user_group_router
     router.include_router(user_group_router)
     ```
   - **init_data.py 新增** `_init_default_user_group(session)`:
-    1. `from bisheng.core.context.tenant import bypass_tenant_filter`
-    2. `from bisheng.database.models.group import Group, DefaultGroup`
+    1. `from doberman_agent.core.context.tenant import bypass_tenant_filter`
+    2. `from doberman_agent.database.models.group import Group, DefaultGroup`
     3. `with bypass_tenant_filter():`
     4. 查询默认组：`group = (await session.exec(select(Group).where(Group.id == DefaultGroup))).first()`
     5. 如果不存在：return（首次安装前默认组由现有 init 逻辑创建）

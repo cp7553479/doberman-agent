@@ -8,20 +8,20 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     DEFAULT_TENANT_ID,
     current_tenant_id,
     get_current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.core.openfga.worker_runtime import ensure_worker_fga_runtime
-from bisheng.permission.application.process_runtime import (
+from doberman_agent.core.openfga.worker_runtime import ensure_worker_fga_runtime
+from doberman_agent.permission.application.process_runtime import (
     bind_f048_process_runtime,
 )
 
 
 def _load_tenant_context():
-    module_path = Path(__file__).parents[2] / "bisheng" / "worker" / "tenant_context.py"
+    module_path = Path(__file__).parents[2] / "doberman_agent" / "worker" / "tenant_context.py"
     spec = importlib.util.spec_from_file_location(
         "f048_worker_tenant_context_under_test",
         module_path,
@@ -146,7 +146,7 @@ def test_permission_publish_writes_current_tenant_header() -> None:
     try:
         headers = {}
         inject_tenant_header(
-            sender="bisheng.worker.permission.reconcile",
+            sender="doberman_agent.worker.permission.reconcile",
             headers=headers,
         )
     finally:
@@ -163,7 +163,7 @@ def test_permission_publish_without_tenant_fails_closed() -> None:
     try:
         with pytest.raises(PermissionTaskTenantContextError):
             inject_tenant_header(
-                sender="bisheng.worker.permission.reconcile",
+                sender="doberman_agent.worker.permission.reconcile",
                 headers={},
             )
     finally:
@@ -171,7 +171,7 @@ def test_permission_publish_without_tenant_fails_closed() -> None:
 
 
 def test_legacy_failed_tuple_retry_remains_tenant_agnostic() -> None:
-    task_name = "bisheng.worker.permission.retry_failed_tuples.retry_failed_tuples"
+    task_name = "doberman_agent.worker.permission.retry_failed_tuples.retry_failed_tuples"
     token = current_tenant_id.set(None)
     try:
         headers = {}
@@ -191,7 +191,7 @@ def test_legacy_failed_tuple_retry_remains_tenant_agnostic() -> None:
 
 
 def test_failed_tuple_cleanup_remains_tenant_agnostic() -> None:
-    task_name = "bisheng.worker.permission.retry_failed_tuples.cleanup_succeeded_failed_tuples"
+    task_name = "doberman_agent.worker.permission.retry_failed_tuples.cleanup_succeeded_failed_tuples"
     token = current_tenant_id.set(None)
     try:
         headers = {}
@@ -216,7 +216,7 @@ def test_permission_prerun_rejects_missing_or_invalid_tenant(tenant_id) -> None:
     if tenant_id is not None:
         headers["tenant_id"] = tenant_id
     sender = SimpleNamespace(
-        name="bisheng.worker.permission.reconcile",
+        name="doberman_agent.worker.permission.reconcile",
         request=SimpleNamespace(headers=headers),
     )
 
@@ -227,7 +227,7 @@ def test_permission_prerun_rejects_missing_or_invalid_tenant(tenant_id) -> None:
 
 def test_permission_prerun_restores_and_postrun_resets_context() -> None:
     sender = SimpleNamespace(
-        name="bisheng.worker.permission.reconcile",
+        name="doberman_agent.worker.permission.reconcile",
         request=SimpleNamespace(
             headers={
                 "f048_permission_task": True,
@@ -243,7 +243,7 @@ def test_permission_prerun_restores_and_postrun_resets_context() -> None:
 
 
 def test_worker_runtime_does_not_register_data_migration_task() -> None:
-    worker_root = Path(__file__).parents[2] / "bisheng" / "worker"
+    worker_root = Path(__file__).parents[2] / "doberman_agent" / "worker"
     source = "\n".join(path.read_text(encoding="utf-8") for path in worker_root.rglob("*.py"))
     assert "migrate_f048_permission_data" not in source
     assert "register_f048_permission_runtime_context" in source

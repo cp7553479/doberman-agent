@@ -6,13 +6,13 @@ from unittest.mock import Mock
 
 import pytest
 
-# The shared test bootstrap replaces ``bisheng.worker`` with a lightweight
+# The shared test bootstrap replaces ``doberman_agent.worker`` with a lightweight
 # module. Give that stub a package path so this focused test can import the real
 # workflow task module while retaining the mocked Celery application.
-worker_package = ModuleType("bisheng.worker")
-worker_package.__path__ = [str(Path(__file__).parents[2] / "bisheng" / "worker")]
-sys.modules["bisheng.worker"] = worker_package
-tasks = importlib.import_module("bisheng.worker.workflow.tasks")
+worker_package = ModuleType("doberman_agent.worker")
+worker_package.__path__ = [str(Path(__file__).parents[2] / "doberman_agent" / "worker")]
+sys.modules["doberman_agent.worker"] = worker_package
+tasks = importlib.import_module("doberman_agent.worker.workflow.tasks")
 
 
 @pytest.mark.parametrize(

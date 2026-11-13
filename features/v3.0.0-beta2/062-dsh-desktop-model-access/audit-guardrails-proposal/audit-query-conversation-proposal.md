@@ -26,13 +26,13 @@
 
 | 当前实现 | 代码依据 | 本次处理 |
 |---|---|---|
-| 审计 `model_name` 已存完整展示名，另存模型 ID 和提供方快照 | `src/backend/bisheng/dsh/audit_runtime.py` 的 metadata；`domain/services/model_display.py` | 复用完整名称，不重新解析历史正文，不新增模型历史表 |
+| 审计 `model_name` 已存完整展示名，另存模型 ID 和提供方快照 | `src/backend/doberman_agent/dsh/audit_runtime.py` 的 metadata；`domain/services/model_display.py` | 复用完整名称，不重新解析历史正文，不新增模型历史表 |
 | 选择当前模型提交 `model_id`，手填提交 `model_name` | `src/frontend/platform/src/pages/SystemPage/dsh/ModelAuditModelSelect.tsx` | 合并成唯一的名称查询路径 |
-| 候选来自当前租户开放模型，不来自审计表聚合 | `src/backend/bisheng/dsh/domain/services/model_audit_queries.py` 的 `models` | 保留目录来源，返回按完整名称去重的候选 |
-| 名称查询已使用 SHA-256 摘要等值条件并校验原名 | `src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py` 的 `page` | 保留这条索引路径；不对审计列使用 LIKE、LOWER 或在线计算摘要 |
-| 请求持有四个状态轴、生效模式、关联状态和开始时间 | `src/backend/bisheng/dsh/domain/models/model_audit_request.py` | 增加派生的二态状态，保留事实字段 |
-| 会话键已包含认证租户、认证用户、客户端会话 ID | `src/backend/bisheng/dsh/infrastructure/model_audit_codec.py` 的 `conversation_key` | 直接复用，不以会话 ID 单独归组 |
-| 已有指定用户及会话的请求分页和直接父会话定位 | `src/backend/bisheng/dsh/api/endpoints/model_audit_admin.py` | 复用明细能力，新增独立的会话目录 API，不改变旧 `/conversations` 的含义 |
+| 候选来自当前租户开放模型，不来自审计表聚合 | `src/backend/doberman_agent/dsh/domain/services/model_audit_queries.py` 的 `models` | 保留目录来源，返回按完整名称去重的候选 |
+| 名称查询已使用 SHA-256 摘要等值条件并校验原名 | `src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py` 的 `page` | 保留这条索引路径；不对审计列使用 LIKE、LOWER 或在线计算摘要 |
+| 请求持有四个状态轴、生效模式、关联状态和开始时间 | `src/backend/doberman_agent/dsh/domain/models/model_audit_request.py` | 增加派生的二态状态，保留事实字段 |
+| 会话键已包含认证租户、认证用户、客户端会话 ID | `src/backend/doberman_agent/dsh/infrastructure/model_audit_codec.py` 的 `conversation_key` | 直接复用，不以会话 ID 单独归组 |
+| 已有指定用户及会话的请求分页和直接父会话定位 | `src/backend/doberman_agent/dsh/api/endpoints/model_audit_admin.py` | 复用明细能力，新增独立的会话目录 API，不改变旧 `/conversations` 的含义 |
 
 以上是当前分支的代码事实，不等于完整会话目录已经实现。当前 `/conversations` 必须指定用户和会话编号，返回的是该会话内的请求，不能直接充当首页会话列表。
 
@@ -71,7 +71,7 @@
 
 候选只搜索授权租户开放模型目录，可在目录数据上做包含匹配；它与审计日志精确查询是两条不同的数据路径。每页 20 个候选，不一次性向浏览器发送全部目录。服务端以完整名称去重后再分页，避免多个配置 ID 产生重复候选或错误的 total。
 
-复用现有 Input、Popover、Command 交互基础，不新造基础组件。使用 combobox/listbox 语义、上下方向键、活动选项和加载提示；Popover 不抢走输入焦点。已落地的 Input、Tag 规范优先，其他能力沿用现有 Platform 及 Client 可搜索选择实现，实施前核对 `@bisheng/ui` 落地状态与 Platform 兼容性，不在本轮迁移整套组件。
+复用现有 Input、Popover、Command 交互基础，不新造基础组件。使用 combobox/listbox 语义、上下方向键、活动选项和加载提示；Popover 不抢走输入焦点。已落地的 Input、Tag 规范优先，其他能力沿用现有 Platform 及 Client 可搜索选择实现，实施前核对 `@doberman-agent/ui` 落地状态与 Platform 兼容性，不在本轮迁移整套组件。
 
 ## 4 正常与异常的判定
 
@@ -281,6 +281,6 @@ GET /api/v1/dsh/admin/model-audit/conversation-groups?tenant_id=1&user_id=1&mode
 | AC-QC-11 | MySQL/DM8 分别检查常用过滤和超长会话 EXISTS 的执行计划、扫描行数、查询耗时与写入开销；不得仅凭等值表达式宣称索引有效 |
 | AC-QC-12 | 全局管理员和租户管理员继续只看对应历史归属范围；组 key、父编号、用户参数不能越权；原文仍逐请求先授权并记录查看日志 |
 
-UI 检查使用毕昇字体、语义色、输入框、标签及多端规范；只保留必要标签，正文和元数据清晰分区，窄屏无横向溢出，键盘可完成候选选择和展开，触屏热区符合现有规范。不采用外部设计系统生成的配色、字体或全新组件视觉。
+UI 检查使用doberman-agent字体、语义色、输入框、标签及多端规范；只保留必要标签，正文和元数据清晰分区，窄屏无横向溢出，键盘可完成候选选择和展开，触屏热区符合现有规范。不采用外部设计系统生成的配色、字体或全新组件视觉。
 
 2026-10-19 用户已确认实施；按三阶段开发，不自动提交推送或部署。

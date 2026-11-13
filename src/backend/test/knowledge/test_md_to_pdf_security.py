@@ -1,4 +1,4 @@
-from bisheng.common.utils.markdown_cmpnt.md_to_pdf import sanitize_html_for_pdf
+from doberman_agent.common.utils.markdown_cmpnt.md_to_pdf import sanitize_html_for_pdf
 
 
 def test_sanitize_html_for_pdf_blocks_local_file_and_relative_resources() -> None:

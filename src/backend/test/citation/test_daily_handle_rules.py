@@ -19,8 +19,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.citation.domain.services.citation_handle_service import HANDLE_RULES_HEADER
-from bisheng.citation.domain.services.daily_citation_handles import (
+from doberman_agent.citation.domain.services.citation_handle_service import HANDLE_RULES_HEADER
+from doberman_agent.citation.domain.services.daily_citation_handles import (
     ensure_daily_handle_rules,
     load_daily_handle_rules,
     replace_legacy_citation_rules,

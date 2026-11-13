@@ -195,7 +195,7 @@
 - [技术评审输入](../../../docs/reviews/vibe-app-open-source-technical-design.md)
 - [SDD 流程](../../../docs/SDD-Guide.md)
 - [架构宪法](../../../docs/constitution.md)
-- [F054](../054-app-domain-runtime/spec.md)、[F055](../055-app-publish-pipeline/spec.md)、[F057](../057-bisheng-sdk/spec.md)、[F059](../059-k8s-runtime-backend/spec.md)
+- [F054](../054-app-domain-runtime/spec.md)、[F055](../055-app-publish-pipeline/spec.md)、[F057](../057-doberman-agent-sdk/spec.md)、[F059](../059-k8s-runtime-backend/spec.md)
 
 ## 2026-10-21验收口径补充
 

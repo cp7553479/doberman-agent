@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.v1.schemas import WSModel
-from bisheng.dsh.domain.services.model_display import configured_display_names, model_display_name
+from doberman_agent.api.v1.schemas import WSModel
+from doberman_agent.dsh.domain.services.model_display import configured_display_names, model_display_name
 
 
 def test_display_names_preserve_provider_and_fall_back_for_blank_labels():
@@ -27,13 +27,13 @@ def test_display_names_preserve_provider_and_fall_back_for_blank_labels():
 
 @pytest.mark.asyncio
 async def test_chat_projection_uses_stored_labels_and_keeps_permission_filter(monkeypatch):
-    from bisheng.common.services import config_service
-    from bisheng.dsh import runtime
-    from bisheng.dsh.domain.schemas.chat import ChatCapabilities
-    from bisheng.dsh.domain.services.model_catalog import project_workbench_config
-    from bisheng.dsh.infrastructure import model_capabilities
-    from bisheng.llm.domain.schemas import WorkbenchModelConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.common.services import config_service
+    from doberman_agent.dsh import runtime
+    from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities
+    from doberman_agent.dsh.domain.services.model_catalog import project_workbench_config
+    from doberman_agent.dsh.infrastructure import model_capabilities
+    from doberman_agent.llm.domain.schemas import WorkbenchModelConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     config = WorkbenchModelConfig(
         models=[
@@ -69,9 +69,9 @@ async def test_chat_projection_uses_stored_labels_and_keeps_permission_filter(mo
 async def test_admin_settings_preserve_raw_metadata_and_check_tenant_scope(monkeypatch):
     from importlib import import_module
 
-    from bisheng.llm.domain.schemas import WorkbenchModelConfig
+    from doberman_agent.llm.domain.schemas import WorkbenchModelConfig
 
-    api = import_module("bisheng.llm.api.router")
+    api = import_module("doberman_agent.llm.api.router")
     config = WorkbenchModelConfig(
         models=[
             WSModel(id="42", displayName="Custom label", description="Retain"),
@@ -98,7 +98,7 @@ async def test_admin_settings_preserve_raw_metadata_and_check_tenant_scope(monke
 async def test_admin_settings_scope_denial_precedes_metadata_read(monkeypatch):
     from importlib import import_module
 
-    api = import_module("bisheng.llm.api.router")
+    api = import_module("doberman_agent.llm.api.router")
     reader = AsyncMock()
     monkeypatch.setattr(api, "_resolve_write_target", lambda user: 7)
     monkeypatch.setattr(api, "_assert_can_write_system_config", AsyncMock(side_effect=PermissionError("tenant")))

@@ -9,18 +9,18 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from bisheng.common.errcode.permission import AuthorizationModelMismatchError
-from bisheng.core.config.openfga import OpenFGAConf
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.common.errcode.permission import AuthorizationModelMismatchError
+from doberman_agent.core.config.openfga import OpenFGAConf
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     build_authorization_model_f048,
 )
-from bisheng.core.openfga.contextual import dependent_relations
-from bisheng.core.openfga.discovery import (
+from doberman_agent.core.openfga.contextual import dependent_relations
+from doberman_agent.core.openfga.discovery import (
     OpenFGARuntimePin,
     discover_openfga_runtime,
 )
-from bisheng.core.openfga.manager import FGAManager
+from doberman_agent.core.openfga.manager import FGAManager
 
 
 class _HeartbeatStore:
@@ -38,7 +38,7 @@ class _HeartbeatStore:
 def _config(**updates) -> OpenFGAConf:
     values = {
         "api_url": "http://openfga:8080",
-        "store_name": "bisheng",
+        "store_name": "doberman_agent",
         "recent_consistency_window_seconds": 35,
     }
     values.update(updates)
@@ -72,7 +72,7 @@ async def test_discovery_selects_unique_named_store_and_latest_model() -> None:
             return httpx.Response(
                 200,
                 json={
-                    "stores": [{"id": "store-live", "name": "bisheng"}],
+                    "stores": [{"id": "store-live", "name": "doberman_agent"}],
                 },
             )
         if request.url.path == "/stores/store-live/authorization-models":
@@ -110,7 +110,7 @@ async def test_discovery_selects_unique_named_store_and_latest_model() -> None:
     )
     assert all(request.startswith("http://openfga:8080/") for request in requests)
     store_requests = [request for request in requests if "/stores?" in request]
-    assert store_requests == ["http://openfga:8080/stores?name=bisheng&page_size=2"]
+    assert store_requests == ["http://openfga:8080/stores?name=doberman_agent&page_size=2"]
 
 
 @pytest.mark.asyncio
@@ -122,7 +122,7 @@ async def test_discovery_accepts_empty_defaults_added_by_openfga() -> None:
         if request.url.path == "/stores":
             return httpx.Response(
                 200,
-                json={"stores": [{"id": "store-live", "name": "bisheng"}]},
+                json={"stores": [{"id": "store-live", "name": "doberman_agent"}]},
             )
         if request.url.path == "/stores/store-live/authorization-models":
             return httpx.Response(
@@ -159,8 +159,8 @@ async def test_discovery_fails_closed_after_two_duplicate_store_matches() -> Non
             200,
             json={
                 "stores": [
-                    {"id": "store-a", "name": "bisheng"},
-                    {"id": "store-b", "name": "bisheng"},
+                    {"id": "store-a", "name": "doberman_agent"},
+                    {"id": "store-b", "name": "doberman_agent"},
                 ],
                 "continuation_token": "more-duplicates-exist",
             },
@@ -181,7 +181,7 @@ async def test_discovery_fails_closed_after_two_duplicate_store_matches() -> Non
                 http_client=client,
             )
 
-    assert requests == ["http://openfga:8080/stores?name=bisheng&page_size=2"]
+    assert requests == ["http://openfga:8080/stores?name=doberman_agent&page_size=2"]
 
 
 @pytest.mark.asyncio
@@ -216,7 +216,7 @@ async def test_development_bootstrap_checks_by_name_before_creating_store() -> N
 
     assert pin.store_id == "store-created"
     assert requests[:2] == [
-        ("GET", "http://openfga:8080/stores?name=bisheng&page_size=2"),
+        ("GET", "http://openfga:8080/stores?name=doberman_agent&page_size=2"),
         ("POST", "http://openfga:8080/stores"),
     ]
 
@@ -232,7 +232,7 @@ async def test_discovery_rejects_latest_model_with_wrong_checksum() -> None:
         if request.url.path == "/stores":
             return httpx.Response(
                 200,
-                json={"stores": [{"id": "store-live", "name": "bisheng"}]},
+                json={"stores": [{"id": "store-live", "name": "doberman_agent"}]},
             )
         if request.url.path == "/stores/store-live/authorization-models":
             return httpx.Response(
@@ -277,7 +277,7 @@ async def test_production_rejects_bootstrap_dual_and_legacy(
         environment="production",
     )
     with patch(
-        "bisheng.core.openfga.manager.discover_openfga_runtime",
+        "doberman_agent.core.openfga.manager.discover_openfga_runtime",
         new_callable=AsyncMock,
     ) as discover:
         with pytest.raises(ValueError):
@@ -309,11 +309,11 @@ async def test_single_model_client_readiness_and_heartbeat() -> None:
     fake_client.close = AsyncMock()
     with (
         patch(
-            "bisheng.core.openfga.manager.discover_openfga_runtime",
+            "doberman_agent.core.openfga.manager.discover_openfga_runtime",
             new=AsyncMock(return_value=pin),
         ) as discover,
         patch(
-            "bisheng.core.openfga.manager.FGAClient",
+            "doberman_agent.core.openfga.manager.FGAClient",
             return_value=fake_client,
         ) as client_class,
     ):
@@ -370,11 +370,11 @@ async def test_predecessor_model_allows_process_start_without_runtime_readiness(
     fake_client.close = AsyncMock()
     with (
         patch(
-            "bisheng.core.openfga.manager.discover_openfga_runtime",
+            "doberman_agent.core.openfga.manager.discover_openfga_runtime",
             new=AsyncMock(return_value=pin),
         ),
         patch(
-            "bisheng.core.openfga.manager.FGAClient",
+            "doberman_agent.core.openfga.manager.FGAClient",
             return_value=fake_client,
         ),
     ):

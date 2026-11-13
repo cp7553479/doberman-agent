@@ -16,7 +16,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.tenant import UserTenant
+from doberman_agent.database.models.tenant import UserTenant
 
 
 @pytest.fixture(scope='module')

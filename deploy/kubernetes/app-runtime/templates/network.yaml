@@ -9,7 +9,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: {name: runtime-entry, namespace: {{ .Values.execution.namespace }}}
 spec:
-  podSelector: {matchLabels: {bisheng.managed: v2}}
+  podSelector: {matchLabels: {doberman-agent.managed: v2}}
   policyTypes: [Ingress]
   ingress:
     - from:
@@ -25,7 +25,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: {name: runtime-egress-only, namespace: {{ .Values.execution.namespace }}}
 spec:
-  podSelector: {matchLabels: {bisheng.managed: v2}}
+  podSelector: {matchLabels: {doberman-agent.managed: v2}}
   policyTypes: [Egress]
   egress:
     - to:
@@ -88,7 +88,7 @@ spec:
   ingress:
     - from:
         - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ .Values.execution.namespace }}}}
-          podSelector: {matchLabels: {bisheng.managed: v2}}
+          podSelector: {matchLabels: {doberman-agent.managed: v2}}
       ports: [{protocol: TCP, port: 3128}]
 ---
 apiVersion: networking.k8s.io/v1
@@ -134,7 +134,7 @@ spec:
       ports: [{protocol: TCP, port: 443}, {protocol: TCP, port: 6443}]
     - to:
         - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ .Values.execution.namespace }}}}
-          podSelector: {matchLabels: {bisheng.managed: v2}}
+          podSelector: {matchLabels: {doberman-agent.managed: v2}}
       ports: [{protocol: TCP, port: http}, {protocol: TCP, port: data-control}]
 ---
 apiVersion: networking.k8s.io/v1
@@ -146,7 +146,7 @@ spec:
   egress:
     - to:
         - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ .Values.execution.namespace }}}}
-          podSelector: {matchLabels: {bisheng.managed: v2}}
+          podSelector: {matchLabels: {doberman-agent.managed: v2}}
       ports: [{protocol: TCP, port: http}]
 ---
 apiVersion: networking.k8s.io/v1

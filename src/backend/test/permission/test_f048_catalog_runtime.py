@@ -13,31 +13,31 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, col, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
     SameLevelGrantRequiresManagePermissionError,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     get_authorization_model_f048,
     required_relations_checksum,
 )
-from bisheng.permission.application import control_state as control_state_module
-from bisheng.permission.application import sql_runtime as sql_runtime_module
-from bisheng.permission.application.catalog_api import (
+from doberman_agent.permission.application import control_state as control_state_module
+from doberman_agent.permission.application import sql_runtime as sql_runtime_module
+from doberman_agent.permission.application.catalog_api import (
     F048CatalogApi,
     OpenFGACatalogProjector,
     SqlCatalogImpact,
     SqlCatalogState,
 )
-from bisheng.permission.application.control_state import (
+from doberman_agent.permission.application.control_state import (
     SqlPermissionControlState,
 )
-from bisheng.permission.application.sql_runtime import (
+from doberman_agent.permission.application.sql_runtime import (
     SqlCatalogDecisionState,
 )
-from bisheng.permission.domain.models import (
+from doberman_agent.permission.domain.models import (
     AuthorizationModelRelease,
     PermissionAction,
     PermissionActionResourceScope,
@@ -49,25 +49,25 @@ from bisheng.permission.domain.models import (
     PermissionModelAction,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.schemas import (
+from doberman_agent.permission.domain.schemas import (
     CatalogChangeRequest,
     CatalogChangeType,
     CatalogDraftRequest,
     CatalogPublishRequest,
     VerifiedPermissionTarget,
 )
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     ACTION_RESOURCE_SCOPES,
     REGISTERED_ACTION_CODES,
     CatalogAction,
     derive_action_release,
 )
-from bisheng.permission.domain.services.catalog_service import CatalogService
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.catalog_service import CatalogService
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.model_policy import (
+from doberman_agent.permission.domain.services.model_policy import (
     CustomModelSelection,
     derive_permission_models,
 )

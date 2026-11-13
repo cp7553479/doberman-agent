@@ -36,7 +36,7 @@ npm run start
 
 开发环境下，以下代理已配置：
 - `target` 代理到 后端接口
-- `/bisheng` 代理到 文件服务器地址
+- `/doberman_agent` 代理到 文件服务器地址
 - `/custom_base/api` 开启子路由时需要配置此代理，并重写路径 `/custom_base/api` 为 `/api`
 
 ## 正式环境部署
@@ -86,7 +86,7 @@ server {
         proxy_set_header Connection "upgrade";
     }
 
-    location /bisheng/ {
+    location /doberman_agent/ {
         proxy_pass [file server url];
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

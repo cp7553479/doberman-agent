@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Radio, RadioGroup } from '@bisheng/ui';
+import { Radio, RadioGroup } from '@doberman-agent/ui';
 import {
   AuthTypeEnum,
   AuthorizationTypeEnum,

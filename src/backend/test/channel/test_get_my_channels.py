@@ -16,17 +16,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import bisheng.channel.domain.services.channel_service as mod
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import (
+import doberman_agent.channel.domain.services.channel_service as mod
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import (
     MyChannelQueryRequest,
     QueryTypeEnum,
     SetPinRequest,
     SortByEnum,
 )
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ChannelNotFoundError
-from bisheng.common.models.space_channel_member import ChannelRelationEnum, UserRoleEnum
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ChannelNotFoundError
+from doberman_agent.common.models.space_channel_member import ChannelRelationEnum, UserRoleEnum
 
 
 def _async(value):

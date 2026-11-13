@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Wrapper for the unified MySQL -> DaMeng (DM8) data migration.
 #
-# Runs migrate_mysql_to_dm.py inside the bisheng backend venv so that the
-# dmPython driver and the DM dialect patches (bisheng.core.database.
+# Runs migrate_mysql_to_dm.py inside the doberman_agent backend venv so that the
+# dmPython driver and the DM dialect patches (doberman_agent.core.database.
 # dialect_helpers) are importable. All arguments are forwarded verbatim, e.g.:
 #
 #   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --dry-run
 #   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --truncate
 #   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --verify
-#   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --db bisheng --resume-from t_report
+#   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --db doberman-agent --resume-from t_report
 #
 # CONNECTION SETTINGS (account / password / ip / port)
 # ----------------------------------------------------
@@ -17,7 +17,7 @@
 # block below. A value the caller already exported always wins over the default.
 #
 #   export MYSQL_HOST=10.0.0.5 MYSQL_PASSWORD=xxx DM_HOST=192.168.107.9 \
-#          DM_BISHENG_PASSWORD=yyy
+#          DM_DOBERMAN_AGENT_PASSWORD=yyy
 #   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --dry-run
 set -euo pipefail
 
@@ -40,17 +40,17 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-}"
 # user==schema deployment, or a shared account + distinct schemas otherwise.
 export DM_HOST="${DM_HOST:-127.0.0.1}"
 export DM_PORT="${DM_PORT:-5236}"
-export DM_BISHENG_USER="${DM_BISHENG_USER:-BISHENG}"
-export DM_BISHENG_SCHEMA="${DM_BISHENG_SCHEMA:-BISHENG}"
-export DM_BISHENG_PASSWORD="${DM_BISHENG_PASSWORD:-}"
-export DM_GATEWAY_USER="${DM_GATEWAY_USER:-BISHENG_GATEWAY}"
-export DM_GATEWAY_SCHEMA="${DM_GATEWAY_SCHEMA:-BISHENG_GATEWAY}"
+export DM_DOBERMAN_AGENT_USER="${DM_DOBERMAN_AGENT_USER:-DOBERMAN_AGENT}"
+export DM_DOBERMAN_AGENT_SCHEMA="${DM_DOBERMAN_AGENT_SCHEMA:-DOBERMAN_AGENT}"
+export DM_DOBERMAN_AGENT_PASSWORD="${DM_DOBERMAN_AGENT_PASSWORD:-}"
+export DM_GATEWAY_USER="${DM_GATEWAY_USER:-DOBERMAN_AGENT_GATEWAY}"
+export DM_GATEWAY_SCHEMA="${DM_GATEWAY_SCHEMA:-DOBERMAN_AGENT_GATEWAY}"
 export DM_GATEWAY_PASSWORD="${DM_GATEWAY_PASSWORD:-}"
 export DM_OPENFGA_USER="${DM_OPENFGA_USER:-OPENFGA}"
 export DM_OPENFGA_SCHEMA="${DM_OPENFGA_SCHEMA:-OPENFGA}"
 export DM_OPENFGA_PASSWORD="${DM_OPENFGA_PASSWORD:-}"
 
-# Prefer the bisheng backend venv (has dmPython on Linux); fall back to PATH.
+# Prefer the doberman_agent backend venv (has dmPython on Linux); fall back to PATH.
 if [ -x "${BACKEND_ROOT}/.venv/bin/python" ]; then
     PYTHON_BIN="${BACKEND_ROOT}/.venv/bin/python"
 elif command -v python >/dev/null 2>&1; then
@@ -62,7 +62,7 @@ else
     exit 1
 fi
 
-# Make `import bisheng.*` resolve against the backend source tree.
+# Make `import doberman_agent.*` resolve against the backend source tree.
 export PYTHONPATH="${BACKEND_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
 
 exec "${PYTHON_BIN}" "${SCRIPT_DIR}/migrate_mysql_to_dm.py" "$@"

@@ -136,7 +136,7 @@ F006 是 v2.4 → v2.5 升级的关键桥梁。它将旧 RBAC 权限数据（rol
 
 ### AC-11: 双模式运行
 
-- [ ] 独立 CLI：`python -m bisheng.permission.migration.migrate_rbac_to_rebac [--dry-run] [--verify] [--step N]`
+- [ ] 独立 CLI：`python -m doberman_agent.permission.migration.migrate_rbac_to_rebac [--dry-run] [--verify] [--step N]`
 - [ ] 启动集成：`init_default_data()` 末尾调用 `_migrate_rbac_to_rebac_if_needed()`
 - [ ] 启动集成通过 Redis key `migration:f006:completed` 判断是否已完成，已完成则跳过
 - [ ] 迁移成功后设置 Redis key，值包含完成时间和统计信息
@@ -254,19 +254,19 @@ SCM_ROLE_MAPPING: dict[str, str] = {
 
 ```bash
 # 默认模式：执行迁移
-python -m bisheng.permission.migration.migrate_rbac_to_rebac
+python -m doberman_agent.permission.migration.migrate_rbac_to_rebac
 
 # 预览模式：只统计不写入
-python -m bisheng.permission.migration.migrate_rbac_to_rebac --dry-run
+python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --dry-run
 
 # 验证模式：对比新旧系统
-python -m bisheng.permission.migration.migrate_rbac_to_rebac --verify
+python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --verify
 
 # 断点续传：从第 N 步开始
-python -m bisheng.permission.migration.migrate_rbac_to_rebac --step 3
+python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --step 3
 
 # 组合使用
-python -m bisheng.permission.migration.migrate_rbac_to_rebac --dry-run --step 3
+python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --dry-run --step 3
 ```
 
 ### 6.2 无 HTTP API
@@ -425,7 +425,7 @@ def _dedup_tuples(self, tuples: list[TupleOperation]) -> list[TupleOperation]:
 # init_data.py 末尾
 async def _migrate_rbac_to_rebac_if_needed():
     """One-time RBAC→ReBAC migration (F006). Idempotent."""
-    from bisheng.core.openfga.manager import get_fga_client
+    from doberman_agent.core.openfga.manager import get_fga_client
     fga = get_fga_client()
     if fga is None:
         return  # OpenFGA 未启用，跳过

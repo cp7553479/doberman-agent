@@ -63,8 +63,8 @@ async def _collect_parent_edges() -> list[tuple[int, int]]:
     """
     from sqlmodel import select
 
-    from bisheng.core.database import get_async_db_session
-    from bisheng.database.models.department import Department
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.database.models.department import Department
 
     async with get_async_db_session() as session:
         rows = (
@@ -86,11 +86,11 @@ async def _collect_parent_edges() -> list[tuple[int, int]]:
 
 
 async def run(apply: bool) -> int:
-    from bisheng.core.context.tenant import bypass_tenant_filter
-    from bisheng.department.domain.services.department_change_handler import (
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.department.domain.services.department_change_handler import (
         DepartmentChangeHandler,
     )
-    from bisheng.permission.application import get_permission_relation_api
+    from doberman_agent.permission.application import get_permission_relation_api
 
     with bypass_tenant_filter():
         edges = await _collect_parent_edges()
@@ -131,8 +131,8 @@ def main() -> int:
     args = parser.parse_args()
 
     async def _amain() -> int:
-        from bisheng.common.services.config_service import settings
-        from bisheng.core.context.manager import (
+        from doberman_agent.common.services.config_service import settings
+        from doberman_agent.core.context.manager import (
             close_app_context,
             initialize_app_context,
         )

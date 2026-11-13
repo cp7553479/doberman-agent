@@ -13,7 +13,7 @@ KnowledgeSpaceConfig / SubscriptionConfig 各加了 `assistant_name` 字段，�
 
 import json
 
-from bisheng.api.v1.schemas import KnowledgeSpaceConfig, SubscriptionConfig
+from doberman_agent.api.v1.schemas import KnowledgeSpaceConfig, SubscriptionConfig
 
 
 def _parse_ks(payload: dict) -> KnowledgeSpaceConfig:

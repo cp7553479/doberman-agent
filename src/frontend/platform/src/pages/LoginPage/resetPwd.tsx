@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, PasswordInput, toast } from '@bisheng/ui';
+import { Button, PasswordInput, toast } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { getBrandAssetUrl } from "@/utils/brand";
 import { useEffect, useRef } from "react";
@@ -80,7 +80,7 @@ export const ResetPwdPage = () => {
                 <div className="bg-background-login relative">
                     <div>
                         <img
-                            src={getBrandAssetUrl("headerLogoLight", "/assets/bisheng/login-logo-small.png")}
+                            src={getBrandAssetUrl("headerLogoLight", "/assets/doberman-agent/login-logo-small.png")}
                             alt="small_logo"
                             className="block w-[114px] h-[36px] m-auto mt-[140px]"
                         />

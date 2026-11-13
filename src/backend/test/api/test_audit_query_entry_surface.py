@@ -8,15 +8,15 @@ half: a census of the whole route table, so that adding a per-family query page
 noticed in review.
 
 It lives under ``test/api/`` rather than next to its sibling because the audit
-unit tests stub ``bisheng.api.router`` / ``bisheng.telemetry_search`` into
+unit tests stub ``doberman_agent.api.router`` / ``doberman_agent.telemetry_search`` into
 ``sys.modules`` in order to exercise the DAO without the application, and those
-stubs make ``bisheng.main`` unimportable for the rest of the session. This
+stubs make ``doberman_agent.main`` unimportable for the rest of the session. This
 package imports the real app, like ``test_route_path_naming.py`` next to it.
 """
 
 from fastapi.routing import APIRoute
 
-from bisheng.main import app
+from doberman_agent.main import app
 
 #: Reads on the audit face. ``/session`` is chat forensics — a different object
 #: (conversations), not an event-type view of the audit log — and predates the

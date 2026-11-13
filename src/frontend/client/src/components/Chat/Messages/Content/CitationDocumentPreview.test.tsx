@@ -2,7 +2,7 @@ import { render,waitFor } from '@testing-library/react';
 import { CitationDocumentPreviewContent } from './CitationDocumentPreviewDrawer';
 import { getFilePathApi } from '~/api/chat/data-service';
 import { getCitationUnresolvedReason } from '~/api/chatApi';
-import type { ChatCitation } from '@bisheng/chat/citations';
+import type { ChatCitation } from '@doberman-agent/chat/citations';
 jest.mock('~/hooks',()=>({useLocalize:()=> (key:string)=>key,usePrefersMobileLayout:()=>false}));
 jest.mock('~/store',()=>({__esModule:true,default:{}}));
 jest.mock('~/api/chatApi',()=>({getCitationUnresolvedReason:jest.fn(),getCitationDetail:jest.fn(),resolveCitationDetails:jest.fn()}));

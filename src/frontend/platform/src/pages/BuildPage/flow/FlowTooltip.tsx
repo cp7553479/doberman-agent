@@ -1,4 +1,4 @@
-import { Tooltip,type TooltipProps } from '@bisheng/ui'
+import { Tooltip,type TooltipProps } from '@doberman-agent/ui'
 import type { ReactNode } from 'react'
 
 interface FlowTooltipProps extends Omit<TooltipProps, 'side' | 'content'> {

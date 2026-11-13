@@ -1,6 +1,6 @@
-import { Button, toast } from '@bisheng/ui';
-import { Tag, Tabs } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, toast } from '@doberman-agent/ui';
+import { Tag, Tabs } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 

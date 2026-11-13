@@ -8,13 +8,13 @@ import httpx
 import pytest
 from fastapi import FastAPI, HTTPException
 
-from bisheng.chat_session.domain.chat import ChatSessionService
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.common.errcode.public_endpoints import PublicApplicationOfflineError
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.main import handle_http_exception
-from bisheng.public_endpoints.api.endpoints import chat
-from bisheng.public_endpoints.api.exception_handlers import register_public_exception_handlers
+from doberman_agent.chat_session.domain.chat import ChatSessionService
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.common.errcode.public_endpoints import PublicApplicationOfflineError
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.main import handle_http_exception
+from doberman_agent.public_endpoints.api.endpoints import chat
+from doberman_agent.public_endpoints.api.exception_handlers import register_public_exception_handlers
 
 FLOW_ID = "816acf819f254de68cf34779a7586621"
 CHAT_ID = "419f82f46fba51f7d5cee9662b761787"

@@ -6,13 +6,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshModelNotAllowedError
-from bisheng.core.context.tenant import current_tenant_id, is_tenant_filter_bypassed, set_current_tenant_id
+from doberman_agent.common.errcode.dsh import DshModelNotAllowedError
+from doberman_agent.core.context.tenant import current_tenant_id, is_tenant_filter_bypassed, set_current_tenant_id
 
 
 @pytest.fixture
 def models(monkeypatch):
-    from bisheng.llm.domain.services.llm import LLMDao, LLMService
+    from doberman_agent.llm.domain.services.llm import LLMDao, LLMService
 
     model = SimpleNamespace(
         id=42, tenant_id=2, server_id=8, online=True, model_type="llm", model_name="m", config={"temperature": 0.5}
@@ -71,13 +71,13 @@ async def test_root_shared_allowed_only_via_current_canonical_authorization(mode
 
 
 def test_builder_uses_same_snapshot_without_cache_lookup(monkeypatch):
-    from bisheng.llm.domain.llm.base import BishengBase
+    from doberman_agent.llm.domain.llm.base import DobermanAgentBase
 
-    class Recording(BishengBase):
+    class Recording(DobermanAgentBase):
         def __init__(self, **kwargs):
             object.__setattr__(self, "values", kwargs)
 
-    monkeypatch.setattr(BishengBase, "get_model_server_info_sync", lambda *args: pytest.fail("unexpected cache read"))
+    monkeypatch.setattr(DobermanAgentBase, "get_model_server_info_sync", lambda *args: pytest.fail("unexpected cache read"))
     model = SimpleNamespace(id=42, model_name="latest", server_id=8, config={"version": 2})
     server = SimpleNamespace(id=8, config={"version": 3})
     result = Recording.get_class_instance_from_snapshot(model_info=model, server_info=server, user_id=20, max_retries=0)
@@ -91,10 +91,10 @@ def test_builder_uses_same_snapshot_without_cache_lookup(monkeypatch):
         Recording.get_class_instance_from_snapshot(model_info=model, server_info=server, model_id=43)
 
 
-def test_actual_bisheng_wrapper_receives_no_retry_provider_config(monkeypatch):
+def test_actual_doberman_agent_wrapper_receives_no_retry_provider_config(monkeypatch):
     from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
-    from bisheng.llm.domain.services.llm import BishengLLM, LLMModel, LLMServer, LLMService
+    from doberman_agent.llm.domain.services.llm import DobermanAgentLLM, LLMModel, LLMServer, LLMService
 
     captured = {}
 
@@ -102,7 +102,7 @@ def test_actual_bisheng_wrapper_receives_no_retry_provider_config(monkeypatch):
         captured.update(kwargs)
         return FakeListChatModel(responses=["ok"])
 
-    monkeypatch.setattr(BishengLLM, "_get_llm_class", staticmethod(lambda kind: create_provider))
+    monkeypatch.setattr(DobermanAgentLLM, "_get_llm_class", staticmethod(lambda kind: create_provider))
     model = LLMModel(
         id=42,
         server_id=8,
@@ -114,7 +114,7 @@ def test_actual_bisheng_wrapper_receives_no_retry_provider_config(monkeypatch):
     )
     server = LLMServer(id=8, tenant_id=2, name="test", type="openai", config={})
     wrapper = LLMService.build_dsh_llm(model, server, user_id=20)
-    assert isinstance(wrapper, BishengLLM)
+    assert isinstance(wrapper, DobermanAgentLLM)
     assert captured["max_retries"] == 0
     assert model.config["user_kwargs"]["max_retries"] == 5
 
@@ -126,8 +126,8 @@ async def test_real_clients_keep_retry_override_local_to_dsh(provider, serialize
     from sqlalchemy import inspect
     from sqlalchemy.orm import make_transient_to_detached
 
-    from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-    from bisheng.llm.domain.services.llm import BishengLLM, LLMModel, LLMServer, LLMService
+    from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+    from doberman_agent.llm.domain.services.llm import DobermanAgentLLM, LLMModel, LLMServer, LLMService
 
     advanced = {"extra_body": {"custom_option": True}}
     if configured_retries is not None:
@@ -154,7 +154,7 @@ async def test_real_clients_keep_retry_override_local_to_dsh(provider, serialize
     original_config = json.dumps(model.config, sort_keys=True)
     original_server_config = json.dumps(server.config, sort_keys=True)
     dsh = LLMService.build_dsh_llm(model, server, user_id=20)
-    ordinary = BishengLLM(
+    ordinary = DobermanAgentLLM(
         model_id=model.id,
         model_info=model,
         server_info=server,

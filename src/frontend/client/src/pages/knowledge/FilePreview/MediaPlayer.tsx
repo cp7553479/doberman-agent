@@ -1,5 +1,5 @@
-import { MediaPlayer as SharedMediaPlayer, type MediaPlayerProps as SharedMediaPlayerProps } from '@bisheng/file-viewers/media-player';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { MediaPlayer as SharedMediaPlayer, type MediaPlayerProps as SharedMediaPlayerProps } from '@doberman-agent/file-viewers/media-player';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 interface MediaPlayerProps extends Omit<SharedMediaPlayerProps, 'labels' | 'selectLabels'> { src: string }
 export function MediaPlayer(props: MediaPlayerProps) {
   const locale = usePreviewLocale();

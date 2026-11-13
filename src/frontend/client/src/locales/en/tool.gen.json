@@ -94,7 +94,7 @@
       "desc": "Fetch messages in direct chats, groups, or threads",
       "name": "Retrieve Feishu Message History"
     },
-    "bisheng_code_interpreter": {
+    "doberman_agent_code_interpreter": {
       "params": {
         "python_code": "The pure Python script to evaluate. It will be placed in main.py. Do not use Markdown."
       },
@@ -156,7 +156,7 @@
       "desc": "Retrieve company basic info, key personnel, shareholders, external investments, branches, etc.",
       "name": "Industrial & Commercial Information"
     },
-    "bisheng_knowledge_search": {
+    "doberman_agent_knowledge_search": {
       "name": "$t(tool:categories.知识库检索.name)",
       "desc": "$t(tool:categories.知识库检索.desc)"
     },

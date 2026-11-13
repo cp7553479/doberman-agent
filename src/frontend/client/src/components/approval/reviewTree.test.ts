@@ -5,7 +5,7 @@ import { ancestorPaths, buildReviewTree, pickInitialFile } from "./reviewTree";
 function entries(): SnapshotEntry[] {
   return [
     { path: "README.md", name: "README.md", type: "file", size: 12, previewable: true, reason: null },
-    { path: "bisheng-app.yaml", name: "bisheng-app.yaml", type: "file", size: 40, previewable: true, reason: null },
+    { path: "doberman_agent-app.yaml", name: "doberman_agent-app.yaml", type: "file", size: 40, previewable: true, reason: null },
     { path: "src", name: "src", type: "dir", size: null },
     { path: "src/app", name: "app", type: "dir", size: null },
     { path: "src/app/main.py", name: "main.py", type: "file", size: 90, previewable: true, reason: null },
@@ -18,8 +18,8 @@ describe("buildReviewTree", () => {
     const tree = buildReviewTree(entries());
 
     // Directories first, then files by `localeCompare` — which is
-    // case-insensitive, so `bisheng-app.yaml` sorts above `README.md`.
-    expect(tree.map((node) => node.path)).toEqual(["src", "bisheng-app.yaml", "README.md"]);
+    // case-insensitive, so `doberman_agent-app.yaml` sorts above `README.md`.
+    expect(tree.map((node) => node.path)).toEqual(["src", "doberman_agent-app.yaml", "README.md"]);
     const src = tree[0];
     expect(src.children.map((node) => node.path)).toEqual(["src/app", "src/logo.png"]);
     expect(src.children[0].children.map((node) => node.path)).toEqual(["src/app/main.py"]);
@@ -60,11 +60,11 @@ describe("ancestorPaths", () => {
 
 describe("pickInitialFile", () => {
   it("opens on the manifest, which is the file every reviewer reads first", () => {
-    expect(pickInitialFile(entries())).toBe("bisheng-app.yaml");
+    expect(pickInitialFile(entries())).toBe("doberman_agent-app.yaml");
   });
 
   it("falls back to the first readable file and skips the ones that cannot be shown", () => {
-    const withoutManifest = entries().filter((entry) => entry.path !== "bisheng-app.yaml");
+    const withoutManifest = entries().filter((entry) => entry.path !== "doberman_agent-app.yaml");
     expect(pickInitialFile(withoutManifest)).toBe("README.md");
     expect(
       pickInitialFile([

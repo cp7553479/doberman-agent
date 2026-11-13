@@ -1,4 +1,4 @@
-import { Button } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/bs-ui/dialog"
 import { useTranslation } from "react-i18next"
 

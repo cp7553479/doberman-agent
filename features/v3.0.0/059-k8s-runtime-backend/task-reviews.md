@@ -116,7 +116,7 @@
 ## Task Review: T002
 
 **任务**：资源账本、材料授权与控制器字段。**类型**：基础设施。
-**文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`。
+**文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -135,7 +135,7 @@
 ## Task Review: T003
 
 **任务**：Schema 扩展与租户登记。**类型**：基础设施。
-**文件**：`src/backend/bisheng/core/database/alembic/versions/f059_runtime_kubernetes.py`、`src/backend/bisheng/app_runtime/domain/models/__init__.py`。
+**文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_runtime_kubernetes.py`、`src/backend/doberman_agent/app_runtime/domain/models/__init__.py`。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -243,7 +243,7 @@ T004来源：[官方50.0.2变更记录](https://cryptography.io/en/latest/change
 
 ## Task Review: T015
 
-**任务**：平台资源账本 Repository（实现）。**文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`。
+**任务**：平台资源账本 Repository（实现）。**文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -322,7 +322,7 @@ T009/T013增量L1：应用凭据支持只给app容器的Secret引用，材料Sec
 ## Task Review: T074
 
 **任务**：发布线继承的迁移图汇合。**类型**：基础设施。
-**文件**：`src/backend/bisheng/core/database/alembic/versions/f059_merge_release_heads.py`。
+**文件**：`src/backend/doberman_agent/core/database/alembic/versions/f059_merge_release_heads.py`。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -379,7 +379,7 @@ T009/T013增量L1：应用凭据支持只给app容器的Secret引用，材料Sec
 ## Task Review: T017
 
 **任务**：控制器租约和资源事实Service。**类型**：实现。
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`。
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -872,7 +872,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T097
 
-**任务**：backend purge 范围和删除授权。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`。
+**任务**：backend purge 范围和删除授权。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -1016,7 +1016,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T095
 
-**任务**：活跃材料候选 Repository 查询。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`。
+**任务**：活跃材料候选 Repository 查询。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -1048,7 +1048,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T057
 
-**任务**：材料用途的出站投影。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_policy_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`。
+**任务**：材料用途的出站投影。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_policy_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -1320,7 +1320,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T110
 
-**任务**：删除维护轻量容量预占。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`。
+**任务**：删除维护轻量容量预占。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -1624,7 +1624,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T129
 
-**任务**：helper 及 PVC 作用域校验接线。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/test/app_runtime/test_runtime_kubernetes_service.py`。
+**任务**：helper 及 PVC 作用域校验接线。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`、`src/backend/test/app_runtime/test_runtime_kubernetes_service.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -1688,7 +1688,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 ## Task Review: T133
 
-**任务**：SDK 平台地址变量接线。**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`。
+**任务**：SDK 平台地址变量接线。**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`。
 
 | # | 检查项 | 结果 | 依据 |
 | --- | --- | --- | --- |
@@ -2035,7 +2035,7 @@ T085仅DDL，parent来自alembic heads的f059_merge_release_heads；DM8仅静态
 
 **任务**: 运行记录租户默认值修订
 **类型**: 基础设施
-**文件**: `src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`
+**文件**: `src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2904,7 +2904,7 @@ T200测试先行ad8d028b7：真实BundleDelivery/SourceImageDelivery、register_
 
 ## Task Review: T208 — 资源账本单次创建与未创建围栏
 
-**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py`、`src/backend/bisheng/app_runtime/domain/models/runtime_kubernetes.py`
+**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py`、`src/backend/doberman_agent/app_runtime/domain/models/runtime_kubernetes.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2944,7 +2944,7 @@ T200测试先行ad8d028b7：真实BundleDelivery/SourceImageDelivery、register_
 
 ## Task Review: T212 — 创建收尾Service与只读准入接线
 
-**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_kubernetes_service.py`
+**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_kubernetes_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2964,7 +2964,7 @@ T200测试先行ad8d028b7：真实BundleDelivery/SourceImageDelivery、register_
 
 ## Task Review: T213 — 签名观察API创建动作输入
 
-**类型**：实现。**文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_kubernetes.py`
+**类型**：实现。**文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_kubernetes.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -3489,7 +3489,7 @@ T221/T223 AC追溯补核：新增测试的跨feature注释已修正为F059实际
 
 ## Task Review: T264
 
-**类型**：测试。**文件**：`src/bisheng-cli/tests/test_errors.py`、`src/bisheng-cli/tests/test_command_deploy_wait.py`。
+**类型**：测试。**文件**：`src/doberman-agent-cli/tests/test_errors.py`、`src/doberman-agent-cli/tests/test_command_deploy_wait.py`。
 
 | 检查项 | 结果 | 说明 |
 | --- | --- | --- |
@@ -3501,7 +3501,7 @@ T221/T223 AC追溯补核：新增测试的跨feature注释已修正为F059实际
 
 ## Task Review: T265
 
-**类型**：实现。**文件**：`bisheng_cli/errors.py`、实际backend分发CLI wheel及manifest。
+**类型**：实现。**文件**：`doberman_agent_cli/errors.py`、实际backend分发CLI wheel及manifest。
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |

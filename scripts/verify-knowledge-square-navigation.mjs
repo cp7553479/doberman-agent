@@ -9,11 +9,11 @@ import { join, resolve } from 'node:path';
 const project = resolve(import.meta.dirname, '..');
 const client = join(project, 'src/frontend/client');
 const desktop = process.env.DESKTOP_SOURCE && resolve(process.env.DESKTOP_SOURCE);
-assert.ok(desktop, 'Set DESKTOP_SOURCE to a BISHENG Desktop V1.2.0 checkout');
+assert.ok(desktop, 'Set DESKTOP_SOURCE to a DOBERMAN_AGENT Desktop V1.2.0 checkout');
 const output = resolve(process.argv[2] || 'tmp/knowledge-square-navigation');
 const requireDesktop = createRequire(join(desktop, 'package.json'));
 const { build } = requireDesktop('esbuild');
-const temporary = await mkdtemp(join(tmpdir(), 'bisheng-square-'));
+const temporary = await mkdtemp(join(tmpdir(), 'doberman-agent-square-'));
 await mkdir(output, { recursive: true });
 const renderer = `
 import React, { useEffect } from 'react';
@@ -66,7 +66,7 @@ async function nativeFixture(config, EnterpriseChatView) {
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
   const base='http://127.0.0.1:'+server.address().port;
   const win=new BrowserWindow({width:1280,height:900,show:true,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});
-  await win.loadURL('data:text/html,<body style="margin:0;background:%23f6f7f8"><aside style="padding:50px 20px">BISHENG<br>Discover</aside>');
+  await win.loadURL('data:text/html,<body style="margin:0;background:%23f6f7f8"><aside style="padding:50px 20px">DOBERMAN_AGENT<br>Discover</aside>');
   const service={snapshot:()=>({connected:true,connectionKey:'fixture'}),subscribe:()=>()=>{},webSession:async()=>({base,cookieName:'fixture',cookie:'fixture',expiresAt:Date.now()+300000})};
   const host=new EnterpriseChatView(service,line=>console.log('[host]',line));
   const results=[];

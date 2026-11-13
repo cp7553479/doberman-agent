@@ -8,8 +8,8 @@ import pytest
 
 @pytest.fixture
 def summary(monkeypatch):
-    from bisheng.app_publish.domain.schemas.current_visibility import ApprovalVisibilityRead
-    from bisheng.app_publish.domain.services import app_publish_current_visibility_service as module
+    from doberman_agent.app_publish.domain.schemas.current_visibility import ApprovalVisibilityRead
+    from doberman_agent.app_publish.domain.services import app_publish_current_visibility_service as module
 
     app = SimpleNamespace(id="app-a", tenant_id=60, owner_user_id=9, state="draft")
     runtime = SimpleNamespace(
@@ -82,7 +82,7 @@ async def test_deleted_app_keeps_no_current_authorization_claim(summary, monkeyp
 
 
 async def test_foreign_application_is_refused_before_directory(summary):
-    from bisheng.common.errcode.approval import ApprovalRequestPermissionDeniedError
+    from doberman_agent.common.errcode.approval import ApprovalRequestPermissionDeniedError
 
     module, context, viewer, runtime, _, app = summary
     app.tenant_id = 61
@@ -92,7 +92,7 @@ async def test_foreign_application_is_refused_before_directory(summary):
 
 
 async def test_foreign_deleted_row_does_not_bypass_tenant_binding(summary):
-    from bisheng.common.errcode.approval import ApprovalRequestPermissionDeniedError
+    from doberman_agent.common.errcode.approval import ApprovalRequestPermissionDeniedError
 
     module, context, viewer, runtime, _, app = summary
     app.tenant_id, app.state = 61, "deleted"

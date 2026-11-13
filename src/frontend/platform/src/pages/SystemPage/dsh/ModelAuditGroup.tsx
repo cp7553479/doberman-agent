@@ -1,6 +1,6 @@
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import "@/style/dsh-content-safety.css";
-import { Badge, Tag } from "@bisheng/ui";
+import { Badge, Tag } from "@doberman-agent/ui";
 import type {
   AuditConversation,
   AuditQueryReadiness,

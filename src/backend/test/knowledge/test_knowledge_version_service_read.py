@@ -2,20 +2,20 @@
 import pytest
 from unittest.mock import MagicMock
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
     KnowledgeDocumentRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
-from bisheng.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
+from doberman_agent.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
 
 
 async def _seed(session):

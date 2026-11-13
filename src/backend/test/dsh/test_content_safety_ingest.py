@@ -18,26 +18,26 @@ from sqlalchemy import event as sql_event
 from sqlalchemy.exc import IntegrityError, OperationalError, TimeoutError
 from sqlmodel import Session, select
 
-from bisheng.common.errcode.dsh import (
+from doberman_agent.common.errcode.dsh import (
     DshContentSafetyAuthError,
     DshContentSafetyConflictError,
     DshContentSafetyExpiredError,
     DshContentSafetyInvalidEventError,
     DshContentSafetyUnavailableError,
 )
-from bisheng.core.context import tenant as context
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-from bisheng.dsh.domain.repositories import content_safety
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
-from bisheng.dsh.domain.schemas.content_safety import ContentSafetyReceipt
-from bisheng.dsh.domain.services.profile import profile_scope
+from doberman_agent.core.context import tenant as context
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+from doberman_agent.dsh.domain.repositories import content_safety
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
+from doberman_agent.dsh.domain.schemas.content_safety import ContentSafetyReceipt
+from doberman_agent.dsh.domain.services.profile import profile_scope
 from test.dsh.test_content_safety_repository import decoded, tenant_session, wire_hash
 
 
 def ingest_port():
-    return importlib.import_module("bisheng.dsh.domain.services.content_safety_ingest")
+    return importlib.import_module("doberman_agent.dsh.domain.services.content_safety_ingest")
 
 
 def source(port, raw, **changes):

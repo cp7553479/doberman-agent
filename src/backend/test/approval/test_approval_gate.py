@@ -11,7 +11,7 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalActionLog,
     ApprovalException,
     ApprovalExceptionType,
@@ -19,16 +19,16 @@ from bisheng.approval.domain.models.approval_instance import (
     ApprovalInstanceStatus,
     ApprovalTask,
 )
-from bisheng.approval.domain.models.approval_scenario import ApprovalScenario
-from bisheng.approval.domain.models.user_menu_access import UserMenuAccess
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
-from bisheng.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
-from bisheng.approval.domain.repositories.user_menu_access_repository import UserMenuAccessRepository
-from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision, ApprovalGateRequest
-from bisheng.approval.domain.services.approval_gate import ApprovalGate
-from bisheng.approval.domain.services.approval_registry import ApprovalRegistry
-from bisheng.common.errcode.approval import ApprovalScenarioDisabledError
+from doberman_agent.approval.domain.models.approval_scenario import ApprovalScenario
+from doberman_agent.approval.domain.models.user_menu_access import UserMenuAccess
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.repositories.approval_query_repository import ApprovalQueryRepository
+from doberman_agent.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
+from doberman_agent.approval.domain.repositories.user_menu_access_repository import UserMenuAccessRepository
+from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision, ApprovalGateRequest
+from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
+from doberman_agent.approval.domain.services.approval_registry import ApprovalRegistry
+from doberman_agent.common.errcode.approval import ApprovalScenarioDisabledError
 
 
 @pytest_asyncio.fixture
@@ -60,19 +60,19 @@ async def patched_approval_repositories(approval_db_engine, monkeypatch):
             yield session
 
     monkeypatch.setattr(
-        "bisheng.approval.domain.repositories.approval_scenario_repository.get_async_db_session",
+        "doberman_agent.approval.domain.repositories.approval_scenario_repository.get_async_db_session",
         _factory,
     )
     monkeypatch.setattr(
-        "bisheng.approval.domain.repositories.approval_instance_repository.get_async_db_session",
+        "doberman_agent.approval.domain.repositories.approval_instance_repository.get_async_db_session",
         _factory,
     )
     monkeypatch.setattr(
-        "bisheng.approval.domain.repositories.approval_query_repository.get_async_db_session",
+        "doberman_agent.approval.domain.repositories.approval_query_repository.get_async_db_session",
         _factory,
     )
     monkeypatch.setattr(
-        "bisheng.approval.domain.repositories.user_menu_access_repository.get_async_db_session",
+        "doberman_agent.approval.domain.repositories.user_menu_access_repository.get_async_db_session",
         _factory,
     )
     yield
@@ -158,8 +158,8 @@ async def test_repository_returns_existing_duplicate_pending_instance(patched_ap
 async def test_failed_request_projection_isolates_tenant_user_scenario_and_latest_state(
     patched_approval_repositories, isolated_approval_tenant_events
 ):
-    from bisheng.approval.application.request_state import get_failed_request_keys
-    from bisheng.core.context.tenant import bypass_tenant_filter, get_current_tenant_id, tenant_execution_scope
+    from doberman_agent.approval.application.request_state import get_failed_request_keys
+    from doberman_agent.core.context.tenant import bypass_tenant_filter, get_current_tenant_id, tenant_execution_scope
 
     with bypass_tenant_filter():
         for tenant, user, scenario, key, status in [
@@ -199,7 +199,7 @@ async def test_failed_request_projection_isolates_tenant_user_scenario_and_lates
 def isolated_approval_tenant_events(monkeypatch):
     from sqlalchemy import event
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     listeners = []
     original = event.listens_for
@@ -263,7 +263,7 @@ async def test_cancelling_failed_instance_allows_new_approval_task(patched_appro
         scenario_repository=scenarios,
         route_matcher=AsyncMock(return_value=SimpleNamespace(id=2, route_type="flow", flow_definition_id=2)),
     )
-    with patch("bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", new_callable=AsyncMock):
+    with patch("doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", new_callable=AsyncMock):
         result = await gate.request_or_pass(
             ApprovalGateRequest(
                 tenant_id=1,
@@ -464,7 +464,7 @@ async def test_gate_raises_disabled_error_when_scenario_disabled():
 
 @pytest.mark.asyncio
 async def test_gate_pass_when_route_direct_approve(monkeypatch):
-    monkeypatch.setattr("bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", AsyncMock())
+    monkeypatch.setattr("doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", AsyncMock())
     handler = SimpleNamespace(
         build_detail=AsyncMock(return_value={"menu_name": "知识管理"}),
         build_title=AsyncMock(return_value="知识管理"),
@@ -523,7 +523,7 @@ async def test_gate_pass_when_route_direct_approve(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_gate_pending_when_route_hits_flow(monkeypatch):
-    monkeypatch.setattr("bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", AsyncMock())
+    monkeypatch.setattr("doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2", AsyncMock())
     handler = SimpleNamespace(
         build_detail=AsyncMock(return_value={"space_name": "研发知识空间"}),
         build_title=AsyncMock(return_value="研发知识空间"),
@@ -653,7 +653,7 @@ async def test_gate_creates_route_missing_exception():
     )
 
     with patch(
-        "bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
+        "doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
         new=AsyncMock(),
     ):
         result = await gate.request_or_pass(
@@ -713,7 +713,7 @@ async def test_gate_creates_approver_empty_exception():
     )
 
     with patch(
-        "bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
+        "doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
         new=AsyncMock(),
     ):
         result = await gate.request_or_pass(
@@ -770,7 +770,7 @@ def _route(route_type: str = "pass", match_config: dict | None = None, enabled: 
 @pytest.mark.asyncio
 async def test_match_first_route_catchall_returns_first_enabled(monkeypatch):
     """Empty match_config → always matches first enabled route."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"regular_user"})))
     gate = _make_gate()
@@ -782,7 +782,7 @@ async def test_match_first_route_catchall_returns_first_enabled(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_skips_disabled_routes(monkeypatch):
     """Disabled routes are never selected, even if they would otherwise match."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"regular_user"})))
     gate = _make_gate()
@@ -796,7 +796,7 @@ async def test_match_first_route_skips_disabled_routes(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_applicant_role_admin_matches(monkeypatch):
     """applicant_role=admin condition matches when user has admin label."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"admin", "regular_user"})))
     gate = _make_gate()
@@ -810,7 +810,7 @@ async def test_match_first_route_applicant_role_admin_matches(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_applicant_role_regular_skips_admin_route(monkeypatch):
     """regular_user should skip admin-only route and fall through to regular route."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"regular_user"})))
     gate = _make_gate()
@@ -824,7 +824,7 @@ async def test_match_first_route_applicant_role_regular_skips_admin_route(monkey
 @pytest.mark.asyncio
 async def test_match_first_route_dept_admin_matches(monkeypatch):
     """dept_admin user should match dept_admin route, not admin route."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"dept_admin", "regular_user"})))
     gate = _make_gate()
@@ -838,7 +838,7 @@ async def test_match_first_route_dept_admin_matches(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_user_labels_queried_once(monkeypatch):
     """_get_user_role_labels is called at most once per match, even with multiple role conditions."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     mock_labels = AsyncMock(return_value=frozenset({"regular_user"}))
     monkeypatch.setattr(gm, "_get_user_role_labels", mock_labels)
@@ -857,7 +857,7 @@ async def test_match_first_route_user_labels_queried_once(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_payload_condition(monkeypatch):
     """Payload-based condition matches when payload_snapshot contains the expected value."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"regular_user"})))
     gate = _make_gate()
@@ -872,7 +872,7 @@ async def test_match_first_route_payload_condition(monkeypatch):
 @pytest.mark.asyncio
 async def test_match_first_route_returns_none_when_no_match(monkeypatch):
     """Returns None when all routes have conditions that don't match."""
-    import bisheng.approval.domain.services.approval_gate as gm
+    import doberman_agent.approval.domain.services.approval_gate as gm
 
     monkeypatch.setattr(gm, "_get_user_role_labels", AsyncMock(return_value=frozenset({"regular_user"})))
     gate = _make_gate()

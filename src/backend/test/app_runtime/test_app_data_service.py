@@ -6,7 +6,7 @@ what is asserted is (who got in, what RPC left, what audit row was written) —
 never how the manager reads the file, which is ``runtime-manager``'s own suite.
 
 Two of the cases are structural rather than behavioural, and they are the ones
-that keep the promise honest over time: no module under ``bisheng`` opens
+that keep the promise honest over time: no module under ``doberman_agent`` opens
 SQLite or calls ``orchestrator_client.db_*`` except this service, so the F052
 MCP data tools *cannot* grow a second path around the owner rule and the audit
 row without failing here.
@@ -19,8 +19,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppAuditAction, AppState
-from bisheng.common.errcode.app_factory import (
+from doberman_agent.app_runtime.domain.constants import AppAuditAction, AppState
+from doberman_agent.common.errcode.app_factory import (
     AppDataForbiddenError,
     AppDataInvalidError,
     AppNotFoundError,
@@ -28,13 +28,13 @@ from bisheng.common.errcode.app_factory import (
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator")
 
-BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 SERVICE_FILE = BACKEND_ROOT / "app_runtime" / "domain" / "services" / "app_data_service.py"
 CLIENT_FILE = BACKEND_ROOT / "app_runtime" / "domain" / "services" / "orchestrator_client.py"
 
 
 def _super_admin_payload(user_id: int = 90999):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name="f054-super", user_role=[], tenant_id=1, is_global_super=True)
 
@@ -55,7 +55,7 @@ class TestOwnerOnly:
         here, and it has to be checked *before* any RPC leaves — a refused
         caller must not even learn whether the app has tables.
         """
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         tenant_admins.grant(tenant_admin_payload.user_id, app.tenant_id)
@@ -76,7 +76,7 @@ class TestOwnerOnly:
 
     async def test_deleted_app_answers_not_found_to_everyone(self, app_factory, app_owner, normal_user):
         """A stranger and the owner get the same 16101 — the refusal leaks nothing."""
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.DELETED.value)
         for actor in (app_owner.payload, normal_user.payload):
@@ -121,7 +121,7 @@ class TestAudit:
         from a second read that the app's next write could already have
         overtaken.
         """
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         fake_orchestrator.responses["db_update_row"] = {
@@ -152,7 +152,7 @@ class TestAudit:
 
     async def test_export_is_audited_and_returns_csv_bytes(self, app_factory, app_owner, fake_orchestrator, audit_sink):
         """AC-65 — a whole table leaving the platform is an event, even though nothing changed."""
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value, slug="sales")
         filename, content = await AppDataService.export_table(app.id, "users", actor=app_owner.payload)
@@ -176,7 +176,7 @@ class TestAudit:
 
     async def test_reads_are_not_audited(self, app_factory, app_owner, audit_sink):
         """Viewing is not an event; only edits and exports are (AC-65)."""
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         await AppDataService.list_tables(app.id, actor=app_owner.payload)
@@ -206,7 +206,7 @@ class TestDdlRejectedAtBackendLayerToo:
     async def test_ddl_rejected_at_backend_layer_too(self, app_factory, app_owner, fake_orchestrator, table):
         """AC-56 — the manager checks names against the live schema; backend refuses
         anything that is not a plain identifier before the request even leaves."""
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         actor = app_owner.payload
@@ -221,7 +221,7 @@ class TestDdlRejectedAtBackendLayerToo:
         assert fake_orchestrator.calls == [], "a rejected identifier never reaches the manager"
 
     async def test_columns_order_and_values_are_checked(self, app_factory, app_owner, fake_orchestrator):
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         actor = app_owner.payload
@@ -258,7 +258,7 @@ class TestForwardsToManagerOnly:
         """
         import sqlite3
 
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         def _forbidden(*args, **kwargs):
             raise AssertionError("backend must never open the app's database file")
@@ -296,7 +296,7 @@ class TestForwardsToManagerOnly:
 
         F052's MCP data tools (and anything else) must go through the service
         so that owner narrowing and the audit row hold for every door. A
-        second call site anywhere under ``bisheng`` fails here.
+        second call site anywhere under ``doberman_agent`` fails here.
         """
         pattern = re.compile(r"orchestrator_client\s*\.\s*db_\w+")
         callers = sorted(
@@ -309,7 +309,7 @@ class TestForwardsToManagerOnly:
         # And the service exposes the five operations by name, so the MCP
         # face has a method to call for each RPC rather than a reason to
         # reach past it.
-        from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+        from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
         for name in ("list_tables", "get_table_schema", "get_rows", "update_row", "export_table"):
             assert callable(getattr(AppDataService, name)), name
@@ -319,8 +319,8 @@ async def test_unpublished_database_is_not_an_internal_error(monkeypatch):
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.app_runtime.domain.services.app_data_service import AppDataService
-    from bisheng.common.errcode.app_factory import AppDataNotReadyError
+    from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
+    from doberman_agent.common.errcode.app_factory import AppDataNotReadyError
 
     app = SimpleNamespace(id="draft", current_version_id=None, pending_version_id=None)
     monkeypatch.setattr(AppDataService, "_load_owned", AsyncMock(return_value=app))

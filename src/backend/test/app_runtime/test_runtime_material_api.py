@@ -10,11 +10,11 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeArtifact
-from bisheng.app_runtime.domain.services import runtime_material_protocol as wire
-from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json
-from bisheng.app_runtime.domain.services.runtime_protocol import signed_headers as hmac_headers
-from bisheng.utils import http_middleware
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeArtifact
+from doberman_agent.app_runtime.domain.services import runtime_material_protocol as wire
+from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json
+from doberman_agent.app_runtime.domain.services.runtime_protocol import signed_headers as hmac_headers
+from doberman_agent.utils import http_middleware
 from test.app_runtime.test_runtime_kubernetes_repository import UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import control as control
@@ -28,8 +28,8 @@ C = "/api/v1/internal/app-runtime/v2/material-delegations"
 
 @pytest.fixture
 async def api_client(transfers, monkeypatch):
-    from bisheng.app_runtime.api.endpoints import runtime_delivery as authentication
-    from bisheng.app_runtime.api.endpoints import runtime_material as api
+    from doberman_agent.app_runtime.api.endpoints import runtime_delivery as authentication
+    from doberman_agent.app_runtime.api.endpoints import runtime_material as api
 
     t = transfers
     keys = {
@@ -126,12 +126,12 @@ async def download(a, g):
 
 
 async def test_production_main_mounts_the_router_without_an_outer_api_prefix():
-    main = Path(__file__).parents[2] / "bisheng/main.py"
+    main = Path(__file__).parents[2] / "doberman_agent/main.py"
     tree = ast.parse(main.read_text())
     names = {
         item.asname or item.name
         for node in ast.walk(tree)
-        if isinstance(node, ast.ImportFrom) and node.module == "bisheng.app_runtime.api.endpoints.runtime_material"
+        if isinstance(node, ast.ImportFrom) and node.module == "doberman_agent.app_runtime.api.endpoints.runtime_material"
         for item in node.names
         if item.name == "router"
     }

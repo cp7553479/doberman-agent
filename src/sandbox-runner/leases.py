@@ -1,4 +1,4 @@
-"""In-memory session leases for one runner replica. Must not import bisheng."""
+"""In-memory session leases for one runner replica. Must not import doberman_agent."""
 
 from __future__ import annotations
 

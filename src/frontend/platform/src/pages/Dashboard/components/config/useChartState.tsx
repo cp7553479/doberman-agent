@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 // useChartState.tsx
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"

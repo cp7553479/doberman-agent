@@ -21,11 +21,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantRelocateBlockedError
-from bisheng.department.domain.services import department_service as ds_module
-from bisheng.department.domain.services.department_service import DepartmentService
-from bisheng.tenant.domain.constants import UserTenantSyncTrigger
-from bisheng.tenant.domain.services import user_tenant_sync_service as sync_module
+from doberman_agent.common.errcode.tenant_resolver import TenantRelocateBlockedError
+from doberman_agent.department.domain.services import department_service as ds_module
+from doberman_agent.department.domain.services.department_service import DepartmentService
+from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
+from doberman_agent.tenant.domain.services import user_tenant_sync_service as sync_module
 
 
 def _ud(user_id: int, dept_id: int, is_primary: int):
@@ -54,7 +54,7 @@ def patches(monkeypatch):
     )
     # Space-binding cleanup is lazy-imported inside the service; patch it on the
     # source class so the leaving-old-dept path can be asserted without DB/FGA.
-    from bisheng.knowledge.domain.services import (
+    from doberman_agent.knowledge.domain.services import (
         department_knowledge_space_service as ks_module,
     )
     space_cleanup = AsyncMock(name='cleanup_removed_department_admins')

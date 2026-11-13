@@ -17,7 +17,7 @@ def metadata(platform="linux/amd64", published=True):
     os_name, architecture = platform.split("/")
     result = {}
     for index, name in enumerate(IMAGE_NAMES):
-        tag = f"example.test/bisheng-{name}:v-test-{architecture}"
+        tag = f"example.test/doberman-agent-{name}:v-test-{architecture}"
         result[name] = {
             "Id": "sha256:" + f"{index + 1:064x}",
             "Os": os_name,
@@ -55,7 +55,7 @@ def test_inventory_freezes_correct_repository_digest_and_role_mapping():
         native_arch="amd64",
         smoke_passed=IMAGE_NAMES,
     )
-    assert result["images"]["runtime-helper"]["image"].startswith("example.test/bisheng-runtime-helper@sha256:")
+    assert result["images"]["runtime-helper"]["image"].startswith("example.test/doberman-agent-runtime-helper@sha256:")
     assert result["roles"]["egress-proxy"] == result["roles"]["admission"] == "runtime-manager"
     assert result["images"]["runtime-assembler"]["tools"]["crane"] == "v0.22.1"
 
@@ -145,13 +145,11 @@ def test_ci_keeps_native_gate_and_release_only_formal_tags():
     assert "cancel-in-progress: false" in workflow
     assert "setup-qemu" not in workflow
     assert "runtime-release.json" in workflow
-    assert "RUNTIME_PUBLISH: '1'" in workflow
-    assert "github.event.forced" in workflow
+    assert "RUNTIME_PUBLISH: ${{ inputs.publish && '1' || '0' }}" in workflow
+    assert "default: false" in workflow
+    assert "secrets.GITHUB_TOKEN" in workflow
+    assert "secrets.CR_" not in workflow and "secrets.DOCKERHUB_" not in workflow
     assert "imagetools create" not in workflow
-    release = (ROOT / ".github/workflows/release.yml").read_text()
-    assert "types: [published]" in release
-    assert '"$image:${{ steps.get_version.outputs.VERSION }}-amd64"' in release
-    assert '"cr.dataelem.com/$image:${{ steps.get_version.outputs.VERSION }}-arm64"' in release
     builder = (ROOT / "scripts/build_runtime_images.sh").read_text()
     assert "--read-only" in builder and "--network none" in builder
     assert "runtime-helper" in builder and "runtime-assembler" in builder
@@ -221,7 +219,7 @@ elif args[0]=="run":
  if "uname" in args:print("x86_64")
  elif "crane" in args and args[-1]=="version":print("v0.22.1")
 elif args[:2]==["image","inspect"]:
- tag=args[-1];name=tag.split("bisheng-")[1].split(":")[0]
+ tag=args[-1];name=tag.split("doberman-agent-")[1].split(":")[0]
  print(json.dumps([{"Id":"sha256:"+hashlib.sha256(name.encode()).hexdigest(),"Os":"linux","Architecture":"amd64","RepoTags":[tag],"RepoDigests":[tag.rsplit(":",1)[0]+"@sha256:"+hashlib.sha256(tag.encode()).hexdigest()],"Config":{"Labels":{"org.opencontainers.image.revision":"a"*40,"org.opencontainers.image.version":"v-test"}}}]))
 """)
     docker.chmod(0o755)
@@ -333,6 +331,7 @@ def test_explicit_reissue_never_pushes_after_failed_native_smoke(tmp_path, monke
 def test_cr_reissue_requires_matching_release_and_uses_verified_ids(tmp_path, monkeypatch, replace_release):
     import subprocess
 
+    monkeypatch.setenv("RUNTIME_MIRROR_NAMESPACE", "registry.example.invalid/cp7553479")
     result, _ = mock_builder(tmp_path, monkeypatch, publish=True)
     assert result.returncode == 0, result.stderr
     monkeypatch.setenv("MOCK_EXISTING", "1")
@@ -340,7 +339,7 @@ def test_cr_reissue_requires_matching_release_and_uses_verified_ids(tmp_path, mo
     log = tmp_path / "docker.jsonl"
     log.write_text("")
     result = subprocess.run(
-        ["bash", str(ROOT / "scripts/sync_runtime_images_cr.sh")], cwd=tmp_path, capture_output=True, text=True
+        ["bash", str(ROOT / "scripts/sync_runtime_images.sh")], cwd=tmp_path, capture_output=True, text=True
     )
     commands = [json.loads(line) for line in log.read_text().splitlines()]
     if replace_release != "v-test":
@@ -351,7 +350,7 @@ def test_cr_reissue_requires_matching_release_and_uses_verified_ids(tmp_path, mo
     tags = [command for command in commands if command[0] == "tag"]
     assert len(tags) == 9
     assert all(command[1].startswith("sha256:") for command in tags)
-    assert all(command[2].startswith("cr.dataelem.com/") for command in tags)
+    assert all(command[2].startswith("registry.example.invalid/cp7553479/") for command in tags)
     assert len([command for command in commands if command[0] == "push"]) == 9
 
 
@@ -399,9 +398,9 @@ def test_helper_supplies_fixed_download_tool_and_native_offline_materials():
     assert "ARG NODE_IMAGE" in helper and "ARG PYTHON_PREPARER_IMAGE" in helper
     assert "FROM ${NODE_IMAGE} AS node-tools" in helper
     assert "FROM ${PYTHON_PREPARER_IMAGE} AS materials" in helper
-    assert "COPY src/app-runtime/common/prepare.py /opt/bisheng/prepare.py" in helper
-    assert "COPY --from=materials /opt/bisheng/wheelhouse/ /opt/bisheng/wheelhouse/" in helper
-    assert "pip install --no-index --find-links=/opt/bisheng/wheelhouse hatchling==1.27.0" in helper
+    assert "COPY src/app-runtime/common/prepare.py /opt/doberman-agent/prepare.py" in helper
+    assert "COPY --from=materials /opt/doberman-agent/wheelhouse/ /opt/doberman-agent/wheelhouse/" in helper
+    assert "pip install --no-index --find-links=/opt/doberman-agent/wheelhouse hatchling==1.27.0" in helper
     assert "COPY --from=node-tools /usr/local/bin/node /usr/local/bin/node" in helper
     assert "COPY --from=node-tools /usr/local/lib/node_modules/npm/ /usr/local/lib/node_modules/npm/" in helper
     assert all(name in helper for name in ("libstdc++.so.6", "libgcc_s.so.1", "libatomic.so.1"))
@@ -413,7 +412,7 @@ def test_mock_builder_builds_helper_from_same_release_native_profiles(tmp_path, 
     result, commands = mock_builder(tmp_path, monkeypatch)
     assert result.returncode == 0, result.stderr
     builds = [command for command in commands if command[:2] == ["buildx", "build"]]
-    by_name = {command[command.index("--tag") + 1].split("bisheng-")[1].split(":")[0]: command for command in builds}
+    by_name = {command[command.index("--tag") + 1].split("doberman-agent-")[1].split(":")[0]: command for command in builds}
     helper = by_name["runtime-helper"]
     for dependency, argument in (
         ("runtime-manager", "MANAGER_IMAGE"),
@@ -421,7 +420,7 @@ def test_mock_builder_builds_helper_from_same_release_native_profiles(tmp_path, 
         ("app-python-preparer", "PYTHON_PREPARER_IMAGE"),
     ):
         assert builds.index(by_name[dependency]) < builds.index(helper)
-        assert f"{argument}=dataelement/bisheng-{dependency}:v-test-amd64" in helper
+        assert f"{argument}=ghcr.io/cp7553479/doberman-agent-{dependency}:v-test-amd64" in helper
     assert builds.index(helper) < builds.index(by_name["runtime-assembler"])
 
 
@@ -430,7 +429,7 @@ def test_native_smoke_exercises_actual_offline_resolvers_and_preserves_storage_s
     code = builder.split("<<'PY_RESOLVE'\n", 1)[1].split("\nPY_RESOLVE", 1)[0]
     compile(code, "helper-native-resolve-smoke", "exec")
     assert "resolve_download(document, source, offline, output)" in code
-    assert '"bisheng-sdk==0.1.1' in code and '"uv.lock"' in code
+    assert '"doberman-agent-sdk==0.1.1' in code and '"uv.lock"' in code
     assert '"node20"' in code and '"static"' in code
     assert '"PIP_NO_INDEX": "1"' in code and '"npm_config_offline": "true"' in code
     assert "preinstall" in code and "install" in code and "postinstall" in code

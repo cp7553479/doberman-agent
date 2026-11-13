@@ -12,8 +12,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.api.services import report_template
-from bisheng.api.v1 import workflow
+from doberman_agent.api.services import report_template
+from doberman_agent.api.v1 import workflow
 
 WORKFLOW_A = "0013432d78ae4c54aac8459b010ed47e"
 WORKFLOW_B = "002488f3de8e4761a3b05400f77b3fd9"
@@ -78,7 +78,7 @@ def test_report_keys_are_read_out_of_flow_data():
 @pytest.fixture
 def storage():
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     minio.object_exists = AsyncMock(return_value=True)
     minio.get_share_link = AsyncMock(return_value="http://minio/x.docx")
     minio.copy_object = AsyncMock()

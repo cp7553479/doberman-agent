@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor, act } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getDshBrowserConfig, saveDshManagementSettings } from '@/controllers/API/dshSettings'
 import { getModelListApi } from '@/controllers/API/finetune'
-import { toast } from '@bisheng/ui'
+import { toast } from '@doberman-agent/ui'
 import { SettingsPanel } from './SettingsPanel'
 import { DshManagement } from './index'
 

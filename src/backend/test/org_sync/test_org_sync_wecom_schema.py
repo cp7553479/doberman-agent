@@ -6,7 +6,7 @@ and confirms AC-38 masking is handled by F009's existing SENSITIVE_KEYS.
 
 import pytest
 
-from bisheng.org_sync.domain.schemas.org_sync_schema import (
+from doberman_agent.org_sync.domain.schemas.org_sync_schema import (
     OrgSyncConfigCreate,
     OrgSyncConfigUpdate,
     mask_sensitive_fields,

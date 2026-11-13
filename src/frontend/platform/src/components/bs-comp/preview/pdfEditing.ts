@@ -1,4 +1,4 @@
-import { containsBBox, scaleBBox, type PageLayout } from '@bisheng/file-viewers/pdf';
+import { containsBBox, scaleBBox, type PageLayout } from '@doberman-agent/file-viewers/pdf';
 export interface PdfLabel { id: string; label: number[]; active: boolean }
 export type PdfLabels = Record<string | number, PdfLabel[]>;
 export function selectedLabels(labels: PdfLabels, start: number, layout: PageLayout[], a: {x:number;y:number}, b: {x:number;y:number}): {id:string;active:boolean}[] {

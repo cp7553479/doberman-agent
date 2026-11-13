@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session
 
-from bisheng.common.errcode.dsh import DshModelNotAllowedError
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.services.profile import profile_scope
+from doberman_agent.common.errcode.dsh import DshModelNotAllowedError
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.services.profile import profile_scope
 from test.dsh.test_policy_repository import NOW, sql_store  # noqa: F401
 
 
 def test_last_call_is_scoped_bounded_and_redacted(sql_store):  # noqa: F811
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
 
     with Session(sql_store) as session, session.begin():
         for tenant, user, name, minutes in [
@@ -63,8 +63,8 @@ def test_last_call_is_scoped_bounded_and_redacted(sql_store):  # noqa: F811
 
 
 async def test_candidates_use_configured_ids_and_target_tenant_governance():
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.dsh.admin_runtime import read_available_models
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.dsh.admin_runtime import read_available_models
 
     async def snapshot(model_id):
         assert get_current_tenant_id() == 2
@@ -88,7 +88,7 @@ async def test_candidates_use_configured_ids_and_target_tenant_governance():
 
 @pytest.mark.parametrize("unavailable", [False, True])
 async def test_management_projection_preserves_policy_and_distinguishes_empty_from_unavailable(unavailable):
-    from bisheng.dsh.admin_runtime import build_policy_view
+    from doberman_agent.dsh.admin_runtime import build_policy_view
 
     candidates = AsyncMock(side_effect=TimeoutError()) if unavailable else AsyncMock(return_value=[])
     latest = AsyncMock(side_effect=TimeoutError()) if unavailable else AsyncMock(return_value=None)

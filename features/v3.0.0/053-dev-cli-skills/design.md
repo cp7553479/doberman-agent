@@ -1,4 +1,4 @@
-# Design: 开发者 CLI 与技能包（独立 `bisheng` CLI 包 + 平台分发端点）
+# Design: 开发者 CLI 与技能包（独立 `doberman-agent` CLI 包 + 平台分发端点）
 
 > **本文档定位 — 现状快照（Why this How）**
 >
@@ -10,22 +10,22 @@
 >
 > **代码事实口径**：本文所有 `文件:行号` 按 `3.0-vibe`（含 F048、F049 已落码 `43e73bfc5`、F054 批 2 已落码 `8e9afaf48`）于 2026-08-17 由探查笔记 `~/.claude/jobs/b4f8a315/tmp/f053-notes/e1-cli-packaging-and-endpoints.md` 核实。行号会漂移、符号名不会——**落地前一律以符号名重定位，不要按行号跳**。
 >
-> **本文是"要建成的样子"**：`src/bisheng-cli/` 是**全新目录**，全仓**零** `[project.scripts]` / `console_scripts` / `setup.py`（e1 §1.1 实测），CLI 是本仓第一个可发布包工程；平台侧 `bisheng/dev_toolkit/` 模块同样是绿地。实现后按现状覆盖本文。
+> **本文是"要建成的样子"**：`src/doberman-agent-cli/` 是**全新目录**，全仓**零** `[project.scripts]` / `console_scripts` / `setup.py`（e1 §1.1 实测），CLI 是本仓第一个可发布包工程；平台侧 `doberman-agent/dev_toolkit/` 模块同样是绿地。实现后按现状覆盖本文。
 >
 > **裁剪基准 = [`mvp-114-path.md`](../mvp-114-path.md) §6 MVP-核心**：本 Feature 本轮只做「CLI 包工程（wheel + 平台下载端点）+ `login` + `deploy` + `logs` 简版」；`skills sync` / 两包技能包 / `dev` / 接入信息区 / 多平台凭据 / 版本兼容校验**全部顺延**（release 仍必做，落点方向见 §1 非目标与 §8）。
 >
-> **2026-08-18 增补 — 技能包切片拉入 MVP（用户拍板）**：为让开发者"一条命令拿到技能、AI 照着开发部署"，把 DEV-03 中**「部署纳管」包 + 其分发/同步链路**从顺延项提前实现：**T035**（`skills sync`）· **T036**（分发端点 `GET /api/v1/dev-toolkit/skills/{pack}`）· **T037**（「部署纳管」包三件套）· **T039**（`login` 后自动 sync）· **T040**（触发评测 AC-22①）· **T049**（AGENTS.md 引用指引）。**T038「平台能力接线」包仍顺延**——其模型/应用库接法依赖 F051/F052 已集成、SDK 三件套章节与 AC-22② 随 F057。两处此前未定的对外合同在此定死：**① `skills sync` 落地路径 = `~/.bisheng/skills/<pack>/`**（与 `credentials.json` 同处一个 0700 目录，D3 风格）〔**已于 2026-08-18 修订为按平台分目录，见下一块**〕；**② 分发端点响应格式 = 按包 gzip tarball**，由 `artifact_service.read_skill_pack` 从**单一源目录** `bisheng/dev_toolkit/skills/<pack>/` 实时打包（成员 mtime/owner 归零 → 字节确定、re-sync 无 churn），包版本走响应头 `X-Bisheng-Pack-Version`（正文是 tar 不是信封）；匿名口径与条件注册闸沿用 D10（open 层关 → 路由天然 404）。实现落于 `3.0-vibe`，CLI 全量 `pytest` 219 passed。
+> **2026-08-18 增补 — 技能包切片拉入 MVP（用户拍板）**：为让开发者"一条命令拿到技能、AI 照着开发部署"，把 DEV-03 中**「部署纳管」包 + 其分发/同步链路**从顺延项提前实现：**T035**（`skills sync`）· **T036**（分发端点 `GET /api/v1/dev-toolkit/skills/{pack}`）· **T037**（「部署纳管」包三件套）· **T039**（`login` 后自动 sync）· **T040**（触发评测 AC-22①）· **T049**（AGENTS.md 引用指引）。**T038「平台能力接线」包仍顺延**——其模型/应用库接法依赖 F051/F052 已集成、SDK 三件套章节与 AC-22② 随 F057。两处此前未定的对外合同在此定死：**① `skills sync` 落地路径 = `~/.doberman-agent/skills/<pack>/`**（与 `credentials.json` 同处一个 0700 目录，D3 风格）〔**已于 2026-08-18 修订为按平台分目录，见下一块**〕；**② 分发端点响应格式 = 按包 gzip tarball**，由 `artifact_service.read_skill_pack` 从**单一源目录** `doberman-agent/dev_toolkit/skills/<pack>/` 实时打包（成员 mtime/owner 归零 → 字节确定、re-sync 无 churn），包版本走响应头 `X-doberman-agent-Pack-Version`（正文是 tar 不是信封）；匿名口径与条件注册闸沿用 D10（open 层关 → 路由天然 404）。实现落于 `3.0-vibe`，CLI 全量 `pytest` 219 passed。
 
-> **2026-08-18 缺陷修订 — 「同步成功」不等于「AI 读得到」（AC-54 / AC-55 / AC-56）**：现场暴露的失败是 `login` 打出「✓ deploy-hosting（版本 3.0.0）：5 个文件已同步」而开发者的 AI 完全不知道有技能——文件确实写在 `~/.bisheng/skills/deploy-hosting/`，但**没有任何编程工具扫描该目录**（Claude Code 只扫 `~/.claude/skills/`，Codex 只扫 `~/.codex/skills/`）。设计原本把「文件落盘」当成了交付完成，这是本 Feature 最贵的失败形态：AI 照常写代码、只是不知道平台规矩，直到 `deploy` 起不来才暴露，而报错不指向技能缺失。三处对外合同随之改定：
+> **2026-08-18 缺陷修订 — 「同步成功」不等于「AI 读得到」（AC-54 / AC-55 / AC-56）**：现场暴露的失败是 `login` 打出「✓ deploy-hosting（版本 3.0.0）：5 个文件已同步」而开发者的 AI 完全不知道有技能——文件确实写在 `~/.doberman-agent/skills/deploy-hosting/`，但**没有任何编程工具扫描该目录**（Claude Code 只扫 `~/.claude/skills/`，Codex 只扫 `~/.codex/skills/`）。设计原本把「文件落盘」当成了交付完成，这是本 Feature 最贵的失败形态：AI 照常写代码、只是不知道平台规矩，直到 `deploy` 起不来才暴露，而报错不指向技能缺失。三处对外合同随之改定：
 >
-> - **落点改为按平台分目录**：`~/.bisheng/skills/<netloc>.<sha256[:8]>/<pack>/`（slug 由 `commands/skills.py::profile_slug` 从归一化后的 base_url 派生，与凭据 profile 同键）。**取代**上一块的 `~/.bisheng/skills/<pack>/`：扁平落点让「先登 test 再登 prod」的第二次 sync 静默覆盖第一份契约，现场无任何迹象。旧扁平目录由 `_migrate_flat_layout` 在 sync 时清掉（留着就是无人更新的诱饵）。
-> - **sync 负责接入本机 AI 工具**（新模块 `bisheng_cli/agent_skills.py`）：探测到 `~/.claude` / `~/.codex` 即在其 `skills/` 下建软链指向当前平台的包，**探测到几个接几个、不询问不择一**（多接一个 = 一个软链；漏接一个 = 静默失败，代价不对称）。Windows 无 Developer Mode 时降级为复制并打 `.bisheng-managed` 标记（复制跟不了后续 sync，故每次 sync 重做且如实报告 mode）。目标路径已被**开发者自己的**技能占用时报 conflict 并原样不动——为了让摘要好看而删掉别人的技能，是比不接入更坏的结果。`login` 路径此前刻意不打印引导（怕输出太长），那份沉默正是本次缺陷的直接成因，现已改为必打落点与接入结果；一个都没接上时是 `warn` 而非 `info`。
+> - **落点改为按平台分目录**：`~/.doberman-agent/skills/<netloc>.<sha256[:8]>/<pack>/`（slug 由 `commands/skills.py::profile_slug` 从归一化后的 base_url 派生，与凭据 profile 同键）。**取代**上一块的 `~/.doberman-agent/skills/<pack>/`：扁平落点让「先登 test 再登 prod」的第二次 sync 静默覆盖第一份契约，现场无任何迹象。旧扁平目录由 `_migrate_flat_layout` 在 sync 时清掉（留着就是无人更新的诱饵）。
+> - **sync 负责接入本机 AI 工具**（新模块 `doberman_agent_cli/agent_skills.py`）：探测到 `~/.claude` / `~/.codex` 即在其 `skills/` 下建软链指向当前平台的包，**探测到几个接几个、不询问不择一**（多接一个 = 一个软链；漏接一个 = 静默失败，代价不对称）。Windows 无 Developer Mode 时降级为复制并打 `.doberman-agent-managed` 标记（复制跟不了后续 sync，故每次 sync 重做且如实报告 mode）。目标路径已被**开发者自己的**技能占用时报 conflict 并原样不动——为了让摘要好看而删掉别人的技能，是比不接入更坏的结果。`login` 路径此前刻意不打印引导（怕输出太长），那份沉默正是本次缺陷的直接成因，现已改为必打落点与接入结果；一个都没接上时是 `warn` 而非 `info`。
 > - **`deploy` 在项目 `AGENTS.md` 留位置指针**（`agent_skills.ensure_project_pointer`）：覆盖 Cursor / Cline 这类没有技能目录约定的工具。写的是**路径不是内容**——包的版本跟随平台，拷进 git 会冻结在旧版本而平台规矩继续变；路径用 `~/` 相对形式以便提交后对同事同样成立。时机在**平台接收上传之后**（此前该事实还只是猜测，失败的 deploy 不得改动开发者工作树），`--dry-run` 与 `--no-agents-note` 不写。
 >
-> 文案侧同步订正：`_print_reference_guide` 原本断言「Claude Code：自动发现 SKILL.md，无需配置」并指向包内根本不存在的 `README.md`（该 README 只在平台源码 `bisheng/dev_toolkit/skills/README.md`，不随 tar 分发），两句都朝「你不用再做什么」的方向误导；教程 `hosted-app.html` 步 1/2 与排障段同改。**`logout` 仍然不做**（§8 四不做项）——软链在每次 sync 时按当前平台重建，切平台自然重指向，不需要一个专门的清理命令。
+> 文案侧同步订正：`_print_reference_guide` 原本断言「Claude Code：自动发现 SKILL.md，无需配置」并指向包内根本不存在的 `README.md`（该 README 只在平台源码 `doberman-agent/dev_toolkit/skills/README.md`，不随 tar 分发），两句都朝「你不用再做什么」的方向误导；教程 `hosted-app.html` 步 1/2 与排障段同改。**`logout` 仍然不做**（§8 四不做项）——软链在每次 sync 时按当前平台重建，切平台自然重指向，不需要一个专门的清理命令。
 
 **关联**: [spec.md](./spec.md) · [tasks.md](./tasks.md)（待写）· [release-contract.md](../release-contract.md)（表 1 **AppManifest 归 F055**、表 3 F053 行；INV-27 / INV-31 / INV-32）· [mvp-114-path.md](../mvp-114-path.md)（**§6 MVP-核心是本轮裁剪基准**、§3 114 环境事实、§1 演示剧本步 2–3）
-**上游 / 姊妹**: [F055 design §4.2 ①③ / §4.2 ⑧](../055-app-publish-pipeline/design.md)（`deploy` / `logs` 端点、AppManifest 形态、失败五元组、162 段错误码——**冲突时一律以 F055 为准**）· [F055 tasks T039](../055-app-publish-pipeline/tasks.md)（端点鉴权顺序与归属判定字段）· [F054 contracts-runtime-manager.md §5](../054-app-domain-runtime/contracts-runtime-manager.md)（注入应用的环境变量清单——`bisheng dev` 顺延，但清单来源在此定死）· [F049 design](../049-openapi-auth-baseline/design.md)（`whoami` / 端点 `open_api_scope` marker + `router_rpc` 的 `verify_open_api_access` / 260 段错误码；**2026-09-10 起以 beta2 F053 实现为准，`open_api_subject` 工厂已作废**）
+**上游 / 姊妹**: [F055 design §4.2 ①③ / §4.2 ⑧](../055-app-publish-pipeline/design.md)（`deploy` / `logs` 端点、AppManifest 形态、失败五元组、162 段错误码——**冲突时一律以 F055 为准**）· [F055 tasks T039](../055-app-publish-pipeline/tasks.md)（端点鉴权顺序与归属判定字段）· [F054 contracts-runtime-manager.md §5](../054-app-domain-runtime/contracts-runtime-manager.md)（注入应用的环境变量清单——`doberman-agent dev` 顺延，但清单来源在此定死）· [F049 design](../049-openapi-auth-baseline/design.md)（`whoami` / 端点 `open_api_scope` marker + `router_rpc` 的 `verify_open_api_access` / 260 段错误码；**2026-09-10 起以 beta2 F053 实现为准，`open_api_subject` 工厂已作废**）
 **版本**: v3.0.0
 **最后更新**: 2026-08-18
 
@@ -33,14 +33,14 @@
 
 ## 1. 目标与非目标
 
-**目标**：交付一个**与后端零耦合的独立 Python 包 `bisheng-cli`**（命令名 `bisheng`），让开发者与其本地 coding agent 在纯内网环境里用三条命令完成「拿密钥登录 → 把本地项目打包发布上平台 → 看自己应用的运行日志」；同时在平台侧提供**匿名可达的安装件与版本信息分发端点**，使 CLI 的获取与升级不依赖任何公网 registry。CLI 自身**不做任何权威判定**——密钥有效性、权限位、manifest 合法性、包体上限、归属人、审批状态全部由服务端裁决，CLI 只负责「打包、送达、把服务端的机读结论翻成人话与退出码」。
+**目标**：交付一个**与后端零耦合的独立 Python 包 `doberman-agent-cli`**（命令名 `doberman-agent`），让开发者与其本地 coding agent 在纯内网环境里用三条命令完成「拿密钥登录 → 把本地项目打包发布上平台 → 看自己应用的运行日志」；同时在平台侧提供**匿名可达的安装件与版本信息分发端点**，使 CLI 的获取与升级不依赖任何公网 registry。CLI 自身**不做任何权威判定**——密钥有效性、权限位、manifest 合法性、包体上限、归属人、审批状态全部由服务端裁决，CLI 只负责「打包、送达、把服务端的机读结论翻成人话与退出码」。
 
 **非目标**（本轮顺延，落点方向已定，避免后人误扩或另起一套）：
 
 | 顺延项 | 为什么本轮不做 | 将来的落点方向 |
 |---|---|---|
 | `skills sync` 与 DEV-03 两包技能包 | MVP-核心不集成平台能力，技能包的一半内容（模型 / 检索 / SDK 接线）无处可教 | 端点 `GET /api/v1/dev-toolkit/skills/{pack}`（与安装件同 router、同匿名口径，D10 已留位）；包内容随后端发布件同行，落点同 `linsight/builtin_skills/` |
-| `dev` 命令（迷你代理 + 本地 SQLite） | 依赖 F054 app-proxy 的注入头形态与 F057 SDK，两者本轮都不在纵切上 | 命令落 `bisheng_cli/commands/dev.py`；**注入的环境变量清单不得自造**，唯一来源 = [`contracts-runtime-manager.md` §5](../054-app-domain-runtime/contracts-runtime-manager.md)（见 §6.2 表末行，本文已把清单原样登记） |
+| `dev` 命令（迷你代理 + 本地 SQLite） | 依赖 F054 app-proxy 的注入头形态与 F057 SDK，两者本轮都不在纵切上 | 命令落 `doberman_agent_cli/commands/dev.py`；**注入的环境变量清单不得自造**，唯一来源 = [`contracts-runtime-manager.md` §5](../054-app-domain-runtime/contracts-runtime-manager.md)（见 §6.2 表末行，本文已把清单原样登记） |
 | 接入信息区（platform 前端） | 属 platform UI，与 CLI 包工程无耦合；MVP-核心的密钥转交靠人工 | F049 服务账号详情页「API 密钥」tab 顶部；下载链接即 D10 的 `download_url` |
 | 多平台凭据（`--platform` 参数、profile 切换与列出） | 114 只有一个平台；裁剪基准 `mvp-114-path.md` §6 F053 行把「多平台凭据」整条列在顺延列 | **凭据文件结构本轮就按多 profile 落**（D3，零迁移地基），但 **`--platform` 参数本轮不注册**——命令一律用 `credentials.json` 的 `current` profile。顺延的是整个「命令级选择 + 列出 + 切换」交互层（D11 第 5 条） |
 | 版本兼容校验（不兼容即阻断） | 平台侧 `versions` 端点本轮就返回 `min_compatible`，但阻断逻辑需要真实的跨版本样本才有意义 | 本轮**只提示不阻断**（D11）；开启阻断 = 在 `http.py` 的前置探测里把 warning 升为 `CliError(exit=2)` |
@@ -58,9 +58,9 @@
 
 ## 2. 关键约束
 
-> 全局架构铁律（双 DB / 多租户 / 权限 / 分层 / 错误码 / 安全）遵循 [`docs/constitution.md`](../../../docs/constitution.md) C1–C7，本节不重抄。**注意作用域**：C1–C7 与 `scripts/arch-guard.sh` 约束的是 `src/backend/`，本 Feature 只有**平台侧两个端点**落在那里；`src/bisheng-cli/` 是独立工程，唯一会对它出声的自动守卫是 RULE-7，**且它只输出 WARNING、不是 VIOLATION、不阻断**（`arch-guard.sh:99` 输出 `⚠️ [arch-guard] RULE-7 WARNING`，脚本头注释 `:13` 标「硬编码敏感信息检测（C6，**WARNING**）」；VIOLATION 只有 RULE-4/5/8/9/10）——见坑 10。
+> 全局架构铁律（双 DB / 多租户 / 权限 / 分层 / 错误码 / 安全）遵循 [`docs/constitution.md`](../../../docs/constitution.md) C1–C7，本节不重抄。**注意作用域**：C1–C7 与 `scripts/arch-guard.sh` 约束的是 `src/backend/`，本 Feature 只有**平台侧两个端点**落在那里；`src/doberman-agent-cli/` 是独立工程，唯一会对它出声的自动守卫是 RULE-7，**且它只输出 WARNING、不是 VIOLATION、不阻断**（`arch-guard.sh:99` 输出 `⚠️ [arch-guard] RULE-7 WARNING`，脚本头注释 `:13` 标「硬编码敏感信息检测（C6，**WARNING**）」；VIOLATION 只有 RULE-4/5/8/9/10）——见坑 10。
 
-- **CON-1 CLI 是独立包，不 import `bisheng`**：不读后端配置、不连任何数据库、不引 SQLModel / FastAPI。推论：**一切权威校验恒在服务端**——CLI 对 `bisheng-app.yaml` 只做「文件存在 + YAML 可解析 + 三个必填项存在」级快速失败（F055 design §D3 逐字要求），对权限位一律不判、不缓存（AC-52）。
+- **CON-1 CLI 是独立包，不 import `doberman-agent`**：不读后端配置、不连任何数据库、不引 SQLModel / FastAPI。推论：**一切权威校验恒在服务端**——CLI 对 `doberman-agent-app.yaml` 只做「文件存在 + YAML 可解析 + 三个必填项存在」级快速失败（F055 design §D3 逐字要求），对权限位一律不判、不缓存（AC-52）。
 - **CON-2 纯内网零公网依赖**：安装件与版本信息由平台自身分发（AC-01）；CLI 运行期只访问 `login` 时给定的**那一个 host**，不做遥测、不查公网 registry、不下载任何东西。推论：**第三方依赖是负债**——每多一条依赖就多一次「内网 pip 装不上」的失败面（依赖预算见 D12）。
 - **CON-3 凭据是本地用户资产**：落用户目录、属主可读写、绝不落工程目录、绝不进上传包（AC-07 / AC-32）。密钥**必须以明文保存**（每次请求都要用它），文件权限位是唯一保护——这不是可以省的一步（坑 1）。
 - **CON-4 包体量上限来自服务端配置，不是 CLI 常量**：默认 50 MB / 200 MB 解包 / 20000 条目，权威值经 `GET /api/v2/apps/deploy-limits` 取；**取不到时直接上传、由服务端 16201 兜底**，不得让一个软校验挡死发布（F055 design D2 / tasks T050 回写项 3）。
@@ -83,10 +83,10 @@
 - **选定**：**C**（spec 决议-1 已定案，本文只补落地形状）。
 - **原因**：目标用户是"会用 coding agent 的业务技术员"，Python 环境常备；wheel 是唯一能同时满足「一份产物 × 三平台」「可直接 `pip install <url>`」「可放进内网镜像」的形态；`src/runtime-manager/pyproject.toml`（hatchling + uv.lock，`:25-30`）是仓内最新的独立包先例，照抄可省掉一轮工具链选型。
 - **落地形状**（照抄基准 = `src/runtime-manager/pyproject.toml`）：
-  - `[build-system]` hatchling；`[tool.hatch.build.targets.wheel] packages = ["bisheng_cli"]` —— **这一行是关键**：目录名带连字符（`src/bisheng-cli/`）时 hatchling 无法自动推断包目录，缺了它 `uv build` 打出的 wheel 是空的。
+  - `[build-system]` hatchling；`[tool.hatch.build.targets.wheel] packages = ["doberman_agent_cli"]` —— **这一行是关键**：目录名带连字符（`src/doberman-agent-cli/`）时 hatchling 无法自动推断包目录，缺了它 `uv build` 打出的 wheel 是空的。
   - `[tool.ruff]` 照抄 `:41-67`，**`RUF001/002/003` 必须 ignore**——CLI 的人读输出全是中文，不 ignore 的话 ruff 会把中文全角括号"修"成 ASCII，把产品文案改错。
   - `[tool.pytest.ini_options]` 照抄 `:32-39`，自定义 marker 由 `docker:` 换成 **`network:`**（需要真平台的用例默认跳过，CI 不跑、114 手验跑）。
-- **三个名字刻意分离**：发行名 `bisheng-cli` · **import 包名 `bisheng_cli`** · 命令名 `bisheng`。理由有两条且都不是洁癖：① 若 import 包取名 `bisheng`，开发者机器上同时装了后端依赖时会与 `src/backend/bisheng/` 顶层包**同名冲突**；② `arch-guard.sh:115,126` 的 RULE-8/9 守卫条件是 `grep -q "/bisheng/"`，目录里出现 `bisheng/` 段会被扫进来产生无谓噪声。
+- **三个名字刻意分离**：发行名 `doberman-agent-cli` · **import 包名 `doberman_agent_cli`** · 命令名 `doberman-agent`。理由有两条且都不是洁癖：① 若 import 包取名 `doberman-agent`，开发者机器上同时装了后端依赖时会与 `src/backend/doberman_agent/` 顶层包**同名冲突**；② `arch-guard.sh:115,126` 的 RULE-8/9 守卫条件是 `grep -q "/doberman-agent/"`，目录里出现 `doberman-agent/` 段会被扫进来产生无谓噪声。
 - **何时该重新考虑**：客户反馈"装不上 Python"成为主要阻碍（表现：现场支持工单里安装类占比过半）→ 补单文件二进制，`versions` 端点改按 `platform/arch` 分发 `assets[]`（形状 §4.2 已留位）。
 
 ### D2：命令与参数面 = argparse 三命令 + 全局 `--json`（机读走 stdout、人读走 stderr）
@@ -97,26 +97,26 @@
   - C. 自己写解析器 — 无收益，`--help` 与错误提示要重造
 - **选定**：**B**。`argparse` 在标准库、支持子命令与互斥组、`--help` 自动生成，唯一损失是彩色输出与自动补全——两者都不是 AC 要求的（AC-04 要求的是"非交互可用 + 机器可读"，与好看无关）。
 - **机读 / 人读双形态的落地（AC-04 的实质）**：
-  - **`--json` 时：机读 NDJSON 走 stdout，人读文本走 stderr**。这样 agent 可以直接 `bisheng deploy --wait --json | jq -c 'select(.event=="stage")'` 而不被进度文本污染，同时人在终端仍能看到过程。反过来（把两者混在 stdout 靠标记区分）会让任何一个 jq 管道在第一行进度文本上炸掉。
+  - **`--json` 时：机读 NDJSON 走 stdout，人读文本走 stderr**。这样 agent 可以直接 `doberman-agent deploy --wait --json | jq -c 'select(.event=="stage")'` 而不被进度文本污染，同时人在终端仍能看到过程。反过来（把两者混在 stdout 靠标记区分）会让任何一个 jq 管道在第一行进度文本上炸掉。
   - 事件形状固定三种：`{"event":"stage",...}` / `{"event":"progress",...}` / `{"event":"result","ok":bool,"exit_code":int,...}`；**每条命令恒以且仅以一条 `result` 结尾**（agent 可以只读最后一行做判定）。
   - 非 TTY 自动降级：不打进度条、不发交互提问，只打里程碑（25/50/75/100%）。
 - **交互确认一律有参数等价物**（AC-04）：`--confirm-schema-change`（AC-36）· `--yes`（迭代 deploy 前的目标应用确认）· `--api-key-stdin`（免命令行明文，AC-07）。**非交互环境下缺参数 = 明确拒绝**，绝不"默认同意"。
 - **`--wait` 的定位**：默认不等（审批是人工动作、可跨天，spec 决议-10）；`--wait` 是纵切演示剧本的等待手段，带 `--wait-timeout`（默认 1800 秒），**超时不是失败**（退出码 23，见 §4.2 退出码表）。
-- **何时该重新考虑**：命令数超过 5 个且开始出现多层子命令（如 `bisheng app logs`）→ 那时 argparse 的手写 `--help` 维护成本会超过一条依赖的成本，可换 typer；或需要 shell 补全成为客户诉求 → 同上。
+- **何时该重新考虑**：命令数超过 5 个且开始出现多层子命令（如 `doberman-agent app logs`）→ 那时 argparse 的手写 `--help` 维护成本会超过一条依赖的成本，可换 typer；或需要 shell 补全成为客户诉求 → 同上。
 
-### D3：凭据存储 = `~/.bisheng/credentials.json`，`0600` + 多 profile 结构本轮就落
+### D3：凭据存储 = `~/.doberman-agent/credentials.json`，`0600` + 多 profile 结构本轮就落
 
 - **备选**：
   - A. **系统钥匙串**（keyring / DPAPI / Keychain）— 优点：最安全；缺点：`keyring` 是第三方依赖且在无 GUI 的 Linux 上要 D-Bus + secretstorage，服务器 / 容器里必炸，与"开发者可能在跳板机上用"直接冲突
-  - B. **环境变量**（每次命令都要 `BISHENG_API_KEY=...`）— 缺点：AC-06 明写"通过后把凭据写入本地用户目录"；且 agent 反复拼环境变量比读文件更易泄漏到 shell history
+  - B. **环境变量**（每次命令都要 `DOBERMAN_AGENT_API_KEY=...`）— 缺点：AC-06 明写"通过后把凭据写入本地用户目录"；且 agent 反复拼环境变量比读文件更易泄漏到 shell history
   - C. **用户目录下的 `0600` JSON 文件**（选定），环境变量作为**覆盖**通道保留
-- **选定**：**C**。路径 `~/.bisheng/credentials.json`（目录 `0700`、文件 `0600`）；Windows 上 `%USERPROFILE%\.bisheng\`，用 `icacls` 等价的"仅当前用户"ACL（坑 1）。
+- **选定**：**C**。路径 `~/.doberman-agent/credentials.json`（目录 `0700`、文件 `0600`）；Windows 上 `%USERPROFILE%\.doberman-agent\`，用 `icacls` 等价的"仅当前用户"ACL（坑 1）。
 - **原因**：形态与开发者熟悉的 `~/.docker/config.json`、`~/.kube/config`、`~/.aws/credentials` 一致，学习成本为零；纯标准库可实现；跳板机 / 容器 / WSL 全部可用。**密钥必然明文存**（每次请求都要原值），所以权限位不是"加固"而是**唯一**保护——写文件必须 `os.open(path, O_CREAT|O_WRONLY|O_TRUNC, 0o600)` 一步到位，不能"先 write 再 chmod"（那中间有一个 world-readable 的窗口）。
 - **多 profile 结构本轮就落**（顺延的只是交互层）：文件顶层 `{"version":1,"current":<base_url>,"profiles":{<base_url>: {...}}}`。理由：结构一旦按单平台写死（顶层直接放 `api_key`），加多平台就是一次带迁移的破坏性变更；按 profile 落只多写十行，而顺延项开启时零迁移。
 - **不存 `scopes`**（AC-52 的直接落点）：服务端有 3 秒正向缓存上界（`core/config/open_platform.py:31-35`，默认 3、硬顶 5），权限位编辑"即时生效"由服务端保证；CLI 一旦缓存权限位就会出现"管理员补勾了但 CLI 还说没权限"。存的是 `service_account` / `resource_owner` / `key_mask` / `tenant_id` 这类**展示用快照**，且每次 `login` 覆盖。
 - **何时该重新考虑**：出现"密钥被同机其他用户窃取"的真实事件（表现：审计里同一把 key 出现不同来源）→ 上系统钥匙串，但必须保留文件后端作为无 GUI 环境的回落，而不是替换。
 
-### D4：打包 = `tar.gz` + 三层忽略规则（git 优先 / 自研子集回落 / `.bishengignore` 收口）
+### D4：打包 = `tar.gz` + 三层忽略规则（git 优先 / 自研子集回落 / `.doberman-agentignore` 收口）
 
 - **备选（包格式）**：zip vs **tar.gz**（选定）。runtime-manager 的解包端两种都收（`src/runtime-manager/runtime_manager/builder.py:168-181`，先 `zipfile.is_zipfile()` 再 `tarfile.open()`），但 F055 端点参数逐字写的是 `package`（tar.gz）、对象键是 `apps/{app_id}/versions/{version_id}/code.tar.gz`（F055 design `:103`）→ **产 zip 等于和字面契约、对象键名、未来分片方案三处同时错位**，没有任何收益。
 - **备选（忽略规则）**：
@@ -125,12 +125,12 @@
   - C. **三层规则**（选定）
 - **选定**：**C**，三层从内到外：
   1. **结构性排除**（与忽略文件无关，恒定生效）。分两类：
-     - **硬排除、不可取回**：`.git/` `.hg/` `.svn/` `node_modules/` `.venv/` `venv/` `env/` `__pycache__/` `*.pyc` `.pytest_cache/` `.ruff_cache/` `.mypy_cache/` `*.egg-info/` `.DS_Store` `.bisheng/`。判据：**这些目录的内容在目标机器上一定是错的或无意义的**（宿主平台的虚拟环境 / 二进制、版本控制元数据、缓存），上传它们只有害处。
-     - **软排除、可被 `.bishengignore` 的 `!` 取回**：`*.db` `*.sqlite` `*.sqlite3`、本地附件目录、**`dist/` `build/`**。
+     - **硬排除、不可取回**：`.git/` `.hg/` `.svn/` `node_modules/` `.venv/` `venv/` `env/` `__pycache__/` `*.pyc` `.pytest_cache/` `.ruff_cache/` `.mypy_cache/` `*.egg-info/` `.DS_Store` `.doberman-agent/`。判据：**这些目录的内容在目标机器上一定是错的或无意义的**（宿主平台的虚拟环境 / 二进制、版本控制元数据、缓存），上传它们只有害处。
+     - **软排除、可被 `.doberman-agentignore` 的 `!` 取回**：`*.db` `*.sqlite` `*.sqlite3`、本地附件目录、**`dist/` `build/`**。
      - ⚠️ **`dist/` / `build/` 刻意不进硬排除**（评审修订）：存量 python3.11 应用把前端构建产物放 `dist/` 交后端静态托管是常见形态，硬排会把它静默剥掉，故障要到 `precheck_probe` / 16228 才暴露、且排查方向指向"平台构建有问题"（正是坑 20 那类误导）。这与本节第一条硬规矩「绝不静默截断——包被悄悄截断 = 线上跑的不是本地那份」（判据照 `linsight/domain/services/workbench_impl.py:1255-1257`）是同一条约束的两面：**凡"真实应用可能需要它"的目录，一律软排 + 在忽略统计里列出**，只有"上传必然错"的才硬排。
      - **凭据文件天然不在工程目录（D3），"不进包"由结构性排除 + 一条 assert 型单测双重保证**（AC-07）。
-  2. **`.gitignore` 语义**：项目是 git 仓库且 `git` 可执行 → 直接 `git ls-files -c -o --exclude-standard -z` 让 git 自己算（零依赖、100% 语义一致；关联 memory `reference_remote_dev`「要比就用 `git ls-files` 全量」的正向用法）；否则 → 自研子集解析器（`#` 注释 / 空行 / 前导 `!` 取反 / 目录后缀 `/` / `**` / 段内 `*` `?`），并**在输出里明说**"本项目非 git 仓库，忽略规则按子集解析，复杂规则请写进 `.bishengignore`"。
-  3. **`.bishengignore`**（可选，同语法、最后加载、优先级最高）——子集解析器兜不住的复杂规则的显式出口。
+  2. **`.gitignore` 语义**：项目是 git 仓库且 `git` 可执行 → 直接 `git ls-files -c -o --exclude-standard -z` 让 git 自己算（零依赖、100% 语义一致；关联 memory `reference_remote_dev`「要比就用 `git ls-files` 全量」的正向用法）；否则 → 自研子集解析器（`#` 注释 / 空行 / 前导 `!` 取反 / 目录后缀 `/` / `**` / 段内 `*` `?`），并**在输出里明说**"本项目非 git 仓库，忽略规则按子集解析，复杂规则请写进 `.doberman-agentignore`"。
+  3. **`.doberman-agentignore`**（可选，同语法、最后加载、优先级最高）——子集解析器兜不住的复杂规则的显式出口。
 - **打包的四条硬规矩**（每条都是坑的对偶）：
   - **绝不静默截断**：超限 / 遇到不可打包成员时**整包拒绝**并列清单，判据注释照抄 `linsight/domain/services/workbench_impl.py:1255-1257`——"包被悄悄截断 = 线上跑的不是本地那份"。
   - **符号链接 / 设备文件 / FIFO / socket 本地就跳过并列出**：服务端 tar 解包闸会拒它们（F055 design D2 的四类拒绝），本地不跳等于必然吃一个 16202。
@@ -217,16 +217,16 @@
 - **登记的主要 code**（全表见 §4.2 ②，来源 = F049 `common/errcode/open_api.py` + F055 design §4.2 ⑧ `:588-591`）：`26001/26002/26027` → 退出 4；`26003` → 退出 5 且**逐字打出 `data.required` 里缺的位名**（AC-34）；`26030`（503，fail-closed）→ 退出 7 且明说**可重试**；`16207` → 退出 8「本环境未启用应用工场」（AC-40）；`16201/16202/16203` → 退出 6（改本地再传）；`16221/16222/16223/16224/16227/16228/16230/16231` → 退出 10；`16241` → 退出 11；`16205/16229/16251/16252/16254` → 退出 12；**`16225` → 退出 13**、**`16226` → 退出 14**（见下条）。
 - **⚠️ 三条"绝不能合并"的映射（评审修订，`ERROR_HINTS` 落码前逐条对照）**：
   1. **`16225`（审批场景未启用）≠ `16226`（运行环境容量不足）**——F055 design D4 `:149` 与 §4.2 ⑧ `:596` 两处逐字警告过："二者的 CLI 处置南辕北辙"，前者是"平台没 seed 审批场景，找管理员"（改代码无用，退出 **13**），后者是"机器没资源，等一会儿或让 owner 手动上线"（可重试，退出 **14**）。把它们一起塞进"托管预检失败"就等于把这条警告作废。
-  2. **`16231`（本环境未启用能力总线）的处置是"删掉 `capabilities` 声明"，不是"找管理员开开关"**——能力总线本轮整体后置（F055 §6 波次表），CLI 的下一步指引必须写"本版不支持能力声明，请从 `bisheng-app.yaml` 删除 `capabilities` 后重发"，映射退出 **10**（要改 manifest）而不是退出 8（环境未启用）。`16230`（能力声明含密钥引用）同理。
-  3. **`16203`（缺 `bisheng-app.yaml`）必须单独有话说**——CLI 本地就该拦住它（AC-30 / §4.1 B 步 2），服务端仍回 16203 只有一种可能：**包根与项目根不一致**（打包起点选错）。文案要指向"检查 `deploy` 的 PATH 参数与包根"，而不是"请创建 manifest"。
+  2. **`16231`（本环境未启用能力总线）的处置是"删掉 `capabilities` 声明"，不是"找管理员开开关"**——能力总线本轮整体后置（F055 §6 波次表），CLI 的下一步指引必须写"本版不支持能力声明，请从 `doberman-agent-app.yaml` 删除 `capabilities` 后重发"，映射退出 **10**（要改 manifest）而不是退出 8（环境未启用）。`16230`（能力声明含密钥引用）同理。
+  3. **`16203`（缺 `doberman-agent-app.yaml`）必须单独有话说**——CLI 本地就该拦住它（AC-30 / §4.1 B 步 2），服务端仍回 16203 只有一种可能：**包根与项目根不一致**（打包起点选错）。文案要指向"检查 `deploy` 的 PATH 参数与包根"，而不是"请创建 manifest"。
 - **`16229` 本轮无写入方但必须登记**：结构演进整体后置（F055 §6 波次表，`confirm_schema_change` 只接收不消费），所以 16229 本轮不会出现；但 `--confirm-schema-change` 参数本轮就实现（D11 第 4 条），映射不登记就会在结构演进上线那天变成"未知 code"。同理 `16253` / `16255` 属发布面动作、CLI 触发不到，走 D9 的降级分支（退出 19）即可，不单独登记。
-- **两个"看起来像 CLI 出错、其实不是"的码要特别标注**：`26004`（带了 `X-Bisheng-On-Behalf-Of` / `X-Bisheng-End-User`）——CLI **绝不发这两个头**，出现即 CLI bug，文案直接写"这是 CLI 缺陷，请报障"；`26031`（端点漏 `@open_api_scope` 标记）——平台缺陷，文案写"请报平台故障"。把它们翻成"你的密钥有问题"会让排障走上完全错误的方向。
+- **两个"看起来像 CLI 出错、其实不是"的码要特别标注**：`26004`（带了 `X-doberman-agent-On-Behalf-Of` / `X-doberman-agent-End-User`）——CLI **绝不发这两个头**，出现即 CLI bug，文案直接写"这是 CLI 缺陷，请报障"；`26031`（端点漏 `@open_api_scope` 标记）——平台缺陷，文案写"请报平台故障"。把它们翻成"你的密钥有问题"会让排障走上完全错误的方向。
 - **何时该重新考虑**：`ERROR_HINTS` 超过 40 条 → 那时该考虑让服务端在 `hints[]` 里直接给面向 CLI 的下一步（F055 的失败五元组已有 `hints`，只是 260 段还没有），CLI 退化为纯呈现。
 
 ### D10：平台分发端点 = `/api/v1/dev-toolkit/*`，匿名可达，开关关闭时**不注册路由**
 
 - **备选（落点）**：
-  - A. `/api/v2/**` 下 — **结构性否决**：F049 计划把 `verify_open_api_access` 提升到整个 `router_rpc`（`src/backend/bisheng/api/router.py:123-126` 的注释），届时 `/api/v2` 下任何端点都必须持密钥；在那里放匿名端点是永久例外
+  - A. `/api/v2/**` 下 — **结构性否决**：F049 计划把 `verify_open_api_access` 提升到整个 `router_rpc`（`src/backend/doberman_agent/api/router.py:123-126` 的注释），届时 `/api/v2` 下任何端点都必须持密钥；在那里放匿名端点是永久例外
   - B. 裸路径 `/cli/download`（照 `/health` 的挂法，`main.py:145-147`）— **不可达**：商业版网关只转发 `/api/v1/**` 与 `/api/v2/**`（CON-7），OSS nginx 同形
   - C. **`/api/v1/dev-toolkit/**` 下一个不挂 `Depends(UserPayload.get_login_user)` 的新 router**（选定）
 - **选定**：**C**。两个端点：
@@ -237,8 +237,8 @@
 - **⚠️ AC-05 的一半本轮做不到，此处显式登记为偏离（评审修订）**：spec §范围边界逐字写「**平台侧 login 校验入口**（含 `delegate` 拒绝）由本 Feature 拥有」、AC-05 要求开放能力层未部署时「安装件下载端点、技能包分发端点**与 login 校验入口**均不可达（呈不存在）」。但 `login` 校验打的是 **F049 已实现的 `GET /api/v2/auth/whoami`**，它挂在 `router_rpc` 上**恒在注册**（`api/router.py:123-126`），且服务账号模块「**恒在、不随 open_platform 开关消失**」是 F049 的显式设计（`core/config/open_platform.py:17-18` 注释逐字："gates only the local-dev-toolkit scopes and the connect-info panel …; the service-account module is always on"）。
   - **本轮的处置**：F053 只交付**两个分发端点**的条件注册；「login 校验入口不可达」这一半**不实现**。**CLI 侧的等价保证**：`login` 的**前置探测**先打 `versions`，404 且 `env.open_platform_enabled=false` → 判定「本环境未部署开放能力层」并**在打 whoami 之前**退出 8（§4.1 A）——开发者观感上 `login` 在该环境确实不可用，AC-10「可读原因」照落。
   - **为什么不建议改实现**：把 whoami 也置于开关下，等于让"服务账号模块恒在"这条 F049 设计破例，且会波及 F049 已落码的鉴权面。→ **建议改 spec 措辞**（把 AC-05 的"login 校验入口"改成"CLI 的 login 在该环境不可用并给出可读原因"），已登记为**回写项 4**（§6.2 / §8）。对比参照：AC-06（D14）与 AC-43（D8）也都是"上游未就位 → 明写降级"的同一种处置，本条与它们同档。
-- **必须同批做的两件事**：① 新 router 加进 `src/backend/bisheng/api/router.py`（`:66-112` 那一片）；② **路径前缀 `/api/v1/dev-toolkit` 加进 `TENANT_CHECK_EXEMPT_PATHS`**（`utils/http_middleware.py:16-44`）。第二条不是可选优化：多租户开启时无 JWT 的请求**不会**调 `set_current_tenant_id`（`http_middleware.py:107-112` 只在 `not multi_tenant.enabled` 时兜底），任何 DAO SELECT 都会 `NoTenantContextError`；豁免名单会把整棵调用树置于 `_bypass_tenant_filter`（`:321-323`）。本端点若严格只读磁盘可以不加，但**版本端点要回 `open_platform_enabled` / `app_runtime_enabled` 且将来极可能读表**，现在就加更省事。
-- **wheel 怎么到镜像里**（坑 11，最容易在生产翻车的一条）：backend 镜像的 build context 只有 `./src/backend/`（`.github/workflows/ci.yml:54` 的 `docker buildx build … ./src/backend/` + `src/backend/Dockerfile:13` `COPY ./ ./`）→ **`src/bisheng-cli/` 不在镜像内**。解法照 `linsight/builtin_skills/` 的判据（`builtin_skill_seeder.py:45-47` 逐字："inside the package so every deployment shape (docker COPY, rsync, pip install) carries it automatically"）：**wheel 产物随后端包同行**，放 `src/backend/bisheng/dev_toolkit/artifacts/`，由 `scripts/pack_cli_wheel.sh`（骨架照 `scripts/pack_linsight_skill.sh:1-40`）构建后拷入；端点用 `Path(__file__).resolve().parents[N] / "artifacts"` 定位（同款写法）。⚠️ **artifacts 目录名不能叫 `build` / `lib` / `wheels` / `sdist`**——`.gitignore:137,148,150,152` 这几条是**无前导斜杠的全局规则**，任何层级同名目录都会被忽略，产物提交不上去（`git check-ignore` 实测：`src/bisheng-cli/dist/` 不被忽略，因为 `/dist/` 是根锚定的；但 `build/x` 命中）。
+- **必须同批做的两件事**：① 新 router 加进 `src/backend/doberman_agent/api/router.py`（`:66-112` 那一片）；② **路径前缀 `/api/v1/dev-toolkit` 加进 `TENANT_CHECK_EXEMPT_PATHS`**（`utils/http_middleware.py:16-44`）。第二条不是可选优化：多租户开启时无 JWT 的请求**不会**调 `set_current_tenant_id`（`http_middleware.py:107-112` 只在 `not multi_tenant.enabled` 时兜底），任何 DAO SELECT 都会 `NoTenantContextError`；豁免名单会把整棵调用树置于 `_bypass_tenant_filter`（`:321-323`）。本端点若严格只读磁盘可以不加，但**版本端点要回 `open_platform_enabled` / `app_runtime_enabled` 且将来极可能读表**，现在就加更省事。
+- **wheel 怎么到镜像里**（坑 11，最容易在生产翻车的一条）：backend 镜像的 build context 只有 `./src/backend/`（`.github/workflows/ci.yml:54` 的 `docker buildx build … ./src/backend/` + `src/backend/Dockerfile:13` `COPY ./ ./`）→ **`src/doberman-agent-cli/` 不在镜像内**。解法照 `linsight/builtin_skills/` 的判据（`builtin_skill_seeder.py:45-47` 逐字："inside the package so every deployment shape (docker COPY, rsync, pip install) carries it automatically"）：**wheel 产物随后端包同行**，放 `src/backend/doberman_agent/dev_toolkit/artifacts/`，由 `scripts/pack_cli_wheel.sh`（骨架照 `scripts/pack_linsight_skill.sh:1-40`）构建后拷入；端点用 `Path(__file__).resolve().parents[N] / "artifacts"` 定位（同款写法）。⚠️ **artifacts 目录名不能叫 `build` / `lib` / `wheels` / `sdist`**——`.gitignore:137,148,150,152` 这几条是**无前导斜杠的全局规则**，任何层级同名目录都会被忽略，产物提交不上去（`git check-ignore` 实测：`src/doberman-agent-cli/dist/` 不被忽略，因为 `/dist/` 是根锚定的；但 `build/x` 命中）。
 - **何时该重新考虑**：安装件从一个 wheel 变成多产物矩阵（二进制 × 平台 × 架构）→ `versions` 载荷升级为 `assets[]`，下载端点加 `?asset=`；或平台开始热更新技能包 → 那时分发端点要读 DB（届时 `TENANT_CHECK_EXEMPT_PATHS` 那条就是必需而不是预防）。
 
 ### D11：MVP-核心边界 = 顺延命令**不注册**，顺延契约**先留形状**
@@ -247,7 +247,7 @@
   - A. 顺延命令注册但执行时报"本版本未提供" — 缺点：`--help` 会列出五个命令，agent 会去调，然后拿到一个非标准失败；且 AC-03「提供且仅提供五个子命令」在本轮本来就做不到，假装提供只是把缺口藏起来
   - B. **顺延命令不注册；顺延的数据契约先在载荷里留字段位**（选定）
 - **选定**：**B**。落地为三条具体规矩：
-  1. **`skills sync` / `dev` 不进解析器**：`bisheng --help` 本轮只列 `login` / `deploy` / `logs`。README 与 `--help` 尾部注明"`dev` / `skills sync` 随后续版本提供"。
+  1. **`skills sync` / `dev` 不进解析器**：`doberman-agent --help` 本轮只列 `login` / `deploy` / `logs`。README 与 `--help` 尾部注明"`dev` / `skills sync` 随后续版本提供"。
   2. **`versions` 端点的 SDK 字段位一次留够**（`sdk.version` / `sdk.min_compatible` / `sdk.download_path`，本轮值为 `null`）：F057 AC-01/03 消费**同一端点**，不先留就会在 F057 期出现第二个端点或一次破坏性改形。
   3. **版本兼容只提示不阻断**：CLI 每次命令前置探测 `versions`，`cli.min_compatible > 本地版本` → 打 warning + 下载链接，**不拒绝执行**；开启阻断只需把那句 warning 换成 `CliError`（AC-02 的完整落地随顺延项）。
   4. **`--confirm-schema-change` 本轮就实现**：F055 端点"只接收不消费"（design D3），但参数存在与否是 CLI 的对外契约——现在不做，将来要改 CLI 与文档两处（F055 自己也是按这个理由留的端点参数）。
@@ -263,18 +263,18 @@
   - C. **`httpx` + `PyYAML` 两条**（选定）
 - **选定**：**C**，每条都有"为什么不能用标准库"的一句话论证：
   - **`httpx`**：需要流式 multipart 上传、细分的 connect/read 超时、`trust_env` 开关（坑 2）。`urllib` 三样都要手写，且 multipart 手拼是典型的低级 bug 温床。（备选 `requests` 亦可，选 httpx 是因为 backend 已在用、行为对齐）
-  - **`PyYAML`**：`bisheng-app.yaml` 解析。必须 `yaml.safe_load`——`full_load` / `unsafe_load` 的 `!!python/object` 是 RCE（F055 design D3 逐字红线）。
+  - **`PyYAML`**：`doberman-agent-app.yaml` 解析。必须 `yaml.safe_load`——`full_load` / `unsafe_load` 的 `!!python/object` 是 RCE（F055 design D3 逐字红线）。
   - **标准库覆盖其余全部**：`argparse`（命令面）· `tarfile` + `gzip`（打包）· `fnmatch` 的**段级**用法 + 手写段匹配（忽略规则，**不用它顶 gitignore 全语义**）· `getpass`（隐藏输入）· `json` / `pathlib` / `os` / `subprocess`（git 探测）/ `hashlib` / `time`。
 - **原因**：CON-2。每条依赖都要在客户内网 pip 镜像里存在；两条都是纯 Python、无二进制扩展、在任何镜像里都是最常见的包。
 - **何时该重新考虑**：出现"客户内网连 httpx 都没有"的真实案例 → 那时 wheel 改打 **vendored**（把两个依赖打进包）而不是回退到 urllib；或引入第三条依赖时，必须在本节补一行论证（这是刻意设的门槛）。
 
-### D13：应用标识保存 = 项目根 `.bisheng/app.json`，**接收成功即写**
+### D13：应用标识保存 = 项目根 `.doberman-agent/app.json`，**接收成功即写**
 
 - **备选**：
-  - A. 写进 `bisheng-app.yaml` — **否决**：manifest 形态归 F055 且 `extra='forbid'`（F055 design §4.2 ③），CLI 加字段会被服务端当场拒；spec 决议-6 也明写"不要求开发者手写"
+  - A. 写进 `doberman-agent-app.yaml` — **否决**：manifest 形态归 F055 且 `extra='forbid'`（F055 design §4.2 ③），CLI 加字段会被服务端当场拒；spec 决议-6 也明写"不要求开发者手写"
   - B. 存在全局凭据文件里（按项目绝对路径索引）— 缺点：项目移动 / 复制后失效，且团队成员之间无法共享
-  - C. **项目根 `.bisheng/app.json`**（选定）
-- **选定**：**C**。结构按平台 base URL 分键（同一项目将来可发到多个平台），`--app-id` 可显式覆盖。**建议开发者把 `.bisheng/` 提交进 git**（团队共享同一个 app_id），但它**结构性排除出上传包**（D4）——"进 git"与"进包"是两件事。
+  - C. **项目根 `.doberman-agent/app.json`**（选定）
+- **选定**：**C**。结构按平台 base URL 分键（同一项目将来可发到多个平台），`--app-id` 可显式覆盖。**建议开发者把 `.doberman-agent/` 提交进 git**（团队共享同一个 app_id），但它**结构性排除出上传包**（D4）——"进 git"与"进包"是两件事。
 - **⚠️ 关键时序：`POST /deploy` 返回 200 的那一刻就写盘，不等管线成功**。理由来自 F055 design D2 的选定（"接收成功后立即创建草稿应用"）：**首发预检失败时平台已经建好了草稿应用并分配了 `app_id`**，返回载荷里就有它。若 CLI 只在成功时才保存，开发者修完 manifest 重跑就会**再建一个应用**，构建页上堆一串同名草稿——而 F055 明确说"CLI 会把 app_id 随项目保存、重试 deploy 复用同一个 app_id"，这条依赖是双向的。
 - **误投护栏**（AC-33 / spec §3）：迭代 `deploy` 在上传前**必须**打印目标应用的名称与标识；交互环境下要确认（`--yes` 跳过），非交互环境下这行输出是唯一护栏。理由：指定了归属人不同的应用会被 16205 拒（安全），但指定了**同一归属人的另一个应用**会真的更新那个应用（无声的错误）。
 - **何时该重新考虑**：出现"一个项目目录发布多个应用"的真实诉求 → `app.json` 加 `profiles` 层（结构已按 dict 分键，扩展无破坏）。
@@ -304,7 +304,7 @@
 **A. `login`**
 
 ```
-bisheng login <base-url> [--api-key … | BISHENG_API_KEY | 隐藏输入 | --api-key-stdin]
+doberman-agent login <base-url> [--api-key … | DOBERMAN_AGENT_API_KEY | 隐藏输入 | --api-key-stdin]
   → 前置探测 GET /api/v1/dev-toolkit/versions        # 匿名，无需密钥
       ├ 404 → 再探 GET /api/v1/env 判别（三支各有确定退出码，AC-04/AC-10）：
       │        能通且无 open_platform_enabled → "平台版本过老，不支持 CLI"                 → exit 9
@@ -316,7 +316,7 @@ bisheng login <base-url> [--api-key … | BISHENG_API_KEY | 隐藏输入 | --api
       ├ 26001/26002/26027 → 密钥无效/撤销/过期/账号停用（彼此可区分，AC-10/AC-11） → exit 4
       ├ 26030 (503)       → 平台鉴权服务暂不可用，可重试                             → exit 7
       ├ scopes 含 "delegate" → 拒绝、不写凭据、委托专用文案（AC-09，D14）            → exit 5
-      └ 200 → 写 ~/.bisheng/credentials.json（0600，覆盖同 base_url 的 profile，D3）
+      └ 200 → 写 ~/.doberman-agent/credentials.json（0600，覆盖同 base_url 的 profile，D3）
   → 输出：目标平台 / 服务账号名 / 资源归属人（或降级提示）/ key_mask / 到期时间
     ⚠️ 本轮不自动执行 skills sync（AC-08 随顺延项）
 ```
@@ -324,30 +324,30 @@ bisheng login <base-url> [--api-key … | BISHENG_API_KEY | 隐藏输入 | --api
 **B. `deploy`**（人读文本走 stderr、`--json` NDJSON 走 stdout，D2）
 
 ```
-bisheng deploy [PATH] [--app-id] [--wait] [--confirm-schema-change] [--yes] [--json]
-  1 载入凭据（无 → "请先 bisheng login"，AC-51）                                  → exit 3
-  2 定位项目根 + 读 bisheng-app.yaml（yaml.safe_load）
+doberman-agent deploy [PATH] [--app-id] [--wait] [--confirm-schema-change] [--yes] [--json]
+  1 载入凭据（无 → "请先 doberman-agent login"，AC-51）                                  → exit 3
+  2 定位项目根 + 读 doberman-agent-app.yaml（yaml.safe_load）
       缺文件 / YAML 不可解析 / 缺 name|runtime|port → 本地拒绝、列缺失项、不上传（AC-30） → exit 6
-  3 解析忽略规则（git ls-files 优先 / 子集解析器回落 / .bishengignore 收口，D4）
+  3 解析忽略规则（git ls-files 优先 / 子集解析器回落 / .doberman-agentignore 收口，D4）
       → 打包 tar.gz（结构性排除、跳过链接与设备文件、可复现、保留可执行位）
       → --dry-run 到此为止：打印条目数 / 体量 / 被忽略统计
   4 GET /api/v2/apps/deploy-limits → 超限则拒绝 + Top10 大文件 + 忽略建议（AC-32） → exit 6
       取不到 → 只提示、继续（服务端 16201 兜底）
-  5 迭代场景：读 .bisheng/app.json 的 app_id → 打印目标应用名称 + 标识（误投护栏，D13）
+  5 迭代场景：读 .doberman-agent/app.json 的 app_id → 打印目标应用名称 + 标识（误投护栏，D13）
       交互环境要确认（--yes 跳过）；非交互直接打印
   6 POST /api/v2/apps/deploy  (multipart: package + app_id? + confirm_schema_change)
       ⚠️ 服务端在这一次同步响应里就跑完了「归属判定 · 大小闸 · 解包闸 · manifest 校验
          · 本地引用校验 · 在途单 / 待上线闸」（F055 design §4.1 ① `:411-427`），
          **首发最常见的失败（manifest 缺字段）全部在这里返回、轮询里永远看不到**（D6）
       → 200：{deployment_id, app_id, version_id, entry_url?}   # 服务端此刻才 INSERT stage=received
-        ★ 立即把 app_id 写进 .bisheng/app.json（哪怕后续失败，D13）
+        ★ 立即把 app_id 写进 .doberman-agent/app.json（哪怕后续失败，D13）
         ★ entry_url 非空则记下——轮询载荷里没有这个字段（D7 回写项 3）
       → 同步错误分支（一条都不能漏，按 code 映射退出码后直接终止，不进轮询）：
           16207 本环境未启用应用工场（AC-40）              → exit 8
           26003 缺 app:manage（逐字打 data.required）      → exit 5
           16205 该应用归属他人（含归属谁，AC-38）           → exit 12
           16201 包超上限 ／ 16202 包解析失败或非法路径条目   → exit 6（改本地再传）
-          16203 缺 bisheng-app.yaml（多半是包根选错，D9）   → exit 6
+          16203 缺 doberman-agent-app.yaml（多半是包根选错，D9）   → exit 6
           16221 manifest 校验失败（details 指出缺哪个字段）  → exit 10
           16222 runtime 不支持 ／ 16223 档位不存在或已停用
           ／ 16224 能力声明不可解析 ／ 16230 含密钥引用
@@ -373,7 +373,7 @@ bisheng deploy [PATH] [--app-id] [--wait] [--confirm-schema-change] [--yes] [--j
 **C. `logs`**
 
 ```
-bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json]
+doberman-agent logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json]
   → 凭据 + app_id 解析（同 deploy 第 1/5 步）
   → GET /api/v2/apps/{app_id}/logs?tail=&since=&keyword=  → {lines[]}
       16254 仅 owner 可执行 / 16205 归属他人 → "该应用不属于当前密钥的资源归属人"（AC-42，服务端判，D8） → exit 12
@@ -388,7 +388,7 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 
 | 命令 | 位置参数 | 参数 | 说明 |
 |---|---|---|---|
-| `login` | `<base-url>` | `--api-key` · `--api-key-stdin` · `--json` | 密钥来源优先级：`--api-key` > `BISHENG_API_KEY` > `--api-key-stdin` > TTY 隐藏输入；四者皆无 → exit 2（AC-07） |
+| `login` | `<base-url>` | `--api-key` · `--api-key-stdin` · `--json` | 密钥来源优先级：`--api-key` > `DOBERMAN_AGENT_API_KEY` > `--api-key-stdin` > TTY 隐藏输入；四者皆无 → exit 2（AC-07） |
 | `deploy` | `[PATH]`（默认 `.`） | `--app-id` · `--wait` · `--wait-timeout`（默认 1800）· `--confirm-schema-change` · `--yes` · `--dry-run` · `--json` | `--dry-run` 只打包 + 本地校验 + 打印体量统计，不上传。**无 `--platform`**：本轮恒用 `credentials.json` 的 `current`（D11 第 5 条） |
 | `logs` | — | `--app-id` · `--tail`（默认 200）· `--since` · `--keyword` · `--follow` · `--json` | `--follow` 短轮询 3 s（D8）。**无 `--platform`**，同上 |
 | 全局 | — | `--version` · `--help` · `--verbose` · `--quiet` · `--timeout` | `--verbose` 打印请求方法/路径/状态码；**Authorization 头恒掩码** |
@@ -402,10 +402,10 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 | 0 | 成功（`--wait` 下 = 通过并上线） | — |
 | 1 | CLI 内部未预期异常 | traceback 仅在 `--verbose` 打印 |
 | 2 | 用法 / 参数错误 | 缺必填参数、互斥参数同用 |
-| 3 | **未登录**（AC-51） → 先 `bisheng login` | 无凭据文件或无该平台 profile |
+| 3 | **未登录**（AC-51） → 先 `doberman-agent login` | 无凭据文件或无该平台 profile |
 | 4 | 鉴权失败 → 换 / 重签一把密钥 | `26001` / `26002` / `26027` |
 | 5 | 权限不足 / `delegate` 拒绝 → 找租户管理员编辑密钥位 | `26003`（打出 `data.required`）· AC-09 |
-| 6 | 本地校验失败 / 包不合法 → 改本地再传 | manifest 缺失或不合法（本地）· 路径不存在 · `16201` 超上限 · `16202` 解析失败或非法路径条目 · `16203` 缺 `bisheng-app.yaml`（多半包根选错） |
+| 6 | 本地校验失败 / 包不合法 → 改本地再传 | manifest 缺失或不合法（本地）· 路径不存在 · `16201` 超上限 · `16202` 解析失败或非法路径条目 · `16203` 缺 `doberman-agent-app.yaml`（多半包根选错） |
 | 7 | 平台不可达 / 服务暂不可用 → 稍后重试 | 网络错误 · `26030`（**可重试**） |
 | 8 | 环境未启用 → 找管理员开开关并重启后端 | 分发端点 404（开放能力层）· `16207`（工场运行时层） |
 | **9** | **平台版本过老，不支持本 CLI** → 升级平台，或换用与平台同版的 CLI | `versions` 404 且 `/api/v1/env` 无 `open_platform_enabled`（§4.1 A） |
@@ -423,14 +423,14 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 
 > **⚠️ exit 18 为什么不并进 1 或 19（2026-08-17 裁决，此前 D9 只说要"特别标注" `26004` / `26031` 却没给退出码）**：这张表存在的唯一理由是让本地 coding agent 不读散文就能决定下一步，所以分格的判据是**动作是否不同**，不是"错误看起来有多严重"。三者的动作各不相同：exit **1**（CLI 内部崩了）——重试一次是合理的；exit **19**（没有登记的码）——读 `message` 后可以改参数重试；exit **18**——重试与改参数**都保证无用**，唯一正确动作是停下报障。这是第三种动作，所以是第三个码。另外把 `26031` 映到 19 还会**给出假标签**：19 的语义是"未登记的码"，而这两个码 CLI 认得清清楚楚。
 
-**③ 凭据文件** `~/.bisheng/credentials.json`（目录 `0700` / 文件 `0600`；Windows 用等价 ACL）
+**③ 凭据文件** `~/.doberman-agent/credentials.json`（目录 `0700` / 文件 `0600`；Windows 用等价 ACL）
 
 ```jsonc
 { "version": 1,
-  "current": "https://bisheng.example.com",
+  "current": "https://platform.example.com.com",
   "profiles": {
-    "https://bisheng.example.com": {
-      "base_url": "https://bisheng.example.com",
+    "https://platform.example.com.com": {
+      "base_url": "https://platform.example.com.com",
       "api_key": "bs-sak-…",                      // 明文，权限位是唯一保护（D3）
       "key_mask": "bs-sak-********abcd",
       "tenant_id": 1,
@@ -443,11 +443,11 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 ```
 **恒不存 `scopes`**（AC-52，D3）。
 
-**④ 项目级应用标识** `<项目根>/.bisheng/app.json`（建议进 git、**结构性排除出上传包**）
+**④ 项目级应用标识** `<项目根>/.doberman-agent/app.json`（建议进 git、**结构性排除出上传包**）
 
 ```jsonc
 { "version": 1,
-  "apps": { "https://bisheng.example.com": {
+  "apps": { "https://platform.example.com.com": {
       "app_id": "…", "app_name": "…", "slug": "…",
       "last_deployment_id": "…", "updated_at": "…" } } }
 ```
@@ -462,13 +462,13 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 ```jsonc
 { "status_code": 200, "status_message": "SUCCESS", "data": {   // /api/v1 恒 HTTP200 + 信封（坑 12）
   "cli": { "version": "3.0.0", "min_compatible": "3.0.0",
-           "filename": "bisheng_cli-3.0.0-py3-none-any.whl",
+           "filename": "doberman_agent_cli-3.0.0-py3-none-any.whl",
            "sha256": "…", "download_path": "/api/v1/dev-toolkit/cli/download" },
   "sdk": { "version": null, "min_compatible": null, "download_path": null },   // F057 消费，本轮留位（D11）
   "platform": { "version": "3.0.0",
                 "open_platform_enabled": true, "app_runtime_enabled": true } } }
 ```
-> ⚠️ `platform.version` **不得**取 `/api/v1/env` 的 `version`——那是硬编码 `'2.6.0-fix'`（`src/backend/bisheng/__init__.py:7`，3.0-vibe 分支实测），CLAUDE.md §7「版本字段不可靠」在本分支依然成立。本端点自带版本真相（读 CLI 产物旁的 `artifacts/manifest.json`）。
+> ⚠️ `platform.version` **不得**取 `/api/v1/env` 的 `version`——那是硬编码 `'2.6.0-fix'`（`src/backend/doberman_agent/__init__.py:7`，3.0-vibe 分支实测），CLAUDE.md §7「版本字段不可靠」在本分支依然成立。本端点自带版本真相（读 CLI 产物旁的 `artifacts/manifest.json`）。
 
 **⑥ 机读输出（`--json`，NDJSON，stdout）**
 
@@ -493,19 +493,19 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `src/bisheng-cli/pyproject.toml` | 包元数据；`[project.scripts] bisheng = "bisheng_cli.main:main"`（**全仓第一条**）；hatchling + `packages=["bisheng_cli"]` | 不引除 `httpx` / `PyYAML` 外的运行期依赖（D12） |
-| `bisheng_cli/main.py` · `cli.py` | 入口与 argparse 子命令注册、全局参数、异常 → 退出码收口 | 不含任何业务逻辑；**不注册顺延命令**（D11） |
-| `bisheng_cli/http.py` | httpx 客户端封装：base URL、Bearer 头、超时、**两套信封解析**（坑 12）、代理处理（坑 2）、前置版本探测 | 不判权限位、不缓存 `scopes`（AC-52） |
-| `bisheng_cli/credentials.py` | 凭据读写、`0600` 原子创建、profile 选择 | 不做加密（明文 + 权限位是既定取舍，D3） |
-| `bisheng_cli/project.py` | 项目根定位、`bisheng-app.yaml` `safe_load` + 三必填快速失败、`.bisheng/app.json` 读写 | **不做完整 manifest 校验**（权威在 F055，CON-1）；不写 manifest |
-| `bisheng_cli/ignore.py` | 三层忽略规则（git 优先 / 子集解析 / `.bishengignore`） | 不用 `fnmatch` 顶 gitignore 全语义（坑 9） |
-| `bisheng_cli/packaging.py` | tar.gz 打包、结构性排除、体量与条目统计、Top10 报告 | 不静默截断；不上传 |
-| `bisheng_cli/errors.py` | `CliError` 体系、`ERROR_HINTS` 翻译表、退出码映射 | 不吞 `details` / `hints`（D6） |
-| `bisheng_cli/output.py` | 人读（stderr）/ NDJSON（stdout）双形态、进度、**掩码器** | 不做彩色/表格（无 rich，D2） |
-| `bisheng_cli/commands/{login,deploy,logs}.py` | 三条命令的编排 | 不直接用 httpx（走 `http.py`） |
-| **平台侧** `bisheng/dev_toolkit/api/{router.py,endpoints/distribution.py}` | 两个匿名端点；开关关闭时**不注册**（D10） | 不直接 import `database/models`（RULE-3）；不查 DB |
-| **平台侧** `bisheng/dev_toolkit/artifacts/`（**目录名不能叫 build/lib/wheels/sdist**，坑 11） | 随后端包同行的 wheel + `manifest.json`（版本 / sha256） | 不进 MinIO（D10） |
-| **平台侧存量改动** `bisheng/api/router.py` · `bisheng/utils/http_middleware.py` | 挂新 router；`/api/v1/dev-toolkit` 进 `TENANT_CHECK_EXEMPT_PATHS` | — |
+| `src/doberman-agent-cli/pyproject.toml` | 包元数据；`[project.scripts] doberman-agent = "doberman_agent_cli.main:main"`（**全仓第一条**）；hatchling + `packages=["doberman_agent_cli"]` | 不引除 `httpx` / `PyYAML` 外的运行期依赖（D12） |
+| `doberman_agent_cli/main.py` · `cli.py` | 入口与 argparse 子命令注册、全局参数、异常 → 退出码收口 | 不含任何业务逻辑；**不注册顺延命令**（D11） |
+| `doberman_agent_cli/http.py` | httpx 客户端封装：base URL、Bearer 头、超时、**两套信封解析**（坑 12）、代理处理（坑 2）、前置版本探测 | 不判权限位、不缓存 `scopes`（AC-52） |
+| `doberman_agent_cli/credentials.py` | 凭据读写、`0600` 原子创建、profile 选择 | 不做加密（明文 + 权限位是既定取舍，D3） |
+| `doberman_agent_cli/project.py` | 项目根定位、`doberman-agent-app.yaml` `safe_load` + 三必填快速失败、`.doberman-agent/app.json` 读写 | **不做完整 manifest 校验**（权威在 F055，CON-1）；不写 manifest |
+| `doberman_agent_cli/ignore.py` | 三层忽略规则（git 优先 / 子集解析 / `.doberman-agentignore`） | 不用 `fnmatch` 顶 gitignore 全语义（坑 9） |
+| `doberman_agent_cli/packaging.py` | tar.gz 打包、结构性排除、体量与条目统计、Top10 报告 | 不静默截断；不上传 |
+| `doberman_agent_cli/errors.py` | `CliError` 体系、`ERROR_HINTS` 翻译表、退出码映射 | 不吞 `details` / `hints`（D6） |
+| `doberman_agent_cli/output.py` | 人读（stderr）/ NDJSON（stdout）双形态、进度、**掩码器** | 不做彩色/表格（无 rich，D2） |
+| `doberman_agent_cli/commands/{login,deploy,logs}.py` | 三条命令的编排 | 不直接用 httpx（走 `http.py`） |
+| **平台侧** `doberman-agent/dev_toolkit/api/{router.py,endpoints/distribution.py}` | 两个匿名端点；开关关闭时**不注册**（D10） | 不直接 import `database/models`（RULE-3）；不查 DB |
+| **平台侧** `doberman-agent/dev_toolkit/artifacts/`（**目录名不能叫 build/lib/wheels/sdist**，坑 11） | 随后端包同行的 wheel + `manifest.json`（版本 / sha256） | 不进 MinIO（D10） |
+| **平台侧存量改动** `doberman-agent/api/router.py` · `doberman-agent/utils/http_middleware.py` | 挂新 router；`/api/v1/dev-toolkit` 进 `TENANT_CHECK_EXEMPT_PATHS` | — |
 | `scripts/pack_cli_wheel.sh` | `uv build` → 校验 → 拷进 `artifacts/` → 写 `manifest.json`（骨架照 `scripts/pack_linsight_skill.sh:1-40`） | 不发布到任何 registry |
 
 ---
@@ -523,10 +523,10 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 | 7 | **密钥被吊销后的错误码有三种，处置各不相同**：`26002`（无效/撤销/过期）· `26027`（服务账号停用）· 而多租户下**默认租户被禁用**会给一个与密钥无关的 `20001`/403 | 把 `20001` 当成"密钥不对"，让用户反复重新签发密钥；实际要去解禁默认租户 | `errors.py` 三条分别登记；排障口径写进 README：**先看 body 的 `status_code` 是 20001 还是 260xx** |
 | 8 | **中间件会把 `Authorization: Bearer bs-sak-…` 当 JWT 取走**（`utils/http_middleware.py:60-73`），解码失败后把租户置成 `DEFAULT_TENANT_ID`（`:81-84`, `:99-106`），再由 `verify_open_api_access` 重新播种真租户 | 不知道这一段，就无法解释"为什么 `/api/v2` 请求会先撞默认租户的禁用黑名单"（`:344-355`）；排障方向全错 | 平台侧既有行为，CLI 不修；坑 7 的排障口径依赖它 |
 | 9 | **`fnmatch` 的 `*` 跨 `/` 匹配，且根本没有 `**`**（`linsight/domain/services/workspace_backend.py:616-619` 自己的注释记录了这两点） | 忽略规则静默失效或过度匹配；本仓已真实咬过一次——提示词逐字教的 `glob("/uploads/**/*.xlsx")` 一直 0 匹配（memory `project_taskmode_selftest_114_glob_bug`） | `ignore.py` 手写段匹配（每段单独 `fnmatch`，`**` 单独处理），**并有一张覆盖 `**` / 前导 `!` / 目录后缀 `/` 的用例矩阵** |
-| 10 | **`arch-guard.sh` 的 RULE-7 会扫到 CLI 的 `.py`**（`:96-100`，匹配 `(password\|secret_key\|api_key\|access_token)\s*=\s*['"][^'"]{8,}['"]`），尽管其余 9 条规则对 `src/bisheng-cli/` 都不生效。**但它输出的是 `⚠️ [arch-guard] RULE-7 WARNING`（`:99`），不是 VIOLATION、不阻断**——脚本头注释 `:13` 标「硬编码敏感信息检测（C6，**WARNING**）」，VIOLATION 只有 RULE-4/5/8/9/10 | 测试里写一个 `api_key = "bs-sak-xxxxxxxxxxxx"` 的样例常量，每次 Write/Edit 都被 hook 刷一条 warning：**不会拦住你，但会被当成噪声长期忽略，真的硬编码密钥那天也就没人看了**。反向误解同样有害——以为它是 VIOLATION（CLAUDE.md §5「VIOLATION must be fixed immediately」）会让实现者以为 hook 阻断了提交而去改错地方 | 测试用 fixture / 环境变量 / 短占位符；**长密钥字面量一律不写进 `.py`**，让 RULE-7 在本工程保持零输出 |
-| 11 | **backend 镜像的 build context 只有 `./src/backend/`**（`ci.yml:53` + `Dockerfile:13`）→ `src/bisheng-cli/` 不在镜像里；而 `.gitignore` 的 `build/` `lib/` `sdist/` `wheels/` 是**无前导斜杠的全局规则**，任何层级同名目录都被忽略 | "本地能下载、生产 404"；或产物目录取名 `build/` 后 `git add` 静默失败，CI 打出的镜像里没有 wheel | `scripts/pack_cli_wheel.sh` 把 wheel 拷进 `bisheng/dev_toolkit/artifacts/`（**这个名字是刻意挑的**）；114 是真 git 检出 + `deploy.sh`、不走镜像，两条路径都要验 |
+| 10 | **`arch-guard.sh` 的 RULE-7 会扫到 CLI 的 `.py`**（`:96-100`，匹配 `(password\|secret_key\|api_key\|access_token)\s*=\s*['"][^'"]{8,}['"]`），尽管其余 9 条规则对 `src/doberman-agent-cli/` 都不生效。**但它输出的是 `⚠️ [arch-guard] RULE-7 WARNING`（`:99`），不是 VIOLATION、不阻断**——脚本头注释 `:13` 标「硬编码敏感信息检测（C6，**WARNING**）」，VIOLATION 只有 RULE-4/5/8/9/10 | 测试里写一个 `api_key = "bs-sak-xxxxxxxxxxxx"` 的样例常量，每次 Write/Edit 都被 hook 刷一条 warning：**不会拦住你，但会被当成噪声长期忽略，真的硬编码密钥那天也就没人看了**。反向误解同样有害——以为它是 VIOLATION（CLAUDE.md §5「VIOLATION must be fixed immediately」）会让实现者以为 hook 阻断了提交而去改错地方 | 测试用 fixture / 环境变量 / 短占位符；**长密钥字面量一律不写进 `.py`**，让 RULE-7 在本工程保持零输出 |
+| 11 | **backend 镜像的 build context 只有 `./src/backend/`**（`ci.yml:53` + `Dockerfile:13`）→ `src/doberman-agent-cli/` 不在镜像里；而 `.gitignore` 的 `build/` `lib/` `sdist/` `wheels/` 是**无前导斜杠的全局规则**，任何层级同名目录都被忽略 | "本地能下载、生产 404"；或产物目录取名 `build/` 后 `git add` 静默失败，CI 打出的镜像里没有 wheel | `scripts/pack_cli_wheel.sh` 把 wheel 拷进 `doberman-agent/dev_toolkit/artifacts/`（**这个名字是刻意挑的**）；114 是真 git 检出 + `deploy.sh`、不走镜像，两条路径都要验 |
 | 12 | **`/api/v2` 有真 HTTP 状态码，`/api/v1` 恒 HTTP 200 + 信封**（`open_api/api/exception_handlers.py:36-61`，`:61` 是 v1 分支） | 只按 HTTP 状态判断 → `/api/v1` 的所有业务错误被当成功；只按 body 判断 → `/api/v2` 的 503 被当成有效响应 | `http.py` 统一解析：**先读 body `status_code`，再看 HTTP 状态**（D9） |
-| 13 | **`deploy` 返回 200 不代表发布成功**——F055 在"接收成功"时就已创建草稿应用并分配 `app_id`（F055 design D2 选定 B） | CLI 只在成功时保存 `app_id` → 预检失败后重跑会**再建一个应用**，构建页堆一串同名草稿；且 F055 明确依赖"CLI 保存 app_id 以复用" | `commands/deploy.py`：拿到 200 立即写 `.bisheng/app.json`（D13） |
+| 13 | **`deploy` 返回 200 不代表发布成功**——F055 在"接收成功"时就已创建草稿应用并分配 `app_id`（F055 design D2 选定 B） | CLI 只在成功时保存 `app_id` → 预检失败后重跑会**再建一个应用**，构建页堆一串同名草稿；且 F055 明确依赖"CLI 保存 app_id 以复用" | `commands/deploy.py`：拿到 200 立即写 `.doberman-agent/app.json`（D13） |
 | 14 | **服务端 tar 解包闸会拒符号链接 / hardlink 成员 / 设备文件 / FIFO**（F055 design D2） | 本地不跳过 → 每次都吃 16202，且错误发生在上传之后（浪费一次上传） | `packaging.py` 本地就跳过并**列出被跳过的项**（不静默）。**但 hardlink 成员不靠「跳过硬链接文件」规避**——手工构造 `TarInfo` 的写入路径根本产不出该成员类型，跳过只会白丢内容（见 D4 订正） |
 | 15 | ~~**`delegate` 位在 F049 期根本签不出来**~~（2026-09-10 作废，见 D14 订正：beta2 底座下该位可签发，验收改真环境）（`open_api/domain/scopes.py:186-188` 的 NOTE 逐字："deliberately NOT registered … ships with F050"） | 实现者去 114 上试 AC-09，试不出来，判定"功能没生效"并去改代码 | AC-09 / AC-13 的验收方式**只能是单测**（构造 mock `whoami` 响应）；tasks 里必须写明（D14） |
 | 16 | **服务端权限位有 3 秒正向缓存上界**（`core/config/open_platform.py:31-35`，默认 3、硬顶 5） | 以为"编辑权限位立刻生效"是零延迟，测试里补勾后立刻验证会偶发失败 | AC-52 的验收留 5 秒余量；CLI 侧零缓存（D3） |
@@ -534,7 +534,7 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 | 18 | **`GET /api/v2/apps/{id}/logs` 的服务端链路目前是断的——但断点不在 runtime-manager**：manager 侧 `GET /v1/apps/{id}/logs` 批 4 已实现（`contracts-runtime-manager.md` §2 已列为就绪端点），真正缺的是**链路中段** F054 T057（backend 转发）与 F055 T039（权限判定）| 按契约写完 CLI 后在 114 上验不通，误判为 CLI bug 或误以为要等编排器 | `logs` 联调排在 F054 T057 / F055 T039 之后；CLI 侧单测用 mock。manager 侧口径已定：`since` 收 epoch 秒或 `30m/2h/7d`；带 `keyword` 时行数 < `tail` 是设计；dockerd 宕机返 503→`16121`（**不是** 404，404 只表示实例不存在）|
 | 19 | **`docker logs` 时间戳是秒级**，`--follow` 用 `since` 续拉时同一秒的行会重复返回 | 日志刷屏重复，看起来像应用在疯狂打同一行（同类坑：memory `project_chat_history_sameSecond_order`） | `commands/logs.py` 按最后 N 行内容哈希去重（D8） |
 | 20 | **tar 里丢掉可执行位，上线后 entrypoint 脚本不可执行**，而故障要到构建 / 探活阶段才暴露（16227 / 16228） | 排查方向跑偏到"平台构建有问题"，实际是打包把 `0755` 归一成了 `0644` | `packaging.py` 模式归一时**保留 owner 执行位**（D4） |
-| 21 | **`/api/v1/env` 的 `version` 是硬编码 `'2.6.0-fix'`**（`src/backend/bisheng/__init__.py:7`，3.0-vibe 实测） | 拿它做 CLI 与平台的版本比对 → 永远判"不兼容"或永远判"兼容"，两种都错 | 分发端点自带版本真相（D10 / §4.2 ⑤）；CLAUDE.md §7 已列此陷阱 |
+| 21 | **`/api/v1/env` 的 `version` 是硬编码 `'2.6.0-fix'`**（`src/backend/doberman_agent/__init__.py:7`，3.0-vibe 实测） | 拿它做 CLI 与平台的版本比对 → 永远判"不兼容"或永远判"兼容"，两种都错 | 分发端点自带版本真相（D10 / §4.2 ⑤）；CLAUDE.md §7 已列此陷阱 |
 
 ---
 
@@ -549,8 +549,8 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 | **CLI 退出码表**（§4.2 ②） | 进程契约 | 本地 coding agent（AC-04 / AC-47 的自动化判定依据）· 114 演示脚本 · 未来 CI |
 | **`--json` NDJSON 事件流**（§4.2 ⑥） | 数据契约 | 同上；`result` 恒为最后一行是 agent 可依赖的不变量 |
 | **凭据文件格式**（§4.2 ③） | 文件契约 | `dev`（顺延，读同一凭据）· 顺延的多平台管理命令 |
-| **`.bisheng/app.json`**（§4.2 ④） | 文件契约 | 团队成员共享同一 `app_id`；`logs` 与迭代 `deploy` |
-| `bisheng/dev_toolkit/artifacts/` 布局 + `scripts/pack_cli_wheel.sh` | 构建契约 | 发版流程（wheel 必须在打镜像前拷入）· 顺延的 SDK 与技能包分发复用同一目录与脚本 |
+| **`.doberman-agent/app.json`**（§4.2 ④） | 文件契约 | 团队成员共享同一 `app_id`；`logs` 与迭代 `deploy` |
+| `doberman-agent/dev_toolkit/artifacts/` 布局 + `scripts/pack_cli_wheel.sh` | 构建契约 | 发版流程（wheel 必须在打镜像前拷入）· 顺延的 SDK 与技能包分发复用同一目录与脚本 |
 
 ### 6.2 我依赖别人的（Incoming）
 
@@ -567,20 +567,20 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 | **F049 `whoami` 恒在注册 + 服务账号模块恒在** | 部署形态 | **⚠️ 回写项 4（spec 侧）**：`open_api_v2_router` 挂在 `router_rpc` 上恒在（`api/router.py:123-126`），服务账号模块「恒在、不随 open_platform 开关消失」是 F049 显式设计（`core/config/open_platform.py:17-18` 注释）→ **AC-05 的"login 校验入口不可达"这一半本轮不实现**，CLI 用前置探测在打 whoami 之前退出 8 作等价保证（D10 偏离登记）。建议改 spec 措辞而非改 F049 实现 |
 | **F055 `logs` 返回形状** | HTTP | **⚠️ 回写项 2：目前只有 `{lines[]}`，缺 `app_state` / `pending_reason`**，AC-43「明确提示应用态」只能降级实现（D8） |
 | **F054 `GET /api/v1/apps/{id}/logs` → runtime-manager `GET /v1/apps/{id}/logs`** | 服务端链路 | manager 段**已实现**（批 4 `d693feeb3`）；缺的是中段 **F054 T057 + F055 T039** → `logs` 联调排在这两条之后（坑 18） |
-| **F054 `contracts-runtime-manager.md` §5 注入环境变量清单** | 数据契约 | `bisheng dev` 顺延，但**将来必须同名注入**：`BISHENG_APP_DB_URL` · `BISHENG_APP_DB_PATH` · `BISHENG_APP_ID` · `BISHENG_APP_SLUG` · `BISHENG_APP_VERSION` · `BISHENG_APP_VERSION_ID` · `BISHENG_PLATFORM_API_BASE` · `PORT` 与 `BISHENG_APP_PORT`（恒等）· `BISHENG_APP_BASE_PATH`（dev 期同为 `/apps/{slug}`，2026-10-11 起；此前为空串）· `BISHENG_APP_HEALTH_PATH`；**F051 模型面三名（2026-09-16 起）**：`OPENAI_BASE_URL` · `OPENAI_API_KEY` · `BISHENG_MODEL_BASE_URL`——`dev` 期的 base URL 取自 `GET /api/v2/auth/whoami` 的 `model_base_url` 字段（F051 AC-30 的唯一出口，不要在 CLI 侧拼 `/api/v2/model/v1`），`OPENAI_API_KEY` 即开发者当前那把服务账号密钥明文。**清单唯一来源是该文件，不得在 CLI 侧另抄一份定义**；平台保留 env 名**覆盖**调用方同名值 |
+| **F054 `contracts-runtime-manager.md` §5 注入环境变量清单** | 数据契约 | `doberman-agent dev` 顺延，但**将来必须同名注入**：`DOBERMAN_AGENT_APP_DB_URL` · `DOBERMAN_AGENT_APP_DB_PATH` · `DOBERMAN_AGENT_APP_ID` · `DOBERMAN_AGENT_APP_SLUG` · `DOBERMAN_AGENT_APP_VERSION` · `DOBERMAN_AGENT_APP_VERSION_ID` · `DOBERMAN_AGENT_PLATFORM_API_BASE` · `PORT` 与 `DOBERMAN_AGENT_APP_PORT`（恒等）· `DOBERMAN_AGENT_APP_BASE_PATH`（dev 期同为 `/apps/{slug}`，2026-10-11 起；此前为空串）· `DOBERMAN_AGENT_APP_HEALTH_PATH`；**F051 模型面三名（2026-09-16 起）**：`OPENAI_BASE_URL` · `OPENAI_API_KEY` · `DOBERMAN_AGENT_MODEL_BASE_URL`——`dev` 期的 base URL 取自 `GET /api/v2/auth/whoami` 的 `model_base_url` 字段（F051 AC-30 的唯一出口，不要在 CLI 侧拼 `/api/v2/model/v1`），`OPENAI_API_KEY` 即开发者当前那把服务账号密钥明文。**清单唯一来源是该文件，不得在 CLI 侧另抄一份定义**；平台保留 env 名**覆盖**调用方同名值 |
 | **平台 `settings.open_platform.enabled` / `settings.app_runtime.enabled`** | 部署配置 | 进程级 YAML；`load_settings_from_yaml` 对未知顶层键 `raise KeyError`（`common/services/config_service.py:107`）→ **先发代码、再改 YAML、最后重启** |
-| `bisheng/api/router.py` 的 include 顺序 · `TENANT_CHECK_EXEMPT_PATHS` | 注册点 | 漏加豁免 → 多租户环境下端点一旦读表即 `NoTenantContextError`（D10） |
-| nginx `client_max_body_size 1024m` / `proxy_read_timeout 300s`（`docker/nginx/conf.d/default.conf:60,53`；114 上是 `/etc/nginx/conf.d/bisheng-lilu.conf`） | 基础设施 | 上传超时取 240 s 是**贴着 300 s 定的**，改任一个要同时看另一个（D5 / D7） |
+| `doberman-agent/api/router.py` 的 include 顺序 · `TENANT_CHECK_EXEMPT_PATHS` | 注册点 | 漏加豁免 → 多租户环境下端点一旦读表即 `NoTenantContextError`（D10） |
+| nginx `client_max_body_size 1024m` / `proxy_read_timeout 300s`（`docker/nginx/conf.d/default.conf:60,53`；114 上是 `/etc/nginx/conf.d/doberman-agent-lilu.conf`） | 基础设施 | 上传超时取 240 s 是**贴着 300 s 定的**，改任一个要同时看另一个（D5 / D7） |
 | `httpx` · `PyYAML`（客户内网 pip 镜像） | 第三方依赖 | 装不上 = CLI 装不上；引入第三条依赖必须在 D12 补论证 |
 
 ---
 
 ## 7. 测试与可观测
 
-**分层策略**（CLI 是独立工程，测试也独立跑：`cd src/bisheng-cli && uv sync && uv run pytest`）
+**分层策略**（CLI 是独立工程，测试也独立跑：`cd src/doberman-agent-cli && uv sync && uv run pytest`）
 
 - **单元测试（默认全跑，零网络）**——CLI 的价值密度几乎全在这一层：
-  - 忽略规则矩阵：`**` / 前导 `!` / 目录后缀 `/` / 段内 `*` / `.bishengignore` 覆盖 `.gitignore`；git 路径与子集解析器**跑同一份样本目录并断言结果一致**（坑 9）。
+  - 忽略规则矩阵：`**` / 前导 `!` / 目录后缀 `/` / 段内 `*` / `.doberman-agentignore` 覆盖 `.gitignore`；git 路径与子集解析器**跑同一份样本目录并断言结果一致**（坑 9）。
   - 打包断言：`.venv/` `node_modules/` `.git/` 不在包内；**凭据文件绝不在包内**（AC-07 的 assert 型测试）；成员路径无 `\`、无绝对路径、无 `..`（坑 4）；符号链接被跳过且被列出（坑 14）；可执行位保留（坑 20）；两次打包 sha256 相同（可复现）。
   - 错误翻译：`ERROR_HINTS` 逐条一个用例，断言输出**不含任何密钥子串**（AC-04）；未登记 code 走降级分支不抛异常。
   - 退出码映射：§4.2 ② 每一行一个用例；**额外三组必测**：① `16225` → 13 与 `16226` → 14 **断言不同码且下一步文案不同**（D9 红线 1）；② `POST /deploy` 的同步错误体（16221 / 16203 / 16251…）走同步分支并终止，**断言不进轮询循环**（D6）；③ 未登记 code → exit 19 且原样打印 code。
@@ -593,28 +593,28 @@ bisheng logs [--app-id] [--tail N] [--since TS] [--keyword K] [--follow] [--json
 - **平台侧端点**：`src/backend/test/dev_toolkit/test_distribution_api.py`——匿名可达、`open_platform.enabled=false` 时 404（**断言是路由不存在，不是错误码**）、`FileResponse` 的 `Content-Disposition` 与 `Content-Length`、多租户开启且无 JWT 时不抛 `NoTenantContextError`。
 - **CI**：仓内 CI 目前**不跑** runtime-manager / app-proxy 的任何测试（`.github/workflows/{ci,test,release,base_ci}.yml` 零命中）。CLI 至少要把 `ruff check` + `pytest -m "not network"` 接进 `frontend-quality.yml` 同级的一个新 job，否则它会和 runtime-manager 一样长期无人验证。
 
-**114 手动验证**（对应 `mvp-114-path.md` §1 演示剧本步 2–3；⚠️ 部署用 `bash /opt/bisheng-ops/deploy.sh`，不要 rsync）
+**114 手动验证**（对应 `mvp-114-path.md` §1 演示剧本步 2–3；⚠️ 部署用 `bash /opt/doberman-agent-ops/deploy.sh`，不要 rsync）
 
 ```bash
 # 0. 平台侧：确认开关与端点（匿名，无需密钥）
 curl -s http://<114>/api/v1/env | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["data"]["open_platform_enabled"], d["data"]["app_runtime_enabled"])'
 curl -s http://<114>/api/v1/dev-toolkit/versions          # 开关关 → 404（这就是 AC-05 的验证）
 # 1. 装 CLI（两条路径都要验）
-curl -sO http://<114>/api/v1/dev-toolkit/cli/download && pip install ./bisheng_cli-3.0.0-py3-none-any.whl
-bisheng --version
+curl -sO http://<114>/api/v1/dev-toolkit/cli/download && pip install ./doberman_agent_cli-3.0.0-py3-none-any.whl
+doberman-agent --version
 # 2. login（key 来自演示剧本步 1 签发的 bs-sak-…，勾了 app:manage）
-BISHENG_API_KEY=bs-sak-… bisheng login http://<114>
-ls -l ~/.bisheng/credentials.json                          # 必须是 -rw-------
-# 3. deploy（表单问卷小应用：python3.11 + bisheng-app.yaml）
-bisheng deploy --dry-run                                   # 先看打包体量与忽略统计
-bisheng deploy --wait --json | tee deploy.ndjson; echo "exit=$?"
+DOBERMAN_AGENT_API_KEY=bs-sak-… doberman-agent login http://<114>
+ls -l ~/.doberman-agent/credentials.json                          # 必须是 -rw-------
+# 3. deploy（表单问卷小应用：python3.11 + doberman-agent-app.yaml）
+doberman-agent deploy --dry-run                                   # 先看打包体量与忽略统计
+doberman-agent deploy --wait --json | tee deploy.ndjson; echo "exit=$?"
 tail -1 deploy.ndjson | python3 -m json.tool               # result 行
 # 4. logs
-bisheng logs --tail 200
+doberman-agent logs --tail 200
 ```
 - **AC-42（owner-only）必须用第二把「资源归属人不同」的密钥验证**，不能用同一把——同一把永远通过，测了等于没测。
 - **⚠️ `health 200` 会骗人**（admin 短路 ReBAC，memory `reference_remote_dev`）：CLI 的所有权限相关判定都走服务账号（非 admin），但**平台侧任何用浏览器 admin 账号做的旁证都不算数**。
-- **失败面演练**：把 `bisheng-app.yaml` 的 `runtime` 改错验 16222；塞一个含 `bs-sak-` 字面量的文件验 16241（**断言输出里没有那个值**）；把 `.venv/` 造大验超限报告。
+- **失败面演练**：把 `doberman-agent-app.yaml` 的 `runtime` 改错验 16222；塞一个含 `bs-sak-` 字面量的文件验 16241（**断言输出里没有那个值**）；把 `.venv/` 造大验超限报告。
 
 **可观测**：CLI 无服务端日志。`--verbose` 打请求方法 / 路径 / HTTP 状态 / 耗时，**Authorization 头恒掩码**（AC-04）。服务端侧的观测走 F055 的 `app_deployment` 表与 `app.release.*` 审计事件——排障时"CLI 说失败了"要以 `deployment_id` 去那两处对账，而不是只看终端输出。
 

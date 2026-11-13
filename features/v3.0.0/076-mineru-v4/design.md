@@ -19,7 +19,7 @@
 - 遵循 [架构宪章](../../../docs/constitution.md) C1–C8 和 [版本契约](../release-contract.md)。本特性不新增数据库表；解析字节在 API、Celery、MinIO 之间传递时，不能依赖跨节点共享本地目录（C8）。
 - [MinerU 4.0 V1 API](https://mineru.atomgit.com/zh/usage/http_api.html) 是上传、提交、轮询、下载的异步流程，不提供旧 `/file_parse`；自部署资源索引保存在服务进程内，服务重启后旧任务 ID 不保证可恢复。
 - 当前 V1 ZIP 结果包含 Middle JSON 与图片素材；Middle JSON 用 `schema=docvortex.middle`、`schema_version=2.0` 标识，页面是 `pages[].blocks[]`，源页号从 0 开始。具体 ZIP 成员和块形态须以目标版本的真实样本为准。[输出协议](https://mineru.atomgit.com/zh/reference/output_files.html)
-- V1 解析任务提供 `ocr_mode`，未提供与毕昇现有 `enable_formula` 完全等价的单次开关；公式效果由实际 tier 和服务能力决定。不能声称旧选项在新提供方上仍有相同语义。[任务参数](https://mineru.atomgit.com/next/api/parse-jobs.html)
+- V1 解析任务提供 `ocr_mode`，未提供与doberman-agent现有 `enable_formula` 完全等价的单次开关；公式效果由实际 tier 和服务能力决定。不能声称旧选项在新提供方上仍有相同语义。[任务参数](https://mineru.atomgit.com/next/api/parse-jobs.html)
 - 目标服务、硬件、可用 tier、鉴权方式尚未提供。实施使用可重复的协议夹具；真实服务验收前不得宣称某 tier、图片或 bbox 已在目标环境验证。服务能力以 `/v1/health`、`/v1/tiers` 为准。
 - 预览缓存与全局配置切换的现有语义已由用户确认：缓存正文可以跨提供方复用；无缓存时，以任务执行时读到的全局提供方为准。允许配置切换窗口和缓存命中带来的小概率来源差异，不新增入队时的提供方快照或预览任务持久恢复。
 
@@ -34,10 +34,10 @@
 
 ### 决策 2：调用外部 V1 服务，使用已有 `httpx`
 
-- **备选**：A. 在毕昇 Worker 安装 MinerU 推理/SDK 包；B. 以 `httpx` 实现薄 V1 客户端，模型运行由独立服务负责。
-- **选定**：B。客户端负责协议校验与有限等待，不在毕昇镜像运行模型。
+- **备选**：A. 在doberman-agent Worker 安装 MinerU 推理/SDK 包；B. 以 `httpx` 实现薄 V1 客户端，模型运行由独立服务负责。
+- **选定**：B。客户端负责协议校验与有限等待，不在doberman-agent镜像运行模型。
 - **原因**：现有接入是服务间调用；直接依赖 MinerU 包会把模型和硬件运行时带入 API/Celery 镜像。[官方 SDK](https://mineru.atomgit.com/zh/usage/sdk_api.html)可作协议参考，但不强制安装。
-- **何时重新考虑**：官方提供无推理依赖的稳定轻量客户端，且依赖与许可符合毕昇打包要求。
+- **何时重新考虑**：官方提供无推理依赖的稳定轻量客户端，且依赖与许可符合doberman-agent打包要求。
 
 ### 决策 3：只接受完整 ZIP 产物
 
@@ -64,8 +64,8 @@
 
 - **备选**：A. 把每个 MinerU V1 可选字段都建成独立配置；B. 与现有 MinerU/PaddleOCR Loader 一样提供 `request_kwargs`，合入解析请求体；C. 把它直接传给 `httpx.post(**request_kwargs)`。
 - **选定**：B。`knowledges.mineru_v4.request_kwargs` 默认 `{}`，只浅合并到 `POST /v1/parse/jobs` 的 JSON 顶层；不作用于上传、健康检查、轮询、下载，也不是 HTTP headers、URL、超时等传输参数。
-- **原因**：现有两个 Loader 的同名字段都是接口请求体参数，管理员可据目标服务能力补充可选字段而无需每次改配置模型。V1 创建任务有明确的 JSON 顶层与文件级字段；把额外字段当 HTTP 客户端参数会改变含义或直接报错。[现有 MinerU 实现](../../../src/backend/bisheng/knowledge/rag/pipeline/loader/mineru.py)、[V1 任务参数](https://mineru.atomgit.com/next/api/parse-jobs.html)
-- **何时重新考虑**：上游出现需要毕昇单独解释的稳定选项，或需要配置文件级参数时，再增加有类型的配置/映射；不能靠顶层浅合并修改 `files[]`。
+- **原因**：现有两个 Loader 的同名字段都是接口请求体参数，管理员可据目标服务能力补充可选字段而无需每次改配置模型。V1 创建任务有明确的 JSON 顶层与文件级字段；把额外字段当 HTTP 客户端参数会改变含义或直接报错。[现有 MinerU 实现](../../../src/backend/doberman_agent/knowledge/rag/pipeline/loader/mineru.py)、[V1 任务参数](https://mineru.atomgit.com/next/api/parse-jobs.html)
+- **何时重新考虑**：上游出现需要doberman-agent单独解释的稳定选项，或需要配置文件级参数时，再增加有类型的配置/映射；不能靠顶层浅合并修改 `files[]`。
 
 ## 4. 系统现状与目标接线
 
@@ -108,11 +108,11 @@ knowledges:
     poll_interval_seconds: 3
 ```
 
-新配置块加入 `src/backend/bisheng/initdb_config.yaml`，旧安装由 `ConfigService.merge_missing_config()` 补入缺失子块；不向启动 `config.yaml` 加新顶层键。`force_ocr=1` 对单次任务覆盖为 `ocr_mode=ocr`；默认解析全部页面。配置的 API Key 环境变量在 API 和知识 Worker 进程都须可读。
+新配置块加入 `src/backend/doberman_agent/initdb_config.yaml`，旧安装由 `ConfigService.merge_missing_config()` 补入缺失子块；不向启动 `config.yaml` 加新顶层键。`force_ocr=1` 对单次任务覆盖为 `ocr_mode=ocr`；默认解析全部页面。配置的 API Key 环境变量在 API 和知识 Worker 进程都须可读。
 
 `request_kwargs` 仅提供创建任务的**其他顶层 JSON 字段**，要求是可 JSON 序列化的映射；构造请求时先合入附加字段，再写入由适配器管理的 `files`、`tier`、`ocr_mode`、`output_formats=["zip"]`。配置若与这四个保留键冲突，直接报配置错误，不默默覆盖。`files[]` 中的 `page_range` 是文件级字段，不能通过此顶层浅合并设置；需要时另设计文件级配置。未知字段由目标 MinerU 服务校验，上游拒绝时按 AC-10/AC-06 报解析失败，不自动切换提供方。`request_kwargs` 不承载 API Key，配置样例和日志均不得包含回调密钥等凭据；`enable_formula` 也不能借透传字段伪装成 V1 已支持的逐任务开关。
 
-ZIP 下载先写受大小限制的临时文件；解包时限制成员数、单成员及总解压字节数，拒绝绝对路径、`..` 路径、符号链接和重复目标名。额度应结合毕昇上传限制和目标服务样本定值，避免大文件或异常 ZIP 耗尽 API/Worker 内存与磁盘。
+ZIP 下载先写受大小限制的临时文件；解包时限制成员数、单成员及总解压字节数，拒绝绝对路径、`..` 路径、符号链接和重复目标名。额度应结合doberman-agent上传限制和目标服务样本定值，避免大文件或异常 ZIP 耗尽 API/Worker 内存与磁盘。
 
 文件分段规则的 `retain_images` 同时传给新 Loader 与既有 `ImageUploadTransformer`。关闭时 Loader 不暂存素材、不生成图片 Markdown 引用，保留可读文字与图注；开启时按完整 `images/...` 相对路径（含可选 `./` 前缀和子目录）查找 ZIP 素材，展平文件名并在计算 `indexes` 前替换为最终 URL。
 
@@ -181,7 +181,7 @@ ZIP 下载先写受大小限制的临时文件；解包时限制成员数、单�
 - 不做按知识库或租户的渐进开关；本版使用全局配置，执行前切换窗口的差异由用户接受。需要细粒度灰度时再定义选择优先级和配置归属。
 - 不把提供方写入预览缓存键，也不保证跨提供方切换时 bbox、图片与缓存正文严格同版。若业务要求所有产物严格一致，需设计完整预览快照及素材转存，不能只改缓存键。
 - 不持久恢复 MinerU 远端 job 或 API 预览后台任务；用户可重新发起预览，知识文件失败后可走现有重解析。
-- 不扩展 Office/HTML/表格的解析范围，也不把模型推理运行时装入毕昇后端。
+- 不扩展 Office/HTML/表格的解析范围，也不把模型推理运行时装入doberman-agent后端。
 - 不承诺 `enable_formula=0` 能关闭 MinerU 4.0 的公式识别；上游 V1 没有该等价开关。若产品要求保留此操作语义，需另行确定 UI 呈现或上游能力支持方式。
 
 ## 修订历史

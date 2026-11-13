@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { emitAreaTextEvent, EVENT_TYPE } from '../useAreaText';
 import { useLocalize } from '~/hooks';
 import { formatStrTime } from '~/utils';

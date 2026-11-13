@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { usePreviewResource } from '@bisheng/file-viewers/resource';
-import type { PreviewResource } from '@bisheng/file-viewers/types';
+import { usePreviewResource } from '@doberman-agent/file-viewers/resource';
+import type { PreviewResource } from '@doberman-agent/file-viewers/types';
 import { createCitationUtilities } from './preview';
 import type { CitationDocumentPreviewState, CitationServices } from './types';
 export function useCitationPreview(preview: CitationDocumentPreviewState | null, services: CitationServices) {

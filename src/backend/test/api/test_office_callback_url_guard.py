@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import requests
 
-from bisheng.api.services import office_callback
-from bisheng.api.services.office_callback import is_office_download_url
+from doberman_agent.api.services import office_callback
+from doberman_agent.api.services.office_callback import is_office_download_url
 
 OFFICE = "http://192.168.106.120:8702"
 
@@ -33,8 +33,8 @@ def test_document_server_download_url_is_allowed(url):
     [
         # The PoC targets from the report.
         "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
-        "http://bisheng-mysql:3306/",
-        "http://bisheng-minio:9000/",
+        "http://doberman-agent-mysql:3306/",
+        "http://doberman-agent-minio:9000/",
         # Right host, wrong port: another service on the same machine.
         "http://192.168.106.120:3306/",
         "http://192.168.106.120/",
@@ -125,7 +125,7 @@ async def test_missing_office_config_refuses_without_requesting(monkeypatch, fak
 @pytest.fixture
 def storage(monkeypatch):
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     minio.put_object = AsyncMock()
     return minio
 
@@ -133,7 +133,7 @@ def storage(monkeypatch):
 @pytest.fixture
 def editor_session(monkeypatch):
     """An editor opened by someone with edit rights; see test_report_template_ownership."""
-    from bisheng.api.services import report_template
+    from doberman_agent.api.services import report_template
 
     monkeypatch.setattr(
         report_template,
@@ -143,7 +143,7 @@ def editor_session(monkeypatch):
 
 
 async def test_workflow_callback_refuses_and_stores_nothing(monkeypatch, storage, editor_session):
-    from bisheng.api.v1 import workflow
+    from doberman_agent.api.v1 import workflow
 
     monkeypatch.setattr(workflow, "afetch_office_document", AsyncMock(return_value=None))
     monkeypatch.setattr(workflow, "get_minio_storage", AsyncMock(return_value=storage))
@@ -158,7 +158,7 @@ async def test_workflow_callback_refuses_and_stores_nothing(monkeypatch, storage
 
 
 async def test_workflow_callback_stores_the_downloaded_document(monkeypatch, storage, editor_session):
-    from bisheng.api.v1 import workflow
+    from doberman_agent.api.v1 import workflow
 
     monkeypatch.setattr(workflow, "afetch_office_document", AsyncMock(return_value=b"saved-docx"))
     monkeypatch.setattr(workflow, "get_minio_storage", AsyncMock(return_value=storage))
@@ -175,12 +175,12 @@ async def test_workflow_callback_stores_the_downloaded_document(monkeypatch, sto
 
 
 async def test_report_callback_refuses_and_stores_nothing(monkeypatch, storage):
-    from bisheng.api.v1 import report
+    from doberman_agent.api.v1 import report
 
     monkeypatch.setattr(report, "afetch_office_document", AsyncMock(return_value=None))
     monkeypatch.setattr(report, "get_minio_storage", AsyncMock(return_value=storage))
 
-    result = await report.callback({"status": 2, "url": "http://bisheng-mysql:3306/", "key": "probe123"})
+    result = await report.callback({"status": 2, "url": "http://doberman-agent-mysql:3306/", "key": "probe123"})
 
     assert result == {"error": 1}
     storage.put_object.assert_not_called()

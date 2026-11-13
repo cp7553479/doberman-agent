@@ -1,8 +1,8 @@
-import { Alert, Button, Input, Select, notification } from '@bisheng/ui';
+import { Alert, Button, Input, Select, notification } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
-import { Checkbox, Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox, Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { TreeDepartmentSelect } from "@/components/bs-comp/department/TreeDepartmentSelect";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";

@@ -1,4 +1,4 @@
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import useSelectCopy from "~/hooks/useSelectCopy";
 import { useLocalize } from "~/hooks";
 import { permissionModelLabel } from "./permissionModelLabel";

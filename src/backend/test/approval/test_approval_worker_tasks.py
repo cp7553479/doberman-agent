@@ -24,32 +24,32 @@ class _FakeCelery:
 
         return _decorator
 
-fake_worker_pkg = types.ModuleType('bisheng.worker')
+fake_worker_pkg = types.ModuleType('doberman_agent.worker')
 fake_worker_pkg.__path__ = []  # type: ignore[attr-defined]
-sys.modules['bisheng.worker'] = fake_worker_pkg
+sys.modules['doberman_agent.worker'] = fake_worker_pkg
 
-fake_worker_main = types.ModuleType('bisheng.worker.main')
-fake_worker_main.bisheng_celery = _FakeCelery()
-sys.modules['bisheng.worker.main'] = fake_worker_main
+fake_worker_main = types.ModuleType('doberman_agent.worker.main')
+fake_worker_main.doberman_agent_celery = _FakeCelery()
+sys.modules['doberman_agent.worker.main'] = fake_worker_main
 
-fake_asyncio_utils = types.ModuleType('bisheng.worker._asyncio_utils')
+fake_asyncio_utils = types.ModuleType('doberman_agent.worker._asyncio_utils')
 
 def _run_async_task(coro_factory):
     raise RuntimeError('run_async_task should not be called in unit tests')
 
 fake_asyncio_utils.run_async_task = _run_async_task
-sys.modules['bisheng.worker._asyncio_utils'] = fake_asyncio_utils
+sys.modules['doberman_agent.worker._asyncio_utils'] = fake_asyncio_utils
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalInstance,
     ApprovalInstanceStatus,
     ApprovalOutbox,
     ApprovalOutboxStatus,
 )
-from bisheng.approval.domain.services.approval_outbox_service import ApprovalOutboxService
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.services.approval_outbox_service import ApprovalOutboxService
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
-_TASKS_PATH = Path(__file__).resolve().parents[2] / 'bisheng' / 'worker' / 'approval' / 'tasks.py'
+_TASKS_PATH = Path(__file__).resolve().parents[2] / 'doberman_agent' / 'worker' / 'approval' / 'tasks.py'
 _TASKS_SPEC = importlib.util.spec_from_file_location('approval_worker_tasks_test_module', _TASKS_PATH)
 assert _TASKS_SPEC and _TASKS_SPEC.loader
 _TASKS_MODULE = importlib.util.module_from_spec(_TASKS_SPEC)

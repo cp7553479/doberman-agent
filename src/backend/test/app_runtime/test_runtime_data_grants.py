@@ -9,10 +9,10 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeAssignment, RuntimeOperation
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError
-from bisheng.database.models.app import App
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeAssignment, RuntimeOperation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError
+from doberman_agent.database.models.app import App
 from test.app_runtime.test_runtime_data_sessions import UID
 from test.app_runtime.test_runtime_data_sessions import repo as repo
 from test.app_runtime.test_runtime_data_sessions import session as session
@@ -54,7 +54,7 @@ async def signed_session(session, request):
         )
     )
     c.op, c.target = op, {"exec_ref": target.id, "pod_uid": target.uid, "online": False, "key_ids": ["data-key"]}
-    from bisheng.app_runtime.domain.services.runtime_data_grant_service import RuntimeDataGrantService
+    from doberman_agent.app_runtime.domain.services.runtime_data_grant_service import RuntimeDataGrantService
 
     c.issuer = RuntimeDataGrantService(c.repo, keyring=KEYS)
     return c
@@ -139,7 +139,7 @@ async def test_readonly_public_keys_never_expose_signing_material(signed_session
 @pytest.mark.parametrize("cancelled", [False, True])
 async def test_owner_cancellation_blocks_fresh_grants_without_releasing_the_session(signed_session, cancelled):
     """覆盖 AC: AC-36、AC-43、AC-48、AC-49、AC-55."""
-    from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+    from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
 
     c = signed_session
     parameters = {"table": "items", "key": "1", "values": {"name": "new"}}

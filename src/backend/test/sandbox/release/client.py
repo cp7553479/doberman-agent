@@ -1,4 +1,4 @@
-"""Logged-in calls to the BiSheng routes the release plan names."""
+"""Logged-in calls to the doberman-agent routes the release plan names."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ def encrypt_password(client: httpx.Client, password: str) -> str:
 
 def login(client: httpx.Client) -> str:
     username = os.environ.get("E2E_ADMIN_USER", "admin")
-    password = os.environ.get("E2E_ADMIN_PASSWORD", "Bisheng@top1")
+    password = os.environ.get("E2E_ADMIN_PASSWORD", "doberman-agent@top1")
     resp = client.post(
         "/user/login",
         json={"user_name": username, "password": encrypt_password(client, password)},
@@ -185,7 +185,7 @@ def linsight_tool_payload(client: httpx.Client) -> dict:
 
 
 def workbench_model_id(client: httpx.Client) -> str | None:
-    chosen = os.environ.get("BISHENG_RELEASE_MODEL_ID")
+    chosen = os.environ.get("DOBERMAN_AGENT_RELEASE_MODEL_ID")
     if chosen:
         return chosen
     payload = data_of(client.get("/llm/workbench"))
@@ -406,7 +406,7 @@ def wait_tasks(
     user-input leave that success/waiting row in place until the worker picks
     the new round up, so an immediate poll would return the previous round.
     """
-    limit = timeout_s if timeout_s is not None else float(os.environ.get("BISHENG_RELEASE_TIMEOUT", "180"))
+    limit = timeout_s if timeout_s is not None else float(os.environ.get("DOBERMAN_AGENT_RELEASE_TIMEOUT", "180"))
     deadline = time.time() + limit
     last: list = []
     baseline = _task_snapshot(previous) if previous is not None else None

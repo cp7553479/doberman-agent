@@ -2,10 +2,10 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.session import MessageSession
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import KnowledgeChatSessionResponse
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import KnowledgeChatSessionResponse
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
 
 
 def _service() -> KnowledgeSpaceChatService:
@@ -47,7 +47,7 @@ async def test_recovered_history_reads_messages_with_original_content_flow():
     service._require_space_view_permission = AsyncMock()
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.ChatSessionService.get_chat_history",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.ChatSessionService.get_chat_history",
         new_callable=AsyncMock,
         return_value=["message"],
     ) as get_history:
@@ -66,7 +66,7 @@ async def test_wrong_entry_chat_id_is_rejected_before_history_read():
     service._require_space_view_permission = AsyncMock()
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.ChatSessionService.get_chat_history",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.ChatSessionService.get_chat_history",
         new_callable=AsyncMock,
     ) as get_history:
         result = await service.get_chat_folder_history(3, 0, "old-folder-chat")
@@ -95,7 +95,7 @@ async def test_recovered_root_chat_uses_whole_space_retrieval():
     space = SimpleNamespace(id=3)
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
         new_callable=AsyncMock,
         return_value=space,
     ):

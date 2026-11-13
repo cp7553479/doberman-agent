@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { Input, SearchInput, toast } from '@bisheng/ui';
+import { Input, SearchInput, toast } from '@doberman-agent/ui';
 import { TrashIcon } from "@/components/bs-icons";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover";

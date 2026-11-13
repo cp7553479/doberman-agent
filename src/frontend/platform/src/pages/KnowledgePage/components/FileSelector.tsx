@@ -2,7 +2,7 @@
 import { FileIcon } from "@/components/bs-icons/file";
 import { truncateString } from "@/util/utils";
 import { DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeTooltip } from "./KnowledgeTooltip";
 
 import { getMetaFile,readFileByLibDatabase } from '@/controllers/API';

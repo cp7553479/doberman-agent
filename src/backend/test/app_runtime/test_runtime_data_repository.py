@@ -5,13 +5,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RuntimeAssignment,
     RuntimeCapacityReservation,
     RuntimeNode,
     RuntimeOperation,
 )
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 from test.app_runtime.test_runtime_delivery_repository import operation
 from test.app_runtime.test_runtime_delivery_repository import runtime_repo as runtime_repo
 
@@ -175,8 +175,8 @@ async def test_data_claim_rejects_changed_serving_generation(owned):
 
 @pytest.mark.parametrize("kind,extra", [("deploy", 128), ("restore", 128), ("probe", 0), ("prepare", 0)])
 async def test_kubernetes_reservations_include_the_actual_data_sidecar(runtime_repo, kind, extra):
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     node = await runtime_repo.get(RuntimeNode, "node-a")
     node.executor_kind = "kubernetes"
@@ -203,7 +203,7 @@ async def test_kubernetes_reservations_include_the_actual_data_sidecar(runtime_r
 
 
 async def test_data_concurrency_limit_is_global_across_tenants(owned):
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     repo, _, _ = owned
     await repo.acquire_data_operation(data_operation())

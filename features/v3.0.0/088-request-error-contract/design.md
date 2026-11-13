@@ -25,7 +25,7 @@
 ### 决策 1：共同错误模型，两端保留请求适配器
 
 - **备选**：A. 完全合并两端 Axios 与成功结果；B. 各端复制一份错误模型；C. 一个内部错误模型包，两端独立处理本端响应与界面。
-- **选定**：C。新增无 UI、无状态库、无网络调用的 `@bisheng/api-client` 内部包，只承载错误类型、规范化与失败分类；两端自行翻译和提示。
+- **选定**：C。新增无 UI、无状态库、无网络调用的 `@doberman-agent/api-client` 内部包，只承载错误类型、规范化与失败分类；两端自行翻译和提示。
 - **原因**：platform 成功返回业务 data，client 的普通包装方法返回响应 body，完整响应方法还用于 headers。合并成功结构会破坏大量无关调用；复制模型则无法保证 AC-04 的长期一致。
 - **重新考虑条件**：两端成功协议与登录路由真正统一，或该包只有单端使用；届时再评估合并请求适配器或内联。
 
@@ -91,7 +91,7 @@
 
 ### 4.3 共同错误契约
 
-包名 `@bisheng/api-client`；入口 `src/frontend/packages/api-client/src/index.ts`。无 React、i18next、Axios 运行时或 Toast 依赖；对原始响应采用结构类型，不复制或 JSON 序列化证据。
+包名 `@doberman-agent/api-client`；入口 `src/frontend/packages/api-client/src/index.ts`。无 React、i18next、Axios 运行时或 Toast 依赖；对原始响应采用结构类型，不复制或 JSON 序列化证据。
 
 | 字段 | 类型 | 含义 |
 |---|---|---|

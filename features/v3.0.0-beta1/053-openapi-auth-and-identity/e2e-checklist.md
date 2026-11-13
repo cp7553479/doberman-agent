@@ -36,7 +36,7 @@
 
 - [ ] PAT 开关关闭时个人设置页不显示入口；开启后显示状态和操作入口。
 - [ ] 首次获取或重新获取后只显示一次明文，必须确认已保存才能关闭；刷新页面后只显示掩码。
-- [ ] 复制安装提示词，确认下载 URL 指向当前实例的 `bisheng-knowledge-search` 技能包，提示使用 `BISHENG_API_KEY`。
+- [ ] 复制安装提示词，确认下载 URL 指向当前实例的 `doberman-agent-knowledge-search` 技能包，提示使用 `DOBERMAN_AGENT_API_KEY`。
 - [ ] 删除 PAT 后状态刷新为未获取；旧 token 在 5 秒内返回 401。
 - [ ] 管理员持有人获取 PAT 时出现风险提示，过期时间不超过部署级管理员 TTL。
 - [ ] 将 PAT 持有人切换到另一活跃租户后，原 token 不被吊销，在新租户按新权限生效且不能访问旧租户；审计含 `open_api.pat.tenant_migrate` 及旧/新 tenant id。

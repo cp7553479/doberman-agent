@@ -10,11 +10,11 @@ import pytest
 from fastapi import FastAPI
 from starlette.requests import ClientDisconnect
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError, DshQuotaUnavailableError
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import models as endpoints
-from bisheng.dsh.domain.schemas.model_policy import DshModelQuotaConfig
-from bisheng.dsh.domain.services.model import PreparedStream
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError, DshQuotaUnavailableError
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import models as endpoints
+from doberman_agent.dsh.domain.schemas.model_policy import DshModelQuotaConfig
+from doberman_agent.dsh.domain.services.model import PreparedStream
 from test.dsh.test_model_service import principal, service_setup  # noqa: F401
 
 
@@ -50,7 +50,7 @@ def app_setup(monkeypatch, service_setup):  # noqa: F811
 
 async def test_cookie_never_substitutes_for_desktop_bearer(app_setup):
     app, runtime, *_ = app_setup
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         response = await client.get("/api/v1/dsh/models", headers={"Cookie": "access_token=browser"})
         assert response.status_code == 401 and runtime.access.authenticate.await_count == 0
         runtime.access.authenticate.side_effect = DshInvalidAccessTokenError()
@@ -61,7 +61,7 @@ async def test_desktop_profile_uses_authenticated_identity_and_bearer(app_setup)
     app, runtime, *_ = app_setup
     expected = {"user": {"id": principal().user_id}, "tenant": {"id": principal().tenant_id, "name": "Renamed"}}
     runtime.identity = SimpleNamespace(profile=AsyncMock(return_value=expected))
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         assert (await client.get("/api/v1/dsh/profile", headers={"Cookie": "access_token=browser"})).status_code == 401
         response = await client.get("/api/v1/dsh/profile?tenant_id=999", headers={"Authorization": "Bearer verified"})
         assert response.json() == expected
@@ -75,11 +75,11 @@ async def test_real_model_service_json_and_sse_contract(app_setup, reliable):
     llm.reliable = reliable
     llm.continue_stream.set()
     headers = {"Authorization": "Bearer dedicated"}
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         listed = await client.get("/api/v1/dsh/models", headers=headers)
-        assert listed.json()["data"][0]["id"] == "bisheng:42"
+        assert listed.json()["data"][0]["id"] == "doberman_agent:42"
         body = {
-            "model": "bisheng:42",
+            "model": "doberman_agent:42",
             "messages": [{"role": "user", "content": "hi"}],
             "stream": True,
             "stream_options": {"include_usage": True},
@@ -112,10 +112,10 @@ async def test_cache_details_on_http_responses_and_settlement(app_setup, stream,
         "input_token_details": {"cache_read": 8, "cache_creation": 1},
     }
     llm.continue_stream.set()
-    body = {"model": "bisheng:42", "messages": [{"role": "user", "content": "test"}], "stream": stream}
+    body = {"model": "doberman_agent:42", "messages": [{"role": "user", "content": "test"}], "stream": stream}
     if include_usage:
         body["stream_options"] = {"include_usage": True}
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         response = await client.post(
             "/api/v1/dsh/chat/completions", json=body, headers={"Authorization": "Bearer dedicated"}
         )
@@ -138,7 +138,7 @@ async def test_cache_details_on_http_responses_and_settlement(app_setup, stream,
 async def test_usage_fallback_keeps_unknown_null_and_projection_time(app_setup, monkeypatch):
     app, _runtime, model_runtime, *_ = app_setup
     headers = {"Authorization": "Bearer dedicated"}
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         result = (await client.get("/api/v1/dsh/usage", headers=headers)).json()
         assert result["used"] is None and result["remaining"] is None and result["as_of"] is None
         assert result["limit"] == 100 and result["source"] == result["quota_state"] == "unavailable"
@@ -207,10 +207,10 @@ async def test_usage_selected_model_cannot_borrow_another_allowance(app_setup, m
             "as_of": datetime(2026, 9, 1),
         }
     )
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         headers = {"Authorization": "Bearer dedicated"}
-        exhausted = (await client.get("/api/v1/dsh/usage?model=bisheng:42", headers=headers)).json()
-        available = (await client.get("/api/v1/dsh/usage?model=bisheng:43", headers=headers)).json()
+        exhausted = (await client.get("/api/v1/dsh/usage?model=doberman_agent:42", headers=headers)).json()
+        available = (await client.get("/api/v1/dsh/usage?model=doberman_agent:43", headers=headers)).json()
         total = (await client.get("/api/v1/dsh/usage", headers=headers)).json()
         assert (exhausted["used"], exhausted["limit"], exhausted["remaining"], exhausted["quota_state"]) == (
             130,
@@ -226,21 +226,21 @@ async def test_usage_selected_model_cannot_borrow_another_allowance(app_setup, m
         )
         assert total["remaining"] == 150
         policy.model_configs[1] = DshModelQuotaConfig(model_id=43, monthly_token_limit=500)
-        refreshed = (await client.get("/api/v1/dsh/usage?model=bisheng:43", headers=headers)).json()
+        refreshed = (await client.get("/api/v1/dsh/usage?model=doberman_agent:43", headers=headers)).json()
         assert (refreshed["used"], refreshed["limit"], refreshed["remaining"]) == (50, 500, 450)
         policy.model_configs.append(DshModelQuotaConfig(model_id=44, monthly_token_limit=50))
-        new_model = (await client.get("/api/v1/dsh/usage?model=bisheng:44", headers=headers)).json()
+        new_model = (await client.get("/api/v1/dsh/usage?model=doberman_agent:44", headers=headers)).json()
         assert (new_model["used"], new_model["limit"], new_model["remaining"]) == (0, 50, 50)
-        denied = await client.get("/api/v1/dsh/usage?model=bisheng:99", headers=headers)
+        denied = await client.get("/api/v1/dsh/usage?model=doberman_agent:99", headers=headers)
         assert denied.status_code == 403 and denied.json()["error"]["code"] == "model_not_allowed"
 
         model_runtime.prepare_month.return_value["models"].pop("43")
-        missing = (await client.get("/api/v1/dsh/usage?model=bisheng:43", headers=headers)).json()
+        missing = (await client.get("/api/v1/dsh/usage?model=doberman_agent:43", headers=headers)).json()
         assert missing["used"] is None and missing["remaining"] is None
         assert missing["limit"] == 500 and missing["quota_state"] == "unavailable"
 
         monkeypatch.setattr(endpoints, "read_policy", AsyncMock(side_effect=RuntimeError("Database unavailable")))
-        failed = await client.get("/api/v1/dsh/usage?model=bisheng:43", headers=headers)
+        failed = await client.get("/api/v1/dsh/usage?model=doberman_agent:43", headers=headers)
         assert failed.status_code == 503 and failed.json()["error"]["code"] == "quota_unavailable"
 
 
@@ -248,12 +248,12 @@ async def test_missing_usage_json_returns_answer_and_next_call_remains_available
     """AC-23/24: missing usage stays nullable in audit without failing a completed answer."""
     app, _, _, llm, ledger = app_setup
     llm.reliable = False
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         for _ in range(2):
             response = await client.post(
                 "/api/v1/dsh/chat/completions",
                 headers={"Authorization": "Bearer dedicated"},
-                json={"model": "bisheng:42", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": "doberman_agent:42", "messages": [{"role": "user", "content": "hi"}]},
             )
             assert response.status_code == 200
             assert response.json()["choices"][0]["message"]["content"] == "ok"

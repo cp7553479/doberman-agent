@@ -15,12 +15,12 @@ from langchain_core.documents import Document
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.citation.domain.services import citation_handle_service as handle_svc
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import _LinsightWebCitationWrapper
-from bisheng.tool.domain.langchain import linsight_knowledge as knowledge_tool
-from bisheng.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
+from doberman_agent.citation.domain.services import citation_handle_service as handle_svc
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import _LinsightWebCitationWrapper
+from doberman_agent.tool.domain.langchain import linsight_knowledge as knowledge_tool
+from doberman_agent.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
 
 
 class _Scope:
@@ -141,7 +141,7 @@ def cache_web(monkeypatch: pytest.MonkeyPatch):
     async def fake_cache(items):
         return items
 
-    monkeypatch.setattr("bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache)
+    monkeypatch.setattr("doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache)
 
 
 async def test_web_results_carry_ref_and_drop_key(cache_web, monkeypatch):
@@ -184,14 +184,14 @@ async def test_web_handles_map_to_snippet_keys_not_grouped_records(monkeypatch):
     handle table stores a bare ``websearch_xxx`` that the marker parser
     rejects and every web citation in the report is lost.
     """
-    from bisheng.citation.domain.services.citation_prompt_helper import extract_citation_ids_from_text
-    from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
+    from doberman_agent.citation.domain.services.citation_prompt_helper import extract_citation_ids_from_text
+    from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
 
     async def grouping_cache(items):
         return CitationRegistryService._group_registry_items(items)
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", grouping_cache
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", grouping_cache
     )
     seen_keys: list = []
 

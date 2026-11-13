@@ -1,4 +1,4 @@
-import { Tabs } from "@bisheng/ui"
+import { Tabs } from "@doberman-agent/ui"
 import { Building2, Users } from "lucide-react"
 import type { ReactNode } from "react"
 import type { SubjectType } from "./types"

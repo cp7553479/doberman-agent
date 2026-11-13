@@ -55,7 +55,7 @@ def _req(tenant_id: int, *, department_id: int | None = None, applicant_user_id:
 
 
 async def _resolve(sources, req):
-    from bisheng.approval.domain.services.approver_resolver import resolve_approvers_from_sources
+    from doberman_agent.approval.domain.services.approver_resolver import resolve_approvers_from_sources
 
     return await resolve_approvers_from_sources(sources, req)
 
@@ -122,7 +122,7 @@ async def test_root_fallback_is_skipped_when_root_somehow_has_admins(publish_db,
     super admins") the function would ignore a future Root-admin grant without
     anybody noticing.
     """
-    from bisheng.tenant.domain.services.tenant_admin_service import TenantAdminService
+    from doberman_agent.tenant.domain.services.tenant_admin_service import TenantAdminService
 
     async def _list(cls, tenant_id: int) -> list[int]:
         return [77001]
@@ -138,7 +138,7 @@ async def test_permission_backend_failure_resolves_empty_not_super_admin(publish
     ``list_tenant_admins`` already swallows its own errors and returns ``[]``;
     the fallback must not turn that into "everybody with AdminRole may approve".
     """
-    from bisheng.tenant.domain.services.tenant_admin_service import TenantAdminService
+    from doberman_agent.tenant.domain.services.tenant_admin_service import TenantAdminService
 
     async def _boom(cls, tenant_id: int) -> list[int]:
         raise RuntimeError("openfga unreachable")
@@ -155,7 +155,7 @@ async def test_permission_backend_failure_resolves_empty_not_super_admin(publish
 
 async def test_existing_channel_scenario_still_resolves_approvers(publish_db, tenant_admin_user, dept_admin_user):
     """Channel subscription: its own sources are untouched and generic ones still route through the resolver."""
-    from bisheng.approval.domain.services.channel_subscribe_scenario_handler import ChannelSubscribeScenarioHandler
+    from doberman_agent.approval.domain.services.channel_subscribe_scenario_handler import ChannelSubscribeScenarioHandler
 
     class _Membership:
         async def find_membership(self, *args, **kwargs):
@@ -181,7 +181,7 @@ async def test_existing_knowledge_space_scenario_still_resolves_approvers(
     publish_db, tenant_admin_user, dept_admin_user
 ):
     """Knowledge-space join: same guard, through the other shipped handler."""
-    from bisheng.approval.domain.services.knowledge_space_subscribe_scenario_handler import (
+    from doberman_agent.approval.domain.services.knowledge_space_subscribe_scenario_handler import (
         KnowledgeSpaceSubscribeScenarioHandler,
     )
 
@@ -220,7 +220,7 @@ async def test_notification_recipient_function_unchanged(publish_db, tenant_admi
     conditional fallback (what approver resolution needs) would drop the super
     admin here and silently change who gets told about approval exceptions.
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     recipients = await ApprovalNotificationService._get_admin_recipient_ids(tenant_id=SUB_TENANT_ID)
 
@@ -230,7 +230,7 @@ async def test_notification_recipient_function_unchanged(publish_db, tenant_admi
 
 async def test_notification_recipients_still_include_super_admin_for_root(publish_db, super_admin_user):
     """Root: the notification side reaches super admins through the union, not through a fallback."""
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     recipients = await ApprovalNotificationService._get_admin_recipient_ids(tenant_id=ROOT_TENANT_ID)
 

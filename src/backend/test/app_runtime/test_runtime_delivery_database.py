@@ -15,18 +15,18 @@ from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RUNTIME_TABLES,
     RuntimeAssignment,
     RuntimeCapacityReservation,
     RuntimeNode,
     RuntimeOperation,
 )
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import (
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import (
     RuntimeConflict,
     RuntimeDeliveryRepository,
 )
-from bisheng.core.context.tenant import current_tenant_id
+from doberman_agent.core.context.tenant import current_tenant_id
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("F086_TEST_DATABASE_URL"),

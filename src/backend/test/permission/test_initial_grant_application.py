@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.permission.application.initial_grant import (
+from doberman_agent.permission.application.initial_grant import (
     InitialGrantAddition,
     InitialGrantApplication,
     InitialGrantRequest,
 )
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_source_service import GrantSourceService
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_source_service import GrantSourceService
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 class _Runtime:

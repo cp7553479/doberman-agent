@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from bisheng.permission.migration.f048_model_mapper import (
+from doberman_agent.permission.migration.f048_model_mapper import (
     INITIAL_ACTION_LEVELS,
     LegacyPermissionModel,
     map_legacy_models,

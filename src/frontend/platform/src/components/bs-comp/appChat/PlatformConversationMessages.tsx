@@ -1,8 +1,8 @@
-import { ConversationMessages, ConversationAttachments, CopyMessageAction } from '@bisheng/chat';
-import { asRecord, parsePayload, describeRun, createRunLabels, displayText, messagesForPresentation, selectQaPair, splitMessageContent, type ChatMessage, type ChatMode } from '@bisheng/chat/core';
+import { ConversationMessages, ConversationAttachments, CopyMessageAction } from '@doberman-agent/chat';
+import { asRecord, parsePayload, describeRun, createRunLabels, displayText, messagesForPresentation, selectQaPair, splitMessageContent, type ChatMessage, type ChatMode } from '@doberman-agent/chat/core';
 import { useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { FlagIcon } from '@/components/bs-icons';
 import { copyText } from '@/utils';
 import { PlatformChatMarkdown } from './PlatformChatMarkdown';

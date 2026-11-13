@@ -1,5 +1,5 @@
 import { ApiRequestFailure } from '~/components/ApiRequestFailure';
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import { ChevronLeft } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';

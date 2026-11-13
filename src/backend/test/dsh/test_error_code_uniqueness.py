@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode import dsh, dsh_audit
-from bisheng.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode import dsh, dsh_audit
+from doberman_agent.common.errcode.base import BaseErrorCode
 
 
 def test_dsh_error_codes_are_unique():

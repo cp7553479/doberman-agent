@@ -1,6 +1,6 @@
 """Put ``src/sandbox-runner`` on sys.path so backend pytest can import it.
 
-The runner is an independent package (must not ``import bisheng``).
+The runner is an independent package (must not ``import doberman_agent``).
 """
 
 from __future__ import annotations

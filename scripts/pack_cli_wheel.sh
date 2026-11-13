@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the bisheng-cli wheel and stage it for the platform's download endpoint.
+# Build the doberman-agent-cli wheel and stage it for the platform's download endpoint.
 #
 #   bash scripts/pack_cli_wheel.sh
 #
@@ -7,9 +7,9 @@
 #
 #   Changing the CLI means re-running this script AND committing its output.
 #   The backend image's build context is only ./src/backend/ (ci.yml +
-#   src/backend/Dockerfile `COPY ./ ./`), so src/bisheng-cli/ is NOT in the
+#   src/backend/Dockerfile `COPY ./ ./`), so src/doberman-agent-cli/ is NOT in the
 #   image. The wheel therefore has to travel inside the backend package, which
-#   is why the artifacts directory lives under bisheng/dev_toolkit/. Skip the
+#   is why the artifacts directory lives under doberman_agent/dev_toolkit/. Skip the
 #   commit and the platform keeps serving the previous wheel with no warning.
 #
 #   The directory name `artifacts` is deliberate. .gitignore carries `build/`,
@@ -20,7 +20,7 @@
 # scripts/pack_sdk_wheel.sh. Both therefore delete only their own wheels and
 # MERGE their section into the manifest instead of rewriting it — a rewrite here
 # used to drop the `sdk` section, which nothing notices until a developer's pip
-# cannot find bisheng-sdk on a platform that has been shipping it for weeks.
+# cannot find doberman-agent-sdk on a platform that has been shipping it for weeks.
 #
 # The install smoke test at the end is not optional padding. app-proxy shipped
 # `fastapi>=0.115` with no ceiling; the dev machine resolved 0.121 with a fully
@@ -33,9 +33,9 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CLI_DIR="${REPO_ROOT}/src/bisheng-cli"
-ARTIFACTS_DIR="${REPO_ROOT}/src/backend/bisheng/dev_toolkit/artifacts"
-SMOKE_VENV="${TMPDIR:-/tmp}/bisheng-cli-smoke-$$"
+CLI_DIR="${REPO_ROOT}/src/doberman-agent-cli"
+ARTIFACTS_DIR="${REPO_ROOT}/src/backend/doberman_agent/dev_toolkit/artifacts"
+SMOKE_VENV="${TMPDIR:-/tmp}/doberman-agent-cli-smoke-$$"
 
 fail() {
   echo "[FAIL] $*" >&2
@@ -44,10 +44,10 @@ fail() {
 
 command -v uv >/dev/null 2>&1 || fail "uv not found on PATH — see src/backend/AGENTS.md for setup"
 
-VERSION="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' "${CLI_DIR}/bisheng_cli/__init__.py")"
-[ -n "${VERSION}" ] || fail "could not read __version__ from bisheng_cli/__init__.py"
+VERSION="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' "${CLI_DIR}/doberman_agent_cli/__init__.py")"
+[ -n "${VERSION}" ] || fail "could not read __version__ from doberman_agent_cli/__init__.py"
 
-echo "[1/5] building wheel for bisheng-cli ${VERSION}"
+echo "[1/5] building wheel for doberman-agent-cli ${VERSION}"
 rm -rf "${CLI_DIR}/dist"
 (cd "${CLI_DIR}" && uv build --wheel)
 
@@ -69,8 +69,8 @@ echo "[2/5] validating ${WHEEL_NAME}"
 # guard, because the fix people reach for is deleting it.
 WHEEL_LISTING="$(unzip -l "${WHEEL}")"
 case "${WHEEL_LISTING}" in
-  *"bisheng_cli/main.py"*) ;;
-  *) fail "${WHEEL_NAME} does not contain bisheng_cli/ — check [tool.hatch.build.targets.wheel] packages" ;;
+  *"doberman_agent_cli/main.py"*) ;;
+  *) fail "${WHEEL_NAME} does not contain doberman_agent_cli/ — check [tool.hatch.build.targets.wheel] packages" ;;
 esac
 case "${WHEEL_NAME}" in
   *"-${VERSION}-"*) ;;
@@ -88,22 +88,22 @@ trap 'rm -rf "${SMOKE_VENV}"' EXIT
 uv pip install --quiet --python "${SMOKE_VENV}/bin/python" "${WHEEL}" \
   || fail "installing the wheel into a clean venv failed"
 # (a) module-level import of the production entry point
-"${SMOKE_VENV}/bin/python" -c "import bisheng_cli.main" \
-  || fail "import bisheng_cli.main failed in the clean venv — a dependency resolved to an incompatible version"
+"${SMOKE_VENV}/bin/python" -c "import doberman_agent_cli.main" \
+  || fail "import doberman_agent_cli.main failed in the clean venv — a dependency resolved to an incompatible version"
 # (b) the console script is really registered, and agrees on the version
-SMOKE_VERSION="$("${SMOKE_VENV}/bin/bisheng" --version | awk '{print $2}')" \
-  || fail "the 'bisheng' console script did not run"
+SMOKE_VERSION="$("${SMOKE_VENV}/bin/doberman-agent" --version | awk '{print $2}')" \
+  || fail "the 'doberman-agent' console script did not run"
 [ "${SMOKE_VERSION}" = "${VERSION}" ] \
   || fail "console script reports ${SMOKE_VERSION}, package says ${VERSION}"
 # (c) the argparse tree can be built
-"${SMOKE_VENV}/bin/bisheng" deploy --help >/dev/null || fail "'bisheng deploy --help' failed"
+"${SMOKE_VENV}/bin/doberman-agent" deploy --help >/dev/null || fail "'doberman-agent deploy --help' failed"
 
 echo "[4/5] staging into ${ARTIFACTS_DIR#"${REPO_ROOT}/"}"
 mkdir -p "${ARTIFACTS_DIR}"
 # Only this package's wheels. `rm -f *.whl` also took out the SDK wheel that the
 # same manifest advertises, so the next release served a 404 from
 # /api/v1/dev-toolkit/sdk/download with everything else looking healthy.
-rm -f "${ARTIFACTS_DIR}"/bisheng_cli-*.whl
+rm -f "${ARTIFACTS_DIR}"/doberman_agent_cli-*.whl
 cp "${WHEEL}" "${ARTIFACTS_DIR}/${WHEEL_NAME}"
 
 if command -v sha256sum >/dev/null 2>&1; then
@@ -147,7 +147,7 @@ manifest["platform"] = {"version": os.environ["PLATFORM_VERSION"] or release_ver
 # two wordings depending on which of them ran last (the drift guard diffs it).
 manifest["_note"] = (
     "Generated by scripts/pack_cli_wheel.sh and scripts/pack_sdk_wheel.sh. "
-    "Commit this file and the wheels beside it; the backend image cannot see src/bisheng-cli/ or src/bisheng-sdk/."
+    "Commit this file and the wheels beside it; the backend image cannot see src/doberman-agent-cli/ or src/doberman-agent-sdk/."
 )
 path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 PY

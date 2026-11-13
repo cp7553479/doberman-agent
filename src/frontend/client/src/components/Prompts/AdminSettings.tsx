@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Permissions, SystemRoles, roleDefaults, PermissionTypes } from '~/types/chat';
 import type { Control, UseFormSetValue, UseFormGetValues } from 'react-hook-form';
 import { OGDialog, OGDialogTitle, OGDialogContent, OGDialogTrigger, Button, DropdownPopup } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useUpdatePromptPermissionsMutation } from '~/hooks/queries/data-provider';
 import { useLocalize, useAuthContext } from '~/hooks';
 import { useToastContext, useConfirm } from '~/Providers';

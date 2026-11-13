@@ -2,7 +2,7 @@
 
 Status: DONE_WITH_CONCERNS (owned implementation complete; parent-owned suppression pruning/full gates remain, and one existing test has a Node/global-setup incompatibility).
 
-Worktree: `/Users/shanghang/.codex/worktrees/request-error-contract/bisheng` only. No commits, repository-wide Git writes, dependency changes, global request-policy changes, or shared locale edits were made. Parent authorized the adjacent article controller extraction after the original component was measured at 813 lines.
+Worktree: `/Users/shanghang/.codex/worktrees/request-error-contract/doberman-agent` only. No commits, repository-wide Git writes, dependency changes, global request-policy changes, or shared locale edits were made. Parent authorized the adjacent article controller extraction after the original component was measured at 813 lines.
 
 ## Changed production paths
 

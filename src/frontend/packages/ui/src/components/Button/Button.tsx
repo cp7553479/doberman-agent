@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva } from 'class-variance-authority';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 
 /**

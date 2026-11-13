@@ -10,9 +10,9 @@
 | 领域对象 | Owner Feature | 说明 |
 |---------|--------------|------|
 | DSH License entitlement / activation | F062-dsh-desktop-model-access | Gateway 项目内授权能力扩展，复用当前 License 验签解析结果，不新增配置副本表；管理 DSH capability、实例绑定与席位容量；不改变现有其他商业能力的授权语义 |
-| DSH SeatAssignment / Session | F062-dsh-desktop-model-access | Gateway DSH 模块持有固定席位、授权代次、登录会话与刷新凭证真相；BiSheng 只引用 |
-| DSH UserPolicy | F062-dsh-desktop-model-access | BiSheng 一条用户策略保存强类型逐模型配置，每个用户/模型独立月 token 上限，不拥有或复制既有模型供应商配置 |
-| DSH MonthlyUsage / ModelCall / AdminOperation | F062-dsh-desktop-model-access | BiSheng 持有已累计用量准入与实际用量入账、调用记录、策略变更不可变审计、可靠用量补记和跨服务管理操作进度；月汇总按用户、模型、月份分行，明细保留 model_id，Redis 实时执行当前用户与所选模型的独立月额度，SQL 为批量投影 |
+| DSH SeatAssignment / Session | F062-dsh-desktop-model-access | Gateway DSH 模块持有固定席位、授权代次、登录会话与刷新凭证真相；doberman-agent 只引用 |
+| DSH UserPolicy | F062-dsh-desktop-model-access | doberman-agent 一条用户策略保存强类型逐模型配置，每个用户/模型独立月 token 上限，不拥有或复制既有模型供应商配置 |
+| DSH MonthlyUsage / ModelCall / AdminOperation | F062-dsh-desktop-model-access | doberman-agent 持有已累计用量准入与实际用量入账、调用记录、策略变更不可变审计、可靠用量补记和跨服务管理操作进度；月汇总按用户、模型、月份分行，明细保留 model_id，Redis 实时执行当前用户与所选模型的独立月额度，SQL 为批量投影 |
 | DSH ModelAuditSetting / SettingChange / Request / Evidence / Manifest / Content / Occurrence / BodyAccess | F062 审计扩展（开发登记，非 beta2 已发布能力） | 开发基线见 audit-guardrails-proposal；仅持有模型审计模式、请求事实、加密原件及查看记录，不接管 ModelCall/MonthlyUsage 写入、不改席位/身份/配额真相。实际发布版本另行登记 |
 | DSH ModelAuditConversation / AuditTreeState / AuditTreeNode / AuditTreePath | F062 审计扩展的可重建查询投影（非发布声明） | 仅组织历史租户/用户范围内的会话目录及客户端声明的父子浏览关系；原请求归属、正文作用域和用量不合并，不持有客户端真实任务树或新身份/授权真相 |
 | DSH ModelAuditConversationTitle | F062审计扩展 | 客户端声明短文本标题，与认证租户/用户/既有审计绑定，独立于可重建目录。设计0.14/契约0.5；用户恢复开发交付，具体结果见标题验证记录，不接管真实会话或权限真相 |
@@ -28,9 +28,9 @@ User、Tenant、LLMServer、LLMModel、PermissionActor 和 F053 ApiCredential �
 | B2-INV-1 | 席位按安装实例与稳定自然人标识计数；相同用户多设备不重复占席。只有管理员明确撤销才释放，已撤销用户不得通过登录自动重新占席 | F062 AC-05～12 |
 | B2-INV-2 | DSH 凭证由 Gateway DSH 模块签发、管理；不能与常规 JWT、PAT、SAK 互换。DSH 席位撤销不修改常规 JWT 版本或 F053 凭证 | F062 AC-13～17 |
 | B2-INV-3 | DSH 只调用既有模型业务确认可访问且管理员开放的模型；根租户共享仍遵守既有模型共享契约 | F062 AC-18～21 |
-| B2-INV-4 | 启用 DSH 依赖 Gateway 内的授权模块；缺失、失效只拒绝 DSH 能力，不给常规 BiSheng 业务增加启动或逐请求依赖 | F062 AC-31～32 |
+| B2-INV-4 | 启用 DSH 依赖 Gateway 内的授权模块；缺失、失效只拒绝 DSH 能力，不给常规 doberman-agent 业务增加启动或逐请求依赖 | F062 AC-31～32 |
 | B2-INV-5 | 月用量按租户、用户、模型、月份分行，逐用户/模型独立执行月额度，用户汇总仅用于展示、额度不可互借；席位释放、重分配、模型移除或设备登录不重置用量；Redis 按已累计实际用量检查，达限拒绝新请求，在途允许超额并如实入账，不预占；实际累计与 SQL 批量投影幂等，无法确认配额时失败关闭；UNKNOWN 按用户跨月阻断，可靠逐请求补记幂等且只移除对应原因，证据不足不强制解冻 | F062 AC-22～24、34 |
-| B2-INV-6 | DSH 客户端只配置 Nginx 公开 origin；全部 API 经 Gateway，版本 API 转发到 BiSheng、其余由 Gateway 自有接口承载，不要求第二公开地址 | F062 client-api.md §2；2026-09-09 用户确认 |
+| B2-INV-6 | DSH 客户端只配置 Nginx 公开 origin；全部 API 经 Gateway，版本 API 转发到 doberman-agent、其余由 Gateway 自有接口承载，不要求第二公开地址 | F062 client-api.md §2；2026-09-09 用户确认 |
 | B2-INV-7 | 客户端当前 0.2.0 接口与时序冻结为开发基线（原 0.1.0 的逐模型修订已记录）；任何线协议变更须更新设计及客户端文档、记录版本差异并同步客户端确认和联调，不能仅修改服务端 | F062 design.md §6.0；2026-09-09 用户要求 |
 | B2-INV-8 | 新 Gateway 保留旧 License 解码和既有商业授权语义；可选 DSH 签名扩展独立验权，缺失/失效不能把旧能力连带置为过期，旧 pro 不代表 DSH 无限席位；旧商业期满与 DSH 到期独立判断，外层无法解析则 DSH 拒绝 | F062 design.md §4.5.4；2026-09-09 用户要求 |
 
@@ -38,18 +38,18 @@ User、Tenant、LLMServer、LLMModel、PermissionActor 和 F053 ApiCredential �
 
 | Feature | 依赖 | 边界 |
 |---------|------|------|
-| F062 | BiSheng 既有用户登录、租户、模型管理与 LLMService | 身份确认和模型调用使用原业务入口 |
+| F062 | doberman-agent 既有用户登录、租户、模型管理与 LLMService | 身份确认和模型调用使用原业务入口 |
 | F062 | Gateway 项目内 License / DSH 授权模块 | 模块开发随 Gateway 部署；新增双向服务端信任配置 |
 | F062 | F048 权限应用层、现有管理端鉴权 | 复用统一业务授权入口，不新增第二权限判定系统 |
 | F062 | F053 作为凭证隔离回归对象 | 不依赖其 PAT/SAK 校验器或数据表；具体鉴权生命周期独立 |
 
 ## 已分配模块编码
 
-2026-09-09 按当前源码扫描分配 F062 模块 **261**，已实现 `26101–26130`，见 `src/backend/bisheng/common/errcode/dsh.py`。覆盖冻结客户端错误与内部管理 operation_in_progress/operation_conflict；既有 **260** 仍保留给 F053。客户端字符串码及 HTTP 不变，不将 MMMEE 当 HTTP 状态。
+2026-09-09 按当前源码扫描分配 F062 模块 **261**，已实现 `26101–26130`，见 `src/backend/doberman_agent/common/errcode/dsh.py`。覆盖冻结客户端错误与内部管理 operation_in_progress/operation_conflict；既有 **260** 仍保留给 F053。客户端字符串码及 HTTP 不变，不将 MMMEE 当 HTTP 状态。
 
 ## 本轮内部契约补充
 
-2026-09-09：identity/redeem 与 identity/check 共用可信 DshIdentitySnapshot；BiSheng 管理 policy 保存使用 operation_id，操作查询返回审计与 phase；UPDATE_POLICY / RECONCILE_USAGE 在 BiSheng 分派。以上由两仓开发者按 Design §4.5.5、§4.7.4、§6.1 同步实现，26 个 HTTP 接口及 8 张表数量不变；客户端 0.1.0 不新增调用。未来线协议变化仍执行 B2-INV-7，不表示已经联系客户端。
+2026-09-09：identity/redeem 与 identity/check 共用可信 DshIdentitySnapshot；doberman-agent 管理 policy 保存使用 operation_id，操作查询返回审计与 phase；UPDATE_POLICY / RECONCILE_USAGE 在 doberman-agent 分派。以上由两仓开发者按 Design §4.5.5、§4.7.4、§6.1 同步实现，26 个 HTTP 接口及 8 张表数量不变；客户端 0.1.0 不新增调用。未来线协议变化仍执行 B2-INV-7，不表示已经联系客户端。
 
 ## 变更历史
 
@@ -72,4 +72,4 @@ User、Tenant、LLMServer、LLMModel、PermissionActor 和 F053 ApiCredential �
 
 ## F062 部署简化（2026-09-09，当前有效）
 
-以 [deployment-simplification.md](./062-dsh-desktop-model-access/deployment-simplification.md) 为准：复用用户同步 HMAC 和毕昇 Redis；DSH token 固定 HS256，ticket 保持一次性兑换；取消模型部署白名单，用户模型及额度由界面授权；月度默认 Asia/Shanghai。客户端契约 0.4.0 保留现有 HTTP 路径与时序，旧 Token 需重新登录。License 发行机制独立不变。
+以 [deployment-simplification.md](./062-dsh-desktop-model-access/deployment-simplification.md) 为准：复用用户同步 HMAC 和doberman-agent Redis；DSH token 固定 HS256，ticket 保持一次性兑换；取消模型部署白名单，用户模型及额度由界面授权；月度默认 Asia/Shanghai。客户端契约 0.4.0 保留现有 HTTP 路径与时序，旧 Token 需重新登录。License 发行机制独立不变。

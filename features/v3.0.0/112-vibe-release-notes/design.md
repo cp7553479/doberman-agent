@@ -25,7 +25,7 @@
 
 ### 决策 1：说明作为发布输入，不写进应用声明或介绍
 
-- **备选**：A. 复用 `description`；B. 放入 `bisheng-app.yaml`；C. deploy 独立可选输入。
+- **备选**：A. 复用 `description`；B. 放入 `doberman-agent-app.yaml`；C. deploy 独立可选输入。
 - **选定**：C，CLI 参数 `--release-notes TEXT` / `--release-notes-file FILE`，HTTP 表单字段 `release_notes`。
 - **原因**：应用介绍描述长期用途，现有发布会同步应用元信息；YAML 是 F055 校验的运行合同，未知字段被拒绝。独立输入可让同一源码发布带不同文案，不改变包摘要、运行依赖或镜像缓存语义。文件可承载多行正文，不增加交互式必答问题。
 - **重新考虑条件**：未来 PRD-2 需要界面编辑发布草稿时，沿用同一服务端输入合同增加入口，不改历史版本说明。
@@ -60,7 +60,7 @@
 - 基线未含发布说明；本次已实现 §4.2 至 §4.7 的输入、持久化、快照及展示。
 - 当前审批详情由 client 的 `AppPublishDetailPanel` 读取 `detail_snapshot`；payload_snapshot 含内部字段，业务 UI 不从那里取值。
 - platform 的发布页 `VersionListCard` 与版本页 `VersionsTab` 均在 `hostedApp/index.tsx` 中实际挂载，都读取 `/api/v1/apps/{app_id}/versions`。分页和非分页响应共用 `AppQueryService.list_versions()` 映射。
-- CLI 下载件由 backend 的 `dev_toolkit/artifacts` 提供，源目录 `src/bisheng-cli` 不在 backend 镜像构建上下文中。
+- CLI 下载件由 backend 的 `dev_toolkit/artifacts` 提供，源目录 `src/doberman-agent-cli` 不在 backend 镜像构建上下文中。
 
 ### 4.2 已实现流程（真实部署验收待执行）
 
@@ -157,14 +157,14 @@ UI 依据：当前 `packages/ui/docs/index.md`、组件总览、字体/色彩规
 | 发布说明 | `hostedApp.releaseNotes.title` | `approval.app_release_notes.title` | Release notes / リリースノート |
 | 未填写发布说明 | `hostedApp.releaseNotes.empty` | `approval.app_release_notes.empty` | No release notes provided / リリースノートは未入力です |
 
-三语言同时提交。后端 16233 的文案只维护 `packages/locales/src/api_errors/{zh-Hans,en,ja}.json` 并运行既有生成器，不手改两端生成文件。CLI 当前是中文输出（既有合同），新增该功能的提示与帮助在 `bisheng_cli/release_notes.py` 内使用小型三语言消息字典，根据进程 locale 选择 zh/en/ja，未知 locale 回退英文；复用 Python 标准库，不新增全局语言开关、翻译框架或全 CLI 国际化迁移。命令行选项名保持不变。
+三语言同时提交。后端 16233 的文案只维护 `packages/locales/src/api_errors/{zh-Hans,en,ja}.json` 并运行既有生成器，不手改两端生成文件。CLI 当前是中文输出（既有合同），新增该功能的提示与帮助在 `doberman_agent_cli/release_notes.py` 内使用小型三语言消息字典，根据进程 locale 选择 zh/en/ja，未知 locale 回退英文；复用 Python 标准库，不新增全局语言开关、翻译框架或全 CLI 国际化迁移。命令行选项名保持不变。
 
 ### 4.7 模块修改职责
 
 | 模块 / 文件 | 本次职责 | 不承担 |
 |---|---|---|
-| `bisheng_cli/cli.py`、`commands/deploy.py`、新增 `release_notes.py` | 参数、解析一次、校验、能力检查、表单与重传 | 访问数据库、导入 backend、改 manifest |
-| `bisheng_cli/packaging.py` | 在现有一次限额响应中解析说明能力 | 推断服务器版本、默默降级说明 |
+| `doberman_agent_cli/cli.py`、`commands/deploy.py`、新增 `release_notes.py` | 参数、解析一次、校验、能力检查、表单与重传 | 访问数据库、导入 backend、改 manifest |
+| `doberman_agent_cli/packaging.py` | 在现有一次限额响应中解析说明能力 | 推断服务器版本、默默降级说明 |
 | `app_publish/api/endpoints/deploy.py` | 增加表单透传与能力声明 | ORM、版本写入、运行编排 |
 | `app_publish/domain/release_notes.py` | 内容规范化与验证，统一上限 | 文件 I/O、数据库读写、身份推导 |
 | `publish_pipeline_service.py`、`domain/models/app_deployment.py` | receive 保存不可变提交说明 | 给任务追加正文参数、历史编辑 |
@@ -209,9 +209,9 @@ UI 依据：当前 `packages/ui/docs/index.md`、组件总览、字体/色彩规
 示例：
 
 ```bash
-bisheng deploy ./today-tasks --release-notes '新增任务提醒；修复日期显示问题。'
-bisheng deploy ./today-tasks --release-notes-file ./release-notes.txt
-bisheng deploy ./today-tasks --release-notes-file ./release-notes.txt --dry-run
+doberman-agent deploy ./today-tasks --release-notes '新增任务提醒；修复日期显示问题。'
+doberman-agent deploy ./today-tasks --release-notes-file ./release-notes.txt
+doberman-agent deploy ./today-tasks --release-notes-file ./release-notes.txt --dry-run
 ```
 
 ```json
@@ -265,7 +265,7 @@ bisheng deploy ./today-tasks --release-notes-file ./release-notes.txt --dry-run
 
 ### 7.3 交付与运行记录
 
-- CLI 采用增量版本 `3.0.0.post1`，同步 `pyproject.toml` 与 `bisheng_cli.__version__`；如实施前已占用则选择下一个 post 版本并更新本文。通过现有脚本重建 wheel、src/bisheng-cli/dist 和 backend artifacts/manifest；脚本增加可选 CLI_MIN_COMPATIBLE、PLATFORM_VERSION 参数；默认 post 发行剥离 .post 后缀，得到兼容基线与平台版本 3.0.0，防止 CI 无参数重建时提高旧 CLI 准入版本或误报平台版本。完整发行版本保留原行为，sdk 元数据保持不变。验证新 shell 真正运行新安装件。
+- CLI 采用增量版本 `3.0.0.post1`，同步 `pyproject.toml` 与 `doberman_agent_cli.__version__`；如实施前已占用则选择下一个 post 版本并更新本文。通过现有脚本重建 wheel、src/doberman-agent-cli/dist 和 backend artifacts/manifest；脚本增加可选 CLI_MIN_COMPATIBLE、PLATFORM_VERSION 参数；默认 post 发行剥离 .post 后缀，得到兼容基线与平台版本 3.0.0，防止 CI 无参数重建时提高旧 CLI 准入版本或误报平台版本。完整发行版本保留原行为，sdk 元数据保持不变。验证新 shell 真正运行新安装件。
 - 沿用现有发布阶段、failure 五元组和审计 ID。无需新增说明全文日志、审计副本、metrics 服务或查询接口；错误只包含原因、限额与定位 ID。
 - E2E 证据区分 mock/静态/真实 API/浏览器检查，未执行不得记通过。正式镜像推送、tag、生产部署不属于当前设计阶段的操作。
 

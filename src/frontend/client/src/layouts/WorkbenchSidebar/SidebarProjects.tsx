@@ -1,6 +1,6 @@
-import { Dropdown, DropdownItem } from "@bisheng/ui";
-import { Tooltip } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Dropdown, DropdownItem } from "@doberman-agent/ui";
+import { Tooltip } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { useMemo, useState } from 'react';
 import Convo from '~/components/Conversations/Convo';
 import { useAuthContext, useLocalize } from '~/hooks';

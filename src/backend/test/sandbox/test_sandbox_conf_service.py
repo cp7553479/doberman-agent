@@ -8,11 +8,11 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.common.errcode.sandbox import SandboxEndpointInvalidError
-from bisheng.core.config.settings import SandboxConf, encrypt_token
-from bisheng.database.models.audit_log import EventType, ObjectType
-from bisheng.tool.domain.services.sandbox_conf_service import SandboxConfService
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.common.errcode.sandbox import SandboxEndpointInvalidError
+from doberman_agent.core.config.settings import SandboxConf, encrypt_token
+from doberman_agent.database.models.audit_log import EventType, ObjectType
+from doberman_agent.tool.domain.services.sandbox_conf_service import SandboxConfService
 
 _USER = SimpleNamespace(user_id=1, user_name="admin")
 
@@ -56,21 +56,21 @@ def saved(monkeypatch: pytest.MonkeyPatch) -> dict:
     def audit(user, ip, note):
         holder["audits"].append((user, ip, note))
 
-    monkeypatch.setattr("bisheng.tool.domain.services.sandbox_conf_service.ConfigDao.get_config", get_config)
+    monkeypatch.setattr("doberman_agent.tool.domain.services.sandbox_conf_service.ConfigDao.get_config", get_config)
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.ConfigDao.insert_or_update_config",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.ConfigDao.insert_or_update_config",
         insert,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.write_sandbox_endpoint_cache",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.write_sandbox_endpoint_cache",
         write,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.AuditLogService.update_sandbox_conf",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.AuditLogService.update_sandbox_conf",
         audit,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
         SandboxConf(endpoints=["http://dep:8080"], token="dep-token"),
     )
     return holder
@@ -136,7 +136,7 @@ async def test_save_does_not_call_http(saved, monkeypatch):
         raise AssertionError("save must not open an HTTP client")
 
     monkeypatch.setattr(httpx, "AsyncClient", boom)
-    monkeypatch.setattr("bisheng.tool.domain.services.sandbox_conf_service.httpx.AsyncClient", boom)
+    monkeypatch.setattr("doberman_agent.tool.domain.services.sandbox_conf_service.httpx.AsyncClient", boom)
     await SandboxConfService.save(["http://h:8080"], "secret-token", _USER, "10.0.0.1")
 
 
@@ -176,7 +176,7 @@ def test_sources_are_per_field(saved, monkeypatch):
     assert "page-token" not in json.dumps(view)
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
         SandboxConf(),
     )
     saved["rows"].clear()

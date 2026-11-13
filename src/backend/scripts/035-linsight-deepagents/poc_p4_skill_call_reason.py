@@ -52,9 +52,9 @@ def do_step(call_reason: str, query: str) -> str:
 
 async def _resolve_model(model_id: int | None):
     """Return a usable BaseChatModel or None (BLOCKED) — probes DB-configured models."""
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.llm.domain.services.llm import ApplicationTypeEnum as AppEnum
-    from bisheng.llm.domain.services.llm import BishengLLM
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.llm.domain.services.llm import ApplicationTypeEnum as AppEnum
+    from doberman_agent.llm.domain.services.llm import DobermanAgentLLM
 
     set_current_tenant_id(1)
     candidates = [model_id] if model_id else [4, 5, 25, 26, 33, 35, 52, 55, 57, 58]
@@ -62,7 +62,7 @@ async def _resolve_model(model_id: int | None):
         if mid is None:
             continue
         try:
-            llm = BishengLLM(
+            llm = DobermanAgentLLM(
                 model_id=mid, app_id=AppEnum.LINSIGHT.value, app_name="poc-p4", app_type=AppEnum.LINSIGHT, user_id=1
             )
             await asyncio.wait_for(llm.ainvoke("ping，请回复 ok"), timeout=30)

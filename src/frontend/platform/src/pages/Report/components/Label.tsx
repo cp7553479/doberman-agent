@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Input, Select } from '@bisheng/ui';
+import { Input, Select } from '@doberman-agent/ui';
 import { Braces } from "lucide-react";
 import { useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

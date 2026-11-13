@@ -1,7 +1,7 @@
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { isApiError } from "@bisheng/api-client";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { isApiError } from "@doberman-agent/api-client";
 import { showApiError } from "~/api/request";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { getVoiceModels, selectVoiceModels, transcribeVoice } from "~/api/voice";

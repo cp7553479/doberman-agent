@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.linsight.domain.services import md_image_refs
-from bisheng.linsight.domain.services.deliverable_download_service import (
+from doberman_agent.linsight.domain.services import md_image_refs
+from doberman_agent.linsight.domain.services.deliverable_download_service import (
     deliverable_workspace_path,
     find_deliverable,
 )
@@ -89,7 +89,7 @@ def _version(final_files):
 
 def test_deliverable_workspace_path_from_recorded_local_path():
     v = _version([])
-    info = {"file_path": "/root/.cache/bisheng/linsight/48e1bcae/output/减肥计划.md"}
+    info = {"file_path": "/root/.cache/doberman_agent/linsight/48e1bcae/output/减肥计划.md"}
     assert deliverable_workspace_path(v, info) == "output/减肥计划.md"
     assert deliverable_workspace_path(v, {"rel_path": "output/x.md", "file_path": ""}) == "output/x.md"
     assert deliverable_workspace_path(v, {"file_path": "/elsewhere/x.md"}) is None
@@ -98,8 +98,8 @@ def test_deliverable_workspace_path_from_recorded_local_path():
 def test_find_deliverable_matches_only_this_versions_final_files():
     key = "linsight/final_result/48e1bcaeae7f4d6fa3dc5d2c72c346e1/675a3970.md"
     v = _version([{"file_url": key, "file_name": "减肥计划.md"}, "garbage"])
-    assert find_deliverable(v, key, "bisheng")["file_name"] == "减肥计划.md"
-    assert find_deliverable(v, "linsight/final_result/48e1bcaeae7f4d6fa3dc5d2c72c346e1/other.md", "bisheng") is None
+    assert find_deliverable(v, key, "doberman_agent")["file_name"] == "减肥计划.md"
+    assert find_deliverable(v, "linsight/final_result/48e1bcaeae7f4d6fa3dc5d2c72c346e1/other.md", "doberman_agent") is None
 
 
 # --- endpoints: md bundle download and image-embedding pdf/docx conversion ----
@@ -113,8 +113,8 @@ REPORT_MD = "# 计划\n\n![曲线](output/charts/curve.png)\n"
 def stored_task(monkeypatch):
     from unittest.mock import AsyncMock
 
-    from bisheng.citation.domain.services import citation_export_service
-    from bisheng.linsight.api.endpoints import linsight as endpoint
+    from doberman_agent.citation.domain.services import citation_export_service
+    from doberman_agent.linsight.api.endpoints import linsight as endpoint
 
     version = SimpleNamespace(
         id=SVID,
@@ -124,7 +124,7 @@ def stored_task(monkeypatch):
                 {
                     "file_url": MD_KEY,
                     "file_name": "减肥计划.md",
-                    "file_path": f"/root/.cache/bisheng/linsight/{SVID[:8]}/output/减肥计划.md",
+                    "file_path": f"/root/.cache/doberman_agent/linsight/{SVID[:8]}/output/减肥计划.md",
                 }
             ]
         },
@@ -133,7 +133,7 @@ def stored_task(monkeypatch):
     monkeypatch.setattr(
         endpoint.LinsightArtifactPreviewService, "load_accessible_version", AsyncMock(return_value=version)
     )
-    monkeypatch.setattr(endpoint, "get_minio_storage", AsyncMock(return_value=SimpleNamespace(bucket="bisheng")))
+    monkeypatch.setattr(endpoint, "get_minio_storage", AsyncMock(return_value=SimpleNamespace(bucket="doberman_agent")))
     monkeypatch.setattr(
         endpoint.LinsightWorkbenchImpl,
         "download_file",
@@ -179,7 +179,7 @@ async def test_md_bundle_endpoint_falls_back_to_plain_md_without_images(stored_t
 
 
 async def test_md_bundle_endpoint_rejects_non_deliverable(stored_task):
-    from bisheng.common.errcode.http_error import NotFoundError
+    from doberman_agent.common.errcode.http_error import NotFoundError
 
     endpoint, _ = stored_task
     with pytest.raises(NotFoundError):
@@ -193,8 +193,8 @@ async def test_md_bundle_endpoint_rejects_non_deliverable(stored_task):
 
 
 async def test_docx_conversion_embeds_workspace_images_when_version_given(stored_task, monkeypatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
-    from bisheng.linsight.domain.schemas.linsight_schema import DownloadFilesSchema
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    from doberman_agent.linsight.domain.schemas.linsight_schema import DownloadFilesSchema
 
     endpoint, _ = stored_task
     seen = {}

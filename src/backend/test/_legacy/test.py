@@ -8,10 +8,10 @@ from aiohttp import web
 
 parent_dir = os.path.dirname(os.path.abspath(__file__)).replace('test', '')
 sys.path.append(parent_dir)
-os.environ['config'] = os.path.join(parent_dir, 'bisheng/config.dev.yaml')
+os.environ['config'] = os.path.join(parent_dir, 'doberman_agent/config.dev.yaml')
 
-from bisheng.database.base import session_getter
-from bisheng.database.models.user import User
+from doberman_agent.database.base import session_getter
+from doberman_agent.database.models.user import User
 from sqlalchemy import select
 
 
@@ -58,7 +58,7 @@ mysql_session()
 # if __name__ == '__main__':
 #     web.run_app(app, host='127.0.0.1', port=8080)
 
-from bisheng import CustomComponent
+from doberman_agent import CustomComponent
 from langchain.chains.base import Chain
 from typing import List, Optional, Dict, Any
 from langchain.callbacks.manager import (
@@ -68,7 +68,7 @@ from langchain.callbacks.manager import (
 
 
 class InputChain(CustomComponent):
-    documentation: str = 'http://docs.bisheng.org/components/custom'
+    documentation: str = 'http://docs.doberman-agent.org/components/custom'
 
     class Input(Chain):
         output_key: str = "text"  #: :meta private:

@@ -5,8 +5,8 @@ import { getKnowledgeDetailApi,readFileLibDatabase } from "@/controllers/API";
 import { getSelectableKnowledgeSpacesApi } from "@/controllers/API/knowledgeSpace";
 import { showApiError } from "@/controllers/request";
 import { isVarInFlow } from "@/util/flowUtils";
-import { Tabs,Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs,Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { memo,useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import useFlowStore from "../../flowStore";
@@ -235,7 +235,7 @@ export default function KnowledgeSelectItem({ data, nodeId, onChange, onVarEvent
     }, [data, value]);
 
     return <div className='node-item mb-4'>
-        <Label className="flex items-center bisheng-label mb-2">
+        <Label className="flex items-center doberman_agent-label mb-2">
             {data.required && <span className="text-red-500">*</span>}
             {t(`${i18nPrefix}label`)}
         </Label>

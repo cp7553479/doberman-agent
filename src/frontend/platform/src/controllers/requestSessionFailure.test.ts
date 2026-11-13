@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
 const notices = vi.hoisted(() => vi.fn());
-vi.mock('@bisheng/ui', () => ({ notification: { open: notices } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: notices } }));
 afterEach(() => { vi.resetModules(); vi.unstubAllGlobals(); localStorage.clear(); sessionStorage.clear(); notices.mockClear(); });
 it('lets the session-kick interaction handle an untyped HTTP401 Blob before clearing the session', async () => {
   const { default: request, requestInterceptor } = await import('./request');

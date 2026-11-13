@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
 import { DialogClose } from "@/components/bs-ui/dialog";
@@ -9,7 +9,7 @@ import { showApiError } from "@/controllers/request";
 import { uploadFileWithProgress } from "@/modals/UploadModal/upload";
 import Word from "@/pages/Report/components/Word";
 import { getOfficeReachableUrl } from "@/utils/officeUrl";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

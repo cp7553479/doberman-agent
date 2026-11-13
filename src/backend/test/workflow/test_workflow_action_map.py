@@ -18,8 +18,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.api.services.workflow import WorkFlowService
-from bisheng.database.models.flow import FlowType
+from doberman_agent.api.services.workflow import WorkFlowService
+from doberman_agent.database.models.flow import FlowType
 
 HOSTED = FlowType.HOSTED_APP.value
 WORKFLOW = FlowType.WORKFLOW.value
@@ -36,7 +36,7 @@ def action_probe(monkeypatch):
     """
     from types import SimpleNamespace
 
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True)
 
@@ -47,7 +47,7 @@ def action_probe(monkeypatch):
         return {str(resource_id): frozenset(actions) for resource_id in resource_ids}
 
     monkeypatch.setattr(
-        "bisheng.api.services.workflow.batch_check_business_actions",
+        "doberman_agent.api.services.workflow.batch_check_business_actions",
         _batch_check,
     )
     return SimpleNamespace(asked=asked)

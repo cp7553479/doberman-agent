@@ -2,10 +2,10 @@ from sqlalchemy import BigInteger, CheckConstraint, String
 from sqlalchemy.dialects import mysql, sqlite
 from sqlalchemy.schema import CreateTable
 
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.domain.models import ApiCredential, ServiceAccount
-from bisheng.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS
-from bisheng.user.domain.models.user import User
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.domain.models import ApiCredential, ServiceAccount
+from doberman_agent.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS
+from doberman_agent.user.domain.models.user import User
 
 
 def test_service_account_is_an_independent_subject():

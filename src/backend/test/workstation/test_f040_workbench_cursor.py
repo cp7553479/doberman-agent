@@ -16,7 +16,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.workstation.api.endpoints import apps as apps_mod
+from doberman_agent.workstation.api.endpoints import apps as apps_mod
 
 
 async def _used_page(*, page, limit, n=5, tag_spy=None):

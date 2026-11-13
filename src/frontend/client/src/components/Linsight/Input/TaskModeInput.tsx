@@ -9,7 +9,7 @@
  * per-session Recoil atom and survive exiting task mode; skills are cleared
  * on exit. Exit = navigate back to /c.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { Square } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -35,7 +35,7 @@ import { useContainerCompact, useLocalize, TOOLBAR_COMPACT_THRESHOLD } from '~/h
 import { useLinsightSessionManager } from '~/hooks/useLinsightManager';
 import InputFiles from '~/pages/appChat/components/InputFiles';
 import { useFileDropAndPaste } from '~/pages/appChat/useFileDropAndPaste';
-import { bishengConfState } from '~/pages/appChat/store/atoms';
+import { dobermanAgentConfState } from '~/pages/appChat/store/atoms';
 import { useToastContext } from '~/Providers';
 import {
     taskModeContextState,
@@ -82,8 +82,8 @@ export function TaskModeInput({ conversationId = 'new', disabled = false, onFoll
     const location = useLocation();
     const { showToast } = useToastContext();
     const { data: bsConfig } = useGetBsConfig();
-    // Upload size limit lives in /api/v1/env (bishengConfState), not bsConfig.
-    const envConfig = useRecoilValue(bishengConfState);
+    // Upload size limit lives in /api/v1/env (dobermanAgentConfState), not bsConfig.
+    const envConfig = useRecoilValue(dobermanAgentConfState);
 
     const sessionKey = conversationId || 'new';
     const [context, setContext] = useRecoilState(taskModeContextState(sessionKey));

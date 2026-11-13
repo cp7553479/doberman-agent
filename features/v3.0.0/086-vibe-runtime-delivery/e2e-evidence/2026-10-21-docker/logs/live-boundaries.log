@@ -1,8 +1,8 @@
 bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 ......                                                                   [100%]
 =============================== warnings summary ===============================
-bisheng/core/ai/__init__.py:2
-  /work/bisheng/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
+doberman-agent/core/ai/__init__.py:2
+  /work/doberman-agent/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
     from langchain_community.chat_models import ChatTongyi, ChatZhipuAI, MoonshotChat
 
 ../app/.venv/lib/python3.11/site-packages/simhash/__init__.py:50

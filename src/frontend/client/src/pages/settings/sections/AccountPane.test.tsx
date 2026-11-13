@@ -28,7 +28,7 @@ jest.mock("~/components/ui/Button", () => ({
     <button onClick={onClick}>{children}</button>
   ),
 }));
-jest.mock("bisheng-icons", () => ({ Outlined: { LogOut: () => null } }));
+jest.mock("@doberman-agent/icons", () => ({ Outlined: { LogOut: () => null } }));
 
 it("opens and closes the client dialog from account information", () => {
   mockEnabled = true;

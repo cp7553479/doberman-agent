@@ -9,14 +9,14 @@ Auto-loaded when editing files in `src/backend/`. Complements root `AGENTS.md`.
 
 ## Coding Conventions
 
-**Module layout**: `<module>/{api/router.py, api/endpoints/, domain/services/, domain/models/, domain/schemas/, domain/repositories/}`. Register the router in `bisheng/api/router.py`. Layered call chain & prohibitions → constitution **C1**.
+**Module layout**: `<module>/{api/router.py, api/endpoints/, domain/services/, domain/models/, domain/schemas/, domain/repositories/}`. Register the router in `doberman_agent/api/router.py`. Layered call chain & prohibitions → constitution **C1**.
 
 **API**:
 ```python
-from bisheng.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.dependencies.user_deps import UserPayload
 user: UserPayload = Depends(UserPayload.get_login_user)   # WebSocket: get_login_user_from_ws
 
-from bisheng.common.schemas.api import resp_200, resp_500
+from doberman_agent.common.schemas.api import resp_200, resp_500
 return resp_200(data)        # success
 return resp_500(code, msg)   # business error
 ```
@@ -85,19 +85,19 @@ uv run pytest test/ -m "not e2e"                  # exclude e2e
 uv run ruff format <file_or_dir>
 uv run ruff check --fix <file_or_dir>
 
-# Start API (port 7860; config = filename relative to the bisheng package dir)
+# Start API (port 7860; config = filename relative to the doberman_agent package dir)
 export config=config.yaml
-uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
+uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
 
 # Celery (one terminal per queue)
-uv run celery -A bisheng.worker.main worker -l info -c 20  -P threads -Q knowledge_celery -n knowledge@%h
-uv run celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery  -n workflow@%h
-uv run celery -A bisheng.worker.main beat -l info
+uv run celery -A doberman_agent.worker.main worker -l info -c 20  -P threads -Q knowledge_celery -n knowledge@%h
+uv run celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery  -n workflow@%h
+uv run celery -A doberman_agent.worker.main beat -l info
 
 # Linsight Worker (optional)
-uv run python bisheng/linsight/worker.py --worker_num 4 --max_concurrency 5
+uv run python doberman_agent/linsight/worker.py --worker_num 4 --max_concurrency 5
 
-# DB migration (alembic.ini in src/backend/; revisions live in bisheng/core/database/alembic/versions/)
+# DB migration (alembic.ini in src/backend/; revisions live in doberman_agent/core/database/alembic/versions/)
 uv run alembic upgrade head
 uv run alembic revision --autogenerate -m "msg"   # autogen reflects MySQL only; review DM8 compat manually
 ```
@@ -107,8 +107,8 @@ uv run alembic revision --autogenerate -m "msg"   # autogen reflects MySQL only;
 **Schema ownership and migration scripts:**
 
 - **Whole-table creation** → declare the SQLModel with `table=True` under a discovered model directory. Every online Alembic upgrade imports all model modules and runs `create_all(checkfirst=True)` for missing tables before revisions. A new standalone table does not require a create-table revision unless a same-release migration depends on it or it needs database objects SQLModel cannot express.
-- **Existing-table schema changes** (add/alter/drop columns, indexes, constraints; rename/drop tables) → Alembic revision under `bisheng/core/database/alembic/versions/`, replayed on every environment via `alembic upgrade head`. `create_all()` never changes an existing table. The **only** data effect allowed in a revision is a `server_default` fill on an added column (the engine backfills existing rows as part of the DDL).
-- **Any data migration / maintenance** — backfill, transform, dedup, purge, seed, or *any* read-then-write on existing rows (`SELECT`→`UPDATE`/`INSERT`, `INSERT…SELECT`) — is a **separate operational procedure** (`scripts/` or a DBA runbook) run out-of-band, **never** in a revision. Even cleanup required before a schema change (e.g. dedup before a unique constraint) is an ops prerequisite run before deploy; the migration only issues the DDL and fails loudly if the data wasn't prepared. Migration authoring rules → `bisheng/core/database/alembic/AGENTS.md`.
+- **Existing-table schema changes** (add/alter/drop columns, indexes, constraints; rename/drop tables) → Alembic revision under `doberman_agent/core/database/alembic/versions/`, replayed on every environment via `alembic upgrade head`. `create_all()` never changes an existing table. The **only** data effect allowed in a revision is a `server_default` fill on an added column (the engine backfills existing rows as part of the DDL).
+- **Any data migration / maintenance** — backfill, transform, dedup, purge, seed, or *any* read-then-write on existing rows (`SELECT`→`UPDATE`/`INSERT`, `INSERT…SELECT`) — is a **separate operational procedure** (`scripts/` or a DBA runbook) run out-of-band, **never** in a revision. Even cleanup required before a schema change (e.g. dedup before a unique constraint) is an ops prerequisite run before deploy; the migration only issues the DDL and fails loudly if the data wasn't prepared. Migration authoring rules → `doberman_agent/core/database/alembic/AGENTS.md`.
 
 ---
 
@@ -122,21 +122,21 @@ uv run alembic revision --autogenerate -m "msg"   # autogen reflects MySQL only;
 
 - **Upgrade one dependency at a time with a pinned version.** A bare `uv lock --upgrade-package <pkg>` moves the whole closure to its newest resolvable state and the review surface explodes; use `--upgrade-package "pkg==ver"` for each package you actually intend to move.
 
-- **The wheel under `src/bisheng-cli/dist/` is a build artifact committed to the repo** (the CLI ships with the backend package; its sources are not in the image). Editing the CLI sources without rebuilding and committing the wheel means the platform keeps distributing the old version, with no warning anywhere. The acceptance test for "the CLI is installed" is that it answers in a **fresh login shell** (`bash -lc '<cmd> --version'`) — installing into a project-local venv passes in the current shell and is command-not-found in the next one.
+- **The wheel under `src/doberman-agent-cli/dist/` is a build artifact committed to the repo** (the CLI ships with the backend package; its sources are not in the image). Editing the CLI sources without rebuilding and committing the wheel means the platform keeps distributing the old version, with no warning anywhere. The acceptance test for "the CLI is installed" is that it answers in a **fresh login shell** (`bash -lc '<cmd> --version'`) — installing into a project-local venv passes in the current shell and is command-not-found in the next one.
 
 - **Check the license before adding a third-party dependency.** The tree already carries AGPL-3.0 code (`pymupdf`, imported directly at several points in the RAG pipeline), which some customer compliance terms conflict with outright; confirm there is no equivalent alternative before pulling in another strong-copyleft package. The same check applies to prompt and skill assets, which are frequently distributed under proprietary licenses that forbid redistribution and derivative works — those cannot be repackaged into a skill pack at all.
 
-- **`bisheng_langchain` is a separate package sitting next to `bisheng`; it must not import `bisheng.*`.** When the two need to share a constant or a threshold, inject it as a parameter from the caller.
+- **`doberman_agent_langchain` is a separate package sitting next to `doberman_agent`; it must not import `doberman_agent.*`.** When the two need to share a constant or a threshold, inject it as a parameter from the caller.
 
 ---
 
 ## Quick Map (indexes — architecture detail in `docs/architecture/`)
 
-**Domain modules** — convention: own top dir under `bisheng/` with `api/` + `domain/` (knowledge, linsight, permission, approval, tenant, evaluation, llm, chat_session, …). `ls bisheng/` is the authoritative list — do not maintain a full enumeration here, it rots. Structural exceptions: `workflow/` (engine layout: graph/nodes/edges, no api/domain) and `mcp_manage/` (clients/langchain only).
+**Domain modules** — convention: own top dir under `doberman_agent/` with `api/` + `domain/` (knowledge, linsight, permission, approval, tenant, evaluation, llm, chat_session, …). `ls doberman_agent/` is the authoritative list — do not maintain a full enumeration here, it rots. Structural exceptions: `workflow/` (engine layout: graph/nodes/edges, no api/domain) and `mcp_manage/` (clients/langchain only).
 **Non-standalone** (single-file routes under `api/v1/`, no top dir): assistant, audit, group, tag, mark, flows, skillcenter, variable, report, invite_code, plus legacy chat/dataset/endpoints.
 → responsibilities: `architecture/02-backend-modules.md`.
 
-**API routes**: v1 `/api/v1` (frontend-facing) + v2 RPC `/api/v2` (in `open_endpoints/api/`) — authoritative registry: `bisheng/api/router.py`.
+**API routes**: v1 `/api/v1` (frontend-facing) + v2 RPC `/api/v2` (in `open_endpoints/api/`) — authoritative registry: `doberman_agent/api/router.py`.
 
 **Subsystems** (quick entry points; architecture in the linked doc):
 - **Workflow engine** — LangGraph DAG. Key files `workflow/graph/{graph_engine,graph_state,workflow}.py`, `nodes/node_manage.py`. Node types = `NodeType` enum in `workflow/common/node.py`. Add node = enum member + node class under `workflow/nodes/<name>/` (inherit `BaseNode`) + register in `NODE_CLASS_MAP` (`node_manage.py`). → `architecture/03`
@@ -178,7 +178,7 @@ uv run alembic revision --autogenerate -m "msg"   # autogen reflects MySQL only;
 - **On the hot path, rewriting a whole row of large JSON on every update is unusable on DM8.** Streaming events that persist full state per step are absorbed fine by MySQL/InnoDB, but DM8's undo segment is exhausted and reports that the undo record version is too old; the UPDATE then hangs holding its lock and every read of that row 500s. Accumulate high-frequency state in Redis (the lossless source of truth) and persist on a throttle. Divergence like this only shows up under the dual-database law (C2) — which is exactly what the DM8 environment is for. Reads matter as much as writes here: `update_by_id` SELECTs the row and refreshes it after the commit, so each call reads a large column back twice — use `update_fields_by_id` when the caller does not need the row.
 - **dmPython ≤ 2.5.38 leaks one reference to every value returned by `fetchall()` / `fetchmany()`** (`fetchone()` is correct; fixed in 2.6.1). SQLAlchemy ORM loading always calls `fetchall`, so on DM8 every ORM read keeps its results alive for the life of the process — about one copy of a large CLOB per read; gc and `malloc_trim` recover nothing. Plain-SQL `.scalar()` / `.first()` go through `fetchone` and look clean, which hides it. To check a deployment, fetch one value (e.g. `SELECT LPAD('a', 8000, 'b') FROM DUAL`) on a raw dmPython cursor with `fetchone()` and with `fetchall()` and compare `sys.getrefcount` — 2 is correct, 3 means the leak. Keep `dmpython` pinned at ≥ 2.6.1.
 - **Verify anything permission-related with a non-admin account.** `super_admin` short-circuits ReBAC, so an administrator still gets 200s while the permission runtime is broken. A smoke script reporting "3/3 endpoints OK" is not evidence either — **an empty list is also a 200**. And the specific triad "visible in the list, 403 on the detail page, blocked for admins too" points at a missing visibility projection rather than at authorization.
-- **Judge regressions by the difference against a baseline, not by an absolute failure count.** Without local middleware the backend suite already fails in blocks (anything needing a database, object storage, or a search engine), and the frontend has pre-existing failing suites too. Take the baseline on the pre-change tree — a separate worktree for a pre-merge comparison — over the *same* selection, then diff. Two riders: a newly failing file may simply have arrived with the branch and be absent from the baseline; and **passing when run alone proves nothing**, because cross-test state leakage (an un-reset tenant ContextVar, for instance) only appears in a combined run. A fresh worktree also has no untracked `src/backend/bisheng/config.yaml` — copy one in before running pytest.
+- **Judge regressions by the difference against a baseline, not by an absolute failure count.** Without local middleware the backend suite already fails in blocks (anything needing a database, object storage, or a search engine), and the frontend has pre-existing failing suites too. Take the baseline on the pre-change tree — a separate worktree for a pre-merge comparison — over the *same* selection, then diff. Two riders: a newly failing file may simply have arrived with the branch and be absent from the baseline; and **passing when run alone proves nothing**, because cross-test state leakage (an un-reset tenant ContextVar, for instance) only appears in a combined run. A fresh worktree also has no untracked `src/backend/doberman_agent/config.yaml` — copy one in before running pytest.
 
 ---
 

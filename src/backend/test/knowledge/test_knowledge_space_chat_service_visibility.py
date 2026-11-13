@@ -20,13 +20,13 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.services.knowledge_file_visibility_service import (
+from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import (
     IndexFilter,
 )
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import (
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import (
     KnowledgeSpaceChatService,
 )
-from bisheng.knowledge.domain.services.retrieval_engine import RetrievalEngine
+from doberman_agent.knowledge.domain.services.retrieval_engine import RetrievalEngine
 
 
 def _make_doc(file_id: int, content: str = "") -> Document:
@@ -78,7 +78,7 @@ async def test_retrieve_and_filter_empty_strategy_skips_invocation(monkeypatch):
     space = MagicMock(id=10)
     invoke_mock = AsyncMock(return_value=[_make_doc(1)])
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=invoke_mock),
     )
 
@@ -106,11 +106,11 @@ async def test_retrieve_and_filter_first_attempt_satisfies(monkeypatch):
 
     # Patch vectorstore init + retriever_tool to deterministic stub.
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 
@@ -122,7 +122,7 @@ async def test_retrieve_and_filter_first_attempt_satisfies(monkeypatch):
         return docs_first
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=fake_ainvoke),
     )
 
@@ -145,11 +145,11 @@ async def test_retrieve_and_filter_post_filter_drops_some(monkeypatch):
 
     space = MagicMock(id=10)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 
@@ -159,7 +159,7 @@ async def test_retrieve_and_filter_post_filter_drops_some(monkeypatch):
         return docs_first
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=fake_ainvoke),
     )
 
@@ -180,11 +180,11 @@ async def test_retrieve_and_filter_capped_at_two_attempts(monkeypatch):
 
     space = MagicMock(id=10)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 
@@ -196,7 +196,7 @@ async def test_retrieve_and_filter_capped_at_two_attempts(monkeypatch):
         return [_make_doc(invoke_count * 10)]
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=fake_ainvoke),
     )
 
@@ -227,11 +227,11 @@ async def test_retrieve_and_filter_expansion_succeeds_second_attempt(monkeypatch
 
     space = MagicMock(id=10)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 
@@ -245,7 +245,7 @@ async def test_retrieve_and_filter_expansion_succeeds_second_attempt(monkeypatch
         return [_make_doc(3), _make_doc(5)]  # only 5 survives
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=fake_ainvoke),
     )
 
@@ -269,11 +269,11 @@ async def test_retrieve_and_filter_logs_structured_fields(monkeypatch, caplog):
 
     space = MagicMock(id=10)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 
@@ -281,7 +281,7 @@ async def test_retrieve_and_filter_logs_structured_fields(monkeypatch, caplog):
         return [_make_doc(1), _make_doc(2)]
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         lambda **kwargs: MagicMock(ainvoke=fake_ainvoke),
     )
 
@@ -331,15 +331,15 @@ async def test_chat_single_file_logs_view_file_passed_debug(monkeypatch):
     # Stub everything downstream so the generator can advance and yield.
     space = MagicMock(id=10)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=space),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=MagicMock(as_retriever=lambda **kw: MagicMock())),
     )
 

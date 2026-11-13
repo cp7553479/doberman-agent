@@ -6,8 +6,8 @@ Covers AC-16 through AC-28 (department + member reconciliation).
 import pytest
 from unittest.mock import MagicMock
 
-from bisheng.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO, RemoteMemberDTO
-from bisheng.org_sync.domain.services.reconciler import (
+from doberman_agent.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO, RemoteMemberDTO
+from doberman_agent.org_sync.domain.services.reconciler import (
     ArchiveDept,
     CreateDept,
     CreateMember,

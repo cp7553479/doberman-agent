@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button, Select, type SelectOption } from '@bisheng/ui';
+import { Button, Select, type SelectOption } from '@doberman-agent/ui';
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { generateUUID } from "@/components/bs-ui/utils";
 import { getKnowledgeDetailApi } from "@/controllers/API";
-import { Tooltip as SharedTooltip,Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip,Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { Hash,Type } from "lucide-react";
 import { useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

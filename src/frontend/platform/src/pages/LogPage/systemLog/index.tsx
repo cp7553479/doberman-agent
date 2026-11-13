@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Pagination, Button, Select } from '@bisheng/ui';
+import { Pagination, Button, Select } from '@doberman-agent/ui';
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 
 import { DatePicker } from "@/components/bs-ui/calendar/datePicker";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table";
-import { notification } from "@bisheng/ui";
+import { notification } from "@doberman-agent/ui";
 import {
     actionToI18nKey,
     AuditLogFilters,
@@ -318,7 +318,7 @@ export default function SystemLog() {
         </div>
         {/* Pagination */}
 
-        <div className="bisheng-table-footer px-6 bg-background-login">
+        <div className="doberman_agent-table-footer px-6 bg-background-login">
             <Pagination locale={paginationLocale}
                 className="float-right justify-end w-full mr-6"
                 current={page}

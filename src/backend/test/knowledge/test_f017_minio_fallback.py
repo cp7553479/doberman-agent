@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.core.storage.minio.minio_storage import (
+from doberman_agent.core.storage.minio.minio_storage import (
     MinioStorage,
     _is_no_such_key_error,
     _translate_to_root_prefix,
@@ -26,7 +26,7 @@ def _make_storage() -> MinioStorage:
     """Skip __init__ (which builds a real minio client) and attach a mock
     client to the instance — enough for these unit tests."""
     storage = MinioStorage.__new__(MinioStorage)
-    storage.bucket = 'bisheng'
+    storage.bucket = 'doberman_agent'
     storage.tmp_bucket = 'tmp-dir'
     storage.minio_client_sync = MagicMock()
     return storage
@@ -88,7 +88,7 @@ def test_is_no_such_key_error_matches_s3_error_code():
 def test_get_object_returns_data_without_fallback_when_leaf_hit():
     storage = _make_storage()
     storage.minio_client_sync.get_object.return_value = _ok_response(b'leaf')
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=True):
         data = storage.get_object_sync(object_name='tenant_subA/file.pdf')
     assert data == b'leaf'
@@ -102,7 +102,7 @@ def test_get_object_falls_back_to_root_on_nosuchkey_for_child():
         _nosuchkey_exc(),
         _ok_response(b'root-data'),
     ]
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=True):
         data = storage.get_object_sync(object_name='tenant_subA/knowledge/1/file.pdf')
     assert data == b'root-data'
@@ -114,7 +114,7 @@ def test_get_object_falls_back_to_root_on_nosuchkey_for_child():
 def test_get_object_no_fallback_when_single_tenant_mode():
     storage = _make_storage()
     storage.minio_client_sync.get_object.side_effect = _nosuchkey_exc()
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=False):
         with pytest.raises(Exception) as excinfo:
             storage.get_object_sync(object_name='tenant_subA/file.pdf')
@@ -128,7 +128,7 @@ def test_get_object_no_fallback_when_object_has_no_tenant_prefix():
     NoSuchKey surfaces."""
     storage = _make_storage()
     storage.minio_client_sync.get_object.side_effect = _nosuchkey_exc()
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=True):
         with pytest.raises(Exception) as excinfo:
             storage.get_object_sync(object_name='knowledge/1/file.pdf')
@@ -138,14 +138,14 @@ def test_get_object_no_fallback_when_object_has_no_tenant_prefix():
 
 def test_get_object_fallback_miss_raises_19503():
     """Fallback attempted but Root path also misses → 19503."""
-    from bisheng.common.errcode.tenant_sharing import StorageSharingFallbackError
+    from doberman_agent.common.errcode.tenant_sharing import StorageSharingFallbackError
 
     storage = _make_storage()
     storage.minio_client_sync.get_object.side_effect = [
         _nosuchkey_exc(),
         _nosuchkey_exc(),
     ]
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=True):
         with pytest.raises(StorageSharingFallbackError):
             storage.get_object_sync(object_name='tenant_subA/knowledge/1/file.pdf')
@@ -166,7 +166,7 @@ def test_object_exists_falls_back_to_root_for_child():
         _nosuchkey_exc(),
         MagicMock(),  # root hit
     ]
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=True):
         assert storage.object_exists_sync(object_name='tenant_subA/file.pdf') is True
     assert storage.minio_client_sync.stat_object.call_count == 2
@@ -175,6 +175,6 @@ def test_object_exists_falls_back_to_root_for_child():
 def test_object_exists_returns_false_when_fallback_disabled_and_missing():
     storage = _make_storage()
     storage.minio_client_sync.stat_object.side_effect = _nosuchkey_exc()
-    with patch('bisheng.core.storage.minio.minio_storage._should_fallback_to_root',
+    with patch('doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root',
                return_value=False):
         assert storage.object_exists_sync(object_name='tenant_subA/file.pdf') is False

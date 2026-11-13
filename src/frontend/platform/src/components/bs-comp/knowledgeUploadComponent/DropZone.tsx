@@ -1,4 +1,4 @@
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 
 import { locationContext } from "@/contexts/locationContext";
 import { UploadIcon } from "lucide-react";
@@ -85,7 +85,7 @@ export default function DropZone({ onDrop }) {
             <input {...getInputProps()} />
             <UploadIcon className="group-hover:text-primary size-5" />
             <p className="text-sm">{t('code.clickOrDragHere')}</p>
-            <p className="bisheng-label px-4 text-center">{formatText}</p>
+            <p className="doberman_agent-label px-4 text-center">{formatText}</p>
         </div>
     );
 };

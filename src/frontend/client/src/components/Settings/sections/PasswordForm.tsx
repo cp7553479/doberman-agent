@@ -3,7 +3,7 @@ import { JSEncrypt } from "jsencrypt";
 import { getPublicKeyApi, updatePasswordApi } from "~/api/user";
 import { NotificationSeverity } from "~/common";
 import { Button } from "~/components/ui/Button";
-import { PasswordInput } from "@bisheng/ui";
+import { PasswordInput } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 import { useToastContext } from "~/Providers";
 import { cn } from "~/utils";

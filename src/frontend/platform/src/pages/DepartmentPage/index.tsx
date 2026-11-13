@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { LazyDepartmentTree, useLazyDepartmentTree } from "@/components/bs-comp/department";
 
 import { locationContext } from "@/contexts/locationContext";
@@ -6,8 +6,8 @@ import { userContext } from "@/contexts/userContext";
 import { getDepartmentApi } from "@/controllers/API/department";
 import { handleUiRequest, showApiError } from "@/controllers/request";
 import { DepartmentTreeNode } from "@/types/api/department";
-import { Tabs } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

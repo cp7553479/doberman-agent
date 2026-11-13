@@ -5,15 +5,15 @@
 
 ## 内置技能：放哪、怎么生效
 
-源码放在 **`src/backend/bisheng/linsight/builtin_skills/<name>/`** —— 必须在 `src/backend/` 之内，
+源码放在 **`src/backend/doberman_agent/linsight/builtin_skills/<name>/`** —— 必须在 `src/backend/` 之内，
 因为 `src/backend/Dockerfile` 是 `COPY ./ ./`，构建上下文就是 `src/backend`，仓库根的目录不会进镜像。
 放在包内之后，docker 镜像、裸机 rsync、pip 安装都自动带上。
 
 | 目录 | 说明 |
 |---|---|
-| `bisheng-pptx/` | PPT 制作技能。用 python-pptx 生成 .pptx，含中文排版规范、模板套用、交付前自检脚本。用户要「PPT／幻灯片／汇报材料」时用 |
-| `bisheng-xlsx/` | Excel 表格技能。用 openpyxl 生成 .xlsx，交付前必须经 LibreOffice Calc 重算公式再体检。用户要「表格／报表／台账／预算测算／财务模型」时用 |
-| `bisheng-docx/` | Word 文档技能。用 python-docx 生成 .docx，覆盖 `w:eastAsia` 中文字体、目录域、页码、表格列宽、封面。用户要**带版式**的正式文档时用；只是「把刚才的内容存成 Word」走自带的 `export_docx`，别用本技能 |
+| `doberman-agent-pptx/` | PPT 制作技能。用 python-pptx 生成 .pptx，含中文排版规范、模板套用、交付前自检脚本。用户要「PPT／幻灯片／汇报材料」时用 |
+| `doberman-agent-xlsx/` | Excel 表格技能。用 openpyxl 生成 .xlsx，交付前必须经 LibreOffice Calc 重算公式再体检。用户要「表格／报表／台账／预算测算／财务模型」时用 |
+| `doberman-agent-docx/` | Word 文档技能。用 python-docx 生成 .docx，覆盖 `w:eastAsia` 中文字体、目录域、页码、表格列宽、封面。用户要**带版式**的正式文档时用；只是「把刚才的内容存成 Word」走自带的 `export_docx`，别用本技能 |
 
 生效链路是**应用启动时自动 seed**（`domain/services/builtin_skill_seeder.py`，挂在 `main.py` 的
 lifespan 上，和既有的两个 backfill 同一位置）：读包 → 遍历活跃租户 → 写入
@@ -36,17 +36,17 @@ lifespan 上，和既有的两个 backfill 同一位置）：读包 → 遍历�
 
 **不打算内置的技能**（客户定制、一次性）不用放这里，直接用下面的打包流程做成 zip 在管理端导入即可。
 
-### bisheng-pptx 的环境前提（实测）
+### doberman-agent-pptx 的环境前提（实测）
 
 - **依赖已经在镜像里，无需额外安装**。`python-pptx>=1.0.2` 是 `src/backend/pyproject.toml` 的正式依赖，
   main / hotfix/2.6.0 / 3.0 各线都有（都在第 81 行）。实测：
-  116（`bisheng-backend:release`，2.6）与 180（`v2.6.0-fix2`）容器内 `python-pptx 1.0.2`、
+  116（`doberman-agent-backend:release`，2.6）与 180（`v2.6.0-fix2`）容器内 `python-pptx 1.0.2`、
   `PyMuPDF 1.26.6`、`Pillow`、`lxml`、`matplotlib`、`pandas`、`reportlab`、`openpyxl`、`XlsxWriter` 全部在位；
   `defusedxml` 和 `markitdown` 都没有（本技能不依赖它们，这正是不照搬官方 skill 的原因之一）。
   > ⚠️ 在容器里核实依赖必须用 **`/app/.venv/bin/python`**，不能用 `python`／`bash -lc "python ..."` ——
   > 后者解析到 `/usr/local/bin/python3`（venv 的 base 解释器），看不到 venv 的 site-packages，
   > 会把装好的包全部误判成缺失。
-- **需要用户勾选代码执行器**（`bisheng_code_interpreter`），否则无法生成文件。
+- **需要用户勾选代码执行器**（`doberman_agent_code_interpreter`），否则无法生成文件。
 - **预览渲染需要 LibreOffice 带 Impress**。镜像（`base.Dockerfile` 装 Debian `libreoffice` 元包）
   实测**有** impress：116、180 上 pptx→pdf 都成功（`impress_pdf_Export` 过滤器）。
   但 114 这类手动只装了 `libreoffice-writer` 的机器**没有** impress，转换会报
@@ -59,12 +59,12 @@ lifespan 上，和既有的两个 backfill 同一位置）：读包 → 遍历�
   的裸版式，配色/版式/图表/图片位置全不可控。SKILL.md 里要写「有，但不用，因为…」——
   把存在的东西写成「不存在」，模型自己 `which` 到之后会开始怀疑整张环境表。
 
-### bisheng-xlsx 的环境前提（实测）
+### doberman-agent-xlsx 的环境前提（实测）
 
 - **依赖已经在镜像里**。`openpyxl>=3.1.5` 是 `src/backend/pyproject.toml` 的正式依赖（第 56 行），
   `import openpyxl` 直接可用。`XlsxWriter` 也在，但只能新建、不能读改已有文件，也不能和 openpyxl
   混用 —— 一律走 openpyxl。`markitdown` 不在。
-- **需要用户勾选代码执行器**（`bisheng_code_interpreter`）。
+- **需要用户勾选代码执行器**（`doberman_agent_code_interpreter`）。
 - **公式必须经 LibreOffice Calc 重算**。openpyxl 写出的公式只有公式文本、**没有缓存值**，
   不重算就等于交了一张全空的表（Excel 打开会自己算，但预览、pandas、下游接口读到的全是 None）。
   包内 `scripts/recalc_check.py` 用 `soffice` 把文件就地重写一遍，再扫结果里有没有 `#NAME?`/`#REF!`。
@@ -75,11 +75,11 @@ lifespan 上，和既有的两个 backfill 同一位置）：读包 → 遍历�
   根本没有 `scalc` 这个文件，而 Calc 完全可用 —— 这样探针会 100% 假阴性，把能用的部署判死。
   同理，**判重算成败要看文件有没有被重写**（mtime + size），不能只看退出码：soffice 什么都没转也会 exit 0。
 
-### bisheng-docx 的环境前提（实测）
+### doberman-agent-docx 的环境前提（实测）
 
 - **依赖已经在镜像里**。`python-docx>=1.2.0` 是 `src/backend/pyproject.toml` 的正式依赖（第 80 行），
   `import docx` 直接可用。
-- **需要用户勾选代码执行器**（`bisheng_code_interpreter`）。
+- **需要用户勾选代码执行器**（`doberman_agent_code_interpreter`）。
 - **中文字体必须显式写 `w:eastAsia`**。`run.font.name` 只设西文，中文会退回 Calibri/宋体。
   包内 `set_run_font()` 一次写 ascii/hAnsi/eastAsia 三个属性；只设 latin 的文档看着「设过字体」，
   打开全是错字体。
@@ -94,10 +94,10 @@ lifespan 上，和既有的两个 backfill 同一位置）：读包 → 遍历�
 ## 打包与导入
 
 ```bash
-bash scripts/pack_linsight_skill.sh src/backend/bisheng/linsight/builtin_skills/bisheng-pptx
-bash scripts/pack_linsight_skill.sh src/backend/bisheng/linsight/builtin_skills/bisheng-xlsx
-bash scripts/pack_linsight_skill.sh src/backend/bisheng/linsight/builtin_skills/bisheng-docx
-# → dist/bisheng-pptx.zip / dist/bisheng-xlsx.zip / dist/bisheng-docx.zip
+bash scripts/pack_linsight_skill.sh src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-pptx
+bash scripts/pack_linsight_skill.sh src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-xlsx
+bash scripts/pack_linsight_skill.sh src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-docx
+# → dist/doberman-agent-pptx.zip / dist/doberman-agent-xlsx.zip / dist/doberman-agent-docx.zip
 ```
 
 脚本会先校验后端在导入时会卡的那几条（SKILL.md 在包根、frontmatter `name` 等于目录名且是 kebab-case、
@@ -120,7 +120,7 @@ Root 租户的技能不会下放给子租户，每个租户都要各导一份。
 - `description` 必填，≤1024 字符。**这是唯一进入模型 prompt 的文字** —— 正文完全不注入。
   技能会不会被用起来，100% 取决于 description 写没写全场景与关键词。
 - `metadata.display-name`：管理页与用户勾选器里显示的名字，可中文，≤255。不写就退回 `name` 那个英文 slug。
-- 其它键（`license`、`allowed-tools` 等）原样保留、不校验。**`allowed-tools` 在 bisheng 里不生效**，
+- 其它键（`license`、`allowed-tools` 等）原样保留、不校验。**`allowed-tools` 在 doberman-agent 里不生效**，
   本轮可用的工具完全由用户在前端勾选的工具决定，技能无法声明依赖。
 - 同租户内 `name` 和 `display-name` 任一重复都会被拒（11055），不会自动加后缀。
 
@@ -128,7 +128,7 @@ Root 租户的技能不会下放给子租户，每个租户都要各导一份。
 
 - 模型必须自己 `read_file("/skills/<name>/SKILL.md", limit=1000)` 才能读到正文（progressive disclosure）。
   正文里引用别的文件也要给全路径 `/skills/<name>/references/xxx.md`。
-- 代码执行器（`bisheng_code_interpreter`）的 cwd 是工作区根，包内文件用**相对路径** `skills/<name>/...` 打开。
+- 代码执行器（`doberman_agent_code_interpreter`）的 cwd 是工作区根，包内文件用**相对路径** `skills/<name>/...` 打开。
   写成 `/skills/...` 指向的是宿主机根目录，`open()` 必 FileNotFoundError
   （`base_executor` 的 `_ABSOLUTE_PROVISIONED_RE` 只会附一条提醒，**不拦截**，所以错了也照跑照崩）。
   **两套路径命名空间是刻意区分的，不要「统一」掉**：给 `read_file` 的引用**带**前导斜杠，

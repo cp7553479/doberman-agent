@@ -1,4 +1,4 @@
-"""PID 1 for the isolation-environment runner. Must not import bisheng."""
+"""PID 1 for the isolation-environment runner. Must not import doberman_agent."""
 
 from __future__ import annotations
 

@@ -10,16 +10,16 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.knowledge_space import SpaceFileNotFoundError
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.models.knowledge_space_delete_job import KnowledgeSpaceDeleteJob, deletion_now
-from bisheng.knowledge.domain.repositories.knowledge_space_delete_repository import KnowledgeSpaceDeleteRepository
-from bisheng.knowledge.domain.services.knowledge_permission_service import KnowledgeFilePermissionRecord
-from bisheng.knowledge.domain.services.knowledge_space_direct_delete_service import (
+from doberman_agent.common.errcode.knowledge_space import SpaceFileNotFoundError
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.models.knowledge_space_delete_job import KnowledgeSpaceDeleteJob, deletion_now
+from doberman_agent.knowledge.domain.repositories.knowledge_space_delete_repository import KnowledgeSpaceDeleteRepository
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import KnowledgeFilePermissionRecord
+from doberman_agent.knowledge.domain.services.knowledge_space_direct_delete_service import (
     DELETE_STEPS,
     KnowledgeSpaceDirectDeleteService,
     dispatch_delete_job,
@@ -340,13 +340,13 @@ async def test_empty_folder_cleanup_uses_snapshot_without_storage_or_embedding(d
     job = next(row for row in await jobs(db) if row.manifest["rows"] == [99])
     adapter = SimpleNamespace(project_delete=AsyncMock())
     with (
-        patch("bisheng.permission.application.access.get_f048_resource_adapter", AsyncMock(return_value=adapter)),
+        patch("doberman_agent.permission.application.access.get_f048_resource_adapter", AsyncMock(return_value=adapter)),
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(side_effect=AssertionError("storage not needed")),
         ),
         patch(
-            "bisheng.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_milvus_vectorstore_sync",
+            "doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_milvus_vectorstore_sync",
             side_effect=AssertionError("embedding not needed"),
         ),
     ):
@@ -360,7 +360,7 @@ async def test_external_step_cannot_complete_with_residue(db, step):
     await svc.delete(resource=db.root, applicant_user_id=5)
     (job,) = await jobs(db)
     job = await svc.repository.claim(job.id)
-    minio = SimpleNamespace(bucket="bisheng", remove_object=AsyncMock(), object_exists=AsyncMock(return_value=True))
+    minio = SimpleNamespace(bucket="doberman_agent", remove_object=AsyncMock(), object_exists=AsyncMock(return_value=True))
     es = SimpleNamespace(
         client=SimpleNamespace(
             indices=SimpleNamespace(exists=MagicMock(return_value=True), refresh=MagicMock()),
@@ -372,12 +372,12 @@ async def test_external_step_cannot_complete_with_residue(db, step):
         col=SimpleNamespace(delete=MagicMock(), flush=MagicMock(), query=MagicMock(return_value=[{"count(*)": 1}]))
     )
     with (
-        patch("bisheng.core.storage.minio.minio_manager.get_minio_storage", AsyncMock(return_value=minio)),
+        patch("doberman_agent.core.storage.minio.minio_manager.get_minio_storage", AsyncMock(return_value=minio)),
         patch(
-            "bisheng.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_es_vectorstore_sync", return_value=es
+            "doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_es_vectorstore_sync", return_value=es
         ),
         patch(
-            "bisheng.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_milvus_vectorstore_sync",
+            "doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag.init_knowledge_milvus_vectorstore_sync",
             return_value=milvus,
         ),
     ):
@@ -391,7 +391,7 @@ async def test_dispatch_carries_explicit_tenant_header(monkeypatch):
     publish = MagicMock()
     monkeypatch.setitem(
         sys.modules,
-        "bisheng.worker.knowledge.space_delete",
+        "doberman_agent.worker.knowledge.space_delete",
         SimpleNamespace(purge_space_delete=SimpleNamespace(apply_async=publish)),
     )
     await dispatch_delete_job(tenant_id=42, job_id="durable-job")

@@ -15,7 +15,7 @@ def descriptor():
         "host_targets": [["192.0.2.5", 7860]],
         "networks": [
             {
-                "name": "bisheng-apps",
+                "name": "doberman-agent-apps",
                 "id": "abc123",
                 "bridge": "br-abc123",
                 "subnet": "172.30.0.0/24",
@@ -28,25 +28,25 @@ def descriptor():
 
 def test_input_and_forward_only_reply_or_fixed_original_proxy(descriptor):
     text = iptables_restore(descriptor, "*filter\n:INPUT ACCEPT [0:0]\n-A INPUT -p tcp --dport 22 -j ACCEPT\nCOMMIT\n")
-    assert "-I INPUT 1 -i br-abc123 -s 172.30.0.0/24 -j BISHENG_APP_INPUT" in text
+    assert "-I INPUT 1 -i br-abc123 -s 172.30.0.0/24 -j DOBERMAN_AGENT_APP_INPUT" in text
     assert "-I DOCKER-USER 1" in text
     assert "--ctdir REPLY --ctstate ESTABLISHED" in text
     assert "--ctdir ORIGINAL" in text and "-d 172.30.0.2" in text and "--dport 3128" in text
     assert "RELATED" not in text
     assert "-F INPUT" not in text and "--dport 22" not in text
-    assert "-A BISHENG_APP_INPUT -j DROP" in text
+    assert "-A DOBERMAN_AGENT_APP_INPUT -j DROP" in text
 
 
 def test_reapply_removes_only_exact_owned_jumps(descriptor):
-    prior = "-A INPUT -i oldbr -s 172.31.0.0/24 -j BISHENG_APP_INPUT\n-A INPUT -j OTHER\n"
+    prior = "-A INPUT -i oldbr -s 172.31.0.0/24 -j DOBERMAN_AGENT_APP_INPUT\n-A INPUT -j OTHER\n"
     text = iptables_restore(descriptor, prior)
-    assert "-D INPUT -i oldbr -s 172.31.0.0/24 -j BISHENG_APP_INPUT" in text
+    assert "-D INPUT -i oldbr -s 172.31.0.0/24 -j DOBERMAN_AGENT_APP_INPUT" in text
     assert "-D INPUT -j OTHER" not in text
 
 
 def test_nft_owns_input_and_forward_table_only(descriptor):
     document = nft_document(descriptor, exists=True)
-    assert document["nftables"][0] == {"delete": {"table": {"family": "inet", "name": "bisheng_egress"}}}
+    assert document["nftables"][0] == {"delete": {"table": {"family": "inet", "name": "doberman_agent_egress"}}}
     chains = [entry["add"]["chain"] for entry in document["nftables"] if "chain" in entry.get("add", {})]
     assert {chain["hook"] for chain in chains} == {"input", "forward"}
     assert all(chain["prio"] == -100 for chain in chains)
@@ -120,7 +120,7 @@ def test_real_engine_adapter_gates_creation_but_preserves_stop(monkeypatch):
 
     monkeypatch.setattr(host_isolation, "manager_proof", denied)
     with pytest.raises(ValueError, match="proof expired"):
-        backend.create_container("new", {"HostConfig": {"NetworkMode": "bisheng-apps"}})
+        backend.create_container("new", {"HostConfig": {"NetworkMode": "doberman-agent-apps"}})
     backend.stop_container("existing")
     assert calls == [("stop", "existing")]
 
@@ -150,7 +150,7 @@ def test_manager_rechecks_actual_engine_descriptor(monkeypatch, descriptor):
 
         def inspect_container(self, ref):
             return {
-                "NetworkSettings": {"Networks": {"bisheng-apps": {"NetworkID": "abc123", "IPAddress": "172.30.0.2"}}}
+                "NetworkSettings": {"Networks": {"doberman-agent-apps": {"NetworkID": "abc123", "IPAddress": "172.30.0.2"}}}
             }
 
     class Client:
@@ -165,10 +165,10 @@ def test_manager_rechecks_actual_engine_descriptor(monkeypatch, descriptor):
             pass
 
     monkeypatch.setattr(platform_client, "PlatformClient", Client)
-    manager_proof(API(), SimpleNamespace(), "bisheng-apps")
+    manager_proof(API(), SimpleNamespace(), "doberman-agent-apps")
     engine["id"] = "replacement"
     with pytest.raises(platform_client.PlatformError, match="descriptor_changed"):
-        manager_proof(API(), SimpleNamespace(), "bisheng-apps")
+        manager_proof(API(), SimpleNamespace(), "doberman-agent-apps")
 
 
 def add_ingress(descriptor):
@@ -185,12 +185,12 @@ def test_trusted_control_ingress_is_exact_forward_tcp_only(descriptor):
     text = iptables_restore(descriptor, "")
     for peer in descriptor["networks"][0]["ingress"]:
         expected = (
-            f"-A BISHENG_APP_FORWARD -i br-abc123 -s {peer['ip']} -d 172.30.0.0/24 "
+            f"-A DOBERMAN_AGENT_APP_FORWARD -i br-abc123 -s {peer['ip']} -d 172.30.0.0/24 "
             "-p tcp -m conntrack --ctdir ORIGINAL -j RETURN"
         )
         assert expected in text
-        assert text.index(expected) < text.index("-A BISHENG_APP_FORWARD -j DROP")
-        assert not any(peer["ip"] in line for line in text.splitlines() if line.startswith("-A BISHENG_APP_INPUT"))
+        assert text.index(expected) < text.index("-A DOBERMAN_AGENT_APP_FORWARD -j DROP")
+        assert not any(peer["ip"] in line for line in text.splitlines() if line.startswith("-A DOBERMAN_AGENT_APP_INPUT"))
     assert "-s 172.30.0.0/24 -d 172.30.0.0/24" not in text
     assert "--dport 3128" in text
 
@@ -261,7 +261,7 @@ def test_discovery_pins_actual_trusted_container_identity(descriptor, change):
                 "Config": {"Labels": {}},
                 "NetworkSettings": {
                     "Networks": {
-                        "bisheng-apps": {
+                        "doberman-agent-apps": {
                             "NetworkID": network["id"],
                             "IPAddress": peer["ip"] if peer else network["proxy_ip"],
                         }
@@ -270,18 +270,18 @@ def test_discovery_pins_actual_trusted_container_identity(descriptor, change):
             }
             if name == "manager":
                 if change == "application":
-                    doc["Config"]["Labels"] = {"bisheng.managed": "v2"}
+                    doc["Config"]["Labels"] = {"doberman-agent.managed": "v2"}
                 elif change == "stopped":
                     doc["State"]["Running"] = False
                 elif change == "network_changed":
-                    doc["NetworkSettings"]["Networks"]["bisheng-apps"]["NetworkID"] = "replacement"
+                    doc["NetworkSettings"]["Networks"]["doberman-agent-apps"]["NetworkID"] = "replacement"
                 elif change == "recreated":
                     doc["Id"] = "e" * 64
                 elif change == "ip_changed":
-                    doc["NetworkSettings"]["Networks"]["bisheng-apps"]["IPAddress"] = "172.30.0.5"
+                    doc["NetworkSettings"]["Networks"]["doberman-agent-apps"]["IPAddress"] = "172.30.0.5"
             return doc
 
-    config = {**deepcopy(descriptor), "network_names": ["bisheng-apps"]}
+    config = {**deepcopy(descriptor), "network_names": ["doberman-agent-apps"]}
     if change in {"application", "stopped", "network_changed"}:
         with pytest.raises(ValueError):
             discover(API(), config)

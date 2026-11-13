@@ -7,8 +7,8 @@ from threading import RLock
 
 import pytest
 
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
-from bisheng.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
 from test.dsh.model_audit_fixtures import NOW, ControlledAuditQueue, FaultAuditObjects, audit_database, audit_session
 from test.dsh.test_model_audit_capture import capture
 from test.dsh.test_model_audit_writer import facts, writer_for
@@ -158,7 +158,7 @@ async def test_shutdown_releases_active_queued_and_writing_buffers_with_deadline
 
 
 async def test_real_batched_writer_is_replay_safe_and_preserves_original_encoding():
-    from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+    from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
 
     with audit_database() as engine:
         objects = FaultAuditObjects()
@@ -197,7 +197,7 @@ async def test_real_batched_writer_is_replay_safe_and_preserves_original_encodin
 
 
 async def test_background_writer_bounds_object_concurrency_and_transaction_size():
-    from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+    from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
 
     active = maximum = 0
     transactions = []

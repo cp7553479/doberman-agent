@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "~/components/Settings/sections/AccountSection";

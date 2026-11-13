@@ -4,7 +4,7 @@ import httpx
 import pytest
 from openai import APIConnectionError, APITimeoutError, AuthenticationError
 
-from bisheng.dsh.infrastructure.model_errors import model_failure_code, provider_failure_code
+from doberman_agent.dsh.infrastructure.model_errors import model_failure_code, provider_failure_code
 
 
 @pytest.mark.parametrize("status", [400, 401, 403, 404, 408, 429, 500, 504])

@@ -1,5 +1,5 @@
 import { InlineCitation as Citation } from './InlineCitation';
-import { useCitationDetails } from '@bisheng/chat/citation-inline';
+import { useCitationDetails } from '@doberman-agent/chat/citation-inline';
 import { useClientCitationServices } from './useClientCitationServices';
 import { code } from './LegacyMarkdownCode';
 import { CompactMarkdownImage, MarkdownImage } from './LegacyMarkdownImages';
@@ -29,7 +29,7 @@ import usePrefersMobileLayout from '~/hooks/usePrefersMobileLayout';
 import store from '~/store';
 import { langSubset, preprocessLaTeX } from '~/utils';
 import { type ChatCitation } from '~/api/chatApi';
-import { transformPrivateCitations, type CitationDisplayData } from '@bisheng/chat/citations';
+import { transformPrivateCitations, type CitationDisplayData } from '@doberman-agent/chat/citations';
 import type { CitationReferencesDesktopPayload } from './CitationReferencesDrawer';
 import CitationDocumentPreviewDrawer, { type CitationDocumentPreviewState } from './CitationDocumentPreviewDrawer';
 import { isDeliverableLinkHref } from '~/components/Linsight/Artifacts/artifactUtils';
@@ -299,7 +299,7 @@ const Markdown = memo(({
       currentContent: transformedContent,
       citationMap,
     };
-    // .replaceAll('(bisheng/', '(/bisheng/') // TODO 临时处理方案,以后需要改为markdown插件方式处理
+    // .replaceAll('(doberman_agent/', '(/doberman_agent/') // TODO 临时处理方案,以后需要改为markdown插件方式处理
     // .replace(/\\[\[\]]/g, '$$') // 处理`\[...\]`包裹的公式
   }, [content, LaTeXParsing, isInitializing, citations]);
 

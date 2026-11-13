@@ -14,9 +14,9 @@ import asyncio
 import threading
 from unittest.mock import patch
 
-import bisheng.workflow.callback.llm_usage_callback as cb_mod
-from bisheng.utils.async_utils import set_preferred_bridge_loop
-from bisheng.workflow.callback.llm_usage_callback import LLMUsageCallbackHandler
+import doberman_agent.workflow.callback.llm_usage_callback as cb_mod
+from doberman_agent.utils.async_utils import set_preferred_bridge_loop
+from doberman_agent.workflow.callback.llm_usage_callback import LLMUsageCallbackHandler
 
 
 def _start_loop() -> asyncio.AbstractEventLoop:

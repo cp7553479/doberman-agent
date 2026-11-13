@@ -1,4 +1,4 @@
-import { ApiError } from '@bisheng/api-client';
+import { ApiError } from '@doberman-agent/api-client';
 import { uploadFileToServerApi } from './knowledge';
 import request from './request';
 

@@ -13,18 +13,18 @@ from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.dsh_market.api.auth import MarketActor, market_actor, market_admin
-from bisheng.dsh_market.api.endpoints import router
-from bisheng.dsh_market.domain.workbench_bundle import (
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.dsh_market.api.auth import MarketActor, market_actor, market_admin
+from doberman_agent.dsh_market.api.endpoints import router
+from doberman_agent.dsh_market.domain.workbench_bundle import (
     WorkbenchBundleError,
     compare_semver,
     validate_workbench_bundle,
 )
-from bisheng.dsh_market.domain.workbench_repository import WorkbenchRepository
-from bisheng.dsh_market.domain.workbench_service import WorkbenchService
-from bisheng.dsh_market.infrastructure import get_workbench_service
-from bisheng.utils.http_middleware import owns_dsh_credential
+from doberman_agent.dsh_market.domain.workbench_repository import WorkbenchRepository
+from doberman_agent.dsh_market.domain.workbench_service import WorkbenchService
+from doberman_agent.dsh_market.infrastructure import get_workbench_service
+from doberman_agent.utils.http_middleware import owns_dsh_credential
 
 
 def archive(version="0.12.6", repository=True, extra=None, patch_path="cordis.patch.yml", explicit_root=False):

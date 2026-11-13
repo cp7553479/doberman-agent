@@ -1,4 +1,4 @@
-"""E2E authentication helpers for BiSheng.
+"""E2E authentication helpers for DobermanAgent.
 
 Handles RSA-encrypted login, JWT token retrieval, and test user creation.
 """
@@ -11,7 +11,7 @@ import httpx
 from test.e2e.helpers.api import API_BASE, assert_resp_200
 
 # Default test admin password. 114 and other non-default-password deployments
-# override via the ``E2E_ADMIN_PASSWORD`` env var (e.g. ``Bisheng@top1`` on
+# override via the ``E2E_ADMIN_PASSWORD`` env var (e.g. ``doberman-agent@top1`` on
 # 192.168.106.114). Local dev / CI leaves the helper's built-in default.
 _DEFAULT_ADMIN_PASSWORD = 'admin123'
 _DEFAULT_USER_PASSWORD = 'test_password_123'
@@ -53,7 +53,7 @@ async def get_admin_token(client: httpx.AsyncClient) -> str:
     Password resolution order:
       1. ``E2E_ADMIN_TOKEN`` env var for an ephemeral dedicated-environment token.
       2. ``E2E_ADMIN_PASSWORD`` env var (set this on servers with non-default
-         admin passwords, e.g. ``Bisheng@top1`` on 192.168.106.114).
+         admin passwords, e.g. ``doberman-agent@top1`` on 192.168.106.114).
       3. Hard-coded default ``admin123`` (local dev / CI).
     """
     token = os.environ.get('E2E_ADMIN_TOKEN', '').strip()

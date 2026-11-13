@@ -12,9 +12,9 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Route
 
-from bisheng.dsh.config import DshSettings
-from bisheng.dsh.domain.services.authorization import DshAuthorizationService
-from bisheng.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime, work_transport_security
+from doberman_agent.dsh.config import DshSettings
+from doberman_agent.dsh.domain.services.authorization import DshAuthorizationService
+from doberman_agent.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime, work_transport_security
 
 ORIGINS = [
     ("http://192.0.2.15:18081/", "http://192.0.2.15:18081"),
@@ -44,14 +44,14 @@ async def test_single_origin_for_login_and_real_mcp(configured, expected, monkey
         list_tools=AsyncMock(
             return_value=[
                 {
-                    "name": "bisheng_tool_7",
+                    "name": "doberman_agent_tool_7",
                     "description": "Read test data",
                     "inputSchema": {"type": "object", "properties": {}},
                 }
             ]
         )
     )
-    monkeypatch.setattr("bisheng.dsh.work_mcp.WorkCapabilitiesService", lambda user: service)
+    monkeypatch.setattr("doberman_agent.dsh.work_mcp.WorkCapabilitiesService", lambda user: service)
     manager = create_work_mcp_runtime(work_transport_security(settings.platform_public_url))
 
     async def endpoint(request: Request):
@@ -81,7 +81,7 @@ async def test_single_origin_for_login_and_real_mcp(configured, expected, monkey
             },
         )
         assert response.status_code == 200, response.text
-        assert response.json()["result"]["serverInfo"]["name"] == "bisheng-enterprise-work"
+        assert response.json()["result"]["serverInfo"]["name"] == "doberman-agent-enterprise-work"
         response = await client.post(
             "/api/v1/dsh/work/mcp",
             json={
@@ -92,7 +92,7 @@ async def test_single_origin_for_login_and_real_mcp(configured, expected, monkey
             headers={"mcp-protocol-version": "2025-11-25"},
         )
         assert response.status_code == 200, response.text
-        assert response.json()["result"]["tools"][0]["name"] == "bisheng_tool_7"
+        assert response.json()["result"]["tools"][0]["name"] == "doberman_agent_tool_7"
 
 
 @pytest.mark.parametrize("configured,expected", ORIGINS)

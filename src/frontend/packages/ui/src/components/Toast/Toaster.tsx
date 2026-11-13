@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Filled, Outlined } from 'bisheng-icons';
+import { Filled, Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import { Button } from '../Button/Button';
 import {
@@ -268,7 +268,7 @@ export function Toaster({ className, closeLabel = 'Close' }: ToasterProps) {
   // chrome or a dialog no matter how large its z-index is.
   return createPortal(
     <div
-      data-bisheng-notice=""
+      data-doberman_agent-notice=""
       className={cn(
         // Always top-center, 16px below the viewport edge, above everything —
         // a toast fired from inside a dialog has to be visible (§3). The exact

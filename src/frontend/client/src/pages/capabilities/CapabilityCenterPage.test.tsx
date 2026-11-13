@@ -12,7 +12,7 @@ const provider = Object.entries(resources.en.tool.categories).find(([, value]) =
 const mockCatalog: Capability[] = [{
   id: 'tool:42', resource_id: 42, kind: 'builtin', tool_key: companyKey,
   name: chinese.name, description: chinese.desc, provider, ready: true,
-  availability_enabled: true, demo: false, trial: null, invocation_name: 'mcp__bisheng__bisheng_tool_42',
+  availability_enabled: true, demo: false, trial: null, invocation_name: 'mcp__doberman_agent__doberman_agent_tool_42',
 }];
 
 jest.mock('~/hooks', () => ({
@@ -29,15 +29,15 @@ jest.mock('~/api/skillCenter', () => ({ getSkillScope: jest.fn() }));
 jest.mock('~/components/Skills/useSkillCenter', () => ({ useSkillCenter: () => ({ platform: {}, personal: {} }) }));
 jest.mock('~/pages/skills/SkillCenterPane', () => ({ SkillCenterPane: () => null }));
 jest.mock('~/pages/skills/SkillList', () => ({ SkillListSkeleton: () => null }));
-jest.mock('~/types/chat', () => ({ QueryKeys: { bishengConfig: 'config' } }));
-jest.mock('bisheng-icons', () => ({ Outlined: { Skill: () => null, Plus: () => null } }));
+jest.mock('~/types/chat', () => ({ QueryKeys: { dobermanAgentConfig: 'config' } }));
+jest.mock('@doberman-agent/icons', () => ({ Outlined: { Skill: () => null, Plus: () => null } }));
 jest.mock('lucide-react', () => ({ Wrench: () => null, CheckCircle2: () => null, Play: () => null }));
 jest.mock('~/components/ModuleHome', () => ({
   MODULE_HOME_COLUMN: '', MODULE_HOME_FRAME: '',
   ModuleHomeHeader: ({ title, children }: { title: string; children: ReactNode }) => <header>{title}{children}</header>,
 }));
 // Keep the page and detail renderers real; layout primitives are lightweight test surfaces.
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
   Button: ({ children, onClick }: { children: ReactNode; onClick: () => void }) => <button onClick={onClick}>{children}</button>,
   SearchInput: ({ value, onChange, ...props }: { value: string; onChange: (event: unknown) => void; 'aria-label': string }) =>
     <input aria-label={props['aria-label']} value={value} onChange={onChange} />,

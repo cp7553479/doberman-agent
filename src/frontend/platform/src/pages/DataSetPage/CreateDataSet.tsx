@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Button, Input, toast } from '@bisheng/ui';
+import { Button, Input, toast } from '@doberman-agent/ui';
 import { QaKnowledgeSelect } from './QaKnowledgeSelect';
 
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
 import { Label } from "@/components/bs-ui/label";
-import { RadioGroup, Radio } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { RadioGroup, Radio } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import SimpleUpload from "@/components/bs-ui/upload/simple";
 import { createDatasetApi } from "@/controllers/API/finetune";
@@ -127,13 +127,13 @@ const CreateDataSet = forwardRef<CreateDataSetHandle, CreateDataSetProps>(({ onC
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-2">
                     <div>
-                        <label htmlFor="dataSetName" className="bisheng-label">
+                        <label htmlFor="dataSetName" className="doberman_agent-label">
                             <span className="text-red-500">*</span>{t('dataset.name')}
                         </label>
                         <Input id="dataSetName" name="dataSetName" value={form.dataSetName} onChange={handleInputChange} className={`mt-2 ${error.dataSetName ? 'border-red-400' : ''}`} />
                     </div>
                     <div>
-                        <label htmlFor="importMethod" className="bisheng-label">{t('dataset.importMethod')}</label>
+                        <label htmlFor="importMethod" className="doberman_agent-label">{t('dataset.importMethod')}</label>
                         <RadioGroup
                             value={form.importMethod}
                             className="flex gap-6 mt-2"
@@ -146,7 +146,7 @@ const CreateDataSet = forwardRef<CreateDataSetHandle, CreateDataSetProps>(({ onC
                     {form.importMethod === 'local' && (
                         <div>
                             <div className="flex justify-between items-center">
-                                <label htmlFor="fileUpload" className="bisheng-label">
+                                <label htmlFor="fileUpload" className="doberman_agent-label">
                                     <span className="text-red-500">*</span>{t('dataset.uploadFile')}
                                 </label>
                                 <div className="flex gap-2 items-center">
@@ -169,7 +169,7 @@ const CreateDataSet = forwardRef<CreateDataSetHandle, CreateDataSetProps>(({ onC
                     )}
                     {form.importMethod === 'qa' && (
                         <div>
-                            <label htmlFor="knowledgeLib" className="bisheng-label">
+                            <label htmlFor="knowledgeLib" className="doberman_agent-label">
                                 <span className="text-red-500">*</span>{t('dataset.selectQaKnowledgeLib')}
                             </label>
                             <QaKnowledgeSelect

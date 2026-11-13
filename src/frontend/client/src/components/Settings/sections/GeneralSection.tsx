@@ -2,7 +2,7 @@
 // legacy atom (ledger #5), no new atoms added.
 // eslint-disable-next-line no-restricted-imports
 import { useRecoilState } from "recoil";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 import useSelectCopy from "~/hooks/useSelectCopy";
 import store from "~/store";

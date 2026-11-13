@@ -6,7 +6,7 @@ import os
 
 import pytest
 
-from bisheng.core.config.settings import SandboxConf, Settings
+from doberman_agent.core.config.settings import SandboxConf, Settings
 
 _ENV_PREFIX = "BS_SANDBOX_CONF__"
 

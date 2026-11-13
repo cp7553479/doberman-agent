@@ -1,4 +1,4 @@
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 
 
 import { userContext } from "@/contexts/userContext";
@@ -12,8 +12,8 @@ import {
   type PermissionCatalogRelease,
   type PublishPermissionCatalogDraftRequest,
 } from "@/controllers/API/permission";
-import { Tabs } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

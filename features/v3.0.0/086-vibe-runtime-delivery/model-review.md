@@ -28,8 +28,8 @@ macOS没有dmPython/dmSQLAlchemy：DM检查使用SQLAlchemy通用编译器、`na
 1. 选择不可变release标识；配置Docker Hub写入身份（DOCKERHUB_USERNAME/DOCKERHUB_TOKEN）以及可用的原生amd64/arm64 runner。
 2. 通过workflow_dispatch(version)或v* tag触发runtime-images工作流，两架构分别构建七类镜像：runtime-manager、app-proxy、Python runtime/preparer、Node runtime/preparer、static runtime。egress及data-helper复用manager镜像，static复用Node preparer。
 3. 执行基础烟测及原生禁网准备、复用、SQLite等集成检查。当前脚本在基础烟测后推送架构标签；后续完整原生检查仍可能失败，所以部分已推tag不等于整套发行通过。
-4. 推送 dataelement/bisheng-*:<release>-<arch>，记录各镜像manifest digest和配置Image ID，检查已有tag并拒绝覆盖。两侧完整job成功后才合成manager/app-proxy服务多架构索引并生成runtime-profiles.json（运行时与preparer按平台引用固定child digest）。
-5. 验证实际仓库镜像及目录可取得；安装侧将Compose的BISHENG_RUNTIME_MANAGER_IMAGE/BISHENG_APP_PROXY_IMAGE指向已发行版本，由超管导入目录并按需CAS切默认环境。离线客户再通过准备机docker save/load交付镜像及依赖材料；当前工作流不自动生成整套离线安装包。
+4. 推送 cp7553479/doberman-agent-*:<release>-<arch>，记录各镜像manifest digest和配置Image ID，检查已有tag并拒绝覆盖。两侧完整job成功后才合成manager/app-proxy服务多架构索引并生成runtime-profiles.json（运行时与preparer按平台引用固定child digest）。
+5. 验证实际仓库镜像及目录可取得；安装侧将Compose的doberman-agent_RUNTIME_MANAGER_IMAGE/DOBERMAN_AGENT_APP_PROXY_IMAGE指向已发行版本，由超管导入目录并按需CAS切默认环境。离线客户再通过准备机docker save/load交付镜像及依赖材料；当前工作流不自动生成整套离线安装包。
 
 工作流当前没有“只构建不推送”的dispatch开关，触发正式工作流会实际推Docker Hub；后续测试Tag已触发并通过。工作流未出现在默认分支时，网页手动Run workflow入口可能不可用；本次实际采用Tag触发。它发布的是平台服务/基础运行环境镜像，不是让客户每次发布应用时构建镜像，也不自动部署客户环境。
 

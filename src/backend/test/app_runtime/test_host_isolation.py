@@ -10,16 +10,16 @@ from test.app_runtime.test_runtime_delivery_repository import runtime_repo as ru
 
 @pytest.fixture
 async def host_env(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_host_isolation import RuntimeHostIsolationReport
-    from bisheng.app_runtime.domain.repositories.host_isolation_repository import REQUIRED, HostIsolationRepository
+    from doberman_agent.app_runtime.domain.models.runtime_host_isolation import RuntimeHostIsolationReport
+    from doberman_agent.app_runtime.domain.repositories.host_isolation_repository import REQUIRED, HostIsolationRepository
 
     async with runtime_repo.transaction() as session:
         row = await session.get(RuntimeHostIsolationReport, "node-a")
         await session.delete(row)
     repository = HostIsolationRepository(runtime_repo._factory)
     identity = SimpleNamespace(node_id="node-a", roles=("host-isolation",))
-    from bisheng.app_runtime.domain.services.runtime_protocol import content_digest
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import content_digest
+    from doberman_agent.common.services.config_service import settings
 
     descriptor = {"node_id": "node-a"}
     expected = {
@@ -41,7 +41,7 @@ async def host_env(runtime_repo, monkeypatch):
 
 
 async def test_fresh_report_required_and_k8s_independent(host_env):
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     repo, proof, identity, expected, body = host_env
     node = SimpleNamespace(id="node-a", engine_id="engine-a", executor_kind="docker")
@@ -57,7 +57,7 @@ async def test_fresh_report_required_and_k8s_independent(host_env):
 
 
 async def test_replay_stale_and_false_canary_refused(host_env):
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     _, proof, identity, expected, body = host_env
     await proof.accept(identity, body, expected)
@@ -74,9 +74,9 @@ async def test_replay_stale_and_false_canary_refused(host_env):
 
 async def test_heartbeat_cannot_refresh_host_proof_and_report_restores_readiness(host_env):
     """覆盖 AC: AC-69. A forged manager boolean is not a host canary result."""
-    from bisheng.app_runtime.api.endpoints.runtime_delivery import Heartbeat
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeNode
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.api.endpoints.runtime_delivery import Heartbeat
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeNode
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     repo, proof, identity, expected, body = host_env
     service = RuntimeOperationService(repo)
@@ -102,11 +102,11 @@ async def test_host_report_api_rejects_manager_role(host_env, monkeypatch):
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.app_runtime.api.endpoints import runtime_delivery
-    from bisheng.app_runtime.api.endpoints.host_isolation import router
-    from bisheng.app_runtime.domain.repositories.host_isolation_repository import HostIsolationRepository
-    from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.api.endpoints import runtime_delivery
+    from doberman_agent.app_runtime.api.endpoints.host_isolation import router
+    from doberman_agent.app_runtime.domain.repositories.host_isolation_repository import HostIsolationRepository
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
+    from doberman_agent.common.services.config_service import settings
 
     repo, _, _, _, body = host_env
     secret = secrets.token_hex(32)

@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from bisheng.core.context import tenant
+from doberman_agent.core.context import tenant
 
 
 def test_nested_failure_restores_admin_visibility_and_bypass():

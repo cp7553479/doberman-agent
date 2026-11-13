@@ -8,12 +8,12 @@ import pytest
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     ensure_citation_rules,
     prompt_has_citation_rules,
 )
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import (
     _annotate_web_search_output,
     _build_researcher_prompt,
     _build_researcher_subagent,
@@ -61,7 +61,7 @@ def cache_web(monkeypatch: pytest.MonkeyPatch):
         return items
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items",
         fake_cache,
     )
     return cached
@@ -172,7 +172,7 @@ def test_researcher_subagent_injects_rules_for_web_search():
 # F069 P1: the short-handle contract selects a second wording everywhere
 # ---------------------------------------------------------------------------
 def test_handle_rules_replace_verbatim_rules_when_enabled():
-    from bisheng.citation.domain.services.citation_handle_service import prompt_has_handle_rules
+    from doberman_agent.citation.domain.services.citation_handle_service import prompt_has_handle_rules
 
     with_handles = _with_citation_rules("system prompt", True, handles=True)
     assert prompt_has_handle_rules(with_handles)
@@ -198,7 +198,7 @@ def test_researcher_handoff_uses_handles_when_enabled():
 
 
 def test_researcher_subagent_follows_the_contract():
-    from bisheng.citation.domain.services.citation_handle_service import prompt_has_handle_rules
+    from doberman_agent.citation.domain.services.citation_handle_service import prompt_has_handle_rules
 
     spec = _build_researcher_subagent([_FakeWeb()], citation_handles=True)
     assert prompt_has_handle_rules(spec["system_prompt"])

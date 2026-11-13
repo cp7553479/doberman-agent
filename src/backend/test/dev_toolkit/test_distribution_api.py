@@ -97,14 +97,14 @@ def test_versions_payload_shape(staged_artifacts, client_factory):
 
 
 def test_platform_version_not_taken_from_env_endpoint(monkeypatch, staged_artifacts, client_factory):
-    """``platform.version`` reads the shipped manifest, not ``bisheng.__version__``.
+    """``platform.version`` reads the shipped manifest, not ``doberman_agent.__version__``.
 
-    ``GET /api/v1/env`` serves a hardcoded ``'2.6.0-fix'`` (``bisheng/__init__.py``)
+    ``GET /api/v1/env`` serves a hardcoded ``'2.6.0-fix'`` (``doberman_agent/__init__.py``)
     — comparing the CLI against that value would make every compatibility check
     permanently right or permanently wrong, and both are useless.
     """
-    from bisheng import __version__ as hardcoded_env_version
-    from bisheng.dev_toolkit.domain.services import artifact_service
+    from doberman_agent import __version__ as hardcoded_env_version
+    from doberman_agent.dev_toolkit.domain.services import artifact_service
 
     client = client_factory()
 
@@ -113,7 +113,7 @@ def test_platform_version_not_taken_from_env_endpoint(monkeypatch, staged_artifa
     assert data["platform"]["version"] != hardcoded_env_version
 
     # With nothing staged the field goes null. This is the assertion that bites:
-    # "fixing" the empty case with a fallback to ``bisheng.__version__`` would
+    # "fixing" the empty case with a fallback to ``doberman_agent.__version__`` would
     # quietly reintroduce the hardcoded literal as the platform's version truth.
     monkeypatch.setattr(artifact_service, "ARTIFACTS_DIR", staged_artifacts / "gone")
     assert client.get(VERSIONS_PATH).json()["data"]["platform"]["version"] is None
@@ -177,11 +177,11 @@ def test_multi_tenant_enabled_no_jwt_does_not_raise_no_tenant_context(monkeypatc
     call tree under ``_bypass_tenant_filter``, which is the only reason a
     handler on this path may ever touch a tenant-aware table.
     """
-    from bisheng.common.errcode.tenant import NoTenantContextError
-    from bisheng.core.context.tenant import is_tenant_filter_bypassed
-    from bisheng.core.database.tenant_filter import _resolve_tenant_id
-    from bisheng.dev_toolkit.domain.services import artifact_service
-    from bisheng.utils import http_middleware
+    from doberman_agent.common.errcode.tenant import NoTenantContextError
+    from doberman_agent.core.context.tenant import is_tenant_filter_bypassed
+    from doberman_agent.core.database.tenant_filter import _resolve_tenant_id
+    from doberman_agent.dev_toolkit.domain.services import artifact_service
+    from doberman_agent.utils import http_middleware
 
     assert "/api/v1/dev-toolkit" in http_middleware.TENANT_CHECK_EXEMPT_PATHS
 
@@ -287,8 +287,8 @@ def test_skill_pack_is_a_tarball_carrying_skill_md(staged_artifacts, client_fact
     # No build noise leaked into the developer's machine.
     assert not any("__pycache__" in n or n.endswith(".pyc") for n in names)
     # Version rides in a header (the body is a tarball, not an envelope), and it
-    # comes from the shipped manifest — never from ``bisheng.__version__``.
-    assert response.headers.get("x-bisheng-pack-version") == MANIFEST_PLATFORM_VERSION
+    # comes from the shipped manifest — never from ``doberman_agent.__version__``.
+    assert response.headers.get("x-doberman-agent-pack-version") == MANIFEST_PLATFORM_VERSION
 
 
 def test_unknown_pack_is_a_real_404(staged_artifacts, client_factory):
@@ -334,7 +334,7 @@ def test_install_guide_reachable_without_any_credential(staged_artifacts, client
     # login command, and warn about the -OJ filename trap.
     body = response.text
     assert "/api/v1/dev-toolkit/cli/download" in body
-    assert "bisheng login" in body
+    assert "doberman-agent login" in body
     assert "-OJ" in body
 
 
@@ -347,7 +347,7 @@ def test_install_guide_carries_no_auth_dependency(staged_artifacts, client_facto
 
 def test_install_guide_missing_degrades_to_404_not_500(staged_artifacts, client_factory, monkeypatch):
     """A release that shipped no guide answers a readable 404, never a traceback."""
-    from bisheng.dev_toolkit.api.endpoints import distribution
+    from doberman_agent.dev_toolkit.api.endpoints import distribution
 
     monkeypatch.setattr(distribution.artifact_service, "read_install_guide", lambda: None)
     client = client_factory()

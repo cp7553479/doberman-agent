@@ -2,15 +2,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.common.errcode.public_endpoints import PublicGuestAccessDisabledError
-from bisheng.public_endpoints.domain.context import (
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.common.errcode.public_endpoints import PublicGuestAccessDisabledError
+from doberman_agent.public_endpoints.domain.context import (
     PublicApiPrincipal,
     reset_current_public_api_principal,
     set_current_public_api_principal,
 )
-from bisheng.public_endpoints.domain.services import guest_link, guest_policy
-from bisheng.public_endpoints.domain.services.guest_link import (
+from doberman_agent.public_endpoints.domain.services import guest_link, guest_policy
+from doberman_agent.public_endpoints.domain.services.guest_link import (
     AppGuestLink,
     GuestLinkPatchRequest,
     guest_link_config_key,
@@ -198,15 +198,15 @@ async def test_specified_user_overrides_default(operator_lookups, monkeypatch) -
 
     monkeypatch.setattr(guest_policy, "load_app_guest_link", load_row)
     monkeypatch.setattr(
-        "bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles",
+        "doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles",
         lambda _user_id: _async_value([]),
     )
     monkeypatch.setattr(
-        "bisheng.utils.http_middleware._check_is_global_super",
+        "doberman_agent.utils.http_middleware._check_is_global_super",
         lambda *_args, **_kwargs: _async_value(False),
     )
     monkeypatch.setattr(
-        "bisheng.permission.application.relation_api.is_tenant_admin",
+        "doberman_agent.permission.application.relation_api.is_tenant_admin",
         lambda *_args, **_kwargs: _async_value(False),
     )
     operator = await guest_policy._load_default_operator(23, "workflow", "flow-1")
@@ -217,7 +217,7 @@ async def test_follow_default_outside_tenant_is_26403(operator_lookups, monkeypa
     operator_lookups.memberships.pop((41, 23), None)
     monkeypatch.setattr(guest_policy, "load_app_guest_link", lambda *a, **k: _async_value(AppGuestLink()))
     monkeypatch.setattr(
-        "bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles",
+        "doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles",
         lambda _user_id: _async_value([]),
     )
     with pytest.raises(PublicGuestAccessDisabledError) as caught:
@@ -330,7 +330,7 @@ def test_guest_skip_does_not_cover_knowledge_or_tools() -> None:
 
 
 async def test_use_check_rereads_switch_and_raises_26403(monkeypatch) -> None:
-    from bisheng.permission.application.business_authorization import check_business_action
+    from doberman_agent.permission.application.business_authorization import check_business_action
 
     token = set_current_public_api_principal(
         PublicApiPrincipal(

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 
 
 import { useComponentEditorStore,useEditorDashboardStore } from "@/store/dashboardStore";

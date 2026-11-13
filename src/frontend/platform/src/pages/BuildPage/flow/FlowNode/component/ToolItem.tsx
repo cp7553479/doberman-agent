@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { TitleIconBg } from "@/components/bs-comp/cardComponent";
 import ToolsSheet from "@/components/bs-comp/sheets/ToolsSheet";
 import { ToolIcon } from "@/components/bs-icons";

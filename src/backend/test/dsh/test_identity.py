@@ -5,9 +5,9 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshInvalidGrantError, DshUserDisabledError
-from bisheng.dsh.domain.repositories.tickets import TicketRepository
-from bisheng.dsh.domain.services.identity import BrowserIdentity, IdentityRecord, IdentityService
+from doberman_agent.common.errcode.dsh import DshInvalidGrantError, DshUserDisabledError
+from doberman_agent.dsh.domain.repositories.tickets import TicketRepository
+from doberman_agent.dsh.domain.services.identity import BrowserIdentity, IdentityRecord, IdentityService
 
 
 class Records:

@@ -1,1 +1,1 @@
-export * from '@bisheng/chat/citation-locate';
+export * from '@doberman-agent/chat/citation-locate';

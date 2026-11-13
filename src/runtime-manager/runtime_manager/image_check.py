@@ -179,7 +179,7 @@ def main():
         result = {"reason": str(exc), **image_failure_context(exc)}
     except (ValueError, KeyError, TypeError):
         result = {"reason": "image_check_document_invalid"}
-    print("BISHENG_RUNTIME_RESULT " + json.dumps(result, sort_keys=True), flush=True)
+    print("DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":

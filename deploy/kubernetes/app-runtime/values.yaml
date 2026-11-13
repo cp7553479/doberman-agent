@@ -5,7 +5,7 @@ platform:
   backendBase: ""
   caConfigMap: runtime-platform-ca
 services:
-  namespace: bisheng-runtime-system
+  namespace: doberman-agent-runtime-system
   credentialsSecret: runtime-service-identities
   materialIssuerSecret: runtime-material-issuer
   admissionTlsSecret: runtime-admission-tls
@@ -21,10 +21,10 @@ services:
   entryNodePort: 30080
   egressClusterIP: ""
 execution:
-  namespace: bisheng-runtime-apps
-  clusterId: bisheng-k8s
-  nodeId: bisheng-k8s-amd64
-  installationId: bisheng-runtime
+  namespace: doberman-agent-runtime-apps
+  clusterId: doberman-agent-k8s
+  nodeId: doberman-agent-k8s-amd64
+  installationId: doberman-agent-runtime
   architecture: amd64
   memoryBudgetMi: 4096
   cpuBudgetMillicores: 4000
@@ -72,7 +72,7 @@ storage:
   sqliteCompatible: false
   nodeLocal: true
   # Directories must already exist on mounted, bounded filesystems.
-  localRoot: /var/lib/bisheng-runtime
+  localRoot: /var/lib/doberman-agent-runtime
   volumes: []
 admission:
   # Base64 public CA certificate matching the persistent TLS secret.

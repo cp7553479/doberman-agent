@@ -173,7 +173,7 @@ PAT · 自身身份       user:{holder_user_id}      holder_user_id
 ### 3.4 模块图
 
 ```text
-bisheng/open_api/
+doberman-agent/open_api/
 ├─ api/
 │  ├─ dependencies.py        verify_open_api_access / get_open_api_execution
 │  ├─ exception_handlers.py  v2 真 HTTP 状态；WS 1008
@@ -187,12 +187,12 @@ bisheng/open_api/
 │  └─ services/              credential / service_account / identity / audit / PAT
 └─ skill_packs/
 
-bisheng/permission/           PermissionActor 与 F048 支持 service_account subject
-bisheng/open_endpoints/       v2 密钥适配器；不再读取 default_operator
-bisheng/public_endpoints/     v3 免登录发布适配器；只含 allowlist
-bisheng/workstation/          日常模式共享 domain service
-bisheng/chat_session/         会话列表 / 详情共享 domain service
-bisheng/knowledge/            临时文件上传共享 domain service
+doberman-agent/permission/           PermissionActor 与 F048 支持 service_account subject
+doberman-agent/open_endpoints/       v2 密钥适配器；不再读取 default_operator
+doberman-agent/public_endpoints/     v3 免登录发布适配器；只含 allowlist
+doberman-agent/workstation/          日常模式共享 domain service
+doberman-agent/chat_session/         会话列表 / 详情共享 domain service
+doberman-agent/knowledge/            临时文件上传共享 domain service
 
 platform: ServiceAccount / PersonalToken 管理页；发布 API 访问文档保留 v2
 client: PersonalTokenDialog；guest 页面 apiVersion 切 v3
@@ -297,7 +297,7 @@ client: PersonalTokenDialog；guest 页面 apiVersion 切 v3
 
 **D3：两层开关。** 部署级 `open_api.pat_enabled=false` 与租户级 `open_api_tenant_setting.pat_enabled=false` 均默认关闭；关闭只让校验拒绝，不改撤销位，重新开启可恢复未过期令牌。
 
-**D4：端点与技能包。** 员工面 `/api/v1/me/api-token`（状态 / 获取或重签 / 删除 / install-prompt）走 JWT；管理员面 `/api/v1/personal-tokens` 走管理员鉴权；技能包下载端点沿用匿名分发。技能包文档使用新身份头名称，API Key 环境变量仍可沿用 `BISHENG_API_KEY`，因为本裁定只去除 HTTP 请求头中的品牌字样。
+**D4：端点与技能包。** 员工面 `/api/v1/me/api-token`（状态 / 获取或重签 / 删除 / install-prompt）走 JWT；管理员面 `/api/v1/personal-tokens` 走管理员鉴权；技能包下载端点沿用匿名分发。技能包文档使用新身份头名称，API Key 环境变量仍可沿用 `DOBERMAN_AGENT_API_KEY`，因为本裁定只去除 HTTP 请求头中的品牌字样。
 
 **D5：个人令牌安装指引。** 员工面按 PRD 参考图展示两步并列卡片，窄屏纵向排列。左侧展示并一键复制安装提示词，中文、英文、日文随界面语言切换；技能包地址与密钥获取地址由当前浏览器部署地址生成，密钥页 `/workspace/settings/account?api-token=1` 可直接打开指引。右侧一键获取后原位展示 API Key、状态与到期日期，提供删除及重新获取；明文仅当次签发可见、可复制，关闭前须确认已保存，重新进入只显示掩码。开发者说明展开后提供可复制的最小调用示例。租户默认有效期为 **365 天**，前端初始值、服务默认值、数据库列默认值一致；保留管理员已保存的时长，修改只影响后续签发，管理员令牌继续受较短 TTL 上限约束。
 
@@ -315,7 +315,7 @@ client: PersonalTokenDialog；guest 页面 apiVersion 切 v3
 
 **E2：只替换认证适配，不改 v1。** 五个 v1 端点的当前登录/匿名语义原样保留；五个 v2 端点不声明 `Depends(UserPayload.get_login_user)`，也不读 cookie/JWT，只消费 `get_open_api_execution`。即使调用方已登录，缺少 `bs-*` 密钥仍返回 401；有密钥但没有 JWT 可以正常调用。
 
-**E3：共享业务实现。** 将端点内编排下沉或复用已有 domain service：聊天调用 `workstation.domain.services.chat_service.stream_chat_completion`，配置调用 `WorkStationService`，会话调用 `ChatSessionService`，上传调用 `KnowledgeService` / storage helper。v2 adapter 把对外请求转换成内部 `APIChatCompletion` 时固定写入 `task_mode=False`、`use_knowledge_base=None`；`files` 原样保留并继续使用 `/api/v2/knowledge/upload` 返回的文件引用。v2 adapter 禁止 import `bisheng.workstation.api.*`、`bisheng.chat_session.api.*` 或 `bisheng.knowledge.api.*`，也禁止内部 HTTP 转调 v1。
+**E3：共享业务实现。** 将端点内编排下沉或复用已有 domain service：聊天调用 `workstation.domain.services.chat_service.stream_chat_completion`，配置调用 `WorkStationService`，会话调用 `ChatSessionService`，上传调用 `KnowledgeService` / storage helper。v2 adapter 把对外请求转换成内部 `APIChatCompletion` 时固定写入 `task_mode=False`、`use_knowledge_base=None`；`files` 原样保留并继续使用 `/api/v2/knowledge/upload` 返回的文件引用。v2 adapter 禁止 import `doberman_agent.workstation.api.*`、`doberman_agent.chat_session.api.*` 或 `doberman_agent.knowledge.api.*`，也禁止内部 HTTP 转调 v1。
 
 **E4：对外请求收窄。** 新建 `OpenDailyChatCompletionReq` 作为 v2 请求模型，其字段等于当前 `APIChatCompletion` 去掉 `use_knowledge_base`、`task_mode` 后的集合；`files` 仍在对外模型中，日常对话继续支持临时文件附件，但不支持选择个人知识库、组织知识库或知识空间。对外 schema 使用 `extra='forbid'`：调用方传 `use_knowledge_base` 返回 400；传任何 `task_mode` 值均返回 400，要求任务模式时使用 `26017`。端点内部不读取调用方的运行模式，调用共享服务前无条件补 `task_mode=False`，所以外部请求无法切入灵思任务分支。
 

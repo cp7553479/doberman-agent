@@ -1,8 +1,8 @@
-# 商业 API 网关 (bisheng-gateway)
+# 商业 API 网关 (doberman-agent-gateway)
 
-bisheng-gateway 是 BiSheng 的**商业拓展套件**，作为 Java 网关层部署在前端与后端之间，提供 SSO/OAuth 统一认证、内容安全审查（敏感词过滤）、流量控制（限流/在线计数）和 API 反向代理能力。它是一个独立的 Java 项目（私有仓库 `dataelement/bisheng-gateway`），拥有独立的数据库表和配置，通过 HTTP 与 bisheng 后端通信。
+本章记录可选 Java 网关的集成契约。该组件提供 SSO/OAuth、内容审查、限流及反向代理能力，拥有独立的数据库和配置，通过 HTTP 与后端通信。Java 网关源码和镜像由部署方提供。社区版基础部署直接连接 Python 后端。
 
-> DSH 原生接入已在 `feat/bisheng-work-110` 中解除本章所述 Java Gateway 依赖。DSH 登录、换证、设备会话和模型鉴权由 Python 提供，商业席位入口移除；其余 Gateway 商业能力仍按本章适用范围维护。新部署及切换说明见 [DSH 无 Gateway 发布](../../features/v3.0.0/110-dsh-local-access/deployment.md)。
+> DSH 原生接入已在 `feat/doberman-agent-work-110` 中解除本章所述 Java Gateway 依赖。DSH 登录、换证、设备会话和模型鉴权由 Python 提供，商业席位入口移除；其余 Gateway 商业能力仍按本章适用范围维护。新部署及切换说明见 [DSH 无 Gateway 发布](../../features/v3.0.0/110-dsh-local-access/deployment.md)。
 
 ## 1. 系统架构
 
@@ -52,7 +52,7 @@ flowchart LR
 | OAuth | JustAuth | 1.16.6 | 多平台 OAuth2 登录库 |
 | 认证 | Sa-Token | 1.38.0 | Reactor 响应式集成 |
 | 企业微信 | weixin-java-cp | 4.7.0 | 企业微信通讯录同步 + OAuth |
-| HTTP 客户端 | Spring 6 @HttpExchange | -- | `BsClient` 声明式调用 bisheng 后端 |
+| HTTP 客户端 | Spring 6 @HttpExchange | -- | `BsClient` 声明式调用 doberman-agent 后端 |
 | 限流 | Guava RateLimiter | 33.2.0-jre | 基于令牌桶的 HTTP 限流 |
 | 工具 | Hutool / Lombok / MapStruct | 5.8.28 / -- / 1.5.5 | 加解密、Bean 映射等 |
 
@@ -64,7 +64,7 @@ flowchart LR
 com.dataelem.gateway/
 ├── GatewayApplication.java              # Spring Boot 启动入口
 ├── config/
-│   ├── BishengConfig.java               # bisheng 集成配置（license, API URL, filter URL 等）
+│   ├── DobermanAgentConfig.java               # doberman-agent 集成配置（license, API URL, filter URL 等）
 │   ├── CustomerConfig.java              # SSO/微信/LDAP 配置 + 预置敏感词加载
 │   ├── LicenseLoader.java               # License 校验（ApplicationRunner, order=1）
 │   ├── LimitRuleLoader.java             # 限流规则加载器（启动时从 DB 加载，运行时刷新）
@@ -92,7 +92,7 @@ com.dataelem.gateway/
 │   ├── AuthCustomSource.java            # 自定义 OAuth Source 枚举
 │   └── CustomSsoConfig.java             # SSO 配置 POJO（URL、clientId、clientSecret 等）
 ├── sdk/
-│   └── BsClient.java                   # 声明式 HTTP 客户端（@HttpExchange，调用 bisheng 后端）
+│   └── BsClient.java                   # 声明式 HTTP 客户端（@HttpExchange，调用 doberman-agent 后端）
 ├── schedule/
 │   └── WechatScheduled.java            # 企业微信通讯录定时同步
 ├── service/impl/                        # Service 实现层
@@ -110,11 +110,11 @@ com.dataelem.gateway/
 
 ## 4. 数据模型
 
-Gateway 使用独立的 4 张表（`gt_*` 前缀），与 bisheng 主库的表互不干扰：
+Gateway 使用独立的 4 张表（`gt_*` 前缀），与 doberman-agent 主库的表互不干扰：
 
 | 表名 | 实体 | 核心字段 | 用途 |
 |------|------|----------|------|
-| `gt_user_group` | `UserGroup` | id, group_name, admin_user, group_limit | 用户组定义，id 与 bisheng 主库保持一致 |
+| `gt_user_group` | `UserGroup` | id, group_name, admin_user, group_limit | 用户组定义，id 与 doberman-agent 主库保持一致 |
 | `gt_group_resource` | `GroupResource` | group_id, resource_id, resource_limit, resource_type | 组-资源关联，含每资源限流阈值 |
 | `gt_sensitive_words` | `SensitiveWords` | resource_id, resource_type, words, auto_words, words_types, auto_reply, is_check | 按资源配置的敏感词（预置词表 + 自定义词表） |
 | `gt_block_record` | `BlockRecord` | resource_id, user_input, block_words, system_out | 敏感词命中记录 |
@@ -126,7 +126,7 @@ erDiagram
     SensitiveWords ||--o{ BlockRecord : "触发"
 
     UserGroup {
-        int id "与 bisheng 组 ID 一致"
+        int id "与 doberman-agent 组 ID 一致"
         string group_name
         string admin_user
         int group_limit "0=无限制"
@@ -199,7 +199,7 @@ sequenceDiagram
 1. **前端获取登录方式**: `GET /api/oauth2/list` 根据 `CustomerConfig` 中配置的 SSO/微信/LDAP 返回可用登录入口
 2. **重定向到 SSO**: Gateway 构造 OAuth2 authorize URL（包含 client_id、redirect_uri、state），302 重定向浏览器
 3. **SSO 回调处理**: JustAuth 框架自动完成 code → access_token → user_info 的 OAuth2 标准流程
-4. **注册/登录 bisheng**: Gateway 调用新的 HMAC SSO 同步链路 → `POST /api/v1/internal/sso/login-sync`，将第三方稳定用户标识、部门信息与用户属性同步给后端，后端完成用户补齐/绑定并返回 JWT
+4. **注册/登录 doberman-agent**: Gateway 调用新的 HMAC SSO 同步链路 → `POST /api/v1/internal/sso/login-sync`，将第三方稳定用户标识、部门信息与用户属性同步给后端，后端完成用户补齐/绑定并返回 JWT
 5. **写入 Cookie**: Gateway 将后端返回的 `access_token` 和 `refresh_token` 写入浏览器 Cookie，302 跳转首页
 
 ### 5.2 三种 SSO Provider
@@ -278,7 +278,7 @@ PathRateGlobalFilter → Backend → 响应       响应 → 返回浏览器
 
 ### 7.1 HTTP 限流 (PathRateGlobalFilter)
 
-**触发条件**: 请求路径匹配 `bisheng.filter-url` 配置列表中的任一项
+**触发条件**: 请求路径匹配 `doberman_agent.filter-url` 配置列表中的任一项
 
 **限流机制**:
 - `LimitRuleLoader` 启动时从 `gt_group_resource` 加载限流规则
@@ -301,11 +301,11 @@ PathRateGlobalFilter → Backend → 响应       响应 → 返回浏览器
 
 ---
 
-## 8. 与 bisheng 后端集成
+## 8. 与 doberman-agent 后端集成
 
 ### 8.1 BsClient 声明式 HTTP 客户端
 
-`BsClient` 使用 Spring 6 的 `@HttpExchange` 声明式 HTTP 客户端，baseUrl 由 `bisheng.bisheng-api-url` 配置：
+`BsClient` 使用 Spring 6 的 `@HttpExchange` 声明式 HTTP 客户端，baseUrl 由 `doberman_agent.doberman-agent-api-url` 配置：
 
 ```java
 @HttpExchange(url = "/api", accept = "application/json", contentType = "application/json")
@@ -338,16 +338,16 @@ public interface BsClient {
 
 ### 8.3 缓存同步
 
-- **Redis Pub/Sub**: bisheng 后端删除用户组时，通过 Redis `delete_group` 频道通知 Gateway，Gateway 的 `RedisTopicListener` 接收消息后删除对应的本地缓存（用户组 + 限流规则 + 敏感词 AC 自动机）
+- **Redis Pub/Sub**: doberman-agent 后端删除用户组时，通过 Redis `delete_group` 频道通知 Gateway，Gateway 的 `RedisTopicListener` 接收消息后删除对应的本地缓存（用户组 + 限流规则 + 敏感词 AC 自动机）
 - **前置条件**: Gateway 和 Backend 必须共享同一个 Redis 实例（配置 `spring.data.redis`）
 
 ### 8.4 企业微信通讯录同步
 
-`WechatScheduled` 定时任务（cron 表达式：`0 0 ${bisheng.time:0} * * ?`，默认每天 0 点）：
+`WechatScheduled` 定时任务（cron 表达式：`0 0 ${doberman_agent.time:0} * * ?`，默认每天 0 点）：
 1. 通过 `weixin-java-cp` SDK 拉取企业微信完整部门树 + 用户列表
 2. 构建 `Department` 树形结构（parentId 关联）
-3. 调用 `BsClient.syncUsers()` 将组织结构同步到 bisheng 后端
-4. 可通过 `bisheng.enable_sync=true` 开启，`bisheng.time` 配置执行小时
+3. 调用 `BsClient.syncUsers()` 将组织结构同步到 doberman-agent 后端
+4. 可通过 `doberman_agent.enable_sync=true` 开启，`doberman_agent.time` 配置执行小时
 
 ---
 
@@ -358,7 +358,7 @@ public interface BsClient {
 `LicenseLoader` 作为 `ApplicationRunner`（order=1），在 Spring Boot 启动阶段执行 License 校验：
 
 ```
-启动 → 读取 bisheng.license 配置
+启动 → 读取 doberman_agent.license 配置
      → RSA 私钥解密 → 得到 JSON: {name, version, expireDay, finger}
      → 检查 version 字段:
          "trial"  → 比较 expireDay 与当前日期，过期则 System.exit(0)
@@ -391,7 +391,7 @@ License 是 RSA 加密的 Base64 字符串，解密后为 JSON：
 
 ```yaml
 spring.cloud.gateway.routes:
-  - id: bisheng-http          # HTTP API 代理
+  - id: doberman-agent-http          # HTTP API 代理
     uri: http://backend:7860
     predicates:
       - Path=/api/v1/**,/api/v2/**
@@ -399,7 +399,7 @@ spring.cloud.gateway.routes:
       - name: CacheRequestBody  # 缓存请求体供 Filter 读取
         args: { bodyClass: java.lang.String }
 
-  - id: bisheng-ws             # WebSocket 代理
+  - id: doberman-agent-ws             # WebSocket 代理
     uri: ws://backend:7860
     predicates:
       - Path=/api/v1/chat/**,/api/v2/chat/**,/api/v1/workflow/chat/**
@@ -409,10 +409,10 @@ spring.cloud.gateway.routes:
 
 **对外地址与转发头**：Spring Cloud Gateway 转发时把 `Host` 改写成上游地址（`backend:7860`），但默认的 `XForwardedHeadersFilter` 会在 `X-Forwarded-Host/Proto` 上**追加**网关自己看到的值、不覆盖已有值。后端写进技能包的地址取这两个头的**首值**，因此两种形态都能自动推导（2026-09-14 在 105 实测）：网关前面有仓库自带 nginx 时，首值是 nginx 传来的浏览器地址；网关直接对外时，首值是用户访问网关所用的地址。只有 TLS 在网关（或其前的 nginx）之前终结、且外层没有转发 `X-Forwarded-Proto` 时，协议会变成 `http://`，这时在后端 `config.yaml` 配置 `open_api.public_base_url`。无论哪种形态，员工运行「AI 助手接入」弹窗复制的配置命令时都会带上浏览器地址，包内地址只是兜底。详见 [08-deployment 反向代理与对外地址](08-deployment.md#反向代理与对外地址)。
 
-### 10.2 bisheng 集成
+### 10.2 doberman-agent 集成
 
 ```yaml
-bisheng:
+doberman-agent:
   license: <RSA 加密的 License 字符串>
   filter-url:                   # 需要限流/敏感词过滤的 URL 模式
     - api/v1/assistant/chat/
@@ -420,7 +420,7 @@ bisheng:
     - api/v2/assistant/chat
   home-url: http://host:port    # SSO 回调后的跳转首页
   web-home-url: http://host:port/chatpro/flow_id  # 企业微信内嵌跳转
-  bisheng-api-url: http://backend:7860  # bisheng 后端 API 地址
+  doberman-agent-api-url: http://backend:7860  # doberman-agent 后端 API 地址
   enable_sync: false            # 是否启用企业微信通讯录同步
   time: 0                       # 同步执行小时（0~23）
 ```
@@ -456,12 +456,12 @@ custom:
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://host:3306/bisheng_gateway  # Gateway 独立数据库
+    url: jdbc:mysql://host:3306/doberman_agent_gateway  # Gateway 独立数据库
     username: root
     password: xxx
   data:
     redis:
-      host: redis-host          # 必须与 bisheng 后端共享同一 Redis
+      host: redis-host          # 必须与 doberman-agent 后端共享同一 Redis
       port: 6379
       database: 3               # 使用独立的 Redis DB
 ```
@@ -472,14 +472,14 @@ spring:
 
 ### 11.1 本地开发
 
-> 前提：bisheng 后端启动前必须 `export BISHENG_PRO=true`，否则商业版接口（如 `/api/v1/user/sso`）不会注册。
+> 前提：doberman-agent 后端启动前必须 `export DOBERMAN_AGENT_PRO=true`，否则商业版接口（如 `/api/v1/user/sso`）不会注册。
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/dataelement/bisheng-gateway.git
+git clone "$GATEWAY_REPOSITORY" gateway
 
 # 2. 构建
-cd bisheng-gateway
+cd gateway
 mvn clean package -DskipTests
 
 # 3. 启动（端口 8180，避免与 OpenFGA 8080 冲突）
@@ -488,7 +488,7 @@ java -jar target/gateway-0.0.1-SNAPSHOT.jar \
   --server.port=8180
 
 # 4. 前端切换为 Gateway 模式
-cd ~/Projects/bisheng/src/frontend/platform
+cd ~/Projects/doberman-agent/src/frontend/platform
 # 修改 vite.config.mts 中 VITE_PROXY_TARGET 为 http://localhost:8180
 npm start
 ```
@@ -497,20 +497,20 @@ npm start
 
 ```bash
 # 远程服务器路径
-# /opt/bisheng-gateway/ on 192.168.106.114
+# /opt/doberman-agent-gateway/ on 192.168.106.114
 
-# 同步脚本（bisheng-gateway 仓根目录的 gateway-sync.sh，不在 bisheng 仓）
+# 同步脚本（doberman-agent-gateway 仓根目录的 gateway-sync.sh，不在 doberman-agent 仓）
 ./gateway-sync.sh up      # 本地 → 远程
 ./gateway-sync.sh down    # 远程 → 本地
 ./gateway-sync.sh watch   # 监听变化，自动推送
 ```
 
-> 2026-10-27 核实：114 上只保留了 `/opt/bisheng-gateway/` 目录，Gateway 没有在运行（8180 无监听），
-> bisheng 后端以 `BISHENG_PRO=false` 启动。要在 114 联调商业版，先启动 Gateway，再把后端各 unit 的 `BISHENG_PRO` 改回 `true`。
+> 2026-10-27 核实：114 上只保留了 `/opt/doberman-agent-gateway/` 目录，Gateway 没有在运行（8180 无监听），
+> doberman-agent 后端以 `DOBERMAN_AGENT_PRO=false` 启动。要在 114 联调商业版，先启动 Gateway，再把后端各 unit 的 `DOBERMAN_AGENT_PRO` 改回 `true`。
 
 ### 11.3 数据库
 
-Gateway 的 4 张表（`gt_*`）部署在独立数据库 `bisheng_gateway` 中（也可与 bisheng 主库同实例不同 schema）。表结构通过 MyBatis-Plus 的 `@TableName` 注解映射，无自动迁移机制，需手动建表。
+Gateway 的 4 张表（`gt_*`）部署在独立数据库 `doberman_agent_gateway` 中（也可与 doberman-agent 主库同实例不同 schema）。表结构通过 MyBatis-Plus 的 `@TableName` 注解映射，无自动迁移机制，需手动建表。
 
 ---
 
@@ -536,16 +536,16 @@ Gateway 中注册了 4 个 GlobalFilter，按 order 值从小到大执行：
 | 改造项 | 当前状态 | 目标状态 |
 |--------|---------|---------|
 | 多租户 OAuth | SSO/微信/LDAP 配置硬编码在 `application.yml` | 新增 `gt_oauth_config` 表，按租户维护 Provider 配置 |
-| JWT 租户上下文 | Gateway 不感知 tenant_id | 从 bisheng JWT 中提取 tenant_id，注入到代理请求头 |
+| JWT 租户上下文 | Gateway 不感知 tenant_id | 从 doberman-agent JWT 中提取 tenant_id，注入到代理请求头 |
 | 租户级内容安全 | 敏感词按 resource_id 粒度 | 增加 tenant_id 维度，支持租户级全局敏感词 |
 | 租户级限流 | 限流按 group+resource 粒度 | 增加 tenant_id 维度，支持租户级配额 |
-| 权限集成 | Gateway 独立管理用户组/资源组 | 与 bisheng 的 OpenFGA ReBAC 体系对齐，复用部门/用户组模型 |
+| 权限集成 | Gateway 独立管理用户组/资源组 | 与 doberman-agent 的 OpenFGA ReBAC 体系对齐，复用部门/用户组模型 |
 
 ---
 
 ## 相关文档
 
 - [系统架构总览](./01-architecture-overview.md) -- 整体请求数据流和组件关系
-- [用户与权限体系](./10-permission-rbac.md) -- bisheng 后端的认证与授权机制
+- [用户与权限体系](./10-permission-rbac.md) -- doberman-agent 后端的认证与授权机制
 - [部署架构与配置](./08-deployment.md) -- Docker Compose 编排和配置系统
 - [v2.5 权限管理体系改造 PRD](../archive/2.5%20权限管理体系改造%20PRD/2.5%20权限管理体系改造%20PRD.md) -- ReBAC 权限体系设计

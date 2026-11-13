@@ -119,7 +119,7 @@
 写方法显式处理：
 
 ```python
-# src/backend/bisheng/llm/domain/models/llm_server.py
+# src/backend/doberman_agent/llm/domain/models/llm_server.py
 
 class LLMDao:
 
@@ -197,9 +197,9 @@ class LLMDao:
 ### 5.2 Router 权限降级
 
 ```python
-# src/backend/bisheng/llm/api/router.py
+# src/backend/doberman_agent/llm/api/router.py
 
-from bisheng.common.dependencies import get_tenant_admin_user, get_admin_user
+from doberman_agent.common.dependencies import get_tenant_admin_user, get_admin_user
 
 @router.post("")
 async def create_llm(data: LLMServerCreate, user: UserPayload = Depends(get_tenant_admin_user)):
@@ -223,7 +223,7 @@ async def set_workbench_config(data: WorkbenchConfig, user: UserPayload = Depend
 新增依赖：
 
 ```python
-# src/backend/bisheng/common/dependencies/user_deps.py
+# src/backend/doberman_agent/common/dependencies/user_deps.py
 
 async def get_tenant_admin_user(user: UserPayload = Depends(UserPayload.get_login_user)) -> UserPayload:
     if user.is_global_super or user.is_child_admin:
@@ -283,7 +283,7 @@ function LLMServerList({ servers }) {
 ### 5.4 知识库/工作流调用链校验
 
 ```python
-# src/backend/bisheng/llm/domain/services/llm_service.py
+# src/backend/doberman_agent/llm/domain/services/llm_service.py
 
 class LLMService:
     @classmethod
@@ -297,7 +297,7 @@ class LLMService:
 知识库检索入口：
 
 ```python
-# src/backend/bisheng/knowledge/domain/services/retrieval.py
+# src/backend/doberman_agent/knowledge/domain/services/retrieval.py
 model = await LLMService.get_model_for_call(knowledge.model_id)
 # 若拿不到，向上抛 19802，前端 controllers/request.ts 拦截器捕获后通过 toast 提示：
 #   "该知识库引用的模型已不可用，请联系管理员更新模型选项"
@@ -307,7 +307,7 @@ model = await LLMService.get_model_for_call(knowledge.model_id)
 ### 5.5 DDL 变更
 
 ```sql
--- src/backend/bisheng/database/migrations/v2_5_1_f020_llm_tenant.py
+-- src/backend/doberman_agent/database/migrations/v2_5_1_f020_llm_tenant.py
 
 -- STEP 1：前置校验（存量 (tenant_id, name) 组合必须已经唯一，否则 ADD UNIQUE 会失败）
 --   v2.5.0/F001 已为 llm_server 添加 tenant_id 字段并回填为 1（Root），此时若 v2.4 历史存在
@@ -377,13 +377,13 @@ multi_tenant:
 
 | 类别 | 文件 | 改动 |
 |------|------|------|
-| DAO | `src/backend/bisheng/llm/domain/models/llm_server.py` | 全部查询方法 tenant 感知（沿 §4.1 event）；`ainsert_server_with_models` 填充 tenant_id + 写 FGA viewer 元组；新增 `aupdate_server_share`；`aupdate_server_with_models` / `adelete_server_by_id` 加写权限校验 |
-| Router | `src/backend/bisheng/llm/api/router.py` | `POST/PUT/DELETE /llm` 依赖改 `get_tenant_admin_user`；保留 `POST /llm/workbench` 等系统级端点为 `get_admin_user`；`PUT /llm/{id}/share` 新端点 |
-| Service | `src/backend/bisheng/llm/domain/services/llm_service.py` | 调用链入口 `get_model_for_call` 抛 19802 |
-| 依赖 | `src/backend/bisheng/common/dependencies/user_deps.py` | 新增 `get_tenant_admin_user` |
-| 迁移 | `src/backend/bisheng/database/migrations/v2_5_1_f020_llm_tenant.py` | 唯一索引改 `(tenant_id, name)` |
-| 错误码 | `src/backend/bisheng/common/errcode/llm_tenant.py` | 新建；19801~19804 |
-| 审计 | `src/backend/bisheng/llm/api/router.py` | CRUD 统一写 audit_log |
+| DAO | `src/backend/doberman_agent/llm/domain/models/llm_server.py` | 全部查询方法 tenant 感知（沿 §4.1 event）；`ainsert_server_with_models` 填充 tenant_id + 写 FGA viewer 元组；新增 `aupdate_server_share`；`aupdate_server_with_models` / `adelete_server_by_id` 加写权限校验 |
+| Router | `src/backend/doberman_agent/llm/api/router.py` | `POST/PUT/DELETE /llm` 依赖改 `get_tenant_admin_user`；保留 `POST /llm/workbench` 等系统级端点为 `get_admin_user`；`PUT /llm/{id}/share` 新端点 |
+| Service | `src/backend/doberman_agent/llm/domain/services/llm_service.py` | 调用链入口 `get_model_for_call` 抛 19802 |
+| 依赖 | `src/backend/doberman_agent/common/dependencies/user_deps.py` | 新增 `get_tenant_admin_user` |
+| 迁移 | `src/backend/doberman_agent/database/migrations/v2_5_1_f020_llm_tenant.py` | 唯一索引改 `(tenant_id, name)` |
+| 错误码 | `src/backend/doberman_agent/common/errcode/llm_tenant.py` | 新建；19801~19804 |
+| 审计 | `src/backend/doberman_agent/llm/api/router.py` | CRUD 统一写 audit_log |
 | 前端（全局复用，**本 Feature 拥有**） | `src/frontend/platform/src/components/AdminScopeSelector.tsx`（新） | **由本 Feature 抽取实现**（F019 §9 Out-of-scope 明确剥离给 F020），供 ModelPage（首个消费方）+ 未来 RolesPage / QuotaPage / AuditLogPage 复用；Props: `{value, onChange, tenants, disabled}`；底层调用 F019 的 `useAdminScope` hook |
 | 前端 | `src/frontend/platform/src/pages/ModelPage/manage/index.tsx` | 顶部挂载 `<AdminScopeSelector>`（仅超管可见）；Root 共享 Badge；编辑按钮 disabled 规则 |
 | 前端 | `src/frontend/platform/src/pages/ModelPage/manage/SystemModelConfig.tsx` | Child Admin 隐藏此组件 |
@@ -443,7 +443,7 @@ multi_tenant:
 | F013 | 权限检查链路（IN 列表过滤、super_admin 短路、Child admin 短路）+ `tenant#shared_to#member` FGA 关系 |
 | F017 | Root 共享资源的 `shared_to` 元组机制（本 Feature 复用同一套 FGA 关系）；§5.4 衍生数据写入层（Child 用户调 Root 共享 LLM → token 计入 Child，本 feature 只依赖结果） |
 | F019 | admin-scope（全局超管切换到 Child 5 视图后，本 Feature 所有端点自动按 Child 5 上下文运行） |
-| **新依赖** | `src/backend/bisheng/common/dependencies/user_deps.py::get_tenant_admin_user`（本 feature 新增，允许 Child Admin 操作本 Child LLM、全局超管操作任意 Tenant；见 §5.2） |
+| **新依赖** | `src/backend/doberman_agent/common/dependencies/user_deps.py::get_tenant_admin_user`（本 feature 新增，允许 Child Admin 操作本 Child LLM、全局超管操作任意 Tenant；见 §5.2） |
 | INV-T15 / INV-T16 | 本 Feature 落地的不变量 |
 
 ---

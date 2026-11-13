@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { DialogClose, DialogFooter } from "@/components/bs-ui/dialog";
 import { PassInput } from '@/components/bs-comp/formFields/PassInput';
 import { Label } from "@/components/bs-ui/label";
-import { RadioGroup, Radio as RadioGroupItem } from "@bisheng/ui";
+import { RadioGroup, Radio as RadioGroupItem } from "@doberman-agent/ui";
 import { getSandboxConfApi, saveSandboxConfApi, testSandboxConfApi } from "@/controllers/API/tools";
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from "react-i18next";

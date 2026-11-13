@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 import { Eraser, TerminalSquare, Variable } from "lucide-react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { alertContext } from "../../contexts/alertContext";
@@ -13,7 +13,7 @@ import ChatMessage from "./chatMessage";
 
 import cloneDeep from "lodash-es/cloneDeep";
 import { useTranslation } from "react-i18next";
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "../../components/bs-ui/dialog";
 
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import {
   Accordion,
   AccordionContent,
@@ -544,8 +544,8 @@ export default function FormModal({
                         👋{" "}
                       </span>
                       <br />
-                      <div className="bisheng-chat-desc">
-                        <span className="bisheng-chat-desc-span">
+                      <div className="doberman_agent-chat-desc">
+                        <span className="doberman_agent-chat-desc-span">
                           Start the conversation and click on the agent's analysis process{" "}
                           <span>
                             <THOUGHTS_ICON className="mx-1 inline h-5 w-5 animate-bounce " />
@@ -557,8 +557,8 @@ export default function FormModal({
                   )}
                   <div ref={ref}></div>
                 </div>
-                <div className="bisheng-chat-input-div">
-                  <div className="bisheng-chat-input">
+                <div className="doberman_agent-chat-input-div">
+                  <div className="doberman_agent-chat-input">
                     <ChatInput
                       chatValue={chatValue}
                       noInput={!chatKey}

@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { ChevronRight, X } from 'lucide-react';
 import { isDesktopEmbedded } from '~/components/Chat/desktopEmbedding';
 import { Button } from '~/components/ui/Button';

@@ -54,7 +54,7 @@ class TestPermissionCacheCheck:
 
     @pytest.mark.asyncio
     async def test_cache_miss(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             result = await PermissionCache.get_check(1, 'viewer', 'workflow', 'abc')
@@ -62,7 +62,7 @@ class TestPermissionCacheCheck:
 
     @pytest.mark.asyncio
     async def test_cache_hit_true(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             await PermissionCache.set_check(1, 'viewer', 'workflow', 'abc', True)
@@ -71,7 +71,7 @@ class TestPermissionCacheCheck:
 
     @pytest.mark.asyncio
     async def test_cache_hit_false(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             await PermissionCache.set_check(1, 'viewer', 'workflow', 'abc', False)
@@ -83,7 +83,7 @@ class TestPermissionCacheListObjects:
 
     @pytest.mark.asyncio
     async def test_list_cache_miss(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             result = await PermissionCache.get_list_objects(1, 'viewer', 'workflow')
@@ -91,7 +91,7 @@ class TestPermissionCacheListObjects:
 
     @pytest.mark.asyncio
     async def test_list_cache_hit(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             await PermissionCache.set_list_objects(1, 'viewer', 'workflow', ['abc', 'def'])
@@ -103,7 +103,7 @@ class TestPermissionCacheInvalidation:
 
     @pytest.mark.asyncio
     async def test_invalidate_user(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             await PermissionCache.set_check(1, 'viewer', 'workflow', 'abc', True)
@@ -123,7 +123,7 @@ class TestPermissionCacheInvalidation:
 
     @pytest.mark.asyncio
     async def test_invalidate_all(self, fake_redis):
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=fake_redis):
             await PermissionCache.set_check(1, 'viewer', 'workflow', 'abc', True)
@@ -142,7 +142,7 @@ class TestRedisUnavailable:
     @pytest.mark.asyncio
     async def test_redis_unavailable_get(self):
         """Redis unavailable → cache miss (None), no exception."""
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=None):
             result = await PermissionCache.get_check(1, 'viewer', 'workflow', 'abc')
@@ -151,7 +151,7 @@ class TestRedisUnavailable:
     @pytest.mark.asyncio
     async def test_redis_unavailable_set(self):
         """Redis unavailable → set is a no-op, no exception."""
-        from bisheng.permission.domain.services.permission_cache import PermissionCache
+        from doberman_agent.permission.domain.services.permission_cache import PermissionCache
 
         with patch.object(PermissionCache, '_get_redis', new_callable=AsyncMock, return_value=None):
             await PermissionCache.set_check(1, 'viewer', 'workflow', 'abc', True)

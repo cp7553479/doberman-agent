@@ -15,13 +15,13 @@ from typing import Optional
 import httpx
 import pytest
 
-from bisheng.common.errcode.org_sync import (
+from doberman_agent.common.errcode.org_sync import (
     OrgSyncAuthFailedError,
     OrgSyncFetchError,
     OrgSyncProviderError,
 )
-from bisheng.org_sync.domain.providers import wecom as wecom_mod
-from bisheng.org_sync.domain.providers.wecom import (
+from doberman_agent.org_sync.domain.providers import wecom as wecom_mod
+from doberman_agent.org_sync.domain.providers.wecom import (
     WECOM_BASE_URL,
     WeComProvider,
 )

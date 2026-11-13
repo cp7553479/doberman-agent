@@ -1,7 +1,7 @@
 import unittest
 
-from bisheng.llm.domain.services.llm import LLMService
-from bisheng.llm.domain.utils import usable_proxy_url
+from doberman_agent.llm.domain.services.llm import LLMService
+from doberman_agent.llm.domain.utils import usable_proxy_url
 
 
 class TestUsableProxyUrl(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestStripConfigWhitespace(unittest.TestCase):
 
 class TestOpenAIParamsProxy(unittest.TestCase):
     def test_chat_params_drop_non_url_proxy(self):
-        from bisheng.llm.domain.llm.llm import _get_openai_params
+        from doberman_agent.llm.domain.llm.llm import _get_openai_params
 
         params = _get_openai_params(
             {},
@@ -78,7 +78,7 @@ class TestOpenAIParamsProxy(unittest.TestCase):
         self.assertNotIn("openai_proxy", params)
 
     def test_embedding_params_drop_non_url_proxy(self):
-        from bisheng.llm.domain.llm.embedding import _get_openai_params
+        from doberman_agent.llm.domain.llm.embedding import _get_openai_params
 
         params = _get_openai_params(
             {},

@@ -3,11 +3,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.commercial_license.domain.services.upsert import (
+from doberman_agent.commercial_license.domain.services.upsert import (
     keep_previous_on_fetch_failure,
     upsert_mapped,
 )
-from bisheng.common.errcode.commercial_license import CommercialLicenseInvalidPayloadError
+from doberman_agent.common.errcode.commercial_license import CommercialLicenseInvalidPayloadError
 
 
 def _mapped(code: str = "gateway") -> dict:

@@ -13,7 +13,7 @@
 所有路径相对仓库根。先写配对测试并运行观察失败，再实现并运行通过；不对其他工作区改动执行提交、恢复或覆盖。
 
 - [x] **T01 后端 API 测试**：`src/backend/test/app_template/test_template_api.py`，本地 FastAPI + httpx、真实 SQLite 与租户事件、替换身份/授权外部端口；根/A/B 三租户参数化验证列表详情、普通用户拒写、管理员增改删、伪造归属、来源、助手快照、重名与报告资产。覆盖 AC: AC-01–13。
-- [x] **T02 后端输入与仓储**：新建 `src/backend/bisheng/app_template/domain/schemas/template.py`、`repositories/template_repository.py`；独立异步会话 + strict_tenant_filter，创建只从来源读取快照，查询/重名/排序限定当前租户；支持 5/10 类型，不迁移旧数据。依赖 T01。
+- [x] **T02 后端输入与仓储**：新建 `src/backend/doberman_agent/app_template/domain/schemas/template.py`、`repositories/template_repository.py`；独立异步会话 + strict_tenant_filter，创建只从来源读取快照，查询/重名/排序限定当前租户；支持 5/10 类型，不迁移旧数据。依赖 T01。
 - [x] **T03 后端服务与 API**：新建 `app_template/domain/services/template_service.py`，修改 `api/v1/skillcenter.py`；使用权限应用身份与 visible 动作，薄接口，复用既有错误与返回形状。依赖 T02。
 - [x] **T04 管理视图边界**：修改 `common/middleware/admin_scope.py` 与前端 `controllers/managementScope.ts`；模板读写进入管理视图，写入校验 X-Management-Tenant。配对边界测试归 T01 和 T06。依赖 T03。
 - [x] **T05 报告文档授权**：修改 `api/services/report_template.py`，模板资产 fallback 改走模板 Service 严格查询；不改变源工作流合法授权。使用 T01 同租户/其他租户报告 key 测试。依赖 T03。

@@ -29,8 +29,8 @@
 ### Wave 1 — 数据层
 
 - [x] **T001**: 模型表新增「状态更新时间」字段 + 迁移
-  **文件**: `src/backend/bisheng/llm/domain/models/llm_server.py`（`LLMModelBase` 加字段）
-  `src/backend/bisheng/core/database/alembic/versions/v3_0_0_beta1_f044_llm_model_status_update_time.py`（新建）
+  **文件**: `src/backend/doberman_agent/llm/domain/models/llm_server.py`（`LLMModelBase` 加字段）
+  `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_beta1_f044_llm_model_status_update_time.py`（新建）
   **逻辑**: 新增可空 DateTime 列 `status_update_time`（历史行为 NULL → 前端显示「—」）。**不得**用 `ON UPDATE CURRENT_TIMESTAMP`，由业务代码显式写入（design §3 决策 4）
   **约束**: C2 双 DB —— 用 `dialect_helpers`，禁 MySQL 专有语法；迁移需可在 MySQL 与 DM8 双跑
   **回滚方案**: `downgrade()` 直接 drop 该列即可——新增可空列、无数据回填、无其他表引用，回滚无损
@@ -38,7 +38,7 @@
   **依赖**: 无
 
 - [x] **T002**: DAO 写状态时一并写时间
-  **文件**: `src/backend/bisheng/llm/domain/models/llm_server.py`（`LLMDao.update_model_status` / `aupdate_model_status`）
+  **文件**: `src/backend/doberman_agent/llm/domain/models/llm_server.py`（`LLMDao.update_model_status` / `aupdate_model_status`）
   **逻辑**: 两个方法的 `values(...)` 增加 `status_update_time=当前时间`；保持既有签名与调用方兼容
   **覆盖 AC**: AC-03, AC-04, AC-05
   **依赖**: T001
@@ -53,7 +53,7 @@
   **依赖**: T002
 
 - [x] **T004**: `test_model_status` 补成功回写 + 超时
-  **文件**: `src/backend/bisheng/llm/domain/services/llm.py`（`LLMService.test_model_status`）
+  **文件**: `src/backend/doberman_agent/llm/domain/services/llm.py`（`LLMService.test_model_status`）
   **逻辑**: ①成功分支补 `update_model_status(id, 0, '')`——现状只在失败写库，不改 AC-03 不成立（design §3 决策 3、§5 坑 1）；②整段探活加 30 秒超时上限，超时按异常处理
   **测试**: T003 全部通过
   **覆盖 AC**: AC-03, AC-04
@@ -63,13 +63,13 @@
 ### Wave 3 — API 层
 
 - [x] **T005**: 「验证单个模型」端点
-  **文件**: `src/backend/bisheng/llm/api/router.py`（与 `/online` 同级新增）
+  **文件**: `src/backend/doberman_agent/llm/api/router.py`（与 `/online` 同级新增）
   **逻辑**: 入参模型 ID；权限沿用同文件既有 `get_tenant_admin_user` 注入；取模型 → 调 `LLMService.test_model_status` → 回读并返回 `{status, remark, status_update_time}`。**不新增错误码**：验证失败是业务结果（状态=异常），接口本身返回成功
   **覆盖 AC**: AC-02, AC-03, AC-04, AC-06
   **依赖**: T004
 
 - [x] **T006**: 模型列表响应带出状态更新时间
-  **文件**: `src/backend/bisheng/llm/domain/services/llm.py` / 相关 schema（按现有模型列表返回结构补字段）
+  **文件**: `src/backend/doberman_agent/llm/domain/services/llm.py` / 相关 schema（按现有模型列表返回结构补字段）
   **逻辑**: 列表接口响应中带 `status_update_time`（新增字段，向后兼容，其他消费方忽略即可）
   **覆盖 AC**: AC-05
   **依赖**: T001

@@ -4,9 +4,9 @@ from types import SimpleNamespace
 from mcp import types
 from packaging.version import Version
 
-from bisheng.common.services.config_service import settings
-from bisheng.open_mcp import server as open_mcp_server
-from bisheng.open_mcp.server import create_open_mcp_runtime
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.open_mcp import server as open_mcp_server
+from doberman_agent.open_mcp.server import create_open_mcp_runtime
 
 
 def test_pinned_sdk_supports_required_streamable_http_contract():

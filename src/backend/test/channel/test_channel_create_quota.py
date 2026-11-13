@@ -14,12 +14,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import CreateChannelRequest
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ChannelCreateLimitExceededError
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import CreateChannelRequest
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ChannelCreateLimitExceededError
 
-_QUOTA_PATCH = "bisheng.channel.domain.services.channel_service.QuotaService.get_effective_quota"
+_QUOTA_PATCH = "doberman_agent.channel.domain.services.channel_service.QuotaService.get_effective_quota"
 
 
 class _LoginUser:
@@ -129,11 +129,11 @@ async def test_create_channel_unlimited_allows_beyond_legacy_ten():
     with (
         patch(_QUOTA_PATCH, new=AsyncMock(return_value=-1)),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=SimpleNamespace(authorize_created=AsyncMock())),
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_bisheng_information_client",
+            "doberman_agent.channel.domain.services.channel_service.get_doberman_agent_information_client",
             new=AsyncMock(return_value=SimpleNamespace(subscribe_information_source=AsyncMock())),
         ),
     ):
@@ -170,11 +170,11 @@ async def test_create_channel_ignores_orphan_membership():
     with (
         patch(_QUOTA_PATCH, new=AsyncMock(return_value=2)),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=SimpleNamespace(authorize_created=AsyncMock())),
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_bisheng_information_client",
+            "doberman_agent.channel.domain.services.channel_service.get_doberman_agent_information_client",
             new=AsyncMock(return_value=SimpleNamespace(subscribe_information_source=AsyncMock())),
         ),
     ):

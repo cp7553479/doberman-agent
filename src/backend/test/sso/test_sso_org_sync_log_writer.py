@@ -17,12 +17,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 
-MODULE = 'bisheng.sso_sync.domain.services.org_sync_log_writer'
+MODULE = 'doberman_agent.sso_sync.domain.services.org_sync_log_writer'
 
 
 @pytest.fixture()
 def mock_seed_config(monkeypatch):
-    import bisheng.sso_sync.domain.services.org_sync_log_writer as mod
+    import doberman_agent.sso_sync.domain.services.org_sync_log_writer as mod
     fake_settings = SimpleNamespace(
         sso_sync=SimpleNamespace(orphan_config_id=9999),
     )
@@ -39,7 +39,7 @@ def anyio_backend():
 class TestBufferAccumulation:
 
     async def test_warn_and_error_accumulate(self):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer,
         )
         buf = OrgSyncLogBuffer()
@@ -55,7 +55,7 @@ class TestBufferAccumulation:
 class TestFlushLog:
 
     async def test_flush_writes_row_with_stats(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         buf = OrgSyncLogBuffer(
@@ -80,7 +80,7 @@ class TestFlushLog:
         assert written.tenant_id == 1
 
     async def test_flush_writes_end_time_with_database_clock(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
 
@@ -96,7 +96,7 @@ class TestFlushLog:
     async def test_flush_uses_seed_config_id_when_not_overridden(
         self, mock_seed_config,
     ):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         buf = OrgSyncLogBuffer()
@@ -109,7 +109,7 @@ class TestFlushLog:
         assert written.config_id == 9999
 
     async def test_explicit_config_id_overrides_seed(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         with patch(
@@ -125,7 +125,7 @@ class TestFlushLog:
         assert written.config_id == 1234
 
     async def test_status_is_partial_when_errors_present(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         buf = OrgSyncLogBuffer()
@@ -141,7 +141,7 @@ class TestFlushLog:
         assert any(e.get('entity_type') == 'upsert' for e in written.error_details)
 
     async def test_explicit_status_overrides_derivation(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         with patch(
@@ -156,7 +156,7 @@ class TestFlushLog:
         assert written.status == 'failed'
 
     async def test_flush_failure_returns_none(self, mock_seed_config):
-        from bisheng.sso_sync.domain.services.org_sync_log_writer import (
+        from doberman_agent.sso_sync.domain.services.org_sync_log_writer import (
             OrgSyncLogBuffer, flush_log,
         )
         with patch(

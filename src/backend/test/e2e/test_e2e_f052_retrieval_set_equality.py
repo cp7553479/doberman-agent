@@ -18,7 +18,7 @@ Prerequisites — a CI middleware stage, or 114:
 * ``F052_E2E=1``. The suite creates and deletes ``e2e-f052-retrieval-`` spaces,
   a document library, a service account and one personal access token, and it
   toggles the deployment PAT switch back to whatever it found.
-* A **deployed** BiSheng with MySQL, Redis, OpenFGA, MinIO, Milvus and
+* A **deployed** doberman-agent with MySQL, Redis, OpenFGA, MinIO, Milvus and
   Elasticsearch, **plus a running knowledge Celery worker** — without the
   worker nothing the suite uploads ever reaches the indexes and every set is
   trivially empty, which would pass three of these tests for the wrong reason
@@ -117,7 +117,7 @@ async def mcp_search(bearer: str, *, query: str, knowledge_ids: tuple[int, ...],
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             result = await session.call_tool(
-                "bisheng_knowledge_retrieve",
+                "doberman_agent_knowledge_retrieve",
                 {"query": query, "knowledge_base_ids": list(knowledge_ids), "top_k": top_k},
             )
     return {"isError": bool(result.isError), "content": result.structuredContent, "raw": result}
@@ -374,7 +374,7 @@ async def test_a_revoked_key_stops_working_inside_the_revocation_bound(client: h
     order coupling that turns a ``-k`` run into a mystery.
     """
 
-    from bisheng.app_publish.domain.services.app_credential_service import REVOCATION_BOUND_SECONDS
+    from doberman_agent.app_publish.domain.services.app_credential_service import REVOCATION_BOUND_SECONDS
 
     issued = assert_resp_200(
         await client.post(
@@ -447,7 +447,7 @@ async def test_with_the_permission_engine_stopped_every_door_errors_and_returns_
 
     key = _required_env("F052_E2E_SEEDED_KEY")
     space_id = int(_required_env("F052_E2E_SEEDED_SPACE_ID"))
-    query = os.environ.get("F052_E2E_SEEDED_QUERY", "bisheng f052 retrieval sample")
+    query = os.environ.get("F052_E2E_SEEDED_QUERY", "doberman_agent f052 retrieval sample")
 
     v2 = await v2_retrieve(client, key, query=query, knowledge_ids=(space_id,))
     body = v2.json()

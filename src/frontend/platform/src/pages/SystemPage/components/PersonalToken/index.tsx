@@ -1,7 +1,7 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input, toast } from '@bisheng/ui';
+import { Button, Input, toast } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
-import { RadioGroup,Radio as RadioGroupItem,Switch,Tag } from "@bisheng/ui";
+import { RadioGroup,Radio as RadioGroupItem,Switch,Tag } from "@doberman-agent/ui";
 
 
 

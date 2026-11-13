@@ -16,9 +16,9 @@
 
 ## 基线与验证
 
-- Web 仓库：`dataelement/bisheng`，目标 `feat/bisheng-work-120-main`。
+- Web 仓库：`cp7553479/doberman-agent`，目标 `feat/doberman-agent-work-120-main`。
 - 远端读取基线：`d4ada988a44e82016a3dd427fc6cb6e14ff5e92a`。
-- 工作树：`.worktrees/bisheng-chat-space-access-20261103`；分支 `codex/chat-space-access-20261103`。
+- 工作树：`.worktrees/doberman-agent-chat-space-access-20261103`；分支 `codex/chat-space-access-20261103`。
 - 原基线替换逻辑后，3 项缺陷回归全部失败；恢复修复后，6 文件 / 76 项通过，覆盖旧会话刷新、跨标签页焦点核验、混合授权、错误恢复、账号/会话切换、有效计数、发送/重新生成、草稿与知识问答交接。
 - 全量前端 lint、Client / Platform strict typecheck、共享 file-viewers 类型检查、Client 生产构建、i18n 一致性、架构守卫与差异检查通过。
 - 自动化使用确定性权限接口替身，验证真实 React hooks、选择器和输入区组件。日志保留于外层工作区 `outputs/chat-space-access-20261103/`。

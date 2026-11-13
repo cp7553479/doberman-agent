@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { historyForHost } from "@bisheng/chat/core";
+import { historyForHost } from "@doberman-agent/chat/core";
 import { generateUUID } from "~/utils";
 import request from "./request";
 
-// 毕昇config
+// doberman-agentconfig
 export async function getBysConfigApi() {
     return await request.get('/api/v1/env')
 }

@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.citation.domain.services.daily_citation_scope import DailyCitationScope
-from bisheng.workstation.domain.services import daily_citation
+from doberman_agent.citation.domain.services.daily_citation_scope import DailyCitationScope
+from doberman_agent.workstation.domain.services import daily_citation
 
 K1 = "knowledgesearch_aaaa1111:0"
 K2 = "websearch_bbbb2222:1"

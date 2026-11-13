@@ -92,7 +92,7 @@
 | 2026-07-02 | 二次确认弹窗现状扫描（B 套 21 文件 9 种按钮写法、C 套 useConfirm 16 文件；手拼 AlertDialog 9 文件划归 Modal 范围），画廊新增「二次确认弹窗」版块；未改组件源码 | `_gallery/sections/ConfirmDialogSection.tsx`（新）、`_gallery/GalleryApp.tsx` | 待 committer 窗口提交 |
 | 2026-07-02 | **C 套第一笔定稿改动**：padding 24→20（`p-6`→`p-5`）、圆角 20→16（`rounded-[20px]`→`rounded-2xl`），16 处业务全场生效 | `Providers/ConfirmContext.tsx` | 待 committer 窗口提交 |
 | 2026-07-02 | C 套焦点环改 `focus-visible`：鼠标打开不显示按钮灰圈，键盘 Tab 仍显示 | `Providers/ConfirmContext.tsx` | 待 committer 窗口提交 |
-| 2026-07-02 | C 套图标 lucide→bisheng-icons：Trash2→`Outlined.Delete`、AlertCircle→`Outlined.Attention`（Attention 字形待设计师目检） | `Providers/ConfirmContext.tsx` | 待 committer 窗口提交 |
+| 2026-07-02 | C 套图标 lucide→@doberman-agent/icons：Trash2→`Outlined.Delete`、AlertCircle→`Outlined.Attention`（Attention 字形待设计师目检） | `Providers/ConfirmContext.tsx` | 待 committer 窗口提交 |
 | 2026-07-02 | C 套取消按钮 hover 从不可见的 `bg-white/70` 改为 `bg-[#f7f8fa]`，与知识空间工具栏按钮 hover 一致 | `Providers/ConfirmContext.tsx` | 待 committer 窗口提交 |
 | 2026-07-03 | **收敛第一、二步**：B 套壳对齐 C 套（遮罩灰底毛玻璃、`p-5`、`rounded-2xl` + 边框淡投影、标题 `text-base font-medium`）；OGDialogTemplate 按钮重写（取消 = C 套样式，确认 = cva `danger` / `primary` 两档，旧 selectClasses 自动折叠）；C 套 `description` 改 ReactNode。注意：OriginalDialog 壳改动影响所有 OG 弹窗（含表单类）。tsc 通过 | `ui/OriginalDialog.tsx`、`ui/OGDialogTemplate.tsx`、`Providers/ConfirmContext.tsx`、画廊 | 待 committer 窗口提交 |
 | 2026-07-03 | B 套 danger 档标题变红 `#f53f3f`（对齐 C 套危险态）；仅 selection 解析为 danger 时生效 | `ui/OGDialogTemplate.tsx` | 待 committer 窗口提交 |

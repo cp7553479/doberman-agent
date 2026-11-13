@@ -3,11 +3,11 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, call
 
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.domain.repositories.interfaces.knowledge_file_repository import (
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.domain.repositories.interfaces.knowledge_file_repository import (
     FolderDescendantStatusFlags,
 )
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 
 def _service(states: dict[int, FolderDescendantStatusFlags], *, login_user_id: int = 42):

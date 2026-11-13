@@ -21,12 +21,12 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import (
     ABSOLUTE_PATH_NOTICE,
     ABSOLUTE_PROVISIONED_PATH_NOTICE,
     BaseExecutor,
 )
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import (
     LOG_TRUNCATED_NOTICE,
     MAX_FAILURE_LOG_CHARS,
     TIMEOUT_MSG,
@@ -301,7 +301,7 @@ def test_local_description_explains_both_namespaces():
 def test_e2b_description_omits_skills():
     """E2B copy-in snapshots the working dir BEFORE skills are materialised, so
     promising `skills/` there would point the model at nothing."""
-    from bisheng_langchain.gpts.tools.code_interpreter.base_executor import path_namespace_rules
+    from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import path_namespace_rules
 
     rules = path_namespace_rules(include_skills=False)
     assert "skills/" not in rules

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cn } from '@bisheng/ui';
+import { cn } from '@doberman-agent/ui';
 import { usePreviewResource } from '../usePreviewResource';
 import type { PreviewViewerProps } from '../viewerTypes';
 import { MarkdownBody } from './MarkdownViewer';

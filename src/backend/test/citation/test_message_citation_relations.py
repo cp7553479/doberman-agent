@@ -3,22 +3,22 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.citation.domain.models.message_citation import MessageCitation, MessageCitationRelation
-from bisheng.citation.domain.repositories.implementations.message_citation_repository_impl import (
+from doberman_agent.citation.domain.models.message_citation import MessageCitation, MessageCitationRelation
+from doberman_agent.citation.domain.repositories.implementations.message_citation_repository_impl import (
     MessageCitationRepositoryImpl,
 )
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_START_MARKER,
 )
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
-from bisheng.database.models.message import ChatMessage
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.database.models.message import ChatMessage
 from scripts.backfill_message_citation_relations import backfill
 
 

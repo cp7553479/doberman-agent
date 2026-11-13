@@ -21,7 +21,7 @@ makes this call in the backend; these tests pin that we now do too.
 import zlib
 from unittest.mock import MagicMock
 
-from bisheng.linsight.domain.services.workspace_backend import (
+from doberman_agent.linsight.domain.services.workspace_backend import (
     _MAX_INLINE_BINARY_BYTES,
     BINARY_READ_ERROR_PREFIX,
     WorkspaceBackend,
@@ -36,7 +36,7 @@ PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00\x01\x02\x03" * 64
 
 def _backend(tmp_path) -> WorkspaceBackend:
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     return WorkspaceBackend(svid="sv-bin", minio=minio, file_dir=str(tmp_path))
 
 

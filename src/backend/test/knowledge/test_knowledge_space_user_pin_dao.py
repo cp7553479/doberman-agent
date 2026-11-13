@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.knowledge.domain.models.knowledge_space_user_pin import (
+from doberman_agent.knowledge.domain.models.knowledge_space_user_pin import (
     KnowledgeSpaceUserPinDao,
 )
 
@@ -48,7 +48,7 @@ async def pin_db(monkeypatch):
             await session.close()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_space_user_pin.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_user_pin.get_async_db_session",
         _fake_session,
     )
     yield engine

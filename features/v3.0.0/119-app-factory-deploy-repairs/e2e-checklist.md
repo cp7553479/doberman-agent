@@ -13,7 +13,7 @@
 
 | 完成 | 操作及必须断言 | AC |
 | --- | --- | --- |
-| [ ] | 在空venv安装平台实际下载的CLI post2，hash/版本与manifest一致，fresh login shell执行 `bisheng --version`，同步官方skills | AC-01, AC-27 |
+| [ ] | 在空venv安装平台实际下载的CLI post2，hash/版本与manifest一致，fresh login shell执行 `doberman-agent --version`，同步官方skills | AC-01, AC-27 |
 | [ ] | 复制官方Python deploy-hosting示例，仅更改专用name/slug；CLI deploy→预检→真实审批→上线，保存deployment/version/operation关联，入口与 `/hits` 正常。没有版本字段的新输入按2/bundle，显式1保持旧方式 | AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08, AC-09, AC-10, AC-11, AC-23, AC-27 |
 | [ ] | 对此临时Python应用 `/hits` 写入计数；使用原应用动作停用再上线，计数继续增长。审批/管理预览写入不进入正式数据 | AC-06, AC-07, AC-38, AC-39 |
 | [ ] | Node index.js或package.main最小项目，从平台下载材料准备→审批→上线；依赖精确版本和本地bin可用，没有npm隐式prestart/poststart | AC-12, AC-13, AC-14, AC-15, AC-16, AC-33, AC-35 |

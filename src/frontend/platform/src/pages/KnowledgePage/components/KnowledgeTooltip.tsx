@@ -1,5 +1,5 @@
-import { Button,Tooltip,type TooltipProps } from '@bisheng/ui'
-import { Outlined } from 'bisheng-icons'
+import { Button,Tooltip,type TooltipProps } from '@doberman-agent/ui'
+import { Outlined } from '@doberman-agent/icons'
 import { Children,isValidElement,type ReactNode } from 'react'
 
 interface KnowledgeTooltipProps extends TooltipProps {

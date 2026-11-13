@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 // components/AudioPlayButton.tsx
 import { textToSpeech } from '@/controllers/API/workbench';
 import { showApiError } from '@/controllers/request';
-import { isApiError } from '@bisheng/api-client';
-import { Outlined } from "bisheng-icons";
+import { isApiError } from '@doberman-agent/api-client';
+import { Outlined } from "@doberman-agent/icons";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

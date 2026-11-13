@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useState } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import type { NavLink, NavProps } from '~/common';

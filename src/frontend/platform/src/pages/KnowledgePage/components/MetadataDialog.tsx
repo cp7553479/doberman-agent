@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { DatePicker } from "@/components/bs-ui/calendar/datePicker";
 import { Dialog,DialogContent,DialogDescription,DialogHeader } from '@/components/bs-ui/dialog';
 import { cname } from "@/components/bs-ui/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Hash } from 'lucide-react';
 import React,{ useMemo,useRef } from 'react';
 import { KnowledgeTooltip } from "./KnowledgeTooltip";

@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.knowledge.rag.pipeline.loader.utils.md_from_html import HTML2MarkdownConverter
+from doberman_agent.knowledge.rag.pipeline.loader.utils.md_from_html import HTML2MarkdownConverter
 
 SIBLING_BYTES = b"\x89PNG sibling image"
 SECRET_BYTES = b"root:x:0:0:root:/root:/bin/bash\n"

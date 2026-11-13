@@ -33,7 +33,7 @@
 ### 基础设施（无测试配对）
 
 - [x] **T01**: Alembic 迁移 — Role 表扩展
-  **文件**: `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py`
+  **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py`
   **逻辑**:
   - `down_revision` = F004 系列最后一个迁移
   - `ADD COLUMN department_id INT NULL`，添加索引 `idx_role_department_id`
@@ -48,7 +48,7 @@
   **依赖**: 无
 
 - [x] **T02**: Role ORM 模型更新
-  **文件**: `src/backend/bisheng/database/models/role.py`
+  **文件**: `src/backend/doberman_agent/database/models/role.py`
   **逻辑**:
   - `RoleBase` 新增字段：`role_type`（String(16), default='tenant'）、`department_id`（Optional[int]）、`quota_config`（Optional[dict], JSON 列）
   - `group_id` 和 `knowledge_space_file_limit` 添加 `# deprecated` 注释（AD-07, AD-08）
@@ -62,7 +62,7 @@
   **依赖**: T01
 
 - [x] **T03**: 错误码定义
-  **文件**: `src/backend/bisheng/common/errcode/role.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/role.py`
   **逻辑**:
   - 定义 6 个错误码类，继承 `BaseErrorCode`：
     ```
@@ -79,15 +79,15 @@
 
 - [x] **T04**: role/ DDD 模块骨架 + Router 注册
   **文件**:
-  - `src/backend/bisheng/role/__init__.py`
-  - `src/backend/bisheng/role/api/__init__.py`
-  - `src/backend/bisheng/role/api/router.py`
-  - `src/backend/bisheng/role/api/endpoints/__init__.py`
-  - `src/backend/bisheng/role/domain/__init__.py`
-  - `src/backend/bisheng/role/domain/schemas/__init__.py`
-  - `src/backend/bisheng/role/domain/schemas/role_schema.py`
-  - `src/backend/bisheng/role/domain/services/__init__.py`
-  - `src/backend/bisheng/api/router.py`（修改，注册 role 模块路由）
+  - `src/backend/doberman_agent/role/__init__.py`
+  - `src/backend/doberman_agent/role/api/__init__.py`
+  - `src/backend/doberman_agent/role/api/router.py`
+  - `src/backend/doberman_agent/role/api/endpoints/__init__.py`
+  - `src/backend/doberman_agent/role/domain/__init__.py`
+  - `src/backend/doberman_agent/role/domain/schemas/__init__.py`
+  - `src/backend/doberman_agent/role/domain/schemas/role_schema.py`
+  - `src/backend/doberman_agent/role/domain/services/__init__.py`
+  - `src/backend/doberman_agent/api/router.py`（修改，注册 role 模块路由）
   **逻辑**:
   - 创建空模块骨架（`__init__.py` 文件）
   - `role/api/router.py` 创建 `role_router` APIRouter，注册到全局 `api/router.py`
@@ -99,13 +99,13 @@
     EffectiveQuotaItem(resource_type, role_quota, tenant_quota, tenant_used, user_used, effective)
     MenuUpdateRequest(menu_ids: list[str])
     ```
-  **验证**: `from bisheng.role.api.router import role_router` 成功
+  **验证**: `from doberman_agent.role.api.router import role_router` 成功
   **依赖**: 无（可与 T01-T03 并行）
 
 - [x] **T05**: WebMenuResource 枚举更新 + init_data 调整
   **文件**:
-  - `src/backend/bisheng/database/models/role_access.py`（修改 WebMenuResource 枚举）
-  - `src/backend/bisheng/common/init_data.py`（修改默认角色初始化）
+  - `src/backend/doberman_agent/database/models/role_access.py`（修改 WebMenuResource 枚举）
+  - `src/backend/doberman_agent/common/init_data.py`（修改默认角色初始化）
   **逻辑**:
   - 更新 `WebMenuResource` 枚举（spec §5.2）：
     - 新增：WORKSTATION, ADMIN, TOOL, MCP, CHANNEL, DATASET, MARK_TASK
@@ -139,7 +139,7 @@
   **依赖**: T03（错误码）, T04（Schema）
 
 - [x] **T07**: QuotaService 实现
-  **文件**: `src/backend/bisheng/role/domain/services/quota_service.py`
+  **文件**: `src/backend/doberman_agent/role/domain/services/quota_service.py`
   **逻辑**:
   - 定义 `DEFAULT_ROLE_QUOTA` 常量（8 个资源类型，spec §5.3）
   - 定义 `QuotaResourceType` 常量类
@@ -184,7 +184,7 @@
   **依赖**: T02, T03, T04
 
 - [x] **T09**: RoleService 实现
-  **文件**: `src/backend/bisheng/role/domain/services/role_service.py`
+  **文件**: `src/backend/doberman_agent/role/domain/services/role_service.py`
   **逻辑**:
   - `RoleService`（@classmethod，无实例状态）：
     - `create_role(req: RoleCreateRequest, login_user: LoginUser)` → Role
@@ -242,10 +242,10 @@
 
 - [x] **T11**: API 端点 + Router 注册
   **文件**:
-  - `src/backend/bisheng/role/api/endpoints/role.py`
-  - `src/backend/bisheng/role/api/endpoints/role_access.py`
-  - `src/backend/bisheng/role/api/endpoints/quota.py`
-  - `src/backend/bisheng/role/api/router.py`（更新注册）
+  - `src/backend/doberman_agent/role/api/endpoints/role.py`
+  - `src/backend/doberman_agent/role/api/endpoints/role_access.py`
+  - `src/backend/doberman_agent/role/api/endpoints/quota.py`
+  - `src/backend/doberman_agent/role/api/router.py`（更新注册）
   **逻辑**:
   - `role.py`（5 个端点）：
     - `POST /roles` → `RoleService.create_role()`
@@ -269,7 +269,7 @@
 ### 集成适配
 
 - [x] **T12**: 旧 API 向后兼容适配
-  **文件**: `src/backend/bisheng/user/api/user.py`
+  **文件**: `src/backend/doberman_agent/user/api/user.py`
   **逻辑**:
   - 修改 5 个旧端点，内部委托 RoleService：
     - `POST /role/add`（L318）→ 调用 `RoleService.create_role()`，将旧 RoleCreate 参数转换为 RoleCreateRequest
@@ -286,8 +286,8 @@
 
 - [x] **T13**: LoginUser 集成 + init_data 更新
   **文件**:
-  - `src/backend/bisheng/user/domain/services/auth.py`（修改 get_roles_web_menu）
-  - `src/backend/bisheng/common/init_data.py`（修改默认角色初始化）
+  - `src/backend/doberman_agent/user/domain/services/auth.py`（修改 get_roles_web_menu）
+  - `src/backend/doberman_agent/common/init_data.py`（修改默认角色初始化）
   **逻辑**:
   - `auth.py` 的 `get_roles_web_menu(user)`（L364-386）：
     - 管理员分支：`web_menu = [one.value for one in WebMenuResource]` — 已自动包含新增枚举值（AC-14）

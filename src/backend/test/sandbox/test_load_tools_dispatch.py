@@ -7,19 +7,19 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.core.config.settings import SandboxConf
-from bisheng_langchain.gpts.load_tools import _get_native_code_interpreter
-from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent.core.config.settings import SandboxConf
+from doberman_agent_langchain.gpts.load_tools import _get_native_code_interpreter
+from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 _BACKEND = Path(__file__).resolve().parents[2]
 _FIVE_PATHS = (
-    _BACKEND / "bisheng/linsight/domain/services/workbench_impl.py",
-    _BACKEND / "bisheng/workstation/domain/services/chat_service.py",
-    _BACKEND / "bisheng/api/services/assistant_agent.py",
-    _BACKEND / "bisheng/workflow/nodes/agent/agent.py",
-    _BACKEND / "bisheng/workflow/nodes/tool/tool.py",
+    _BACKEND / "doberman_agent/linsight/domain/services/workbench_impl.py",
+    _BACKEND / "doberman_agent/workstation/domain/services/chat_service.py",
+    _BACKEND / "doberman_agent/api/services/assistant_agent.py",
+    _BACKEND / "doberman_agent/workflow/nodes/agent/agent.py",
+    _BACKEND / "doberman_agent/workflow/nodes/tool/tool.py",
 )
 
 
@@ -59,7 +59,7 @@ def test_e2b_config_type_is_not_an_executor_kwarg(monkeypatch: pytest.MonkeyPatc
             captured.update(kwargs)
 
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.E2bCodeExecutor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.E2bCodeExecutor",
         _Spy,
     )
     _get_native_code_interpreter(
@@ -72,7 +72,7 @@ def test_e2b_config_type_is_not_an_executor_kwarg(monkeypatch: pytest.MonkeyPatc
 
 
 def test_container_pool_params_come_from_sandbox_conf_not_extra(monkeypatch: pytest.MonkeyPatch):
-    import bisheng_langchain.gpts.tools.code_interpreter.factory as factory_mod
+    import doberman_agent_langchain.gpts.tools.code_interpreter.factory as factory_mod
 
     conf = SandboxConf(endpoints=["http://pool:8080"], token="pool-token")
     monkeypatch.setattr(factory_mod, "load_sandbox_conf", lambda: conf)

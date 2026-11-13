@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.v1.schemas import WorkstationConfig
-from bisheng.llm.domain.schemas import WorkbenchModelConfig, WSModel
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.api.v1.schemas import WorkstationConfig
+from doberman_agent.llm.domain.schemas import WorkbenchModelConfig, WSModel
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 @pytest.mark.asyncio

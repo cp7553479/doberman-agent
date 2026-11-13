@@ -1,7 +1,7 @@
 import { ApiRequestFailure } from "~/components/ApiRequestFailure";
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from "@bisheng/ui";
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from "@doberman-agent/ui";
 import { useEffect, useRef, useState } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import AiChatMessages from "~/components/Chat/AiChatMessages";

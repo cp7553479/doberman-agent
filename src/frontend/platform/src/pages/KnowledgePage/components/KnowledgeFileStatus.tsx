@@ -1,5 +1,5 @@
-import { Button,Tag,Tooltip,type TagColor } from '@bisheng/ui'
-import { Outlined } from 'bisheng-icons'
+import { Button,Tag,Tooltip,type TagColor } from '@doberman-agent/ui'
+import { Outlined } from '@doberman-agent/icons'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { resolveKnowledgeParseFailure } from '../knowledgeParseFailureMessage'

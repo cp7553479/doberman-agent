@@ -3,8 +3,8 @@ import { AppPreviewPanel } from "./AppPreviewPanel";
 import type { LocalizeFn } from "./approvalPresentation";
 import type { PreviewStatus } from "~/api/hostedAppPreview";
 
-jest.mock('bisheng-icons',()=>{
-  const actual=jest.requireActual('bisheng-icons');
+jest.mock('@doberman-agent/icons',()=>{
+  const actual=jest.requireActual('@doberman-agent/icons');
   return {...actual,Outlined:{...actual.Outlined,Eye:()=>null,ViewOnNewTab:()=>null}};
 });
 jest.mock('~/utils/apiStatusError',()=>({extractApiErrorMessage:(error:Error)=>error.message}));

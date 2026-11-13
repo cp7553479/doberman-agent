@@ -16,13 +16,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.tool.domain.models.gpts_tools import GptsToolsDao
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsDao
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 _ROWS = {
     "web_search": SimpleNamespace(id=1, type=11, name="联网搜索", tool_key="web_search", desc="搜索互联网信息"),
-    "bisheng_code_interpreter": SimpleNamespace(
-        id=6, type=6, name="代码执行器", tool_key="bisheng_code_interpreter", desc="执行 Python 代码"
+    "doberman_agent_code_interpreter": SimpleNamespace(
+        id=6, type=6, name="代码执行器", tool_key="doberman_agent_code_interpreter", desc="执行 Python 代码"
     ),
 }
 
@@ -54,7 +54,7 @@ async def test_default_config_ships_web_search_and_code_interpreter(monkeypatch:
     # Both pre-checked, so a fresh install has them toggled on in the input bar.
     assert all(grp.default_checked for grp in cfg.tools)
     # Each group carries the real GptsTools leaf id the executor resolves against.
-    assert [grp.children[0]["tool_key"] for grp in cfg.tools] == ["web_search", "bisheng_code_interpreter"]
+    assert [grp.children[0]["tool_key"] for grp in cfg.tools] == ["web_search", "doberman_agent_code_interpreter"]
 
 
 async def test_default_config_enables_skill_entry(monkeypatch: pytest.MonkeyPatch):

@@ -6,11 +6,11 @@ from datetime import timedelta
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeNode, RuntimeOperation
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_protocol import ServiceIdentity, content_digest
-from bisheng.core.context.tenant import bypass_tenant_filter, current_tenant_id
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeNode, RuntimeOperation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_protocol import ServiceIdentity, content_digest
+from doberman_agent.core.context.tenant import bypass_tenant_filter, current_tenant_id
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID, setup_operation
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 
@@ -42,19 +42,19 @@ def document(op, *, kind="Pod", purpose="serve"):
                 "namespace": "namespace-a",
                 "name": name,
                 "labels": {
-                    "bisheng.managed": "v2",
-                    "runtime.bisheng.io/resource": REF,
-                    "runtime.bisheng.io/app": short_hash(op.app_id),
-                    "runtime.bisheng.io/node": short_hash(op.node_id),
-                    "runtime.bisheng.io/purpose": purpose,
+                    "doberman_agent.managed": "v2",
+                    "runtime.doberman_agent.io/resource": REF,
+                    "runtime.doberman_agent.io/app": short_hash(op.app_id),
+                    "runtime.doberman_agent.io/node": short_hash(op.node_id),
+                    "runtime.doberman_agent.io/purpose": purpose,
                 },
                 "annotations": {
-                    "runtime.bisheng.io/operation": op.id,
-                    "runtime.bisheng.io/generation": str(op.generation),
-                    "runtime.bisheng.io/owner-epoch": str(op.owner_epoch),
-                    "runtime.bisheng.io/status-policy": "v1",
+                    "runtime.doberman_agent.io/operation": op.id,
+                    "runtime.doberman_agent.io/generation": str(op.generation),
+                    "runtime.doberman_agent.io/owner-epoch": str(op.owner_epoch),
+                    "runtime.doberman_agent.io/status-policy": "v1",
                 },
-                "finalizers": ["runtime.bisheng.io/stop-confirmed"],
+                "finalizers": ["runtime.doberman_agent.io/stop-confirmed"],
             },
             "spec": {
                 "nodeSelector": {"kubernetes.io/os": "linux", "kubernetes.io/arch": "amd64"},
@@ -69,7 +69,7 @@ def document(op, *, kind="Pod", purpose="serve"):
 
 @pytest.fixture
 async def control(repo):
-    from bisheng.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
+    from doberman_agent.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
 
     node = await repo.get(RuntimeNode, "node-a")
     node.capabilities = {**node.capabilities, "helper_image": HELPER}
@@ -160,9 +160,9 @@ async def test_registration_rejects_unbound_or_unfrozen_resource_content(control
         meta[mutation] = "foreign"
     elif mutation in {"operation", "generation", "policy"}:
         key = "status-policy" if mutation == "policy" else mutation
-        meta["annotations"]["runtime.bisheng.io/" + key] = "foreign"
+        meta["annotations"]["runtime.doberman_agent.io/" + key] = "foreign"
     elif mutation in {"app", "resource", "purpose"}:
-        meta["labels"]["runtime.bisheng.io/" + mutation] = "foreign"
+        meta["labels"]["runtime.doberman_agent.io/" + mutation] = "foreign"
     elif mutation == "kind":
         template["kind"] = "Deployment"
     elif mutation == "image":
@@ -283,7 +283,7 @@ async def test_secret_intent_contains_only_digest_and_no_private_bytes(control):
 
 
 async def test_lost_assignment_fence_refuses_new_admission(control):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeAssignment
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeAssignment
 
     svc, repository, _ = control
     await register(control)
@@ -341,7 +341,7 @@ async def test_manager_can_recover_resource_identity_and_protection_without_loca
 
 
 async def test_intermediate_phase_stop_does_not_release_the_whole_operation_reservation(control):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation
     from test.app_runtime.test_runtime_kubernetes_repository import evidence
 
     svc, repository, op = control
@@ -364,12 +364,12 @@ async def service_intent(control):
     service_ref = "44444444-4444-4444-8444-444444444444"
     body = document(op, kind="Service", purpose="probe")
     body["resource_ref"] = service_ref
-    body["template"]["metadata"]["labels"]["runtime.bisheng.io/resource"] = service_ref
+    body["template"]["metadata"]["labels"]["runtime.doberman_agent.io/resource"] = service_ref
     body["template"]["metadata"]["name"] = "svc-app-a"
     body["template"]["metadata"].pop("finalizers", None)
     body["template"]["spec"] = {
         "type": "ClusterIP",
-        "selector": {"runtime.bisheng.io/resource": REF},
+        "selector": {"runtime.doberman_agent.io/resource": REF},
         "ports": [{"port": 8080, "targetPort": 8080, "protocol": "TCP"}],
     }
     await svc.register_resource(MANAGER, body)
@@ -462,7 +462,7 @@ async def test_scratch_volume_deletion_requires_all_operation_writers_confirmed(
     volume = document(op, kind="PersistentVolumeClaim", purpose="prepare-download")
     volume["resource_ref"] = volume_ref
     volume["template"]["metadata"]["name"] = "scratch-fixture"
-    volume["template"]["metadata"]["labels"]["runtime.bisheng.io/resource"] = volume_ref
+    volume["template"]["metadata"]["labels"]["runtime.doberman_agent.io/resource"] = volume_ref
     volume["template"]["spec"] = {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "512Mi"}}}
     await svc.register_resource(MANAGER, volume)
     await svc.observe_resource(MANAGER, volume_ref, {**auth, "action": "bind", "uid": volume_ref})
@@ -489,7 +489,7 @@ async def test_normal_cleanup_never_authorizes_production_volume_deletion(contro
 def test_every_production_purpose_refuses_cross_application_volume(purpose):
     from types import SimpleNamespace
 
-    from bisheng.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
+    from doberman_agent.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
 
     operation = SimpleNamespace(
         kind={"serve": "deploy", "data": "data", "migrate": "migrate", "restore": "restore", "purge": "destroy"}[

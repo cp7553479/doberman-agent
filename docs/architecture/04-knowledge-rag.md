@@ -1,6 +1,6 @@
 # 知识库与 RAG 管道
 
-知识库模块是毕昇平台的核心业务领域之一，负责文档的上传、解析、向量化与检索。整个处理流程采用三阶段管道架构（Load、Transform、Ingest），文档内容同时写入 Milvus 稠密向量库和 Elasticsearch 稀疏索引，实现语义检索与关键词检索的双路召回。异步文件处理由 Celery Worker 驱动，通过 `knowledge_celery` 队列实现任务解耦。
+知识库模块是doberman-agent平台的核心业务领域之一，负责文档的上传、解析、向量化与检索。整个处理流程采用三阶段管道架构（Load、Transform、Ingest），文档内容同时写入 Milvus 稠密向量库和 Elasticsearch 稀疏索引，实现语义检索与关键词检索的双路召回。异步文件处理由 Celery Worker 驱动，通过 `knowledge_celery` 队列实现任务解耦。
 
 ## 1. 领域模型
 
@@ -190,14 +190,14 @@ flowchart LR
 | 文件扩展名 | 加载器 | 说明 |
 |-----------|--------|------|
 | pdf | `_init_pdf_loader` | 根据配置选择解析引擎（见下文） |
-| doc, docx | `BishengWordLoader` | Word 文档加载 |
-| ppt, pptx | `BishengPptLoader` | PowerPoint 加载 |
-| txt, md | `BishengTextLoader` | 纯文本 / Markdown |
-| html, htm | `BishengHtmlLoader` | HTML 页面 |
+| doc, docx | `DobermanAgentWordLoader` | Word 文档加载 |
+| ppt, pptx | `DobermanAgentPptLoader` | PowerPoint 加载 |
+| txt, md | `DobermanAgentTextLoader` | 纯文本 / Markdown |
+| html, htm | `DobermanAgentHtmlLoader` | HTML 页面 |
 | xlsx, xls, csv | `ExcelLoader` | 表格文件（使用独立的 Excel 转换链） |
 | png, jpg, jpeg, bmp | `_init_image_loader` | 图片（复用 PDF 解析引擎做 OCR） |
 
-所有加载器继承 `BaseBishengLoader`（`knowledge/rag/pipeline/loader/base.py`），统一接收 `file_path`、`file_metadata`、`file_extension`、`tmp_dir` 四个参数，输出 LangChain `Document` 列表。加载器还维护 `bbox_list`（文本区域坐标信息）和 `local_image_dir`（提取的图片目录）供后续转换器使用。
+所有加载器继承 `Basedoberman-agentLoader`（`knowledge/rag/pipeline/loader/base.py`），统一接收 `file_path`、`file_metadata`、`file_extension`、`tmp_dir` 四个参数，输出 LangChain `Document` 列表。加载器还维护 `bbox_list`（文本区域坐标信息）和 `local_image_dir`（提取的图片目录）供后续转换器使用。
 
 ### 4.2 PDF 解析引擎
 
@@ -294,9 +294,9 @@ Excel 类文件（xlsx/xls/csv）使用独立的转换链，跳过附件处理�
 
 ## 7. 检索组件
 
-### 7.1 bisheng_langchain 检索器
+### 7.1 doberman_agent_langchain 检索器
 
-`bisheng_langchain` 扩展包（`src/backend/bisheng_langchain/rag/`）提供了多种检索器实现，用于 RAG 管道的检索阶段：
+`doberman_agent_langchain` 扩展包（`src/backend/doberman_agent_langchain/rag/`）提供了多种检索器实现，用于 RAG 管道的检索阶段：
 
 | 检索器 | 类 | 说明 |
 |--------|-----|------|
@@ -306,9 +306,9 @@ Excel 类文件（xlsx/xls/csv）使用独立的转换链，跳过附件处理�
 | 小块检索 | `SmallerChunksVectorRetriever` | 使用更小的分块进行精细检索，返回时映射回原始大块 |
 | 集成检索 | `EnsembleRetriever` | 将多个检索器的结果进行融合排序 |
 
-### 7.2 BishengRagPipeline
+### 7.2 DobermanAgentRagPipeline
 
-`BishengRagPipeline`（`bisheng_langchain/rag/bisheng_rag_pipeline.py`）是完整的 RAG 管道编排类，通过 YAML 配置文件驱动，整合以下组件：
+`DobermanAgentRagPipeline`（`doberman_agent_langchain/rag/doberman_agent_rag_pipeline.py`）是完整的 RAG 管道编排类，通过 YAML 配置文件驱动，整合以下组件：
 
 - Embedding 模型初始化
 - LLM 模型初始化
@@ -319,14 +319,14 @@ Excel 类文件（xlsx/xls/csv）使用独立的转换链，跳过附件处理�
 
 ### 7.3 评分与评估
 
-`bisheng_langchain/rag/scoring/` 提供了 RAG 质量评估工具：
+`doberman_agent_langchain/rag/scoring/` 提供了 RAG 质量评估工具：
 
 - `RagScore`（`ragas_score.py`）：基于 RAGAS 框架的自动化评估
 - `llama_index_score.py`：基于 LlamaIndex 的评估方法
 
 ### 7.4 Rerank
 
-`bisheng_langchain/rag/rerank/` 提供检索结果重排序功能，在初步召回后对候选文档进行精排，提升检索精度。
+`doberman_agent_langchain/rag/rerank/` 提供检索结果重排序功能，在初步召回后对候选文档进行精排，提升检索精度。
 
 ## 8. 异步任务处理
 
@@ -337,7 +337,7 @@ Excel 类文件（xlsx/xls/csv）使用独立的转换链，跳过附件处理�
 知识库任务使用 `knowledge_celery` 队列，启动命令：
 
 ```bash
-celery -A bisheng.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
+celery -A doberman_agent.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
 ```
 
 ### 8.2 Celery 任务
@@ -411,7 +411,7 @@ celery -A bisheng.worker.main worker -l info -c 20 -P threads -Q knowledge_celer
 ## 10. 相关文档
 
 - `docs/architecture/01-architecture-overview.md` -- 系统整体架构概述
-- `src/backend/bisheng/core/config/settings.py` -- KnowledgeConf 配置定义
-- `src/backend/bisheng/knowledge/` -- 知识库模块完整源码
-- `src/backend/bisheng_langchain/rag/` -- RAG 检索器与评估工具
-- `src/backend/bisheng/worker/knowledge/` -- Celery 异步任务定义
+- `src/backend/doberman_agent/core/config/settings.py` -- KnowledgeConf 配置定义
+- `src/backend/doberman_agent/knowledge/` -- 知识库模块完整源码
+- `src/backend/doberman_agent_langchain/rag/` -- RAG 检索器与评估工具
+- `src/backend/doberman_agent/worker/knowledge/` -- Celery 异步任务定义

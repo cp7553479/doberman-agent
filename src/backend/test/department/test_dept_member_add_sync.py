@@ -25,12 +25,12 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantRelocateBlockedError
-from bisheng.department.domain.services import department_service as ds_module
-from bisheng.department.domain.services.department_service import DepartmentService
-from bisheng.tenant.domain.constants import UserTenantSyncTrigger
-from bisheng.tenant.domain.services import user_tenant_sync_service as sync_module
-from bisheng.user.domain.services import user_department_service as uds_module
+from doberman_agent.common.errcode.tenant_resolver import TenantRelocateBlockedError
+from doberman_agent.department.domain.services import department_service as ds_module
+from doberman_agent.department.domain.services.department_service import DepartmentService
+from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
+from doberman_agent.tenant.domain.services import user_tenant_sync_service as sync_module
+from doberman_agent.user.domain.services import user_department_service as uds_module
 
 
 def _login_user(uid=1, tenant_id=1):
@@ -202,7 +202,7 @@ def _async_return(value):
 def create_member_patches(monkeypatch):
     """Mocks for ``acreate_local_member`` — focuses on the sync trigger.
 
-    ``acreate_local_member`` lazy-imports ``bisheng.user.domain.{models,services}.user``;
+    ``acreate_local_member`` lazy-imports ``doberman_agent.user.domain.{models,services}.user``;
     those modules pull in ``rsa`` which isn't in the test env. We inject
     stub modules into ``sys.modules`` before the function reaches its
     imports so the real chain never loads.
@@ -219,24 +219,24 @@ def create_member_patches(monkeypatch):
     user_dao.aexists_disabled_login_account = AsyncMock(return_value=False)
     user_dao.add_user_with_groups_and_roles = MagicMock(return_value=fake_user)
 
-    user_models_mod = ModuleType('bisheng.user.domain.models.user')
+    user_models_mod = ModuleType('doberman_agent.user.domain.models.user')
     user_models_mod.User = lambda **kw: SimpleNamespace(**kw)
     user_models_mod.UserDao = user_dao
     monkeypatch.setitem(
-        sys.modules, 'bisheng.user.domain.models.user', user_models_mod,
+        sys.modules, 'doberman_agent.user.domain.models.user', user_models_mod,
     )
 
     user_service = MagicMock(name='UserService')
     user_service.decrypt_password_plain = MagicMock(return_value='Pa55word!aaaa')
-    user_services_mod = ModuleType('bisheng.user.domain.services.user')
+    user_services_mod = ModuleType('doberman_agent.user.domain.services.user')
     user_services_mod.UserService = user_service
     monkeypatch.setitem(
-        sys.modules, 'bisheng.user.domain.services.user', user_services_mod,
+        sys.modules, 'doberman_agent.user.domain.services.user', user_services_mod,
     )
 
-    utils_mod = ModuleType('bisheng.utils')
+    utils_mod = ModuleType('doberman_agent.utils')
     utils_mod.md5_hash = lambda s: 'pwhash'
-    monkeypatch.setitem(sys.modules, 'bisheng.utils', utils_mod)
+    monkeypatch.setitem(sys.modules, 'doberman_agent.utils', utils_mod)
 
     # ── Mock the orchestration touchpoints ──
     perm_mock = AsyncMock(name='_get_dept_and_check_permission', return_value=dept)

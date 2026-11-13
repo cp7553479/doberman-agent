@@ -1,4 +1,4 @@
-import { shouldRetryApiError } from '@bisheng/api-client';
+import { shouldRetryApiError } from '@doberman-agent/api-client';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

@@ -9,7 +9,7 @@ design:
   is keyed by ``app_id``; a preview writes no record there at all. So a preview
   of version 7 while version 6 is serving cannot replace, stop, or race the
   running container, and the reconciler — which only ever looks at
-  ``bisheng.managed=true`` — never sees it.
+  ``doberman-agent.managed=true`` — never sees it.
 * **It therefore consumes no instance slot** (AC-26 「不占应用运行实例名额」).
   ``store.committed()`` sums the records, and a preview has none, so neither
   the capacity arithmetic nor ``capacity.instances`` counts it. Host capacity
@@ -114,12 +114,12 @@ def build_preview_payload(
     **The environment is the ordinary one** (:func:`runtime_manager.lifecycle.
     build_env`, contract §5) and that is the whole point of a trial run: the
     approver has to see the application behave the way it will behave in
-    production, and an app that is not told ``BISHENG_APP_DB_URL`` does not
+    production, and an app that is not told ``DOBERMAN_AGENT_APP_DB_URL`` does not
     start at all — which reads as "the preview is broken" rather than as "the
     platform forgot to tell it where its database is". Only two values differ,
     and both are the AC speaking:
 
-    * ``BISHENG_APP_BASE_PATH`` is ``/apps/preview/{session}``, not
+    * ``DOBERMAN_AGENT_APP_BASE_PATH`` is ``/apps/preview/{session}``, not
       ``/apps/{slug}`` — the same source has to rebuild its URLs correctly at
       both entry points (D5.2).
     * **no attachment handle at all** (``storage_token=None``): the app's
@@ -135,7 +135,7 @@ def build_preview_payload(
     * ``RestartPolicy`` is ``no``. A preview that resurrected itself after the
       platform reclaimed it would be an instance nobody can account for.
     * ``LABEL_MANAGED`` is ``preview``, not ``true``, so the reconciler's
-      ``bisheng.managed=true`` filter cannot see it — neither to adopt it into
+      ``doberman-agent.managed=true`` filter cannot see it — neither to adopt it into
       the desired state nor to reclaim it as an orphan.
     * No ``Healthcheck``: nothing reconciles a preview, so a health verdict
       would have no reader; readiness is decided once, by the start probe.

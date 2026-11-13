@@ -127,13 +127,13 @@ MCP长连接按实际业务调用重新校验，不能只在建连时检查一�
 
 本地核对基线：release@1a56cd5c6db087c672c543ce0b90336bc19cc9db。116事实来自同日先前只读核查；不以镜像标签推断源码SHA。
 
-- [服务账号与缓存准入](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/credential_validator.py)
-- [HTTP/MCP公共访问上下文](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/access_context.py)
-- [归属人查询](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/repositories/owner_repository.py)
-- [服务账号创建与固定租户逻辑](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/service_account_service.py)
-- [已有管理范围中间件](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/common/middleware/admin_scope.py)
-- [已有管理范围Hook](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/frontend/platform/src/hooks/useAdminScope.ts)
-- [服务账号管理页](https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/frontend/platform/src/pages/SystemPage/components/ServiceAccount/index.tsx)
+- [服务账号与缓存准入](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/credential_validator.py)
+- [HTTP/MCP公共访问上下文](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/access_context.py)
+- [归属人查询](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py)
+- [服务账号创建与固定租户逻辑](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/service_account_service.py)
+- [已有管理范围中间件](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/common/middleware/admin_scope.py)
+- [已有管理范围Hook](https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/hooks/useAdminScope.ts)
+- [服务账号管理页](https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/SystemPage/components/ServiceAccount/index.tsx)
 
 本简化版取代上一版迁移方案，旧版独立架构复审结论不适用于本版。本轮完成静态方案自检；未执行业务测试、部署、迁移或新的独立代理复审。
 

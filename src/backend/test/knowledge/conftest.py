@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 _PROXY_ENV_VARS = (
     "ALL_PROXY",
@@ -105,7 +105,7 @@ class FakeEngine:
 def fake_engine(monkeypatch):
     """Install ``FakeEngine`` in place of ``RetrievalEngine`` in the facade."""
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     FakeEngine.docs_by_knowledge_default = {}
     FakeEngine.raises_default = None
@@ -127,7 +127,7 @@ def fake_engine(monkeypatch):
 def knowledge_rows(monkeypatch):
     """Control what ``KnowledgeDao.aget_list_by_ids`` finds."""
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     table: dict[int, object] = {}
 
@@ -149,7 +149,7 @@ def knowledge_rows(monkeypatch):
 def fake_visibility(monkeypatch):
     """Control ``batch_check_business_actions`` per resource type and id."""
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     granted: dict[str, set[int]] = {"knowledge_space": set(), "knowledge_library": set()}
     seen: list[dict] = []
@@ -180,7 +180,7 @@ def fake_visibility(monkeypatch):
 def fake_visible_objects(monkeypatch):
     """Control ``F048PermissionRuntime.list_visible_objects``."""
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     by_type: dict[str, list[int]] = {}
     calls: list[dict] = []

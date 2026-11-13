@@ -10,19 +10,19 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import InvalidCatalogActionError, PermissionInvalidResourceError
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.tool.domain.const import ToolPresetType
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao, GptsToolsType
-from bisheng.tool.domain.services.f048_tool_permission import F048ToolPermissionAdapter, ToolDaoPermissionLoader
-from bisheng.tool.domain.services.permission_migration_source import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import InvalidCatalogActionError, PermissionInvalidResourceError
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.tool.domain.const import ToolPresetType
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao, GptsToolsType
+from doberman_agent.tool.domain.services.f048_tool_permission import F048ToolPermissionAdapter, ToolDaoPermissionLoader
+from doberman_agent.tool.domain.services.permission_migration_source import (
     SqlToolMigrationRepository,
     ToolPermissionMigrationSource,
 )
-from bisheng.tool.domain.services.tool import ToolServices
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.tool.domain.services.tool import ToolServices
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 @pytest.mark.parametrize("owner_user_id", [None, 1, 7])
@@ -67,7 +67,7 @@ def test_new_permission_record_uses_type_independently_of_creator(owner_user_id,
 
 @pytest.mark.parametrize("allowed", [True, False])
 async def test_workstation_presets_with_creator_still_require_use_permission(monkeypatch, allowed):
-    from bisheng.permission.application import business_authorization
+    from doberman_agent.permission.application import business_authorization
 
     row = GptsToolsType(id=902, tenant_id=5, user_id=1, name="Web search", is_preset=1)
     monkeypatch.setattr(GptsToolsDao, "aget_one_tool_type", AsyncMock(return_value=row))
@@ -142,7 +142,7 @@ async def test_sql_migration_classifies_only_presets_as_system_owned(tool_sessio
 
 @pytest.mark.parametrize("owner_user_id", [None, 1])
 async def test_tenant_copy_projects_presets_with_historical_creator(monkeypatch, tool_session_factory, owner_user_id):
-    from bisheng.workstation.domain.services import workstation_service
+    from doberman_agent.workstation.domain.services import workstation_service
 
     async with tool_session_factory() as session:
         session.add(GptsToolsType(id=902, tenant_id=1, name="Web search", is_preset=1, user_id=owner_user_id))

@@ -25,8 +25,8 @@ export const paramsSerializer = (params) => {
 
 const GITHUB_API_URL = "https://api.github.com";
 
-export type { ChatCitation, ChatCitationItem } from "@bisheng/chat/citations";
-import type { ChatCitation } from "@bisheng/chat/citations";
+export type { ChatCitation, ChatCitationItem } from "@doberman-agent/chat/citations";
+import type { ChatCitation } from "@doberman-agent/chat/citations";
 
 function citationCacheKey(id: string, scope = getCitationAccessScope()) {
   return JSON.stringify([scope, id]);

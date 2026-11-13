@@ -11,26 +11,26 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     GrantLevelForbiddenError,
     PermissionModelStateConflictError,
     PermissionVersionConflictError,
     ProtectedAssignmentMutationError,
 )
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_service import (
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_service import (
     CanonicalGrantChange,
     GrantCapability,
     GrantMutationContext,
     GrantService,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.projection_service import ProjectionOutcome
-from bisheng.permission.domain.services.visibility_projection_service import (
+from doberman_agent.permission.domain.services.projection_service import ProjectionOutcome
+from doberman_agent.permission.domain.services.visibility_projection_service import (
     VisibilityProjectionCompiler,
 )
 

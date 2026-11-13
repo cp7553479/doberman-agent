@@ -1,4 +1,4 @@
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 import { LogOut, MoreHorizontal, Pin, PinOff, Settings } from "lucide-react";
 import { useState } from "react";

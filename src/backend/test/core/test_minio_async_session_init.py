@@ -5,8 +5,8 @@ import threading
 
 import pytest
 
-from bisheng.core.storage.minio.minio_storage import _build_async_minio_session
-from bisheng.utils.async_utils import set_preferred_bridge_loop
+from doberman_agent.core.storage.minio.minio_storage import _build_async_minio_session
+from doberman_agent.utils.async_utils import set_preferred_bridge_loop
 
 
 @pytest.fixture

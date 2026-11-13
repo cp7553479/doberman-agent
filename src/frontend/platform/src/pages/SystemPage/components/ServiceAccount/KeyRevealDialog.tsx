@@ -1,7 +1,7 @@
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 
-import { Checkbox } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import {
 Dialog,

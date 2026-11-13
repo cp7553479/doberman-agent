@@ -1,4 +1,4 @@
-"""One-off environment preparation for the eval on a BiSheng instance (run on that host).
+"""One-off environment preparation for the eval on a DobermanAgent instance (run on that host).
 
 What it does (idempotent; re-running reuses what exists):
   1. logs in as a tenant admin (RSA password, same as the web UI);
@@ -7,7 +7,7 @@ What it does (idempotent; re-running reuses what exists):
      26007; a service account's own identity cannot be granted skills or knowledge spaces).
      Tasks show up in taskmode_eval's workbench — log in as it to inspect a run;
   3. imports the customer skills used by the selected cases from PACK/skills/*.zip
-     (builtin office skills bisheng-docx/pptx/xlsx are NOT imported: they are part of the
+     (builtin office skills doberman-agent-docx/pptx/xlsx are NOT imported: they are part of the
      system under test, the environment's own version is used);
   4. as taskmode_eval, creates the two knowledge spaces (eval copies of 106 spaces 9 and 10), uploads the
      files from PACK/knowledge_spaces/<id>/ and waits for parsing;
@@ -37,7 +37,7 @@ _sys.path.insert(0, str(_P(__file__).resolve().parent))
 
 from common import HARNESS, PACK, dump_json, load_case, load_json, log, select_cases
 
-BUILTIN = {"bisheng-docx", "bisheng-pptx", "bisheng-xlsx", "html-report"}
+BUILTIN = {"doberman-agent-docx", "doberman-agent-pptx", "doberman-agent-xlsx", "html-report"}
 SKILL_MAP = {"annual-debt-adjustment-local": "annual-debt-adjustment-rag"}
 EVAL_USER = "taskmode_eval"
 KS_NAMES = {"9": "评测-制度知识空间（106#9）", "10": "评测-研发管理知识空间（106#10）"}
@@ -222,7 +222,7 @@ def judge_cfg(model_id: str, args) -> dict:
     base = cfg.get("openai_api_base") or cfg.get("base_url")
     key = (cfg.get("openai_api_key") or cfg.get("api_key") or "").strip()
     extra = {"enable_thinking": False} if "dashscope" in (base or "") else {}
-    return {"base_url": base, "api_key": key, "model": name, "extra_body": extra, "bisheng_model_id": str(model_id)}
+    return {"base_url": base, "api_key": key, "model": name, "extra_body": extra, "doberman_agent_model_id": str(model_id)}
 
 
 def main():
@@ -244,11 +244,11 @@ def main():
     ap.add_argument(
         "--platform-version",
         default=None,
-        help="记进 env.json 的被测版本标识，如镜像 digest；默认取 /opt/bisheng 的 git HEAD",
+        help="记进 env.json 的被测版本标识，如镜像 digest；默认取 /opt/doberman-agent 的 git HEAD",
     )
     ap.add_argument(
         "--db-url",
-        default=os.environ.get("DB_URL") or "mysql://bisheng:123456@127.0.0.1:3306/bisheng",
+        default=os.environ.get("DB_URL") or "mysql://doberman-agent:123456@127.0.0.1:3306/doberman-agent",
         help="平台数据库连接串，只用于读：查已有用户/知识空间、文件解析状态、评审模型凭据",
     )
     args = ap.parse_args()
@@ -292,7 +292,7 @@ def main():
     )
     env["platform_version"] = args.platform_version or (
         subprocess.run(
-            ["git", "-C", "/opt/bisheng", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
+            ["git", "-C", "/opt/doberman-agent", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
         ).stdout.strip()
         or None
     )

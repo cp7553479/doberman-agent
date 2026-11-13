@@ -1,7 +1,7 @@
 """Tests for Group and UserGroup DAO operations (F003).
 
 Uses a self-contained SQLite engine with raw SQL helpers to avoid
-premock conflicts with bisheng.database.models.group (which is in
+premock conflicts with doberman_agent.database.models.group (which is in
 PREMOCK_MODULES). Follows the factories.py pattern.
 """
 

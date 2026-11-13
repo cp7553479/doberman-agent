@@ -22,7 +22,7 @@ def _row(last_sync_ts: int, is_deleted: int = 0):
 class TestNewExternalId:
 
     async def test_new_upsert_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         assert await OrgSyncTsGuard.check_and_update(None, 100, 'upsert') \
@@ -30,7 +30,7 @@ class TestNewExternalId:
 
     async def test_new_remove_skipped(self):
         """Remove on unseen external_id: nothing to delete → drop silently."""
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         assert await OrgSyncTsGuard.check_and_update(None, 100, 'remove') \
@@ -41,7 +41,7 @@ class TestNewExternalId:
 class TestStaleMessages:
 
     async def test_stale_upsert_skipped(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=200)
@@ -49,7 +49,7 @@ class TestStaleMessages:
             == GuardDecision.SKIP_TS
 
     async def test_stale_remove_skipped(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=200)
@@ -61,7 +61,7 @@ class TestStaleMessages:
 class TestNewerTs:
 
     async def test_newer_upsert_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100)
@@ -69,7 +69,7 @@ class TestNewerTs:
             == GuardDecision.APPLY
 
     async def test_newer_remove_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100)
@@ -84,7 +84,7 @@ class TestSameTs:
     operations (both upserts or both removes) are idempotent applies."""
 
     async def test_same_ts_upsert_on_active_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100, is_deleted=0)
@@ -93,7 +93,7 @@ class TestSameTs:
 
     async def test_same_ts_upsert_on_deleted_skipped(self):
         """INV-T12 key case: remove already applied, later upsert drops."""
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100, is_deleted=1)
@@ -101,7 +101,7 @@ class TestSameTs:
             == GuardDecision.SKIP_TS
 
     async def test_same_ts_remove_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100, is_deleted=0)
@@ -112,7 +112,7 @@ class TestSameTs:
         """Double-remove at same ts is idempotent — still APPLY, the DAO
         update is a no-op UPDATE ... SET is_deleted=1 on an already-deleted
         row."""
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=100, is_deleted=1)
@@ -127,7 +127,7 @@ class TestZeroTsBaseline:
     carrying ts=0 on the system-clock fallback from WeCom/Feishu)."""
 
     async def test_zero_ts_upsert_applies(self):
-        from bisheng.org_sync.domain.services.ts_guard import (
+        from doberman_agent.org_sync.domain.services.ts_guard import (
             GuardDecision, OrgSyncTsGuard,
         )
         existing = _row(last_sync_ts=0)

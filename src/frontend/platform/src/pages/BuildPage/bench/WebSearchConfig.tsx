@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { useEffect, useState } from "react";
@@ -45,7 +45,7 @@ export const WebSearchConfig = ({
 
     return (
         <>
-            <Label className="bisheng-label">{t("bench.webSearchPrompt")}</Label>
+            <Label className="doberman_agent-label">{t("bench.webSearchPrompt")}</Label>
             <div className="mt-3">
                 <Textarea value={config.prompt || config} onChange={(e) => onChange("prompt", e.target.value)} textareaClassName={"min-h-48"} />
             </div>

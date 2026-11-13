@@ -12,8 +12,8 @@ Note: the preview-object-path mapping (`get_*_preview_file_object_name`) lives i
 by the manual end-to-end pass (T014, AC-03/AC-05).
 """
 
-from bisheng.api.v1.endpoints import UNS_SUPPORT_FORMATS
-from bisheng.knowledge.rag.base_file_pipeline import FileExtensionMap
+from doberman_agent.api.v1.endpoints import UNS_SUPPORT_FORMATS
+from doberman_agent.knowledge.rag.base_file_pipeline import FileExtensionMap
 
 
 def test_ofd_routed_to_ofd_loader():

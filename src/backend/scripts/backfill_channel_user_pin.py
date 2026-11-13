@@ -32,14 +32,14 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.channel.domain.models.channel_user_pin import ChannelUserPin  # noqa: E402
-from bisheng.common.models.space_channel_member import (  # noqa: E402
+from doberman_agent.channel.domain.models.channel_user_pin import ChannelUserPin  # noqa: E402
+from doberman_agent.common.models.space_channel_member import (  # noqa: E402
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
 
 
 @dataclass

@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy import Column, Integer, MetaData, String, Table, case, func, select
 from sqlalchemy.dialects import mysql
 
-from bisheng.database.utils.keyset import build_keyset_where
+from doberman_agent.database.utils.keyset import build_keyset_where
 
 
 @pytest.fixture
@@ -165,7 +165,7 @@ def test_mixed_direction_length_mismatch_raises(kf_table):
 def test_expanded_fallback_emits_nested_or(kf_table):
     """If a future dialect rejects tuple_() we'll flip _USE_EXPANDED_FALLBACK;
     smoke-test the fallback function directly so it stays exercised."""
-    from bisheng.database.utils.keyset import _expanded_keyset_where
+    from doberman_agent.database.utils.keyset import _expanded_keyset_where
 
     where = _expanded_keyset_where(
         sort_cols=(kf_table.c.file_type, kf_table.c.file_name, kf_table.c.id),

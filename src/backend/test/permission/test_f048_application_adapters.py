@@ -6,17 +6,17 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.api.services.assistant import AssistantResourceAuthorizationPort
-from bisheng.api.services.f048_application_permission import (
+from doberman_agent.api.services.assistant import AssistantResourceAuthorizationPort
+from doberman_agent.api.services.f048_application_permission import (
     ApplicationPermissionRecord,
     F048ApplicationPermissionAdapter,
 )
-from bisheng.api.services.workflow import WorkflowResourceAuthorizationPort
-from bisheng.common.errcode.permission import (
+from doberman_agent.api.services.workflow import WorkflowResourceAuthorizationPort
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionInvalidResourceError,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

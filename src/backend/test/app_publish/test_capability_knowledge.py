@@ -24,15 +24,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_publish.domain.services import capability_bus_service
-from bisheng.app_publish.domain.services.capability_bus_service import (
+from doberman_agent.app_publish.domain.services import capability_bus_service
+from doberman_agent.app_publish.domain.services.capability_bus_service import (
     CapabilityBusService,
     hosted_app_access_user,
     load_effective_declaration,
 )
-from bisheng.common.errcode.app_publish import AppCapabilityNotDeclaredError, AppCapabilityRevokedError
-from bisheng.common.errcode.mcp_face import KnowledgeCapabilityRevokedError, RetrievalIdentityMissingError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.common.errcode.app_publish import AppCapabilityNotDeclaredError, AppCapabilityRevokedError
+from doberman_agent.common.errcode.mcp_face import KnowledgeCapabilityRevokedError, RetrievalIdentityMissingError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 ACCESS_USER_ID = 93001
 
@@ -45,7 +45,7 @@ def recorded_retrievals(monkeypatch):
     prove is which *arguments* reach it, so the double narrows exactly as the
     real one documents (``whitelist ∩ visible``) and records the call.
     """
-    from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+    from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
 
     calls: list[dict] = []
     visible = {"ids": set()}
@@ -63,14 +63,14 @@ def recorded_retrievals(monkeypatch):
         return SimpleNamespace(actor=SimpleNamespace(subject_id=user_id), login_user=None)
 
     monkeypatch.setattr(RetrievalFacadeService, "retrieve", classmethod(lambda cls, *a, **k: _retrieve(*a, **k)))
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
 
     monkeypatch.setattr(RetrievalIdentity, "from_user", classmethod(lambda cls, *a, **k: _from_user(*a, **k)))
     return SimpleNamespace(calls=calls, visible=visible)
 
 
 async def _online_app_declaring(publish_db, app_factory, knowledge_refs):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, version = await app_factory(state="online")
     async with publish_db() as session:
@@ -208,7 +208,7 @@ async def test_an_application_that_is_not_online_holds_no_capability(
 ):
     declared = await knowledge_factory(name="产品手册")
     app_row = await _online_app_declaring(publish_db, app_factory, [{"id": str(declared.id)}])
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with publish_db() as session:
         row = await AppDao.aget(session, app_row.id)
@@ -228,7 +228,7 @@ def test_an_unverifiable_access_token_is_no_access_user(monkeypatch):
     refusal — the alternative, falling through to the application itself, would
     make attribution something the caller can steer by sending garbage.
     """
-    from bisheng.open_api.domain.services import model_range_policy
+    from doberman_agent.open_api.domain.services import model_range_policy
 
     class RefusingVerifier:
         def verify(self, token, *, app_id, tenant_id):
@@ -236,14 +236,14 @@ def test_an_unverifiable_access_token_is_no_access_user(monkeypatch):
 
     monkeypatch.setattr(model_range_policy, "_access_subject_verifier", RefusingVerifier())
     principal = SimpleNamespace(subject_ref="app-uuid", tenant_id=1)
-    request = SimpleNamespace(headers={"X-BiSheng-Access-Token": "forged"})
+    request = SimpleNamespace(headers={"X-Doberman-Agent-Access-Token": "forged"})
 
     assert hosted_app_access_user(request, principal) is None
     assert hosted_app_access_user(SimpleNamespace(headers={}), principal) is None
 
 
 def test_a_verified_token_names_the_visitor(monkeypatch):
-    from bisheng.open_api.domain.services import model_range_policy
+    from doberman_agent.open_api.domain.services import model_range_policy
 
     class Verifier:
         def verify(self, token, *, app_id, tenant_id):
@@ -253,7 +253,7 @@ def test_a_verified_token_names_the_visitor(monkeypatch):
     monkeypatch.setattr(model_range_policy, "_access_subject_verifier", Verifier())
     principal = SimpleNamespace(subject_ref="app-uuid", tenant_id=1)
 
-    assert hosted_app_access_user(SimpleNamespace(headers={"X-BiSheng-Access-Token": "signed"}), principal) == (
+    assert hosted_app_access_user(SimpleNamespace(headers={"X-Doberman-Agent-Access-Token": "signed"}), principal) == (
         ACCESS_USER_ID
     )
 
@@ -271,7 +271,7 @@ def test_a_hosted_app_principal_cannot_build_a_facade_identity():
     is added next — would hand the application its *owner's* visibility with no
     whitelist at all, by omission rather than by decision.
     """
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
 
     principal = SimpleNamespace(
         actor_kind="hosted_app",
@@ -301,8 +301,8 @@ def test_a_hosted_app_cannot_borrow_its_owner_through_the_legacy_v2_helpers(monk
     So the refusal sits in ``_principal_user_id``, which all of them share — one
     place rather than five, and the route added next inherits it.
     """
-    from bisheng.common.errcode.open_api import OpenApiHostedAppEndpointRefusedError
-    from bisheng.open_endpoints.domain import utils as open_api_utils
+    from doberman_agent.common.errcode.open_api import OpenApiHostedAppEndpointRefusedError
+    from doberman_agent.open_endpoints.domain import utils as open_api_utils
 
     principal = SimpleNamespace(
         actor_kind="hosted_app",
@@ -331,7 +331,7 @@ def test_a_hosted_app_cannot_borrow_its_owner_through_the_legacy_v2_helpers(monk
 
 def test_a_service_account_still_reaches_the_legacy_v2_helpers(monkeypatch):
     """The refusal above is keyed on the subject kind, not on v2 as a whole."""
-    from bisheng.open_endpoints.domain import utils as open_api_utils
+    from doberman_agent.open_endpoints.domain import utils as open_api_utils
 
     principal = SimpleNamespace(
         actor_kind="service_account",
@@ -356,8 +356,8 @@ async def test_a_deleted_declared_knowledge_base_becomes_16273_with_its_name(
     declared = await knowledge_factory(name="产品手册")
     app_row = await _online_app_declaring(publish_db, app_factory, [{"id": str(declared.id)}])
 
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
-    from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
+    from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
 
     async def _raise(identity, req, *, version_repo=None):
         raise KnowledgeCapabilityRevokedError(knowledge_id=declared.id)

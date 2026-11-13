@@ -5,9 +5,9 @@ import httpx
 import pytest
 from yarl import URL
 
-from bisheng.common.errcode.channel import BishengInformationServiceError
-from bisheng.core.config.settings import IntelligenceCenterConf
-from bisheng.core.external.bisheng_information_client.client import BishengInformationClient
+from doberman_agent.common.errcode.channel import DobermanAgentInformationServiceError
+from doberman_agent.core.config.settings import IntelligenceCenterConf
+from doberman_agent.core.external.doberman_agent_information_client.client import DobermanAgentInformationClient
 
 
 def _response(data=None, *, total=0, page=1, page_size=100, code=200, status=200):
@@ -45,7 +45,7 @@ async def test_list_all_subscriptions_validates_and_collects_every_page():
             ]
         )
     )
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=http_client,
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )
@@ -70,12 +70,12 @@ async def test_list_all_subscriptions_validates_and_collects_every_page():
     ],
 )
 async def test_list_all_subscriptions_rejects_incomplete_snapshots(responses):
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=SimpleNamespace(get=AsyncMock(side_effect=responses)),
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )
 
-    with pytest.raises(BishengInformationServiceError) as exc:
+    with pytest.raises(DobermanAgentInformationServiceError) as exc:
         await client.list_all_subscriptions()
 
     assert "secret" not in str(exc.value)
@@ -84,7 +84,7 @@ async def test_list_all_subscriptions_rejects_incomplete_snapshots(responses):
 async def test_single_source_mutations_and_dynamic_key():
     current_key = "key-one"
     http_client = SimpleNamespace(post=AsyncMock(return_value=_response()))
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=http_client,
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key=current_key),
     )
@@ -121,7 +121,7 @@ async def test_get_information_articles_page_is_async_and_preserves_boundary(ret
         page_size=10,
     )
     http_client = SimpleNamespace(get=AsyncMock(return_value=body))
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=http_client,
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )
@@ -154,7 +154,7 @@ async def test_article_page_query_can_be_encoded_by_async_transport(return_infor
         assert query["return_information"] == str(return_information).lower()
         return _response({"articles": []})
 
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=SimpleNamespace(get=get),
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )
@@ -172,7 +172,7 @@ def test_sync_article_query_uses_lowercase_boolean(monkeypatch, return_informati
 
     real_client = httpx.Client
     monkeypatch.setattr(httpx, "Client", lambda: real_client(transport=httpx.MockTransport(handle)))
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=SimpleNamespace(),
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )
@@ -191,7 +191,7 @@ async def test_get_information_articles_bootstrap_uses_dedicated_endpoint():
         total=0,
     )
     http_client = SimpleNamespace(get=AsyncMock(return_value=body))
-    client = BishengInformationClient(
+    client = DobermanAgentInformationClient(
         http_client=http_client,
         get_conf=lambda: IntelligenceCenterConf(base_url="http://information.test", api_key="secret"),
     )

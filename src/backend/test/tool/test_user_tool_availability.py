@@ -8,11 +8,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.models.config import Config
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.tool.domain.repositories import user_availability as repository_module
-from bisheng.tool.domain.repositories.user_availability import UserToolAvailabilityRepository
-from bisheng.tool.domain.services.user_availability import UserToolAvailabilityService, manages_availability
+from doberman_agent.common.models.config import Config
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.tool.domain.repositories import user_availability as repository_module
+from doberman_agent.tool.domain.repositories.user_availability import UserToolAvailabilityRepository
+from doberman_agent.tool.domain.services.user_availability import UserToolAvailabilityService, manages_availability
 
 
 @pytest.fixture
@@ -87,7 +87,7 @@ async def test_all_tool_kinds_read_account_availability(kind):
 
 @pytest.mark.parametrize("app_type, expected", [("daily_chat", True), ("linsight", True), ("dsh_desktop", True), ("workflow", False), ("assistant", False)])
 def test_personal_preferences_apply_to_chat_and_work(app_type, expected):
-    from bisheng.tool.domain.services.user_availability import uses_account_availability
+    from doberman_agent.tool.domain.services.user_availability import uses_account_availability
     assert uses_account_availability(app_type) is expected
 
 

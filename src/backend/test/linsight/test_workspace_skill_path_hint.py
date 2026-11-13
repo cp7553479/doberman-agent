@@ -15,8 +15,8 @@ import tempfile
 import pytest
 from test_workspace_backend import FakeMinioStorage
 
-from bisheng.linsight.domain.services.tool_loop_middleware import _corrective_hint
-from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend
+from doberman_agent.linsight.domain.services.tool_loop_middleware import _corrective_hint
+from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend
 
 SVID = "4c85fb6948a44258a9cc8fa7f336fbb4"
 MANIFEST = "references/power_phase1_llm_operation_manifest.json"

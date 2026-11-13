@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { AlertDialog,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader } from "@/components/bs-ui/alertDialog";
 
 import { useEffect,useState } from "react";

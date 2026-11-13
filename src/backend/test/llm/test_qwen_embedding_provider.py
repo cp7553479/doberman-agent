@@ -10,11 +10,11 @@ import openai
 import pytest
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.llm.domain import utils as model_utils
-from bisheng.llm.domain.llm import embedding as embedding_module
-from bisheng.llm.domain.llm.embedding import BishengEmbedding, _get_openai_params, _get_qwen_params
-from bisheng.llm.domain.models import LLMModel, LLMServer
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.llm.domain import utils as model_utils
+from doberman_agent.llm.domain.llm import embedding as embedding_module
+from doberman_agent.llm.domain.llm.embedding import DobermanAgentEmbedding, _get_openai_params, _get_qwen_params
+from doberman_agent.llm.domain.models import LLMModel, LLMServer
 
 BASE_URL = "https://gateway.example.test/custom/compatible-mode/v1"
 MODEL_BATCHES = [
@@ -137,10 +137,10 @@ async def test_explicit_encoding_format_is_preserved(advanced):
 
 def test_client_mapping_and_other_openai_provider_defaults():
     """AC-QE-01, AC-QE-11: only Qwen changes provider-specific defaults."""
-    assert BishengEmbedding._get_embedding_class("qwen") is OpenAIEmbeddings
-    assert BishengEmbedding._get_embedding_class("azure_openai") is AzureOpenAIEmbeddings
+    assert DobermanAgentEmbedding._get_embedding_class("qwen") is OpenAIEmbeddings
+    assert DobermanAgentEmbedding._get_embedding_class("azure_openai") is AzureOpenAIEmbeddings
     for provider in ["openai", "xinference", "llamacpp", "vllm", "qianfan", "minimax", "zhipu", "tencent", "silicon"]:
-        assert BishengEmbedding._get_embedding_class(provider) is OpenAIEmbeddings
+        assert DobermanAgentEmbedding._get_embedding_class(provider) is OpenAIEmbeddings
         assert embedding_module._node_type[provider]["params_handler"] is _get_openai_params
     params = _get_openai_params({"model": "other-model"}, {"base_url": BASE_URL, "api_key": "other-key"}, {})
     assert "chunk_size" not in params
@@ -178,9 +178,9 @@ async def sdk_factory(monkeypatch):
             },
         )
 
-    monkeypatch.setattr(model_utils, "sync_bisheng_model_limit_check", lambda model: None)
+    monkeypatch.setattr(model_utils, "sync_doberman_agent_model_limit_check", lambda model: None)
     monkeypatch.setattr(model_utils, "upload_telemetry_log", lambda *args, **kwargs: None)
-    monkeypatch.setattr(BishengEmbedding, "sync_update_model_status", lambda *args: None)
+    monkeypatch.setattr(DobermanAgentEmbedding, "sync_update_model_status", lambda *args: None)
     with httpx.Client(transport=httpx.MockTransport(respond)) as sync_http:
         async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as async_http:
 
@@ -205,7 +205,7 @@ async def sdk_factory(monkeypatch):
                     online=True,
                     config={"user_kwargs": {"max_retries": 0, **(advanced or {})}},
                 )
-                return BishengEmbedding(
+                return DobermanAgentEmbedding(
                     model_id=2,
                     model_info=model,
                     server_info=server,

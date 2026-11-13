@@ -19,7 +19,7 @@
 | Gateway 自有接口 | `/api/oauth2/list`、`/api/getkey` HTTP/业务状态均 200 |
 | 页面 | `/`、`/workspace/` HTTP 200；浏览器刷新登录页正常 |
 | Nginx | `nginx -t` 通过；安装器生成 Gateway 转发配置并挂载生效 |
-| 专用数据库 | init 容器退出 0，bisheng_gateway 库 6 张表；专用账号实际连接成功 |
+| 专用数据库 | init 容器退出 0，doberman_agent_gateway 库 6 张表；专用账号实际连接成功 |
 | HMAC | Gateway/backend/worker 的密钥一致且非空；内部 login-sync 空对象请求，未签名业务码 19301，正确签名业务码 422（进入参数校验），没有创建或修改用户 |
 | 文件/端口 | license 文件与 .env 均 0600，license 只读挂载，Gateway 没有发布宿主端口 |
 | 服务 | 15 个服务：13 个常驻容器运行、两个初始化容器退出 0；有健康检查的常驻容器均 healthy，Gateway 重启计数 0 |

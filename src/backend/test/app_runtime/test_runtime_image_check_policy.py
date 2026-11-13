@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_image_check_policy import frozen_targets, registry_sources
-from bisheng.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_image_check_policy import frozen_targets, registry_sources
+from doberman_agent.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
 
 
 def case():
@@ -74,7 +74,7 @@ def test_even_an_approved_plan_cannot_escape_checker_scope(changed):
     if changed == "init":
         spec["initContainers"].append({"name": "untrusted"})
     if changed == "credentials":
-        container["env"].append({"name": "BISHENG_APP_TOKEN", "value_sha256": "0" * 64})
+        container["env"].append({"name": "DOBERMAN_AGENT_APP_TOKEN", "value_sha256": "0" * 64})
     if changed == "timeout":
         spec["activeDeadlineSeconds"] = 1800
     if changed == "claim":
@@ -86,7 +86,7 @@ def test_even_an_approved_plan_cannot_escape_checker_scope(changed):
 
 
 async def test_registry_policy_denies_arbitrary_sources_before_issuing_any_handle():
-    from bisheng.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
+    from doberman_agent.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
 
     op, node, _ = case()
     repo = SimpleNamespace(get=AsyncMock(return_value=node), find=AsyncMock())
@@ -96,7 +96,7 @@ async def test_registry_policy_denies_arbitrary_sources_before_issuing_any_handl
 
 
 def test_http_private_registry_is_explicit_and_other_origins_stay_tls():
-    from bisheng.app_runtime.domain.services.runtime_image_check_policy import check_document
+    from doberman_agent.app_runtime.domain.services.runtime_image_check_policy import check_document
 
     op, node, _ = case()
     node.capabilities.update(insecure_registry=True, image_repository="registry.invalid/apps")
@@ -121,7 +121,7 @@ def test_backend_target_document_matches_the_actual_standalone_manager(kind, mod
     import sys
     from pathlib import Path
 
-    from bisheng.app_runtime.domain.services.runtime_image_check_policy import check_document
+    from doberman_agent.app_runtime.domain.services.runtime_image_check_policy import check_document
 
     op, node, _ = case()
     op.kind = kind

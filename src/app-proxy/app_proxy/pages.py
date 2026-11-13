@@ -519,7 +519,7 @@ def _retry_markup(kind: str) -> tuple[str, str]:
     meta = f'<meta http-equiv="refresh" content="{RETRY_MAX_SECONDS}">\n'
     script = f"""<script>
 (function () {{
-  var first = {RETRY_FIRST_SECONDS}, cap = {RETRY_MAX_SECONDS}, key = 'bisheng.app-proxy.retry.' + location.pathname;
+  var first = {RETRY_FIRST_SECONDS}, cap = {RETRY_MAX_SECONDS}, key = 'doberman-agent.app-proxy.retry.' + location.pathname;
   var attempt = 0, now = Date.now();
   try {{
     var saved = (sessionStorage.getItem(key) || '0:0').split(':');

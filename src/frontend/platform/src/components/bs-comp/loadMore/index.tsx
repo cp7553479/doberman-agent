@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
  *
  * F027: needed because IntersectionObserver defaults to `root: null`
  * (viewport). When the footer lives inside an in-page scroll container
- * (typical BiSheng table layout), scrolling INSIDE that container never
+ * (typical DobermanAgent table layout), scrolling INSIDE that container never
  * changes the footer's intersection with the viewport, so the observer
  * fires only at mount and never again. Passing the scroll container as
  * `root` makes intersection track in-container scroll position instead.

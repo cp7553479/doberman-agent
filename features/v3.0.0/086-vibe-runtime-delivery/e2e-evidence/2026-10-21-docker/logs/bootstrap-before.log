@@ -9,7 +9,7 @@ fail = False
     async def test_bootstrap_binds_each_verified_tenant_and_restores_caller(monkeypatch, fail):
         from dataclasses import replace
 
-        from bisheng.core.context import tenant
+        from doberman_agent.core.context import tenant
 
         resources = (_spec("6"), replace(_spec("16"), tenant_id=2))
         missing = tuple(SystemOwnedResourceState(resource=one, state="MISSING") for one in resources)
@@ -40,7 +40,7 @@ fail = False
 
 test/permission/test_f048_system_resource_reconcile.py:149:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-bisheng/permission/application/system_resource_reconcile.py:150: in reconcile_system_owned_resources
+doberman-agent/permission/application/system_resource_reconcile.py:150: in reconcile_system_owned_resources
     await runtime.authorize_system_owned(
 ../../../../../../.local/share/uv/python/cpython-3.11.13-macos-aarch64-none/lib/python3.11/unittest/mock.py:2251: in _execute_mock_call
     result = await effect(*args, **kwargs)
@@ -59,7 +59,7 @@ target = VerifiedPermissionTarget(tenant_id=1, resource_type='tool', resource_id
 >       assert tenant.get_current_tenant_id() == target.tenant_id
 E       AssertionError: assert 99 == 1
 E        +  where 99 = <function get_current_tenant_id at 0x10b8f5620>()
-E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'bisheng.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng/src/backend/bisheng/core/context/tenant.py'>.get_current_tenant_id
+E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'doberman_agent.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent/src/backend/doberman_agent/core/context/tenant.py'>.get_current_tenant_id
 E        +  and   1 = VerifiedPermissionTarget(tenant_id=1, resource_type='tool', resource_id='6', resource_version=0, parent_type=None, parent_id=None, context_version='tool-6').tenant_id
 
 test/permission/test_f048_system_resource_reconcile.py:135: AssertionError
@@ -72,7 +72,7 @@ fail = True
     async def test_bootstrap_binds_each_verified_tenant_and_restores_caller(monkeypatch, fail):
         from dataclasses import replace
 
-        from bisheng.core.context import tenant
+        from doberman_agent.core.context import tenant
 
         resources = (_spec("6"), replace(_spec("16"), tenant_id=2))
         missing = tuple(SystemOwnedResourceState(resource=one, state="MISSING") for one in resources)
@@ -101,7 +101,7 @@ fail = True
 
 test/permission/test_f048_system_resource_reconcile.py:147:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-bisheng/permission/application/system_resource_reconcile.py:150: in reconcile_system_owned_resources
+doberman-agent/permission/application/system_resource_reconcile.py:150: in reconcile_system_owned_resources
     await runtime.authorize_system_owned(
 ../../../../../../.local/share/uv/python/cpython-3.11.13-macos-aarch64-none/lib/python3.11/unittest/mock.py:2251: in _execute_mock_call
     result = await effect(*args, **kwargs)
@@ -120,7 +120,7 @@ target = VerifiedPermissionTarget(tenant_id=1, resource_type='tool', resource_id
 >       assert tenant.get_current_tenant_id() == target.tenant_id
 E       AssertionError: assert 99 == 1
 E        +  where 99 = <function get_current_tenant_id at 0x10b8f5620>()
-E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'bisheng.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng/src/backend/bisheng/core/context/tenant.py'>.get_current_tenant_id
+E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'doberman_agent.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent/src/backend/doberman_agent/core/context/tenant.py'>.get_current_tenant_id
 E        +  and   1 = VerifiedPermissionTarget(tenant_id=1, resource_type='tool', resource_id='6', resource_version=0, parent_type=None, parent_id=None, context_version='tool-6').tenant_id
 
 test/permission/test_f048_system_resource_reconcile.py:135: AssertionError
@@ -129,7 +129,7 @@ __ test_first_admin_dashboard_projection_has_a_tenant_without_request_context __
 monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x135abe550>
 
     async def test_first_admin_dashboard_projection_has_a_tenant_without_request_context(monkeypatch):
-        from bisheng.core.context import tenant
+        from doberman_agent.core.context import tenant
 
         dashboards = (_dashboard(10),)
         current_modes = {"10": SimpleNamespace(resource_id="10", projection_state="CURRENT")}
@@ -152,7 +152,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x135abe550>
 
 test/permission/test_f048_preset_dashboard_bootstrap.py:125:
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-bisheng/api/services/f048_preset_dashboard_bootstrap.py:131: in reconcile_preset_dashboard_permissions
+doberman-agent/api/services/f048_preset_dashboard_bootstrap.py:131: in reconcile_preset_dashboard_permissions
     await components.facade.authorize_created(
 ../../../../../../.local/share/uv/python/cpython-3.11.13-macos-aarch64-none/lib/python3.11/unittest/mock.py:2251: in _execute_mock_call
     result = await effect(*args, **kwargs)
@@ -169,13 +169,13 @@ kwargs = {'actor': PermissionActor(subject_type='user', subject_id=1, tenant_id=
 >       assert tenant.get_current_tenant_id() == kwargs["target"].tenant_id == 1
 E       AssertionError: assert None == 1
 E        +  where None = <function get_current_tenant_id at 0x10b8f5620>()
-E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'bisheng.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng/src/backend/bisheng/core/context/tenant.py'>.get_current_tenant_id
+E        +    where <function get_current_tenant_id at 0x10b8f5620> = <module 'doberman_agent.core.context.tenant' from '/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent/src/backend/doberman_agent/core/context/tenant.py'>.get_current_tenant_id
 E        +  and   1 = VerifiedPermissionTarget(tenant_id=1, resource_type='dashboard', resource_id='10', resource_version=0, parent_type=None, parent_id=None, context_version='c9988e308a56d06007bcdc9e9a94146711688d7b8ff88786d031e8333845e0f5').tenant_id
 
 test/permission/test_f048_preset_dashboard_bootstrap.py:117: AssertionError
 =============================== warnings summary ===============================
-bisheng/core/ai/__init__.py:2
-  /Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng/src/backend/bisheng/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
+doberman-agent/core/ai/__init__.py:2
+  /Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent/src/backend/doberman_agent/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
     from langchain_community.chat_models import ChatTongyi, ChatZhipuAI, MoonshotChat
 
 <frozen importlib._bootstrap>:241
@@ -189,8 +189,8 @@ bisheng/core/ai/__init__.py:2
 <frozen importlib._bootstrap>:241
   <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
 
-../../../../../../works/bisheng/src/backend/.venv/lib/python3.11/site-packages/jieba/_compat.py:18
-  /Users/zhangguoqing/works/bisheng/src/backend/.venv/lib/python3.11/site-packages/jieba/_compat.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+../../../../../../works/doberman-agent/src/backend/.venv/lib/python3.11/site-packages/jieba/_compat.py:18
+  /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/lib/python3.11/site-packages/jieba/_compat.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
     import pkg_resources
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html

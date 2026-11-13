@@ -1,5 +1,5 @@
 import { showApiError } from "~/api/request";
-import { Button as RetryButton, Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Button as RetryButton, Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Loader2, Link2, Search, Check } from "lucide-react";

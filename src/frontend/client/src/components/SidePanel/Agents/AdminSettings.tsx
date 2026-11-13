@@ -7,7 +7,7 @@ import type { Control, UseFormSetValue, UseFormGetValues } from 'react-hook-form
 import { OGDialog, OGDialogTitle, OGDialogContent, OGDialogTrigger } from '~/components/ui';
 import { useUpdateAgentPermissionsMutation } from '~/hooks/queries/data-provider';
 import { Button, DropdownPopup } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize, useAuthContext } from '~/hooks';
 import { useToastContext } from '~/Providers';
 

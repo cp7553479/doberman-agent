@@ -1,11 +1,11 @@
 """Tests for new similar-status / main-version DAO + repo queries."""
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileDao
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileDao
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
 
@@ -57,7 +57,7 @@ async def test_aget_files_by_similar_status_pending(async_db_session, monkeypatc
     await _seed_file(async_db_session, 101, similar_status=0)
     await _seed_file(async_db_session, 102, similar_status=2)
 
-    with patch("bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+    with patch("doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
                side_effect=lambda: _ctx()):
         rows = await KnowledgeFileDao.aget_files_by_similar_status(1, similar_status=1)
         ids = {r.id for r in rows}
@@ -78,7 +78,7 @@ async def test_aget_files_by_similar_status_excludes_unparsed(async_db_session, 
     await _seed_file(async_db_session, 100, similar_status=1, status=2)  # SUCCESS
     await _seed_file(async_db_session, 101, similar_status=1, status=1)  # WAITING
 
-    with patch("bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+    with patch("doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
                side_effect=lambda: _ctx()):
         rows = await KnowledgeFileDao.aget_files_by_similar_status(1, similar_status=1)
         assert {r.id for r in rows} == {100}

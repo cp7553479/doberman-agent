@@ -30,7 +30,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto}pre code{display
 <blockquote>
 <p>状态：2026-10-30 用户已确认 36 项映射并要求进入正式规格；同日追加具体租户单选，并按用户同意的复审建议补充代发布自审、预览用途和取消资格。正式规格见 spec.md，规格与修订设计均已确认；本地实现已接线，真实E2E与最终L2待完成，证据见verification。
 日期：2026-10-30（Asia/Taipei）。基线：<code>origin/feat/3.0.0@cfcefd6577744c7807f30ce77de4e1b4050074ff</code>。
-分支：<code>codex/114-vibe-permission-actions</code>；独立工作树：<code>/Users/zhangguoqing/.codex/worktrees/vibe-permission-actions/bisheng</code>。</p>
+分支：<code>codex/114-vibe-permission-actions</code>；独立工作树：<code>/Users/zhangguoqing/.codex/worktrees/vibe-permission-actions/doberman-agent</code>。</p>
 </blockquote>
 <h2 id="1">1. 需求变更</h2>
 <p>用户最新要求：“修改下需求，统一下所有的 vibeapp 相关操作 → 映射到现有的权限操作”。这取代上一轮“本轮只统一删除权限”的范围。</p>
@@ -394,63 +394,63 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto}pre code{display
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/permission/domain/services/catalog_policy.py#L52">catalog_policy.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/permission/domain/services/catalog_policy.py#L52">catalog_policy.py</a></td>
 <td>app 已有六个动作，share/download 等不在 app 范围</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/test/app_runtime/test_app_permission_registration.py#L67">test_app_permission_registration.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/test/app_runtime/test_app_permission_registration.py#L67">test_app_permission_registration.py</a></td>
 <td>app 类型及六动作注册断言</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L782">app_state_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L782">app_state_service.py</a></td>
 <td>删除、上下线等独立业务资格分支</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_query_service.py#L266">app_query_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py#L266">app_query_service.py</a></td>
 <td>平台详情 edit、CLI/MCP 额外 owner 入口及日志判断</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_data_service.py">app_data_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py">app_data_service.py</a></td>
 <td>生产数据 owner 校验；运行时数据会话/票据复用该判断</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/app_secret_service.py#L55">app_secret_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py#L55">app_secret_service.py</a></td>
 <td>变量维护 owner 校验、只读响应按 owner 裁剪</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py">secret_rebuild_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py">secret_rebuild_service.py</a></td>
 <td>重建 owner 判断和确认指纹/幂等围栏</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L228">publish_pipeline_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L228">publish_pipeline_service.py</a></td>
 <td>发布主体重校验、自然人归属校验、迭代仅原归属人</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L198">deploy.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L198">deploy.py</a></td>
 <td>CLI logs 构造资源归属人兼容身份</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/publish_status_service.py#L91">publish_status_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py#L91">publish_status_service.py</a></td>
 <td>withdraw/preview/manual_publish 按 owner 设置</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py#L35">runtime_management_service.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py#L35">runtime_management_service.py</a></td>
 <td>私有物料、运行状态、快照恢复等 natural_owner_required</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py">runtime_management.py</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py">runtime_management.py</a></td>
 <td>应用级管理与平台公共 profile/物料入口</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/frontend/platform/src/pages/BuildPage/HostedAppCard.tsx#L188">HostedAppCard.tsx</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/BuildPage/HostedAppCard.tsx#L188">HostedAppCard.tsx</a></td>
 <td>F048 canDelete 后又叠加创建人/管理员条件</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/frontend/platform/src/pages/BuildPage/hostedApp/publish/DangerZoneCard.tsx">DangerZoneCard.tsx</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/BuildPage/hostedApp/publish/DangerZoneCard.tsx">DangerZoneCard.tsx</a></td>
 <td>详情删除区只按 owner/super 显示</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/.claude/skills/approval-module/SKILL.md">approval-module</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/.claude/skills/approval-module/SKILL.md">approval-module</a></td>
 <td>任务决策、业务取消、必审及 outbox 的既有边界</td>
 </tr>
 </tbody>

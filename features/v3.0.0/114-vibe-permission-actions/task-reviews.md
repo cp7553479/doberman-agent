@@ -8,7 +8,7 @@
 
 **类型**：基础设施
 
-**文件**：`src/backend/bisheng/app_publish/domain/models/app_deployment.py`、`src/backend/bisheng/app_publish/domain/models/app_preview_session.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/models/app_deployment.py`、`src/backend/doberman_agent/app_publish/domain/models/app_preview_session.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -33,7 +33,7 @@
 
 **类型**：基础设施
 
-**文件**：`src/backend/bisheng/core/database/alembic/versions/f114_app_authorization_context.py`
+**文件**：`src/backend/doberman_agent/core/database/alembic/versions/f114_app_authorization_context.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -58,7 +58,7 @@
 
 **类型**：基础设施
 
-**文件**：`src/backend/bisheng/common/errcode/admin_scope.py`、`src/backend/bisheng/app_runtime/domain/schemas/app_authorization.py`
+**文件**：`src/backend/doberman_agent/common/errcode/admin_scope.py`、`src/backend/doberman_agent/app_runtime/domain/schemas/app_authorization.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -108,7 +108,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_authorization_service.py`、`src/backend/bisheng/app_runtime/application/authorization.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_authorization_service.py`、`src/backend/doberman_agent/app_runtime/application/authorization.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -158,7 +158,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/admin/domain/services/tenant_scope.py`、`src/backend/bisheng/admin/domain/repositories/tenant_scope_repository.py`
+**文件**：`src/backend/doberman_agent/admin/domain/services/tenant_scope.py`、`src/backend/doberman_agent/admin/domain/repositories/tenant_scope_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -183,7 +183,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/admin/application/tenant_scope.py`、`src/backend/bisheng/admin/api/endpoints/tenant_scope.py`
+**文件**：`src/backend/doberman_agent/admin/application/tenant_scope.py`、`src/backend/doberman_agent/admin/api/endpoints/tenant_scope.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -208,7 +208,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/common/middleware/admin_scope.py`、`src/backend/bisheng/core/context/tenant.py`
+**文件**：`src/backend/doberman_agent/common/middleware/admin_scope.py`、`src/backend/doberman_agent/core/context/tenant.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -258,7 +258,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/apps.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/apps.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -283,7 +283,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -308,7 +308,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -333,7 +333,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/app_secret_service.py`、`src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -383,7 +383,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/approval/domain/repositories/app_review_repository.py`、`src/backend/bisheng/approval/application/app_review.py`
+**文件**：`src/backend/doberman_agent/approval/domain/repositories/app_review_repository.py`、`src/backend/doberman_agent/approval/application/app_review.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -433,7 +433,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/snapshot_browse_service.py`、`src/backend/bisheng/app_publish/domain/services/version_diff_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/snapshot_browse_service.py`、`src/backend/doberman_agent/app_publish/domain/services/version_diff_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -458,7 +458,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -508,7 +508,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/bisheng/app_governance/domain/services/runtime_audit_export_service.py`
+**文件**：`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_export_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -558,7 +558,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_provision_service.py`、`src/backend/bisheng/app_runtime/domain/services/f048_app_permission.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_provision_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/f048_app_permission.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -583,7 +583,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/bisheng/app_publish/api/endpoints/deploy.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/doberman_agent/app_publish/api/endpoints/deploy.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -608,7 +608,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_mcp/tools/apps.py`、`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`
+**文件**：`src/backend/doberman_agent/open_mcp/tools/apps.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -658,7 +658,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`、`src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -683,7 +683,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/approval/domain/services/approval_center_service.py`、`src/backend/bisheng/approval/application/app_publish.py`
+**文件**：`src/backend/doberman_agent/approval/domain/services/approval_center_service.py`、`src/backend/doberman_agent/approval/application/app_publish.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -708,7 +708,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/publish_online_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_terminal_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_terminal_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -758,7 +758,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_authorization_service.py`、`src/backend/bisheng/app_runtime/application/runtime_authorization.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_authorization_service.py`、`src/backend/doberman_agent/app_runtime/application/runtime_authorization.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -783,7 +783,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -808,7 +808,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py`
+**文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -833,7 +833,7 @@
 
 **类型**：Worker
 
-**文件**：`src/backend/bisheng/worker/app_publish/tasks.py`、`src/backend/bisheng/app_publish/domain/services/precheck_service.py`
+**文件**：`src/backend/doberman_agent/worker/app_publish/tasks.py`、`src/backend/doberman_agent/app_publish/domain/services/precheck_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -933,7 +933,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/repositories/preview_runtime_repository.py`、`src/backend/bisheng/app_publish/application/preview_runtime.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/repositories/preview_runtime_repository.py`、`src/backend/doberman_agent/app_publish/application/preview_runtime.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -958,7 +958,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_api/application/runtime_credentials.py`、`src/backend/bisheng/app_publish/domain/services/app_credential_service.py`
+**文件**：`src/backend/doberman_agent/open_api/application/runtime_credentials.py`、`src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -983,7 +983,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`、`src/backend/bisheng/app_publish/api/endpoints/preview.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`、`src/backend/doberman_agent/app_publish/api/endpoints/preview.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1008,7 +1008,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_cleanup_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_cleanup_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1058,7 +1058,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/application/preview_access.py`、`src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/application/preview_access.py`、`src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1083,7 +1083,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_api/domain/services/access_context.py`、`src/backend/bisheng/open_api/domain/services/model_range_policy.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/services/access_context.py`、`src/backend/doberman_agent/open_api/domain/services/model_range_policy.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1108,7 +1108,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`、`src/backend/bisheng/app_publish/composition.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`、`src/backend/doberman_agent/app_publish/composition.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1158,7 +1158,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_protocol.py`、`src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_protocol.py`、`src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1233,7 +1233,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_runtime/api/router.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py`
+**文件**：`src/backend/doberman_agent/app_runtime/api/router.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1683,7 +1683,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_grant_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_grant_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1733,7 +1733,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/permission/application/runtime.py`
+**文件**：`src/backend/doberman_agent/permission/application/runtime.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1758,7 +1758,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_api/application/runtime_authorization.py`、`src/backend/bisheng/user/domain/services/auth.py`
+**文件**：`src/backend/doberman_agent/open_api/application/runtime_authorization.py`、`src/backend/doberman_agent/user/domain/services/auth.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1783,7 +1783,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_governance/domain/services/runtime_audit_query_service.py`、`src/backend/bisheng/app_governance/domain/schemas/runtime_audit.py`
+**文件**：`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_query_service.py`、`src/backend/doberman_agent/app_governance/domain/schemas/runtime_audit.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1808,7 +1808,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/user/application/runtime_identity.py`、`src/backend/bisheng/user/domain/repositories/runtime_identity.py`
+**文件**：`src/backend/doberman_agent/user/application/runtime_identity.py`、`src/backend/doberman_agent/user/domain/repositories/runtime_identity.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1833,7 +1833,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_governance/domain/repositories/runtime_audit_repository.py`
+**文件**：`src/backend/doberman_agent/app_governance/domain/repositories/runtime_audit_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1858,7 +1858,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/schemas/release_tenancy.py`、`src/backend/bisheng/app_publish/domain/services/release_tenancy_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/schemas/release_tenancy.py`、`src/backend/doberman_agent/app_publish/domain/services/release_tenancy_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1883,7 +1883,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/approval/application/app_candidates.py`、`src/backend/bisheng/approval/domain/repositories/app_candidate_repository.py`
+**文件**：`src/backend/doberman_agent/approval/application/app_candidates.py`、`src/backend/doberman_agent/approval/domain/repositories/app_candidate_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1908,7 +1908,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/approval/domain/services/approval_exception_service.py`、`src/backend/bisheng/approval/domain/services/approval_runtime_handler_factory.py`
+**文件**：`src/backend/doberman_agent/approval/domain/services/approval_exception_service.py`、`src/backend/doberman_agent/approval/domain/services/approval_runtime_handler_factory.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1933,7 +1933,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/approval/domain/repositories/app_publish_withdrawal_repository.py`
+**文件**：`src/backend/doberman_agent/approval/domain/repositories/app_publish_withdrawal_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1958,7 +1958,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/app_publish/api/endpoints/publish_status.py`
+**文件**：`src/backend/doberman_agent/app_publish/api/endpoints/publish_status.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -1983,7 +1983,7 @@
 
 **类型**：基础设施
 
-**文件**：`src/backend/bisheng/core/config/app_runtime.py`
+**文件**：`src/backend/doberman_agent/core/config/app_runtime.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2058,7 +2058,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_storage_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_storage_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2083,7 +2083,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/application/preview_operations.py`
+**文件**：`src/backend/doberman_agent/app_runtime/application/preview_operations.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2108,7 +2108,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/user/application/runtime_identity.py`
+**文件**：`src/backend/doberman_agent/user/application/runtime_identity.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2133,7 +2133,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/preview_access_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_access_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2158,7 +2158,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_publish/application/runtime_delivery.py`
+**文件**：`src/backend/doberman_agent/app_publish/application/runtime_delivery.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2183,7 +2183,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_api/domain/services/preview_context.py`、`src/backend/bisheng/open_api/domain/context.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/services/preview_context.py`、`src/backend/doberman_agent/open_api/domain/context.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2333,7 +2333,7 @@
 
 **类型**：后端 API
 
-**文件**：`src/backend/bisheng/api/services/workflow.py`、`src/backend/test/app_runtime/test_f114_build_list.py`
+**文件**：`src/backend/doberman_agent/api/services/workflow.py`、`src/backend/test/app_runtime/test_f114_build_list.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2433,7 +2433,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/open_api/domain/repositories/credential_repository.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/repositories/credential_repository.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
@@ -2458,7 +2458,7 @@
 
 **类型**：后端 Domain
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/test/app_runtime/test_f114_private_materials.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/test/app_runtime/test_f114_private_materials.py`
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |

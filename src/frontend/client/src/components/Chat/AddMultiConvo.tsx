@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { PlusCircle } from 'lucide-react';
 import { isAssistantsEndpoint } from '~/types/chat';
 import type { TConversation } from '~/types/chat';

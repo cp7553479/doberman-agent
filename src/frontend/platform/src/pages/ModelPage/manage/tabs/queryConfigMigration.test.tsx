@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';

@@ -11,7 +11,7 @@ export function frontendConfig({
   localizeHint,
 }) {
   return tseslint.config(
-    { ignores },
+    { ignores: ['**/._*', ...ignores] },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {

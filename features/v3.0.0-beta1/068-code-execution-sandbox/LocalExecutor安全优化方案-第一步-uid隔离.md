@@ -8,14 +8,14 @@
 
 解决：
 
-- 用户代码拿不到 worker 的环境变量（数据库、Redis、MinIO 密钥）；读不到 `/root` 下的东西（`/root/.cache/bisheng/` 里有所有用户的上传缓存和各任务工作区）。
+- 用户代码拿不到 worker 的环境变量（数据库、Redis、MinIO 密钥）；读不到 `/root` 下的东西（`/root/.cache/doberman-agent/` 里有所有用户的上传缓存和各任务工作区）。
 - 用户代码改不了、也换不掉任务工作区里的任何东西；写不了工作区和 `/root`。
 - 输出、磁盘、进程数、内存有上限；超时后按 uid 清掉残留进程；进程被杀后遗留的运行目录会被清掉，不会被下一个拿到同一 uid 的调用读到。
 - 去掉 `insert_set_font_code` 每次删除进程共享字体缓存的竞态（仅在隔离模式下）。
 
 不解决（见"剩余风险"）：
 
-- **对所有用户可读的文件仍然可读**。`/app/bisheng`（含挂进来的 `config.yaml`）和 `/app/data` 由"权限收紧"一节单独关上，启动时实测；其余如 `/etc`、`/usr`、`/app/.venv`、`/app/bisheng_langchain` 仍可读。
+- **对所有用户可读的文件仍然可读**。`/app/doberman-agent`（含挂进来的 `config.yaml`）和 `/app/data` 由"权限收紧"一节单独关上，启动时实测；其余如 `/etc`、`/usr`、`/app/.venv`、`/app/doberman_agent_langchain` 仍可读。
 - **`/tmp`、`/var/tmp`、`/dev/shm` 这类全局可写目录**：脚本可以在里面写文件，也可以读别的运行留在那里的、权限为 `0644` 的文件。是否收紧是另一项可选加固，不在本方案内。
 - 网络、内核漏洞。
 
@@ -27,7 +27,7 @@
 |---|---|
 | 子进程与 worker 同为 root | `local_executor.py::_execute_code`，镜像没有 `USER` |
 | 环境整份拷进子进程 | `_child_env`：`os.environ.copy()` |
-| 子进程直接在任务工作区里运行 | `run`：`run_with_dir(dir_path=self.local_sync_path)`，灵思的 `file_dir` 是 `/root/.cache/bisheng/linsight/<svid8>`（`task_exec.py:931`） |
+| 子进程直接在任务工作区里运行 | `run`：`run_with_dir(dir_path=self.local_sync_path)`，灵思的 `file_dir` 是 `/root/.cache/doberman-agent/linsight/<svid8>`（`task_exec.py:931`） |
 | 输出无上限 | `proc.communicate()` 把 stdout / stderr 全读进 worker 内存 |
 | 无资源上限 | 容器模式的 runner 有 `RLIMIT_AS` / `NPROC` / `CPU`（`sandbox-runner/execute.py:34`），本机模式一个都没有 |
 | 共享字体缓存被并发删除 | `insert_set_font_code`：`os.remove(fontlist*)` |
@@ -103,7 +103,7 @@
 | `async_continue`（继续对话） | `_managed_resume` | 同上 |
 
 - **停靠**：任务停靠时协程直接返回，同样走这条 `finally`，W 和 R 在停靠时就释放了。续跑、继续对话每次都重新 `_init_file_directory`、重建工具，每一轮是新的 W、新的登记。
-- **谁会设 `keep_run_dir`**：`_init_bisheng_code_tool` 在生产代码里只有 `task_exec._generate_tools` 一个调用方，其余都是测试。工作站日常对话建代码工具时没有 `local_sync_path`，走临时模式，不会遗留登记，不需要钩子。
+- **谁会设 `keep_run_dir`**：`_init_doberman-agent_code_tool` 在生产代码里只有 `task_exec._generate_tools` 一个调用方，其余都是测试。工作站日常对话建代码工具时没有 `local_sync_path`，走临时模式，不会遗留登记，不需要钩子。
 - **三处 `one.close()`**（`_execute_workflow`、`_resume_workflow`、`_continue_workflow` 的 `finally`）：`LocalExecutor.close()` 来自基类，是空操作，释放不能指望它。它们在驱动结束时先执行，早于 `_cleanup_resources`。
 - **驱动在初始化工作区之前失败**（例如 `TaskAlreadyInProgressError` 在 `try` 之前抛出、或附件摄取失败）：`file_dir` 还是 `None`，也没有构造过代码执行器，钩子直接返回，不会误释放正在运行的另一个驱动的登记。
 
@@ -111,7 +111,7 @@
 
 1. **钩子独立于 `_cleanup_resources` 里现有的 `try`**，且按 `self.file_dir` 操作，不依赖 `exists`。见"释放钩子"的放置要求。
 2. **终止时线程还在跑**：终止路径是 `task.cancel(); await task`。`agent_task` 如果正阻塞在 `await asyncio.to_thread(...)`，取消只让等待方返回，线程里的子进程仍在执行，驱动随后进入 `_cleanup_resources`。释放钩子的"置 `closing`、清场杀进程、等内层锁"就是为这种情况设计的；钩子的调用要用 `asyncio.shield` 包住，见上。
-3. **释放之后到达的调用，不能重新建登记**：登记条目在 `_init_bisheng_code_tool` 构造执行器时创建，句柄存在执行器上；`release_local_run(W)` 把它标为已关闭，之后到达的调用直接返回"任务已结束"，不会为已删除的 W 新建 R 和 uid。
+3. **释放之后到达的调用，不能重新建登记**：登记条目在 `_init_doberman-agent_code_tool` 构造执行器时创建，句柄存在执行器上；`release_local_run(W)` 把它标为已关闭，之后到达的调用直接返回"任务已结束"，不会为已删除的 W 新建 R 和 uid。
 4. **启动清扫放在每个 worker 进程里**：`ScheduleCenterProcess.run` 里、进入主循环之前，每个进程各跑一次。判断依据是 uid 池标记里的 pid 加启动时间是否对应存活进程，不能一律清掉，否则会误删同一台机器上其他 worker 进程正在用的 R（`--worker_num` 默认 4 个进程同时启动）。现有的 `check_and_terminate_incomplete_tasks` 只处理数据库里的会话状态，不管磁盘，这里要新加。
 
 **钩子覆盖不了、只能靠启动清扫的场景**：进程崩溃（`kill -9`、OOM、容器重启）时 `finally` 不会执行，W 和 R 都留下。清扫只清 R；W 目录本身没人清，这是现状，与本方案无关。
@@ -122,9 +122,9 @@
 
 **为什么要串**：同一个 uid 下的两个进程共用一个 R，其中一次调用结束时的清场（`kill(-1)`）会把另一次调用的进程也杀掉；两次调用对 R 的复制进来、收回也会互相踩。串行是清场安全的前提之一，详见"uid 池"里的"清场的范围与前提"。
 
-**确实会并行**：灵思用 `create_deep_agent`，工具节点 `ToolNode._afunc` 对同一条模型回复里的全部工具调用做 `asyncio.gather`。`bisheng_code_interpreter` 不在子代理的禁用名单里，主图和研究员子代理用的是同一个工具实例，没有任何锁。所以同一条消息里的两次代码调用，或者主图与子代理的代码调用，现在会同时在 W 里运行。`--max_concurrency` 限制的是不同任务，管不到任务内部。
+**确实会并行**：灵思用 `create_deep_agent`，工具节点 `ToolNode._afunc` 对同一条模型回复里的全部工具调用做 `asyncio.gather`。`doberman_agent_code_interpreter` 不在子代理的禁用名单里，主图和研究员子代理用的是同一个工具实例，没有任何锁。所以同一条消息里的两次代码调用，或者主图与子代理的代码调用，现在会同时在 W 里运行。`--max_concurrency` 限制的是不同任务，管不到任务内部。
 
-**不能当作"一个任务一个工具对象"来设计锁**：当前每次驱动只构造一个 `CodeInterpreterTool`（`_init_bisheng_code_tool` 构造后把工具 id 从选择列表里删掉，不会再造副本；子代理拿的是同一份列表）。但 `create_deep_agent` 会对描述被覆盖的工具做 `model_copy`，是浅拷贝，工具对象变两个而 `executor` 还是同一个。所以锁不放在工具对象上，放在按 `realpath(W)` 索引的登记条目上。
+**不能当作"一个任务一个工具对象"来设计锁**：当前每次驱动只构造一个 `CodeInterpreterTool`（`_init_doberman-agent_code_tool` 构造后把工具 id 从选择列表里删掉，不会再造副本；子代理拿的是同一份列表）。但 `create_deep_agent` 会对描述被覆盖的工具做 `model_copy`，是浅拷贝，工具对象变两个而 `executor` 还是同一个。所以锁不放在工具对象上，放在按 `realpath(W)` 索引的登记条目上。
 
 **范围**：只在 `local_isolation=uid` 的保留模式下生效。`off`、容器模式、E2B 以及代码节点的行为不变，锁不加在 `CodeInterpreterTool` 的所有路径上。
 
@@ -209,7 +209,7 @@ subprocess.Popen(
 - `user=` / `group=` / `extra_groups=` 是 `subprocess` 自带参数（3.9 起），换 uid 发生在 fork 与 exec 之间的 C 代码里，在 `-P threads` 的 worker 里是安全的。不用 `preexec_fn`，不引入 `chroot` 命令。
 - `extra_groups=[]` 必须给，否则 root 的附加组会被带进子进程。
 - 资源上限用 `prlimit` 命令套一层：它先以子 uid 身份给自己设上限，再 `exec` 解释器，没有引导脚本，traceback 里也没有多余的栈帧。`RLIMIT_NPROC` 按真实 uid 计数，所以必须在换 uid 之后生效，这也是不能把进程数上限加在 worker 本身的原因。
-- `prlimit` 来自 util-linux。**已在 107 部署上核实**：`bisheng-backend`、`bisheng-backend-worker`（镜像 `bisheng-backend:feat_v3.0.0-beta1_068-container-sandbox`，Debian 13）里都有 `/usr/bin/prlimit`（util-linux 2.41），沙箱 runner 里也有。util-linux 是 Debian 的基础必装包，换成别的 Debian 系基础镜像也会有；但其他发行版的基础镜像或精简镜像仍要靠预检兜底。
+- `prlimit` 来自 util-linux。**已在 107 部署上核实**：`doberman-agent-backend`、`doberman-agent-backend-worker`（镜像 `doberman-agent-backend:feat_v3.0.0-beta1_068-container-sandbox`，Debian 13）里都有 `/usr/bin/prlimit`（util-linux 2.41），沙箱 runner 里也有。util-linux 是 Debian 的基础必装包，换成别的 Debian 系基础镜像也会有；但其他发行版的基础镜像或精简镜像仍要靠预检兜底。
 - 保留现有的 `lang` 处理：`python*` 用 `sys.executable`，`sh` / `bash` 仍可运行，同样以该 uid 和同样的上限运行。第一步不收紧语言。
 
 ### 环境变量
@@ -242,7 +242,7 @@ subprocess.Popen(
 ## uid 池
 
 - 区间 `30000`–`39999`，常量写在代码里，不进配置。该区间不能与容器里已有的 uid 冲突：清场的 `kill(-1)` 会杀掉这个 uid 的全部进程，若别的服务恰好用了这段 uid 会被误杀。后端容器里的服务目前都是 root，没有冲突；预检时扫一遍 `/proc/*/status`，发现区间内已有不属于池标记的进程就拒绝启用隔离并写明 uid（见"开关与失败策略"）。
-- 标记目录 `/var/run/bisheng-local-uids`（root，`0700`）。标记内容是占用进程的 pid 和启动时间（`/proc/<pid>/stat` 第 22 列）。
+- 标记目录 `/var/run/doberman-agent-local-uids`（root，`0700`）。标记内容是占用进程的 pid 和启动时间（`/proc/<pid>/stat` 第 22 列）。
 - 发布标记：先写本线程私有的临时文件，再用 `os.link` 链成 `<uid>`。链接是原子的，目标已存在就失败，所以多线程、多进程之间只有一个能拿到，也没有别人读到半写标记的窗口。
 - 发现标记时，对应进程还在就换下一个；不在了，或启动时间对不上（pid 被复用），当作残留：先清场、确认无进程，再删标记重取。
 - 清场：以该 uid 起一个小进程执行 `os.kill(-1, 9)`（`Popen(user=uid, group=uid, extra_groups=[])`）。内核不会把信号发给调用者自己。随后扫 `/proc/*/status` 的 `Uid:` 行确认没有存活进程，僵尸（`State: Z`）不算。确认失败就保留标记、不再分配这个 uid，并记 error 日志；此时不收回文件、不删 R（流程第 8 步）。
@@ -273,30 +273,30 @@ subprocess.Popen(
 
 | 路径 | 来源 | 内容 |
 |---|---|---|
-| `/app/bisheng/` | 镜像 | 后端源码 |
-| `/app/bisheng/config.yaml` | 宿主机只读挂载 `bisheng/config/config.yaml:/app/bisheng/config.yaml:ro` | 数据库、Redis、MinIO 等连接信息（密码为 Fernet 密文，密钥在源码里） |
-| `/app/data/` | 宿主机读写挂载 `data/bisheng:/app/data`，`backend` 与 `backend_worker` 共用 | 助手对话历史、统计日志、性能快照等 |
+| `/app/doberman-agent/` | 镜像 | 后端源码 |
+| `/app/doberman-agent/config.yaml` | 宿主机只读挂载 `doberman-agent/config/config.yaml:/app/doberman-agent/config.yaml:ro` | 数据库、Redis、MinIO 等连接信息（密码为 Fernet 密文，密钥在源码里） |
+| `/app/data/` | 宿主机读写挂载 `data/doberman-agent:/app/data`，`backend` 与 `backend_worker` 共用 | 助手对话历史、统计日志、性能快照等 |
 | `/app/.venv/` | 镜像 | 解释器和依赖，**子进程必须能读、能执行，不能动** |
 
 ### 处理
 
-1. **`/app/bisheng`：启动时 `chmod 0700`。**
+1. **`/app/doberman-agent`：启动时 `chmod 0700`。**
    - 只改这一层目录，不递归。目录没有其他用户的 `x` 位，普通 uid 连路径都穿不过去，下面的源码和 `config.yaml` 挂载点一并被挡住，与 `config.yaml` 自己的权限无关。
    - `/app` 本身保持 `0755`：子进程要穿过它去用 `/app/.venv`。
-   - 子进程用不到 `/app/bisheng`：`cwd=R`，脚本目录 R 在 `sys.path` 上，`/app` 不在；技能包和知识库图片由 root 先复制进 W 再进 R。
+   - 子进程用不到 `/app/doberman-agent`：`cwd=R`，脚本目录 R 在 `sys.path` 上，`/app` 不在；技能包和知识库图片由 root 先复制进 W 再进 R。
    - 这是对容器可写层的元数据修改，`docker restart` 后仍在，容器重建后丢失，所以每次启动都做（幂等）。
 2. **`config.yaml`：宿主机上设为 `0600`、属主 root，作为第二道防线。**
    - 容器里改不了它：只读挂载，`chmod` 会得到 `EROFS`，而且权限本来就取自宿主机。
    - 有了第 1 条，即使宿主机上是 `0644` 也读不到；`0600` 防的是它从别的路径被访问到（另一个挂载点、宿主机上的其他用户）。部署文档写明这条要求。
 3. **`/app/data`：启动时对挂载根目录 `chmod 0700`。**
-   - 同样只改顶层目录，不递归。这是绑定挂载，改的是宿主机上 `data/bisheng` 目录本身的权限，部署文档要写明；该目录在宿主机上本来就属主 root。
+   - 同样只改顶层目录，不递归。这是绑定挂载，改的是宿主机上 `data/doberman-agent` 目录本身的权限，部署文档要写明；该目录在宿主机上本来就属主 root。
    - 宿主机上如果有非 root 的运维脚本直接读这个目录下的日志，会受影响，需要改成 root 读或走 `filelib/download_statistic` 接口。
    - 存储不允许 root 改权限时（例如 NFS 开了 `root_squash`），`chmod` 会失败，见下面的启动检查。
 
 **不需要处理的**：
 - `/app/entrypoint.sh`：只有启动命令，没有密钥（已核对 `src/backend/entrypoint.sh`）。
-- `/proc/<pid>/cmdline`：各进程的命令行是 `uvicorn …`、`celery -A bisheng.worker.main …`、`python bisheng/linsight/worker.py …`，不带密钥（同上核对）；`/proc/<pid>/environ` 是 `0400` 属主 root，子进程本来就读不到，预检会实测。
-- `/app/bisheng_langchain` 等其他源码目录：没有配置和密钥，不收紧，避免扩大改动面。
+- `/proc/<pid>/cmdline`：各进程的命令行是 `uvicorn …`、`celery -A doberman_agent.worker.main …`、`python doberman-agent/linsight/worker.py …`，不带密钥（同上核对）；`/proc/<pid>/environ` 是 `0400` 属主 root，子进程本来就读不到，预检会实测。
+- `/app/doberman_agent_langchain` 等其他源码目录：没有配置和密钥，不收紧，避免扩大改动面。
 
 ### 启动检查
 
@@ -304,8 +304,8 @@ subprocess.Popen(
 
 | 检查 | 期望 | 不满足时 |
 |---|---|---|
-| 以 uid 打开 `/app/bisheng/config.yaml` | `PermissionError` | **拒绝启用隔离**，抛 `LocalIsolationUnavailable`，日志写明哪一步可读 |
-| 以 uid 列 `/app/bisheng` | `PermissionError` | 同上 |
+| 以 uid 打开 `/app/doberman-agent/config.yaml` | `PermissionError` | **拒绝启用隔离**，抛 `LocalIsolationUnavailable`，日志写明哪一步可读 |
+| 以 uid 列 `/app/doberman-agent` | `PermissionError` | 同上 |
 | 以 uid 列 `/app/data` | `PermissionError` | 只打 WARNING，不拒绝（内容是日志和历史，且有些存储改不了权限）；WARNING 写明"沙箱代码可读 `/app/data`" |
 | 以 root `stat` 宿主机挂进来的 `config.yaml` | group / other 没有读位 | 只打 WARNING，提示宿主机上改成 `0600` |
 | 以 uid 运行 `/app/.venv/bin/python -c "import numpy"` | 成功 | 拒绝启用隔离：收紧把解释器也挡住了 |
@@ -336,10 +336,10 @@ subprocess.Popen(
    | `CAP_DAC_OVERRIDE` | root 读写属主是该 uid、权限 `0700` 的 R |
    | `CAP_KILL` | 超时后向该 uid 的进程组发信号 |
 
-   Docker 默认能力集包含这些。已在 107 部署上核实：`bisheng-backend` 与 `bisheng-backend-worker` 的 `CapEff` 都是 `0xa80425fb`（Docker 默认集），5 项都在，另有 `CAP_SYS_CHROOT`（chroot 方案需要；该方案暂时不做）。`docker/docker-compose.yml` 里沙箱 runner 显式列了 `SETUID`、`SETGID`、`CHOWN`、`DAC_OVERRIDE`，没有 `CAP_KILL`；本机隔离不在 runner 里跑，不受影响。
+   Docker 默认能力集包含这些。已在 107 部署上核实：`doberman-agent-backend` 与 `doberman-agent-backend-worker` 的 `CapEff` 都是 `0xa80425fb`（Docker 默认集），5 项都在，另有 `CAP_SYS_CHROOT`（chroot 方案需要；该方案暂时不做）。`docker/docker-compose.yml` 里沙箱 runner 显式列了 `SETUID`、`SETGID`、`CHOWN`、`DAC_OVERRIDE`，没有 `CAP_KILL`；本机隔离不在 runner 里跑，不受影响。
 
 2. 扫 `/proc/*/status`：`30000`–`39999` 区间内如果已有进程，且不属于池标记记录的占用者，说明有别的服务在用这段 uid，清场会误杀它们，拒绝启用隔离，日志写明 uid 和进程。
-3. 做"权限收紧"里的 `chmod`（`/app/bisheng`、`/app/data` 顶层目录 `0700`）。
+3. 做"权限收紧"里的 `chmod`（`/app/doberman-agent`、`/app/data` 顶层目录 `0700`）。
 4. 再从池里领一个 uid，在一个临时 R 里跑一小段脚本，确认：uid 非 0；读 `/proc/1/environ` 被拒；能导入 numpy、pandas、matplotlib；能在 R 里写文件；以及"权限收紧"里启动检查表的各项。**无论成败，都在 `finally` 里按清场流程收尾：清场、删临时 R、删标记、把 uid 还回池里。**
 
 失败时抛 `LocalIsolationUnavailable`，原因写进服务端日志，给模型的文案只说"本机代码执行环境未就绪"。
@@ -353,7 +353,7 @@ subprocess.Popen(
 | 字段 | 默认 | 说明 |
 |---|---|---|
 | `local_isolation` | `off` | `uid` / `off`；环境变量 `BS_SANDBOX_CONF__LOCAL_ISOLATION` |
-| `local_run_root` | `/tmp/bisheng-local-run` | R 的父目录。启动时建好，root，`0711`：uid 能穿过，不能列目录 |
+| `local_run_root` | `/tmp/doberman-agent-local-run` | R 的父目录。启动时建好，root，`0711`：uid 能穿过，不能列目录 |
 | `local_rlimit_as_bytes` | `2 GiB` | 沿用 `sandbox-runner` 的值，两种模式行为一致。已确认够灵思里处理大表格，不再上调 |
 | `local_rlimit_nproc` | `256` | 同上，给 BLAS 线程和 LibreOffice 留余量 |
 | `local_rlimit_cpu_s` | `600` | 同上 |
@@ -378,14 +378,14 @@ subprocess.Popen(
 | `base_executor.py` | `run_with_dir` 里的 `execute_code` 调用改经 `_execute_in_dir`，`LocalExecutor` 借它把 W 上的调用交给保留模式；快照差分、收割逻辑不动 | 已实现 |
 | `container_executor.py` | `supports_retained_run = False`：它整体替换了 `execute_code`，不能被分到本机保留模式 | 已实现 |
 | `settings.py` | `SandboxConf` 新字段 | 已实现 |
-| `local_isolation.py` 的预检 | "权限收紧"：`chmod 0700 /app/bisheng`、`/app/data`（顶层目录、不递归、失败不中断），再以池里的 uid 实测启动检查表 | 已实现 |
+| `local_isolation.py` 的预检 | "权限收紧"：`chmod 0700 /app/doberman-agent`、`/app/data`（顶层目录、不递归、失败不中断），再以池里的 uid 实测启动检查表 | 已实现 |
 | `local_isolation.py` 的 `run_retained`、`sweep_on_startup` | 保留模式的一次调用；进程启动清扫 | 已实现 |
 | `local_run_registry.py`（新） | 保留模式的登记表（`realpath(W)` → uid、R、同步索引、外层 `asyncio.Lock`、内层 `threading.Lock`、`closing`）；`release_local_run(W)` | 已实现 |
 | `code_interpreter/tool.py` | `CodeInterpreterTool` 新增 `_arun`，调 `executor.arun`；执行器没有 `arun`（E2B）时退回同步 `_run`；锁不放在工具对象上 | 已实现 |
 | `task_exec.py` | `_cleanup_resources` 里，在自己的 `try` 中、排在第一位，按 `self.file_dir` 调用 `release_local_run(file_dir)`（`asyncio.shield` 加线程池），早于 `_stop_termination_monitor()` 和 `rmtree` | 已实现 |
 | `worker.py` | `ScheduleCenterProcess.run` 进入主循环之前，每个进程跑一次启动清扫：按标记里 pid 加启动时间判断存活，清掉没有存活属主的 R 和标记 | 已实现 |
 | `workbench_impl.py` | 构造代码解释器配置时，`config.local.keep_run_dir = True`（与 `local_sync_path` 同处） | 已实现 |
-| `沙箱部署说明.md` | 记录 `local_isolation` 的开启方式；写明宿主机 `config.yaml` 设 `0600`、属主 root，`data/bisheng` 目录会被改为 `0700`，依赖它的非 root 运维脚本要调整 | 已更新 |
+| `沙箱部署说明.md` | 记录 `local_isolation` 的开启方式；写明宿主机 `config.yaml` 设 `0600`、属主 root，`data/doberman-agent` 目录会被改为 `0700`，依赖它的非 root 运维脚本要调整 | 已更新 |
 
 `factory.py` 不改，原因见"配置字段"。
 
@@ -437,9 +437,9 @@ subprocess.Popen(
 只在 `os.geteuid() == 0` 且 Linux 上跑的：
 
 - 子进程 uid 在 30000–39999，附加组为空，环境只有白名单变量。
-- 读 `/proc/1/environ`、`/root`、`/app/bisheng/config.yaml` 被拒；**宿主机上 `config.yaml` 是 `0644` 时也被拒**（靠 `/app/bisheng` 的 `0700`）。
-- 列 `/app/bisheng`、`/app/data` 被拒；`/app/.venv/bin/python` 仍能启动并导入 numpy。
-- 启动检查：人为把 `/app/bisheng` 改回 `0755` 后预检拒绝启用隔离，日志写明可读的路径；`/app/data` 改权限失败时只出 WARNING，隔离照常启用。
+- 读 `/proc/1/environ`、`/root`、`/app/doberman-agent/config.yaml` 被拒；**宿主机上 `config.yaml` 是 `0644` 时也被拒**（靠 `/app/doberman-agent` 的 `0700`）。
+- 列 `/app/doberman-agent`、`/app/data` 被拒；`/app/.venv/bin/python` 仍能启动并导入 numpy。
+- 启动检查：人为把 `/app/doberman-agent` 改回 `0755` 后预检拒绝启用隔离，日志写明可读的路径；`/app/data` 改权限失败时只出 WARNING，隔离照常启用。
 - `local_isolation=off` 时不改任何目录权限。
 - 在 R 里建指向 `/etc/passwd` 的符号链接、硬链接、FIFO，收回后 W 里没有它们。
 - 超时被杀，之后该 uid 在 `/proc` 里没有进程，标记已删除。
@@ -455,7 +455,7 @@ subprocess.Popen(
 
 这些在第一步之后仍然存在。chroot 监狱暂时不做，不作为下一步；本机模式就停在这里：
 
-- **全局可读的文件仍然可读**：`/app/.venv`、`/app/bisheng_langchain` 等源码、`/etc`、`/usr`。`/app/bisheng`（含 `config.yaml`）和 `/app/data` 已由"权限收紧"关上；其中 `/app/data` 在存储不允许改权限时只打 WARNING，仍可能可读。`config.yaml` 另要求宿主机上设为 `0600`、属主 root。
+- **全局可读的文件仍然可读**：`/app/.venv`、`/app/doberman_agent_langchain` 等源码、`/etc`、`/usr`。`/app/doberman-agent`（含 `config.yaml`）和 `/app/data` 已由"权限收紧"关上；其中 `/app/data` 在存储不允许改权限时只打 WARNING，仍可能可读。`config.yaml` 另要求宿主机上设为 `0600`、属主 root。
 - **全局可写目录**：`/tmp`、`/var/tmp`、`/dev/shm` 通常是 `1777`，子进程可以在里面落文件，也可以读别的运行留在那里的、权限为 `0644` 的文件。可选加固是启动时以 root 把这三处改成 `0755` 并清掉现有文件上的"其他用户可写"；这会改变容器里这些目录的行为，需要单独评估后再决定，不并进本方案。
 - **`/proc/<pid>/cmdline` 等对所有人可读的进程信息**。现有进程的命令行不带密钥（见"权限收紧"），以后如果有人把密钥写进启动参数，就会泄露。
 - **网络不隔离**：子进程仍能连容器网络内的 MySQL、Redis、MinIO、OpenFGA 等；环境变量里没有密钥，不等于连不上，也不等于这些服务没有默认凭据。

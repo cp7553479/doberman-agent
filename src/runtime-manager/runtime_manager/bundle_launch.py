@@ -48,7 +48,7 @@ class BundleLauncher:
         env = dict(body.get("runtime_env", {}))
         if any(
             key.startswith(("RTM_", "APP_PROXY_"))
-            or key in {"DOCKER_HOST", "BISHENG_RUNTIME_SERVICE_KEYS", "BISHENG_RUNTIME_PAYLOAD_KEY"}
+            or key in {"DOCKER_HOST", "DOBERMAN_AGENT_RUNTIME_SERVICE_KEYS", "DOBERMAN_AGENT_RUNTIME_PAYLOAD_KEY"}
             for key in env
         ):
             raise BundleInputError("control_secret_environment_refused")
@@ -96,11 +96,11 @@ class BundleLauncher:
             payload.pop("WorkingDir")
         payload["Labels"].update(
             {
-                "bisheng.managed": "v2",
+                "doberman-agent.managed": "v2",
                 OP_LABEL: operation["operation_id"],
                 PHASE_LABEL: "probe" if preview else "serve",
-                "bisheng.runtime.node": self.config.node_id,
-                "bisheng.runtime.epoch": str(operation["owner_epoch"]),
+                "doberman-agent.runtime.node": self.config.node_id,
+                "doberman-agent.runtime.epoch": str(operation["owner_epoch"]),
             }
         )
         data_dir = Path(data_dir) if data_dir else self.config.app_data_dir(operation["app_id"])
@@ -132,12 +132,12 @@ class BundleLauncher:
             stat = path.stat()
             if (stat.st_uid, stat.st_gid) != (uid, gid):
                 os.chown(path, uid, gid)
-        name = f"bisheng-v2-{operation['operation_id']}-{'probe' if paths.get('preview') else 'serve'}"
+        name = f"doberman-agent-v2-{operation['operation_id']}-{'probe' if paths.get('preview') else 'serve'}"
         matches = self.docker.list_containers(
             all_states=True,
             filters={
                 "label": [
-                    f"bisheng.runtime.node={self.config.node_id}",
+                    f"doberman-agent.runtime.node={self.config.node_id}",
                     f"{OP_LABEL}={operation['operation_id']}",
                     f"{PHASE_LABEL}={payload['Labels'][PHASE_LABEL]}",
                 ]

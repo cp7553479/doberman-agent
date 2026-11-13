@@ -9,12 +9,12 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from sqlmodel import Session
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.dsh import DshDshDisabledError, DshUserDisabledError
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import self_service as api
-from bisheng.dsh.domain.repositories.identities import CurrentIdentityRecords
-from bisheng.dsh.domain.services.self_service import DshSelfService
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.dsh import DshDshDisabledError, DshUserDisabledError
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import self_service as api
+from doberman_agent.dsh.domain.repositories.identities import CurrentIdentityRecords
+from doberman_agent.dsh.domain.services.self_service import DshSelfService
 from test.dsh.test_policy_repository import sql_store  # noqa: F401
 from test.dsh.test_profile_outbox import user_store  # noqa: F401
 
@@ -92,9 +92,9 @@ async def test_moved_or_disabled_user_never_reaches_gateway(monkeypatch):
 
 
 def test_primary_department_is_display_only_and_missing_is_null(user_store):  # noqa: F811
-    from bisheng.database.models.department import Department, UserDepartment
-    from bisheng.user.domain.repositories.dsh_display import DshDisplayRepository
-    from bisheng.user.domain.repositories.dsh_profile import UserDshProfileRepository
+    from doberman_agent.database.models.department import Department, UserDepartment
+    from doberman_agent.user.domain.repositories.dsh_display import DshDisplayRepository
+    from doberman_agent.user.domain.repositories.dsh_profile import UserDshProfileRepository
 
     with Session(user_store) as session:
         assert DshDisplayRepository.read(session, [20])[20]["department_name"] is None
@@ -113,12 +113,12 @@ async def test_usage_exposes_only_authorized_models_without_a_seat(monkeypatch):
 
     monkeypatch.setitem(
         sys.modules,
-        "bisheng.llm.domain.services.llm",
+        "doberman_agent.llm.domain.services.llm",
         SimpleNamespace(LLMService=SimpleNamespace(get_dsh_model_snapshot=AsyncMock())),
     )
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.dsh import admin_runtime
-    from bisheng.dsh import runtime as model_runtime
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.dsh import admin_runtime
+    from doberman_agent.dsh import runtime as model_runtime
 
     rt = runtime()
     rt.settings.billing_timezone = "Asia/Shanghai"
@@ -165,8 +165,8 @@ async def test_usage_exposes_only_authorized_models_without_a_seat(monkeypatch):
 async def test_annual_usage_uses_authenticated_identity_and_shared_summary(monkeypatch):
     from datetime import timedelta
 
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.dsh import admin_runtime
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.dsh import admin_runtime
 
     rt = runtime()
     identity = AsyncMock(return_value=SimpleNamespace(active=True, tenant_active=True, natural_person=True))

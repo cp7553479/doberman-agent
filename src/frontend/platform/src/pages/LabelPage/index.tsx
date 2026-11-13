@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
-import { Pagination, Button, Select, toast } from '@bisheng/ui';
+import { Outlined } from "@doberman-agent/icons";
+import { Pagination, Button, Select, toast } from '@doberman-agent/ui';
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import UsersSelect from "@/components/bs-comp/selectComponent/Users";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
@@ -111,7 +111,7 @@ function CreateModal({ open, setOpen, onSuccess }) {
             </DialogHeader>
             <div className="flex flex-col gap-4 py-2">
                 <div className="">
-                    <label htmlFor="name" className="bisheng-label">{t('label.selectAppsToLabel')}</label>
+                    <label htmlFor="name" className="doberman_agent-label">{t('label.selectAppsToLabel')}</label>
                     <Select
                         {...selectLabels}
                         multiple
@@ -128,7 +128,7 @@ function CreateModal({ open, setOpen, onSuccess }) {
                 </div>
                 {count ? <p className="text-sm text-gray-500">{t('label.unmarkedConversationCount')}: {count}</p> : null}
                 <div className="">
-                    <label htmlFor="name" className="bisheng-label">{t('label.selectLabelers')}</label>
+                    <label htmlFor="name" className="doberman_agent-label">{t('label.selectLabelers')}</label>
                     <UsersSelect
                         multiple
                         value={users}
@@ -245,7 +245,7 @@ export default function Tasks() {
                     </TableFooter>
                 </Table>
             </div>
-            <div className="bisheng-table-footer bg-background-login px-2">
+            <div className="doberman_agent-table-footer bg-background-login px-2">
                 <Pagination locale={paginationLocale}
                     className="float-right justify-end w-full mr-6"
                     current={page}

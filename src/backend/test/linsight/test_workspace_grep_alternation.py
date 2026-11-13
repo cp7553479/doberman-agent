@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 from deepagents.backends.protocol import FileInfo, LsResult
 
-from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend, _grep_terms
+from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend, _grep_terms
 
 REPORT = "\n".join(
     [
@@ -29,7 +29,7 @@ REPORT = "\n".join(
 
 def _backend(tmp_path) -> WorkspaceBackend:
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     be = WorkspaceBackend(svid="sv-grep", minio=minio, file_dir=str(tmp_path))
     data = REPORT.encode()
     be._cache_write("uploads/report.md", data)

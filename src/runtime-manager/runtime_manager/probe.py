@@ -32,7 +32,7 @@ from runtime_manager.docker_backend import DockerBackend, get_docker_backend
 
 logger = logging.getLogger(__name__)
 
-PROBE_NAME_PREFIX = "bisheng-probe-"
+PROBE_NAME_PREFIX = "doberman-agent-probe-"
 
 
 @dataclass(frozen=True)
@@ -143,7 +143,7 @@ class ProbeService:
             "Image": image_ref,
             "Env": [f"{k}={v}" for k, v in sorted(env.items())],
             "ExposedPorts": {f"{port}/tcp": {}},
-            "Labels": {LABEL_MANAGED: "probe", "bisheng.runtime.node": self._config.node_id},
+            "Labels": {LABEL_MANAGED: "probe", "doberman-agent.runtime.node": self._config.node_id},
             "HostConfig": {
                 "ReadonlyRootfs": True,
                 # ``mode=1777`` is required, not cosmetic: the container runs as

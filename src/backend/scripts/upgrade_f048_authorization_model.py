@@ -54,7 +54,7 @@ negotiable:
 * **Dry-run first on any environment with data.** ``plan`` prints exactly what
   ``apply`` would touch and writes nothing.
 
-arch-guard note: importing ``bisheng.core.openfga`` here reports a RULE-9
+arch-guard note: importing ``doberman_agent.core.openfga`` here reports a RULE-9
 violation. Constitution C4 exempts "explicit operational migration tools" from
 that rule but the guard's allowlist only covers ``core/openfga`` and
 ``permission/``, so every F048 script in this directory reports it — see
@@ -85,25 +85,25 @@ if _BACKEND_ROOT not in sys.path:
 from sqlalchemy import func, update  # noqa: E402
 from sqlmodel import select  # noqa: E402
 
-from bisheng.core.openfga.authorization_model_f048 import (  # noqa: E402
+from doberman_agent.core.openfga.authorization_model_f048 import (  # noqa: E402
     MODEL_VERSION,
     authorization_model_checksum,
     build_authorization_model_f048,
     canonicalize_authorization_model,
     required_relations_checksum,
 )
-from bisheng.permission.domain.models.catalog import (  # noqa: E402
+from doberman_agent.permission.domain.models.catalog import (  # noqa: E402
     PermissionAction,
     PermissionActionResourceScope,
     PermissionCatalogRelease,
 )
-from bisheng.permission.domain.models.migration import AuthorizationModelRelease  # noqa: E402
-from bisheng.permission.domain.services.catalog_policy import (  # noqa: E402
+from doberman_agent.permission.domain.models.migration import AuthorizationModelRelease  # noqa: E402
+from doberman_agent.permission.domain.services.catalog_policy import (  # noqa: E402
     ACTION_RESOURCE_SCOPES,
     CatalogAction,
     derive_action_release,
 )
-from bisheng.permission.migration.f048_runtime_storage import OPENFGA_RELEASE_VERSION  # noqa: E402
+from doberman_agent.permission.migration.f048_runtime_storage import OPENFGA_RELEASE_VERSION  # noqa: E402
 
 EXIT_OK = 0
 EXIT_BLOCKED = 3
@@ -618,10 +618,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 async def _build_context() -> UpgradeContext:
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.manager import app_context
-    from bisheng.core.database import get_async_db_session
-    from bisheng.core.openfga.runtime_heartbeat import list_runtime_heartbeats
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.manager import app_context
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.core.openfga.runtime_heartbeat import list_runtime_heartbeats
     from scripts.reconcile_f048_visible_projection import _environment_name
 
     client = await app_context.async_get_instance("openfga")
@@ -643,9 +643,9 @@ async def _build_context() -> UpgradeContext:
 
 
 async def execute(args: argparse.Namespace) -> int:
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.manager import close_app_context, initialize_app_context
-    from bisheng.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.manager import close_app_context, initialize_app_context
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
 
     # ``initialize_app_context`` grew a required ``config`` argument when
     # feat/3.0.0-beta1 merged in; the sibling backfill scripts already pass it.

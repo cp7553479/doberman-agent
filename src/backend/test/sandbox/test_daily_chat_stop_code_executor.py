@@ -5,9 +5,9 @@ from __future__ import annotations
 import threading
 from types import SimpleNamespace
 
-from bisheng.workstation.domain.services import chat_service
-from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent.workstation.domain.services import chat_service
+from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 
 class _RecordingContainer(ContainerExecutor):

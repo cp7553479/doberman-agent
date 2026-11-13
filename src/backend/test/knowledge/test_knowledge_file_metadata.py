@@ -1,7 +1,7 @@
 from datetime import datetime
 from types import SimpleNamespace
 
-from bisheng.knowledge.rag.knowledge_file_pipeline import KnowledgeFilePipeline, UserDao
+from doberman_agent.knowledge.rag.knowledge_file_pipeline import KnowledgeFilePipeline, UserDao
 
 
 def test_file_metadata_normalizes_null_user_metadata(monkeypatch):

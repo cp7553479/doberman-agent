@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Copy } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -82,7 +82,7 @@ export default function ECharts({ option }: { option: string }) {
     }, [mode])
 
     useEffect(() => {
-        const parentNode = document.querySelector(".bisheng-message")
+        const parentNode = document.querySelector(".doberman_agent-message")
         if (parentNode && containerRef.current) {
             containerRef.current.style.width = `${parentNode.clientWidth - 60}px`
         }

@@ -37,15 +37,15 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import DEFAULT_TENANT_ID, set_current_tenant_id  # noqa: E402
-from bisheng.linsight.domain.models.linsight_skill import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID, set_current_tenant_id  # noqa: E402
+from doberman_agent.linsight.domain.models.linsight_skill import (  # noqa: E402
     SKILL_SOURCE_MANUAL,
     LinsightSkill,
     LinsightSkillDao,
 )
-from bisheng.linsight.domain.services.skill_store import (  # noqa: E402
+from doberman_agent.linsight.domain.services.skill_store import (  # noqa: E402
     MAX_DESCRIPTION_LEN,
     MAX_DISPLAY_NAME_LEN,
     MAX_NAME_LEN,

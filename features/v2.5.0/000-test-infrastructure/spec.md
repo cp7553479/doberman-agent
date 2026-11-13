@@ -39,17 +39,17 @@ F000 是 v2.5.0 所有 Feature 的测试地基。它提供开箱即用的 pytest
 F001 已内联搭建了一套最小测试基础（SQLite in-memory + conftest.py + 预 mock 模式），但每个测试文件各自维护独立的 engine/session/pre-mock，不可复用。F000 将这些模式正式化为共享基础设施，并为后续 Feature（特别是 F004-rebac-core 所需的 OpenFGA mock）提前准备。
 
 **用户故事 1**:
-作为 **BiSheng 后端开发者**，
+作为 **doberman-agent 后端开发者**，
 我希望 **在新 Feature 的测试文件中直接使用 `db_session`、`mock_redis`、`mock_openfga` 等 fixture**，
 以便 **不必每次从零搭建 SQLite engine、手动管理 import chain pre-mock、编写事务回滚逻辑**。
 
 **用户故事 2**:
-作为 **BiSheng 后端开发者**，
+作为 **doberman-agent 后端开发者**，
 我希望 **通过 `create_tenant(session)`、`create_test_user(session)` 等工厂函数快速构造测试数据**，
 以便 **专注于业务逻辑测试而非测试数据准备**。
 
 **用户故事 3**:
-作为 **BiSheng 前端开发者**，
+作为 **doberman-agent 前端开发者**，
 我希望 **在 Platform 项目中运行 `npm test` 即可执行 Vitest 测试**，
 以便 **F007（资源权限 UI）等前端 Feature 有自动化测试基础可用**。
 

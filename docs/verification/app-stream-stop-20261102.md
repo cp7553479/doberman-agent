@@ -2,10 +2,10 @@
 
 ## 基线与问题
 
-- 仓库 `dataelement/bisheng`，目标 `feat/bisheng-work-120-main@9a985f4214be93eb74e5d4f04c0dca681ffd16ac`。
-- 工作目录 `.worktrees/bisheng-app-stream-stop-status`，分支 `codex/app-stream-stop-status`。
+- 仓库 `cp7553479/doberman-agent`，目标 `feat/doberman-agent-work-120-main@9a985f4214be93eb74e5d4f04c0dca681ffd16ac`。
+- 工作目录 `.worktrees/doberman-agent-app-stream-stop-status`，分支 `codex/app-stream-stop-status`。
 - 应用页仅用 `end` 表示消息结束，手动停止后的截断回答与正常完成共用展示。助手后端已用 `remark=break_answer` 存储中断回答，前台历史渲染尚未消费该语义。
-- 工作模式对照：本地安装的 Harness `@deepseek-ai/dsh-client-ui-chat@0.2.1-rc.2` 在 interrupted 回答下方显示“已停止”。本次修改属于 BISHENG 网页应用对话，Desktop 宿主及 Harness 依赖沿用各自基线。
+- 工作模式对照：本地安装的 Harness `@deepseek-ai/dsh-client-ui-chat@0.2.1-rc.2` 在 interrupted 回答下方显示“已停止”。本次修改属于 doberman-agent 网页应用对话，Desktop 宿主及 Harness 依赖沿用各自基线。
 
 ## 修复行为
 

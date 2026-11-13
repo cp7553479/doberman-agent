@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { TreeDepartmentSelect } from "@/components/bs-comp/department/TreeDepartmentSelect";
 
 import { userContext } from "@/contexts/userContext";
@@ -7,7 +7,7 @@ import {
   getDshUsagePresentationSummary as getDshUsageTimeSummary,
 } from "@/controllers/API/dshUsagePresentation";
 import type { DshUsageOverviewUser, DshUsageTimeSummary } from "@/types/dsh";
-import { Segmented } from "@bisheng/ui";
+import { Segmented } from "@doberman-agent/ui";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UsageRangeSelect } from "./UsageRangeSelect";

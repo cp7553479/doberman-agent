@@ -85,7 +85,7 @@
 | 模块编码 (MMM) | 模块 | Owner Feature |
 |----------------|------|---------------|
 | 181 | approval | F025（沿用现有 `common/errcode/approval.py`，扩展为统一审批中心错误码） |
-| 190 | channel / bisheng_information | F026 沿用现有 `common/errcode/channel.py`，扩展频道授权错误码时不得与既有 190xx 冲突 |
+| 190 | channel / doberman_agent_information | F026 沿用现有 `common/errcode/channel.py`，扩展频道授权错误码时不得与既有 190xx 冲突 |
 | 120 | workstation | F028 沿用现有 `common/errcode/workstation.py`，会话导出 / 导入知识空间错误码段位 12060-12079，不得与既有 1204X / 1205X 冲突 |
 | 109 | knowledge | F030 沿用现有 `common/errcode/knowledge.py`，新增 `KnowledgeTypeNotSupportedError`(10962)；复用 10900/10901/10991。180 (knowledge_space) 复用 18001/18010/18040 |
 | 109 | knowledge | F032 沿用现有 `common/errcode/knowledge.py`，新增 `OfdConvertError`(10917)；不得与既有 10915/10916/10962 冲突 |

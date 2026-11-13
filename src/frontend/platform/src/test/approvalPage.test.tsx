@@ -41,8 +41,8 @@ const deleteApprovalRouteApi = vi.fn();
 const reorderApprovalRoutesApi = vi.fn();
 const deleteApprovalFlowApi = vi.fn();
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   toast: (...args: any[]) => toastMock(...args),
 }))();

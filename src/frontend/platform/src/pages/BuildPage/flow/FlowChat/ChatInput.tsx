@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { ConversationComposer } from '@bisheng/chat';
-import { notification } from '@bisheng/ui';
+import { ConversationComposer } from '@doberman-agent/chat';
+import { notification } from '@doberman-agent/ui';
 
 
 

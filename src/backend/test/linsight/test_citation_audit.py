@@ -14,10 +14,10 @@ from unittest.mock import AsyncMock
 import pytest
 from loguru import logger
 
-from bisheng.database.models.message import ChatMessage
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 MARKER = "knowledgesearch_ab12cd34:3"
 
@@ -209,7 +209,7 @@ async def test_footnotes_and_bracket_numbers_are_counted_not_converted(completio
 async def test_audit_failure_never_blocks_completion(completion_task, monkeypatch):
     completion_task._citation_scope = SimpleNamespace(seen_keys=None)
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.extract_citation_ids_from_text",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.extract_citation_ids_from_text",
         lambda _t: (_ for _ in ()).throw(RuntimeError("boom")),
     )
     session = _session()
@@ -230,7 +230,7 @@ async def test_persist_records_zero_persisted_on_audit(monkeypatch):
     session = _session()
     session.output_result = {"answer": "最终答案", "citation_audit": {"status": "uncited"}}
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.persist_linsight_report_citations",
         AsyncMock(return_value=[]),
     )
 

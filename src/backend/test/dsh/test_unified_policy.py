@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from bisheng.dsh.domain.schemas.unified_policy import (
+from doberman_agent.dsh.domain.schemas.unified_policy import (
     UNLIMITED_TOKEN_LIMIT,
     CreditRuleInput,
     ModelVisibilityInput,

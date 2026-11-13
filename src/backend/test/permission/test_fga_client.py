@@ -8,8 +8,8 @@ health, and error handling (fail-closed).
 import pytest
 import httpx
 
-from bisheng.core.openfga.client import FGAClient
-from bisheng.core.openfga.exceptions import (
+from doberman_agent.core.openfga.client import FGAClient
+from doberman_agent.core.openfga.exceptions import (
     FGAClientError,
     FGAConnectionError,
     FGAWriteError,

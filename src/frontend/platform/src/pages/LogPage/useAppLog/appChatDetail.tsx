@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import MessagePanne from "@/components/bs-comp/chatComponent/MessagePanne";
 import { MessageStoreProvider as AssistantMessageStoreProvider, useMessageStore } from "@/components/bs-comp/chatComponent/messageStore";
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
-import { Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { getAssistantDetailApi } from "@/controllers/API/assistant";
 import { getDeleteFlowApi } from "@/controllers/API/flow";
 import { showApiError } from "@/controllers/request";

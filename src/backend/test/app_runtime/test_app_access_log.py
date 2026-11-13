@@ -26,7 +26,7 @@ import pytest
 from sqlalchemy import event
 from sqlmodel import select
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 pytestmark = pytest.mark.usefixtures("app_db")
 
@@ -43,7 +43,7 @@ _ACCESS_KEY = re.compile(r"^app_access:(?P<app_id>[^:]+):(?P<user_id>\d+)$")
 
 @pytest.fixture()
 def runtime_enabled(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True, raising=False)
     monkeypatch.setattr(settings.app_runtime, "obo_secret", OBO_SECRET, raising=False)
@@ -52,7 +52,7 @@ def runtime_enabled(monkeypatch):
 
 @pytest.fixture()
 def visible(monkeypatch):
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     state = {"allow": True}
 
@@ -65,7 +65,7 @@ def visible(monkeypatch):
 
 @pytest.fixture()
 def no_tenant_blacklist(monkeypatch):
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     async def _disabled(tenant_id: int) -> bool:
         return False
@@ -104,7 +104,7 @@ class _FakeRedisConnection:
 
 @pytest.fixture()
 def fake_redis(monkeypatch):
-    from bisheng.core.cache import redis_manager
+    from doberman_agent.core.cache import redis_manager
 
     connection = _FakeRedisConnection()
     client = SimpleNamespace(async_connection=connection)
@@ -119,13 +119,13 @@ def fake_redis(monkeypatch):
 @pytest.fixture()
 async def drained():
     """Await every fire-and-forget access write scheduled so far."""
-    from bisheng.app_runtime.domain.services.app_access_log_service import flush_pending_access_records
+    from doberman_agent.app_runtime.domain.services.app_access_log_service import flush_pending_access_records
 
     return flush_pending_access_records
 
 
 def _token(user_id: int, user_name: str = "u", tenant_id: int = 1) -> str:
-    from bisheng.user.domain.services.auth import AuthJwt
+    from doberman_agent.user.domain.services.auth import AuthJwt
 
     return AuthJwt().create_access_token(
         {"user_id": user_id, "user_name": user_name, "tenant_id": tenant_id, "token_version": 0}
@@ -133,14 +133,14 @@ def _token(user_id: int, user_name: str = "u", tenant_id: int = 1) -> str:
 
 
 async def _verdict(slug, token, request_id="req-1"):
-    from bisheng.app_runtime.domain.services.entry_authz_service import authorize_entry
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import authorize_entry
 
     return await authorize_entry(slug=slug, access_token=token, request_id=request_id)
 
 
 async def _rows(app_db):
-    from bisheng.core.context.tenant import bypass_tenant_filter
-    from bisheng.database.models.app_access_log import AppAccessLog
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.database.models.app_access_log import AppAccessLog
 
     with bypass_tenant_filter():
         async with app_db() as session:
@@ -173,7 +173,7 @@ class TestOneRowPerEntry:
     ):
         """AC-38 — ``SETNX app_access:{app_id}:{user_id} EX <window>``: inside the
         window repeats merge; once it expires the next visit is a new entry."""
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.common.services.config_service import settings
 
         app, _ = await app_factory(slug="window-app", state=AppState.ONLINE.value)
         token = _token(app_owner.user_id)
@@ -197,7 +197,7 @@ class TestOneRowPerEntry:
     async def test_merge_window_default_is_1800s_per_f056_d7(self):
         """F056 design D7 / spec 决议-2 own the window: 30 minutes, not the 300 s
         the first F054 draft carried. A deployment overrides it in config.yaml."""
-        from bisheng.core.config.app_runtime import AppRuntimeConf
+        from doberman_agent.core.config.app_runtime import AppRuntimeConf
 
         assert AppRuntimeConf().access_log_merge_window_seconds == 1800
         assert AppRuntimeConf(access_log_merge_window_seconds=60).access_log_merge_window_seconds == 60
@@ -308,8 +308,8 @@ class TestFailureIsolation:
     ):
         """AC-38 — fire-and-forget: a broken insert is logged and swallowed; the
         visitor still gets in and the process keeps no failed task around."""
-        from bisheng.app_runtime.domain.services import app_access_log_service
-        from bisheng.database.models.app_access_log import AppAccessLogDao
+        from doberman_agent.app_runtime.domain.services import app_access_log_service
+        from doberman_agent.database.models.app_access_log import AppAccessLogDao
 
         async def _boom(*args, **kwargs):
             raise RuntimeError("simulated database outage")
@@ -345,7 +345,7 @@ class TestFailureIsolation:
     ):
         """The verdict does not await the write — the task is still pending when
         ``authorize_entry`` returns, and it is the drain that lands the row."""
-        from bisheng.app_runtime.domain.services import app_access_log_service
+        from doberman_agent.app_runtime.domain.services import app_access_log_service
 
         _app, _ = await app_factory(slug="async-app", state=AppState.ONLINE.value)
 
@@ -369,7 +369,7 @@ class TestShutdownFlush:
     ):
         """A bounded flush is what the lifespan calls: a write that finishes
         inside the budget lands, and the count of dropped records is zero."""
-        from bisheng.app_runtime.domain.services.app_access_log_service import flush_pending_access_records
+        from doberman_agent.app_runtime.domain.services.app_access_log_service import flush_pending_access_records
 
         _app, _ = await app_factory(slug="flush-app", state=AppState.ONLINE.value)
         await _verdict("flush-app", _token(app_owner.user_id))
@@ -382,7 +382,7 @@ class TestShutdownFlush:
         stuck task is cancelled, counted, and the task set ends up empty."""
         import asyncio
 
-        from bisheng.app_runtime.domain.services import app_access_log_service
+        from doberman_agent.app_runtime.domain.services import app_access_log_service
 
         stalled = asyncio.Event()
 
@@ -405,7 +405,7 @@ class TestShutdownFlush:
         """``main.lifespan`` awaits the flush on the way down, and does so
         *before* ``close_app_context`` — after it there is no session to write
         with, and the flush would only be draining failures."""
-        source = (Path(__file__).resolve().parents[2] / "bisheng" / "main.py").read_text(encoding="utf-8")
+        source = (Path(__file__).resolve().parents[2] / "doberman_agent" / "main.py").read_text(encoding="utf-8")
         flush_at = source.find("await flush_pending_access_records(")
         close_at = source.find("await close_app_context()")
         assert flush_at != -1, "main.lifespan must flush pending access records on shutdown"
@@ -421,9 +421,9 @@ class TestTenantIsolation:
     def test_module_registered_for_tenant_filtering(self):
         """Asserted first, on purpose: everything below is vacuous if the module
         is not in ``_TENANT_AWARE_MODEL_MODULES`` (design §4.3 — the fourth path)."""
-        from bisheng.core.database import tenant_filter
+        from doberman_agent.core.database import tenant_filter
 
-        assert "bisheng.database.models.app_access_log" in tenant_filter._TENANT_AWARE_MODEL_MODULES
+        assert "doberman_agent.database.models.app_access_log" in tenant_filter._TENANT_AWARE_MODEL_MODULES
         assert "app_access_log" in tenant_filter._discover_tenant_aware_tables()
 
     async def test_tenant_isolation_of_access_log(self, app_db, app_factory, app_owner, sub_tenant, monkeypatch):
@@ -431,9 +431,9 @@ class TestTenantIsolation:
         discovery + clause builder on a per-session listener, because the
         process-wide registration is deliberately kept out of this test package
         (see conftest ``_no_super_admin_probe``)."""
-        from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-        from bisheng.core.database import tenant_filter
-        from bisheng.database.models.app_access_log import AppAccessLog, AppAccessLogDao
+        from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+        from doberman_agent.core.database import tenant_filter
+        from doberman_agent.database.models.app_access_log import AppAccessLog, AppAccessLogDao
 
         root_app, _ = await app_factory(slug="root-app", tenant_id=1)
         sub_app, _ = await app_factory(
@@ -478,8 +478,8 @@ class TestTenantIsolation:
     async def test_query_face_filters_by_app_user_and_time_range(self, app_db, app_factory, app_owner, normal_user):
         """F056 AC-24 reads through this DAO: by application, by visitor, by time
         range, newest first with the id as the tie-breaker."""
-        from bisheng.core.context.tenant import bypass_tenant_filter
-        from bisheng.database.models.app_access_log import AppAccessLog, AppAccessLogDao
+        from doberman_agent.core.context.tenant import bypass_tenant_filter
+        from doberman_agent.database.models.app_access_log import AppAccessLog, AppAccessLogDao
 
         one, _ = await app_factory(slug="q-one")
         two, _ = await app_factory(slug="q-two")
@@ -548,7 +548,7 @@ class TestWriterIdentity:
     def test_scheduled_only_from_the_entry_verdict(self):
         """One writer: ``entry_authz_service.authorize_entry``. A second call
         site would be a second definition of what an "entry" is."""
-        backend_root = Path(__file__).resolve().parents[2] / "bisheng"
+        backend_root = Path(__file__).resolve().parents[2] / "doberman_agent"
         callers = sorted(
             str(path.relative_to(backend_root))
             for path in backend_root.rglob("*.py")

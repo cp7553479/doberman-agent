@@ -5,17 +5,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RuntimeCapacityReservation,
     RuntimeCredentialBinding,
     RuntimeOperation,
     RuntimeRoute,
     RuntimeStorageBinding,
 )
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput, OperationInput
-from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
-from bisheng.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput, OperationInput
+from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+from doberman_agent.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
 from test.app_runtime.test_runtime_delivery_repository import operation
 from test.app_runtime.test_runtime_delivery_repository import runtime_repo as runtime_repo
 
@@ -27,7 +27,7 @@ async def material_projection_tables(runtime_repo):
     Keep the real repository query in these lifecycle tests. Its empty material
     projection still needs the two schema tables; do not replace it with a stub.
     """
-    from bisheng.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES
+    from doberman_agent.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES
 
     async with runtime_repo.transaction() as session:
         connection = await session.connection()
@@ -169,9 +169,9 @@ async def test_egress_retries_keep_credentials_and_cutover_fences_by_operation(r
     """AC-50, AC-53: reusing a version never revives a retired operation's egress handle."""
     from cryptography.fernet import Fernet
 
-    from bisheng.app_runtime.domain.services import runtime_egress_service as egress
-    from bisheng.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services import runtime_egress_service as egress
+    from doberman_agent.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "runtime_payload_key", Fernet.generate_key().decode())
     op = await runtime_repo.create_operation(operation())
@@ -210,9 +210,9 @@ async def test_egress_deadline_is_utc_under_customer_timezone(runtime_repo, monk
 
     from cryptography.fernet import Fernet
 
-    from bisheng.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
-    from bisheng.app_runtime.domain.services.runtime_payload import seal
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services.runtime_egress_service import RuntimeEgressService
+    from doberman_agent.app_runtime.domain.services.runtime_payload import seal
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "runtime_payload_key", Fernet.generate_key().decode())
     op = operation()
@@ -239,7 +239,7 @@ async def test_egress_deadline_is_utc_under_customer_timezone(runtime_repo, monk
 
 def test_credential_guard_fences_candidates_same_version_restarts_and_maintenance():
     """AC-39, AC-51: only the active operation's key is admitted to production capabilities."""
-    from bisheng.app_runtime.domain.repositories.runtime_credential_repository import allowed
+    from doberman_agent.app_runtime.domain.repositories.runtime_credential_repository import allowed
 
     route = SimpleNamespace(status="serving", version_id="v", operation_id="current")
     old = SimpleNamespace(state="active", version_id="v", operation_id="retired")
@@ -281,7 +281,7 @@ async def test_legacy_build_marker_survives_operation_reads(runtime_repo):
 
 async def test_failure_diagnostic_is_durable_bounded_and_expires_without_losing_control_facts(runtime_repo):
     """AC-29, AC-63: a missing dependency remains diagnosable after container cleanup."""
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact
 
     op = operation("diagnostics")
     op.kind = "prepare"
@@ -318,10 +318,10 @@ async def test_failure_diagnostic_is_durable_bounded_and_expires_without_losing_
 
 
 async def test_stale_runtime_node_has_a_stable_business_error(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeNode
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeNode
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "runtime_default_node_id", "node-a")
     node = await runtime_repo.get(RuntimeNode, "node-a")
@@ -335,9 +335,9 @@ async def test_stale_runtime_node_has_a_stable_business_error(runtime_repo, monk
 @pytest.mark.parametrize("status", ["failed", "timed_out", "cancelled"])
 async def test_execution_failure_keeps_publish_stage_and_machine_readable_reason(runtime_repo, status):
     """AC-17, AC-29, AC-63: a cleaned probe failure remains actionable to the publisher."""
-    from bisheng.app_publish.domain.schemas.failure import failure_from_error
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.common.errcode.app_factory import AppProbeFailedError
+    from doberman_agent.app_publish.domain.schemas.failure import failure_from_error
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.common.errcode.app_factory import AppProbeFailedError
 
     op = await runtime_repo.create_operation(operation("probe-failure-" + status))
     op.status = status

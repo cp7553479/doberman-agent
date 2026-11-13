@@ -25,7 +25,7 @@ Celery Worker。以下清单不得用 fake 测试结果替代。
 - [ ] 两个租户各创建一个引用同一来源 A 的频道，执行：
 
   ```bash
-  uv run celery -A bisheng.worker.main call bisheng.worker.information.reconcile.reconcile_information_subscriptions
+  uv run celery -A doberman_agent.worker.main call doberman_agent.worker.information.reconcile.reconcile_information_subscriptions
   ```
 
 - [ ] 远端只新增一条来源 A 订阅；请求体每次只有一个 `information_ids` 元素。
@@ -44,7 +44,7 @@ Celery Worker。以下清单不得用 fake 测试结果替代。
 - [ ] 让来源 A 的 `last_sync_at` 保持前一业务日，执行：
 
   ```bash
-  uv run celery -A bisheng.worker.main call bisheng.worker.information.article.sync_information_articles
+  uv run celery -A doberman_agent.worker.main call doberman_agent.worker.information.article.sync_information_articles
   ```
 
 - [ ] 确认未调用来源 A 的文章接口，状态表不推进；后续轮询仍会检查。

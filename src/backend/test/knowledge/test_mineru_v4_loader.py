@@ -5,10 +5,10 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.knowledge.rag.pipeline.loader.mineru_v4 import MineruV4Loader
-from bisheng.knowledge.rag.pipeline.loader.mineru_v4_client import MineruV4Error
-from bisheng.knowledge.rag.pipeline.transformer.extra_file import ExtraFileTransformer
-from bisheng.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
+from doberman_agent.knowledge.rag.pipeline.loader.mineru_v4 import MineruV4Loader
+from doberman_agent.knowledge.rag.pipeline.loader.mineru_v4_client import MineruV4Error
+from doberman_agent.knowledge.rag.pipeline.transformer.extra_file import ExtraFileTransformer
+from doberman_agent.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
 
 
 @pytest.fixture(autouse=True)
@@ -123,9 +123,9 @@ def test_fractional_bbox_matches_saved_labels_after_splitting(tmp_path):
     chunks = SplitterTransformer(separator=["\n\n"], chunk_size=1000, chunk_overlap=0).transform_documents(documents)
     knowledge_file = SimpleNamespace(bbox_object_name="")
     with (
-        patch("bisheng.knowledge.rag.pipeline.transformer.extra_file.get_minio_storage_sync") as get_minio,
+        patch("doberman_agent.knowledge.rag.pipeline.transformer.extra_file.get_minio_storage_sync") as get_minio,
         patch(
-            "bisheng.knowledge.rag.pipeline.transformer.extra_file.KnowledgeUtils.get_knowledge_bbox_file_object_name",
+            "doberman_agent.knowledge.rag.pipeline.transformer.extra_file.KnowledgeUtils.get_knowledge_bbox_file_object_name",
             return_value="bbox/1.json",
             create=True,
         ),

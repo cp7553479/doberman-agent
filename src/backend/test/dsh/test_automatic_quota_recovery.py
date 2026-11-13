@@ -9,16 +9,16 @@ import pytest
 from sqlalchemy import create_engine, inspect, select
 from sqlmodel import Session, SQLModel
 
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.services.automatic_quota_recovery import AutomaticQuotaRecovery
-from bisheng.dsh.domain.services.projection import DshProjectionService
-from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.services.automatic_quota_recovery import AutomaticQuotaRecovery
+from doberman_agent.dsh.domain.services.projection import DshProjectionService
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal
@@ -250,9 +250,9 @@ async def test_first_policy_and_mid_update_redis_loss_resume_same_intent(
     """AC-27/29: First grant needs no approval, and committed policy updates survive cache loss."""
     from sqlalchemy import event as sql_event
 
-    from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-    from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
-    from bisheng.dsh.domain.services.admin_policy import DshAdminService
+    from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+    from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
+    from doberman_agent.dsh.domain.services.admin_policy import DshAdminService
 
     if with_history:
         event = running().model_copy(update={"started_at": datetime(2026, 9, 9, microsecond=662861)})
@@ -348,13 +348,13 @@ async def test_http_model_call_recovers_then_projects_actual_usage(quota, recove
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.dsh.api.dependencies import get_runtime
-    from bisheng.dsh.api.endpoints import models as endpoints
-    from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-    from bisheng.dsh.domain.schemas.chat import ChatCapabilities
-    from bisheng.dsh.domain.services.model import DshModelService
-    from bisheng.dsh.domain.services.usage import DshUsageService
-    from bisheng.dsh.runtime import ModelRuntime
+    from doberman_agent.dsh.api.dependencies import get_runtime
+    from doberman_agent.dsh.api.endpoints import models as endpoints
+    from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+    from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities
+    from doberman_agent.dsh.domain.services.model import DshModelService
+    from doberman_agent.dsh.domain.services.usage import DshUsageService
+    from doberman_agent.dsh.runtime import ModelRuntime
     from test.dsh.test_model_service import LLM, principal
 
     await erase(quota)
@@ -392,10 +392,10 @@ async def test_http_model_call_recovers_then_projects_actual_usage(quota, recove
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://e2e-dsh-auto") as client:
         denied = await client.post(
             "/api/v1/dsh/chat/completions",
-            json={"model": "bisheng:4", "messages": [{"role": "user", "content": "test"}]},
+            json={"model": "doberman_agent:4", "messages": [{"role": "user", "content": "test"}]},
         )
         assert denied.status_code == 401 and llm.calls == 0
-        body = {"model": "bisheng:4", "messages": [{"role": "user", "content": "test"}], "stream": stream}
+        body = {"model": "doberman_agent:4", "messages": [{"role": "user", "content": "test"}], "stream": stream}
         if stream:
             body["stream_options"] = {"include_usage": True}
         response = await client.post(
@@ -434,8 +434,8 @@ async def test_actual_redis_restart_preserves_persisted_usage(recovery_db, tmp_p
 
     from redis.exceptions import RedisError
 
-    from bisheng.dsh.infrastructure.quota_redis import QuotaRedis
-    from bisheng.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
+    from doberman_agent.dsh.infrastructure.quota_redis import QuotaRedis
+    from doberman_agent.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
 
     binary = os.environ.get("DSH_TEST_REDIS_SERVER") or shutil.which("redis-server")
     if not binary:
@@ -496,8 +496,8 @@ async def test_two_independent_redis_clients_cannot_restore_the_same_user_concur
     import asyncio
     import threading
 
-    from bisheng.dsh.infrastructure.quota_redis import QuotaRedis
-    from bisheng.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
+    from doberman_agent.dsh.infrastructure.quota_redis import QuotaRedis
+    from doberman_agent.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
 
     event = terminal(running())
     persist(recovery_db, [event])

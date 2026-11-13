@@ -34,19 +34,19 @@
 ### Wave 1 — 基础设施（无测试配对，互不依赖）
 
 - [x] **T001**: `linsight_skill` 归属列与迁移
-  **文件**: `src/backend/bisheng/linsight/domain/models/linsight_skill.py`，`src/backend/bisheng/core/database/alembic/versions/v3_0_0b3_f076_linsight_skill_owner.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/models/linsight_skill.py`，`src/backend/doberman_agent/core/database/alembic/versions/v3_0_0b3_f076_linsight_skill_owner.py`
   **逻辑**: 增加非空 `owner_user_id`（默认 0）和可空 `last_import_id`。唯一约束从 `uq_linsight_skill_tenant_name (tenant_id, name)` 改为 `(tenant_id, owner_user_id, name)`。另加 `(tenant_id, owner_user_id, last_import_id)`：MySQL 与 DM8 上两行空的 `last_import_id` 都要能插入（design §7.4）。升级前若同租户同名已有重复行则中止，不填业务数据；存量行 `owner_user_id` 填 0。降级删两个新约束、恢复旧约束、删这两列。不搬对象。本任务只改模型和迁移，不改 DAO 方法（T007）。租户技能管理的请求和响应不加字段（design §6，release-contract 里这张表的个人技能归属 F076，存量行仍是租户技能）。
   **测试**: MySQL 与 DM8 各执行一次 upgrade / downgrade；两行空 `last_import_id` 同时成功。DM8 若把空值当成相等，停下，不要自行换成另一种唯一约束。
   **依赖**: 无
 
 - [x] **T002**: 会话版本技能快照列
-  **文件**: `src/backend/bisheng/linsight/domain/models/linsight_session_version.py`，`src/backend/bisheng/core/database/alembic/versions/v3_0_0b3_f076_session_skill_snapshot.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/models/linsight_session_version.py`，`src/backend/doberman_agent/core/database/alembic/versions/v3_0_0b3_f076_session_skill_snapshot.py`
   **逻辑**: 增加可空 JSON 列 `skill_snapshot`。每一项是 `{name, skill_id, owner_user_id, content_hash}`，表示这个会话目录属于哪一行（design §7.8）。不回填。原 `skills` 列仍只存勾选的技能名，本任务不改它的含义。对外的 dump 不输出这一列。降级删列。
   **测试**: MySQL 与 DM8 各执行一次 upgrade / downgrade
   **依赖**: 无
 
 - [x] **T003**: 个人技能错误码类
-  **文件**: `src/backend/bisheng/common/errcode/linsight.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/linsight.py`
   **逻辑**: 新增 11061 个数超出、11062 容量超出、11063 压缩包已加密、11064 版本过期、11065 类型与内容不一致、11066 同一次导入的文件不一致、11067 压缩包损坏、11068 缺少 `SKILL.md`、11069 路径越界、11071 文件为 0 字节、11072 压缩包内含多份技能、11073 `SKILL.md` 超过 1 MiB、11074 条目超过 1000。11052、11059 增加 `limit_mb`，经基类 kwargs 进入响应 `data`。不改 11051、11053、11054、11055 的码，不改 11060、11070 的类和文案。用户能看到的句子只写在 T004，不在 `status_message` 再写一句中文（design §6）。
   **依赖**: 无
 
@@ -56,7 +56,7 @@
   **依赖**: 无
 
 - [x] **T005**: 把 `linsight_skill` 补进 edit / delete 的资源范围
-  **文件**: `src/backend/bisheng/permission/domain/services/catalog_policy.py`
+  **文件**: `src/backend/doberman_agent/permission/domain/services/catalog_policy.py`
   **逻辑**: `edit` 的资源范围加入 `linsight_skill`。`delete` 目前等于 `MIGRATED_RESOURCE_TYPES`，而 catalog 校验拒绝该集合以外的类型，所以把 `linsight_skill` 加入 `MIGRATED_RESOURCE_TYPES`，`delete` 和 `manage_permission` 会一并带上它。不新建资源类型，不加授权页面。本期仍不按人把个人技能授给别人；单条操作的归属核对在 T023。企业技能的使用继续不读这条所有者记录（design 决策 5、§5）。跑 `src/backend/test/permission/` 里按该集合参数化的用例；失败时只补这个类型在 catalog 上的最小登记，不把知识库的授权流程抄过来。
   **依赖**: 无
 
@@ -69,7 +69,7 @@
   **依赖**: T001
 
 - [x] **T007**: DAO 查询带上归属
-  **文件**: `src/backend/bisheng/linsight/domain/models/linsight_skill.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/models/linsight_skill.py`
   **逻辑**: 只改 DAO 方法，不动 T001 的列。`get_by_name`、`set_enabled`、`set_default_checked`、`delete_by_name`、`list_enabled`、`get_page` 增加归属条件，并保留 `strict_tenant_filter()`。批量更新显式带 `tenant_id` 和 `owner_user_id`。管理端调用固定 `owner_user_id=0`，旧请求响应不加字段（design §4.3、§5、§6）。
   **测试**: T006 全部通过；`test/linsight/test_skill_dao.py`、`test_skill_api.py`、`test_skill_list_paging.py` 不回归
   **覆盖 AC**: AC-05, AC-10, AC-12
@@ -82,7 +82,7 @@
   **依赖**: T003, T004
 
 - [x] **T009**: `SkillStore` 按归属选择前缀和上限
-  **文件**: `src/backend/bisheng/linsight/domain/services/skill_store.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/skill_store.py`
   **逻辑**: 对象键、本地缓存、读取和删除按 `owner_user_id` 选前缀。`0` 仍用 `linsight/skills`，存量对象不搬。个人上传用 T008 的固定上限，不读系统配置里更大的默认值。解压和路径校验沿用现有函数，不另写一套（design §4.3、§5）。
   **测试**: T008 中属于 `SkillStore` 的用例通过；`test_skill_store.py`、`test_skill_upload_limit.py` 不回归
   **覆盖 AC**: AC-03, AC-04, AC-16, AC-23
@@ -95,7 +95,7 @@
   **依赖**: T003, T004
 
 - [x] **T011**: 现有三处体积错误带上 `limit_mb`
-  **文件**: `src/backend/bisheng/linsight/api/endpoints/skill.py`，`src/backend/bisheng/linsight/domain/services/skill_service.py`，`src/backend/bisheng/linsight/domain/services/github_skill_fetcher.py`
+  **文件**: `src/backend/doberman_agent/linsight/api/endpoints/skill.py`，`src/backend/doberman_agent/linsight/domain/services/skill_service.py`，`src/backend/doberman_agent/linsight/domain/services/github_skill_fetcher.py`
   **逻辑**: 这三处抛 11052、11059 时传入实际上限的 MiB 数。企业路径用系统配置，不改成个人技能的 50 / 200。不改这三处以外的校验结果。与 T004 同一 PR。
   **测试**: T010 全部通过
   **覆盖 AC**: AC-04
@@ -110,7 +110,7 @@
   **依赖**: T007
 
 - [x] **T013**: 重名检查收进同一归属
-  **文件**: `src/backend/bisheng/linsight/domain/services/skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/skill_service.py`
   **逻辑**: `_check_duplicate` 只在同一 `owner_user_id` 内检查技能标识和展示名。管理端调用仍传 `owner_user_id=0`。不改管理端创建的其他步骤（design 决策 2、§4.3）。
   **测试**: T012 全部通过；`test_skill_api.py`、`test_skill_service.py` 不回归
   **覆盖 AC**: AC-12, AC-14
@@ -123,7 +123,7 @@
   **依赖**: T003, T007, T009
 
 - [x] **T015**: `PersonalSkillService` 创建、用量和导入查询
-  **文件**: `src/backend/bisheng/linsight/domain/services/personal_skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/personal_skill_service.py`
   **逻辑**: 新增该服务，本任务只加 `create`、`usage`、`find_by_import`，以及内部的 `_load_own_skill`：按当前租户加载行，没有这行或归属不是本人就返回 11053。后续 T017、T019 只用这个加载；T023 在归属通过后补 `require_business_action`，不改这里的创建流程。`create` 写 `owner_user_id=当前用户`，复用 `SkillService` 已有的 `authorize_created`（资源类型 `linsight_skill`，所有者是上传者），不新写 OpenFGA。个数和容量与插入放在同一事务，超出则回滚并返回 11061 或 11062。同名返回 11055 且带 `skill_id`、`content_hash`。成功后把 `import_id` 写入 `last_import_id`，并按 design §7.1 记审计。请求结束删除解压临时目录。校验未通过不调用对象写入。`usage` 返回已用个数、已用字节和上限 20、209715200。
   **测试**: T014 全部通过
   **覆盖 AC**: AC-01, AC-02, AC-05, AC-13, AC-14, AC-16, AC-17, AC-24
@@ -136,7 +136,7 @@
   **依赖**: T003, T015
 
 - [x] **T017**: 覆盖更新
-  **文件**: `src/backend/bisheng/linsight/domain/services/personal_skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/personal_skill_service.py`
   **逻辑**: 增加 `overwrite`，加载行只用 T015 的 `_load_own_skill`。顺序按 design §7.2：哈希不一致直接 11064；一致则先写新对象，再改行，保留技能 ID 和启停状态；行更新成功后删旧对象，新旧哈希相同不删，删除失败留给 T035 清扫。容量按新文件重算。本任务不在 `_load_own_skill` 里调用统一授权。
   **测试**: T016 全部通过
   **覆盖 AC**: AC-14, AC-17, AC-18
@@ -149,7 +149,7 @@
   **依赖**: T015, T003
 
 - [x] **T019**: 启停与删除
-  **文件**: `src/backend/bisheng/linsight/domain/services/personal_skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/personal_skill_service.py`
   **逻辑**: 增加 `set_enabled` 和 `delete`，加载行只用 `_load_own_skill`。重复提交的结果按 design §7.3。删除在本次请求删除对象，不查哪些会话未结束（design §5、§7.8）。停用不删对象、不删会话目录。不在本任务里做列表过滤。
   **测试**: T018 全部通过
   **覆盖 AC**: AC-09, AC-10, AC-15, AC-17, AC-19
@@ -162,7 +162,7 @@
   **依赖**: T007, T019
 
 - [x] **T021**: 两个读取方法
-  **文件**: `src/backend/bisheng/linsight/domain/services/personal_skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/personal_skill_service.py`
   **逻辑**: 增加 `list_center` 和 `list_candidates`，共用同一套归属条件（design 决策 3）。列表一次查询，不逐条调用 `require_business_action`。同名去重只发生在 `list_candidates`。`GET /api/v1/linsight/skill/selectable` 不在本任务修改。
   **测试**: T020 全部通过
   **覆盖 AC**: AC-06, AC-07, AC-09, AC-11, AC-12, AC-26
@@ -175,7 +175,7 @@
   **依赖**: T005, T017, T019
 
 - [x] **T023**: 详情、读文件和统一授权
-  **文件**: `src/backend/bisheng/linsight/domain/services/personal_skill_service.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/personal_skill_service.py`
   **逻辑**: 增加 `get` 和 `read_file`。只改 `_load_own_skill`：归属通过后再 `require_business_action`（design 决策 5）。不改 T017、T019 里覆盖、启停、删除的其余步骤。`get` 在对象缺失时返回 `bundle_missing=true`。不把企业技能的使用改成这条授权。
   **测试**: T022 全部通过；T016、T018 仍通过
   **覆盖 AC**: AC-08, AC-21, AC-22
@@ -190,7 +190,7 @@
   **依赖**: T015, T017, T019, T021, T023
 
 - [x] **T025**: 个人技能路由
-  **文件**: `src/backend/bisheng/linsight/api/endpoints/personal_skill.py`，`src/backend/bisheng/linsight/api/router.py`
+  **文件**: `src/backend/doberman_agent/linsight/api/endpoints/personal_skill.py`，`src/backend/doberman_agent/linsight/api/router.py`
   **逻辑**: 新路由用普通登录用户，委托 `PersonalSkillService`，接口层不访问仓库。路径与 T024 一致，注册顺序保证 `center`、`candidates`、`personal` 不会被现有 `/{name}` 当成技能名。不改 `skill.py` 里管理端和 `/selectable` 的响应形状（design §6；输入框、装载和开放接口改读 `list_candidates`，见 T027、T029）。
   **测试**: T024 全部通过
   **覆盖 AC**: AC-01, AC-02, AC-06, AC-08, AC-13, AC-14
@@ -203,7 +203,7 @@
   **依赖**: T021
 
 - [x] **T027**: 开放接口改读任务候选
-  **文件**: `src/backend/bisheng/open_api/domain/services/task_mode_service.py`
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/task_mode_service.py`
   **逻辑**: `enabled_skill_rows` 改为当前身份的 `list_candidates`。个人技能只对所有者生效。不改请求 schema，不改日常模式。
   **测试**: T026 全部通过；`test/open_api/` 里既有任务模式用例不回归
   **覆盖 AC**: AC-08, AC-11, AC-12
@@ -218,7 +218,7 @@
   **依赖**: T002, T009, T021
 
 - [x] **T029**: 整包拷入与恢复时不覆盖已有目录
-  **文件**: `src/backend/bisheng/linsight/domain/services/skill_provisioning.py`，`src/backend/bisheng/linsight/domain/services/workbench_impl.py`，`src/backend/bisheng/linsight/domain/schemas/linsight_schema.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/skill_provisioning.py`，`src/backend/doberman_agent/linsight/domain/services/workbench_impl.py`，`src/backend/doberman_agent/linsight/domain/schemas/linsight_schema.py`
   **逻辑**: `materialize_session_skills` 改为拷入 `list_candidates` 的整包，并写 `skill_snapshot`。恢复和继续提问时跳过快照里已有的目录名（design §7.8）。`workbench_impl` 里给 E2B 拍 `file_list` 的调用保持在拷贝之后；不改单个文件 5 MiB 的限制。既有四个调用点仍调用这一个函数。`linsight_schema.py` 的提交请求增加可选 `skill_ids`。装载时把这些 ID 换成实际拷入的目录名，写入现有 `skills` 列；同名时勾了企业技能 ID，列里写留下的个人技能目录名。只传技能名的旧请求原样写入该列。
   **测试**: T028 全部通过；`test_skill_provisioning.py` 不回归
   **覆盖 AC**: AC-09, AC-11, AC-12, AC-15
@@ -231,7 +231,7 @@
   **依赖**: T002, T029
 
 - [x] **T031**: 包一层技能名单中间件
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: 在现有 `SkillsMiddleware` 外面包一层，按会话 `skills` 列里的目录名追加两句。同名覆盖后，该列已是 T029 留下的目录名。不改 deepagents 里的 `SkillsMiddleware`，不把勾选写进技能包，不加请求字段（design §7.8）。
   **测试**: T030 全部通过
   **覆盖 AC**: AC-11, AC-25, AC-26
@@ -244,8 +244,8 @@
   **依赖**: T002, T019, T029
 
 - [x] **T033**: 两处运行时检查
-  **文件**: `src/backend/bisheng/linsight/domain/services/workspace_backend.py`，`src/backend/bisheng/linsight/domain/services/skill_runtime_guard.py`
-  **逻辑**: `WorkspaceBackend.read` / `aread` 在路径落在 `/skills/{名字}/` 时调用守卫。新建 `skill_runtime_guard.py`，在 `bisheng_code_interpreter` 执行前扫描本次代码引用的 `skills/{名字}/`，按快照拒绝。不改 `bisheng_langchain` 里的执行器。只拦 `read_file` 不够，两处都要有（design §5、§7.8）。
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/workspace_backend.py`，`src/backend/doberman_agent/linsight/domain/services/skill_runtime_guard.py`
+  **逻辑**: `WorkspaceBackend.read` / `aread` 在路径落在 `/skills/{名字}/` 时调用守卫。新建 `skill_runtime_guard.py`，在 `doberman_agent_code_interpreter` 执行前扫描本次代码引用的 `skills/{名字}/`，按快照拒绝。不改 `doberman_agent_langchain` 里的执行器。只拦 `read_file` 不够，两处都要有（design §5、§7.8）。
   **测试**: T032 全部通过
   **覆盖 AC**: AC-09, AC-15
   **依赖**: T029, T032
@@ -259,7 +259,7 @@
   **依赖**: T001, T009
 
 - [x] **T035**: 按租户清扫无主对象
-  **文件**: `src/backend/bisheng/worker/linsight/personal_skill_sweep.py`，`src/backend/bisheng/core/config/settings.py`
+  **文件**: `src/backend/doberman_agent/worker/linsight/personal_skill_sweep.py`，`src/backend/doberman_agent/core/config/settings.py`
   **逻辑**: Beat 按租户各发一条子任务。子任务参数带 `tenant_id`，发布时写入 Celery headers，worker 的 `task_prerun` 经 `worker/tenant_context.py` 恢复 `current_tenant_id` 后再查技能行。不在一条任务里跨租户查询。不新增 YAML 顶层键，默认调度写在 `settings.py` 既有 `beat_schedule` 默认项旁。清扫失败只记日志，不影响用户请求里已经返回的删除结果（design §5）。
   **测试**: T034 全部通过
   **覆盖 AC**: AC-16
@@ -325,7 +325,7 @@
 
 - [x] **T044**: 去掉预览开关
   **文件**: `src/frontend/client/src/components/Skills/types.ts`，`src/frontend/client/src/vite-env.d.ts`，`src/frontend/client/src/routes/index.tsx`
-  **逻辑**: 删除 `skillCenterPreviewEnabled`。技能中心路由不再包在这个开关里。不改 `public/assets/bisheng/config.js`（那是本地未提交覆盖）；字段删掉后不再被读取。
+  **逻辑**: 删除 `skillCenterPreviewEnabled`。技能中心路由不再包在这个开关里。不改 `public/assets/doberman-agent/config.js`（那是本地未提交覆盖）；字段删掉后不再被读取。
   **测试**: T038 全部通过
   **覆盖 AC**: AC-02, AC-06
   **依赖**: T038

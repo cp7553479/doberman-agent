@@ -8,7 +8,7 @@
 
 将模型管理中 Qwen 文本向量模型的客户端由 `DashScopeEmbeddings` 切换为 `langchain_openai.OpenAIEmbeddings`，使用阿里云的 OpenAI 兼容接口，并让界面填写的 Base URL 实际控制请求地址。Qwen LLM 已有的地址与凭证映射方式是本次实现参考。
 
-继续使用 `BishengEmbedding` 对外提供的向量接口，保留模型名称、模型 ID、上线状态检查、调用限制和向量归一化逻辑。服务商类型仍为 `qwen`，用户无需把服务商改成 OpenAI。
+继续使用 `DobermanAgentEmbedding` 对外提供的向量接口，保留模型名称、模型 ID、上线状态检查、调用限制和向量归一化逻辑。服务商类型仍为 `qwen`，用户无需把服务商改成 OpenAI。
 
 本次涉及现有后端适配和针对性测试；界面已经有地址输入和保存能力，无需新增字段，也不涉及数据库结构迁移。Qwen LLM、rerank、ASR、TTS 及其他服务商的协议与默认值不在修改范围内。
 
@@ -31,7 +31,7 @@ modelProviderFields.ts 定义 Qwen 字段
 → ModelConfig.handleSave 将配置放入 config
 → finetune.ts 调用 POST 或 PUT /api/v1/llm
 → LLMService 保存 LLMServer.config
-→ BishengBase.get_server_info_config 读取配置
+→ DobermanAgentBase.get_server_info_config 读取配置
 → embedding._get_qwen_params 组装客户端参数
 ```
 
@@ -55,7 +55,7 @@ embedding 应参考这一组装方式，复用 **embedding 模块自己的** `_g
 
 ### 客户端映射
 
-在 `src/backend/bisheng/llm/domain/llm/embedding.py` 中：
+在 `src/backend/doberman_agent/llm/domain/llm/embedding.py` 中：
 
 1. 将 `_node_type[LLMServerType.QWEN.value]["client"]` 改为已有的 `OpenAIEmbeddings`。
 2. 移除该文件不再使用的 `DashScopeEmbeddings` 导入。
@@ -119,7 +119,7 @@ Qwen 默认地址继续与现有 LLM 保持一致：`https://dashscope.aliyuncs.
 
 另须检查恰好达到上限时只有一次请求，以及显式调小批次后的拆分结果。
 
-显式使用 `encoding_format="float"` 可以避免依赖不同网关的 base64 返回行为；阿里云[接口文档](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api)说明新旧网关的实际返回格式存在差异。向量仍交给 `BishengEmbedding` 执行现有归一化处理。
+显式使用 `encoding_format="float"` 可以避免依赖不同网关的 base64 返回行为；阿里云[接口文档](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api)说明新旧网关的实际返回格式存在差异。向量仍交给 `DobermanAgentEmbedding` 执行现有归一化处理。
 
 ## 兼容影响
 
@@ -167,14 +167,14 @@ Qwen 默认地址继续与现有 LLM 保持一致：`https://dashscope.aliyuncs.
 
 | 文件 | 用途 |
 | --- | --- |
-| [embedding.py](../../../src/backend/bisheng/llm/domain/llm/embedding.py) | 核心修改点；客户端映射、Qwen 参数、统一向量封装 |
-| [llm.py](../../../src/backend/bisheng/llm/domain/llm/llm.py) | 参考 `_get_openai_params` 与 `_get_qwen_params` 的地址和凭证处理 |
-| [chat_qwen.py](../../../src/backend/bisheng/core/ai/llm/chat_qwen.py) | Qwen LLM 的 OpenAI 兼容客户端继承关系 |
+| [embedding.py](../../../src/backend/doberman_agent/llm/domain/llm/embedding.py) | 核心修改点；客户端映射、Qwen 参数、统一向量封装 |
+| [llm.py](../../../src/backend/doberman_agent/llm/domain/llm/llm.py) | 参考 `_get_openai_params` 与 `_get_qwen_params` 的地址和凭证处理 |
+| [chat_qwen.py](../../../src/backend/doberman_agent/core/ai/llm/chat_qwen.py) | Qwen LLM 的 OpenAI 兼容客户端继承关系 |
 | [modelProviderFields.ts](../../../src/frontend/platform/src/pages/ModelPage/manage/modelProviderFields.ts) | Qwen 界面字段及默认地址 |
 | [ModelConfig.tsx](../../../src/frontend/platform/src/pages/ModelPage/manage/ModelConfig.tsx) | 实际界面保存入口 |
 | [finetune.ts](../../../src/frontend/platform/src/controllers/API/finetune.ts) | 界面实际使用的服务商新增和更新请求 |
-| [llm 服务](../../../src/backend/bisheng/llm/domain/services/llm.py) | 配置保存、空白清理和模型探测 |
-| [base.py](../../../src/backend/bisheng/llm/domain/llm/base.py) | 服务商与模型配置读取 |
+| [llm 服务](../../../src/backend/doberman_agent/llm/domain/services/llm.py) | 配置保存、空白清理和模型探测 |
+| [base.py](../../../src/backend/doberman_agent/llm/domain/llm/base.py) | 服务商与模型配置读取 |
 | [uv.lock](../../../src/backend/uv.lock) | 已有依赖：`langchain-openai==1.2.2`、`openai==2.41.0`、`langchain-community==0.4.2` |
 
 ## 验证结果

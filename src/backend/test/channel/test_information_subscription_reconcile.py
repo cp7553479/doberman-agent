@@ -1,11 +1,11 @@
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.channel.domain.services.information_subscription_reconcile_service import (
+from doberman_agent.channel.domain.services.information_subscription_reconcile_service import (
     DesiredSubscriptionSnapshot,
     InformationSubscriptionReconcileService,
 )
-from bisheng.core.config.settings import IntelligenceCenterConf
-from bisheng.core.external.bisheng_information_client.response_schema import InformationSubscriptionItem
+from doberman_agent.core.config.settings import IntelligenceCenterConf
+from doberman_agent.core.external.doberman_agent_information_client.response_schema import InformationSubscriptionItem
 
 
 def _item(source_id: str) -> InformationSubscriptionItem:

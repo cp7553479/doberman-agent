@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import AceEditor from "react-ace";
 // import "ace-builds/webpack-resolver";
 import { useContext, useEffect, useRef, useState } from "react";

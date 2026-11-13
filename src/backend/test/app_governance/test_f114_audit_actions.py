@@ -5,13 +5,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import PermissionDeniedError
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import PermissionDeniedError
 
 
 async def test_selected_app_audit_uses_edit_and_concrete_tenant(monkeypatch):
-    from bisheng.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
-    from bisheng.app_governance.domain.services import runtime_audit_scope as mod
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
+    from doberman_agent.app_governance.domain.services import runtime_audit_scope as mod
 
     user = UserPayload(user_id=42, tenant_id=3, user_role=[], token_version=7)
     monkeypatch.setattr(
@@ -32,8 +32,8 @@ async def test_selected_app_audit_uses_edit_and_concrete_tenant(monkeypatch):
 
 
 async def test_export_download_rechecks_selected_app(monkeypatch):
-    from bisheng.app_governance.domain.schemas.runtime_audit import AuthorizedRuntimeAuditScope
-    from bisheng.app_governance.domain.services import runtime_audit_export_service as mod
+    from doberman_agent.app_governance.domain.schemas.runtime_audit import AuthorizedRuntimeAuditScope
+    from doberman_agent.app_governance.domain.services import runtime_audit_export_service as mod
 
     monkeypatch.setattr(mod, "enabled", lambda: None)
     job = SimpleNamespace(

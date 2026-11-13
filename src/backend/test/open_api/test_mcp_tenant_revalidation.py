@@ -7,16 +7,16 @@ import pytest
 from mcp import types
 from sqlmodel import select
 
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.application.service_account_tenancy import revalidate_service_account
-from bisheng.open_api.domain.context import (
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.application.service_account_tenancy import revalidate_service_account
+from doberman_agent.open_api.domain.context import (
     get_current_open_api_principal,
     reset_current_open_api_principal,
     set_current_open_api_principal,
 )
-from bisheng.open_mcp import server
-from bisheng.open_mcp.auth import current_mcp_scope
-from bisheng.open_mcp.contracts import ResourceListData
+from doberman_agent.open_mcp import server
+from doberman_agent.open_mcp.auth import current_mcp_scope
+from doberman_agent.open_mcp.contracts import ResourceListData
 from test.open_api.test_service_account_tenancy import principal, seed
 
 
@@ -54,7 +54,7 @@ async def test_tool_uses_fresh_binding_and_preserves_shared_transport_scope(open
         runtime = server.create_open_mcp_runtime()
         result = await runtime.manager.app.request_handlers[types.CallToolRequest](
             types.CallToolRequest(
-                params=types.CallToolRequestParams(name="bisheng_knowledge_list", arguments={"type": 0})
+                params=types.CallToolRequestParams(name="doberman_agent_knowledge_list", arguments={"type": 0})
             )
         )
         assert result.root.isError is moved

@@ -20,22 +20,22 @@
 | AC-SET-04 | 关闭拒绝后续新授权、换证/刷新和模型准入，不删除或撤销已有会话、席位、模型授权及用量；不强行中断已经准入的调用，在途用量继续入账。 |
 | AC-SET-05 | 重新开启不分配新席位、不重置额度、不延长令牌寿命；仍有效且未撤销的凭证继续按既有规则使用，已过期凭证仍按既有刷新或重新登录流程处理。 |
 | AC-SET-06 | 下载地址允许无用户名密码的 HTTP/HTTPS 绝对地址，空值表示未配置；非法协议或地址保存失败，原值不变。平台入口与桌面登录页展示同一已保存地址，不需要重新构建前端。 |
-| AC-SET-07 | 关闭状态仍可修改下载地址；未配置时隐藏下载链接并使用既有安装帮助。唤起地址默认 `dsh-desktop://login`，自动附加当前毕昇 origin 的 `server` 参数；更换协议或路径需安装的客户端支持。 |
+| AC-SET-07 | 关闭状态仍可修改下载地址；未配置时隐藏下载链接并使用既有安装帮助。唤起地址默认 `dsh-desktop://login`，自动附加当前doberman-agent origin 的 `server` 参数；更换协议或路径需安装的客户端支持。 |
 | AC-SET-08 | 保存失败明确提示，页面不显示成功；缺少 Gateway 接入配置时不能假报接入已就绪。License 缺失/失效继续按原设计拒绝使用，开关不能绕过 License。 |
 
 本修订最初不包含 client 工作台专用弹窗。后续用户已明确批准本人查询和逐会话吊销，见 [本人弹窗修订](./self-service-revision.md)；工作台入口和 /desktop-login 均消费同一业务状态。License 状态及席位余量维持只读展示。
 
 ## 现状及设计决策
 
-1. 当前 BiSheng 读取启动配置 `DshSettings.enabled`；`get_runtime()` 先校验部署开关，再经 DshSettingsService 校验数据库内的业务开关，最后复用 `app.state.dsh_runtime`。因此业务开关在每次准入读取，已初始化的对象不能绕过。
+1. 当前 doberman-agent 读取启动配置 `DshSettings.enabled`；`get_runtime()` 先校验部署开关，再经 DshSettingsService 校验数据库内的业务开关，最后复用 `app.state.dsh_runtime`。因此业务开关在每次准入读取，已初始化的对象不能绕过。
 2. 下载地址已移除构建变量 `VITE_DSH_DOWNLOAD_URL`，统一使用服务端管理配置。运行期保存生效，不需要重新构建前端。
 3. 实例配置复用已有全局 `Config` 存储中的独立 DSH key，由有明确 schema 的对象读写（enabled、download_url、launch_url），不修改额度表，不增加配置明细表或 Alembic。只更新自己的 key，不能重写整个 initdb_config。
 4. 新增专用管理 GET/PUT `/api/v1/dsh/admin/settings`，响应 `{enabled: boolean, download_url: string | null, launch_url: string}`；PUT 接受同一完整对象，服务端校验并保存。超级管理员身份从现有 JWT/权限入口取得。配置服务不依赖已启用的 DSH runtime，避免关闭后无法重新打开。
 5. 原 `GET /api/v1/dsh/config` 的字段与关闭响应形状保持兼容，enabled 反映动态业务开关。浏览器下载信息使用独立只读 GET `/api/v1/dsh/browser-config`，响应 `{management_enabled, enabled, download_url, launch_url}`；management_enabled 反映部署开关，enabled 反映业务开关，部署关闭时两者均为 false 且下载地址为空，不暴露部署地址、Secret 或 License。客户端无需新增调用或修改冻结契约。
-6. 部署开关继续是 BiSheng `dsh.enabled`，默认 false；业务开关唯一真相在数据库，默认 false。两者都开启才可使用 DSH：前者由部署者开放管理能力，后者由超级管理员启用业务。Gateway 模块启动和 License 仍由部署者配置，界面不修改 Gateway 配置文件。
+6. 部署开关继续是 doberman-agent `dsh.enabled`，默认 false；业务开关唯一真相在数据库，默认 false。两者都开启才可使用 DSH：前者由部署者开放管理能力，后者由超级管理员启用业务。Gateway 模块启动和 License 仍由部署者配置，界面不修改 Gateway 配置文件。
 7. 初版准入配置直接读权威数据库，不使用现有 initdb_config 的 100 秒缓存，也不放入进程内缓存。配置读取失败拒绝新的 DSH 准入。关闭操作提交后的新准入使用新值；与关闭并发且已获准入的请求按在途处理。
-8. Gateway 换证及刷新已通过 HMAC 调用 BiSheng identity/redeem、identity/check，动态开关接入这些路径；创建尚未完成的授权事务不能绕过关闭状态完成登录。若要求关闭时连 Gateway 授权事务创建都拒绝，则须另行增加跨仓开关检查，不默认扩展客户端协议。
-9. 关闭开关只控制新准入。现有使用事件投影、在途结算和可靠补记继续工作，不能共用动态开关提前退出后台维护。普通 BiSheng API、JWT、PAT、其他商业授权不受影响。
+8. Gateway 换证及刷新已通过 HMAC 调用 doberman-agent identity/redeem、identity/check，动态开关接入这些路径；创建尚未完成的授权事务不能绕过关闭状态完成登录。若要求关闭时连 Gateway 授权事务创建都拒绝，则须另行增加跨仓开关检查，不默认扩展客户端协议。
+9. 关闭开关只控制新准入。现有使用事件投影、在途结算和可靠补记继续工作，不能共用动态开关提前退出后台维护。普通 doberman-agent API、JWT、PAT、其他商业授权不受影响。
 
 ## 实施与验证
 
@@ -65,6 +65,6 @@
 2026-09-10 核对 `dsh-gateway`：镜像 `v1.6.0-dsh-pre-20260910-http`，镜像 ID `sha256:7a78c97fd9e5815dee7d221ac3f32638fb89b231a9c2ef88cf4aa9bfa3a798cc`。
 运行中 JAR 含旧 `DshInternalController`，不含 `DshSelfService`。无凭据空请求访问 `/api/internal/dsh/self/sessions` 得到旧异常包装 `HTTP 200 / status_code:500 / status_message:404_NOT_FOUND`；同样访问已有 `/api/internal/dsh/management/read` 得到预期 HMAC 拒绝 401。这证明新本人接口尚未部署。
 
-毕昇拒绝非契约上游响应，转为 `authorization_unavailable` 是既有行为，不应删除校验或放宽权限。需由部署者将 Gateway `feat/dsh-access` 中包含提交 `2cd0fc446d3f688b595eb5421af8393636cf0a2c` 的代码打新 tag 构建并更新镜像；该提交已包含本人查询/逐会话吊销及对应路由。不复用旧 tag、不仅更新毕昇镜像。本次不部署、不修改 109 配置或数据。
+doberman-agent拒绝非契约上游响应，转为 `authorization_unavailable` 是既有行为，不应删除校验或放宽权限。需由部署者将 Gateway `feat/dsh-access` 中包含提交 `2cd0fc446d3f688b595eb5421af8393636cf0a2c` 的代码打新 tag 构建并更新镜像；该提交已包含本人查询/逐会话吊销及对应路由。不复用旧 tag、不仅更新doberman-agent镜像。本次不部署、不修改 109 配置或数据。
 
 本轮验证：配置 API/旧配置兼容/非法地址后端 16 项通过；platform 配置、登录入口及 URL 测试 29 项通过；client 弹窗、开关及 URL 测试 15 项通过。前端全工作区 lint、typecheck、check-i18n 通过。真实管理组件使用隔离模拟数据完成 1280px/390px 布局目检；未连接线上数据。Client DOM 测试沿用本机 canvas 加载替身，不涉及画布能力。运行中旧 Gateway 缺接口的问题仅作只读诊断，部署后的本人会话联调由部署者复验。

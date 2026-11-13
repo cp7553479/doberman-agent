@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from minio.error import S3Error
 
-from bisheng.core.storage.minio.minio_storage import (
+from doberman_agent.core.storage.minio.minio_storage import (
     MinioStorage,
     _is_no_such_key_error,
     _thaw_s3_error,
@@ -37,14 +37,14 @@ def _nosuchkey_exc() -> S3Error:
         request_id="req",
         host_id="host",
         response=MagicMock(status=404, headers={}),
-        bucket_name="bisheng",
+        bucket_name="doberman_agent",
         object_name="569a92bade28471c94dd538bb0a73647.jpg",
     )
 
 
 def _make_storage() -> MinioStorage:
     storage = MinioStorage.__new__(MinioStorage)
-    storage.bucket = "bisheng"
+    storage.bucket = "doberman_agent"
     storage.tmp_bucket = "tmp-dir"
     storage.minio_client_sync = MagicMock()
     return storage
@@ -109,11 +109,11 @@ def test_download_object_raises_mutable_s3error_on_missing_key():
     storage = _make_storage()
     storage.minio_client_sync.get_object.side_effect = _nosuchkey_exc()
     with patch(
-        "bisheng.core.storage.minio.minio_storage._should_fallback_to_root",
+        "doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root",
         return_value=False,
     ):
         with pytest.raises(S3Error) as ei:
-            storage.download_object_sync(bucket_name="bisheng", object_name="missing.jpg")
+            storage.download_object_sync(bucket_name="doberman_agent", object_name="missing.jpg")
     assert _is_no_such_key_error(ei.value)
     # The escaped error survives a later __traceback__ reassignment.
     ei.value.__traceback__ = None
@@ -123,10 +123,10 @@ def test_get_object_raises_mutable_s3error_on_missing_key():
     storage = _make_storage()
     storage.minio_client_sync.get_object.side_effect = _nosuchkey_exc()
     with patch(
-        "bisheng.core.storage.minio.minio_storage._should_fallback_to_root",
+        "doberman_agent.core.storage.minio.minio_storage._should_fallback_to_root",
         return_value=False,
     ):
         with pytest.raises(S3Error) as ei:
-            storage.get_object_sync(bucket_name="bisheng", object_name="missing.jpg")
+            storage.get_object_sync(bucket_name="doberman_agent", object_name="missing.jpg")
     assert _is_no_such_key_error(ei.value)
     ei.value.__traceback__ = None

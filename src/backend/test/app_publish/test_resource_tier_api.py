@@ -41,7 +41,7 @@ def _body(response):
 
 def test_tier_routes_offer_no_delete_and_no_create():
     """AC-47's precondition at the HTTP layer: retirement is a PATCH, never a DELETE."""
-    from bisheng.app_publish.api.router import v1_router
+    from doberman_agent.app_publish.api.router import v1_router
 
     tier_routes = [route for route in v1_router.routes if route.path.startswith("/resource-tiers")]
     assert tier_routes, "the tier admin endpoints are not mounted on the v1 router"
@@ -52,7 +52,7 @@ def test_tier_routes_offer_no_delete_and_no_create():
 
 def test_tier_routes_are_not_under_apps_prefix():
     """F054's ``GET /apps/{app_id}`` is mounted first and would swallow ``/apps/resource-tiers``."""
-    from bisheng.app_publish.api.router import v1_router
+    from doberman_agent.app_publish.api.router import v1_router
 
     assert not any(route.path.startswith("/apps/resource-tiers") for route in v1_router.routes)
 
@@ -82,8 +82,8 @@ async def test_list_refuses_when_runtime_layer_disabled_16207(publish_db, api_ap
 
 async def test_rbac_admin_role_is_accepted_as_super_admin(publish_db, api_app, tier_seed):
     """The ``AdminRole`` fallback — payloads built without the login path still pass."""
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.database.constants import AdminRole
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.database.constants import AdminRole
 
     payload = UserPayload(
         user_id=SUPER_ADMIN_USER_ID,
@@ -141,7 +141,7 @@ async def test_list_shape_and_in_use_counts(publish_db, api_app, tier_seed, supe
 async def test_patch_retunes_spec_and_description_and_audits(
     publish_db, api_app, tier_seed, super_admin_user, audit_sink
 ):
-    from bisheng.app_runtime.domain.constants import AppAuditAction
+    from doberman_agent.app_runtime.domain.constants import AppAuditAction
 
     async with api_app(payload=super_admin_user.payload) as client:
         payload = _body(
@@ -156,7 +156,7 @@ async def test_patch_retunes_spec_and_description_and_audits(
     assert row["code"] == "standard" and row["enabled"] is True
 
     # And the table agrees — the answer is re-read, not echoed.
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     async with publish_db() as session:
         stored = await ResourceTierDao.aget_by_code(session, "standard")
@@ -199,7 +199,7 @@ async def test_patch_with_no_effective_change_writes_no_audit(
 async def test_patch_rejects_invalid_spec_16262_naming_the_field(
     publish_db, api_app, tier_seed, super_admin_user, audit_sink, body, field
 ):
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     async with api_app(payload=super_admin_user.payload) as client:
         payload = _body(await client.patch(f"{LIST_URL}/standard", json=body))
@@ -217,7 +217,7 @@ async def test_patch_rejects_bool_as_integer_at_the_schema(
     publish_db, api_app, tier_seed, super_admin_user, audit_sink, field
 ):
     """JSON ``true`` must not land as ``1`` — pydantic's lax ``int`` would take it, ``StrictInt`` refuses (422)."""
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     async with api_app(payload=super_admin_user.payload) as client:
         response = await client.patch(f"{LIST_URL}/standard", json={field: True})
@@ -257,9 +257,9 @@ async def _list(api_app, who):
 async def test_disable_blocks_new_selection_but_existing_apps_keep_resolving(
     publish_db, api_app, tier_seed, super_admin_user, app_factory, audit_sink
 ):
-    from bisheng.app_publish.domain.services.resource_tier_service import ResourceTierService
-    from bisheng.app_runtime.domain.constants import AppAuditAction
-    from bisheng.common.errcode.app_publish import AppTierUnavailableError
+    from doberman_agent.app_publish.domain.services.resource_tier_service import ResourceTierService
+    from doberman_agent.app_runtime.domain.constants import AppAuditAction
+    from doberman_agent.common.errcode.app_publish import AppTierUnavailableError
 
     _app, version = await app_factory(tier_id="performance", terminal_state="online")
 
@@ -297,7 +297,7 @@ async def test_disable_blocks_new_selection_but_existing_apps_keep_resolving(
 
 async def test_default_tier_cannot_be_disabled_16263(publish_db, api_app, tier_seed, super_admin_user, audit_sink):
     """AC-46 makes ``light`` the answer for every manifest without ``tier:``; retiring it would break them all."""
-    from bisheng.database.models.resource_tier import DEFAULT_TIER_CODE, ResourceTierDao
+    from doberman_agent.database.models.resource_tier import DEFAULT_TIER_CODE, ResourceTierDao
 
     async with api_app(payload=super_admin_user.payload) as client:
         payload = _body(await client.patch(f"{LIST_URL}/{DEFAULT_TIER_CODE}", json={"enabled": False}))
@@ -316,7 +316,7 @@ async def test_default_tier_cannot_be_disabled_16263(publish_db, api_app, tier_s
 
 async def test_audit_action_is_registered_in_the_lockstep_whitelist():
     """Written events must be findable on the audit page (pit 21 / 24)."""
-    from bisheng.app_runtime.domain.constants import AppAuditAction
-    from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
+    from doberman_agent.app_runtime.domain.constants import AppAuditAction
+    from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
 
     assert AppAuditAction.TIER_UPDATE.value in _UI_VISIBLE_V2_ACTIONS

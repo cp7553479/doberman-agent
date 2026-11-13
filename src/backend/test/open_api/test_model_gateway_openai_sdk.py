@@ -14,7 +14,7 @@ import pytest
 from langchain_core.messages import AIMessage
 
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     install_catalog,
@@ -33,7 +33,7 @@ MESSAGES = [{"role": "user", "content": "hi"}]
 @pytest.fixture
 def face(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     install_catalog(
@@ -57,7 +57,7 @@ def client_for(app) -> openai.AsyncOpenAI:
 
 
 async def test_the_client_lists_models_and_every_id_is_callable(monkeypatch, face):
-    install_fake_llm(monkeypatch, FakeBishengLLM(invoke_result=AIMessage(content="ok")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(invoke_result=AIMessage(content="ok")))
     client = client_for(face)
 
     listing = await client.models.list()
@@ -72,7 +72,7 @@ async def test_the_client_lists_models_and_every_id_is_callable(monkeypatch, fac
 async def test_the_client_parses_a_non_streaming_completion_with_usage(monkeypatch, face):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(
+        FakeDobermanAgentLLM(
             invoke_result=AIMessage(
                 content="hello",
                 usage_metadata={"input_tokens": 3, "output_tokens": 2, "total_tokens": 5},
@@ -90,7 +90,7 @@ async def test_the_client_parses_a_non_streaming_completion_with_usage(monkeypat
 async def test_the_client_accumulates_a_tool_calling_stream(monkeypatch, face):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(
+        FakeDobermanAgentLLM(
             stream_script=[
                 text_chunk("thinking"),
                 tool_chunk(name="read_file", args='{"p"', call_id="call_1"),
@@ -135,7 +135,7 @@ async def test_the_client_accumulates_a_tool_calling_stream(monkeypatch, face):
     ],
 )
 async def test_admission_failures_raise_the_clients_own_exception_classes(monkeypatch, side_effect, expected):
-    from bisheng.common.errcode.open_api import OpenApiCredentialMissingError, OpenApiScopeMissingError
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialMissingError, OpenApiScopeMissingError
 
     error = (
         OpenApiCredentialMissingError()
@@ -143,18 +143,18 @@ async def test_admission_failures_raise_the_clients_own_exception_classes(monkey
         else OpenApiScopeMissingError(required="model:invoke")
     )
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(side_effect=error),
     )
 
     with pytest.raises(expected) as excinfo:
         await client_for(build_model_face_app()).models.list()
 
-    assert excinfo.value.body["bisheng_code"] == error.code
+    assert excinfo.value.body["doberman_agent_code"] == error.code
 
 
 async def test_an_unknown_model_raises_not_found(monkeypatch, face):
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     with pytest.raises(openai.NotFoundError) as excinfo:
         await client_for(face).chat.completions.create(model="never-configured", messages=MESSAGES)
@@ -163,7 +163,7 @@ async def test_an_unknown_model_raises_not_found(monkeypatch, face):
 
 
 async def test_an_ambiguous_name_raises_bad_request_and_names_the_alternatives(monkeypatch, face):
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     with pytest.raises(openai.BadRequestError) as excinfo:
         await client_for(face).chat.completions.create(model="shared", messages=MESSAGES)
@@ -172,23 +172,23 @@ async def test_an_ambiguous_name_raises_bad_request_and_names_the_alternatives(m
 
 
 async def test_the_provider_daily_limit_raises_rate_limit_error(monkeypatch, face):
-    from bisheng.llm.domain.utils import LlmProviderDailyLimitExceededError
+    from doberman_agent.llm.domain.utils import LlmProviderDailyLimitExceededError
 
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(raise_on_invoke=LlmProviderDailyLimitExceededError("azure/gpt-4o Quota used up")),
+        FakeDobermanAgentLLM(raise_on_invoke=LlmProviderDailyLimitExceededError("azure/gpt-4o Quota used up")),
     )
 
     with pytest.raises(openai.RateLimitError) as excinfo:
         await client_for(face).chat.completions.create(model="gpt-4o", messages=MESSAGES)
 
-    assert excinfo.value.body["bisheng_code"] == 26517
+    assert excinfo.value.body["doberman_agent_code"] == 26517
 
 
 async def test_an_endpoint_outside_the_promise_raises_not_found(monkeypatch, face):
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     with pytest.raises(openai.NotFoundError) as excinfo:
         await client_for(face).embeddings.create(model="gpt-4o", input="hi")
 
-    assert excinfo.value.body["bisheng_code"] == 26501
+    assert excinfo.value.body["doberman_agent_code"] == 26501

@@ -7,12 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionMigrationBlockedError
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.common.errcode.permission import PermissionMigrationBlockedError
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     get_authorization_model_f048,
 )
-from bisheng.core.openfga.discovery import OpenFGARuntimePin
+from doberman_agent.core.openfga.discovery import OpenFGARuntimePin
 from scripts import migrate_f048_permission_data as cli
 from scripts.f048_migration_runtime import _require_predecessor_source
 
@@ -67,9 +67,9 @@ def test_new_migration_is_rejected_when_store_already_uses_final_f048_model():
 def test_formal_migration_is_not_called_from_api_or_celery_startup():
     entrypoint = "migrate_f048_permission_data"
     startup_files = (
-        BACKEND_ROOT / "bisheng/main.py",
-        BACKEND_ROOT / "bisheng/run_celery.py",
-        BACKEND_ROOT / "bisheng/worker/main.py",
+        BACKEND_ROOT / "doberman_agent/main.py",
+        BACKEND_ROOT / "doberman_agent/run_celery.py",
+        BACKEND_ROOT / "doberman_agent/worker/main.py",
     )
 
     assert all(entrypoint not in path.read_text(encoding="utf-8") for path in startup_files)

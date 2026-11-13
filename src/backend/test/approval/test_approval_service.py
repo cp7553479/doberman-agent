@@ -3,23 +3,23 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.approval.domain.models.approval_request import (
+from doberman_agent.approval.domain.models.approval_request import (
     ApprovalRequest,
     ApprovalRequestStatusEnum,
     ApprovalRequestTypeEnum,
     ApprovalReviewModeEnum,
     ApprovalSafetyStatusEnum,
 )
-from bisheng.approval.domain.schemas.approval_schema import (
+from doberman_agent.approval.domain.schemas.approval_schema import (
     ApprovalDecisionActionEnum,
     DepartmentKnowledgeSpaceApprovalSettings,
 )
-from bisheng.approval.domain.services.approval_service import ApprovalService
-from bisheng.common.errcode.approval import (
+from doberman_agent.approval.domain.services.approval_service import ApprovalService
+from doberman_agent.common.errcode.approval import (
     ApprovalRequestNotFoundError,
     ApprovalRequestPermissionDeniedError,
 )
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 
 def _make_login_user(user_id: int, *, is_admin: bool = False):
@@ -96,7 +96,7 @@ def test_build_pending_file_responses_include_file_size():
 
 
 def test_original_file_name_from_path_prefers_upload_name_cache(monkeypatch):
-    from bisheng.core.cache import redis_manager
+    from doberman_agent.core.cache import redis_manager
 
     class _Redis:
         def get(self, key):
@@ -113,7 +113,7 @@ async def test_get_request_for_user_denies_removed_reviewer():
     request_row = _make_request_row(applicant_user_id=10, reviewer_user_ids=[20])
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.aget_by_id',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.aget_by_id',
         new_callable=AsyncMock,
         return_value=request_row,
     ), patch.object(
@@ -134,7 +134,7 @@ async def test_list_requests_for_user_filters_out_stale_reviewer_snapshot():
     request_row = _make_request_row(applicant_user_id=10, reviewer_user_ids=[20])
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.alist_all',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.alist_all',
         new_callable=AsyncMock,
         return_value=[request_row],
     ), patch.object(
@@ -158,7 +158,7 @@ async def test_decide_request_blocks_self_approval():
     request_row = _make_request_row(applicant_user_id=20, reviewer_user_ids=[20])
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.aget_by_id',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.aget_by_id',
         new_callable=AsyncMock,
         return_value=request_row,
     ):
@@ -183,11 +183,11 @@ async def test_create_department_space_upload_request_excludes_applicant_from_re
         return request_row
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=SimpleNamespace(department_id=10),
     ), patch(
-        'bisheng.approval.domain.services.approval_service.KnowledgeDao.aquery_by_id',
+        'doberman_agent.approval.domain.services.approval_service.KnowledgeDao.aquery_by_id',
         new_callable=AsyncMock,
         return_value=SimpleNamespace(id=101, name='Dept Space', type=KnowledgeTypeEnum.SPACE.value),
     ), patch.object(
@@ -206,7 +206,7 @@ async def test_create_department_space_upload_request_excludes_applicant_from_re
         new_callable=AsyncMock,
         return_value=(ApprovalSafetyStatusEnum.SKIPPED.value, None),
     ), patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.acreate',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.acreate',
         new_callable=AsyncMock,
         side_effect=_acreate,
     ), patch.object(
@@ -215,7 +215,7 @@ async def test_create_department_space_upload_request_excludes_applicant_from_re
         new_callable=AsyncMock,
         return_value=[20],
     ) as mock_get_reviewers, patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.aupdate',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.aupdate',
         new_callable=AsyncMock,
         side_effect=_aupdate,
     ), patch.object(
@@ -241,11 +241,11 @@ async def test_create_department_space_upload_request_does_not_persist_without_r
     login_user = _make_login_user(10)
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=SimpleNamespace(department_id=10),
     ), patch(
-        'bisheng.approval.domain.services.approval_service.KnowledgeDao.aquery_by_id',
+        'doberman_agent.approval.domain.services.approval_service.KnowledgeDao.aquery_by_id',
         new_callable=AsyncMock,
         return_value=SimpleNamespace(id=101, name='Dept Space', type=KnowledgeTypeEnum.SPACE.value),
     ), patch.object(
@@ -269,7 +269,7 @@ async def test_create_department_space_upload_request_does_not_persist_without_r
         new_callable=AsyncMock,
         return_value=[],
     ), patch(
-        'bisheng.approval.domain.services.approval_service.ApprovalRequestDao.acreate',
+        'doberman_agent.approval.domain.services.approval_service.ApprovalRequestDao.acreate',
         new_callable=AsyncMock,
     ) as mock_create:
         with pytest.raises(ApprovalRequestPermissionDeniedError):
@@ -292,7 +292,7 @@ async def test_get_department_knowledge_space_settings_reads_per_space_binding()
     )
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=binding,
     ):
@@ -305,7 +305,7 @@ async def test_get_department_knowledge_space_settings_reads_per_space_binding()
 @pytest.mark.asyncio
 async def test_get_department_knowledge_space_settings_raises_when_missing():
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=None,
     ):
@@ -325,11 +325,11 @@ async def test_update_department_knowledge_space_settings_updates_binding():
     )
 
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=binding,
     ), patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aupdate',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aupdate',
         new_callable=AsyncMock,
         return_value=binding,
     ) as mock_update:
@@ -348,7 +348,7 @@ async def test_update_department_knowledge_space_settings_updates_binding():
 @pytest.mark.asyncio
 async def test_should_require_department_space_approval_uses_binding_setting():
     with patch(
-        'bisheng.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
+        'doberman_agent.approval.domain.services.approval_service.DepartmentKnowledgeSpaceDao.aget_by_space_id',
         new_callable=AsyncMock,
         return_value=SimpleNamespace(approval_enabled=False),
     ):

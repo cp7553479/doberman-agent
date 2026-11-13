@@ -15,10 +15,10 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
 
-# NOTE: importing AuditLog through the ORM pulls the full bisheng stack
+# NOTE: importing AuditLog through the ORM pulls the full doberman_agent stack
 # (core.context → core.config → celery). Pytest's conftest pre-mocks this
 # chain; running this file via `pytest` is required, not direct `python -c`.
-from bisheng.database.models.audit_log import AuditLog
+from doberman_agent.database.models.audit_log import AuditLog
 
 
 @pytest.fixture(scope='module')

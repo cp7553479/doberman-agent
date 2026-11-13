@@ -23,13 +23,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from langchain_core.documents import Document
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_SEPARATOR_MARKER,
     CITATION_START_MARKER,
@@ -39,8 +39,8 @@ from bisheng.citation.domain.services.citation_prompt_helper import (
     select_registry_items_for_persistence,
     strip_unregistered_citation_markers,
 )
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
-from bisheng.workstation.domain.services.conversation_export_service import ConversationExportService
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.workstation.domain.services.conversation_export_service import ConversationExportService
 
 
 def _marker(*keys: str) -> str:

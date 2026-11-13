@@ -65,11 +65,11 @@ def _request(**overrides) -> DeployRequest:
         "slug": "sales-report",
         "version_id": "ver-0123456789abcdef",
         "version_no": 3,
-        "image_ref": "bisheng-app/sales-report:3-ver-0123",
+        "image_ref": "doberman-agent-app/sales-report:3-ver-0123",
         "tier": TierIn(cpu=0.5, mem=512),
         "port": 8080,
         "env": {},
-        "platform_api_base": "https://bisheng.example.com/api",
+        "platform_api_base": "https://doberman-agent.example.com/api",
     }
     payload.update(overrides)
     return DeployRequest(**payload)
@@ -154,7 +154,7 @@ def test_bind_source_is_the_host_path_when_the_manager_is_containerised(rtm_conf
     it is managing lives somewhere nobody looks. So the payload must carry the
     host view while every filesystem call this process makes keeps the local one.
     """
-    config = rtm_config.with_overrides(host_data_root=Path("/srv/bisheng/app-data"))
+    config = rtm_config.with_overrides(host_data_root=Path("/srv/doberman-agent/app-data"))
     set_config(config)
     try:
         _service(config, fake_docker).deploy(_request())
@@ -162,7 +162,7 @@ def test_bind_source_is_the_host_path_when_the_manager_is_containerised(rtm_conf
         set_config(rtm_config)
 
     host = fake_docker.last_call("create_container")["payload"]["HostConfig"]
-    assert host["Binds"] == ["/srv/bisheng/app-data/apps/app-1/db:/data:rw"]
+    assert host["Binds"] == ["/srv/doberman-agent/app-data/apps/app-1/db:/data:rw"]
     # ...and the directory this process created is still the one it can reach.
     assert config.app_data_dir("app-1").is_dir()
     assert str(config.app_data_dir("app-1")).startswith(str(rtm_config.data_root))
@@ -199,31 +199,31 @@ def test_no_published_ports(rtm_config, fake_docker):
 
 
 def test_env_injection_names(rtm_config, fake_docker):
-    """AC-17 / AC-45 — the contract F053's ``bisheng dev`` injects by the same names.
+    """AC-17 / AC-45 — the contract F053's ``doberman-agent dev`` injects by the same names.
 
-    ``PORT`` and ``BISHENG_APP_PORT`` are both asserted, and asserted *equal*:
+    ``PORT`` and ``DOBERMAN_AGENT_APP_PORT`` are both asserted, and asserted *equal*:
     frameworks read one or the other, and a deployment where they disagree fails
     in the worst possible way — the app binds a port nothing dials.
     """
     _service(rtm_config, fake_docker).deploy(_request())
 
     env = _env_of(fake_docker.last_call("create_container")["payload"])
-    assert env["BISHENG_APP_DB_URL"] == "sqlite:////data/app.db"
-    assert env["BISHENG_APP_DB_PATH"] == "/data/app.db"
-    assert env["BISHENG_APP_ID"] == "app-1"
-    assert env["BISHENG_APP_SLUG"] == "sales-report"
-    assert env["BISHENG_APP_VERSION"] == "3"
-    assert env["BISHENG_APP_VERSION_ID"] == "ver-0123456789abcdef"
-    assert env["BISHENG_PLATFORM_API_BASE"] == "https://bisheng.example.com/api"
+    assert env["DOBERMAN_AGENT_APP_DB_URL"] == "sqlite:////data/app.db"
+    assert env["DOBERMAN_AGENT_APP_DB_PATH"] == "/data/app.db"
+    assert env["DOBERMAN_AGENT_APP_ID"] == "app-1"
+    assert env["DOBERMAN_AGENT_APP_SLUG"] == "sales-report"
+    assert env["DOBERMAN_AGENT_APP_VERSION"] == "3"
+    assert env["DOBERMAN_AGENT_APP_VERSION_ID"] == "ver-0123456789abcdef"
+    assert env["DOBERMAN_AGENT_PLATFORM_API_BASE"] == "https://doberman-agent.example.com/api"
     assert env["PORT"] == "8080"
-    assert env["BISHENG_APP_PORT"] == "8080"
-    assert env["PORT"] == env["BISHENG_APP_PORT"]
-    assert env["BISHENG_APP_BASE_PATH"] == "/apps/sales-report"
+    assert env["DOBERMAN_AGENT_APP_PORT"] == "8080"
+    assert env["PORT"] == env["DOBERMAN_AGENT_APP_PORT"]
+    assert env["DOBERMAN_AGENT_APP_BASE_PATH"] == "/apps/sales-report"
     # T085 — the attachment handle: an endpoint on this process, a per-app
     # bearer, and the cap so the SDK can refuse before sending.
-    assert env["BISHENG_APP_STORAGE_ENDPOINT"] == f"http://{rtm_config.host}:{rtm_config.port}/v1/apps/app-1/storage"
-    assert len(env["BISHENG_APP_STORAGE_TOKEN"]) >= 32
-    assert env["BISHENG_APP_STORAGE_MAX_FILE_MB"] == str(rtm_config.storage_max_file_mb)
+    assert env["DOBERMAN_AGENT_APP_STORAGE_ENDPOINT"] == f"http://{rtm_config.host}:{rtm_config.port}/v1/apps/app-1/storage"
+    assert len(env["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]) >= 32
+    assert env["DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB"] == str(rtm_config.storage_max_file_mb)
 
 
 def test_storage_endpoint_uses_the_app_facing_base_url(rtm_config, fake_docker):
@@ -236,7 +236,7 @@ def test_storage_endpoint_uses_the_app_facing_base_url(rtm_config, fake_docker):
         set_config(rtm_config)
 
     env = _env_of(fake_docker.last_call("create_container")["payload"])
-    assert env["BISHENG_APP_STORAGE_ENDPOINT"] == "http://runtime-manager:8091/v1/apps/app-1/storage"
+    assert env["DOBERMAN_AGENT_APP_STORAGE_ENDPOINT"] == "http://runtime-manager:8091/v1/apps/app-1/storage"
 
 
 def test_storage_token_is_stable_across_redeploys_and_rotates_after_destroy(rtm_config, fake_docker):
@@ -249,16 +249,16 @@ def test_storage_token_is_stable_across_redeploys_and_rotates_after_destroy(rtm_
     """
     service = _service(rtm_config, fake_docker)
     service.deploy(_request())
-    first = _env_of(fake_docker.last_call("create_container")["payload"])["BISHENG_APP_STORAGE_TOKEN"]
+    first = _env_of(fake_docker.last_call("create_container")["payload"])["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]
 
     service.deploy(_request(version_id="ver-fedcba9876543210", version_no=4))
-    second = _env_of(fake_docker.last_call("create_container")["payload"])["BISHENG_APP_STORAGE_TOKEN"]
+    second = _env_of(fake_docker.last_call("create_container")["payload"])["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]
     assert second == first
-    assert get_store(rtm_config).get("app-1").env["BISHENG_APP_STORAGE_TOKEN"] == first
+    assert get_store(rtm_config).get("app-1").env["DOBERMAN_AGENT_APP_STORAGE_TOKEN"] == first
 
     service.destroy("app-1")
     service.deploy(_request())
-    third = _env_of(fake_docker.last_call("create_container")["payload"])["BISHENG_APP_STORAGE_TOKEN"]
+    third = _env_of(fake_docker.last_call("create_container")["payload"])["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]
     assert third != first
 
 
@@ -267,18 +267,18 @@ def test_platform_env_wins_over_caller_env(rtm_config, fake_docker):
     _service(rtm_config, fake_docker).deploy(
         _request(
             env={
-                "BISHENG_APP_DB_URL": "postgres://elsewhere",
-                "BISHENG_APP_STORAGE_TOKEN": "caller-chosen",
-                "BISHENG_APP_STORAGE_ENDPOINT": "http://evil.example",
+                "DOBERMAN_AGENT_APP_DB_URL": "postgres://elsewhere",
+                "DOBERMAN_AGENT_APP_STORAGE_TOKEN": "caller-chosen",
+                "DOBERMAN_AGENT_APP_STORAGE_ENDPOINT": "http://evil.example",
                 "MY_FLAG": "1",
             }
         )
     )
 
     env = _env_of(fake_docker.last_call("create_container")["payload"])
-    assert env["BISHENG_APP_DB_URL"] == "sqlite:////data/app.db"
-    assert env["BISHENG_APP_STORAGE_TOKEN"] != "caller-chosen"
-    assert env["BISHENG_APP_STORAGE_ENDPOINT"].startswith(f"http://{rtm_config.host}:")
+    assert env["DOBERMAN_AGENT_APP_DB_URL"] == "sqlite:////data/app.db"
+    assert env["DOBERMAN_AGENT_APP_STORAGE_TOKEN"] != "caller-chosen"
+    assert env["DOBERMAN_AGENT_APP_STORAGE_ENDPOINT"].startswith(f"http://{rtm_config.host}:")
     assert env["MY_FLAG"] == "1"
 
 

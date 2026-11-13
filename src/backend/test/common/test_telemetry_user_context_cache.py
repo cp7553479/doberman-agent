@@ -18,9 +18,9 @@ for _mod in ("elasticsearch", "elasticsearch.exceptions"):
         sys.modules.setdefault(_mod, MagicMock())
 
 for _mod in (
-    "bisheng.common.services.telemetry.telemetry_service",
-    "bisheng.common.services.telemetry",
-    "bisheng.common.services",
+    "doberman_agent.common.services.telemetry.telemetry_service",
+    "doberman_agent.common.services.telemetry",
+    "doberman_agent.common.services",
 ):
     sys.modules.pop(_mod, None)
 
@@ -28,13 +28,13 @@ import importlib  # noqa: E402
 
 import pytest  # noqa: E402
 
-from bisheng.common.schemas.telemetry.base_telemetry_schema import UserContext  # noqa: E402
+from doberman_agent.common.schemas.telemetry.base_telemetry_schema import UserContext  # noqa: E402
 
 # Reference the live module object (not a string path). Both this file and
 # test_telemetry_thread_context pop+reload the telemetry module; resolving the
 # class and the monkeypatch targets through the same module object keeps them
 # consistent regardless of cross-file import order.
-ts = importlib.import_module("bisheng.common.services.telemetry.telemetry_service")
+ts = importlib.import_module("doberman_agent.common.services.telemetry.telemetry_service")
 BaseTelemetryService = ts.BaseTelemetryService
 
 

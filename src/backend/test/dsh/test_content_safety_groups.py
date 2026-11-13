@@ -12,17 +12,17 @@ import pytest
 from sqlalchemy import event
 from sqlmodel import Session, select
 
-from bisheng.core.context.tenant import strict_tenant_filter
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation as Group
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState
-from bisheng.dsh.domain.repositories import content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.schemas.model_audit_status import refresh_audit_status
-from bisheng.dsh.domain.services.model_audit_projection import project_audit_groups
-from bisheng.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
-from bisheng.dsh.infrastructure.model_audit_codec import conversation_key
+from doberman_agent.core.context.tenant import strict_tenant_filter
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation as Group
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState
+from doberman_agent.dsh.domain.repositories import content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.schemas.model_audit_status import refresh_audit_status
+from doberman_agent.dsh.domain.services.model_audit_projection import project_audit_groups
+from doberman_agent.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
+from doberman_agent.dsh.infrastructure.model_audit_codec import conversation_key
 from test.dsh.test_content_safety_merge import committed_merge, output_event
 from test.dsh.test_content_safety_native_writer import capture_events
 from test.dsh.test_content_safety_native_writer import native_environment as native_environment

@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 def _runtime(status, *, state="CURRENT", version=1, operation_id=9):

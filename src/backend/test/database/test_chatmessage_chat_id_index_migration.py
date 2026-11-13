@@ -16,7 +16,7 @@ from alembic.migration import MigrationContext
 from alembic.operations import Operations
 
 _MIGRATION = (
-    Path(__file__).resolve().parents[2] / "bisheng/core/database/alembic/versions/v3_0_0b1_chatmessage_chat_id_index.py"
+    Path(__file__).resolve().parents[2] / "doberman_agent/core/database/alembic/versions/v3_0_0b1_chatmessage_chat_id_index.py"
 )
 
 

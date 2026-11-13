@@ -15,8 +15,8 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from langchain_core.messages import AIMessage
 
-from bisheng.database.models.session import MessageSessionDao
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.database.models.session import MessageSessionDao
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
 
 class TestNormalizeTitle:

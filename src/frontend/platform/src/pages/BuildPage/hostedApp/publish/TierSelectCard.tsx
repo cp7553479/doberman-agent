@@ -5,7 +5,7 @@
  * here:
  *
  * * **Read-only** — every application in this volume. It arrived through
- *   `bisheng deploy`, so its tier is whatever `bisheng-app.yaml` declared, and
+ *   `doberman_agent deploy`, so its tier is whatever `doberman_agent-app.yaml` declared, and
  *   the only honest thing the page can do is show which one and say where it
  *   is changed. A disabled dropdown would look like a control that is broken;
  *   a sentence naming the file is a control the reader can actually use.

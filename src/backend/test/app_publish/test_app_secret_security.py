@@ -4,11 +4,11 @@ import pytest
 from cryptography.fernet import Fernet
 from pydantic import ValidationError
 
-from bisheng.common.errcode.app_publish import AppSecretEncryptionUnavailableError, AppSecretInvalidError
+from doberman_agent.common.errcode.app_publish import AppSecretEncryptionUnavailableError, AppSecretInvalidError
 
 
 def security():
-    from bisheng.app_publish.domain import secret_security
+    from doberman_agent.app_publish.domain import secret_security
 
     return secret_security
 
@@ -42,7 +42,7 @@ def test_invalid_key_fails_closed(key):
         "9A",
         "中文",
         "x" * 129,
-        "BISHENG_TOKEN",
+        "DOBERMAN_AGENT_TOKEN",
         "rtm_key",
         "MINIO_URL",
         "KUBERNETES_X",
@@ -90,7 +90,7 @@ def test_difference_uses_declared_actual_values_not_revisions():
 
 
 def test_request_schemas_are_strict_and_repr_hides_value():
-    from bisheng.app_publish.domain.schemas.app_secrets import SecretDeleteInput, SecretRebuildInput, SecretSaveInput
+    from doberman_agent.app_publish.domain.schemas.app_secrets import SecretDeleteInput, SecretRebuildInput, SecretSaveInput
 
     request = SecretSaveInput(value="never-print-this", expected_revision=0)
     assert "never-print-this" not in repr(request)

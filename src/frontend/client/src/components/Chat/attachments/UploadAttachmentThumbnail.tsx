@@ -1,7 +1,7 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 
 import {
     getMediaDisplayBaseName,

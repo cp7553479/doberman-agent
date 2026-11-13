@@ -1,7 +1,7 @@
 """Real-middleware E2E runner for F035 Tracks A/B/C (F035 task mode).
 
 Run in a CLEAN subprocess (no pytest conftest premock) so it talks to the REAL
-infrastructure configured in ``bisheng/config.yaml`` — real Redis (Track B
+infrastructure configured in ``doberman_agent/config.yaml`` — real Redis (Track B
 checkpointer), real MinIO (Track C WorkspaceBackend), real deepagents (Track A
 agent assembly). The pytest wrapper ``test_e2e_abc.py`` invokes this and asserts
 on the JSON it prints, so the conftest's MagicMock'd ``redis_manager`` never
@@ -45,7 +45,7 @@ def record(name: str, ok: bool, detail: str = "") -> None:
 async def track_b() -> None:
     from langgraph.checkpoint.base import empty_checkpoint
 
-    from bisheng.linsight.domain.services.checkpointer import make_checkpointer
+    from doberman_agent.linsight.domain.services.checkpointer import make_checkpointer
 
     saver = make_checkpointer(ttl_seconds=120)
     thread_id = _svid()
@@ -74,8 +74,8 @@ async def track_b() -> None:
 # Track C (AC-6) — WorkspaceBackend against REAL MinIO
 # ---------------------------------------------------------------------------
 def track_c() -> None:
-    from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync
-    from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend
+    from doberman_agent.core.storage.minio.minio_manager import get_minio_storage_sync
+    from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend
 
     minio = get_minio_storage_sync()
 
@@ -142,9 +142,9 @@ async def track_a() -> None:
     from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
     from langgraph.checkpoint.memory import InMemorySaver
 
-    from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync
-    from bisheng.linsight.domain.services.agent_factory import create_linsight_agent
-    from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend
+    from doberman_agent.core.storage.minio.minio_manager import get_minio_storage_sync
+    from doberman_agent.linsight.domain.services.agent_factory import create_linsight_agent
+    from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend
 
     svid = _svid()
     session_model = type("S", (), {"id": svid, "tenant_id": 1, "user_id": 1, "model": None})()
@@ -152,7 +152,7 @@ async def track_a() -> None:
     # Real WorkspaceBackend; LLM is an external service -> substituted by a fake.
     backend = WorkspaceBackend(svid=svid, minio=get_minio_storage_sync(), file_dir=tmp)
     with patch(
-        "bisheng.linsight.domain.services.agent_factory._resolve_model",
+        "doberman_agent.linsight.domain.services.agent_factory._resolve_model",
         return_value=(GenericFakeChatModel(messages=iter([])), True),
     ):
         agent = await create_linsight_agent(

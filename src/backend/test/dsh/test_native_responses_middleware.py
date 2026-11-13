@@ -7,10 +7,10 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import models
-from bisheng.dsh.domain.services.access import DshPrincipal
-from bisheng.utils import http_middleware
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import models
+from doberman_agent.dsh.domain.services.access import DshPrincipal
+from doberman_agent.utils import http_middleware
 
 
 @pytest.mark.parametrize("protocol", ["responses", "chat/completions"])
@@ -31,7 +31,7 @@ async def test_stale_browser_cookie_cannot_preempt_desktop_bearer(monkeypatch, p
     app.add_middleware(http_middleware.CustomMiddleware)
     app.dependency_overrides[get_runtime] = lambda: runtime
     body = {
-        "model": "bisheng:42",
+        "model": "doberman_agent:42",
         "input" if protocol == "responses" else "messages": [{"role": "user", "content": "hi"}],
     }
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://test") as client:

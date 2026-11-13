@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button, SearchInput, notification } from '@bisheng/ui';
+import { Button, SearchInput, notification } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 
 
 
 import { getChatOnlineApi, getRecommendedAppsApi } from "@/controllers/API/assistant";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";

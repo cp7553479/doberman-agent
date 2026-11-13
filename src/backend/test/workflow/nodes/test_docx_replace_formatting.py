@@ -9,7 +9,7 @@ from io import BytesIO
 
 from docx import Document
 
-from bisheng.workflow.nodes.report.docx_replace import DocxReplacer
+from doberman_agent.workflow.nodes.report.docx_replace import DocxReplacer
 
 PLACEHOLDER = "{{输入|input_bfa69.user_input}}"
 KEY = "输入|input_bfa69.user_input"

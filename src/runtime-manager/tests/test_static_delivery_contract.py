@@ -70,7 +70,7 @@ def test_kubernetes_upload_uses_original_build_intent_and_normalizes_site(tmp_pa
     from tests.test_k8s_helper import package, setup
 
     client, document, _, root = setup.__wrapped__(tmp_path)
-    files = {"bisheng-app.yaml": b"runtime: static", "index.html": b"source", "public/index.html": b"site"}
+    files = {"doberman-agent-app.yaml": b"runtime: static", "index.html": b"source", "public/index.html": b"site"}
     if built:
         files["package.json"] = b'{"scripts":{"build":"node build.js"}}'
     client.data["source-a"] = package(root, "site", files)
@@ -97,7 +97,7 @@ def test_kubernetes_rejects_missing_output_before_any_artifact_upload(tmp_path):
 
     client, document, _, root = setup.__wrapped__(tmp_path)
     client.data["source-a"] = package(
-        root, "site", {"bisheng-app.yaml": b"runtime: static", "package.json": b'{"scripts":{"build":"node build.js"}}'}
+        root, "site", {"doberman-agent-app.yaml": b"runtime: static", "package.json": b'{"scripts":{"build":"node build.js"}}'}
     )
     document["profile"]["language"] = "static"
     work = root / "work"
@@ -115,7 +115,7 @@ def test_docker_compiled_artifact_and_restore_use_the_selected_site(tmp_path, bu
     from runtime_manager.config import Config
     from tests.test_k8s_helper import package
 
-    files = {"bisheng-app.yaml": b"runtime: static"}
+    files = {"doberman-agent-app.yaml": b"runtime: static"}
     if built:
         files["package.json"] = b'{"scripts":{"build":"node build.js"}}'
         # No index exists until compilation completes.

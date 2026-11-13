@@ -1,8 +1,8 @@
 # 灵思任务模式运行链路与 deepagents 上下文工程对比
 
-> 一句话结论：当前灵思任务模式 = **deepagents 内核 + 毕昇企业级"外骨骼"**——单图规划/执行被 deepagents 的 `create_deep_agent` 接管（`write_todos` 现场拆解、内置 SummarizationMiddleware 压缩、WorkspaceBackend 真文件系统），外层包了分布式 Worker 队列、Redis checkpointer 跨进程 park/resume、StreamEventMapper 防腐层与 WebSocket 回传；而 deepagents demo 是同一框架的**最小默认形态**（单进程单图、useStream SSE 直连、子代理并行委派、Skills progressive disclosure 真生效）。毕昇为修 HITL 正确性，**主动砍掉了 demo 引以为核心的 `task` 子代理委派与 Skills 热插拔**——这正是两者最尖锐的分歧。
+> 一句话结论：当前灵思任务模式 = **deepagents 内核 + doberman-agent企业级"外骨骼"**——单图规划/执行被 deepagents 的 `create_deep_agent` 接管（`write_todos` 现场拆解、内置 SummarizationMiddleware 压缩、WorkspaceBackend 真文件系统），外层包了分布式 Worker 队列、Redis checkpointer 跨进程 park/resume、StreamEventMapper 防腐层与 WebSocket 回传；而 deepagents demo 是同一框架的**最小默认形态**（单进程单图、useStream SSE 直连、子代理并行委派、Skills progressive disclosure 真生效）。doberman-agent为修 HITL 正确性，**主动砍掉了 demo 引以为核心的 `task` 子代理委派与 Skills 热插拔**——这正是两者最尖锐的分歧。
 >
-> 本文定位：取代旧两篇调研（《灵思任务模式 vs deepagents demo 上下文工程对比调研.md》《灵思任务模式全局运行链路与 SOP 必要性研判.md》），基于本地最新代码（HEAD=`77beaa6f0`，分支 `feat/2.6.0-beta4`）的真实调用链重写。**2026-06-17 一连串重构（SOP 残留代码整体物理删除、知识检索收窄到知识库/知识空间并改精确注入、SearchKnowledgeBase 改条件注入）已全部折叠进正文为当前真相**，所有毕昇侧锚点为本次实读的 CURRENT 行号；deepagents demo 侧凡未在本仓库复验的论断均显式标注可信度。
+> 本文定位：取代旧两篇调研（《灵思任务模式 vs deepagents demo 上下文工程对比调研.md》《灵思任务模式全局运行链路与 SOP 必要性研判.md》），基于本地最新代码（HEAD=`77beaa6f0`，分支 `feat/2.6.0-beta4`）的真实调用链重写。**2026-06-17 一连串重构（SOP 残留代码整体物理删除、知识检索收窄到知识库/知识空间并改精确注入、SearchKnowledgeBase 改条件注入）已全部折叠进正文为当前真相**，所有doberman-agent侧锚点为本次实读的 CURRENT 行号；deepagents demo 侧凡未在本仓库复验的论断均显式标注可信度。
 
 ---
 
@@ -98,9 +98,9 @@
 
 ## 3. 工具与中间件拓扑
 
-### 3.1 deepagents 默认装配 vs 毕昇调整
+### 3.1 deepagents 默认装配 vs doberman-agent调整
 
-| 维度 | deepagents 框架默认 | 毕昇 `create_linsight_agent` |
+| 维度 | deepagents 框架默认 | doberman-agent `create_linsight_agent` |
 |---|---|---|
 | `write_todos`（TodoListMiddleware） | 默认装 | **保留**（规划核心） |
 | 文件工具 read/write/edit/ls/grep（FilesystemMiddleware） | 默认装，挂 StateBackend | **保留但覆盖 backend** → 真 `WorkspaceBackend`（MinIO）。注：旧自研 local_file 工具集已退役，文件能力统一走框架中间件 |
@@ -120,7 +120,7 @@ agent 最终工具集 = **用户日常勾选 tools** + **`ask_user`（恒硬注�
   - **条件注入**：当白名单 `allowed_knowledge_ids` 为**空 set**（未选 KB 且无可检索目标）时 `init_linsight_tools` 直接 `return []`（`tool.py:608-609`），**不注入该工具**——否则模型会看到它并带缺失 `knowledge_id` 误调，报 "Field required"；`None`（back-compat）才保留工具且不设门控。
 - **`ask_user`**（`agent_factory.py:156`）：调 langgraph `interrupt()` 实现 park-and-resume，**唯一恒硬注入**的内置工具。
 
-**code_interpreter 非无条件注入**：需双条件——`need_upload and file_dir`（`workbench_impl.py:937`，有上传文件）**且** `bisheng_code_tool.id in config_tool_ids`（`workbench_impl.py:869`，日常配置勾了代码解释器）。
+**code_interpreter 非无条件注入**：需双条件——`need_upload and file_dir`（`workbench_impl.py:937`，有上传文件）**且** `doberman_agent_code_tool.id in config_tool_ids`（`workbench_impl.py:869`，日常配置勾了代码解释器）。
 
 ### 3.3 `task` 子代理为何被剥离
 
@@ -174,16 +174,16 @@ agent 最终工具集 = **用户日常勾选 tools** + **`ask_user`（恒硬注�
 
 - **单进程单图**：demo 用 `create_deep_agent(...)` 装一张 LangGraph 图，agent 图与 HTTP server 同进程，规划+执行在同一次 `astream` 连续完成，无独立 Worker、无 Redis 队列、无两段式。`[demo专属-未在本仓库复验]` 框架侧佐证：`create_deep_agent` 末尾即 `create_agent(...).with_config({recursion_limit: 9999})` 返回可直接 invoke/astream 的编译图（`graph.py:840-862`），框架本身不含进程/队列基础设施。`[框架真值-已验证]`
 - **SSE useStream 直连**：前端用 `useStream` 直接订阅 graph 原生 SSE 流，**无后端事件翻译层/防腐层**。`[demo专属-未在本仓库复验]`
-- **interrupt + resume 同进程**：HITL 在进程内 thread 上靠 `interrupt()` 挂起，`useStream` 同进程 resume（`Command(resume=...)`），无毕昇的分布式 park-release / 释放 Worker 槽 / 跨进程 resume。`[demo专属-未在本仓库复验]`；`interrupt()` 是 LangGraph 原生机制 `[框架真值-已验证]`。
+- **interrupt + resume 同进程**：HITL 在进程内 thread 上靠 `interrupt()` 挂起，`useStream` 同进程 resume（`Command(resume=...)`），无doberman-agent的分布式 park-release / 释放 Worker 槽 / 跨进程 resume。`[demo专属-未在本仓库复验]`；`interrupt()` 是 LangGraph 原生机制 `[框架真值-已验证]`。
 
 ### 5.2 上下文工程要点
 
 - **Prompt 工程**：`ORCHESTRATOR_PROMPT` 把 6 步流水线写死（Step0/Step1 互斥、Silent Defaults 五字段缺省表、最多 1 轮澄清），使规划跨 run 可复现。`[demo专属-未在本仓库复验]`，框架包内不存在。框架默认会把 `BASE_AGENT_PROMPT`（Understand→Act→Verify）拼在调用方 system_prompt 之后（`graph.py:69-92/832-838`），demo 的 6 步是叠加其上的应用层约束。`[框架真值-已验证]`
 - **task 子代理并行委派 + 子上下文隔离（demo 核心）**：demo 把 `task` 并行委派当工作流核心，`subagents=[research-agent]` fan-out 并行调研、各子代理隔离上下文里深挖、主图只收综合后单条结果。`[demo专属-未在本仓库复验]`（`research-agent` 框架包内不存在）。框架真值底座 `[框架真值-已验证]`：`task` 调子代理时构造全新隔离 state，从父 state 剔除 `messages/todos/structured_response/...`（`subagents.py:240-264`），子代理 messages 重置为仅一条 `HumanMessage(description)`（`:538-540`）；跑完只把最后一条 AIMessage 文本包成单条 ToolMessage 回传父图（`:494-532`）——这就是子上下文隔离。即便不传 `subagents=`，框架也自动注入 1 个 general-purpose 子代理（`graph.py:687-747`）。
-- **文件系统**：demo 文件全在 state 内虚拟 FS、随 checkpoint 持久化，不落 MinIO。`[demo专属-未在本仓库复验]`。框架默认 backend 就是 `StateBackend()`（`filesystem.py:734-735`），文件存于 state `files` 字段（DeltaChannel 增量持久化，`filesystem.py:307-310`）。框架也支持换真实/远程 backend——毕昇正是显式覆盖默认。`[框架真值-已验证]`
-- **记忆/压缩**：demo 单 turn deep-research，直接吃框架内置 `SummarizationMiddleware` 默认阈值，无自研调参；单 turn 无跨轮记忆。`[demo专属-未在本仓库复验]`。主 agent 栈固定插入 `create_summarization_middleware`（`graph.py:776-781`）`[框架真值-已验证]`——这点毕昇与 demo 同源同默认。
+- **文件系统**：demo 文件全在 state 内虚拟 FS、随 checkpoint 持久化，不落 MinIO。`[demo专属-未在本仓库复验]`。框架默认 backend 就是 `StateBackend()`（`filesystem.py:734-735`），文件存于 state `files` 字段（DeltaChannel 增量持久化，`filesystem.py:307-310`）。框架也支持换真实/远程 backend——doberman-agent正是显式覆盖默认。`[框架真值-已验证]`
+- **记忆/压缩**：demo 单 turn deep-research，直接吃框架内置 `SummarizationMiddleware` 默认阈值，无自研调参；单 turn 无跨轮记忆。`[demo专属-未在本仓库复验]`。主 agent 栈固定插入 `create_summarization_middleware`（`graph.py:776-781`）`[框架真值-已验证]`——这点doberman-agent与 demo 同源同默认。
 - **HITL**：demo 有两类——询问型 active（`request_clarification` Step0 规划前澄清，框架包内不存在，demo 自写）+ 审批型 dormant（`interrupt_on` 工具执行前审批，demo 休眠未用）。`[demo专属-未在本仓库复验]`。`interrupt_on` 是框架一等参数，接到 `HumanInTheLoopMiddleware`（`graph.py:808-813`）`[框架真值-已验证]`。
-- **Skills 真生效（progressive disclosure）**：demo 的 SkillsMiddleware 真注入，每次 model call 把 skills 渲染进 system message（仅注入 frontmatter 的 name/description，正文靠模型自己 read_file），受架构不变量测试守护。`[demo专属-未在本仓库复验]`。框架代码实证 `skills.py:883-949` `[框架真值-已验证]`。这与毕昇"Skills 整体 DISABLED"形成对比。
+- **Skills 真生效（progressive disclosure）**：demo 的 SkillsMiddleware 真注入，每次 model call 把 skills 渲染进 system message（仅注入 frontmatter 的 name/description，正文靠模型自己 read_file），受架构不变量测试守护。`[demo专属-未在本仓库复验]`。框架代码实证 `skills.py:883-949` `[框架真值-已验证]`。这与doberman-agent"Skills 整体 DISABLED"形成对比。
 - **generative UI**：demo 用 `emit_research_card` 推 title/summary 卡片到前端。`[demo专属-未在本仓库复验]`（框架包内不存在）；框架允许自定义 `state_schema`（须 `DeepAgentState` 子类）`[框架真值-已验证]`。
 
 ### 5.3 一句话基线
@@ -196,34 +196,34 @@ deepagents demo = **框架默认形态的最小可运行参考**：单进程单�
 
 ### 6.1 主对照表
 
-| 维度 | deepagents demo | 毕昇灵思任务模式 | 效果差异 |
+| 维度 | deepagents demo | doberman-agent灵思任务模式 | 效果差异 |
 |---|---|---|---|
-| 执行框架 | 单进程单图，规划+执行一次 astream | 分布式多进程 Worker + Redis 队列 + 两段式（async_run/resume/continue） | 毕昇解决排队/并发/断线/跨进程恢复 |
-| Prompt 工程 | 6 步 ORCHESTRATOR_PROMPT 写死（应用层）`[demo专属]` | 静态 `LINSIGHT_SYSTEM_PROMPT_ZH` + 运行期动态首条 user message（前情/问题/文件指针/知识库 id） | demo 规划确定性强；毕昇上下文按会话动态装配 |
-| 工具供给 | task 委派 + demo 自定义 web 工具 `[demo专属]` | 用户日常勾选 + ask_user（恒） + search_knowledge_base（条件，仅 KB/space）；无 web_search/think_tool | 毕昇按租户/用户资源约束，无内置搜索 |
-| 子代理 / 子上下文隔离 | `task` fan-out 并行 + 隔离 state（核心）| `task` **剥离**，全工作回主图单上下文 | 毕昇牺牲并行/隔离换 HITL 在主图正确 park |
-| HITL | request_clarification（询问型 active）+ interrupt_on（审批型 dormant）`[demo专属]` | `ask_user`→`interrupt()` 主图 park + 跨进程 resume（`Command(resume)` 同 thread_id） | 毕昇 HITL 工业化（park 不占槽、LPUSH 头插优先恢复） |
-| 文件系统 / offload | state 内虚拟 FS 随 checkpoint（框架默认） | `WorkspaceBackend`（MinIO 真理源）+ offload-first 指针块 | 毕昇交付物落对 workspace，每写打 MinIO |
-| 记忆 / 压缩 | 内置 Summarization（默认阈值），单 turn 无跨轮 | 内置 Summarization + `build_prior_conversation_summary` 跨轮截断前情 | 毕昇额外有跨轮记忆 |
-| 流式 / 防腐 | useStream 直订 graph SSE，无翻译层 | astream→StreamEventMapper→Redis 事件队列→WebSocket 三跳 | 毕昇防腐层隔离模型 chunk 与前端协议，可落库重放 |
-| Skills | progressive disclosure 真生效 | 整体 DISABLED（运行时零注入） | 毕昇牺牲热插拔领域知识换 workspace 不被 shadow |
+| 执行框架 | 单进程单图，规划+执行一次 astream | 分布式多进程 Worker + Redis 队列 + 两段式（async_run/resume/continue） | doberman-agent解决排队/并发/断线/跨进程恢复 |
+| Prompt 工程 | 6 步 ORCHESTRATOR_PROMPT 写死（应用层）`[demo专属]` | 静态 `LINSIGHT_SYSTEM_PROMPT_ZH` + 运行期动态首条 user message（前情/问题/文件指针/知识库 id） | demo 规划确定性强；doberman-agent上下文按会话动态装配 |
+| 工具供给 | task 委派 + demo 自定义 web 工具 `[demo专属]` | 用户日常勾选 + ask_user（恒） + search_knowledge_base（条件，仅 KB/space）；无 web_search/think_tool | doberman-agent按租户/用户资源约束，无内置搜索 |
+| 子代理 / 子上下文隔离 | `task` fan-out 并行 + 隔离 state（核心）| `task` **剥离**，全工作回主图单上下文 | doberman-agent牺牲并行/隔离换 HITL 在主图正确 park |
+| HITL | request_clarification（询问型 active）+ interrupt_on（审批型 dormant）`[demo专属]` | `ask_user`→`interrupt()` 主图 park + 跨进程 resume（`Command(resume)` 同 thread_id） | doberman-agent HITL 工业化（park 不占槽、LPUSH 头插优先恢复） |
+| 文件系统 / offload | state 内虚拟 FS 随 checkpoint（框架默认） | `WorkspaceBackend`（MinIO 真理源）+ offload-first 指针块 | doberman-agent交付物落对 workspace，每写打 MinIO |
+| 记忆 / 压缩 | 内置 Summarization（默认阈值），单 turn 无跨轮 | 内置 Summarization + `build_prior_conversation_summary` 跨轮截断前情 | doberman-agent额外有跨轮记忆 |
+| 流式 / 防腐 | useStream 直订 graph SSE，无翻译层 | astream→StreamEventMapper→Redis 事件队列→WebSocket 三跳 | doberman-agent防腐层隔离模型 chunk 与前端协议，可落库重放 |
+| Skills | progressive disclosure 真生效 | 整体 DISABLED（运行时零注入） | doberman-agent牺牲热插拔领域知识换 workspace 不被 shadow |
 
 ### 6.2 分维度要点
 
-- **prompt 工程**：demo 把规划逻辑前置进静态 prompt（跨 run 可复现）；毕昇把规划交给 deepagents kernel，但用**运行期动态 user message** 注入会话级上下文（跨轮前情 + 文件指针 + 真实 knowledge_id），上下文随每次提交装配而非写死。
-- **工具供给**：demo 倾向丰富内置/自定义工具；毕昇收口到"用户已有权限的日常勾选 + 知识检索（仅 KB/知识空间）+ HITL"，刻意不给 web_search/think_tool；连知识检索工具也改成"无可检索目标就不注入"，把工具表面积压到最小。
-- **subagent 与子上下文隔离**：这是最尖锐对立。demo 靠 `task` 隔离子上下文换纯净度与并行；毕昇为保 `ask_user` interrupt 一定在主图 park，**主动剥离 `task`**，放弃并行与子上下文隔离。
-- **HITL**：demo 的 active HITL 是规划前一次性澄清（`request_clarification`）；毕昇是执行中任意点可 park 的 `ask_user`，且 park 后通过 LPUSH 头插 + 跨进程 resume 工业化恢复，park 期间不占并发槽。
-- **文件系统与 offload**：demo 文件随 checkpoint（park/resume 无损但撑大 checkpoint）；毕昇 offload-first——大文件不进窗口、只给 `<uploaded_files>` 指针，正文按需 `read_file`，交付物落 MinIO 真理源。
-- **记忆与压缩**：turn 内压缩两边同源（内置 SummarizationMiddleware）；跨轮上下文是毕昇独有（确定性 head+tail 截断回顾）。
-- **流式与防腐**：demo 前端直订 graph SSE（少一跳但耦合模型 chunk 格式）；毕昇插 StreamEventMapper 防腐层，把模型 chunk 翻成 10 个冻结事件类型再经 Redis 队列 → WebSocket，可落库、可断线重连、前端协议与模型解耦。
-- **执行框架**：demo 单进程单图（最小部署）；毕昇分布式多进程 + 信号量并发控制 + Redis checkpointer，把"一个会话的规划→执行→park→resume→多轮 continue"做成可在 Worker 集群上调度的工业链路。
+- **prompt 工程**：demo 把规划逻辑前置进静态 prompt（跨 run 可复现）；doberman-agent把规划交给 deepagents kernel，但用**运行期动态 user message** 注入会话级上下文（跨轮前情 + 文件指针 + 真实 knowledge_id），上下文随每次提交装配而非写死。
+- **工具供给**：demo 倾向丰富内置/自定义工具；doberman-agent收口到"用户已有权限的日常勾选 + 知识检索（仅 KB/知识空间）+ HITL"，刻意不给 web_search/think_tool；连知识检索工具也改成"无可检索目标就不注入"，把工具表面积压到最小。
+- **subagent 与子上下文隔离**：这是最尖锐对立。demo 靠 `task` 隔离子上下文换纯净度与并行；doberman-agent为保 `ask_user` interrupt 一定在主图 park，**主动剥离 `task`**，放弃并行与子上下文隔离。
+- **HITL**：demo 的 active HITL 是规划前一次性澄清（`request_clarification`）；doberman-agent是执行中任意点可 park 的 `ask_user`，且 park 后通过 LPUSH 头插 + 跨进程 resume 工业化恢复，park 期间不占并发槽。
+- **文件系统与 offload**：demo 文件随 checkpoint（park/resume 无损但撑大 checkpoint）；doberman-agent offload-first——大文件不进窗口、只给 `<uploaded_files>` 指针，正文按需 `read_file`，交付物落 MinIO 真理源。
+- **记忆与压缩**：turn 内压缩两边同源（内置 SummarizationMiddleware）；跨轮上下文是doberman-agent独有（确定性 head+tail 截断回顾）。
+- **流式与防腐**：demo 前端直订 graph SSE（少一跳但耦合模型 chunk 格式）；doberman-agent插 StreamEventMapper 防腐层，把模型 chunk 翻成 10 个冻结事件类型再经 Redis 队列 → WebSocket，可落库、可断线重连、前端协议与模型解耦。
+- **执行框架**：demo 单进程单图（最小部署）；doberman-agent分布式多进程 + 信号量并发控制 + Redis checkpointer，把"一个会话的规划→执行→park→resume→多轮 continue"做成可在 Worker 集群上调度的工业链路。
 
 ---
 
 ## 7. 效果影响与取舍："削能力换正确性"
 
-毕昇相对 deepagents demo 的几处"减法"都是**用框架能力换交付正确性/工程稳定性**：
+doberman-agent相对 deepagents demo 的几处"减法"都是**用框架能力换交付正确性/工程稳定性**：
 
 - **剥离 `task` 子代理**：牺牲并行 fan-out 与子上下文隔离（纯净度/经济性），换 `ask_user` 的 `interrupt()` 一定在主图 park 稳定触达用户——否则子图内 interrupt 冒泡不上来，澄清丢失、任务跑成 direct-answer fallback。
 - **禁用 Skills**：牺牲热插拔领域知识（progressive disclosure），换交付物正确落进 workspace——否则 skills 自带的 FilesystemBackend 会 shadow agent 的 write_file/read_file，产物落进 skills store、workspace 为空、产不出结果文档。
@@ -276,9 +276,9 @@ deepagents demo = **框架默认形态的最小可运行参考**：单进程单�
 | StreamEventMapper（interrupt→NeedUserInput） | `stream_event_mapper.py:111` / `:198` |
 | MessageStreamHandle.connect | `message_stream_handle.py:46` |
 
-### 8.2 legacy 模块 liveness 矩阵（`bisheng_langchain/linsight/`）
+### 8.2 legacy 模块 liveness 矩阵（`doberman_agent_langchain/linsight/`）
 
-> SOP 子系统 2026-06-17 物理删除后，`workbench_impl` 已不再 import `bisheng_langchain.linsight`（`LinsightAgent` / `ExecConfig` 引用全消失）。整条 `LinsightAgent → manage → react_task` 链**失去最后一条活跃 import 边，彻底死亡**。现仅余 `event.py` 数据类 + `const.TaskStatus` 作为防腐层基石仍在用。
+> SOP 子系统 2026-06-17 物理删除后，`workbench_impl` 已不再 import `doberman_agent_langchain.linsight`（`LinsightAgent` / `ExecConfig` 引用全消失）。整条 `LinsightAgent → manage → react_task` 链**失去最后一条活跃 import 边，彻底死亡**。现仅余 `event.py` 数据类 + `const.TaskStatus` 作为防腐层基石仍在用。
 
 | 模块/符号 | 状态 | 证据 |
 |---|---|---|
@@ -292,7 +292,7 @@ deepagents demo = **框架默认形态的最小可运行参考**：单进程单�
 | `prompt.py` SOP 三件套（SopPrompt/FeedBackSopPrompt/GenerateTaskPrompt） | **死** | 原仅 SOP 旁路用，SOP 删除后无活跃引用 |
 | `utils.format_size` | **在用（散点）** | `local_file.py:9`（与 SOP 链无关） |
 
-> 关键修正：上一版文档（基于 SOP 删除前的 HEAD）把 `LinsightAgent`/`ExecConfig`/`prompt.py` 标为"SOP 旁路在用"。SOP 子系统物理删除后，这些已全部转为 **死代码**——`bisheng_langchain/linsight/` 现在只有 `event.py` + `const.TaskStatus` + `utils.format_size` 三处还有活跃引用。
+> 关键修正：上一版文档（基于 SOP 删除前的 HEAD）把 `LinsightAgent`/`ExecConfig`/`prompt.py` 标为"SOP 旁路在用"。SOP 子系统物理删除后，这些已全部转为 **死代码**——`doberman_agent_langchain/linsight/` 现在只有 `event.py` + `const.TaskStatus` + `utils.format_size` 三处还有活跃引用。
 
 ### 8.3 相比旧两篇调研文档纠正的关键误判
 
@@ -300,9 +300,9 @@ deepagents demo = **框架默认形态的最小可运行参考**：单进程单�
 - **SOP 已物理删除（不止"架空"）**：submit→start-execute 全程无 SOP 生成；`_build_agent_input` 的 SOP 注入分支、`generate_sop`/`search_sop`/`sop_manage.py`、generate-sop/integrated-execute 端点**全部已删**，仅余 `linsight_sop` 库表 + 管理/showcase 端点作静态资产，执行链零触点。
 - **知识检索收窄 + 精确注入 + 条件注入**：`search_knowledge_base` 现**只检索知识库/知识空间**（删了文件检索，文件改 `read_file` 直读）；KB 注入改成**用户精确勾选的那几个 id**（不再按类型全量）；白名单为空时**不注入该工具**——故"唯一恒硬注入"实为 `ask_user`，`search_knowledge_base` 是条件注入。
 - **Skills 运行时零注入**：`agent_factory.py:127 middlewares=[]` 仅含剥离 task 的中间件，`TenantSkillsMiddleware` 生产代码零 import，因 workspace filesystem shadow bug 整体 DISABLED——旧文档若称 Skills 在运行链路生效为误。
-- **`task` 子代理已剥离**：`_ToolExclusionMiddleware(excluded={"task"})` 从模型可见工具集过滤掉 `task`，毕昇放弃了 demo 引以为核心的子代理并行委派与子上下文隔离。
+- **`task` 子代理已剥离**：`_ToolExclusionMiddleware(excluded={"task"})` 从模型可见工具集过滤掉 `task`，doberman-agent放弃了 demo 引以为核心的子代理并行委派与子上下文隔离。
 - **默认无 web_search / think_tool**：全仓 grep 零命中；旧自研 local_file 工具集也已退役（文件能力统一走 deepagents FilesystemMiddleware）。
-- **自研 tool_buffer 压缩已退役**：改用 deepagents 内置 SummarizationMiddleware（避免 langchain "duplicate middleware" 断言），这点毕昇与 demo 同源同默认。
+- **自研 tool_buffer 压缩已退役**：改用 deepagents 内置 SummarizationMiddleware（避免 langchain "duplicate middleware" 断言），这点doberman-agent与 demo 同源同默认。
 
 ---
 

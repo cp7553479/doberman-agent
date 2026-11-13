@@ -1,6 +1,6 @@
 services:
   office:
-    container_name: bisheng-office
+    container_name: doberman-agent-office
     image: ${ONLYOFFICE_IMAGE:?set ONLYOFFICE_IMAGE in docker/.env (see .env.example)}
     ports:
       - "8701:80"
@@ -8,7 +8,7 @@ services:
       TZ: Asia/Shanghai
       JWT_ENABLED: "false"
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/office/bisheng:/var/www/onlyoffice/documentserver/sdkjs-plugins/bisheng
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/office/doberman-agent:/var/www/onlyoffice/documentserver/sdkjs-plugins/doberman-agent
     command: bash -c "supervisorctl restart all"
     restart: on-failure
 

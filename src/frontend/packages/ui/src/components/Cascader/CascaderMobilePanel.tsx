@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';

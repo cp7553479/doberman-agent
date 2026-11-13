@@ -72,7 +72,7 @@ def test_destructive_migration_replay_is_idempotent(tmp_path):
     assert service.migrate_confirmed(plan, snapshot=snapshot)["skipped"] == ["already_committed"]
     with sqlite3.connect(path) as connection:
         assert connection.execute("SELECT name FROM sqlite_master WHERE name='data'").fetchone() is None
-        assert connection.execute("SELECT COUNT(*) FROM _bisheng_runtime_migrations").fetchone()[0] == 1
+        assert connection.execute("SELECT COUNT(*) FROM _doberman_agent_runtime_migrations").fetchone()[0] == 1
 
 
 def test_restore_protects_current_database_and_keeps_target_ownership(tmp_path):

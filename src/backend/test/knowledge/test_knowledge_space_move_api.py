@@ -9,9 +9,9 @@ import ast
 import inspect
 from pathlib import Path
 
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import FileMoveReq
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import FileMoveReq
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _find_func(source: str, name: str):
@@ -49,7 +49,7 @@ def test_move_endpoint_registered_and_delegates():
 
 def test_service_move_items_signature():
     """KnowledgeSpaceService.move_items must accept the move contract args."""
-    from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+    from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
     sig = inspect.signature(KnowledgeSpaceService.move_items)
     params = set(sig.parameters)

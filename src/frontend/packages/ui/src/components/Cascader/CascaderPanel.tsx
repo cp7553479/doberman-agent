@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { CONTROL_BASE, CONTROL_CHECKED, CONTROL_SIZE } from '../Selection/shared';

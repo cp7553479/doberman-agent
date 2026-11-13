@@ -20,7 +20,7 @@
 
 - **纯前端（client）**，零后端改动、零接口新增。
 - 手动验证为主；图片识别的纯函数补组件级测试。
-- 遵循 client AGENTS.md：`~/` 别名、命名导出、单文件 ≤600 行、图标优先 `bisheng-icons`、不引入新 UI 库。
+- 遵循 client AGENTS.md：`~/` 别名、命名导出、单文件 ≤600 行、图标优先 `doberman-agent-icons`、不引入新 UI 库。
 
 ---
 

@@ -8,9 +8,9 @@ from datetime import timedelta
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 from test.app_runtime.test_runtime_kubernetes_coordination import coordination as coordination
 from test.app_runtime.test_runtime_kubernetes_coordination import heartbeat, prepare_document
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID, evidence

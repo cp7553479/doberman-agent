@@ -4,7 +4,7 @@
 审批中心（F025）是一套通用多场景审批引擎（统一网关 ApprovalGate → 路由分支 → 流程/节点 → 实例/任务 → outbox 异步执行业务 → 站内信），新增「应用发布」场景在框架层无阻塞：或签、撤回、富 JSON payload、outbox、站内信、审计全部现成可复用，接入成本集中在"三件套"注册（preset + 业务入口 Gate + runtime handler 工厂分支）。真正的缺口在 PRD 的四条场景特化规则上：未配置兜底租户管理员（现状是直接抛错或落异常单，且 tenant_admin 解析器错用系统超管近似）、提交人自动跳过（完全没有）、删除应用取消在途单（无系统级 cancel API）、定制审批单详情页与审读视图入口（前端是通用 key-value 渲染，无分区扩展点）。最大歧义是 PRD 把审批单详情写在"平台审批中心"，而现状审批处理界面只存在于 client 端 /workspace 弹窗，platform 端只有场景配置与异常处理。
 
 ## current_state
-【均为代码核实，路径相对 src/backend/bisheng/ 除注明外】
+【均为代码核实，路径相对 src/backend/doberman_agent/ 除注明外】
 
 一、统一网关与主流程。所有场景经 `ApprovalGate.request_or_pass()`（approval/domain/services/approval_gate.py:92）进入：先按 tenant+scenario_code+business_key+applicant_user_id 查在途去重（`ApprovalInstanceRepository.find_duplicate_active_instance`，活跃状态集=pending/exception/execute_failed，repositories/approval_instance_repository.py:16,52-69，命中时静默返回已有实例而非报错）；再取 handler 生成 `detail_snapshot`/`business_name`（handler.build_detail/build_title）；场景行不存在或 disabled → 直接 `raise ApprovalScenarioDisabledError`（gate.py:109-111，即业务调用失败）；路由按 sort_order 自上而下匹配（`_match_first_route`，gate.py:417-460，支持 catch-all `{}`、`applicant_role` 身份标签"包含即命中"、payload 字段等值三种条件）；pass 分支→实例 APPROVED+建 outbox 立即 dispatch；flow 分支→实例 PENDING+首节点每个审批人一条 task；无路由命中/审批人解析为空→实例 EXCEPTION（route_missing/approver_empty）+站内信通知管理员（`_notify_admins_of_exception`）。全部分支写审计（AuditLogDao.ainsert_v2）。
 
@@ -24,19 +24,19 @@
 
 ## key_files
 - .claude/skills/approval-module/SKILL.md — 审批模块权威架构参考，本次核实其关键声明均与代码一致；含维护契约（改代码须同步改 skill）
-- src/backend/bisheng/approval/domain/services/approval_gate.py — 统一网关：在途去重(92-103)、场景缺失抛错(109-111)、pass/flow/exception 分流、路由匹配(417-460)；「未配置兜底租户管理员」缺口的核心改造点
-- src/backend/bisheng/approval/domain/services/approval_center_service.py — decide_task 或签/会签流转(658-801)、_advance_after_node_approved(803-966)、withdraw_instance(418-492，无状态守卫)、get_task_detail(99-203)
-- src/backend/bisheng/approval/domain/services/approver_resolver.py — 审批人来源解析；tenant_admin 分支(63-74)错用 AdminRole 系统超管近似真租户管理员——兜底需求的前置修复点
-- src/backend/bisheng/approval/domain/services/approval_registry.py — preset 目录(with_default_presets:14-45)+handler 注册表；新场景第一件套
-- src/backend/bisheng/approval/domain/services/approval_runtime_handler_factory.py — build_runtime_handler 硬编码 if 链(17-35)；新场景第三件套，outbox/advance/钩子共用
-- src/backend/bisheng/approval/domain/services/knowledge_space_subscribe_scenario_handler.py — 场景 Handler 协议实证：build_title/build_detail/resolve_approvers/on_approved/on_rejected/on_withdrawn/on_cancelled
-- src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py — 业务入口接网关范式(subscribe_space:4607-4664 先过网关再落业务态；_build_space_approval_gate:4700-4710)；新场景第二件套模板
-- src/backend/bisheng/approval/domain/models/approval_instance.py — 9 状态实例模型；payload_snapshot/detail_snapshot JSON 列(61-62)可承载富 payload；CANCELLED 枚举已存在(21)
-- src/backend/bisheng/approval/domain/repositories/approval_instance_repository.py — find_duplicate_active_instance(52-69)：在途单去重键含 applicant_user_id、活跃集不含 approved/executing，且命中是静默返回非报错——与 PRD「须先撤回」语义有差
-- src/backend/bisheng/approval/domain/services/approval_exception_service.py — 唯一的实例取消路径(177-215，仅限 EXCEPTION 态、管理员操作)；cancel-on-delete 缺口对照物
-- src/backend/bisheng/approval/domain/services/approval_outbox_service.py — outbox 执行/重试；成功→executed、失败→execute_failed+异常+通知；发布「终检+上线」动作的承载位
-- src/backend/bisheng/approval/domain/services/approval_notification_service.py — 站内信统一封装；_get_admin_recipient_ids(122-150)是真租户管理员解析的正确参照实现
-- src/backend/bisheng/common/init_data.py — _init_default_approval_scenarios(342-436)：场景 seed 范式（仅 DEFAULT_TENANT），应用发布场景 seed 可仿此
+- src/backend/doberman_agent/approval/domain/services/approval_gate.py — 统一网关：在途去重(92-103)、场景缺失抛错(109-111)、pass/flow/exception 分流、路由匹配(417-460)；「未配置兜底租户管理员」缺口的核心改造点
+- src/backend/doberman_agent/approval/domain/services/approval_center_service.py — decide_task 或签/会签流转(658-801)、_advance_after_node_approved(803-966)、withdraw_instance(418-492，无状态守卫)、get_task_detail(99-203)
+- src/backend/doberman_agent/approval/domain/services/approver_resolver.py — 审批人来源解析；tenant_admin 分支(63-74)错用 AdminRole 系统超管近似真租户管理员——兜底需求的前置修复点
+- src/backend/doberman_agent/approval/domain/services/approval_registry.py — preset 目录(with_default_presets:14-45)+handler 注册表；新场景第一件套
+- src/backend/doberman_agent/approval/domain/services/approval_runtime_handler_factory.py — build_runtime_handler 硬编码 if 链(17-35)；新场景第三件套，outbox/advance/钩子共用
+- src/backend/doberman_agent/approval/domain/services/knowledge_space_subscribe_scenario_handler.py — 场景 Handler 协议实证：build_title/build_detail/resolve_approvers/on_approved/on_rejected/on_withdrawn/on_cancelled
+- src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py — 业务入口接网关范式(subscribe_space:4607-4664 先过网关再落业务态；_build_space_approval_gate:4700-4710)；新场景第二件套模板
+- src/backend/doberman_agent/approval/domain/models/approval_instance.py — 9 状态实例模型；payload_snapshot/detail_snapshot JSON 列(61-62)可承载富 payload；CANCELLED 枚举已存在(21)
+- src/backend/doberman_agent/approval/domain/repositories/approval_instance_repository.py — find_duplicate_active_instance(52-69)：在途单去重键含 applicant_user_id、活跃集不含 approved/executing，且命中是静默返回非报错——与 PRD「须先撤回」语义有差
+- src/backend/doberman_agent/approval/domain/services/approval_exception_service.py — 唯一的实例取消路径(177-215，仅限 EXCEPTION 态、管理员操作)；cancel-on-delete 缺口对照物
+- src/backend/doberman_agent/approval/domain/services/approval_outbox_service.py — outbox 执行/重试；成功→executed、失败→execute_failed+异常+通知；发布「终检+上线」动作的承载位
+- src/backend/doberman_agent/approval/domain/services/approval_notification_service.py — 站内信统一封装；_get_admin_recipient_ids(122-150)是真租户管理员解析的正确参照实现
+- src/backend/doberman_agent/common/init_data.py — _init_default_approval_scenarios(342-436)：场景 seed 范式（仅 DEFAULT_TENANT），应用发布场景 seed 可仿此
 - src/frontend/client/src/components/approval/ApprovalCenterDialog.tsx — 唯一的审批处理界面（client 端弹窗，1037 行）；TaskDetailPanel(682-724) 通用 key-value 渲染 detail_snapshot，menu_access 特例分支(380)是场景定制的最小先例
 - src/frontend/platform/src/pages/ApprovalPage/index.tsx — 管理后台审批页（2524 行）：仅场景配置（preset 下拉 219-270、审批人来源 UI 591-840）+异常处理，无审批单处理面
 

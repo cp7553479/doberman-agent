@@ -4,7 +4,7 @@ import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
 import { WorkflowNode } from "@/types/flow";
 import { normalizeFileAccept,type UploadFileKind } from "@/util/fileAcceptUtils";
-import { Select,Switch,Tag } from "@bisheng/ui";
+import { Select,Switch,Tag } from "@doberman-agent/ui";
 import { useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";
 import FileTypeSelect from "./FileTypeSelect";
@@ -126,7 +126,7 @@ export default function GroupInputFile({ nodeId, node, cate, tab,
 
             {/* 文件处理策略 - 单选 */}
             <div className="node-item flex gap-4 items-center mb-4">
-                <Label className="bisheng-label min-w-28 flex items-center gap-1">
+                <Label className="doberman_agent-label min-w-28 flex items-center gap-1">
                     {t("fileProcessingStrategy")}
                     <QuestionTooltip
                         content={<div className="whitespace-pre-line">{t("fileProcessingStrategyTip")}</div>}
@@ -161,7 +161,7 @@ export default function GroupInputFile({ nodeId, node, cate, tab,
                             />
                         )}
                         <div className="flex justify-between items-center">
-                            <Label className="bisheng-label">{t("fileParseResult")}</Label>
+                            <Label className="doberman_agent-label">{t("fileParseResult")}</Label>
                             <Tag size="small" color="brand" className="">dialog_files_content</Tag>
                         </div>
                     </>
@@ -170,7 +170,7 @@ export default function GroupInputFile({ nodeId, node, cate, tab,
                 {showImage && imageFileItem && (
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1">
-                            <Label className="bisheng-label">{t(`node.${node.type}.${imageFileItem.key}.label`)}</Label>
+                            <Label className="doberman_agent-label">{t(`node.${node.type}.${imageFileItem.key}.label`)}</Label>
                             <QuestionTooltip content={t("extractImages")} />
                         </div>
                         <Tag size="small" color="brand" className="">dialog_image_files</Tag>
@@ -180,7 +180,7 @@ export default function GroupInputFile({ nodeId, node, cate, tab,
                 {/* 文件路径 - 恒展示 */}
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1">
-                        <Label className="bisheng-label">{t("filePath")}</Label>
+                        <Label className="doberman_agent-label">{t("filePath")}</Label>
                         <QuestionTooltip content={t("storeUploadFiles")} />
                     </div>
                     <Tag size="small" color="brand" className="">dialog_file_paths</Tag>

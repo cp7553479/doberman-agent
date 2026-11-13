@@ -1,6 +1,6 @@
 import unittest
 
-from bisheng.llm.domain.schemas import AssistantLLMConfig, AssistantLLMItem
+from doberman_agent.llm.domain.schemas import AssistantLLMConfig, AssistantLLMItem
 
 
 class TestAssistantExecutorTypeFallback(unittest.TestCase):

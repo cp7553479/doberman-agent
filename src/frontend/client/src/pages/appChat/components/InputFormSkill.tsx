@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { getVariablesApi } from "~/api/apps";
 import { useToastContext } from "~/Providers";
@@ -10,7 +10,7 @@ import InputComponent from "./InputComponent";
 import InputFileComponent from "./InputFileComponent";
 import { Button } from "~/components";
 import { emitAreaTextEvent, EVENT_TYPE } from "../useAreaText";
-import { MessageFrame } from '@bisheng/chat';
+import { MessageFrame } from '@doberman-agent/chat';
 
 /**
  * @component 会话报告生成专用表单

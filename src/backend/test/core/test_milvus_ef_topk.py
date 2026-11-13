@@ -15,7 +15,7 @@ import asyncio
 
 from langchain_milvus import Milvus as _LangchainMilvus
 
-from bisheng.core.vectorstore.milvus import Milvus
+from doberman_agent.core.vectorstore.milvus import Milvus
 
 # --- pure helper: ef >= k coverage -----------------------------------------
 

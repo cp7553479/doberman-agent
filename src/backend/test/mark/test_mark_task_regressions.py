@@ -4,10 +4,10 @@ from unittest.mock import Mock
 import pytest
 from pydantic import ValidationError
 
-from bisheng.api.v1 import mark_task as mark_task_api
-from bisheng.api.v1.schema.mark_schema import MarkTaskCreate
-from bisheng.database.models import mark_task as mark_task_model
-from bisheng.database.models.mark_task import MarkTask, MarkTaskDao
+from doberman_agent.api.v1 import mark_task as mark_task_api
+from doberman_agent.api.v1.schema.mark_schema import MarkTaskCreate
+from doberman_agent.database.models import mark_task as mark_task_model
+from doberman_agent.database.models.mark_task import MarkTask, MarkTaskDao
 
 
 def test_mark_task_create_rejects_non_numeric_user_ids():

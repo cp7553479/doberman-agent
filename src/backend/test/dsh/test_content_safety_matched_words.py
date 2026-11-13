@@ -6,11 +6,11 @@ import pytest
 from pydantic import ValidationError
 from sqlalchemy import select
 
-from bisheng.common.errcode.dsh import DshContentSafetyConflictError
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.repositories import content_safety_projection
-from bisheng.dsh.domain.repositories.content_safety_queries import event_metadata
-from bisheng.dsh.domain.schemas.content_safety import ContentSafetyEvent
+from doberman_agent.common.errcode.dsh import DshContentSafetyConflictError
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.repositories import content_safety_projection
+from doberman_agent.dsh.domain.repositories.content_safety_queries import event_metadata
+from doberman_agent.dsh.domain.schemas.content_safety import ContentSafetyEvent
 from test.dsh.test_content_safety_merge import committed_merge
 from test.dsh.test_content_safety_repository import tenant_session
 

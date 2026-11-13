@@ -19,9 +19,9 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository  # noqa: E402
-from bisheng.dsh.domain.services.model_audit_tree import DshAuditTreeProjectionService  # noqa: E402
-from bisheng.dsh.operations_runtime import repository_scope  # noqa: E402
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository  # noqa: E402
+from doberman_agent.dsh.domain.services.model_audit_tree import DshAuditTreeProjectionService  # noqa: E402
+from doberman_agent.dsh.operations_runtime import repository_scope  # noqa: E402
 
 
 @contextmanager

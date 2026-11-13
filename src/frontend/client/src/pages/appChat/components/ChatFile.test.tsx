@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createServer, get, type Server } from 'node:http';
 import { downloadFile } from '~/utils';
-import { normalizeHistory } from '@bisheng/chat/core';
+import { normalizeHistory } from '@doberman-agent/chat/core';
 import { ClientMessageAttachments } from './ClientMessageAttachments';
 
 function AppChatFileList({ files }: { files: Record<string, unknown>[] }) {
@@ -9,7 +9,7 @@ function AppChatFileList({ files }: { files: Record<string, unknown>[] }) {
     return <ClientMessageAttachments message={message} conversationId="test" />;
 }
 
-jest.mock('@bisheng/chat', () => ({ ConversationAttachments: jest.requireActual('../../../../../packages/chat/src/components/ConversationAttachments').ConversationAttachments }));
+jest.mock('@doberman-agent/chat', () => ({ ConversationAttachments: jest.requireActual('../../../../../packages/chat/src/components/ConversationAttachments').ConversationAttachments }));
 jest.mock('~/utils', () => ({ downloadFile: jest.fn(), cn: (...parts: string[]) => parts.filter(Boolean).join(' ') }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/api/chatApi', () => ({ getAttachmentUrl: jest.fn() }));
@@ -18,7 +18,7 @@ jest.mock('~/components/Chat/attachments/MediaAttachmentChip', () => ({ MediaAtt
 
 const filename = 'APP_FILE_120.pdf';
 const signature = '?X-Amz-Credential=test%2Fdate%2Fs3&X-Amz-Signature=abc%2B123';
-const objectPath = '/bisheng/chat/7/APP_FILE_120.pdf';
+const objectPath = '/doberman_agent/chat/7/APP_FILE_120.pdf';
 
 beforeEach(() => {
     __APP_ENV__.BASE_URL = '/workspace';
@@ -52,7 +52,7 @@ describe('application history attachment downloads', () => {
 
     it('preserves encoded object names and the original download filename', () => {
         const name = decodeURIComponent('%E5%8E%86%E5%8F%B2%E6%8A%A5%E5%91%8A%202026.pdf');
-        const path = '/bisheng/chat/7/%E5%8E%86%E5%8F%B2%20a%2Fb.pdf';
+        const path = '/doberman_agent/chat/7/%E5%8E%86%E5%8F%B2%20a%2Fb.pdf';
         render(<AppChatFileList files={[{ name, file_url: `https://storage.internal${path}${signature}` }]} />);
         fireEvent.click(screen.getByText(name));
         expect(downloadFile).toHaveBeenCalledWith(path + signature, name);

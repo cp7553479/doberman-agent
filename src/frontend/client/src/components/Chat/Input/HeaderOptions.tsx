@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useRecoilState } from 'recoil';
 import { Settings2 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';

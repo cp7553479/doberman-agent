@@ -7,15 +7,15 @@
 - client 工作台的桌面端及移动端头像菜单新增 DSH Desktop 弹窗，与现有消息/审批入口采用相同菜单与弹窗组件。
 - 弹窗提供打开客户端、下载、本人的分页登录会话及按模型本月用量；只列出当前用户已授权模型，显示提供方 / 实际模型名。
 - 吊销需要用户确认，只使所选会话及其刷新令牌失效。其他设备、固定席位、授权、额度上限和历史用量不变。相同 session_id 重试幂等，不需要新操作 ID。
-- 未登录过 DSH 的毕昇用户可打开弹窗，会话为空；没有授权模型时提示联系管理员。读取不分配席位，不新增授权或额度。
+- 未登录过 DSH 的doberman-agent用户可打开弹窗，会话为空；没有授权模型时提示联系管理员。读取不分配席位，不新增授权或额度。
 - 部署开关与业务开关继续沿用既定职责。业务关闭后菜单消失、已打开的弹窗关闭；服务端每次请求检查开关。浏览器每 30 秒或回到窗口时刷新状态，短暂旧页面也不能绕过服务端拒绝。
 - 管理端席位表将租户列替换为主部门名称；无部门显示“未设置部门”。“无登录会话”后不显示 0。
 - desktop-login 授权文案显示用户名及主部门；无部门不显示空括号。不显示租户。
-- 部门仅在毕昇侧批量读取，永不进入 Gateway Profile / Outbox，也不恢复部门筛选、部门授权、用户组、限流、PAT、批量吊销或 License 界面配置。
+- 部门仅在doberman-agent侧批量读取，永不进入 Gateway Profile / Outbox，也不恢复部门筛选、部门授权、用户组、限流、PAT、批量吊销或 License 界面配置。
 
 ## 本人接口
 
-以下均位于同一毕昇 Nginx origin，通过毕昇浏览器 JWT / HttpOnly Cookie 认证。服务端从 JWT 取得 tenant_id / user_id 并实时验证有效用户及租户；不接受页面提供的身份或管理范围。成功使用毕昇标准 `status_code=200, data=...` 包装；失败使用现有 DSH 错误封装，所有响应 no-store。
+以下均位于同一doberman-agent Nginx origin，通过doberman-agent浏览器 JWT / HttpOnly Cookie 认证。服务端从 JWT 取得 tenant_id / user_id 并实时验证有效用户及租户；不接受页面提供的身份或管理范围。成功使用doberman-agent标准 `status_code=200, data=...` 包装；失败使用现有 DSH 错误封装，所有响应 no-store。
 
 | 接口 | 输入 | data |
 |---|---|---|
@@ -36,15 +36,15 @@
 
 - POST /api/internal/dsh/self/sessions：{tenant_id,user_id,cursor,limit}，回分页 SessionItem（内部仍含 seat_id）。根据本人查席位，不允许传入管理员 scope 或目标 seat_id。
 - POST /api/internal/dsh/self/sessions/revoke：{tenant_id,user_id,session_id}。检查归属后复用已有 session repository 吊销事务、seat→session 锁顺序与 refresh family 失效，不改席位或 grant_version。
-- `/api/v1/dsh/me/*` 的明确路由交给毕昇认证，其他 API 路由保持原行为。
-- 无表结构和部署配置变更。毕昇和 Gateway 需使用本次配套代码后启用本人会话功能；不改 DSH 客户端 0.4.0 登录/模型调用协议。
+- `/api/v1/dsh/me/*` 的明确路由交给doberman-agent认证，其他 API 路由保持原行为。
+- 无表结构和部署配置变更。doberman-agent和 Gateway 需使用本次配套代码后启用本人会话功能；不改 DSH 客户端 0.4.0 登录/模型调用协议。
 
 ## 调用顺序
 
 1. 工作台读取 browser-config，业务开启才展示头像菜单入口。
 2. 用户打开弹窗，并行读取 me/sessions 与 me/usage；下载地址沿用 browser-config。
 3. 打开客户端使用 `dsh-desktop://login?server=<Nginx origin>`，不包含 `/workspace`。
-4. 用户点击某设备“吊销”并确认 → 同源 POST → 毕昇检查身份与开关 → HMAC 到 Gateway 检查归属 → 吊销该会话/刷新令牌 → 刷新会话列表。
+4. 用户点击某设备“吊销”并确认 → 同源 POST → doberman-agent检查身份与开关 → HMAC 到 Gateway 检查归属 → 吊销该会话/刷新令牌 → 刷新会话列表。
 5. 该设备下一次 introspect/refresh 被拒绝，需要重新登录；其他设备继续使用，席位占用不变。已进入执行的模型请求仍按原结算路径处理。
 
 ## 验证

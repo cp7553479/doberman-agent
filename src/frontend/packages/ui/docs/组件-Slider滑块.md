@@ -128,10 +128,10 @@
 <!-- site-hide -->
 ## 落地（给实现窗口）
 
-1. 组件放 `packages/ui/src/components/Slider/`，基于 `@radix-ui/react-slider`（client 现壳已在用，已加进 pnpm catalog 与 `@bisheng/ui` 依赖），由 `@bisheng/ui` 导出。单值 / 范围由 `value` 数组长度决定，`minStepsBetweenThumbs={0}`（允许上下限相等，radix 自身不允许交叉）。
+1. 组件放 `packages/ui/src/components/Slider/`，基于 `@radix-ui/react-slider`（client 现壳已在用，已加进 pnpm catalog 与 `@doberman-agent/ui` 依赖），由 `@doberman-agent/ui` 导出。单值 / 范围由 `value` 数组长度决定，`minStepsBetweenThumbs={0}`（允许上下限相等，radix 自身不允许交叉）。
 2. 取值：Root `relative flex h-8 w-full min-w-[120px] items-center touch-none select-none`；Track `h-1 rounded-full bg-fill-hover`（gray-3）；Range `bg-blue-500`（已重定向 `--brand-*`）；Thumb `block size-4 rounded-full border-2 border-blue-500 bg-bg-page transition-transform duration-150 hover:scale-[1.125] data-[dragging]:scale-[1.125] cursor-grab data-[dragging]:cursor-grabbing focus-visible:outline-none focus-visible:shadow-focus`——radix Thumb 没有拖动态属性，`data-dragging` 由组件在 pointerdown / pointerup 上自己挂摘（气泡跟随也读它）。禁用：Range 改 `bg-fill-active`、Thumb 改 `border-border-deep`（两者同为 gray-4），`cursor-not-allowed`。
 3. 刻度：`marks: Record<number, ReactNode>` + `snapToMarks?: boolean`（true 时 `step` 失效、松手吸附最近刻度）；刻度点 `size-2 rounded-full border-2 bg-bg-page`，未覆盖 `border-border-base`、已覆盖 `border-blue-500`；标签 `text-caption text-text-3`，两端标签分别 `left-0` / `right-0` 对齐不居中。
-4. 数值显示：`valueDisplay: 'input' | 'tooltip'`（二选一，默认 `tooltip`）。`input` 内置 `@bisheng/ui` 的 InputNumber，固定 `size="small"`（不开放覆盖），外包 `h-8 items-center` 与滑块行居中，`gap-4`；范围模式左右各一个。`tooltip` 复用 `@bisheng/ui` 的 Tooltip，`open` 受控 = hover ∨ dragging ∨ focus-visible，`side="top"`，`formatValue?: (v) => ReactNode` 同时供气泡与刻度标签使用。
+4. 数值显示：`valueDisplay: 'input' | 'tooltip'`（二选一，默认 `tooltip`）。`input` 内置 `@doberman-agent/ui` 的 InputNumber，固定 `size="small"`（不开放覆盖），外包 `h-8 items-center` 与滑块行居中，`gap-4`；范围模式左右各一个。`tooltip` 复用 `@doberman-agent/ui` 的 Tooltip，`open` 受控 = hover ∨ dragging ∨ focus-visible，`side="top"`，`formatValue?: (v) => ReactNode` 同时供气泡与刻度标签使用。
 5. 交互：`onValueChange` 拖动中实时触发，`onValueCommit`（radix 原生，pointerup / keyup）做保存；文档与 demo 都要写明「请求放 onValueCommit」。Shift + 方向键 10 步、PageUp / PageDown、Home / End 均为 radix 1.4 自带（已核对源码），无需自补。不监听 wheel。
 6. 触屏：Thumb `::before` 伪元素 `inset: -16px`（16px 是 border-box，伪元素按 12px 的 padding box 定位，12 + 32 = 44px），写进 `packages/ui/src/styles/tokens.css` 一处（`.slider-thumb-hit` / `.slider-track-hit`），与 `.btn-touch-hit` 同口径；Track 上下各扩 20px 透明点击区。
 7. 现状（2026-10-21 扫描，口径：`client/src` 的 *.tsx，grep `<Slider`）：旧 `client/src/components/ui/Slider.tsx`（radix，轨道 `h-2` 8px `bg-secondary`、滑块 20px `border-primary`，shadcn 旧 token），27 处 / 9 文件，几乎全是设置面板里与旧 `ui/InputNumber` 并排的用法（`Endpoints/Settings/*` 4 个、`SidePanel/Parameters/DynamicSlider`、`Nav/SettingsTabs/Speech/*` 3 个、`Nav/SettingsTabs/Account/Avatar`）——**宜与 InputNumber 同批迁移**；另 `client/src/components/ui/ModelParameters.tsx:148` 1 处原生 `type="range"`。旧壳支持 `onDoubleClick`（PlaybackRate 用双击恢复默认值），规范未收，见待决策清单。迁移批次照总纲节奏，设计师点名后再动。
@@ -148,5 +148,5 @@
 | 日期 | 改了什么 | 提交 |
 |---|---|---|
 | 2026-10-21 | 建档 v1：设计师拍板四项（单值 + 范围 + 刻度标签；数值显示并排数字框 / 气泡二选一；滑块白底品牌色描边环；单档尺寸轨道 4px、滑块 16px→悬停 18px）；配套定范围不交叉、只能停在刻度上的吸附、点击轨道就近移动、键盘 Shift 10 步与 Home / End、滚轮不改值、拖动实时预览松手生效、并排数字框越界时滑块停在最后合法值、触屏 44px 热区、深浅色走 token；现状扫描旧 radix 壳 27 处 / 9 文件存档于落地区 7 | 待 committer 窗口提交 |
-| 2026-10-21 | 落地 `@bisheng/ui` Slider：数值 API 为 `number \| [number, number]`；`snapToMarks` 拖动中自由移动、`onValueChange` 只报刻度值、松手吸附，键盘一次跳一个刻度；`valueDisplay="input"` 的数字框经 `inputProps` 传单位 / 文案；落地区 5、6 按实际核对修正（Shift 10 步 radix 自带、拇指热区 inset 为 -16px） | 未提交 |
+| 2026-10-21 | 落地 `@doberman-agent/ui` Slider：数值 API 为 `number \| [number, number]`；`snapToMarks` 拖动中自由移动、`onValueChange` 只报刻度值、松手吸附，键盘一次跳一个刻度；`valueDisplay="input"` 的数字框经 `inputProps` 传单位 / 文案；落地区 5、6 按实际核对修正（Shift 10 步 radix 自带、拇指热区 inset 为 -16px） | 未提交 |
 | 2026-10-21 | 设计师调整：与滑块并用的数字框固定 small 档（24px），与滑块行垂直居中；§5 表、§5.1、落地区 4 同步 | 未提交 |

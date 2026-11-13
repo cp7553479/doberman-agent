@@ -15,9 +15,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.api.services.assistant_agent import AssistantAgent
-from bisheng.knowledge.domain.knowledge_rag import KnowledgeRag
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.api.services.assistant_agent import AssistantAgent
+from doberman_agent.knowledge.domain.knowledge_rag import KnowledgeRag
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 _ALLOWED_KB = 11
 _FORBIDDEN_KB = 12
@@ -61,15 +61,15 @@ async def _run_init_tools(agent, *, usable_ids):
     )
     with (
         patch(
-            "bisheng.api.services.assistant_agent.AssistantLinkDao.get_assistant_link",
+            "doberman_agent.api.services.assistant_agent.AssistantLinkDao.get_assistant_link",
             AsyncMock(return_value=_links()),
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.get_list_by_ids",
+            "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.get_list_by_ids",
             return_value=_knowledge_rows(),
         ),
         patch(
-            "bisheng.knowledge.domain.services.space_flow_retrieval.abuild_scoped_login_user",
+            "doberman_agent.knowledge.domain.services.space_flow_retrieval.abuild_scoped_login_user",
             AsyncMock(return_value=SimpleNamespace(user_id=150041)),
         ),
         patch.object(
@@ -78,7 +78,7 @@ async def _run_init_tools(agent, *, usable_ids):
             AsyncMock(return_value=set(usable_ids)),
         ) as usable_filter,
         patch(
-            "bisheng.api.services.assistant_agent.ToolExecutor.init_knowledge_tool",
+            "doberman_agent.api.services.assistant_agent.ToolExecutor.init_knowledge_tool",
             init_knowledge_tool,
         ),
         patch.object(AssistantAgent, "wrap_citation_tool", lambda self, tool: tool),
@@ -128,7 +128,7 @@ async def test_toggle_off_leaves_the_previous_behaviour_alone():
 )
 async def test_the_filter_keeps_only_the_use_action(action_map, expected):
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_permission_service."
+        "doberman_agent.knowledge.domain.services.knowledge_permission_service."
         "KnowledgePermissionService.get_knowledge_action_map_async",
         AsyncMock(return_value=action_map),
     ):

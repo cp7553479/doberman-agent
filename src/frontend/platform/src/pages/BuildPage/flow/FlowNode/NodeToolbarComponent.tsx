@@ -1,7 +1,7 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { FlowTooltip as Tip } from "@/pages/BuildPage/flow/FlowTooltip";
-import { Filled, Outlined } from "bisheng-icons";
+import { Filled, Outlined } from "@doberman-agent/icons";
 
 import { useTranslation } from "react-i18next";
 

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { toast, type ToastType } from '@bisheng/ui';
+import { toast, type ToastType } from '@doberman-agent/ui';
 import type { TShowToast } from '~/common';
 import { NotificationSeverity } from '~/common';
 
 /**
- * Legacy `showToast(...)` façade over the shared @bisheng/ui toast
+ * Legacy `showToast(...)` façade over the shared @doberman-agent/ui toast
  * (packages/ui/docs/组件-Toast轻提示.md). Every existing call site keeps working;
  * the queueing, stacking, timing and a11y now live in the library.
  *
@@ -18,7 +18,7 @@ import { NotificationSeverity } from '~/common';
  * `showIcon` is accepted for compatibility but ignored: every toast carries its
  * type icon, since the icon is what conveys the semantics without color (§2).
  *
- * New code should import `{ toast }` from '@bisheng/ui' directly.
+ * New code should import `{ toast }` from '@doberman-agent/ui' directly.
  */
 declare global {
   interface Window {

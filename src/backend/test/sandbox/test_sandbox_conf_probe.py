@@ -7,9 +7,9 @@ import json
 import httpx
 import pytest
 
-from bisheng.common.errcode.sandbox import SandboxEndpointInvalidError
-from bisheng.core.config.settings import SandboxConf, encrypt_token
-from bisheng.tool.domain.services.sandbox_conf_service import SandboxConfService
+from doberman_agent.common.errcode.sandbox import SandboxEndpointInvalidError
+from doberman_agent.core.config.settings import SandboxConf, encrypt_token
+from doberman_agent.tool.domain.services.sandbox_conf_service import SandboxConfService
 
 _REAL_ASYNC_CLIENT = httpx.AsyncClient
 
@@ -39,9 +39,9 @@ def _install(monkeypatch, handler, rows=None, deployment=None):
         kwargs["transport"] = transport
         return _REAL_ASYNC_CLIENT(*args, **kwargs)
 
-    monkeypatch.setattr("bisheng.tool.domain.services.sandbox_conf_service.httpx.AsyncClient", factory)
+    monkeypatch.setattr("doberman_agent.tool.domain.services.sandbox_conf_service.httpx.AsyncClient", factory)
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
+        "doberman_agent.tool.domain.services.sandbox_conf_service.settings.sandbox_conf",
         deployment if deployment is not None else SandboxConf(endpoints=["http://dep:8080"], token="dep-token"),
     )
 
@@ -50,7 +50,7 @@ def _install(monkeypatch, handler, rows=None, deployment=None):
             return None
         return _Row(rows)
 
-    monkeypatch.setattr("bisheng.tool.domain.services.sandbox_conf_service.ConfigDao.get_config", get_config)
+    monkeypatch.setattr("doberman_agent.tool.domain.services.sandbox_conf_service.ConfigDao.get_config", get_config)
     return requests, timeouts
 
 

@@ -6,10 +6,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.chat.client import ChatClient, ChatMessageExecution
-from bisheng.common.chat.manager import ChatManager
-from bisheng.common.chat.types import WorkType
-from bisheng.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
+from doberman_agent.common.chat.client import ChatClient, ChatMessageExecution
+from doberman_agent.common.chat.manager import ChatManager
+from doberman_agent.common.chat.types import WorkType
+from doberman_agent.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
 
 
 @pytest.mark.parametrize("denied", [False, True])
@@ -56,7 +56,7 @@ async def test_existing_web_path_does_not_gain_a_new_admission_contract():
 
 
 async def test_queued_messages_do_not_overwrite_each_others_identity(monkeypatch):
-    from bisheng.common.chat import client as module
+    from doberman_agent.common.chat import client as module
 
     queued = []
     async def capture_worker(worker, fn, *args, **kwargs):
@@ -91,12 +91,12 @@ async def test_queued_messages_do_not_overwrite_each_others_identity(monkeypatch
 
 
 async def test_v2_endpoint_supplies_fresh_admission_without_changing_session_partition(monkeypatch):
-    from bisheng.open_api.domain.context import (
+    from doberman_agent.open_api.domain.context import (
         get_current_open_api_principal,
         reset_current_open_api_principal,
         set_current_open_api_principal,
     )
-    from bisheng.open_endpoints.api.endpoints import assistant as endpoint
+    from doberman_agent.open_endpoints.api.endpoints import assistant as endpoint
     from test.open_api.test_websocket_auth import _principal, _websocket
 
     original = _principal()

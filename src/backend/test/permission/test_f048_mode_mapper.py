@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from bisheng.permission.migration.f048_mode_mapper import map_resource_modes
-from bisheng.permission.migration.f048_source_inventory import (
+from doberman_agent.permission.migration.f048_mode_mapper import map_resource_modes
+from doberman_agent.permission.migration.f048_source_inventory import (
     PermissionMigrationResourceDTO,
 )
-from bisheng.permission.migration.f048_tuple_mapper import (
+from doberman_agent.permission.migration.f048_tuple_mapper import (
     MappedGrant,
     MappedGrantAssignee,
 )

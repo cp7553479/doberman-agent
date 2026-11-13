@@ -69,7 +69,7 @@
 `模型管理页 hover → 点「更新状态」 → 新验证端点 → 复用既有探活 → 写状态+时间 → 返回新状态 → 前端刷新行 + Toast`
 
 - **页面**：`platform/src/pages/ModelPage/manage/index.tsx` —— 按服务提供方分组列出模型；状态列按 `status` 数值取色取文案（0 正常 / 1 异常 / 2 未知），异常时旁边挂一个问号 tooltip 显示 `remark`。**本特性在状态右侧加 hover 出现的按钮，并新增一列时间。**
-- **既有探活**：`backend/bisheng/llm/domain/services/llm.py` 的 `test_model_status()` —— 按模型类型分别真实调用一次（对话模型 `hello`、向量模型算一次 embedding、语音识别用内置示例音频、重排序压一条文档），失败时写状态=异常+原因。调用时带 `MODEL_TEST` 应用类型且 `ignore_online=True`（**因此已下线模型也能验证，AC-06 天然成立**）。
+- **既有探活**：`backend/doberman-agent/llm/domain/services/llm.py` 的 `test_model_status()` —— 按模型类型分别真实调用一次（对话模型 `hello`、向量模型算一次 embedding、语音识别用内置示例音频、重排序压一条文档），失败时写状态=异常+原因。调用时带 `MODEL_TEST` 应用类型且 `ignore_online=True`（**因此已下线模型也能验证，AC-06 天然成立**）。
 - **既有触发点**：只有两处——新增服务提供方、更新服务提供方（且只对新增或改了模型名/类型的模型重测）。**没有定时任务**。
 - **状态写入**：`LLMDao.update_model_status` / `aupdate_model_status`（`llm/domain/models/llm_server.py`）——批量 `update()` 语句写 `status` + `remark`。**本特性在此扩展写入状态更新时间。**
 - **新增端点**：挂在既有 LLM 路由（`llm/api/router.py`，与 `/online` 同级），入参模型 ID，租户管理员权限（与同文件其余管理端点一致）。
@@ -118,7 +118,7 @@
 
 | 依赖 | 形式 | 风险点 |
 |---|---|---|
-| 各模型类型的客户端构造与调用（`get_bisheng_llm` 等） | 内部 Python API | 新增模型类型时若不在探活里补分支，该类型验证会静默无操作 |
+| 各模型类型的客户端构造与调用（`get_doberman-agent_llm` 等） | 内部 Python API | 新增模型类型时若不在探活里补分支，该类型验证会静默无操作 |
 | 上游模型服务 | 外部网络 | 验证结果受网络波动影响，可能出现偶发"异常"；用户可再点一次 |
 
 ---

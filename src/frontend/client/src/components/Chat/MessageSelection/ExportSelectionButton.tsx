@@ -19,7 +19,7 @@
  */
 
 import { useCallback } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useMessageSelection } from '~/hooks/useMessageSelection';
 import { useSelectionMessages } from './SelectionMessagesContext';
 import { cn } from '~/utils';

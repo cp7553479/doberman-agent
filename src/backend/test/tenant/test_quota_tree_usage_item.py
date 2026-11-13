@@ -1,6 +1,6 @@
 """Quota tree usage entries carry fractional storage usage."""
 
-from bisheng.tenant.domain.schemas.tenant_schema import TenantQuotaUsageItem
+from doberman_agent.tenant.domain.schemas.tenant_schema import TenantQuotaUsageItem
 
 
 def test_storage_usage_in_gb_is_kept_fractional():

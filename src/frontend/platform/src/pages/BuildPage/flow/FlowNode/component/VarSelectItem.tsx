@@ -2,8 +2,8 @@
 import { Label } from "@/components/bs-ui/label";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
 import { isVarInFlow,updateVariableName } from "@/util/flowUtils";
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import React,{ useCallback,useEffect,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -111,7 +111,7 @@ export default function VarSelectItem({ nodeId, data: paramItem, onChange, onOut
 
     return <div className='node-item mb-4' data-key={paramItem.key}>
         <div className="flex justify-between items-center">
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {paramItem.required && <span className="text-red-500">*</span>}
                 {t(`${i18nPrefix}label`)}
                 {paramItem.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}
@@ -202,7 +202,7 @@ export function VarSelectSingleItem({ nodeId, data: paramItem, onChange, onValid
 
     return <div className='node-item mb-4' data-key={paramItem.key}>
         <div className="flex justify-between items-center">
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {paramItem.required && <span className="text-red-500">*</span>}
                 {t(`${i18nPrefix}label`)}
                 {paramItem.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}

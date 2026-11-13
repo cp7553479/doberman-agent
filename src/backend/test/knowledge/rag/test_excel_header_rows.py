@@ -6,11 +6,11 @@ import os
 
 import openpyxl
 
-from bisheng.api.v1.schemas import ExcelRule, FileProcessBase
-from bisheng.knowledge.rag.base_file_pipeline import BaseFilePipeline
-from bisheng.knowledge.rag.pipeline.loader.excel import ExcelLoader
-from bisheng.knowledge.rag.pipeline.loader.utils.md_from_excel import convert_file_to_markdown
-from bisheng.utils import md5_hash
+from doberman_agent.api.v1.schemas import ExcelRule, FileProcessBase
+from doberman_agent.knowledge.rag.base_file_pipeline import BaseFilePipeline
+from doberman_agent.knowledge.rag.pipeline.loader.excel import ExcelLoader
+from doberman_agent.knowledge.rag.pipeline.loader.utils.md_from_excel import convert_file_to_markdown
+from doberman_agent.utils import md5_hash
 
 
 class _HeaderRowPipeline(BaseFilePipeline):

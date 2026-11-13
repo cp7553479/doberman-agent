@@ -31,7 +31,7 @@ GATEWAY_WECOM_ORG_SYNC_PATH = '/api/v1/internal/sso/gateway-wecom-org-sync'
 
 
 def _mount_app() -> FastAPI:
-    from bisheng.sso_sync.api.router import router as sso_sync_router
+    from doberman_agent.sso_sync.api.router import router as sso_sync_router
 
     app = FastAPI()
     api = APIRouter(prefix='/api/v1')
@@ -48,16 +48,16 @@ def _mount_app() -> FastAPI:
 def mocked_services(monkeypatch):
     """Patch service + writer calls at the endpoints import site so we
     only test the HTTP / dependency plumbing."""
-    import bisheng.sso_sync.api.endpoints.login_sync as login_ep
-    import bisheng.sso_sync.api.endpoints.departments_sync as depts_ep
-    import bisheng.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
+    import doberman_agent.sso_sync.api.endpoints.login_sync as login_ep
+    import doberman_agent.sso_sync.api.endpoints.departments_sync as depts_ep
+    import doberman_agent.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
 
     login_result = SimpleNamespace(
         user_id=7, leaf_tenant_id=15, token='jwt-token',
     )
     # LoginSyncResponse is a Pydantic model — build a real one so resp_200
     # serialisation works cleanly.
-    from bisheng.sso_sync.domain.schemas.payloads import (
+    from doberman_agent.sso_sync.domain.schemas.payloads import (
         BatchResult, LoginSyncResponse,
     )
 
@@ -274,7 +274,7 @@ class TestGatewayWecomOrgSyncRoute:
         """Batched Gateway push: an incremental envelope (``full_snapshot``
         omitted / false) must NOT trigger user absent reconcile. Otherwise
         each chunk would disable every wecom user outside the chunk."""
-        import bisheng.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
+        import doberman_agent.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
 
         app = _mount_app()
         body = (
@@ -309,7 +309,7 @@ class TestGatewayWecomOrgSyncRoute:
         invoke ``disable_wecom_users_absent_from_import`` with the union of
         external ids present in the batch, and forward full_snapshot to the
         departments service for archival of absent dept rows."""
-        import bisheng.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
+        import doberman_agent.sso_sync.api.endpoints.gateway_wecom_org_sync as wecom_ep
 
         app = _mount_app()
         body = (
@@ -345,7 +345,7 @@ class TestExemptPathWhitelist:
         """Regression guard: both routes MUST be whitelisted or the main
         tenant-context middleware will try to parse JWT and 401 before
         our HMAC dependency even runs."""
-        from bisheng.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
+        from doberman_agent.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
         assert LOGIN_SYNC_PATH in TENANT_CHECK_EXEMPT_PATHS
         assert DEPTS_SYNC_PATH in TENANT_CHECK_EXEMPT_PATHS
         assert GATEWAY_WECOM_ORG_SYNC_PATH in TENANT_CHECK_EXEMPT_PATHS

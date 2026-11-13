@@ -19,10 +19,10 @@ What runs where:
   without it. Those cases assert the end-to-end grant → allow behaviour that no
   amount of constant-checking can prove; they are not weakened to run locally.
 
-arch-guard note: reading ``bisheng.core.openfga.authorization_model_f048``
+arch-guard note: reading ``doberman_agent.core.openfga.authorization_model_f048``
 from a test trips RULE-9 when the guard is handed an absolute path, because the
-repository root directory is itself named ``bisheng`` and the rule matches
-``/bisheng/``. It is a false positive on any test file — the in-tree
+repository root directory is itself named ``doberman_agent`` and the rule matches
+``/doberman_agent/``. It is a false positive on any test file — the in-tree
 ``test/permission/test_f048_action_catalog_policy.py`` produces it verbatim —
 and the import is the only way to assert the model-side registration at all.
 
@@ -37,31 +37,31 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionDeniedError,
     PermissionInvalidResourceError,
 )
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     MIGRATED_RESOURCE_TYPES as MODEL_MIGRATED_TYPES,
 )
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     RESOURCE_ACTION_SCOPES,
     SYSTEM_SHARED_ACTION_TYPES,
 )
-from bisheng.permission.api.endpoints import grant_subjects
-from bisheng.permission.api.endpoints.grant_subjects import GRANT_SUBJECT_RESOURCE_TYPES
-from bisheng.permission.api.router import router as permission_router
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.api.endpoints import grant_subjects
+from doberman_agent.permission.api.endpoints.grant_subjects import GRANT_SUBJECT_RESOURCE_TYPES
+from doberman_agent.permission.api.router import router as permission_router
+from doberman_agent.permission.domain.services.catalog_policy import (
     ACTION_RESOURCE_SCOPES,
     CatalogAction,
     effective_action_codes,
 )
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     MIGRATED_RESOURCE_TYPES as CATALOG_MIGRATED_TYPES,
 )
-from bisheng.permission.domain.services.owner_service import SYSTEM_OWNED_RESOURCE_ALLOWLIST
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.permission.domain.services.resource_lifecycle_policy import FIXED_CUSTOM_TYPES
+from doberman_agent.permission.domain.services.owner_service import SYSTEM_OWNED_RESOURCE_ALLOWLIST
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.resource_lifecycle_policy import FIXED_CUSTOM_TYPES
 
 #: The six actions a hosted app supports. **No new action code is introduced** —
 #: a new code would mean a new model relation, a full Catalog change and new
@@ -127,7 +127,7 @@ def _actor(user_id: int = OWNER_ID, tenant_id: int = TENANT_ID, **kwargs) -> Per
 
 
 def _adapter(record):
-    from bisheng.app_runtime.domain.services.f048_app_permission import (
+    from doberman_agent.app_runtime.domain.services.f048_app_permission import (
         F048AppPermissionAdapter,
     )
 
@@ -142,7 +142,7 @@ def _record(
     state: str = "online",
     owner_user_id: int | None = OWNER_ID,
 ):
-    from bisheng.app_runtime.domain.services.f048_app_permission import AppPermissionRecord
+    from doberman_agent.app_runtime.domain.services.f048_app_permission import AppPermissionRecord
 
     return AppPermissionRecord(
         tenant_id=tenant_id,
@@ -233,8 +233,8 @@ def test_registry_and_adapters_expose_app() -> None:
     ``RuntimeError("F048 resource registry is not configured")``. Building the
     composition with a stub runtime is enough to prove the wiring.
     """
-    from bisheng.api.services.f048_permission_runtime import build_f048_resource_composition
-    from bisheng.app_runtime.domain.services.f048_app_permission import (
+    from doberman_agent.api.services.f048_permission_runtime import build_f048_resource_composition
+    from doberman_agent.app_runtime.domain.services.f048_app_permission import (
         F048AppPermissionAdapter,
     )
 
@@ -434,7 +434,7 @@ async def test_fga_unavailable_denies_not_allows(fga_down) -> None:
     Asserted at ``check_business_action`` — the single facade every caller uses
     — so it holds regardless of which module imported it by name.
     """
-    from bisheng.permission.application.business_authorization import check_business_action
+    from doberman_agent.permission.application.business_authorization import check_business_action
 
     with pytest.raises(fga_down):
         await check_business_action(
@@ -452,8 +452,8 @@ def test_app_uses_complete_registration_instead_of_owner_projection() -> None:
     positive contract instead of freezing another resource's historical gap.
     The unknown-type endpoint tests above retain the negative type-gate checks.
     """
-    from bisheng.api.services.f048_permission_runtime import build_f048_resource_composition
-    from bisheng.core.openfga.authorization_model_f048 import OWNER_PROJECTION_RESOURCE_TYPES
+    from doberman_agent.api.services.f048_permission_runtime import build_f048_resource_composition
+    from doberman_agent.core.openfga.authorization_model_f048 import OWNER_PROJECTION_RESOURCE_TYPES
 
     assert "app" not in OWNER_PROJECTION_RESOURCE_TYPES
     assert "app" in CATALOG_MIGRATED_TYPES

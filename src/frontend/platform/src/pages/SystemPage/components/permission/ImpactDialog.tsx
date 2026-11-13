@@ -1,4 +1,4 @@
-import { Alert, Button } from '@bisheng/ui';
+import { Alert, Button } from '@doberman-agent/ui';
 
 import {
 Dialog,
@@ -17,7 +17,7 @@ PermissionCatalogModelChange,
 PublishPermissionCatalogDraftRequest,
 } from "@/controllers/API/permission";
 import { formatDate } from "@/util/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

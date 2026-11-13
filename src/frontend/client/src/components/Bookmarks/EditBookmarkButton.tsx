@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useState } from 'react';
 import type { FC } from 'react';
 import type { TConversationTag } from '~/types/chat';

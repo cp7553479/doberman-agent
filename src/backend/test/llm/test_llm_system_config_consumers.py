@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 # All assertions read the file directly so we don't trigger heavy imports.
-_BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent / 'bisheng'
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent / 'doberman_agent'
 
 
 def _read(rel_path: str) -> str:

@@ -13,17 +13,17 @@ from uuid import uuid4
 import pytest
 from sqlmodel import select
 
-from bisheng.database.models.tenant import Tenant, UserTenant
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.unified_policy import CreditRule, ModelVisibility, PersonalLedgerState
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
-from bisheng.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.schemas.model_audit_events import AuditEvent
-from bisheng.dsh.domain.schemas.unified_policy import ModelVisibilityInput
-from bisheng.dsh.domain.schemas.usage import UsageEvent
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+from doberman_agent.database.models.tenant import Tenant, UserTenant
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.unified_policy import CreditRule, ModelVisibility, PersonalLedgerState
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
+from doberman_agent.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.schemas.model_audit_events import AuditEvent
+from doberman_agent.dsh.domain.schemas.unified_policy import ModelVisibilityInput
+from doberman_agent.dsh.domain.schemas.usage import UsageEvent
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
 from test.dsh.test_content_safety_database_integration import (
     Maintenance,
     Request,

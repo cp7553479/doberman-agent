@@ -38,7 +38,7 @@
 
 - [x] **T001**: 配置常量 + release-contract 登记（commit `c2bf1e4ab`）
   **文件**:
-  - `src/backend/bisheng/core/config/settings.py`（新增 `KnowledgeQAFilterConf` 配置块挂在 `Settings` 顶层为可选块）
+  - `src/backend/doberman_agent/core/config/settings.py`（新增 `KnowledgeQAFilterConf` 配置块挂在 `Settings` 顶层为可选块）
   - `features/v2.6.0/release-contract.md`（① 表 1 追加 F029 行，标注"不引入新领域对象、仅读取/调用现有对象"；② 表 2 追加 INV-7 完整三列定义（spec §9 已给出）；③ 表 3 追加 F029 行，依赖列填 "—"；④ 变更历史登记本次新增）
   **逻辑**:
   - `KnowledgeQAFilterConf` 字段：`index_filter_threshold: int = 5000`、`retrieval_initial_multiplier: int = 3`、`retrieval_expansion_multiplier: int = 10`、`fine_grained_concurrency: int = 8`
@@ -66,8 +66,8 @@
 
 - [x] **T003**: KnowledgeFileVisibilityService 实现 + FastAPI 依赖工厂（commit `98942f52c`，arch-guard 通过）
   **文件**:
-  - `src/backend/bisheng/knowledge/domain/services/knowledge_file_visibility_service.py`（新建）
-  - `src/backend/bisheng/knowledge/api/dependencies.py`（修改：新增 `get_knowledge_file_visibility_service(request: Request, login_user: UserPayload = Depends(UserPayload.get_login_user)) -> KnowledgeFileVisibilityService` 工厂函数，供 T005/T007/T009 endpoints 与下游 service 通过 Depends 拿实例）
+  - `src/backend/doberman_agent/knowledge/domain/services/knowledge_file_visibility_service.py`（新建）
+  - `src/backend/doberman_agent/knowledge/api/dependencies.py`（修改：新增 `get_knowledge_file_visibility_service(request: Request, login_user: UserPayload = Depends(UserPayload.get_login_user)) -> KnowledgeFileVisibilityService` 工厂函数，供 T005/T007/T009 endpoints 与下游 service 通过 Depends 拿实例）
   **逻辑**:
   - 构造函数注入 `request: Request, login_user: UserPayload`
   - `is_space_visible(space_id) -> bool`：non-throwing 版本，复用 `KnowledgeSpaceService._require_permission_id('knowledge_space', space_id, 'view_space')` 的判定逻辑，捕获 `SpacePermissionDeniedError` 返回 False
@@ -110,7 +110,7 @@
   **依赖**: T003
 
 - [x] **T005**: KnowledgeSpaceChatService 实现（commit `f274a1fa0`，`_retrieve_and_filter` + `_render_rag_response` + chat_folder 重接线）
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py`（修改）
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py`（修改）
   **逻辑**:
   - 拆分 `_build_folder_search_kwargs` → `_compute_candidate_file_ids(knowledge_id, folder_id, tags) -> Optional[List[int]]`（保留原 candidate 计算逻辑）
   - 新增 `_retrieve_with_post_filter(space, query, candidate, top_k, max_content) -> List[Document]`：按 spec §7.4 五步流程实现（调 `build_index_prefilter` → 首轮 ×3 → 抽 unique file_id → `post_filter_visible_files` → 截到 top_k → 不足则扩张到 ×10 一次 → 仍不足返回）；每轮结束写结构化日志（AC-27 字段）
@@ -140,7 +140,7 @@
   **依赖**: T003
 
 - [x] **T007**: WorkStationService.queryChunksFromDB 实现（commit `a924fab12`，Stage 1 + Stage 3）
-  **文件**: `src/backend/bisheng/workstation/domain/services/workstation_service.py`（修改）
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/workstation_service.py`（修改）
   **逻辑**: 按 spec §7.2b 表格逐项落地：
   - 进入循环前对 `space_bucket` 的每个 kb_id 调 `KnowledgeFileVisibilityService.is_space_visible(kb_id)`；不通过则 `continue` + INFO 日志（AC-11）
   - 构造 `MultiRetriever` 的 `search_kwargs` 注入 `build_index_prefilter(kb_id, None)` 的产物（与 chat_folder 路径一致）
@@ -177,11 +177,11 @@
 
 - [x] **T009**: CitationResolveService 实现（commit `d55bdfbb6`，删除 `_has_file_access`，新增 `_filter_visible_rag_items`；arch-guard RULE-8 VIOLATION 消除）
   **文件**:
-  - `src/backend/bisheng/citation/domain/services/citation_resolve_service.py`（修改）
-  - `src/backend/bisheng/citation/api/dependencies.py`（修改：构造时注入 `KnowledgeFileVisibilityService`）
+  - `src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py`（修改）
+  - `src/backend/doberman_agent/citation/api/dependencies.py`（修改：构造时注入 `KnowledgeFileVisibilityService`）
   **逻辑**:
   - 删除 `_has_file_access` 静态方法（旧 RBAC `AccessType.KNOWLEDGE` 调用，arch-guard RULE-8 VIOLATION）
-  - 删除对 `from bisheng.database.models.role_access import AccessType` 的导入
+  - 删除对 `from doberman_agent.database.models.role_access import AccessType` 的导入
   - 新增 `_filter_visible_rag_items(items: List[CitationRegistryItemSchema], login_user: Optional[UserPayload]) -> List[CitationRegistryItemSchema]`：
     1. `login_user is None` → 直返（AC-20，匿名直通）
     2. 提取 RAG 类型 items 的 (knowledgeId, documentId) 对；按 knowledgeId 分组

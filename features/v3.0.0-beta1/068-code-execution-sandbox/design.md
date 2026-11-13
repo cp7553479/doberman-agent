@@ -191,8 +191,8 @@ flowchart TB
     end
 
     subgraph Isolated["sandbox_net · 执行侧"]
-        R1["code-runner-1<br/>镜像 bisheng-sandbox"]
-        R2["code-runner-N<br/>镜像 bisheng-sandbox"]
+        R1["code-runner-1<br/>镜像 doberman-agent-sandbox"]
+        R2["code-runner-N<br/>镜像 doberman-agent-sandbox"]
     end
 
     Cloud["云沙箱控制面<br/>仅 e2b 后端"]
@@ -241,13 +241,13 @@ flowchart TB
 
 | # | 产品入口 | 今天的装配锚点 | F068 怎么用沙箱 |
 |---|---|---|---|
-| 1 | 灵思任务模式 | `linsight/.../workbench_impl.py:_init_bisheng_code_tool` → `ToolExecutor` | `keep_session=True`；`run()` 时刻 copy-in 整个任务工作区（含已物化 `skills/`）；产物 `sync_to_workspace`；任务结束才 DELETE |
+| 1 | 灵思任务模式 | `linsight/.../workbench_impl.py:_init_doberman-agent_code_tool` → `ToolExecutor` | `keep_session=True`；`run()` 时刻 copy-in 整个任务工作区（含已物化 `skills/`）；产物 `sync_to_workspace`；任务结束才 DELETE |
 | 2 | 工作台日常会话 | `workstation/.../chat_service.py:_prepare_tools` → `ToolExecutor`（`DAILY_CHAT`） | `keep_session=False`；**原件不进沙箱**；一次 `run` 结束 DELETE |
 | 3 | 助手 | `api/services/assistant_agent.py` → `ToolExecutor`（`ASSISTANT`） | 同路径 2 |
 | 4 | 工作流 Agent 节点 | `workflow/nodes/agent/agent.py:_init_tools` | 一次一清；copy-in 该次工具工作目录 |
 | 5 | 工作流工具节点 | `workflow/nodes/tool/tool.py` `invoke` | 同路径 4，无多轮粘滞 |
 
-共同 dispatch：`tool/domain/services/executor.py:ToolExecutor` 注入 MinIO → `bisheng_langchain/gpts/load_tools.py:_get_native_code_interpreter` 按 `type` 显式三分支 `local | container | e2b`（禁止 `else` 吞未知 type，§5 坑 7）。
+共同 dispatch：`tool/domain/services/executor.py:ToolExecutor` 注入 MinIO → `doberman_agent_langchain/gpts/load_tools.py:_get_native_code_interpreter` 按 `type` 显式三分支 `local | container | e2b`（禁止 `else` 吞未知 type，§5 坑 7）。
 
 **档 B：工作流代码节点**
 
@@ -356,13 +356,13 @@ sequenceDiagram
 
 ### 4.4 镜像数量与内容
 
-本期 **只新增 1 个镜像**：`dataelement/bisheng-sandbox`。
+本期 **只新增 1 个镜像**：`cp7553479/doberman-agent-sandbox`。
 
 | 镜像 | 谁构建 | 本期动作 |
 |---|---|---|
-| `bisheng-backend` | 已有 | 不改镜像职责；worker 里多一个 HTTP 客户端 |
-| `bisheng-frontend` | 已有 | 配置弹窗加一个选项 |
-| **`bisheng-sandbox`（新）** | 本 Feature | 从 `src/backend/base.Dockerfile` 派生：完整 venv + LibreOffice/pandoc/字体 + runner HTTP 进程。一份镜像同时当「执行环境」和「租约服务」，不拆 runner-manager 镜像 |
+| `doberman-agent-backend` | 已有 | 不改镜像职责；worker 里多一个 HTTP 客户端 |
+| `doberman-agent-frontend` | 已有 | 配置弹窗加一个选项 |
+| **`doberman-agent-sandbox`（新）** | 本 Feature | 从 `src/backend/base.Dockerfile` 派生：完整 venv + LibreOffice/pandoc/字体 + runner HTTP 进程。一份镜像同时当「执行环境」和「租约服务」，不拆 runner-manager 镜像 |
 | 云沙箱 | 厂商 | 不构建。`e2b` 继续走其 SDK，不包进我们的镜像 |
 
 不拆第二份瘦镜像的原因见决策 7。不拆 manager 镜像的原因见决策 2。
@@ -668,7 +668,7 @@ sequenceDiagram
 
 ### 4.6 compose 与 K8s 如何挂沙箱
 
-两种编排支持的是**同一件事**：声明 N 个 `bisheng-sandbox` 副本，把每一台的 URL 写进平台的 `endpoints`，并用网络策略把 runner 从中间件网段里摘出去。应用代码看不到 docker / kube-apiserver，也不按主机名扫描副本。**本期交付 compose；K8s 协议兼容，不强制交清单、不要求客户新上集群。**
+两种编排支持的是**同一件事**：声明 N 个 `doberman-agent-sandbox` 副本，把每一台的 URL 写进平台的 `endpoints`，并用网络策略把 runner 从中间件网段里摘出去。应用代码看不到 docker / kube-apiserver，也不按主机名扫描副本。**本期交付 compose；K8s 协议兼容，不强制交清单、不要求客户新上集群。**
 
 | 维度 | docker compose（本期交付） | Kubernetes（协议兼容） |
 |---|---|---|
@@ -684,7 +684,7 @@ sequenceDiagram
 | | docker compose | Kubernetes |
 |---|---|---|
 | 地址写在哪 | backend / worker 的 `BS_SANDBOX_CONF__ENDPOINTS` | 平台 chart 的 `sandbox.endpoints`，注入同一环境变量 |
-| 默认两台 | `http://code-runner-1:8080`、`http://code-runner-2:8080` | `http://code-runner-0.code-runner.bisheng-sandbox.svc.cluster.local:8080`、`…-1…` |
+| 默认两台 | `http://code-runner-1:8080`、`http://code-runner-2:8080` | `http://code-runner-0.code-runner.doberman-agent-sandbox.svc.cluster.local:8080`、`…-1…` |
 | 粘滞绑什么 | `http://code-runner-2:8080` | `http://code-runner-1.code-runner:8080` |
 | 与 runner 的 HTTP | 相同：`POST /v1/sessions` → files/exec/DELETE | 相同 |
 | 不做什么 | 不扫描 `code-runner-{n}`，不查一个叫 `code-runner` 的 VIP | 不按 ordinal 递增解析到 NXDOMAIN；不把 Service 名 `code-runner` 当唯一入口（那会变成多 A / kube-proxy 打散） |
@@ -729,7 +729,7 @@ services:
       BS_SANDBOX_CONF__ENDPOINTS: '["http://code-runner-1:8080","http://code-runner-2:8080"]'
 
   code-runner-1: &runner
-    image: dataelement/bisheng-sandbox:${TAG}
+    image: cp7553479/doberman-agent-sandbox:${TAG}
     networks: [sandbox_net]
     # 加固字段：cap_drop / read_only / mem_limit / tmpfs / user 65534
     # 无 ports: —— 不暴露到宿主
@@ -798,7 +798,7 @@ spec:
   ports: [{ port: 8080 }]
 ```
 
-worker **必须**列出每一台 Pod。平台 `sandbox.endpoints` 写入 `http://code-runner-0.code-runner.bisheng-sandbox.svc.cluster.local:8080` 这种具体 URL，领租约时只打这份列表。粘滞的是这份 URL，不是 Service 名 `code-runner`。headless Service 的作用是让序号 DNS 能被这份列表引用，不是当 VIP，也不是给 worker 做扫描。
+worker **必须**列出每一台 Pod。平台 `sandbox.endpoints` 写入 `http://code-runner-0.code-runner.doberman-agent-sandbox.svc.cluster.local:8080` 这种具体 URL，领租约时只打这份列表。粘滞的是这份 URL，不是 Service 名 `code-runner`。headless Service 的作用是让序号 DNS 能被这份列表引用，不是当 VIP，也不是给 worker 做扫描。
 
 **不要**用普通 ClusterIP 当唯一入口——kube-proxy 会把第二次 `exec` 打到另一台 Pod。也**不要**让 runner 向 Redis / API 注册：用户代码与 runner 同 netns，注册出站等于给执行侧开中间件通道（决策 12）。
 
@@ -864,7 +864,7 @@ flowchart TB
 
 **E2B 线上是三层协议，不是一条 `/exec`**（所以不能伪装成副本池的 `/v1/sessions`）：
 
-| 层 | 地址 | 鉴权 | 毕昇实际调用 |
+| 层 | 地址 | 鉴权 | doberman-agent实际调用 |
 |---|---|---|---|
 | ① 控制面 | `https://api.e2b.app` REST：`POST/DELETE /sandboxes` 等 | `X-API-Key` | `Sandbox(...)` / `sandbox.kill()` |
 | ② 数据面 envd | 默认端口 **49983**：`POST/GET /files`、ConnectRPC `Filesystem.*` / `Process.Start` | `E2b-Sandbox-Id` + `E2b-Sandbox-Port`；`secure: true` 时还有 `X-Access-Token` | `files.write` / `read` / `list` / `make_dir`。解释器 **不用** Process RPC |
@@ -872,7 +872,7 @@ flowchart TB
 
 `run_code` **跨调用保留 kernel 变量**（上一轮 `x = 1` 下一轮还能用）。F068 `/exec` 是一次独立子进程，磁盘靠 sticky 目录保留，Python 进程不保留。访问沙箱的新写法是共享主机 `sandbox.{domain}` + 两个路由 header；旧写法 `https://{port}-{sandboxID}.e2b.app`。worker **直连**云控制面；runner 零出站。
 
-**`SIZE_AUTOPUSH = 5MB` 不是 E2B 接口上限。** 是 F035（design §9.3.9）给「自动 copy-in」定的产品阈值：沙箱碰不到 MinIO，worker 必须 `f.read()` 整文件再 `files.write`；每次 `run` 把工作区全量出境会变成 silent bulk transfer。设计意图是 ≤5MB 自动 delta push，>5MB 由模型在 `required_files` 声明后再中转。现状对不上：工具 schema 只有 `python_code`；`_materialize_working_set()` 固定 `{}`；`workbench_impl._init_bisheng_code_tool` 装配时把 oversized 从 `file_list` 剔除。所以 **E2B 模式下 >5MB 等于进不去沙箱**。本地执行器不受影响（cwd=`file_dir`，原件可到 `_RAW_KEEP_MAX_BYTES` 50MB）。本期不还这笔债；容器模式用 `max_copy_in_bytes` + AC-10 点名跳过，不套 5MB 自动推送。
+**`SIZE_AUTOPUSH = 5MB` 不是 E2B 接口上限。** 是 F035（design §9.3.9）给「自动 copy-in」定的产品阈值：沙箱碰不到 MinIO，worker 必须 `f.read()` 整文件再 `files.write`；每次 `run` 把工作区全量出境会变成 silent bulk transfer。设计意图是 ≤5MB 自动 delta push，>5MB 由模型在 `required_files` 声明后再中转。现状对不上：工具 schema 只有 `python_code`；`_materialize_working_set()` 固定 `{}`；`workbench_impl._init_doberman-agent_code_tool` 装配时把 oversized 从 `file_list` 剔除。所以 **E2B 模式下 >5MB 等于进不去沙箱**。本地执行器不受影响（cwd=`file_dir`，原件可到 `_RAW_KEEP_MAX_BYTES` 50MB）。本期不还这笔债；容器模式用 `max_copy_in_bytes` + AC-10 点名跳过，不套 5MB 自动推送。
 
 **不要做的**
 
@@ -927,7 +927,7 @@ sequenceDiagram
 **改造清单（独立 Feature，不并进 F068）**
 
 1. `E2bCodeExecutor` 只实现 `execute_code` / `close`，删掉私有的产物收割；走共享 `run_with_dir`（决策 4）。出口改成与本地模式相同的 `{exitcode, log, file_list}`，或与决策 5 一起做契约归一——不要第三种 ToolMessage 形状再活一轮。
-2. 灵思 `_init_bisheng_code_tool`：**删掉**为 E2B 预扫 `file_list` 的那段。copy-in 改到 `run()` 时刻，与 container 相同，`path_namespace_rules(include_skills=True)`。这是坑 4，不修则技能包在 E2B 里继续结构性缺失。
+2. 灵思 `_init_doberman-agent_code_tool`：**删掉**为 E2B 预扫 `file_list` 的那段。copy-in 改到 `run()` 时刻，与 container 相同，`path_namespace_rules(include_skills=True)`。这是坑 4，不修则技能包在 E2B 里继续结构性缺失。
 3. copy-out 必须**递归**列举（`files.list` 默认一层是坑 12）。FakeSandbox 必须尊重 path，否则单测继续绿、线上继续丢 `output/` 子目录。
 4. `load_tools` 修坑 7：`config.e2b.type`（private/official）不得 `kwargs.update` 进执行器；只看 `domain` 是否为空。未知 `type` 报错，不要落入 E2B 分支。
 5. 代码节点：`SandboxCodeParser` 已通过同一 `execute_code` 跑 wrapper。E2B 映像若缺后端 venv 里的包，存量工作流会 `ImportError`——这是决策 7 在云镜像上的翻版，要在工具描述里写清可用库，或只用 E2B 跑解释器、代码节点继续强制 `container`。
@@ -946,16 +946,16 @@ sequenceDiagram
 | 1 | 工具返回的 dict **原样进 `ToolMessage`**，三种后端吐三种形状且无归一层 | 顺手「优化」字段名，模型行为与一批用例同时崩，且看不出因果 | 决策 5；`container_executor.py` 出口固定为本地模式形状 |
 | 2 | 成功日志有 30000 字符上限，是踩出来的：一次 112744 字节的结果越过 deepagents 卸载阈值，预览按行计算而 `json.dumps` 把整个结果压成一行，模型只看到开头，于是同一段脚本重发 79 次、78 分钟、13.8M token | 放开日志上限 → 复现该死循环 | `base_executor.py:MAX_SUCCESS_LOG_CHARS` / `clip_middle`；产物清单永不裁剪 |
 | 3 | 只读根文件系统下**必须**把 `HOME` / `XDG_CACHE_HOME` / `TMPDIR` 指到 **本 session 的 tmpfs 目录**，不能用容器级 `/tmp/home` | 指到镜像只读路径 → soffice 失败；指到容器级共享 HOME → 下一租约读到上一租户的 office profile | 执行侧按租约覆盖 env；DELETE 时 rmtree 该树 |
-| 4 | 灵思今天为 E2B 预扫工作目录生成 `file_list`，而技能包物化**晚于**这次快照，所以 E2B 模式下 `skills/` 结构性不可见（代码里有 `include_skills=False` 的自认，且被用例钉住） | 以为容器模式也看不到技能包，于是照抄 `include_skills=False`，白白丢掉这次改造最大的红利 | 容器模式在 `run()` 时刻 copy-in，`path_namespace_rules(include_skills=True)`；`_init_bisheng_code_tool` 的预扫与尺寸过滤整段不再需要 |
+| 4 | 灵思今天为 E2B 预扫工作目录生成 `file_list`，而技能包物化**晚于**这次快照，所以 E2B 模式下 `skills/` 结构性不可见（代码里有 `include_skills=False` 的自认，且被用例钉住） | 以为容器模式也看不到技能包，于是照抄 `include_skills=False`，白白丢掉这次改造最大的红利 | 容器模式在 `run()` 时刻 copy-in，`path_namespace_rules(include_skills=True)`；`_init_doberman-agent_code_tool` 的预扫与尺寸过滤整段不再需要 |
 | 5 | 4 路并发的内存下限是 384Mi，低于此必被 OOM killer 杀；`rc=137` 且 soffice 只吐一句无关的 javaldx 警告，**报错完全指不到内存** | 把 OOM 误判成 LibreOffice 缺组件，往错误方向排查很久 | compose `mem_limit: 2g` 留余量；错误分类识别 137 |
 | 6 | Docker 的 `--tmpfs` **默认已带** `noexec,nosuid,nodev`，且 LibreOffice 在 noexec 的 `/tmp` 上正常工作 | 以为要为此写额外适配，或误以为该档位没生效 | compose `tmpfs` 条目 |
 | 7 | 前端把 `config.e2b.type`（`private`/`official`）塞进 e2b 段，后端 `kwargs.update(config)` 会把它当 `type` kwarg 传给执行器、被 `**kwargs` 吞掉；真正区分自建/官方的只有 `domain` 传不传 | 照此模式给 container 段加 `type`，得到同一个静默失效 | 本 Feature 顺手修 `load_tools.py` 的 dispatch |
 | 8 | 工作流代码节点今天可以从 `main()` 返回**任意 Python 对象**并写入 `graph_state` | 迁到隔离执行后这类存量工作流静默产出空值或报无关错误 | `SandboxCodeParser` 显式报 `28005`；`code_node_enabled` 开关可回退 |
-| 9 | 在发布的 `config.yaml` 里新增顶层 key 会让**旧版本镜像**拒绝启动（配置加载在 import 期遍历顶层 key 并对 `Settings` 缺失字段抛 `KeyError`），表现为容器重启循环 | 加 `sandbox_conf` 段后，混版部署直接起不来 | `docker/bisheng/config/config.yaml` 中该段**注释掉**发布 |
+| 9 | 在发布的 `config.yaml` 里新增顶层 key 会让**旧版本镜像**拒绝启动（配置加载在 import 期遍历顶层 key 并对 `Settings` 缺失字段抛 `KeyError`），表现为容器重启循环 | 加 `sandbox_conf` 段后，混版部署直接起不来 | `docker/doberman-agent/config/config.yaml` 中该段**注释掉**发布 |
 | 10 | 副本池模型下同一执行副本会先后承载不同租户的执行 | 以为「已经进容器了」就撤掉逃逸拒绝规则，重新打开跨租户读取面 | 决策 6：`workspace_escape_guard` 保留 |
 | 11 | 灵思的产物可见性依赖 `sync_to_workspace` 把文件镜像进对象存储，只留本地副本会让模型 `ls` 不到自己刚写的文件、且下一轮继承为空 | 换后端时漏掉这步，复现两个历史缺陷 | 共享实现里保留（决策 4） |
 | 12 | E2B 的产物枚举只列一层目录（`files.list('./')` 默认非递归），`output/` 子目录产物列不出来；单测之所以绿是因为 Fake 实现忽略了 path 参数 | 参照 E2B 写容器模式的 copy-out，重现同一缺陷；且 Fake 会替你把它藏住 | 容器模式 copy-out 用递归 tar；Fake 客户端必须尊重路径语义 |
-| 13 | **沙箱不是边界，宿主侧配置面才是**：Cymulate 2026-05 的研究显示 Claude Code / Gemini CLI / Codex CLI 三家的逃逸根因都是「沙箱被当成边界，而真正的边界——宿主侧配置与执行逻辑——从沙箱内可写」。bisheng 现有 compose 把 `config.yaml` 与 `entrypoint.sh` 以**可写**方式 bind-mount 进容器，正好命中这个模式 | 把执行搬进容器后误以为已经安全，而改配置文件这条更短的路仍然开着 | compose 对应挂载加 `:ro`，且执行侧完全不挂载这两个文件（AC-28） |
+| 13 | **沙箱不是边界，宿主侧配置面才是**：Cymulate 2026-05 的研究显示 Claude Code / Gemini CLI / Codex CLI 三家的逃逸根因都是「沙箱被当成边界，而真正的边界——宿主侧配置与执行逻辑——从沙箱内可写」。doberman-agent 现有 compose 把 `config.yaml` 与 `entrypoint.sh` 以**可写**方式 bind-mount 进容器，正好命中这个模式 | 把执行搬进容器后误以为已经安全，而改配置文件这条更短的路仍然开着 | compose 对应挂载加 `:ro`，且执行侧完全不挂载这两个文件（AC-28） |
 | 14 | 同容器、同 uid 下的兄弟目录**不是**会话数据隔离；全局 Bearer 也挡不住同网 DELETE 邻居租约 | 把槽位调到 2 或只靠目录权限，用户代码能读/写邻居文件，或打 localhost 删邻居 session | 决策 13：独立 uid + 父目录 0711 + `/tmp` 0755 + 按会话 lease_token |
 | 15 | tar 解包若不校验成员路径，`../` 或绝对路径会写出 session 目录（zip-slip） | copy-in 被用户代码或被污染的工作区带着逃出 `work_dir` | PUT/GET 两侧都拒绝 `..` 与绝对路径；成员必须落在该 UUID 目录内 |
 | 16 | 决策 7 的「venv 对等」会把 `minio` / `playwright` 等客户端库带进沙箱，但 Chromium 二进制默认不装、中间件也连不上 | 以为能 `playwright.launch()` 或 `Minio(...)` 上传；或反过来把 playwright 包从锁文件里删掉导致代码节点 ImportError | 工具描述只承诺办公/数据那批库；浏览器技能运行时探测；`import minio` 成功 ≠ 能连 MinIO |
@@ -1008,7 +1008,7 @@ sequenceDiagram
 cd docker && docker compose up -d code-runner
 
 # 2. 加固档位确权
-docker inspect bisheng-code-runner --format \
+docker inspect doberman-agent-code-runner --format \
   '{{.HostConfig.CapDrop}} {{.HostConfig.ReadonlyRootfs}} {{.HostConfig.Memory}} {{.HostConfig.PidsLimit}}'
 
 # 3. 网络隔离反向校验（应失败）

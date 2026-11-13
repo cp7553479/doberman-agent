@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import messages from '../../../locales/en/api_errors.gen.json';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { getSpaceTagsApi } from '~/api/knowledge';
 import { CompoundSearchInput } from './CompoundSearchInput';
 

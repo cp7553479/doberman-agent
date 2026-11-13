@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { uploadFileToServerApi } from '~/api/knowledge';
 import { uploadFilesSequential } from './useFileUpload';
 jest.mock('~/api/knowledge', () => ({ uploadFileToServerApi: jest.fn(), FileStatus: { UPLOADING: 'UPLOADING', WAITING: 'WAITING', PROCESSING: 'PROCESSING', REBUILDING: 'REBUILDING' } }));

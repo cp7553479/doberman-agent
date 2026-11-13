@@ -267,7 +267,7 @@ information_conf:
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `core/external/bisheng_information_client/client.py` | 封装订阅完整分页、单来源订阅/退订和异步文章请求，解析业务 code 与响应模型。 | 不计算 desired、不写 DB/ES、不记录 API Key。 |
+| `core/external/doberman_agent_information_client/client.py` | 封装订阅完整分页、单来源订阅/退订和异步文章请求，解析业务 code 与响应模型。 | 不计算 desired、不写 DB/ES、不记录 API Key。 |
 | `channel/domain/models/information_article_sync_state.py` | 声明唯一新增公共状态表。 | 不保存租户或知识投递状态。 |
 | `channel/domain/repositories/*information*_repository*` | 读取/锁定/提交公共状态，读取当前租户频道与配置，upsert 公共来源元数据。 | 不调用公网、不编排 Celery。 |
 | `channel/domain/services/information_subscription_reconcile_service.py` | 校验完整快照、计算差集、逐来源收敛与最终漂移结果。 | 不管理 Beat，不设置 tenant Context。 |
@@ -285,7 +285,7 @@ information_conf:
 
 | # | 反直觉事实 | 如果不知道会怎样 | 在哪处理 |
 |---|---|---|---|
-| 1 | Information 的鉴权/业务错误常仍是 HTTP 200。 | 把失败页当空页，自动退订或错误推进水位。 | `core/external/bisheng_information_client/client.py::_handle_response` 与完整分页方法。 |
+| 1 | Information 的鉴权/业务错误常仍是 HTTP 200。 | 把失败页当空页，自动退订或错误推进水位。 | `core/external/doberman_agent_information_client/client.py::_handle_response` 与完整分页方法。 |
 | 2 | 调接口使用订阅项 `id`，不是字段名相近的 `source_id`。 | 详情、订阅或文章请求返回不存在。 | Client 响应模型、Service 的 `source_id` 命名约定。 |
 | 3 | `/subscriptions` 没有快照 token。 | 分页期间并发写导致局部 actual，并可能误退订。 | 对账是唯一远端订阅写者；`worker/information/reconcile.py` 平台锁 + total/唯一数校验。 |
 | 4 | `last_sync_at` 只说明上游成功执行，不说明有新文章。 | 每次上游任务都重复拉文章。 | `InformationArticleSyncService` 同时比较 `article_list_updated_at`。 |
@@ -343,15 +343,15 @@ information_conf:
 
 - **单元测试**：以 fake Client/Repository/Redis/ES 覆盖完整/不完整租户快照、分页 total/重复 ID、逐个失败隔离、自动退订开关默认 true、Key 更换、远端未就绪、水位不变、包含边界、首次 20 边界固化、分页中断、bulk 部分成功、锁丢失、知识主/子频道路由、配置生效时间和全部终态失败分类。
 - **集成测试**：验证 SQLModel 新表自动发现、MySQL 行锁/CAS、`channel_info_source` 全局读取及租户卸载不迁移、ES mget/bulk/refresh 顺序、Celery 参数可 JSON 序列化、配置 missing-key backfill；DM8 语法进入中央回归。
-- **E2E**：本 Feature 无新增或修改的对外 HTTP API/页面，按仓库 `e2e-test` 规范不生成伪 API E2E；真实环境按 `e2e-checklist.md` 覆盖两个租户共享来源只订阅/拉取一次、上游晚于毕昇首次轮询、首次数量配置、边界重复不二次投递、主/子频道知识投递和失败不重试。真实 Information/ES/MinIO 不可用时必须标记未执行，不能用 mock 结果冒充真实 E2E。
+- **E2E**：本 Feature 无新增或修改的对外 HTTP API/页面，按仓库 `e2e-test` 规范不生成伪 API E2E；真实环境按 `e2e-checklist.md` 覆盖两个租户共享来源只订阅/拉取一次、上游晚于doberman-agent首次轮询、首次数量配置、边界重复不二次投递、主/子频道知识投递和失败不重试。真实 Information/ES/MinIO 不可用时必须标记未执行，不能用 mock 结果冒充真实 E2E。
 
 ### 7.2 手动验证
 
 在 `src/backend/`、已配置测试 Information API Key 且默认 Worker 正常消费的环境执行：
 
 ```bash
-uv run celery -A bisheng.worker.main call bisheng.worker.information.reconcile.reconcile_information_subscriptions
-uv run celery -A bisheng.worker.main call bisheng.worker.information.article.sync_information_articles
+uv run celery -A doberman_agent.worker.main call doberman_agent.worker.information.reconcile.reconcile_information_subscriptions
+uv run celery -A doberman_agent.worker.main call doberman_agent.worker.information.article.sync_information_articles
 ```
 
 验证步骤：

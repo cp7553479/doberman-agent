@@ -12,7 +12,7 @@ import { NotificationSeverity } from "~/common";
 import { useToastContext } from "~/Providers";
 import { cn } from "~/utils";
 import { Button } from "~/components/ui/Button";
-import { Dropdown, DropdownItem, DropdownSeparator, SearchInput } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator, SearchInput } from "@doberman-agent/ui";
 import {
     Dialog,
     DialogClose,

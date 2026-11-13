@@ -27,12 +27,12 @@
 ### Wave 1 — 基础设施
 
 - [x] **T001**: `license_info` ORM
-  **文件**: `src/backend/bisheng/commercial_license/domain/models/license_info.py`
+  **文件**: `src/backend/doberman_agent/commercial_license/domain/models/license_info.py`
   **逻辑**: 继承 `SQLModelSerializable`，`table=True`，`__tablename__='license_info'`。列按 design §4.3：`license_code` PK（`gateway`/`etl`/`dashboard`）、`expire_date`、`days_remaining`、`display_state`、`source_status`、`checked_at`、`extra` JSON、`create_time`/`update_time`（统一 server default）。**禁止 `tenant_id`**。整表新建靠启动 `create_all`，不写 create-table Alembic；模型须能被启动路径 import（T012 注册路由时带上），否则 `create_all` 建不出表。回滚：删模型后 `DROP TABLE license_info`。
   **依赖**: 无
 
 - [x] **T002**: 错误码 270 + C5 登记
-  **文件**: `src/backend/bisheng/common/errcode/commercial_license.py`,
+  **文件**: `src/backend/doberman_agent/common/errcode/commercial_license.py`,
            `docs/constitution.md`
   **逻辑**: `BaseErrorCode` 子类，模块号 270（上报体非法 27001）。在 constitution C5 表**只追加一行** `270 commercial_license`，不改其它模块号。不占用 11x，不把 Gateway 11001 收进本模块。release-contract 已预登记 270。
   **依赖**: 无
@@ -46,7 +46,7 @@
   **依赖**: 无
 
 - [x] **T004**: Gateway / ETL mapper
-  **文件**: `src/backend/bisheng/commercial_license/domain/mappers.py`
+  **文件**: `src/backend/doberman_agent/commercial_license/domain/mappers.py`
   **逻辑**: `map_gateway_payload` / `map_etl_payload` / `compute_display_state(expire_date, days_remaining, today)`。实现 T003 断言。论证见 design 决策 4。
   **覆盖 AC**: AC-02, AC-03, AC-04, AC-15
   **依赖**: T003
@@ -58,8 +58,8 @@
   **依赖**: T001, T004
 
 - [x] **T006**: repository + upsert
-  **文件**: `src/backend/bisheng/commercial_license/domain/repositories/license_info_repository.py`,
-           `src/backend/bisheng/commercial_license/domain/services/upsert.py`
+  **文件**: `src/backend/doberman_agent/commercial_license/domain/repositories/license_info_repository.py`,
+           `src/backend/doberman_agent/commercial_license/domain/services/upsert.py`
   **逻辑**: `get_all` / `get_by_code` / `upsert`。`upsert_mapped` 只接受三个枚举 code。`keep_previous_on_fetch_failure(code)` 不写库。无 `tenant_id` 过滤。
   **覆盖 AC**: AC-14, AC-15, AC-16
   **依赖**: T001, T002, T005
@@ -73,7 +73,7 @@
   **依赖**: T004, T006
 
 - [x] **T008**: ETL 同步实现
-  **文件**: `src/backend/bisheng/commercial_license/domain/services/etl_sync.py`
+  **文件**: `src/backend/doberman_agent/commercial_license/domain/services/etl_sync.py`
   **逻辑**: 读 `settings.get_knowledge().etl4lm.url`，剥 origin（design 坑 1），超时 2–3s，用项目 HTTP 客户端。不根据 url 是否存在推断授权有效。
   **覆盖 AC**: AC-05, AC-16
   **依赖**: T007
@@ -85,7 +85,7 @@
   **依赖**: T006, T008
 
 - [x] **T010**: 聚合服务
-  **文件**: `src/backend/bisheng/commercial_license/domain/services/aggregator.py`
+  **文件**: `src/backend/doberman_agent/commercial_license/domain/services/aggregator.py`
   **逻辑**: `list_license_status(now)` 实现 T009。返回字段：`license_code`、`license_name`（=code）、`display_state`、`expire_date`、`days_remaining`、`checked_at`。不新增看板/ETL 过期拦截。
   **覆盖 AC**: AC-01, AC-17, AC-19, AC-22
   **依赖**: T009
@@ -99,17 +99,17 @@
   **依赖**: T006, T010
 
 - [x] **T012**: 端点 + 路由注册
-  **文件**: `src/backend/bisheng/commercial_license/api/router.py`,
-           `src/backend/bisheng/api/router.py`
-  **逻辑**: 本模块 `router.py` 内写 `GET /status`、`POST /gateway`（`resp_200`；登录用户 + `is_global_super`）。GET 委托 `list_license_status`（含 ETL 补拉）；POST 只 `upsert` gateway。在 `bisheng/api/router.py` **只追加** `include_router`，不改其它路由。本仓不改 Gateway Java 降级白名单（AC-24）。
+  **文件**: `src/backend/doberman_agent/commercial_license/api/router.py`,
+           `src/backend/doberman_agent/api/router.py`
+  **逻辑**: 本模块 `router.py` 内写 `GET /status`、`POST /gateway`（`resp_200`；登录用户 + `is_global_super`）。GET 委托 `list_license_status`（含 ETL 补拉）；POST 只 `upsert` gateway。在 `doberman-agent/api/router.py` **只追加** `include_router`，不改其它路由。本仓不改 Gateway Java 降级白名单（AC-24）。
   **覆盖 AC**: AC-18, AC-19, AC-20, AC-24
   **依赖**: T002, T011
 
 - [x] **T013**: ETL Beat 任务
-  **文件**: `src/backend/bisheng/worker/commercial_license/tasks.py`,
-           `src/backend/bisheng/worker/__init__.py`,
-           `src/backend/bisheng/core/config/settings.py`
-  **逻辑**: 定义 `refresh_etl_license`，任务体直接调 `etl_sync`。在 `worker/__init__.py` **只追加**该任务 import（Celery `include=["bisheng.worker"]` 靠这里注册）。在 `CeleryTask.beat_schedule` 默认补 `refresh_etl_license`，`schedule=3600.0`，task 路径 `bisheng.worker.commercial_license.tasks.refresh_etl_license`。**不传 tenant_id，不遍历租户，不恢复租户 ContextVar**（INV-35 / design 坑 7）。默认 `celery` 队列。
+  **文件**: `src/backend/doberman_agent/worker/commercial_license/tasks.py`,
+           `src/backend/doberman_agent/worker/__init__.py`,
+           `src/backend/doberman_agent/core/config/settings.py`
+  **逻辑**: 定义 `refresh_etl_license`，任务体直接调 `etl_sync`。在 `worker/__init__.py` **只追加**该任务 import（Celery `include=["doberman_agent.worker"]` 靠这里注册）。在 `CeleryTask.beat_schedule` 默认补 `refresh_etl_license`，`schedule=3600.0`，task 路径 `doberman_agent.worker.commercial_license.tasks.refresh_etl_license`。**不传 tenant_id，不遍历租户，不恢复租户 ContextVar**（INV-35 / design 坑 7）。默认 `celery` 队列。
   **覆盖 AC**: AC-16
   **依赖**: T008
 
@@ -162,7 +162,7 @@
   **文件**: `src/frontend/packages/locales/src/api_errors/zh-Hans.json`,
            `src/frontend/packages/locales/src/api_errors/en.json`,
            `src/frontend/packages/locales/src/api_errors/ja.json`
-  **逻辑**: 三语同一批改 11001。改为 Gateway 点名文案。只改 locales 源，不手改 gen / `platform/public/locales/*/api_errors.json`；改完按仓库流程生成（`pnpm --filter @bisheng/locales` 的 build / 现有 pre-script）。
+  **逻辑**: 三语同一批改 11001。改为 Gateway 点名文案。只改 locales 源，不手改 gen / `platform/public/locales/*/api_errors.json`；改完按仓库流程生成（`pnpm --filter @doberman-agent/locales` 的 build / 现有 pre-script）。
   **覆盖 AC**: AC-12, AC-21
   **依赖**: 无
 

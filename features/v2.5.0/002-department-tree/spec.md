@@ -38,11 +38,11 @@
 - AD-07: UserDepartment 不加 tenant_id，隔离通过 Department.tenant_id 传递
 
 **关键文件（预判）**:
-- 新建: `src/backend/bisheng/database/models/department.py`
-- 新建: `src/backend/bisheng/department/`（DDD 模块：api/ + domain/）
-- 新建: `src/backend/bisheng/common/errcode/department.py`
-- 修改: `src/backend/bisheng/api/router.py`（路由注册）
-- 修改: `src/backend/bisheng/common/init_data.py`（默认根部门创建）
+- 新建: `src/backend/doberman_agent/database/models/department.py`
+- 新建: `src/backend/doberman_agent/department/`（DDD 模块：api/ + domain/）
+- 新建: `src/backend/doberman_agent/common/errcode/department.py`
+- 修改: `src/backend/doberman_agent/api/router.py`（路由注册）
+- 修改: `src/backend/doberman_agent/common/init_data.py`（默认根部门创建）
 
 **关联不变量**: INV-1, INV-12, INV-14
 
@@ -50,27 +50,27 @@
 
 ## 1. 概述与用户故事
 
-F002 为 BiSheng 引入组织架构的核心数据结构——部门树。部门树使用物化路径存储，支持无限层级、高效子树查询，是后续 ReBAC 权限（F004）、角色配额（F005）、资源授权管理（F007/F008）的基础。
+F002 为 doberman-agent 引入组织架构的核心数据结构——部门树。部门树使用物化路径存储，支持无限层级、高效子树查询，是后续 ReBAC 权限（F004）、角色配额（F005）、资源授权管理（F007/F008）的基础。
 
 无论多租户是否启用，部门功能始终可用。单租户模式下默认租户(id=1)拥有一棵组织树；多租户模式下每个租户各有独立的组织树。
 
 **用户故事 1**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **能创建、编辑、移动和归档部门，构建树形组织架构**，
 以便 **将用户按组织结构分组管理，后续为部门级别分配资源访问权限**。
 
 **用户故事 2**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **能批量将用户添加到部门并管理主/挂靠关系**，
 以便 **每个用户都有明确的组织归属，支持一人多部门场景**。
 
 **用户故事 3**:
-作为 **BiSheng 后续 Feature 开发者**，
+作为 **doberman-agent 后续 Feature 开发者**，
 我希望 **F002 提供 `create_root_department()` 服务方法和 DepartmentChangeHandler 元组 DTO**，
 以便 **F001/F010 的租户创建流程能原子地创建根部门，F004 的 PermissionService 能消费部门变更事件**。
 
 **用户故事 4**:
-作为 **BiSheng 运维人员**，
+作为 **doberman-agent 运维人员**，
 我希望 **升级到 v2.5.0 时默认租户自动获得根部门，存量系统正常运行**，
 以便 **零迁移成本升级，不影响现有功能**。
 
@@ -521,20 +521,20 @@ N/A — F002 不涉及前端变更。部门管理前端页面由 F010 实现。
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/database/models/department.py` | Department + UserDepartment ORM + DepartmentDao + UserDepartmentDao |
-| `src/backend/bisheng/common/errcode/department.py` | 210xx 部门错误码（10 个） |
-| `src/backend/bisheng/department/__init__.py` | DDD 模块包 |
-| `src/backend/bisheng/department/api/__init__.py` | API 子包 |
-| `src/backend/bisheng/department/api/router.py` | 路由聚合，prefix `/departments` |
-| `src/backend/bisheng/department/api/endpoints/__init__.py` | 端点子包 |
-| `src/backend/bisheng/department/api/endpoints/department.py` | 部门 CRUD + tree + move 端点 |
-| `src/backend/bisheng/department/api/endpoints/department_member.py` | 成员管理端点 |
-| `src/backend/bisheng/department/domain/__init__.py` | 领域子包 |
-| `src/backend/bisheng/department/domain/schemas/__init__.py` | DTO 子包 |
-| `src/backend/bisheng/department/domain/schemas/department_schema.py` | 请求/响应 Pydantic DTO |
-| `src/backend/bisheng/department/domain/services/__init__.py` | 服务子包 |
-| `src/backend/bisheng/department/domain/services/department_service.py` | 部门核心业务逻辑 |
-| `src/backend/bisheng/department/domain/services/department_change_handler.py` | TupleOperation DTO + 事件方法 + execute() 日志 stub |
+| `src/backend/doberman_agent/database/models/department.py` | Department + UserDepartment ORM + DepartmentDao + UserDepartmentDao |
+| `src/backend/doberman_agent/common/errcode/department.py` | 210xx 部门错误码（10 个） |
+| `src/backend/doberman_agent/department/__init__.py` | DDD 模块包 |
+| `src/backend/doberman_agent/department/api/__init__.py` | API 子包 |
+| `src/backend/doberman_agent/department/api/router.py` | 路由聚合，prefix `/departments` |
+| `src/backend/doberman_agent/department/api/endpoints/__init__.py` | 端点子包 |
+| `src/backend/doberman_agent/department/api/endpoints/department.py` | 部门 CRUD + tree + move 端点 |
+| `src/backend/doberman_agent/department/api/endpoints/department_member.py` | 成员管理端点 |
+| `src/backend/doberman_agent/department/domain/__init__.py` | 领域子包 |
+| `src/backend/doberman_agent/department/domain/schemas/__init__.py` | DTO 子包 |
+| `src/backend/doberman_agent/department/domain/schemas/department_schema.py` | 请求/响应 Pydantic DTO |
+| `src/backend/doberman_agent/department/domain/services/__init__.py` | 服务子包 |
+| `src/backend/doberman_agent/department/domain/services/department_service.py` | 部门核心业务逻辑 |
+| `src/backend/doberman_agent/department/domain/services/department_change_handler.py` | TupleOperation DTO + 事件方法 + execute() 日志 stub |
 | `src/backend/test/test_department_dao.py` | DAO 单元测试 |
 | `src/backend/test/test_department_service.py` | Service 单元测试 |
 | `src/backend/test/test_department_api.py` | API 集成测试 |
@@ -543,8 +543,8 @@ N/A — F002 不涉及前端变更。部门管理前端页面由 F010 实现。
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/api/router.py` | 导入并注册 `department_router` |
-| `src/backend/bisheng/common/init_data.py` | 添加 `_init_default_root_department(session)` 函数，在 `_init_default_tenant()` 后调用 |
+| `src/backend/doberman_agent/api/router.py` | 导入并注册 `department_router` |
+| `src/backend/doberman_agent/common/init_data.py` | 添加 `_init_default_root_department(session)` 函数，在 `_init_default_tenant()` 后调用 |
 | `src/backend/test/fixtures/table_definitions.py` | TABLE_DEPARTMENT 增加 dept_id/default_role_ids/create_user，TABLE_USER_DEPARTMENT 增加 source |
 | `src/backend/test/fixtures/factories.py` | 添加 `create_department()` + `create_user_department()` 工厂函数 |
 

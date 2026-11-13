@@ -2,8 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { refreshChannelState, useChannelStateRefresh } from "./Subscription/hooks/useChannelStateRefresh";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type UIEvent } from "react";
 import { EmptyStateIllustration } from "~/components/illustrations";
-import { Outlined } from "bisheng-icons";
-import { SearchInput } from "@bisheng/ui";
+import { Outlined } from "@doberman-agent/icons";
+import { SearchInput } from "@doberman-agent/ui";
 import { ChannelSquareCard } from "./ChannelSquareCard";
 import { useToastContext } from "~/Providers";
 import { NotificationSeverity } from "~/common";
@@ -411,7 +411,7 @@ function ChannelSquare({
         onScroll={handleListScroll}
       >
         <div className={cn("mx-auto mb-6 mt-6 w-full max-w-[480px]", isH5 && "px-4")}>
-          {/* Spec search field (@bisheng/ui): magnifier prefix, Enter is a no-op
+          {/* Spec search field (@doberman-agent/ui): magnifier prefix, Enter is a no-op
               here because the filter is realtime via onChange. */}
           <SearchInput
             placeholder={tSearchPlaceholder}

@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.database.alembic_helpers.dm_ddl import build_modify_column_ddl
+from doberman_agent.core.database.alembic_helpers.dm_ddl import build_modify_column_ddl
 
 # Quote what a real preparer would quote: reserved words, nothing else.
 _RESERVED = {"user", "order", "session"}
@@ -34,7 +34,7 @@ def test_reserved_column_name_is_still_quoted():
     assert stmt == 'ALTER TABLE knowledge MODIFY "user" VARCHAR2(64 CHAR)'
 
 
-@pytest.mark.parametrize("schema", ["BISHENG_105"])
+@pytest.mark.parametrize("schema", ["DOBERMAN_AGENT_105"])
 def test_schema_is_prefixed(schema):
     stmt = build_modify_column_ddl(_PREPARER, "user", "user_name", "VARCHAR2(128 CHAR)", schema)
     assert stmt == f'ALTER TABLE {schema}."user" MODIFY user_name VARCHAR2(128 CHAR)'

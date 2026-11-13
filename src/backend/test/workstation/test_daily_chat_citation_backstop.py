@@ -5,7 +5,7 @@
 ``replace_legacy_citation_rules(<admin prompt with {cur_date} replaced>)``: the
 model is taught the ``[Sn]`` handle rules and never the verbatim-id format.
 Pinned here by capturing the exact message list the model receives on the
-no-tools branch (``bisheng_llm.astream``):
+no-tools branch (``doberman_agent_llm.astream``):
 
 1. An empty admin prompt yields a SystemMessage carrying exactly the daily
    handle rules — citations keep working when the admin blanks the prompt.
@@ -26,10 +26,10 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.citation.domain.services.citation_handle_service import HANDLE_RULES_HEADER
-from bisheng.citation.domain.services.daily_citation_handles import load_daily_handle_rules
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.citation.domain.services.citation_handle_service import HANDLE_RULES_HEADER
+from doberman_agent.citation.domain.services.daily_citation_handles import load_daily_handle_rules
+from doberman_agent.workstation.domain.services import chat_service
 
 # Six ASCII characters (backslash, u, e, 2, 0, 0) — the literal spelling that
 # ``prompt_has_citation_rules`` accepts in place of the real U+E200 char.
@@ -83,7 +83,7 @@ def citation_env(monkeypatch: pytest.MonkeyPatch):
     )
     monkeypatch.setattr(chat_service, "_resolve_user_kb_selection", AsyncMock(return_value=[]))
     # Image viewing reads its model config from the DB; off for these tests.
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
     # The citation handle table lives in Redis; start each turn with an empty one.
     monkeypatch.setattr(chat_service.DailyCitationScope, "load", AsyncMock(return_value=None))
     monkeypatch.setattr(chat_service, "_prepare_tools", AsyncMock(return_value=([], [])))

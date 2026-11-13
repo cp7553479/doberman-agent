@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 
 import EditLabel from "../../../components/bs-ui/editLabel";
 import { alertContext } from "../../../contexts/alertContext";

@@ -9,17 +9,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.image_view import ImageRegistry, annotate
-from bisheng.common.image_view.tool import build_view_image_tool
+from doberman_agent.common.image_view import ImageRegistry, annotate
+from doberman_agent.common.image_view.tool import build_view_image_tool
 
 
 def _registry_with_four_images() -> ImageRegistry:
     registry = ImageRegistry()
     annotate(
-        "![a](/bisheng/knowledge/images/1/2/a.png)"
-        "![b](/bisheng/knowledge/images/1/2/b.png)"
-        "![c](/bisheng/knowledge/images/1/2/c.png)"
-        "![d](/bisheng/knowledge/images/1/2/d.png)",
+        "![a](/doberman_agent/knowledge/images/1/2/a.png)"
+        "![b](/doberman_agent/knowledge/images/1/2/b.png)"
+        "![c](/doberman_agent/knowledge/images/1/2/c.png)"
+        "![d](/doberman_agent/knowledge/images/1/2/d.png)",
         registry,
     )
     return registry
@@ -38,7 +38,7 @@ def test_view_image_schema_has_ids_and_quality_but_no_url():
 @pytest.mark.asyncio
 async def test_unknown_image_id_does_not_fetch(monkeypatch):
     fetch = AsyncMock()
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
     tool = build_view_image_tool(ImageRegistry())
 
     observation = await tool.ainvoke({"image_ids": ["img#9"], "quality": "standard"})
@@ -51,7 +51,7 @@ async def test_unknown_image_id_does_not_fetch(monkeypatch):
 async def test_four_ids_in_one_turn_are_all_fetched(monkeypatch):
     fetch = AsyncMock()
     fetch.return_value = type("R", (), {"ok": True, "data_uri": "data:image/png;base64,abc", "error": None})()
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
     tool = build_view_image_tool(_registry_with_four_images())
 
     observation = await tool.ainvoke({"image_ids": ["img#1", "img#2", "img#3", "img#4"], "quality": "standard"})
@@ -64,7 +64,7 @@ async def test_four_ids_in_one_turn_are_all_fetched(monkeypatch):
 @pytest.mark.asyncio
 async def test_non_standard_quality_is_rejected(monkeypatch):
     fetch = AsyncMock()
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
     tool = build_view_image_tool(_registry_with_four_images())
 
     observation = await tool.ainvoke({"image_ids": ["img#1"], "quality": "hd"})
@@ -77,13 +77,13 @@ async def test_non_standard_quality_is_rejected(monkeypatch):
 async def test_success_ack_has_no_image_block(monkeypatch):
     fetch = AsyncMock()
     fetch.return_value = type("R", (), {"ok": True, "data_uri": "data:image/png;base64,abc", "error": None})()
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
     tool = build_view_image_tool(_registry_with_four_images())
 
     observation = await tool.ainvoke({"image_ids": ["img#1"], "quality": "standard"})
 
     fetch.assert_awaited_once()
     assert "img#1" in observation
-    assert "![](/bisheng/knowledge/images/1/2/a.png)" in observation
+    assert "![](/doberman_agent/knowledge/images/1/2/a.png)" in observation
     assert "data:image" not in observation
     assert "image_url" not in observation

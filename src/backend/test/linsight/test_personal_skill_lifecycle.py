@@ -8,14 +8,14 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import select
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-import bisheng.linsight.domain.services.personal_skill_service as service_module
-from bisheng.common.errcode.linsight import SkillNotFoundError
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.database.models.audit_log import AuditLog
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.personal_skill_service import PersonalSkillService
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+import doberman_agent.linsight.domain.services.personal_skill_service as service_module
+from doberman_agent.common.errcode.linsight import SkillNotFoundError
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.database.models.audit_log import AuditLog
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.personal_skill_service import PersonalSkillService
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
@@ -52,7 +52,7 @@ async def env(tmp_path, monkeypatch):
     monkeypatch.setattr(model_module, "get_async_db_session", _session)
     monkeypatch.setattr(service_module, "get_async_db_session", _session)
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.require_business_action",
+        "doberman_agent.permission.application.business_authorization.require_business_action",
         AsyncMock(),
     )
     set_current_tenant_id(TENANT)

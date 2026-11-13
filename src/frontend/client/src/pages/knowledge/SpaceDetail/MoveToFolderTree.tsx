@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback, useEffect, useState } from "react";
 
 import { listKnowledgeFolders } from "~/api/knowledge";

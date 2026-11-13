@@ -161,9 +161,9 @@ def request(base, path, *, document=None, file=None, method="POST", _scope_only=
     address = urlsplit(base)
     if address.scheme not in {"http", "https"} or not address.netloc or address.username or address.password:
         raise ValueError("invalid_management_url")
-    token = os.environ.get("BISHENG_MANAGEMENT_TOKEN", "")
+    token = os.environ.get("DOBERMAN_AGENT_MANAGEMENT_TOKEN", "")
     if not token:
-        raise ValueError("set BISHENG_MANAGEMENT_TOKEN to the authorized human session token")
+        raise ValueError("set DOBERMAN_AGENT_MANAGEMENT_TOKEN to the authorized human session token")
     headers = {"Cookie": "access_token_cookie=" + token}
     parts = urlsplit(path).path.strip("/").split("/")
     if (
@@ -292,7 +292,7 @@ def prepare_offline(source, materials, profile, image_id):
             f"type=bind,src={materials},dst=/output",
         ]
         subprocess.run(
-            [*common, image_id, "python", "/opt/bisheng/prepare.py", "download", profile["language"]], check=True
+            [*common, image_id, "python", "/opt/doberman-agent/prepare.py", "download", profile["language"]], check=True
         )
         validation = Path(tmp) / "validated"
         shutil.copytree(materials, validation)
@@ -306,7 +306,7 @@ def prepare_offline(source, materials, profile, image_id):
                 "none",
                 image_id,
                 "python",
-                "/opt/bisheng/prepare.py",
+                "/opt/doberman-agent/prepare.py",
                 "lock",
                 profile["language"],
             ],

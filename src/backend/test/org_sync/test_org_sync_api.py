@@ -6,7 +6,7 @@ without requiring a running server or database.
 
 import pytest
 
-from bisheng.org_sync.domain.schemas.org_sync_schema import (
+from doberman_agent.org_sync.domain.schemas.org_sync_schema import (
     OrgSyncConfigCreate,
     OrgSyncConfigUpdate,
     OrgSyncConfigRead,

@@ -1,7 +1,7 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { skillApi, type SkillDetail } from '@/controllers/API/linsight';
 import { showApiError } from '@/controllers/request';
 import { SkillDetailSheet } from './SkillDetailSheet';

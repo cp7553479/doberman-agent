@@ -13,10 +13,10 @@ import time
 import pytest
 import sqlalchemy as sa
 
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.user.domain.models.user import User
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.user.domain.models.user import User
 from test.dsh.model_audit_fixtures import AUDIT_MODELS, NOW, FaultAuditObjects, audit_database, audit_session
 from test.dsh.test_model_audit_groups import row
 
@@ -38,7 +38,7 @@ def test_owned_mysql_bootstrap_projection_and_exact_query_plan():
         "--name",
         name,
         "--label",
-        "bisheng.test=dsh-audit-groups",
+        "doberman_agent.test=dsh-audit-groups",
         "-p",
         "127.0.0.1::3306",
         "-e",
@@ -66,7 +66,7 @@ def test_owned_mysql_bootstrap_projection_and_exact_query_plan():
                 if attempt == 159:
                     raise RuntimeError("Isolated MySQL did not become ready") from None
                 time.sleep(0.25)
-        from bisheng.core.database.alembic_helpers.online import create_missing_model_tables
+        from doberman_agent.core.database.alembic_helpers.online import create_missing_model_tables
 
         with engine.begin() as connection:
             metadata = sa.MetaData()
@@ -176,8 +176,8 @@ async def validate_deferred_bodies(engine):
     """AC-17, AC-35, AC-38: actual concurrent SQL consumers, bounded batches and replay."""
     from sqlmodel import SQLModel
 
-    from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
-    from bisheng.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
+    from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
+    from doberman_agent.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
     from test.dsh.test_model_audit_deferred_body import drain
     from test.dsh.test_model_audit_writer import writer_for
 
@@ -226,7 +226,7 @@ async def validate_deferred_bodies(engine):
         await drain(queue)
         assert writer.failed == 0 and sizes and max(sizes) == 32
         with audit_session(engine) as session:
-            from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+            from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
 
             repo = DshModelAuditWriteRepository(session)
             row = repo.request("e2e-dsh-audit-deferred-mysql")

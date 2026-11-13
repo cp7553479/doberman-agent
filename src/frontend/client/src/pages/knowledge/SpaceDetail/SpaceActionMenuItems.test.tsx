@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { SpaceActionMenuItems, getSpaceActionFlags } from './SpaceActionMenuItems';
 import type { KnowledgeSpace } from '~/api/knowledge';
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
-jest.mock('bisheng-icons', () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/icons', () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
+jest.mock('@doberman-agent/ui', () => ({
   DropdownItem: ({ children, onSelect }: { children: React.ReactNode; onSelect: () => void }) => <button onClick={onSelect}>{children}</button>,
   DropdownSeparator: () => null,
 }));

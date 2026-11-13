@@ -6,8 +6,8 @@ from test.app_publish.test_app_secret_repository import secret_repository as sec
 async def test_session_save_and_get_never_return_plaintext(
     secret_repository, app_factory, owner_user, api_app, monkeypatch
 ):
-    from bisheng.app_publish.api.endpoints import app_secrets as endpoint
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.api.endpoints import app_secrets as endpoint
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     monkeypatch.setattr(endpoint, "service", lambda: AppSecretService(repository=repo, cipher=cipher))
@@ -48,8 +48,8 @@ async def test_cli_polling_exposes_missing_names_without_values(
     secret_repository, app_factory, deployment_factory, owner_user, service_account_principal, api_app, monkeypatch
 ):
     """AC-72: the actual CLI polling endpoint carries safe missing-reference metadata."""
-    from bisheng.app_publish.application import runtime_secrets
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.application import runtime_secrets
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     app, version = await app_factory()

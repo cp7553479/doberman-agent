@@ -1,6 +1,6 @@
 import { act, render, waitFor } from '@testing-library/react';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 import { clearToasts, getToasts } from '../../../../../../packages/ui/src/components/Toast/toastStore';
 import { PdfViewer } from './PdfViewer';
 

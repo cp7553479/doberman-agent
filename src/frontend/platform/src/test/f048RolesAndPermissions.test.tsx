@@ -114,8 +114,8 @@ vi.mock("@/pages/SystemPage/components/permission/ImpactDialog", () => ({
   },
 }))
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   message: (...args: unknown[]) => childCalls.message(...args),
 }))();

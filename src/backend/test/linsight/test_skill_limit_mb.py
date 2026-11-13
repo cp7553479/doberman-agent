@@ -7,13 +7,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.linsight import SkillBundleTooLargeError, SkillFileTooLargeError
-from bisheng.linsight.api.endpoints import skill as skill_endpoint
-from bisheng.linsight.domain.services import github_skill_fetcher as fetcher_module
-from bisheng.linsight.domain.services import skill_store
-from bisheng.linsight.domain.services.github_skill_fetcher import GithubTarget, fetch_skill_files
-from bisheng.linsight.domain.services.skill_service import SkillService
-from bisheng.linsight.domain.services.skill_store import SKILL_MD
+from doberman_agent.common.errcode.linsight import SkillBundleTooLargeError, SkillFileTooLargeError
+from doberman_agent.linsight.api.endpoints import skill as skill_endpoint
+from doberman_agent.linsight.domain.services import github_skill_fetcher as fetcher_module
+from doberman_agent.linsight.domain.services import skill_store
+from doberman_agent.linsight.domain.services.github_skill_fetcher import GithubTarget, fetch_skill_files
+from doberman_agent.linsight.domain.services.skill_service import SkillService
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD
 
 MB = 1024 * 1024
 
@@ -22,7 +22,7 @@ def _conf(monkeypatch, upload_mb: int, unpacked_mb: int) -> None:
     async def _aget(self):
         return SimpleNamespace(skill_upload_max_size_mb=upload_mb, skill_unpacked_max_size_mb=unpacked_mb)
 
-    monkeypatch.setattr(type(skill_store.bisheng_settings), "aget_linsight_conf", _aget)
+    monkeypatch.setattr(type(skill_store.doberman_agent_settings), "aget_linsight_conf", _aget)
 
 
 def _zip_declared_size(declared: int) -> bytes:

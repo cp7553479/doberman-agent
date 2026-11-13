@@ -5,17 +5,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.app_factory import AppOnlineCannotDeleteError
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.database.models.app import App
-from bisheng.permission.application.identity import PermissionActor
+from doberman_agent.common.errcode.app_factory import AppOnlineCannotDeleteError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.database.models.app import App
+from doberman_agent.permission.application.identity import PermissionActor
 
 
 @pytest.fixture
 def management(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_authorization_service as policy
-    from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services import app_authorization_service as policy
+    from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app = App(id="target", slug="example", name="Example", tenant_id=2, owner_user_id=81, state="stopped")
     actor = SimpleNamespace(user_id=42, tenant_id=2, is_global_super=False)
@@ -38,7 +38,7 @@ def management(monkeypatch):
 
 @pytest.mark.parametrize("action", ["publish", "unpublish", "delete", "manage_permission"])
 async def test_non_editor_can_read_only_safe_management_summary(management, action):
-    from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+    from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
     app, actor, allowed = management
     allowed.add(action)
@@ -50,7 +50,7 @@ async def test_non_editor_can_read_only_safe_management_summary(management, acti
 
 @pytest.mark.parametrize("entry", ["detail", "cli", "mcp"])
 async def test_granted_non_owner_log_read_is_edit(management, monkeypatch, entry):
-    from bisheng.app_runtime.domain.services import app_query_service as mod
+    from doberman_agent.app_runtime.domain.services import app_query_service as mod
 
     app, actor, allowed = management
     allowed.add("edit")
@@ -65,7 +65,7 @@ async def test_granted_non_owner_log_read_is_edit(management, monkeypatch, entry
 
 
 async def test_granted_non_owner_metadata_edit(management):
-    from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+    from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
     app, actor, allowed = management
     allowed.add("edit")
@@ -76,7 +76,7 @@ async def test_granted_non_owner_metadata_edit(management):
 
 
 async def test_delete_is_not_tied_to_owner_status(management):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, actor, allowed = management
     allowed.add("delete")
@@ -87,7 +87,7 @@ async def test_delete_is_not_tied_to_owner_status(management):
 
 
 async def test_online_delete_still_refuses_before_runtime_work(management, monkeypatch):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, actor, allowed = management
     app.state = "online"
@@ -97,7 +97,7 @@ async def test_online_delete_still_refuses_before_runtime_work(management, monke
 
 
 async def test_stop_and_start_are_different_actions(management):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, actor, allowed = management
     allowed.add("publish")
@@ -112,7 +112,7 @@ async def test_stop_and_start_are_different_actions(management):
 
 
 async def test_production_data_is_edit_not_owner(management):
-    from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+    from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
     app, actor, allowed = management
     allowed.add("edit")
@@ -124,7 +124,7 @@ async def test_production_data_is_edit_not_owner(management):
 
 
 async def test_data_session_checks_edit_before_creating_work(management, monkeypatch):
-    from bisheng.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
+    from doberman_agent.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
 
     app, actor, _allowed = management
     service = RuntimeDataSessionService()
@@ -138,7 +138,7 @@ async def test_data_session_checks_edit_before_creating_work(management, monkeyp
 async def test_data_grant_rechecks_edit_before_signing(management, monkeypatch):
     from contextlib import asynccontextmanager
 
-    from bisheng.app_runtime.domain.services.runtime_data_grant_service import RuntimeDataGrantService
+    from doberman_agent.app_runtime.domain.services.runtime_data_grant_service import RuntimeDataGrantService
 
     app, actor, _allowed = management
 
@@ -161,7 +161,7 @@ async def test_data_grant_rechecks_edit_before_signing(management, monkeypatch):
 async def test_cancel_requires_current_canceller_actions(management, purpose, actions):
     from contextlib import asynccontextmanager
 
-    from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+    from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
 
     app, actor, allowed = management
     op = SimpleNamespace(
@@ -213,8 +213,8 @@ async def test_cancel_requires_current_canceller_actions(management, purpose, ac
 async def test_cancel_rejects_missing_or_system_source(management, context):
     from contextlib import asynccontextmanager
 
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
 
     app, actor, allowed = management
     allowed.update({"edit", "publish", "unpublish", "delete"})
@@ -244,7 +244,7 @@ async def test_cancel_rejects_missing_or_system_source(management, context):
 
 
 async def test_private_runtime_snapshot_requires_edit(management):
-    from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+    from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
 
     app, actor, allowed = management
     repo = SimpleNamespace(get_application=AsyncMock(return_value=app), find=AsyncMock(return_value=[]))

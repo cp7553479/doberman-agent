@@ -40,7 +40,7 @@ ALLOWED_CALL_SITES: dict[str, list[str]] = {
     # F055: the first-node notice and the two parked outcomes (AC-40 row 1,
     # AC-42). Approved / rejected / withdrawn / cancelled are the approval
     # engine's — a copy here would double every message.
-    "bisheng.app_publish": [
+    "doberman_agent.app_publish": [
         "domain/services/publish_approval_service.py::notify_approvers_of_new_task",
         "domain/services/publish_online_service.py::notify_pending_online",
         "domain/services/publish_online_service.py::notify_pending_online",
@@ -49,14 +49,14 @@ ALLOWED_CALL_SITES: dict[str, list[str]] = {
     ],
     # F054 state actions + F056's one wiring. ``stop`` and ``_start`` each call
     # it once; nothing else in the runtime notifies anybody.
-    "bisheng.app_runtime": [
+    "doberman_agent.app_runtime": [
         "domain/services/app_state_service.py::notify_owner_of_admin_state_change",
         "domain/services/app_state_service.py::notify_owner_of_admin_state_change",
     ],
     # AC-44 row 3: key issue / revoke / auto-expiry send nothing. The developer
     # learns from the key page; a station message per key event would be noise
     # on the one surface that is already about keys.
-    "bisheng.open_api": [],
+    "doberman_agent.open_api": [],
 }
 
 #: Names that mean "a station message goes out". ``notify_`` covers the service
@@ -89,7 +89,7 @@ def _notified_action_codes(package: str) -> set[str]:
     import importlib
 
     module = importlib.import_module(package)
-    # ``bisheng.approval`` has no ``__init__.py`` — it is a namespace package,
+    # ``doberman_agent.approval`` has no ``__init__.py`` — it is a namespace package,
     # so ``__file__`` is None and only ``__path__`` locates it.
     root = Path(module.__file__).parent if module.__file__ else Path(next(iter(module.__path__)))
     codes: set[str] = set()
@@ -169,7 +169,7 @@ class TestTableCensus:
         never learn their release was approved or rejected, and the approver
         never that the request was withdrawn or cancelled.
         """
-        codes = _notified_action_codes("bisheng.approval")
+        codes = _notified_action_codes("doberman_agent.approval")
 
         assert APPROVAL_ENGINE_ACTION_CODES <= codes, (
             f"§3.0.3 rows 1 to 4 lost a sender in the approval engine: {sorted(APPROVAL_ENGINE_ACTION_CODES - codes)}"
@@ -179,7 +179,7 @@ class TestTableCensus:
         """AC-44 row 2. The interface tells the owner by *failing visibly*
         (F055 GOV-05); a station message would arrive hours later and out of
         context."""
-        from bisheng.app_publish.domain.services import publish_notification_service
+        from doberman_agent.app_publish.domain.services import publish_notification_service
 
         declared = {
             value
@@ -192,7 +192,7 @@ class TestTableCensus:
         """AC-44 row 4. Being newly able to see an application is not news the
         platform pushes this version — there is no "new in the square" feed, and
         a grant can cover hundreds of users at once."""
-        from bisheng.app_runtime.domain.services import visibility_audit
+        from doberman_agent.app_runtime.domain.services import visibility_audit
 
         source = Path(visibility_audit.__file__).read_text(encoding="utf-8")
         assert "notify" not in source
@@ -205,8 +205,8 @@ class TestTableCensus:
         something; an unused ``ACTION_KEY_ISSUED`` is how "we decided not to"
         turns into "somebody wired it up".
         """
-        from bisheng.app_publish.domain.services import publish_notification_service
-        from bisheng.app_runtime.domain.services import state_change_notify
+        from doberman_agent.app_publish.domain.services import publish_notification_service
+        from doberman_agent.app_runtime.domain.services import state_change_notify
 
         declared = set()
         for module in (publish_notification_service, state_change_notify):
@@ -238,7 +238,7 @@ class TestSendFailureNeverBlocksTheAction:
         keep passing while proving nothing. The counter is what keeps them
         honest.
         """
-        from bisheng.message.api import dependencies as message_dependencies
+        from doberman_agent.message.api import dependencies as message_dependencies
 
         reached: list[str] = []
 
@@ -250,7 +250,7 @@ class TestSendFailureNeverBlocksTheAction:
         return reached
 
     async def test_approver_notice_failure_is_swallowed(self, broken_message_chain):
-        from bisheng.app_publish.domain.services import publish_notification_service
+        from doberman_agent.app_publish.domain.services import publish_notification_service
 
         # Returns None rather than raising: the approval request and its tasks
         # already exist by the time this runs, and the caller goes on to write
@@ -269,8 +269,8 @@ class TestSendFailureNeverBlocksTheAction:
 
     @pytest.mark.parametrize("reason_kind", ["capacity", "deploy_failed", "iteration_failed"])
     async def test_parked_notice_failure_is_swallowed(self, broken_message_chain, monkeypatch, reason_kind):
-        from bisheng.app_publish.domain.services import publish_notification_service
-        from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+        from doberman_agent.app_publish.domain.services import publish_notification_service
+        from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
         async def _admins(*, tenant_id):
             return [11]
@@ -294,7 +294,7 @@ class TestSendFailureNeverBlocksTheAction:
     async def test_admin_state_change_notice_failure_is_swallowed(self, broken_message_chain):
         from types import SimpleNamespace
 
-        from bisheng.app_runtime.domain.services.state_change_notify import notify_owner_of_admin_state_change
+        from doberman_agent.app_runtime.domain.services.state_change_notify import notify_owner_of_admin_state_change
 
         # The assertion is that this returns at all. ``notify_users`` is the
         # choke point and swallows there, so the hook reports "handed to the
@@ -313,8 +313,8 @@ class TestSendFailureNeverBlocksTheAction:
     async def test_admin_recipient_lookup_failure_still_reaches_the_owner(self, monkeypatch):
         """The parked notice resolves two groups of recipients; losing the
         second must not lose the first — the owner is the one who has to act."""
-        from bisheng.app_publish.domain.services import publish_notification_service
-        from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+        from doberman_agent.app_publish.domain.services import publish_notification_service
+        from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
         async def _boom(*, tenant_id):
             raise RuntimeError("tenant service down")

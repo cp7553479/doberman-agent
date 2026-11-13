@@ -34,7 +34,7 @@
 我希望 **导入知识库 / 触发工作流 / 创建助手 / 触发评测 / 使用工作台 ASR-TTS 时，自动使用本 Child 的默认模型选择**，
 以便 **不需要在每个业务入口手动选模型，且不会"逃逸"使用其他 Child 的模型**。
 
-**背景**：F020 落地完成 LLM Server / LLM Model 的按租户隔离，但**系统级默认模型选择**（`Config.key ∈ {knowledge_llm, assistant_llm, evaluation_llm, workflow_llm, linsight_llm}` 共 5 类）仍存于全局唯一的 `Config` 表行(v2.5.0 F001 主迁移注释 `Excluded: ..., config, ...` 主动排除)，admin-scope 中间件不读这 5 个端点。F020 AD-07 当时选"保留全局超管独有"是基于"全局共享"假设的合理决策；本 Feature 把存储语义升级为按租户隔离后，该担心不再成立，遂修订 AD-07 与 AC-11，实现完整的 LLM 多租户隔离闭环。错误码 19803（`llm_system_config_forbidden`）当时已在 `bisheng/common/errcode/llm_tenant.py:25` 预留定义，本 Feature 修订其触发语义并落地实际使用。
+**背景**：F020 落地完成 LLM Server / LLM Model 的按租户隔离，但**系统级默认模型选择**（`Config.key ∈ {knowledge_llm, assistant_llm, evaluation_llm, workflow_llm, linsight_llm}` 共 5 类）仍存于全局唯一的 `Config` 表行(v2.5.0 F001 主迁移注释 `Excluded: ..., config, ...` 主动排除)，admin-scope 中间件不读这 5 个端点。F020 AD-07 当时选"保留全局超管独有"是基于"全局共享"假设的合理决策；本 Feature 把存储语义升级为按租户隔离后，该担心不再成立，遂修订 AD-07 与 AC-11，实现完整的 LLM 多租户隔离闭环。错误码 19803（`llm_system_config_forbidden`）当时已在 `doberman-agent/common/errcode/llm_tenant.py:25` 预留定义，本 Feature 修订其触发语义并落地实际使用。
 
 ---
 
@@ -143,7 +143,7 @@
 ### 5.1 `tenant_system_model_config` 表
 
 ```python
-# src/backend/bisheng/llm/domain/models/tenant_system_model_config.py
+# src/backend/doberman_agent/llm/domain/models/tenant_system_model_config.py
 
 from datetime import datetime
 from typing import Optional
@@ -152,7 +152,7 @@ from sqlalchemy import Column, DateTime, Integer, SmallInteger, String, UniqueCo
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlmodel import Field
 
-from bisheng.common.models.base import SQLModelSerializable
+from doberman_agent.common.models.base import SQLModelSerializable
 
 
 class TenantSystemModelConfig(SQLModelSerializable, table=True):
@@ -196,7 +196,7 @@ class TenantSystemModelConfig(SQLModelSerializable, table=True):
 ### 5.2 Domain DTO（响应增加 fallback 元信息）
 
 ```python
-# src/backend/bisheng/llm/domain/schemas/system_model.py
+# src/backend/doberman_agent/llm/domain/schemas/system_model.py
 
 from pydantic import BaseModel
 from typing import Optional
@@ -301,7 +301,7 @@ POST /api/v1/llm/knowledge
 |------|------|-------|------|---------|
 | 403 | 19803 | `LLMSystemConfigForbiddenError` | Child Admin 通过构造请求试图写 `target_tenant_id ∉ user.manageable_tenant_ids` 的行 | AC-10 |
 
-> **Msg 修订**：`bisheng/common/errcode/llm_tenant.py:25` 当前 Msg 是 "System-level LLM configuration ... is restricted to the global super admin"；本 Feature 修订为 `"Cross-tenant write forbidden: target tenant_id is not in caller's manageable set"`，反映新语义。
+> **Msg 修订**：`doberman-agent/common/errcode/llm_tenant.py:25` 当前 Msg 是 "System-level LLM configuration ... is restricted to the global super admin"；本 Feature 修订为 `"Cross-tenant write forbidden: target tenant_id is not in caller's manageable set"`，反映新语义。
 
 ---
 
@@ -312,7 +312,7 @@ POST /api/v1/llm/knowledge
 每个 `get_*_llm` / `update_*_llm` / `sync_get_*_llm` 加 `tenant_id: int | None = None` 参数：
 
 ```python
-# src/backend/bisheng/llm/domain/services/llm.py
+# src/backend/doberman_agent/llm/domain/services/llm.py
 
 class LLMService:
 
@@ -353,7 +353,7 @@ class LLMService:
 ### 7.2 fallback resolve 逻辑（DAO）
 
 ```python
-# src/backend/bisheng/llm/domain/dao/tenant_system_model_config.py
+# src/backend/doberman_agent/llm/domain/dao/tenant_system_model_config.py
 
 class TenantSystemModelConfigDao:
 
@@ -391,7 +391,7 @@ class TenantSystemModelConfigDao:
 ### 7.3 router 写侧权限校验
 
 ```python
-# src/backend/bisheng/llm/api/router.py
+# src/backend/doberman_agent/llm/api/router.py
 
 @router.post('/knowledge', ...)
 async def update_knowledge_llm(
@@ -552,26 +552,26 @@ export interface SystemModelConfigEnvelope<T> {
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/llm/domain/models/tenant_system_model_config.py` | ORM + DAO（同文件，沿用 `llm_server.py` 既有惯例：`{Entity}Base` + `{Entity}` table + `{Entity}Dao` 一文件搞定） |
-| `src/backend/bisheng/llm/domain/schemas.py` | 在原有单文件 schemas.py 中追加 `SystemModelConfigEnvelope`（spec 起初提议 `schemas/system_model.py` 子目录，但 schemas.py 是单文件惯例，遵循之） |
-| `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f034_tenant_system_model_config.py` | alembic 迁移：建表 + backfill `config` 5 个 key 到 tenant_id=1（INSERT IGNORE 幂等）。spec 起初规划 F031，实施时该编号已被 `startup_hotfix_fields` 占用，统一改用 F034 |
-| `src/backend/bisheng/core/database/tenant_filter.py` | 在 `_TENANT_AWARE_MODEL_MODULES` 列表追加新模块路径，让全局事件监听器自动启用 tenant filter |
+| `src/backend/doberman_agent/llm/domain/models/tenant_system_model_config.py` | ORM + DAO（同文件，沿用 `llm_server.py` 既有惯例：`{Entity}Base` + `{Entity}` table + `{Entity}Dao` 一文件搞定） |
+| `src/backend/doberman_agent/llm/domain/schemas.py` | 在原有单文件 schemas.py 中追加 `SystemModelConfigEnvelope`（spec 起初提议 `schemas/system_model.py` 子目录，但 schemas.py 是单文件惯例，遵循之） |
+| `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f034_tenant_system_model_config.py` | alembic 迁移：建表 + backfill `config` 5 个 key 到 tenant_id=1（INSERT IGNORE 幂等）。spec 起初规划 F031，实施时该编号已被 `startup_hotfix_fields` 占用，统一改用 F034 |
+| `src/backend/doberman_agent/core/database/tenant_filter.py` | 在 `_TENANT_AWARE_MODEL_MODULES` 列表追加新模块路径，让全局事件监听器自动启用 tenant filter |
 
 ### 修改
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/llm/domain/services/llm.py` | 5 类 get/update + sync 版本加 `tenant_id: int | None = None` 参数；DAO 切到 `TenantSystemModelConfigDao`；返回 envelope 元信息 |
-| `src/backend/bisheng/llm/api/router.py` | 5 个 POST 入口加 `target_tenant_id ∈ user.manageable_tenant_ids` 校验；5 个 GET 透出 envelope；audit_log 写入 |
-| `src/backend/bisheng/common/errcode/llm_tenant.py:25` | 修订 `LLMSystemConfigForbiddenError` Msg："Cross-tenant write forbidden..." |
-| `src/backend/bisheng/common/middleware/admin_scope.py` | 验证 5 个 endpoint 已被 `MANAGEMENT_API_PREFIXES` 覆盖（`/api/v1/llm` 已在列表，无需改动） |
-| `src/backend/bisheng/knowledge/api/endpoints/knowledge.py:415` | 个人 KB 初始化无需改（默认入参） |
-| `src/backend/bisheng/api/services/knowledge_imp.py:207` | `decide_knowledge_llm` 接收 `knowledge` 对象，传 `tenant_id`；Celery task 入队带 `tenant_id` payload |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_utils.py:186` | 摘要函数加 `tenant_id` 参数 |
-| `src/backend/bisheng/workflow/nodes/agent/agent.py` | `sync_get_assistant_llm(tenant_id=flow.tenant_id)` |
-| `src/backend/bisheng/workflow/nodes/input/input.py:266` | `get_knowledge_default_embedding(user_id, tenant_id)` 加参，KB owner 优先 |
-| `src/backend/bisheng/api/services/assistant.py:172` | 默认入参（调用人 tenant），无需显式 |
-| `src/backend/bisheng/api/services/evaluation.py:288` | `get_evaluation_llm_object(user_id, tenant_id=evaluation.tenant_id)` 加参；Celery payload |
+| `src/backend/doberman_agent/llm/domain/services/llm.py` | 5 类 get/update + sync 版本加 `tenant_id: int | None = None` 参数；DAO 切到 `TenantSystemModelConfigDao`；返回 envelope 元信息 |
+| `src/backend/doberman_agent/llm/api/router.py` | 5 个 POST 入口加 `target_tenant_id ∈ user.manageable_tenant_ids` 校验；5 个 GET 透出 envelope；audit_log 写入 |
+| `src/backend/doberman_agent/common/errcode/llm_tenant.py:25` | 修订 `LLMSystemConfigForbiddenError` Msg："Cross-tenant write forbidden..." |
+| `src/backend/doberman_agent/common/middleware/admin_scope.py` | 验证 5 个 endpoint 已被 `MANAGEMENT_API_PREFIXES` 覆盖（`/api/v1/llm` 已在列表，无需改动） |
+| `src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py:415` | 个人 KB 初始化无需改（默认入参） |
+| `src/backend/doberman_agent/api/services/knowledge_imp.py:207` | `decide_knowledge_llm` 接收 `knowledge` 对象，传 `tenant_id`；Celery task 入队带 `tenant_id` payload |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_utils.py:186` | 摘要函数加 `tenant_id` 参数 |
+| `src/backend/doberman_agent/workflow/nodes/agent/agent.py` | `sync_get_assistant_llm(tenant_id=flow.tenant_id)` |
+| `src/backend/doberman_agent/workflow/nodes/input/input.py:266` | `get_knowledge_default_embedding(user_id, tenant_id)` 加参，KB owner 优先 |
+| `src/backend/doberman_agent/api/services/assistant.py:172` | 默认入参（调用人 tenant），无需显式 |
+| `src/backend/doberman_agent/api/services/evaluation.py:288` | `get_evaluation_llm_object(user_id, tenant_id=evaluation.tenant_id)` 加参；Celery payload |
 | `src/frontend/platform/src/pages/ModelPage/manage/SystemModelConfig.tsx` | 顶部 banner（3 状态）；5 Tab 接 `currentTenant` / `isReadOnly` |
 | `src/frontend/platform/src/pages/ModelPage/manage/tabs/{Workbench,Knowledge,Assistant,Evaluation,Workflow}Model.tsx` | queryKey 加 tenantId；inherited Badge；首次编辑清 inherited |
 | `src/frontend/platform/src/pages/ModelPage/manage/ScopeBar.tsx` | onChange invalidateQueries `['llm']` |

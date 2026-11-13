@@ -9,15 +9,15 @@ builds the per-field keys by prefixing ``event_name``; it must use
 ``event_name.value`` so the keys stay stable across Python versions.
 """
 
-from bisheng.common.constants.enums.telemetry import (
+from doberman_agent.common.constants.enums.telemetry import (
     ApplicationTypeEnum,
     BaseTelemetryTypeEnum,
 )
-from bisheng.common.schemas.telemetry.base_telemetry_schema import (
+from doberman_agent.common.schemas.telemetry.base_telemetry_schema import (
     BaseTelemetryEvent,
     UserContext,
 )
-from bisheng.common.schemas.telemetry.event_data_schema import (
+from doberman_agent.common.schemas.telemetry.event_data_schema import (
     ApplicationProcessEventData,
     UserLoginEventData,
 )

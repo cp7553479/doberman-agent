@@ -8,14 +8,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.common.errcode import open_api as errors
-from bisheng.common.errcode.http_error import NotFoundError
-from bisheng.database.models.session import MessageSession
-from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
-from bisheng.open_api.domain.services import task_mode_service
-from bisheng.open_api.domain.services.task_mode_service import OpenTaskModeService
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.common.errcode import open_api as errors
+from doberman_agent.common.errcode.http_error import NotFoundError
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
+from doberman_agent.open_api.domain.services import task_mode_service
+from doberman_agent.open_api.domain.services.task_mode_service import OpenTaskModeService
 from test.open_api.task_mode_support import delegated_principal, sa_principal
 
 S = SessionVersionStatusEnum
@@ -71,7 +71,7 @@ def store(monkeypatch):
     monkeypatch.setattr(task_mode_service.LinsightExecuteTaskDao, "get_by_session_version_id", _todos)
     monkeypatch.setattr(OpenTaskModeService, "_object_size", staticmethod(_size))
     monkeypatch.setattr(OpenTaskModeService, "_queue_position", staticmethod(AsyncMock(return_value=None)))
-    monkeypatch.setattr("bisheng.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.terminate", _terminate)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.terminate", _terminate)
     return state
 
 
@@ -257,7 +257,7 @@ async def test_download_only_reaches_this_tasks_own_files(store, monkeypatch):
         return _Resp()
 
     monkeypatch.setattr(
-        "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+        "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
         AsyncMock(return_value=SimpleNamespace(download_object_sync=_download)),
     )
 

@@ -88,7 +88,7 @@ SILENT_ROWS: tuple[tuple[str, str], ...] = (
     (
         "数据表迁移被拒且应用本来就不在线",
         "这次发布整体失败, 与构建失败 / 探活失败同族 —— 那两类也不发站内信, "
-        "都由发布面与 bisheng deploy 报告。应用在线时走 iteration_failed 那一行, "
+        "都由发布面与 doberman-agent deploy 报告。应用在线时走 iteration_failed 那一行, "
         "因为那条文案说的正是「新版本未能上线, 线上版本仍在服务」。",
     ),
 )
@@ -122,7 +122,7 @@ def _module(path: str):
 
 
 def _declared_action_codes() -> set[str]:
-    module = _module("bisheng.app_publish.domain.services.publish_notification_service")
+    module = _module("doberman_agent.app_publish.domain.services.publish_notification_service")
     return {value for name, value in vars(module).items() if name.startswith("ACTION_") and isinstance(value, str)}
 
 
@@ -220,7 +220,7 @@ class TestTheSilentRowsStaySilent:
         """
         import inspect
 
-        from bisheng.app_publish.domain.services.publish_online_service import PublishOnlineService
+        from doberman_agent.app_publish.domain.services.publish_online_service import PublishOnlineService
 
         source = inspect.getsource(PublishOnlineService._settle_schema_failure)
 
@@ -254,7 +254,7 @@ class TestNoReminderMechanism:
         Nothing in either package runs on a clock, which is the shape a
         reminder would need.
         """
-        for package in ("bisheng.worker.app_publish", "bisheng.worker.approval"):
+        for package in ("doberman_agent.worker.app_publish", "doberman_agent.worker.approval"):
             for path in sorted(_package_root(package).rglob("*.py")):
                 source = path.read_text(encoding="utf-8")
                 assert "crontab" not in source, path
@@ -264,8 +264,8 @@ class TestNoReminderMechanism:
     @pytest.mark.parametrize(
         "package",
         [
-            "bisheng.app_publish.domain.services",
-            "bisheng.approval.domain.services",
+            "doberman_agent.app_publish.domain.services",
+            "doberman_agent.approval.domain.services",
         ],
     )
     def test_no_reminder_vocabulary_on_the_publish_or_approval_path(self, package):
@@ -293,7 +293,7 @@ class TestNoReminderMechanism:
     def test_the_approval_scenario_carries_no_deadline(self):
         """The scenario model has nowhere to put a timeout, so no other service
         can grow a timer that reads one."""
-        from bisheng.approval.domain.models.approval_scenario import ApprovalScenario
+        from doberman_agent.approval.domain.models.approval_scenario import ApprovalScenario
 
         fields = set(ApprovalScenario.model_fields)
 
@@ -317,11 +317,11 @@ class TestAc08StaysProbeBased:
     def test_the_probe_refusal_carries_the_conversion_guidance(self):
         """All three middleware kinds the hosting contract excludes, by name,
         plus the variable that replaces the first of them."""
-        from bisheng.app_publish.domain.services.precheck_service import PROBE_HINTS
+        from doberman_agent.app_publish.domain.services.precheck_service import PROBE_HINTS
 
         joined = " ".join(PROBE_HINTS)
 
-        for word in ("数据库", "消息队列", "缓存", "BISHENG_APP_DB_URL"):
+        for word in ("数据库", "消息队列", "缓存", "DOBERMAN_AGENT_APP_DB_URL"):
             assert word in joined, f"AC-08 guidance lost {word!r}"
 
     def test_the_guidance_is_attached_to_every_probe_failure(self):
@@ -329,7 +329,7 @@ class TestAc08StaysProbeBased:
         how half the refusals would stop explaining themselves."""
         import inspect
 
-        from bisheng.app_publish.domain.services import precheck_service
+        from doberman_agent.app_publish.domain.services import precheck_service
 
         source = inspect.getsource(precheck_service)
         # The bare name also appears at its definition and in prose; only the
@@ -355,7 +355,7 @@ class TestAc08StaysProbeBased:
         """
         from pathlib import Path
 
-        from bisheng.app_publish.domain.services import precheck_service
+        from doberman_agent.app_publish.domain.services import precheck_service
 
         source = Path(precheck_service.__file__).read_text(encoding="utf-8")
         reads = re.compile(

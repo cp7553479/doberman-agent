@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 
 import { cname, generateUUID } from "@/components/bs-ui/utils";
 import { locationContext } from "@/contexts/locationContext";

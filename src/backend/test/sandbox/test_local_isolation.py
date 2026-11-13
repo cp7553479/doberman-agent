@@ -12,15 +12,15 @@ import threading
 
 import pytest
 
-from bisheng.core.config.settings import SandboxConf
-from bisheng_langchain.gpts.tools.code_interpreter import local_isolation, local_uid_pool, workspace_copy
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import (
+from doberman_agent.core.config.settings import SandboxConf
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_isolation, local_uid_pool, workspace_copy
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import (
     COPY_IN_SKIPPED_NOTICE,
     DISK_LIMIT_MSG,
     ISOLATION_UNAVAILABLE_MSG,
     LocalExecutor,
 )
-from bisheng_langchain.gpts.tools.code_interpreter.local_isolation import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_isolation import (
     IsolatedOutcome,
     LocalIsolationUnavailable,
 )
@@ -65,7 +65,7 @@ def test_unreadable_conf_counts_as_isolated(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_rewrite_paths_respects_component_boundaries() -> None:
-    src, dst = "/root/.cache/bisheng/linsight/ab12cd34", "/tmp/run-x"
+    src, dst = "/root/.cache/doberman_agent/linsight/ab12cd34", "/tmp/run-x"
     text = f'open("{src}/a.txt"); os.chdir("{src}"); print("{src}ef/b"); x = {src}\n'
     out = local_isolation.rewrite_paths(text, src, dst)
     assert f'"{dst}/a.txt"' in out
@@ -361,7 +361,7 @@ def test_probe_only_warns_on_readable_data_dir() -> None:
 
 
 def test_tighten_permissions_closes_both_dirs(tmp_path) -> None:
-    pkg, data = tmp_path / "bisheng", tmp_path / "data"
+    pkg, data = tmp_path / "doberman_agent", tmp_path / "data"
     pkg.mkdir(mode=0o755)
     data.mkdir(mode=0o755)
     (pkg / "config.yaml").write_text("x: 1")

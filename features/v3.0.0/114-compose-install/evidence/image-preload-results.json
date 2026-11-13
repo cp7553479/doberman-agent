@@ -1,6 +1,6 @@
 [
   {
-    "image": "cr.dataelem.com/dataelement/bisheng-backend:v3.0.0-beta6",
+    "image": "cr.dataelem.com/cp7553479/doberman-agent-backend:v3.0.0-beta6",
     "manifest": "sha256:0a9ce22db4a1c494fa6b8011bb724f2f4a623c5710c4f6dfdf707bcbf12c00bc",
     "config": "sha256:55c0061e8cee11064d1e780e6716927ba32d7a9a7cb05a85f8e0c54ceb275c7a",
     "result": "loaded and verified"
@@ -48,13 +48,13 @@
     "result": "existing exact config tagged"
   },
   {
-    "image": "cr.dataelem.com/dataelement/bisheng-sandbox:feat_3.0.0",
+    "image": "cr.dataelem.com/cp7553479/doberman-agent-sandbox:feat_3.0.0",
     "manifest": "sha256:b63538c05a1d1e4e80f2dbbf4f7472f56693dfba697ec7ec03667c8c1d7b1fc1",
     "config": "sha256:b3718657209c1b78c7a8fdebd1d786611e3a3f2bc62a36070f8d7b55c3299dcc",
     "result": "loaded and verified"
   },
   {
-    "image": "cr.dataelem.com/dataelement/bisheng-frontend:v3.0.0-beta6",
+    "image": "cr.dataelem.com/cp7553479/doberman-agent-frontend:v3.0.0-beta6",
     "manifest": "sha256:f3975be7880ad4a9e9d2085666366c04056d5f0221044ced730d6fec8fb22f65",
     "config": "sha256:2787c8b09afac41d0ab1e29e8f4a5d871657f7bbfb78c4b7465014d7288ffd25",
     "result": "loaded and verified"

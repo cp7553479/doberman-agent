@@ -10,16 +10,16 @@ import pytest
 from fake_runner import FakeRunnerClient as _BaseFakeRunnerClient
 from fake_runner import _tar_gz
 
-from bisheng.common.errcode.sandbox import (
+from doberman_agent.common.errcode.sandbox import (
     SandboxCapacityExceededError,
     SandboxExecTimeoutError,
     SandboxProtocolError,
     SandboxUnreachableError,
 )
-from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
-_SHUFFLE_MODULE = "bisheng_langchain.gpts.tools.code_interpreter.container_executor.random.shuffle"
+_SHUFFLE_MODULE = "doberman_agent_langchain.gpts.tools.code_interpreter.container_executor.random.shuffle"
 
 
 class FakeRunnerClient(_BaseFakeRunnerClient):
@@ -213,7 +213,7 @@ def test_description_lists_isolation_libraries():
 def test_container_executor_has_no_orchestrator_imports_or_discover():
     path = (
         Path(__file__).resolve().parents[2]
-        / "bisheng_langchain"
+        / "doberman_agent_langchain"
         / "gpts"
         / "tools"
         / "code_interpreter"

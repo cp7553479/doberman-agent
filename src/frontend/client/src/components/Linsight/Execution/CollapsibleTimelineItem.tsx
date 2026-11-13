@@ -12,7 +12,7 @@
  * single source of truth survives session persistence / live append). The
  * connector under the rail is drawn while `open` so the spine flanks the body.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useCallback, type FC, type MouseEvent, type ReactNode } from 'react';
 import { cn } from '~/utils';
 import { INK, MUTED } from './execTokens';

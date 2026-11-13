@@ -6,8 +6,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.database.models import session as session_module
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.database.models import session as session_module
 
 
 @pytest.mark.parametrize(

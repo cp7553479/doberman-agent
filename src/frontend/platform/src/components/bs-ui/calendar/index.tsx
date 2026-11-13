@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from '@bisheng/ui';
+import { Button, buttonVariants } from '@doberman-agent/ui';
 
 import { cn } from "@/utils";
 import { enUS, zhCN } from 'date-fns/locale';

@@ -5,7 +5,7 @@
  *   - `siteData.pages`               -> the demo pages that actually exist (title, route, toc, frontmatter)
  *   - `siteData.themeConfig.sidebar` -> which group each page belongs to, and drift in both directions
  *
- * plus `__UI_COMPONENTS__` (rspress.config.ts) -> what @bisheng/ui actually exports,
+ * plus `__UI_COMPONENTS__` (rspress.config.ts) -> what @doberman-agent/ui actually exports,
  * which is what the 「已迁库」 badge reads. A page states WHICH component it documents
  * (`component:` front matter) and the library states whether that component is in it,
  * so nobody has to remember to flip a badge on migration day. Identities are stable;
@@ -23,7 +23,7 @@ import { usePageData } from 'rspress/runtime';
 /** Build stamp injected by rspress.config.ts — surfaced as a data attribute, not as page copy. */
 declare const __DOCS_BUILD__: { time: string; sha: string; branch: string };
 
-/** What @bisheng/ui exports, injected by rspress.config.ts — drives the 已迁库 badge. */
+/** What @doberman-agent/ui exports, injected by rspress.config.ts — drives the 已迁库 badge. */
 declare const __UI_COMPONENTS__: string[];
 
 const SECTION = '/components/';
@@ -49,7 +49,7 @@ interface Row {
   route: string;
   group: string;
   status: string;
-  /** True when the component this page documents is exported by @bisheng/ui. */
+  /** True when the component this page documents is exported by @doberman-agent/ui. */
   migrated: boolean;
   note: string;
   /** Drift marker; empty when the page, the sidebar and the library agree. */
@@ -103,7 +103,7 @@ export function ComponentIndex() {
       groupOf.has(route) ? '' : '页面存在，但没挂进侧边栏',
       // Declared an identity the library does not back: the component was renamed,
       // dropped from src/index.ts, or the front matter has a typo.
-      component && !inLibrary.has(component) ? `front matter 声明的 ${component} 不在 @bisheng/ui 的导出里` : '',
+      component && !inLibrary.has(component) ? `front matter 声明的 ${component} 不在 @doberman-agent/ui 的导出里` : '',
     ].filter(Boolean);
     return {
       title: page.title || route.replace(SECTION, ''),

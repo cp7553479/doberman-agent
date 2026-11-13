@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "@bisheng/ui";
+import { Button, Tooltip } from "@doberman-agent/ui";
 // src/frontend/client/src/pages/Subscription/CreateChannel/CrawlQueuePanel.tsx
 import { Loader2, X, ArrowRight, TriangleAlert, CircleCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocalize } from "~/hooks";

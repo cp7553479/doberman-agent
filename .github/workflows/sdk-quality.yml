@@ -1,6 +1,6 @@
 name: SDK Quality
 
-# Quality gate for src/bisheng-sdk/ (the `bisheng-sdk` application runtime SDK).
+# Quality gate for src/doberman-agent-sdk/ (the `doberman-agent-sdk` application runtime SDK).
 #
 # Same three legs as cli-quality.yml, and for the same reason: the repo's CI runs
 # no tests for the standalone packages, so anything not wired into a gate here
@@ -12,7 +12,7 @@ name: SDK Quality
 on:
   pull_request:
     paths:
-      - "src/bisheng-sdk/**"
+      - "src/doberman-agent-sdk/**"
       - "scripts/pack_sdk_wheel.sh"
       - ".github/workflows/sdk-quality.yml"
   workflow_dispatch:
@@ -40,22 +40,22 @@ jobs:
       - name: Is the package present?
         id: guard
         run: |
-          if [ -f src/bisheng-sdk/pyproject.toml ]; then
+          if [ -f src/doberman-agent-sdk/pyproject.toml ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::src/bisheng-sdk/ is not on this branch — skipping the SDK legs"
+            echo "::notice::src/doberman-agent-sdk/ is not on this branch — skipping the SDK legs"
           fi
 
       # --frozen, not a plain sync: uv.lock is committed and CI must use it.
       - name: Sync (frozen)
         if: steps.guard.outputs.present == 'true'
-        working-directory: src/bisheng-sdk
+        working-directory: src/doberman-agent-sdk
         run: uv sync --frozen --extra dev
 
       - name: Ruff
         if: steps.guard.outputs.present == 'true'
-        working-directory: src/bisheng-sdk
+        working-directory: src/doberman-agent-sdk
         run: |
           uv run ruff check .
           uv run ruff format --check .
@@ -64,7 +64,7 @@ jobs:
       # they only run during the 114 manual verification.
       - name: Tests
         if: steps.guard.outputs.present == 'true'
-        working-directory: src/bisheng-sdk
+        working-directory: src/doberman-agent-sdk
         run: uv run pytest -m "not network"
 
   wheel:
@@ -80,11 +80,11 @@ jobs:
       - name: Is the package present?
         id: guard
         run: |
-          if [ -f src/bisheng-sdk/pyproject.toml ]; then
+          if [ -f src/doberman-agent-sdk/pyproject.toml ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::src/bisheng-sdk/ is not on this branch — skipping the wheel leg"
+            echo "::notice::src/doberman-agent-sdk/ is not on this branch — skipping the wheel leg"
           fi
 
       - name: Build wheel and run the packaging smoke test
@@ -98,16 +98,16 @@ jobs:
         if: steps.guard.outputs.present == 'true'
         run: |
           set -euo pipefail
-          PKG_VERSION="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/bisheng-sdk/bisheng_sdk/__init__.py)"
-          MANIFEST_VERSION="$(python3 -c "import json;print(json.load(open('src/backend/bisheng/dev_toolkit/artifacts/manifest.json'))['sdk']['version'])")"
+          PKG_VERSION="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/doberman-agent-sdk/doberman_agent_sdk/__init__.py)"
+          MANIFEST_VERSION="$(python3 -c "import json;print(json.load(open('src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json'))['sdk']['version'])")"
           if [ "${PKG_VERSION}" != "${MANIFEST_VERSION}" ]; then
-            echo "::error::bisheng_sdk.__version__=${PKG_VERSION} but artifacts/manifest.json says ${MANIFEST_VERSION}"
+            echo "::error::doberman_agent_sdk.__version__=${PKG_VERSION} but artifacts/manifest.json says ${MANIFEST_VERSION}"
             exit 1
           fi
           # The wheel must be committable: `.gitignore` carries build/, lib/,
           # wheels/ and sdist/ without a leading slash, so a future rename of the
           # staging directory would make `git add` fail silently.
-          WHEEL="$(ls src/backend/bisheng/dev_toolkit/artifacts/bisheng_sdk-*.whl | head -n 1)"
+          WHEEL="$(ls src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_sdk-*.whl | head -n 1)"
           if git check-ignore -q "${WHEEL}"; then
             echo "::error::${WHEEL} is matched by a .gitignore rule and would never reach the backend image"
             exit 1
@@ -120,9 +120,9 @@ jobs:
         if: steps.guard.outputs.present == 'true'
         run: |
           set -euo pipefail
-          if ! git diff --quiet -- src/backend/bisheng/dev_toolkit/artifacts/manifest.json; then
+          if ! git diff --quiet -- src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json; then
             echo "::error::artifacts/manifest.json is out of date — run bash scripts/pack_sdk_wheel.sh and commit the result"
-            git --no-pager diff -- src/backend/bisheng/dev_toolkit/artifacts/manifest.json
+            git --no-pager diff -- src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json
             exit 1
           fi
 
@@ -145,7 +145,7 @@ jobs:
       - name: Is the package present?
         id: guard
         run: |
-          if [ -f src/bisheng-sdk/pyproject.toml ]; then
+          if [ -f src/doberman-agent-sdk/pyproject.toml ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
@@ -153,10 +153,10 @@ jobs:
 
       - name: Resolve to the newest allowed dependencies
         if: steps.guard.outputs.present == 'true'
-        working-directory: src/bisheng-sdk
+        working-directory: src/doberman-agent-sdk
         run: uv sync --upgrade --extra dev
 
       - name: Tests against the newest httpx in range
         if: steps.guard.outputs.present == 'true'
-        working-directory: src/bisheng-sdk
+        working-directory: src/doberman-agent-sdk
         run: uv run pytest -m "not network"

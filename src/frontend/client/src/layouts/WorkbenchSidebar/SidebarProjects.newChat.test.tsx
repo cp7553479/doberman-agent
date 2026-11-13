@@ -21,8 +21,8 @@ jest.mock('./projectsStore', () => ({
 jest.mock('./ProjectNameDialog', () => ({ ProjectNameDialog: () => null }));
 jest.mock('~/components/Conversations/Convo', () => ({ __esModule: true, default: () => null }));
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
-jest.mock('bisheng-icons', () => ({ Outlined: new Proxy({}, { get: () => () => <svg /> }) }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/icons', () => ({ Outlined: new Proxy({}, { get: () => () => <svg /> }) }));
+jest.mock('@doberman-agent/ui', () => ({
   Tooltip: ({ children }: { children: ReactNode }) => children,
   Dropdown: ({ children }: { children: ReactNode }) => children,
   DropdownItem: () => null,

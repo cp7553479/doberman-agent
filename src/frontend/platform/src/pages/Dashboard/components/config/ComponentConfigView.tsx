@@ -1,13 +1,13 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 import { TimeRangeType } from "../../types/dataConfig";
 
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
 import { Label } from "@/components/bs-ui/label";
 import { generateUUID } from "@/components/bs-ui/utils";
-import { RadioGroup,Radio as RadioGroupItem } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { RadioGroup,Radio as RadioGroupItem } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { ChartType,QueryConfig,TimeRangeMode } from "../../types/dataConfig";
 import { AdvancedDatePicker } from "../AdvancedDatePicker";

@@ -11,8 +11,8 @@ vi.mock('@/controllers/API/tools', () => ({
 vi.mock('@/controllers/request', () => ({ showApiError: mocks.error, handleUiRequest: (fn: () => Promise<unknown>) => () => fn().catch(mocks.error) }));
 vi.mock('@/util/utils', () => ({ isValidJSON: (text: string) => { try { JSON.parse(text); return true; } catch { return false; } } }));
 vi.mock('@/components/bs-ui/alertDialog/useConfirm', () => ({ bsConfirm: vi.fn() }));
-vi.mock('@bisheng/ui', async () => {
-    const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+    const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
     return { ...actual,
         Dropdown: ({ menu, children }: { menu: React.ReactNode; children: React.ReactNode }) => <div>{children}{menu}</div>,
         DropdownItem: ({ onSelect, children }: { onSelect: () => void; children: React.ReactNode }) => <button onClick={onSelect}>{children}</button>,

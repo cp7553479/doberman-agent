@@ -7,10 +7,10 @@ from uuid import uuid4
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeTransfer
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
-from bisheng.app_runtime.domain.services import runtime_material_protocol as wire
-from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeTransfer
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
+from doberman_agent.app_runtime.domain.services import runtime_material_protocol as wire
+from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json
 from test.app_runtime.test_runtime_artifacts import MemoryObjects
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import control as control
@@ -22,7 +22,7 @@ DATA = b"0123456789"
 
 @pytest.fixture
 async def transfers(materials):
-    from bisheng.app_runtime.domain.services.runtime_material_transfer_service import RuntimeMaterialTransferService
+    from doberman_agent.app_runtime.domain.services.runtime_material_transfer_service import RuntimeMaterialTransferService
 
     objects = MemoryObjects()
     for field in ("compiled_artifact_id", "dependency_artifact_id"):

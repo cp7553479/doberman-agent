@@ -21,8 +21,8 @@ import json
 
 import pytest
 
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
 
 
 def _q(id_: int, query: str) -> ChatMessage:
@@ -125,8 +125,8 @@ async def test_summary_empty_for_single_turn_with_empty_bot_placeholder(patch_me
 
 def test_build_agent_input_prepends_history_before_question():
     """_build_agent_input puts the prior-context block ahead of the current question."""
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     session = LinsightSessionVersion(id="SV-1", session_id="chat-1", user_id=1, question="当前问题", tenant_id=1)
     out = LinsightWorkflowTask._build_agent_input(
@@ -176,8 +176,8 @@ def test_build_agent_input_joins_file_list_not_repr():
     block. Interpolating the list directly would emit ``['...\\n...']`` (brackets,
     quotes, escaped newlines), mangling the pointer block the model must parse.
     """
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     block = "<uploaded_files>\n- path: /uploads/a/index.md\n  name: 年报.pdf\n</uploaded_files>"
     session = LinsightSessionVersion(id="SV-1", session_id="chat-1", user_id=1, question="问", tenant_id=1)
@@ -193,8 +193,8 @@ async def test_prepare_knowledge_list_clean_format_exposes_id():
     """fix #4: each KB renders as a clean line exposing knowledge_id (no i18n garble)."""
     from types import SimpleNamespace
 
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-    from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+    from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
     kbs = [
         SimpleNamespace(type=KnowledgeTypeEnum.NORMAL.value, id=45, name="财报库", description="历年财报"),

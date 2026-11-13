@@ -1,6 +1,6 @@
 # 109 main 基线恢复与迁移范围修正
 
-日期：2026-10-20。目标：先归档 109 原库，在新测试库建立 main 基线，再升级 feat/bisheng-work-110。本轮已完成归档、main 基线启动、升级与无 Gateway 联调。
+日期：2026-10-20。目标：先归档 109 原库，在新测试库建立 main 基线，再升级 feat/doberman-agent-work-110。本轮已完成归档、main 基线启动、升级与无 Gateway 联调。
 
 ## 原因与范围
 
@@ -44,7 +44,7 @@ MySQL 全库备份 132234804 字节，SHA-256 `0181f1211b1afc501bbd499536db922ba
 
 ## main 基线与隔离配置
 
-原 `bisheng` 库完整保留；归档后、客户端复测后均为 2132 条模型调用、917 条审计请求。16 条历史无席位调用继续留在原库，没有删除、改写或填造席位。
+原 `doberman-agent` 库完整保留；归档后、客户端复测后均为 2132 条模型调用、917 条审计请求。16 条历史无席位调用继续留在原库，没有删除、改写或填造席位。
 
 | 项目 | 本轮使用值 / 结果 |
 | --- | --- |
@@ -52,9 +52,9 @@ MySQL 全库备份 132234804 字节，SHA-256 `0181f1211b1afc501bbd499536db922ba
 | 应用 Redis / Celery broker | 独立 DB 12 / DB 13；原 DB 0 / DB 1 保留 |
 | OpenFGA | 新 Store `dsh-work110-main-20261020`；原 Store 保留 |
 | main 源码 | `4218ba7c138a90764a304681c3d8a5875b2c9c1a` |
-| main 镜像 | `dataelement/bisheng-backend:work110-main-baseline-4218ba7c1`，ID `3dc6ca958297` |
+| main 镜像 | `cp7553479/doberman-agent-backend:work110-main-baseline-4218ba7c1`，ID `3dc6ca958297` |
 | 功能镜像源码 | `fdb9ae81b254e4ecdda785f247e119560fc4fd78` |
-| 功能镜像 | `cr.dataelem.com/dataelement/bisheng-backend:feat_bisheng-work-110`，ID `c63324c8b0f8` |
+| 功能镜像 | `cr.dataelem.com/cp7553479/doberman-agent-backend:feat_doberman-agent-work-110`，ID `c63324c8b0f8` |
 | 功能镜像 digest | `sha256:869488b0ec5152fc3ed9ac02165d839503396782724c112ae3d92516e3ad839b` |
 | 13001 最终状态 | API 与 worker 均为功能镜像，running、restarts=0；API healthy；Gateway exited |
 
@@ -78,7 +78,7 @@ main 的数据库完整快照保存为归档目录下的 `main-test-baseline.sql
 
 | 场景 | 实测结果 |
 | --- | --- |
-| 原生登录 | 浏览器使用毕昇账号密码登录，确认授权，PKCE 回调进入本地 Electron；当前账号为 dsh109-admin |
+| 原生登录 | 浏览器使用doberman-agent账号密码登录，确认授权，PKCE 回调进入本地 Electron；当前账号为 dsh109-admin |
 | 模型调用 | API 非流式/SSE 均得到预期回复；本地 Electron 收到 `DSH110_MAIN_BASELINE_OK` |
 | 个人配置优先 | 部门 100000、个人 10000，个人生效；低个人额度没有被部门更高额度覆盖 |
 | 部门继承与独立计量 | 无个人配置的成员继承部门 100000；两名成员分别消耗 30 Token，各自计量；取消个人配置后使用部门额度，已用 30 不归零 |
@@ -90,13 +90,13 @@ API 场景创建的两个测试成员及部门策略已停用，调用和审计�
 
 原生客户端请求 `a5595c70-2bc3-4963-bc60-e6a1ca12e7c5`，会话 `9d130b60-1aa3-42d5-99c9-3aa2d2c85be8`：输入 8825、输出 9、合计 8834 Token，调用 SUCCEEDED，审计正文包含预期回复。见 [审计核验](./evidence/109-main-native-audit.json)；其中 message_sources_status 是详情 API 未返回该平铺字段，不能据此认定数据库缺失采集。
 
-![本地原生客户端实际模型回复](./evidence/109-main-native-client.png)
 
-[浏览器 Harness 同一轮结果](./evidence/109-main-harness-client.png) 另行保留。客户端为 `codex/dsh-without-gateway` 的本地开发进程；Electron 运行时版本号不作为源码分支版本的证据。
+
+ 另行保留。客户端为 `codex/dsh-without-gateway` 的本地开发进程；Electron 运行时版本号不作为源码分支版本的证据。
 
 ## 归档与回退边界
 
 原库的历史 revision 不属于新分支可直接升级的起点。归档用于追溯与恢复旧环境；当前新测试库从真实 main 建立。若恢复旧环境，需要一并恢复原配置、原库及对应镜像，不能让当前可变 feature tag 连接旧库。
-旧运行镜像已额外保留本地标签 `dataelement/bisheng-backend:work110-archived-20261020`，ID `b553a9544e32`；原 Compose/config/inspect 及 main 临时容器日志保存在上述 root 专用归档中。
+旧运行镜像已额外保留本地标签 `cp7553479/doberman-agent-backend:work110-archived-20261020`，ID `b553a9544e32`；原 Compose/config/inspect 及 main 临时容器日志保存在上述 root 专用归档中。
 
 本轮验证的是 109 的 MySQL 和当前客户端指定链路；DM 实库升级、并发 refresh、其他发布检查及全仓既有前端门禁问题仍未宣称通过。

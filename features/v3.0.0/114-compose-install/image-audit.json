@@ -5,7 +5,7 @@
   "images": [
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-backend:v3.0.0-beta6",
+      "image": "cp7553479/doberman-agent-backend:v3.0.0-beta6",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -14,7 +14,7 @@
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-frontend:v3.0.0-beta6",
+      "image": "cp7553479/doberman-agent-frontend:v3.0.0-beta6",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -86,7 +86,7 @@
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-sandbox:feat_3.0.0",
+      "image": "cp7553479/doberman-agent-sandbox:feat_3.0.0",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -95,47 +95,47 @@
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-runtime-manager:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-manager:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-proxy:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-proxy:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-runtime-helper:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-helper:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-runtime-assembler:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-assembler:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-python:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-python:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-python-preparer:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-python-preparer:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-node:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-node:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-node-preparer:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-node-preparer:v3.0.0",
       "status": 404
     },
     {
       "registry": "cr",
-      "image": "dataelement/bisheng-app-static:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-static:v3.0.0",
       "status": 404
     },
     {
@@ -154,12 +154,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-manager:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-manager:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-manager:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-runtime-manager:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -168,7 +168,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-manager:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-runtime-manager:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -177,12 +177,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-proxy:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-proxy:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-proxy:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-proxy:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -191,7 +191,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-proxy:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-proxy:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -200,42 +200,42 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-helper:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-helper:v3.0.0",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-helper:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-runtime-helper:v3.0.0-test-vibe-amd64",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-helper:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-runtime-helper:v3.0.0-test-vibe-arm64",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-assembler:v3.0.0",
+      "image": "cp7553479/doberman-agent-runtime-assembler:v3.0.0",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-assembler:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-runtime-assembler:v3.0.0-test-vibe-amd64",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-runtime-assembler:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-runtime-assembler:v3.0.0-test-vibe-arm64",
       "status": 401
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-python:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-python:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -244,7 +244,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-python:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -253,12 +253,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python-preparer:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-python-preparer:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python-preparer:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-python-preparer:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -267,7 +267,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-python-preparer:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-python-preparer:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -276,12 +276,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-node:v3.0.0",
       "error": "URLError"
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-node:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -290,7 +290,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-node:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -299,12 +299,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node-preparer:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-node-preparer:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node-preparer:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-node-preparer:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -313,7 +313,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-node-preparer:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-node-preparer:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"
@@ -322,12 +322,12 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-static:v3.0.0",
+      "image": "cp7553479/doberman-agent-app-static:v3.0.0",
       "status": 404
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-static:v3.0.0-test-vibe-amd64",
+      "image": "cp7553479/doberman-agent-app-static:v3.0.0-test-vibe-amd64",
       "status": 200,
       "platforms": [
         "linux/amd64"
@@ -336,7 +336,7 @@
     },
     {
       "registry": "hub",
-      "image": "dataelement/bisheng-app-static:v3.0.0-test-vibe-arm64",
+      "image": "cp7553479/doberman-agent-app-static:v3.0.0-test-vibe-arm64",
       "status": 200,
       "platforms": [
         "linux/arm64"

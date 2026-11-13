@@ -31,27 +31,27 @@
 ### Wave 1 — 后端使能层（无依赖，可并行）
 
 - [x] **T001**: `accessScope` 字段 + 迁移（citation 链路，F029 协同）
-  **文件**: `src/backend/bisheng/citation/domain/schemas/citation_schema.py`（`CitationRegistryItemSchema` 加 `accessScope: Literal['per_user','shared'] = 'per_user'`）、`citation/domain/models/message_citation.py`（持久列，默认 `per_user`）、`src/backend/bisheng/migrations/versions/`（alembic 加列，autogen 后手工核 DM8 兼容）
+  **文件**: `src/backend/doberman_agent/citation/domain/schemas/citation_schema.py`（`CitationRegistryItemSchema` 加 `accessScope: Literal['per_user','shared'] = 'per_user'`）、`citation/domain/models/message_citation.py`（持久列，默认 `per_user`）、`src/backend/doberman_agent/migrations/versions/`（alembic 加列，autogen 后手工核 DM8 兼容）
   **逻辑**: 新增可选字段，默认 `per_user`（存量从严）；持久层与 registry schema 都加，历史会话重开走 DB 时不丢标记
   **回滚**: alembic `downgrade` 删列即可（MySQL/DM8 均可逆）；存量行按默认值 `per_user`，无需数据回填
   **覆盖 AC**: AC-19（标注载体）；防坑 §5.5
   **依赖**: 无
 
 - [x] **T002**: workflow 配置者 id 构造期透传
-  **文件**: `src/backend/bisheng/workflow/graph/workflow.py`、`workflow/graph/graph_engine.py`、`workflow/nodes/base.py`、`src/backend/bisheng/worker/**/tasks.py`（入口把 `workflow_info.user_id` 作 `flow_user_id` 传入 `Workflow(...)`）
+  **文件**: `src/backend/doberman_agent/workflow/graph/workflow.py`、`workflow/graph/graph_engine.py`、`workflow/nodes/base.py`、`src/backend/doberman_agent/worker/**/tasks.py`（入口把 `workflow_info.user_id` 作 `flow_user_id` 传入 `Workflow(...)`）
   **逻辑**: 新增 `flow_user_id`（创建者）kwarg，沿 `Workflow → GraphEngine → BaseNode` 透传（范式对齐既有 `tenant_id`）；节点内可读 `self.flow_user_id`
   **覆盖 AC**: AC-14（关档身份来源）；实现 design 决策 3、防坑 §5.1
   **依赖**: 无
 
 - [x] **T003**: 无副作用构造"配置者 UserPayload"辅助
-  **文件**: `src/backend/bisheng/workflow/common/knowledge.py`（或就近 util）
+  **文件**: `src/backend/doberman_agent/workflow/common/knowledge.py`（或就近 util）
   **逻辑**: `UserPayload.init_login_user(user_id=配置者id, tenant_id=当前 flow 租户)` 造身份，**不调 `set_current_tenant_id`**（不切当前租户）；**不得**直接用 `resolve_operator`
   **测试**: `test_author_userpayload_no_tenant_switch` → 断言构造前后 `current_tenant_id` 不变
   **覆盖 AC**: AC-14；实现 design 决策 2、防坑 §5.10
   **依赖**: 无
 
 - [x] **T004**: 空间检索核心辅助（file_ids 解析 + F029 双层过滤 + 身份 + sync→async）
-  **文件**: `src/backend/bisheng/workflow/common/knowledge.py`（新 helper，供 RagUtils / agent / assistant 共用）
+  **文件**: `src/backend/doberman_agent/workflow/common/knowledge.py`（新 helper，供 RagUtils / agent / assistant 共用）
   **逻辑**: 入参 `(space_ids, identity_user: UserPayload, tag/metadata 过滤)` →
   ① `SpaceFileDao.get_children_by_prefix` 解析空间主版本 file_ids（防坑 §5.3）；
   ② `KnowledgeFileVisibilityService(request, identity_user).build_index_prefilter` 得 milvus_expr/es_filter；
@@ -64,21 +64,21 @@
 ### Wave 2 — 4 入口接检索核心（依赖 W1）
 
 - [x] **T005**: 工作流 rag / knowledge_retriever 节点接空间分支
-  **文件**: `src/backend/bisheng/workflow/common/knowledge.py`（`RagUtils`：识别 `knowledge.type=='space'` → 走 T004 helper；身份 = 开档 `self.user_id` / 关档 `self.flow_user_id`）、`workflow/nodes/rag/rag.py`、`workflow/nodes/knowledge_retriever/knowledge_retriever.py`（无需大改，复用 RagUtils）
+  **文件**: `src/backend/doberman_agent/workflow/common/knowledge.py`（`RagUtils`：识别 `knowledge.type=='space'` → 走 T004 helper；身份 = 开档 `self.user_id` / 关档 `self.flow_user_id`）、`workflow/nodes/rag/rag.py`、`workflow/nodes/knowledge_retriever/knowledge_retriever.py`（无需大改，复用 RagUtils）
   **逻辑**: 空间分支产出的 `List[Document]` 复用既有 `annotate_rag_documents_with_citations` + `collect_rag_citation_registry_items`（格式/citation 自动一致，AC-17/18）
   **测试**: `test_rag_node_space_open`→AC-12 / `test_rag_node_space_close`→AC-14 / `test_deleted_or_parsing_excluded`→AC-25；`**测试降级**`: Milvus/ES 端到端召回需向量库 mock，成本极高 → 手动验证
   **覆盖 AC**: AC-12, AC-14, AC-17, AC-18, AC-23, AC-25
   **依赖**: T002, T004
 
 - [x] **T006**: 工作流 agent 节点接空间分支 + 新增 user_auth 读取
-  **文件**: `src/backend/bisheng/workflow/nodes/agent/agent.py`（`_init_knowledge_tools`：`knowledge_id.type=='space'` → T004 helper；读节点 `user_auth`；身份同 T005）
+  **文件**: `src/backend/doberman_agent/workflow/nodes/agent/agent.py`（`_init_knowledge_tools`：`knowledge_id.type=='space'` → T004 helper；读节点 `user_auth`；身份同 T005）
   **逻辑**: 助手节点知识工具对空间套过滤 + citation accessScope（T008）
   **测试**: `test_agent_node_space_open/close` → AC-12/14
   **覆盖 AC**: AC-10, AC-12, AC-14, AC-17, AC-18
   **依赖**: T002, T004
 
 - [x] **T007**: 助手应用接空间分支 + 新增 user_auth 读取
-  **文件**: `src/backend/bisheng/api/services/assistant_agent.py`（`init_knowledge_tool`：空间 id → T004 helper；身份 = 开档 `self.invoke_user_id` / 关档 `self.assistant.user_id`；读助手级 `user_auth`）
+  **文件**: `src/backend/doberman_agent/api/services/assistant_agent.py`（`init_knowledge_tool`：空间 id → T004 helper；身份 = 开档 `self.invoke_user_id` / 关档 `self.assistant.user_id`；读助手级 `user_auth`）
   **逻辑**: 助手检索对空间套过滤；assistant 侧身份直接可用（design 决策 3）
   **测试**: `test_assistant_space_open/close` → AC-12/14；`**测试降级**`: 召回手动验证
   **覆盖 AC**: AC-10, AC-12, AC-14, AC-17, AC-18
@@ -93,7 +93,7 @@
   **依赖**: T005, T006, T007
 
 - [x] **T009**: `CitationResolveService` 分级解析（filter + enrich 两处）
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_resolve_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py`
   **逻辑**: ① `_filter_visible_rag_items`：`per_user` 项照 F029 按运行使用者 view_file 整条剔除、`shared` 项**不剔除**；② `_enrich_rag_item`：`shared` 项按**运行使用者** view_file 决定是否填 `previewUrl`/`downloadUrl`（无权→仅元数据，防坑 §5.6）；③ `resolve_citation` 单条 `shared` 无权不再抛 `NotFoundError`
   **测试**: `test_resolve_per_user_dropped`→AC-20/AC-13（开档角标侧）；`test_resolve_shared_metadata_no_url`→AC-21；`test_resolve_shared_with_view_file_full`→AC-22
   **覆盖 AC**: AC-13, AC-19, AC-20, AC-21, AC-22

@@ -2,7 +2,7 @@
 
 状态：范围与默认授权规则已确认，实现与自动验证完成后提交 PR。
 
-目标分支：dataelement/bisheng 的 feat/bisheng-work-120-main。
+目标分支：cp7553479/doberman-agent 的 feat/doberman-agent-work-120-main。
 核验基线：d4d60f77e41d58753a76969c6f40465a36054fa6（2026-10-26）。
 
 ## 验收条件

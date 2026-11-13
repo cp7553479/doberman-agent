@@ -6,9 +6,9 @@ import type { MediaPlayerLabels, MediaSelectLabels } from "../viewerTypes";
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode, SyntheticEvent } from "react";
-import { Filled, Outlined } from "bisheng-icons";
-import { cn, Dropdown, DropdownItem, Select } from "@bisheng/ui";
-import type { SelectOption } from "@bisheng/ui";
+import { Filled, Outlined } from "@doberman-agent/icons";
+import { cn, Dropdown, DropdownItem, Select } from "@doberman-agent/ui";
+import type { SelectOption } from "@doberman-agent/ui";
 
 export interface MediaPlayerProps {
     labels: MediaPlayerLabels;

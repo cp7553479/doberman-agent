@@ -7,10 +7,10 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from langchain_core.messages import AIMessage
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.llm.domain.utils import LlmProviderDailyLimitExceededError
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.llm.domain.utils import LlmProviderDailyLimitExceededError
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     install_catalog,
@@ -30,7 +30,7 @@ BODY = {"model": "gpt-4o", "messages": [{"role": "user", "content": "hi"}]}
 @pytest.fixture
 def records(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     install_catalog(monkeypatch, [server_row(1, "azure-openai")], [model_row(10, 1, "gpt-4o")])
@@ -54,7 +54,7 @@ def _events(text: str) -> list:
 async def test_a_non_streaming_call_returns_a_chat_completion(monkeypatch, records):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(
+        FakeDobermanAgentLLM(
             invoke_result=AIMessage(
                 content="hello",
                 usage_metadata={"input_tokens": 3, "output_tokens": 2, "total_tokens": 5},
@@ -75,7 +75,7 @@ async def test_a_non_streaming_call_returns_a_chat_completion(monkeypatch, recor
 
 
 async def test_the_model_is_built_for_this_face_and_charged_to_the_resource_owner(monkeypatch, records):
-    fake = install_fake_llm(monkeypatch, FakeBishengLLM())
+    fake = install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     await _post({**BODY, "temperature": 0.2})
 
@@ -87,7 +87,7 @@ async def test_the_model_is_built_for_this_face_and_charged_to_the_resource_owne
 
 
 async def test_sampling_parameters_and_tools_reach_the_model_untouched(monkeypatch, records):
-    fake = install_fake_llm(monkeypatch, FakeBishengLLM())
+    fake = install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
     tools = [{"type": "function", "function": {"name": "read_file", "parameters": {}}}]
 
     await _post({**BODY, "top_p": 0.9, "stop": ["END"], "tools": tools, "tool_choice": "auto"})
@@ -100,7 +100,7 @@ async def test_sampling_parameters_and_tools_reach_the_model_untouched(monkeypat
 
 
 async def test_streaming_carries_the_headers_that_stop_a_proxy_buffering_it(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(stream_script=[text_chunk("hi")]))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(stream_script=[text_chunk("hi")]))
 
     app = build_model_face_app()
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -115,7 +115,7 @@ async def test_streaming_carries_the_headers_that_stop_a_proxy_buffering_it(monk
 async def test_a_tool_calling_stream_round_trips_with_usage(monkeypatch, records):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(
+        FakeDobermanAgentLLM(
             stream_script=[
                 tool_chunk(name="read_file", args='{"p"', call_id="call_1"),
                 tool_chunk(name=None, args=':"a.py"}', call_id=None),
@@ -144,7 +144,7 @@ async def test_a_tool_calling_stream_round_trips_with_usage(monkeypatch, records
 
 
 async def test_usage_is_recorded_even_when_the_caller_did_not_ask_for_it(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(stream_script=[text_chunk("hi"), usage_chunk(prompt=2, completion=1)]))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(stream_script=[text_chunk("hi"), usage_chunk(prompt=2, completion=1)]))
 
     app = build_model_face_app()
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -155,7 +155,7 @@ async def test_usage_is_recorded_even_when_the_caller_did_not_ask_for_it(monkeyp
 
 
 async def test_unknown_usage_is_recorded_as_null_not_zero(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(invoke_result=AIMessage(content="hi")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(invoke_result=AIMessage(content="hi")))
 
     response = await _post(BODY)
 
@@ -167,7 +167,7 @@ async def test_unknown_usage_is_recorded_as_null_not_zero(monkeypatch, records):
 async def test_the_daily_provider_limit_is_a_real_429_not_half_a_stream(monkeypatch, records):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(raise_on_first_chunk=LlmProviderDailyLimitExceededError("azure/gpt-4o Quota used up")),
+        FakeDobermanAgentLLM(raise_on_first_chunk=LlmProviderDailyLimitExceededError("azure/gpt-4o Quota used up")),
     )
 
     response = await _post({**BODY, "stream": True})
@@ -176,7 +176,7 @@ async def test_the_daily_provider_limit_is_a_real_429_not_half_a_stream(monkeypa
     # this a status code rather than an error buried inside a 200 stream.
     assert response.status_code == 429
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26517
+    assert body["doberman_agent_code"] == 26517
     assert body["type"] == "rate_limit_error"
     assert records[0].result == "limit_exceeded"
 
@@ -186,28 +186,28 @@ async def test_an_upstream_rejection_keeps_the_provider_status(monkeypatch, reco
         status_code = 413
         message = "context length exceeded"
 
-    install_fake_llm(monkeypatch, FakeBishengLLM(raise_on_first_chunk=Status()))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(raise_on_first_chunk=Status()))
 
     response = await _post({**BODY, "stream": True})
 
     assert response.status_code == 413
-    assert response.json()["error"]["bisheng_code"] == 26532
+    assert response.json()["error"]["doberman_agent_code"] == 26532
     assert "context length exceeded" in response.json()["error"]["message"]
 
 
 async def test_an_upstream_connection_failure_is_a_502(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(raise_on_invoke=ConnectionError("no route to host")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(raise_on_invoke=ConnectionError("no route to host")))
 
     response = await _post(BODY)
 
     assert response.status_code == 502
-    assert response.json()["error"]["bisheng_code"] == 26531
+    assert response.json()["error"]["doberman_agent_code"] == 26531
     assert records[0].result == "upstream_failed"
     assert records[0].total_tokens is None
 
 
 async def test_a_mid_stream_failure_ends_the_stream_readably(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(stream_script=[text_chunk("par")], raise_after=1))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(stream_script=[text_chunk("par")], raise_after=1))
 
     app = build_model_face_app()
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -217,7 +217,7 @@ async def test_a_mid_stream_failure_ends_the_stream_readably(monkeypatch, record
     # the connection must close rather than hang.
     assert response.status_code == 200
     errors = [item for item in _events(response.text) if "error" in item]
-    assert errors[0]["error"]["bisheng_code"] == 26534
+    assert errors[0]["error"]["doberman_agent_code"] == 26534
     assert response.text.endswith("data: [DONE]\n\n")
     assert records[0].result == "upstream_failed"
 
@@ -240,19 +240,19 @@ async def test_a_model_withdrawn_inside_the_cache_window_is_reported_as_such(
     # that is discovered, and it is the only place 26512 / 26513 can come from:
     # deleting a provider deletes its model rows, leaving resolution nothing to
     # explain.
-    import bisheng.common.errcode.server as server_errors
-    from bisheng.llm.domain.services.llm import LLMService
+    import doberman_agent.common.errcode.server as server_errors
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     error_class = getattr(server_errors, platform_error)
 
     async def explode(**_kwargs):
         raise error_class()
 
-    monkeypatch.setattr(LLMService, "get_bisheng_llm", staticmethod(explode))
+    monkeypatch.setattr(LLMService, "get_doberman_agent_llm", staticmethod(explode))
 
     response = await _post(BODY)
 
-    assert response.json()["error"]["bisheng_code"] == expected_code
+    assert response.json()["error"]["doberman_agent_code"] == expected_code
     assert records[0].result == expected_result
     # The name the caller wrote is preserved even though the model is gone.
     assert records[0].requested_model == "gpt-4o"
@@ -261,7 +261,7 @@ async def test_a_model_withdrawn_inside_the_cache_window_is_reported_as_such(
 async def test_a_client_that_walks_away_mid_stream_is_recorded_as_such(monkeypatch, records):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(stream_script=[text_chunk("one"), text_chunk("two"), text_chunk("three")]),
+        FakeDobermanAgentLLM(stream_script=[text_chunk("one"), text_chunk("two"), text_chunk("three")]),
     )
     calls = {"count": 0}
 
@@ -282,9 +282,9 @@ async def test_a_client_that_walks_away_mid_stream_is_recorded_as_such(monkeypat
 
 
 async def test_no_session_or_message_row_is_created(monkeypatch, records):
-    from bisheng.database.models.session import MessageSessionDao
+    from doberman_agent.database.models.session import MessageSessionDao
 
-    install_fake_llm(monkeypatch, FakeBishengLLM(invoke_result=AIMessage(content="hi")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(invoke_result=AIMessage(content="hi")))
     created: list = []
     for method in ("insert_one", "async_insert_one"):
         monkeypatch.setattr(

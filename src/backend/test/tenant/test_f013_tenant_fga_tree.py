@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.tenant_fga import (
+from doberman_agent.common.errcode.tenant_fga import (
     RootTenantAdminNotAllowedError,
 )
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     build_authorization_model_f048,
 )
-from bisheng.permission.application import PermissionObject, PermissionRelation, PermissionSubject
-from bisheng.tenant.domain.services.tenant_admin_service import (
+from doberman_agent.permission.application import PermissionObject, PermissionRelation, PermissionSubject
+from doberman_agent.tenant.domain.services.tenant_admin_service import (
     TenantAdminService,
 )
 
@@ -59,9 +59,9 @@ async def test_child_admin_grant_writes_only_the_child_tuple() -> None:
     permissions.grant = AsyncMock()
 
     with (
-        patch("bisheng.tenant.domain.services.tenant_admin_service.TenantDao") as tenant_dao,
+        patch("doberman_agent.tenant.domain.services.tenant_admin_service.TenantDao") as tenant_dao,
         patch(
-            "bisheng.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
             AsyncMock(return_value=permissions),
         ),
     ):
@@ -85,8 +85,8 @@ async def test_child_admin_grant_writes_only_the_child_tuple() -> None:
 @pytest.mark.asyncio
 async def test_direct_root_admin_grant_is_rejected_before_fga() -> None:
     with (
-        patch("bisheng.tenant.domain.services.tenant_admin_service.TenantDao") as tenant_dao,
-        patch("bisheng.tenant.domain.services.tenant_admin_service.get_permission_relation_api") as get_permissions,
+        patch("doberman_agent.tenant.domain.services.tenant_admin_service.TenantDao") as tenant_dao,
+        patch("doberman_agent.tenant.domain.services.tenant_admin_service.get_permission_relation_api") as get_permissions,
     ):
         with pytest.raises(RootTenantAdminNotAllowedError):
             await TenantAdminService.grant_tenant_admin(

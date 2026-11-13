@@ -16,9 +16,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.department import DepartmentPermissionDeniedError
+from doberman_agent.common.errcode.department import DepartmentPermissionDeniedError
 
-_MOD = "bisheng.department.domain.services.department_service"
+_MOD = "doberman_agent.department.domain.services.department_service"
 
 
 def _login_user(user_id=7, tenant_id=1):
@@ -26,7 +26,7 @@ def _login_user(user_id=7, tenant_id=1):
 
 
 async def _call_scope(login_user):
-    from bisheng.department.domain.services.department_service import _aget_user_scope
+    from doberman_agent.department.domain.services.department_service import _aget_user_scope
 
     return await _aget_user_scope(login_user)
 
@@ -40,7 +40,7 @@ class TestAgetUserScope:
         assert admin_paths == set()
 
     async def test_dept_admin_paths(self):
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         login_user = _login_user()
         admin_depts = [
@@ -59,7 +59,7 @@ class TestAgetUserScope:
         assert admin_paths == {"/1/21/", "/1/30/"}
 
     async def test_tenant_admin_mount_path(self):
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         login_user = _login_user()
         with (
@@ -73,7 +73,7 @@ class TestAgetUserScope:
         assert admin_paths == {"/5/"}
 
     async def test_dept_and_tenant_admin_union(self):
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         login_user = _login_user()
         admin_depts = [SimpleNamespace(id=21, path="/1/21/")]
@@ -90,7 +90,7 @@ class TestAgetUserScope:
         assert admin_paths == {"/1/21/", "/5/"}
 
     async def test_non_admin_denied(self):
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         login_user = _login_user()
         with (

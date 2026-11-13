@@ -15,9 +15,9 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.database.models.app import App, AppDao
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.database.models.app import App, AppDao
 from test.audit.conftest import make_user_payload
 
 
@@ -84,15 +84,15 @@ class TestAppDaoSearch:
 class TestSearchAuditAppsService:
     @pytest.fixture()
     def bind_service(self, monkeypatch, app_db):
-        monkeypatch.setattr("bisheng.api.services.audit_log.get_async_db_session", app_db)
-        monkeypatch.setattr("bisheng.api.services.audit_log.bypass_tenant_filter", lambda: nullcontext())
+        monkeypatch.setattr("doberman_agent.api.services.audit_log.get_async_db_session", app_db)
+        monkeypatch.setattr("doberman_agent.api.services.audit_log.bypass_tenant_filter", lambda: nullcontext())
 
     async def test_tenant_admin_search_stays_in_tenant(self, bind_service, app_db):
         await _seed(app_db)
         user = make_user_payload(user_id=77, is_admin=True, is_global_super=False)
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=3),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=3),
         ):
             hits = await AuditLogService.search_audit_apps(user, "sales", 20)
         assert {h["id"] for h in hits} == {"a3", "a4"}
@@ -102,8 +102,8 @@ class TestSearchAuditAppsService:
         await _seed(app_db)
         user = make_user_payload(user_id=1, is_admin=True, is_global_super=True)
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=1),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=1),
         ):
             hits = await AuditLogService.search_audit_apps(user, "sales", 20)
         assert {h["id"] for h in hits} == {"a1", "a3", "a4"}
@@ -118,6 +118,6 @@ class TestSearchAuditAppsService:
             return []
 
         monkeypatch.setattr(AuditLogService, "_user_has_log_web_menu", _no_menu)
-        monkeypatch.setattr("bisheng.api.services.audit_log.UserGroupDao.aget_user_admin_group", _no_groups)
+        monkeypatch.setattr("doberman_agent.api.services.audit_log.UserGroupDao.aget_user_admin_group", _no_groups)
         with pytest.raises(UnAuthorizedError):
             await AuditLogService.search_audit_apps(user, "sales", 20)

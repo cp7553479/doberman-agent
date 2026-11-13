@@ -1,8 +1,8 @@
 /* ============================================================
- * @bisheng/ui design tokens — v0 契约
+ * @doberman-agent/ui design tokens — v0 契约
  * 双层结构:primitive(原始数值源)+ semantic(组件唯一可消费层)。
  * 本文件是这些 token 的唯一定义处:client 通过 main.jsx 的
- * `import '@bisheng/ui/tokens.css'` 加载(其 style.css 只保留 client 自有变量),
+ * `import '@doberman-agent/ui/tokens.css'` 加载(其 style.css 只保留 client 自有变量),
  * 文档站通过 rspress.config.ts 的 preEntry 加载;platform 接入时同样引本文件。
  * 覆盖顺序在本文件内部即已排定::root 在前,.dark / ≤768px / .theme-green /
  * .dark.theme-green / .illus-grey 在后——除 .dark.theme-green(双类,特异性更高)
@@ -330,7 +330,7 @@
  * body raised (14→16), headings lowered (24→22) — flatter ladder.
  * Component classNames stay unchanged. */
 @media (max-width: 768px) {
-  :root:not([data-bisheng-surface="desktop"]) {
+  :root:not([data-doberman-agent-surface="desktop"]) {
     --text-body-sm: var(--font-size-3);  --leading-body-sm: var(--line-height-3); /* 13→14 */
     --text-body: var(--font-size-4);     --leading-body: var(--line-height-4);    /* 14→16 */
     --text-h3: 1.0625rem;                --leading-h3: 1.5625rem;                 /* 18→17 / 25 */
@@ -519,8 +519,8 @@
  * on purpose: it must beat the size档's own `text-[length:…]` utility whatever
  * order the stylesheets end up in. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
-  :root:not([data-bisheng-surface="desktop"]) input.input-no-zoom,
-  :root:not([data-bisheng-surface="desktop"]) textarea.input-no-zoom {
+  :root:not([data-doberman-agent-surface="desktop"]) input.input-no-zoom,
+  :root:not([data-doberman-agent-surface="desktop"]) textarea.input-no-zoom {
     font-size: 16px;
     line-height: 24px;
   }

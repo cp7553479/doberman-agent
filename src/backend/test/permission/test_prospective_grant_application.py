@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.permission.application.prospective_grant import (
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.permission.application.prospective_grant import (
     ProspectiveGrantApplication,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

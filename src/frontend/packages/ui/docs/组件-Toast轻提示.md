@@ -195,7 +195,7 @@
 
 ### 11.1 状态：2026-08-13 已完成
 
-组件在 `packages/ui/src/components/Toast/`（`toastStore.ts` 队列 + `Toaster.tsx` 容器），`@bisheng/ui` 导出 `toast` / `<Toaster />`；demo 页 `docs/components/toast.mdx`。client 接线：
+组件在 `packages/ui/src/components/Toast/`（`toastStore.ts` 队列 + `Toaster.tsx` 容器），`@doberman-agent/ui` 导出 `toast` / `<Toaster />`；demo 页 `docs/components/toast.mdx`。client 接线：
 
 | 位置 | 改动 |
 |---|---|
@@ -247,6 +247,6 @@
 | 2026-08-13 | 关闭按钮调淡并拉开：`text-3` → `text-4`（禁用文字色），离文案 8px → 16px（与操作按钮同口径）；§5.3 补规则 | 待 committer 窗口提交 |
 | 2026-08-13 | 修投影被裁：做收合补位的外层 `overflow-hidden` 把 `shadow-popup` 整个裁掉了（投影画在盒子外面），改为只在退场收合时才裁 | 待 committer 窗口提交 |
 | 2026-08-13 | 修层级：容器改为 `createPortal` 到 `<body>`。原先容器渲染在挂载点原地，被组件站 z-20 的顶栏压住（同一层叠上下文之外，z-index 数值再大也无效），§3「盖住弹窗与抽屉」实际不成立 | 待 committer 窗口提交 |
-| 2026-08-13 | 组件落地：`@bisheng/ui` 新增 Toast（`toastStore.ts` + `Toaster.tsx`），四类型 / 3 条堆叠去重 / 动态时长 + 悬停暂停 / 操作按钮 / ESC / 分级播报全部按 §2–§9 实现；client 壳全量替换（含删掉私有撤销 toast 与旧 `.toast-root` CSS），404 个调用点未动；补 `shadow-popup` / `shadow-modal` 两档投影 token；建 `components/toast.mdx` demo 页并注册侧栏。本文改：§10 标注过时、新增 §11.1 落地状态、§12 勾注 4 条并新增 1 条 | 待 committer 窗口提交 |
+| 2026-08-13 | 组件落地：`@doberman-agent/ui` 新增 Toast（`toastStore.ts` + `Toaster.tsx`），四类型 / 3 条堆叠去重 / 动态时长 + 悬停暂停 / 操作按钮 / ESC / 分级播报全部按 §2–§9 实现；client 壳全量替换（含删掉私有撤销 toast 与旧 `.toast-root` CSS），404 个调用点未动；补 `shadow-popup` / `shadow-modal` 两档投影 token；建 `components/toast.mdx` demo 页并注册侧栏。本文改：§10 标注过时、新增 §11.1 落地状态、§12 勾注 4 条并新增 1 条 | 待 committer 窗口提交 |
 | 2026-08-13 | 补 §10 现状扫描（隐藏区）：全局 Toast 一套 135 文件 404 调用点 + 私有撤销 toast 1 处、壳解剖 13 项差距表、入参双写法 72 vs 45、两个迁移坑（`duration: 0` 语义反转、`useDelayedUploadToast` 死代码）；原 §10/§11 顺延为 §11/§12，待决策清单勾销首条并新增两条。**展示层规则未增未减未改** | 待 committer 窗口提交 |
 | 2026-08-26 | 暗色底色归口功能色深色阶：`*-tint` / 品牌 `blue-50` 在暗色下由 token 层解析为深色取值，`Toaster.tsx` 删掉四处 `dark:` 15% 透明底回退；§11.1 暗色条目与 §12 待决策项同步勾销 | 待 committer 窗口提交 |

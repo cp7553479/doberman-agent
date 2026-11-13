@@ -20,8 +20,8 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
-from bisheng.api.services import workflow as wf
-from bisheng.api.services.workflow import WorkFlowService
+from doberman_agent.api.services import workflow as wf
+from doberman_agent.api.services.workflow import WorkFlowService
 
 # Rows 1..10, id "1" newest (update_time descending with the id number).
 _VISIBLE_IDS = {"1", "2", "4", "5", "7", "8", "10"}  # 3, 6, 9 are filtered out

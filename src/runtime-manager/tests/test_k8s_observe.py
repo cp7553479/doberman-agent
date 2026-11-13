@@ -62,7 +62,7 @@ def service(tmp_path, monkeypatch):
         available = True
 
         def list(self, resource, *, label_selector):
-            assert resource == "pods" and label_selector == "bisheng.managed=v2"
+            assert resource == "pods" and label_selector == "doberman-agent.managed=v2"
             if not self.available:
                 raise KubernetesAPIError("fixture-sensitive-cluster-error", 503)
             return {"items": []}
@@ -86,7 +86,7 @@ def service(tmp_path, monkeypatch):
             return dict(resource)
 
         def operation(self, ident):
-            return {"payload": {"runtime_env": {"BISHENG_APP_TOKEN": "fixture-business-token"}}}
+            return {"payload": {"runtime_env": {"DOBERMAN_AGENT_APP_TOKEN": "fixture-business-token"}}}
 
         def node_snapshot(self):
             return {
@@ -283,7 +283,7 @@ def observed_application_http(tmp_path, monkeypatch):
                     200,
                     json={
                         "node_id": "node-a",
-                        "payload": {"runtime_env": {"BISHENG_APP_TOKEN": "fixture-business-token"}},
+                        "payload": {"runtime_env": {"DOBERMAN_AGENT_APP_TOKEN": "fixture-business-token"}},
                     },
                 )
             pytest.fail("unexpected platform endpoint")
@@ -295,12 +295,12 @@ def observed_application_http(tmp_path, monkeypatch):
                 return {
                     "Config": {
                         "Labels": {
-                            "bisheng.runtime.node": "node-a",
+                            "doberman-agent.runtime.node": "node-a",
                             OP_LABEL: "op-a",
-                            "bisheng.app.id": "app-a",
-                            "bisheng.managed": "v2",
+                            "doberman-agent.app.id": "app-a",
+                            "doberman-agent.managed": "v2",
                         },
-                        "Env": ["BISHENG_APP_TOKEN=fixture-business-token"],
+                        "Env": ["DOBERMAN_AGENT_APP_TOKEN=fixture-business-token"],
                     },
                     "State": {"Running": healthy, "Health": {"Status": "healthy" if healthy else "unhealthy"}},
                     "RestartCount": 2,

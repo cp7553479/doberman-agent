@@ -1,4 +1,4 @@
-import { getBareCitationRefs } from '@bisheng/chat/citations';
+import { getBareCitationRefs } from '@doberman-agent/chat/citations';
 import type { ChatCitation, ChatMessage } from './chatApi';
 
 /** Old stream-format history omits registries; resolve candidates through the existing permission gate. */

@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
 
 class _FakePipeline:
@@ -26,21 +26,21 @@ class _FakePipeline:
 
 
 async def test_parse_file_uploads_markdown_without_vector_write(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline, raising=False)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline, raising=False)
     fake_minio = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+        "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
         AsyncMock(return_value=fake_minio),
     )
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.workbench_impl.async_calculate_md5",
+        "doberman_agent.linsight.domain.services.workbench_impl.async_calculate_md5",
         AsyncMock(return_value="deadbeef"),
     )
     # Hard guard: any attempt to build a vector store must fail the test.
     milvus_spy = Mock(side_effect=AssertionError("milvus write must not happen"))
     es_spy = Mock(side_effect=AssertionError("es write must not happen"))
-    monkeypatch.setattr("bisheng.knowledge.domain.knowledge_rag.KnowledgeRag.init_milvus_vectorstore", milvus_spy)
-    monkeypatch.setattr("bisheng.knowledge.domain.knowledge_rag.KnowledgeRag.init_es_vectorstore", es_spy)
+    monkeypatch.setattr("doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag.init_milvus_vectorstore", milvus_spy)
+    monkeypatch.setattr("doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag.init_es_vectorstore", es_spy)
 
     result = await LinsightWorkbenchImpl._parse_file(1, "fid123", "/tmp/x.docx", "x.docx")
 

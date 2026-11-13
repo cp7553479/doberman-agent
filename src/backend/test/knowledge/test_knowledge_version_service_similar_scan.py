@@ -2,31 +2,31 @@
 import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
     KnowledgeDocumentRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
-from bisheng.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
+from doberman_agent.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
 
 
 @pytest.fixture
 def enable_switch(monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = True
     conf.version_management.simhash_similarity_threshold = 0.85
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
 
 
 def _build_svc(session):

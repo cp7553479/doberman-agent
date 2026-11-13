@@ -7,7 +7,7 @@ L1 聚焦约定合规和架构红线，不检查边界条件、权限、并发�
 
 | # | 检查项 | 适用文件 | 严重度 | 检查方法 |
 |---|--------|---------|--------|---------|
-| 1 | 架构分层 | 后端 `*.py` | HIGH | Endpoint 不直接实例化 DAO 做复杂业务（应通过 Service）；Service 不导入 FastAPI 对象（Request/Response/Depends/APIRouter）；`domain/models/` 不得 `from bisheng.*.domain.services`；`common/` 和 `core/` 不得导入领域模块；新代码不放 `api/services/`（旧服务层），应放 `{module}/domain/services/`；Worker 只导入 Domain Services 不导入 Endpoint |
+| 1 | 架构分层 | 后端 `*.py` | HIGH | Endpoint 不直接实例化 DAO 做复杂业务（应通过 Service）；Service 不导入 FastAPI 对象（Request/Response/Depends/APIRouter）；`domain/models/` 不得 `from doberman_agent.*.domain.services`；`common/` 和 `core/` 不得导入领域模块；新代码不放 `api/services/`（旧服务层），应放 `{module}/domain/services/`；Worker 只导入 Domain Services 不导入 Endpoint |
 | 2 | 命名规范 | 全部 | MEDIUM | DAO 方法：同步 `get_xxx`/`create_xxx`/`update_xxx`/`delete_xxx`，异步 `aget_xxx`/`acreate_xxx`/`aupdate_xxx`/`adelete_xxx`；DAO 为 `@classmethod`；Service 类名 `{Module}{Function}Service`；错误码类名 `{Module}{Error}Error`，Code 遵循 MMMEE；前端页面 PascalCase，store 文件 camelCase+Store，API 函数 camelCase；i18n key 小写+点分隔 |
 | 3 | 序列化约定 | 后端 `*.py` | HIGH | ORM 继承 `SQLModelSerializable`；API 响应用 `UnifiedResponseModel`（`resp_200`/`resp_500`/`ErrorClass.return_resp`）；分页用 `PageData[T]`（新代码）；枚举序列化为 `.value`；SSE 用 `to_sse_event()`；WS 关闭用 `websocket_close_message()` |
 | 4 | 数据库约定 | 后端 models/migration `*.py` | HIGH | 新表必须含 `tenant_id`（`index=True`）；必须含 `create_time`/`update_time`；禁止手动 `WHERE tenant_id=`（SQLAlchemy event 自动注入）；禁止 Service 层直接写 SQL（用 DAO classmethod）；新模块 DAO 放 `{module}/domain/models/` 而非 `database/models/`；使用 `get_sync_db_session()`/`get_async_db_session()` |

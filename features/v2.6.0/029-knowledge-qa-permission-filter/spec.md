@@ -374,18 +374,18 @@ POST /api/v1/citations/resolve
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/knowledge/domain/services/knowledge_file_visibility_service.py` | 新 service：`build_index_prefilter` / `post_filter_visible_files` / `is_space_visible`（AD-01/02/08） |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_file_visibility_service.py` | 新 service：`build_index_prefilter` / `post_filter_visible_files` / `is_space_visible`（AD-01/02/08） |
 
 ### 修改
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py` | `_build_folder_search_kwargs` 拆分 + `chat_folder` 接入双层过滤；`space_rag` 在 retriever_tool 后调用结果层精滤；新增结构化日志 |
-| `src/backend/bisheng/workstation/domain/services/workstation_service.py` | `queryChunksFromDB` 加入 `is_space_visible` 二次校验 + 每 KB 索引层粗滤 + 结果层精滤（AC-11 ~ AC-13） |
-| `src/backend/bisheng/citation/domain/services/citation_resolve_service.py` | 删除 `_has_file_access`（旧 RBAC `AccessType.KNOWLEDGE` + 空间级，arch-guard RULE-8 VIOLATION）；新增 `_filter_visible_rag_items` 走 `KnowledgeFileVisibilityService.post_filter_visible_files`；`resolve_citations` 先过滤再 enrich；`resolve_citation` 单条无权抛 `NotFoundError`（AC-15 ~ AC-18） |
-| `src/backend/bisheng/knowledge/api/dependencies.py` | 注入 `KnowledgeFileVisibilityService` 的 FastAPI 依赖工厂 |
-| `src/backend/bisheng/citation/api/dependencies.py` | `CitationResolveService` 构造增加对 `KnowledgeFileVisibilityService` 的依赖 |
-| `src/backend/bisheng/core/config/settings.py` | 新增 `KnowledgeQAFilterConf` 配置块（AD-02/03/08 的阈值/并发） |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py` | `_build_folder_search_kwargs` 拆分 + `chat_folder` 接入双层过滤；`space_rag` 在 retriever_tool 后调用结果层精滤；新增结构化日志 |
+| `src/backend/doberman_agent/workstation/domain/services/workstation_service.py` | `queryChunksFromDB` 加入 `is_space_visible` 二次校验 + 每 KB 索引层粗滤 + 结果层精滤（AC-11 ~ AC-13） |
+| `src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py` | 删除 `_has_file_access`（旧 RBAC `AccessType.KNOWLEDGE` + 空间级，arch-guard RULE-8 VIOLATION）；新增 `_filter_visible_rag_items` 走 `KnowledgeFileVisibilityService.post_filter_visible_files`；`resolve_citations` 先过滤再 enrich；`resolve_citation` 单条无权抛 `NotFoundError`（AC-15 ~ AC-18） |
+| `src/backend/doberman_agent/knowledge/api/dependencies.py` | 注入 `KnowledgeFileVisibilityService` 的 FastAPI 依赖工厂 |
+| `src/backend/doberman_agent/citation/api/dependencies.py` | `CitationResolveService` 构造增加对 `KnowledgeFileVisibilityService` 的依赖 |
+| `src/backend/doberman_agent/core/config/settings.py` | 新增 `KnowledgeQAFilterConf` 配置块（AD-02/03/08 的阈值/并发） |
 | `src/frontend/platform/public/locales/{en-US,zh-Hans,ja}/knowledge.json` | 补 `knowledge.qa.noVisibleContent` i18n key（若现状无对应文案） |
 | `src/frontend/client/src/locales/{en,zh-Hans,ja}/translation.json` | 补对应 i18n key |
 | `features/v2.6.0/release-contract.md` | ① 表 1 追加一行：F029 不引入新领域对象、仅读取 / 调用 F025 之外的现有对象；② 表 2 追加 INV-7（定义见下表）；③ 表 3 追加 F029 行，依赖列为 "—"（无前置 feature）；④ 变更历史登记本次新增 |
@@ -394,9 +394,9 @@ POST /api/v1/citations/resolve
 
 | 文件 | 原因 |
 |------|------|
-| `src/backend/bisheng/knowledge/api/endpoints/qa.py` | `/qa/chunk` / `/qa/keyword` 是历史角标溯源接口，新版引用 UI 已切换到 `/api/v1/citations/resolve`；本期不动，待后续合适时机统一下线 |
-| `src/backend/bisheng/workflow/nodes/knowledge_retriever/` | 工作流节点检索路径，本期不动（AD-06） |
-| `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py` 与 `citation.py` 的 v2 RPC | 默认 operator 身份运行，与终端用户视角不一致，本期不动（AD-06） |
+| `src/backend/doberman_agent/knowledge/api/endpoints/qa.py` | `/qa/chunk` / `/qa/keyword` 是历史角标溯源接口，新版引用 UI 已切换到 `/api/v1/citations/resolve`；本期不动，待后续合适时机统一下线 |
+| `src/backend/doberman_agent/workflow/nodes/knowledge_retriever/` | 工作流节点检索路径，本期不动（AD-06） |
+| `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py` 与 `citation.py` 的 v2 RPC | 默认 operator 身份运行，与终端用户视角不一致，本期不动（AD-06） |
 
 ### INV-7 完整定义（待写入 `release-contract.md` 表 2）
 
@@ -406,8 +406,8 @@ POST /api/v1/citations/resolve
 
 ### 不修改（明确排除）
 
-- `src/backend/bisheng/workflow/nodes/knowledge_retriever/`
-- `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`
+- `src/backend/doberman_agent/workflow/nodes/knowledge_retriever/`
+- `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`
 - OpenFGA 模型定义文件、`PermissionService.authorize` / `revoke` 路径
 - `_filter_visible_child_items` / `_scan_visible_child_items`（列表 UI 路径，沿用）
 

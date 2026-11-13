@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Input } from '@bisheng/ui';
-import { Checkbox, Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, Input } from '@doberman-agent/ui';
+import { Checkbox, Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 // src/features/chat-config/components/ModelManagement.tsx
 
 import { QuestionHint as QuestionTooltip } from "@/components/bs-comp/QuestionHint";
@@ -15,7 +15,7 @@ import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-// Keep in sync with backend WSModel (bisheng/api/v1/schemas.py).
+// Keep in sync with backend WSModel (doberman_agent/api/v1/schemas.py).
 export const MODEL_DESCRIPTION_MAX_LENGTH = 50;
 
 export interface Model {
@@ -110,13 +110,13 @@ export const ModelManagement = forwardRef<HTMLDivElement[], ModelManagementProps
                 <div className="min-w-[1072px]">
                     <div className="grid mb-4 items-end gap-x-2" style={{ gridTemplateColumns: MODEL_ROW_COLUMNS }}>
                         <div className="min-w-0">
-                            <Label className="bisheng-label">{t("bench.model")}</Label>
+                            <Label className="doberman_agent-label">{t("bench.model")}</Label>
                         </div>
                         <div className="min-w-0">
-                            <Label className="bisheng-label">{t("bench.displayName")}</Label>
+                            <Label className="doberman_agent-label">{t("bench.displayName")}</Label>
                         </div>
                         <div className="min-w-0">
-                            <Label className="bisheng-label">{t("bench.modelDescription")}</Label>
+                            <Label className="doberman_agent-label">{t("bench.modelDescription")}</Label>
                         </div>
                         {/* No whitespace-nowrap on these three: the cells are fixed-width
                         while the labels are translated, so nowrap made English and
@@ -124,14 +124,14 @@ export const ModelManagement = forwardRef<HTMLDivElement[], ModelManagementProps
                         ("Vision" over "Linsight Default Model"). Wrapping keeps a long
                         translation inside its own column whatever its length. */}
                         <div className="flex items-center justify-center gap-0.5 px-1 text-center">
-                            <Label className="bisheng-label">{t("bench.vision")}</Label>
+                            <Label className="doberman_agent-label">{t("bench.vision")}</Label>
                             <QuestionTooltip className="shrink-0" content={t("bench.visionText")} />
                         </div>
                         <div className="flex items-center justify-center px-1 text-center">
-                            <Label className="bisheng-label">{t("model:model.dailyDefaultModel")}</Label>
+                            <Label className="doberman_agent-label">{t("model:model.dailyDefaultModel")}</Label>
                         </div>
                         <div className="flex items-center justify-center gap-0.5 px-1 text-center">
-                            <Label className="bisheng-label">{t("model:model.linsightDefaultModel")}</Label>
+                            <Label className="doberman_agent-label">{t("model:model.linsightDefaultModel")}</Label>
                             <QuestionTooltip
                                 className="shrink-0"
                                 content={t("model:model.linsightDefaultModelTooltip")}

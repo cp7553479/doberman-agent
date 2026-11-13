@@ -1,7 +1,7 @@
 """F053 T041 (checkable half) — what the cross-Feature journey needs locally.
 
 T041 itself is an end-to-end run on a real platform: a key is handed over, the
-developer runs ``bisheng login``, calls an MCP tool, and their coding agent
+developer runs ``doberman-agent login``, calls an MCP tool, and their coding agent
 carries an application from declaration to an approved release without leaving
 the local conversation (AC-46, AC-47). That run needs F052's MCP face and a
 machine; it cannot happen here.
@@ -20,7 +20,7 @@ assertions check the *content*, not merely its presence, because an exit code
 or a tool name taught wrongly is worse than one never taught.
 
 What still needs a real platform and a real machine (reported, not faked):
-handing a key over, ``bisheng login`` against it, one live MCP tool call, and
+handing a key over, ``doberman-agent login`` against it, one live MCP tool call, and
 an administrator actually approving the release.
 """
 
@@ -32,7 +32,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
+from doberman_agent.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
 
 SKILL_MD = SKILLS_DIR / "deploy-hosting" / "SKILL.md"
 
@@ -48,13 +48,13 @@ class TestJourneyStepsTheSkillPackTeaches:
     def test_step_one_login_with_a_handed_over_key(self, skill_text):
         # AC-46's local half: the pack tells the agent the exact command and
         # that the key arrives separately, from an administrator.
-        assert "bisheng login <平台地址> --api-key bs-sak-" in skill_text
+        assert "doberman-agent login <平台地址> --api-key bs-sak-" in skill_text
         assert "--api-key-stdin" in skill_text
 
     def test_step_two_declaration_completion(self, skill_text):
         # The manifest is what "补全应用包声明" means; name and runtime are the
         # required pair, and the pack has to say which keys exist at all.
-        assert "bisheng-app.yaml" in skill_text
+        assert "doberman-agent-app.yaml" in skill_text
         for key in ("manifest_version:", "name:", "runtime:", "port:", "slug:", "tier:"):
             assert key in skill_text, f"manifest key {key} is not documented"
         # The keys that do *not* exist matter as much: the manifest rejects
@@ -63,7 +63,7 @@ class TestJourneyStepsTheSkillPackTeaches:
         assert "没有 `health` / `command` / `entry` / `start` 这些字段" in skill_text
 
     def test_step_three_deploy(self, skill_text):
-        assert "bisheng deploy ." in skill_text
+        assert "doberman-agent deploy ." in skill_text
         assert "--dry-run" in skill_text
 
     def test_step_four_precheck_codes_match_the_backend(self, skill_text):
@@ -76,7 +76,7 @@ class TestJourneyStepsTheSkillPackTeaches:
         secret-scan bands, which are the ones a `deploy` can actually return to
         a developer.
         """
-        from bisheng.common.errcode import app_publish as errcodes
+        from doberman_agent.common.errcode import app_publish as errcodes
 
         documented = {int(code) for code in re.findall(r"\b(162[2-4]\d)\b", skill_text)}
         defined = {
@@ -107,8 +107,8 @@ class TestJourneyStepsTheSkillPackTeaches:
 SRC_ROOT = Path(__file__).resolve().parents[3]
 PLATFORM_SRC = SRC_ROOT / "frontend" / "platform" / "src"
 SERVICE_ACCOUNT_DIR = PLATFORM_SRC / "pages" / "SystemPage" / "components" / "ServiceAccount"
-CLI_EXIT_CODES = SRC_ROOT / "bisheng-cli" / "bisheng_cli" / "errors.py"
-CLI_DEPLOY = SRC_ROOT / "bisheng-cli" / "bisheng_cli" / "commands" / "deploy.py"
+CLI_EXIT_CODES = SRC_ROOT / "doberman-agent-cli" / "doberman_agent_cli" / "errors.py"
+CLI_DEPLOY = SRC_ROOT / "doberman-agent-cli" / "doberman_agent_cli" / "commands" / "deploy.py"
 
 
 def _exit_code_values() -> dict[str, int]:
@@ -161,9 +161,9 @@ class TestJourneyLastStepApprovalTracking:
     """
 
     def test_the_pack_teaches_both_local_ways_to_follow_an_approval(self, skill_text):
-        assert "bisheng deploy . --wait" in skill_text
+        assert "doberman-agent deploy . --wait" in skill_text
         assert "--wait-timeout" in skill_text
-        assert "bisheng_app_status" in skill_text
+        assert "doberman_agent_app_status" in skill_text
 
     def test_the_exit_codes_it_teaches_are_the_codes_the_cli_actually_returns(self, skill_text):
         """Read off `errors.py`, not remembered — a renumbering must break here.
@@ -202,9 +202,9 @@ class TestJourneyLastStepApprovalTracking:
 
     def test_the_status_tool_it_names_is_a_real_tool_with_that_scope(self, skill_text):
         """`app:manage` is what the pack tells the developer to ask their admin for."""
-        from bisheng.open_mcp.registry import TOOL_REGISTRY
+        from doberman_agent.open_mcp.registry import TOOL_REGISTRY
 
-        spec = TOOL_REGISTRY.get("bisheng_app_status")
+        spec = TOOL_REGISTRY.get("doberman_agent_app_status")
         assert spec is not None, "the pack names an MCP tool the face does not serve"
         assert spec.scope == "app:manage"
         assert "app:manage" in skill_text
@@ -232,7 +232,7 @@ class TestAccessInfoAnAdministratorCanHandOver:
     def test_it_covers_all_four_items_the_developer_needs(self, panel_source):
         for key in ("mcpAddress", "modelBaseUrl", "cliDownload", "loginCommand", "platformAddress"):
             assert f"accessInfo.{key}" in panel_source, f"the access-information block lost {key}"
-        assert "bisheng login" in panel_source
+        assert "doberman-agent login" in panel_source
 
     def test_the_copied_text_carries_no_credential(self, panel_source):
         """AC-45, checked where it can actually rot: the component's own source.

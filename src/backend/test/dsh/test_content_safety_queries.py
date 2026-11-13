@@ -14,13 +14,13 @@ import pytest
 from sqlalchemy import delete, event
 from sqlmodel import SQLModel
 
-from bisheng.core.context.tenant import visible_tenant_ids
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditEvidence
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.repositories import content_safety, content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
-from bisheng.user.domain.models.user import User
+from doberman_agent.core.context.tenant import visible_tenant_ids
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditEvidence
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.repositories import content_safety, content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.user.domain.models.user import User
 from test.dsh.test_content_safety_groups import native
 from test.dsh.test_content_safety_merge import committed_merge
 from test.dsh.test_content_safety_repository import committed_append, tenant_session
@@ -38,7 +38,7 @@ def query_engine(content_safety_engine):
 
 def event_repository(session):
     return importlib.import_module(
-        "bisheng.dsh.domain.repositories.content_safety_queries"
+        "doberman_agent.dsh.domain.repositories.content_safety_queries"
     ).ContentSafetyQueryRepository(session)
 
 

@@ -1,7 +1,7 @@
 """Tests for MiniMax provider upgrade to OpenAI-compatible API (M3 support).
 
 These tests verify the MiniMax provider changes without requiring the full
-bisheng backend to be installed, by testing the specific files that were changed.
+doberman_agent backend to be installed, by testing the specific files that were changed.
 """
 
 import ast
@@ -16,7 +16,7 @@ class TestMiniMaxLLMModuleChanges(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.llm_py_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "bisheng", "llm", "domain", "llm", "llm.py"
+            os.path.dirname(__file__), "..", "..", "doberman_agent", "llm", "domain", "llm", "llm.py"
         )
         cls.llm_py_path = os.path.normpath(cls.llm_py_path)
         with open(cls.llm_py_path) as f:
@@ -47,7 +47,7 @@ class TestMiniMaxLLMModuleChanges(unittest.TestCase):
     def test_minimax_entry_uses_chat_minimax(self):
         """_llm_node_type['minimax'] should reference the dedicated ChatMinimax
         client (web-search handling now lives inside that ChatModel, not in the
-        BishengLLM wrapper)."""
+        DobermanAgentLLM wrapper)."""
         found = False
         for line in self.llm_source.splitlines():
             if "MINIMAX" in line and "client" in line:
@@ -70,10 +70,10 @@ class TestMiniMaxLLMModuleChanges(unittest.TestCase):
 
     def test_web_search_support_moved_to_chat_minimax(self):
         """Web search support is now encapsulated in ChatMinimax and must no
-        longer live in the removed BishengLLM.parse_kwargs hook."""
-        self.assertNotIn("def parse_kwargs", self.llm_source, "parse_kwargs should be removed from BishengLLM")
+        longer live in the removed DobermanAgentLLM.parse_kwargs hook."""
+        self.assertNotIn("def parse_kwargs", self.llm_source, "parse_kwargs should be removed from DobermanAgentLLM")
         chat_minimax_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "bisheng", "core", "ai", "llm", "chat_minimax.py"
+            os.path.dirname(__file__), "..", "..", "doberman_agent", "core", "ai", "llm", "chat_minimax.py"
         )
         chat_minimax_path = os.path.normpath(chat_minimax_path)
         with open(chat_minimax_path) as f:
@@ -104,7 +104,7 @@ class TestCoreAIModuleChanges(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.init_py_path = os.path.join(os.path.dirname(__file__), "..", "..", "bisheng", "core", "ai", "__init__.py")
+        cls.init_py_path = os.path.join(os.path.dirname(__file__), "..", "..", "doberman_agent", "core", "ai", "__init__.py")
         cls.init_py_path = os.path.normpath(cls.init_py_path)
         with open(cls.init_py_path) as f:
             cls.init_source = f.read()
@@ -146,7 +146,7 @@ class TestEmbeddingModuleConsistency(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.emb_py_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "bisheng", "llm", "domain", "llm", "embedding.py"
+            os.path.dirname(__file__), "..", "..", "doberman_agent", "llm", "domain", "llm", "embedding.py"
         )
         cls.emb_py_path = os.path.normpath(cls.emb_py_path)
         with open(cls.emb_py_path) as f:
@@ -248,7 +248,7 @@ class TestMiniMaxLLMServerTypeEnum(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.const_path = os.path.join(os.path.dirname(__file__), "..", "..", "bisheng", "llm", "domain", "const.py")
+        cls.const_path = os.path.join(os.path.dirname(__file__), "..", "..", "doberman_agent", "llm", "domain", "const.py")
         cls.const_path = os.path.normpath(cls.const_path)
         with open(cls.const_path) as f:
             cls.const_source = f.read()
@@ -263,7 +263,7 @@ class TestOpenAIParamsFunction(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        llm_py_path = os.path.join(os.path.dirname(__file__), "..", "..", "bisheng", "llm", "domain", "llm", "llm.py")
+        llm_py_path = os.path.join(os.path.dirname(__file__), "..", "..", "doberman_agent", "llm", "domain", "llm", "llm.py")
         llm_py_path = os.path.normpath(llm_py_path)
         with open(llm_py_path) as f:
             source = f.read()

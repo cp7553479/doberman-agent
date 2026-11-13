@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Dropdown, DropdownItem } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Dropdown, DropdownItem } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Article, getArticleDetailApi } from "~/api/channels";

@@ -8,7 +8,7 @@ from uuid import uuid4
 import pytest
 from redis.asyncio import Redis
 
-from bisheng.linsight.domain.services.task_message_broadcast import task_message_subscription
+from doberman_agent.linsight.domain.services.task_message_broadcast import task_message_subscription
 
 
 @pytest.fixture
@@ -97,7 +97,7 @@ async def test_real_websockets_both_finish_the_same_task(redis_queue, monkeypatc
     import websockets
     from fastapi import FastAPI, WebSocket
 
-    from bisheng.linsight.domain.services import message_stream_handle as stream
+    from doberman_agent.linsight.domain.services import message_stream_handle as stream
 
     redis, key = redis_queue
     monkeypatch.setattr(

@@ -8,12 +8,12 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from bisheng import main
-from bisheng.api.services import f048_permission_runtime as api_runtime_module
-from bisheng.core.context.manager import ApplicationContextManager
-from bisheng.department.domain.services import department_projection_scope
-from bisheng.permission.application import process_runtime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent import main
+from doberman_agent.api.services import f048_permission_runtime as api_runtime_module
+from doberman_agent.core.context.manager import ApplicationContextManager
+from doberman_agent.department.domain.services import department_projection_scope
+from doberman_agent.permission.application import process_runtime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 
 
 class _PermissionFacade:
@@ -68,11 +68,11 @@ def test_api_process_registers_permission_and_department_contexts_lazily(monkeyp
     registered = []
     monkeypatch.setattr(main.settings.openfga, "enabled", True)
     monkeypatch.setattr(
-        "bisheng.permission.application.process_runtime.register_f048_permission_runtime_context",
+        "doberman_agent.permission.application.process_runtime.register_f048_permission_runtime_context",
         lambda initializer: registered.append(("permission", initializer)),
     )
     monkeypatch.setattr(
-        "bisheng.department.domain.services.department_projection_scope.register_department_projection_runtime_context",
+        "doberman_agent.department.domain.services.department_projection_scope.register_department_projection_runtime_context",
         lambda: registered.append(("department", None)),
     )
 

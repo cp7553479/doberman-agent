@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.permission.application.catalog_api import OpenFGACatalogProjector
+from doberman_agent.permission.application.catalog_api import OpenFGACatalogProjector
 
 
 class _RecordingClient:

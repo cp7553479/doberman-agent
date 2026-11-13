@@ -55,14 +55,14 @@
   返回 auto；普通 close、助手、非独立页、开关关闭、新会话、迟到 chat 均返回 manual/ignore；同一 activation
   只消费一次，A→B→A 后新的 A activation 可再次消费。
   **覆盖 AC**: AC-01, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08, AC-09, AC-10, AC-11, AC-13
-  **验证**: `cd src/frontend && pnpm --filter bishengchat test:ci -- --runInBand workflowAutoRerun.test.ts`
+  **验证**: `cd src/frontend && pnpm --filter doberman-agentchat test:ci -- --runInBand workflowAutoRerun.test.ts`
   **依赖**: 无
 
 ### Wave 2：实现后端配置与明确状态协议
 
 - [x] **T004**: 系统配置与 `/env` 下发实现
-  **文件**: `src/backend/bisheng/core/config/settings.py`,
-  `src/backend/bisheng/initdb_config.yaml`, `src/backend/bisheng/api/v1/endpoints.py`
+  **文件**: `src/backend/doberman_agent/core/config/settings.py`,
+  `src/backend/doberman_agent/initdb_config.yaml`, `src/backend/doberman_agent/api/v1/endpoints.py`
   **逻辑**: 在 `WorkflowConf` 增加严格 fail-safe 的 `auto_rerun_on_open: bool = false`；模板 `workflow` 段
   增加带注释默认项；`get_env` 下发 `workflow.auto_rerun_on_open`，不返回其他工作流运行参数。
   **测试**: T001 全部通过；现有 config backfill 测试保持通过。
@@ -70,7 +70,7 @@
   **依赖**: T001
 
 - [x] **T005**: 状态检查 finished 标记实现
-  **文件**: `src/backend/bisheng/common/chat/clients/workflow_client.py`
+  **文件**: `src/backend/doberman_agent/common/chat/clients/workflow_client.py`
   **逻辑**: `check_status` 在有历史且检查瞬间无 Redis 状态时直接发带标记 close；检查瞬间已经是
   SUCCESS/FAILED 时先复用既有响应排空/清理，再让最终 close 带同一标记；非终态继续恢复且后续 close 不带
   标记。保持下线、新会话和其他客户端兼容。
@@ -95,7 +95,7 @@
   **逻辑**: mock `/env`、sidebar 和 AppChat；验证配置成功时 provider 获得 boolean，配置完成前不挂载 AppChat；
   请求失败、字段缺失/错误时按 false 继续渲染；guest/auth 与 workflow/assistant 范围正确。
   **覆盖 AC**: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-13
-  **验证**: `cd src/frontend && pnpm --filter bishengchat test:ci -- --runInBand StandaloneChatPage.test.tsx`
+  **验证**: `cd src/frontend && pnpm --filter doberman-agentchat test:ci -- --runInBand StandaloneChatPage.test.tsx`
   **依赖**: T003
 
 - [x] **T008**: 独立页读取并传递统一开关
@@ -130,4 +130,4 @@
   `e2e-checklist.md`。
 - `pnpm typecheck` 的 platform 阶段被两个既有测试错误阻断：
   `src/test/f048DashboardPermissions.test.tsx:91` 与 `src/test/routeFilterPurity.test.ts:16`；本次涉及的 client
-  `pnpm --filter bishengchat typecheck` 已通过。
+  `pnpm --filter doberman-agentchat typecheck` 已通过。

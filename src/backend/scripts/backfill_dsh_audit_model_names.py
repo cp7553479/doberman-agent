@@ -16,9 +16,9 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.core.database import get_sync_db_session  # noqa: E402
-from bisheng.dsh.domain.repositories.model_audit_maintenance import backfill_name_digests  # noqa: E402
-from bisheng.dsh.domain.services.profile import profile_scope  # noqa: E402
+from doberman_agent.core.database import get_sync_db_session  # noqa: E402
+from doberman_agent.dsh.domain.repositories.model_audit_maintenance import backfill_name_digests  # noqa: E402
+from doberman_agent.dsh.domain.services.profile import profile_scope  # noqa: E402
 
 
 def main():

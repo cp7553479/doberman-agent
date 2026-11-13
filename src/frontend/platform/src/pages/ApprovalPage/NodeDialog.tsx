@@ -1,11 +1,11 @@
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
-import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Select } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Select } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
 import { type ApprovalNodeItem } from "@/controllers/API/approval";
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { approverSourceLabel, offerableApproverSources } from "./approverSources";

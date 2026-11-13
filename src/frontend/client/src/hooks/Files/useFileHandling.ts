@@ -21,7 +21,7 @@ import { useToastContext } from '~/Providers/ToastContext';
 import { useChatContext } from '~/Providers/ChatContext';
 import { logger, validateFiles } from '~/utils';
 import useUpdateFiles from './useUpdateFiles';
-import { bishengConfState } from '~/pages/appChat/store/atoms';
+import { dobermanAgentConfState } from '~/pages/appChat/store/atoms';
 import { useRecoilState } from 'recoil';
 
 type UseFileHandling = {
@@ -245,7 +245,7 @@ const useFileHandling = (params?: UseFileHandling) => {
     img.src = preview;
   };
 
-  const [config] = useRecoilState(bishengConfState)
+  const [config] = useRecoilState(dobermanAgentConfState)
   const handleFiles = async (_files: FileList | File[], _toolResource?: string) => {
     // abortControllerRef.current = new AbortController();
     const fileList = Array.from(_files);

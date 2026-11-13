@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { LogOut } from "lucide-react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Channel, SortType, canDeleteChannel, canEditChannelSettings, canManageChannelPermissions, getChannelDetailApi, getChannelsApi } from "~/api/channels";
 import { useConfirm } from "~/Providers";
 import { useChannelActions } from "../hooks/useChannelActions";

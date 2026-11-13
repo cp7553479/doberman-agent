@@ -76,9 +76,9 @@ class DockerExecutor:
         )
 
     def executions(self, app_id=None, operation_id=None):
-        labels = ["bisheng.managed=v2", f"bisheng.runtime.node={self.config.node_id}"]
+        labels = ["doberman-agent.managed=v2", f"doberman-agent.runtime.node={self.config.node_id}"]
         if app_id:
-            labels.append(f"bisheng.app.id={app_id}")
+            labels.append(f"doberman-agent.app.id={app_id}")
         if operation_id:
             labels.append(f"{OP_LABEL}={operation_id}")
         return self.docker.list_containers(all_states=True, filters={"label": labels})
@@ -90,8 +90,8 @@ class DockerExecutor:
             try:
                 legacy = self.docker.inspect_container(scope["exec_ref"])
                 labels = legacy.get("Config", {}).get("Labels", {})
-                if labels.get("bisheng.managed") == "true":
-                    if labels.get("bisheng.app.id") != operation["app_id"]:
+                if labels.get("doberman-agent.managed") == "true":
+                    if labels.get("doberman-agent.app.id") != operation["app_id"]:
                         raise ExecutionError("legacy_execution_scope_mismatch")
                     items.append(
                         {"Id": scope["exec_ref"], "Labels": {PHASE_LABEL: "serve", OP_LABEL: scope["operation_id"]}}
@@ -161,8 +161,8 @@ class DockerExecutor:
             item
             for item in self.docker.list_containers(all_states=False)
             if not (
-                item.get("Labels", {}).get("bisheng.managed") == "v2"
-                and item.get("Labels", {}).get("bisheng.runtime.node") == self.config.node_id
+                item.get("Labels", {}).get("doberman-agent.managed") == "v2"
+                and item.get("Labels", {}).get("doberman-agent.runtime.node") == self.config.node_id
             )
             and item["Id"] not in getattr(self, "_legacy_owned", set())
         ]
@@ -191,12 +191,12 @@ class DockerExecutor:
     def cleanup_data_workers(self):
         workers = self.docker.list_containers(
             all_states=True,
-            filters={"label": ["bisheng.managed=data-helper", f"bisheng.runtime.node={self.config.node_id}"]},
+            filters={"label": ["doberman-agent.managed=data-helper", f"doberman-agent.runtime.node={self.config.node_id}"]},
         )
-        protected = {item.get("Labels", {}).get("bisheng.runtime.operation") for item in workers}
+        protected = {item.get("Labels", {}).get("doberman-agent.runtime.operation") for item in workers}
         for item in workers:
             labels = item.get("Labels", {})
-            deadline = int(labels.get("bisheng.runtime.deadline", "0"))
+            deadline = int(labels.get("doberman-agent.runtime.deadline", "0"))
             if deadline > self.clock.time():
                 continue
             ref = item["Id"]
@@ -205,7 +205,7 @@ class DockerExecutor:
             if self.docker.inspect_container(ref).get("State", {}).get("Running"):
                 continue
             self.docker.remove_container(ref, force=False)
-            ident = labels.get("bisheng.runtime.operation", "")
+            ident = labels.get("doberman-agent.runtime.operation", "")
             if len(ident) == 32 and all(c in "0123456789abcdef" for c in ident):
                 output = self.config.data_root / "data-jobs" / ident
                 if output.exists():
@@ -228,14 +228,14 @@ class DockerExecutor:
     def _record(self, exec_ref, operation=None):
         record = self.docker.inspect_container(exec_ref)
         labels = record.get("Config", {}).get("Labels", {})
-        if labels.get("bisheng.runtime.node") != self.config.node_id or labels.get("bisheng.managed") != "v2":
+        if labels.get("doberman-agent.runtime.node") != self.config.node_id or labels.get("doberman-agent.managed") != "v2":
             if not (
                 operation
-                and labels.get("bisheng.managed") == "true"
-                and labels.get("bisheng.app.id") == operation["app_id"]
+                and labels.get("doberman-agent.managed") == "true"
+                and labels.get("doberman-agent.app.id") == operation["app_id"]
             ):
                 raise ExecutionError("execution_scope_mismatch")
-        if operation and labels.get("bisheng.app.id") != operation["app_id"]:
+        if operation and labels.get("doberman-agent.app.id") != operation["app_id"]:
             raise ExecutionError("execution_scope_mismatch")
         return record
 
@@ -261,7 +261,7 @@ class DockerExecutor:
         for item in self.executions(app_id=operation["app_id"], operation_id=operation["operation_id"]):
             record = self._record(item["Id"], operation)
             labels = record.get("Config", {}).get("Labels", {})
-            if labels.get(OP_LABEL) != operation["operation_id"] or labels.get("bisheng.runtime.epoch") != str(
+            if labels.get(OP_LABEL) != operation["operation_id"] or labels.get("doberman-agent.runtime.epoch") != str(
                 operation["owner_epoch"]
             ):
                 continue

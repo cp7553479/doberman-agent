@@ -1,5 +1,5 @@
 /**
- * design-token.js — Single Source of Truth (SSOT) for BiSheng client design tokens.
+ * design-token.js — Single Source of Truth (SSOT) for DobermanAgent client design tokens.
  *
  * ONE catalog, consumed by two audiences:
  *   • components  — via Tailwind (docs build spreads `tailwindTheme` into theme.extend;

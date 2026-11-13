@@ -5,9 +5,9 @@ from alembic.ddl.mysql import MySQLImpl
 from sqlalchemy import Column, Index, Integer, MetaData, Table, UniqueConstraint, create_engine
 from sqlalchemy.dialects import mysql
 
-from bisheng.core.database.alembic_helpers import mysql_impl
-from bisheng.core.database.alembic_helpers.indexes import find_equivalent_index
-from bisheng.core.database.alembic_helpers.mysql_impl import BishengMySQLImpl
+from doberman_agent.core.database.alembic_helpers import mysql_impl
+from doberman_agent.core.database.alembic_helpers.indexes import find_equivalent_index
+from doberman_agent.core.database.alembic_helpers.mysql_impl import DobermanAgentMySQLImpl
 
 
 def test_finds_same_non_unique_columns_with_different_name():
@@ -71,15 +71,15 @@ def test_finds_equivalent_unique_constraint():
         assert find_equivalent_index(connection, candidate) == (True, "uk_items_tenant_id")
 
 
-def test_bisheng_mysql_impl_is_registered():
-    assert DefaultImpl.get_by_dialect(mysql.dialect()) is BishengMySQLImpl
+def test_doberman_agent_mysql_impl_is_registered():
+    assert DefaultImpl.get_by_dialect(mysql.dialect()) is DobermanAgentMySQLImpl
 
 
-def test_bisheng_mysql_impl_skips_equivalent_index():
+def test_doberman_agent_mysql_impl_skips_equivalent_index():
     metadata = MetaData()
     table = Table("items", metadata, Column("tenant_id", Integer))
     candidate = Index("idx_items_tenant_id", table.c.tenant_id)
-    implementation = BishengMySQLImpl(
+    implementation = DobermanAgentMySQLImpl(
         mysql.dialect(),
         MagicMock(),
         as_sql=False,

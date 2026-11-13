@@ -10,11 +10,11 @@ Windows Desktop 从发现广场打开知识空间预览，返回入口和正文�
 
 ## 基线与范围
 
-- 目标：`dataelement/bisheng:feat/bisheng-work-120-main`，基线 `1e495e15a46bcb749a86642e292ff2c35897d847`。
+- 目标：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main`，基线 `1e495e15a46bcb749a86642e292ff2c35897d847`。
 - 分支：`codex/knowledge-preview-layout-20261103`。
-- 工作区：`.worktrees/bisheng-knowledge-preview-layout-20261103`。
+- 工作区：`.worktrees/doberman-agent-knowledge-preview-layout-20261103`。
 - 变更范围：Client 预览布局、现有渲染验证脚本及交付记录。导航、权限与订阅业务沿用现有实现。
-- 本地渲染宿主：Desktop `011e8e2d0ad3b01941e7b2b39f3b5c4d137ee061`，目录 `.worktrees/bisheng-splash-locale-20261102`；实际 Harness `0.2.1-rc.2`、Electron `43.0.0`，macOS。该 checkout 作为验证夹具提供现有原生宿主和 preload。
+- 本地渲染宿主：Desktop `011e8e2d0ad3b01941e7b2b39f3b5c4d137ee061`，目录 `.worktrees/doberman-agent-splash-locale-20261102`；实际 Harness `0.2.1-rc.2`、Electron `43.0.0`，macOS。该 checkout 作为验证夹具提供现有原生宿主和 preload。
 - 使用现有已安装依赖及 pnpm `9.15.9`。依赖清单和锁文件沿用发布基线。
 
 ## 验证
@@ -30,7 +30,7 @@ Windows Desktop 从发现广场打开知识空间预览，返回入口和正文�
 复现命令：先构建 Client，然后执行：
 
 ```sh
-DESKTOP_SOURCE=/absolute/path/to/bisheng-desktop \
+DESKTOP_SOURCE=/absolute/path/to/doberman-agent-desktop \
   node scripts/verify-knowledge-square-navigation.mjs /absolute/path/to/evidence
 ```
 

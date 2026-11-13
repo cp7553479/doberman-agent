@@ -51,7 +51,7 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlalchemy import text as sa_text  # noqa: E402
 
-from bisheng.core.database import get_sync_db_session  # noqa: E402
+from doberman_agent.core.database import get_sync_db_session  # noqa: E402
 
 
 SCAN_SQL = sa_text("""

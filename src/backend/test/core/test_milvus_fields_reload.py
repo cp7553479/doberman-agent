@@ -18,8 +18,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from bisheng.core.vectorstore import milvus as milvus_module
-from bisheng.core.vectorstore.milvus import Milvus
+from doberman_agent.core.vectorstore import milvus as milvus_module
+from doberman_agent.core.vectorstore.milvus import Milvus
 
 
 def _make_store(*, fields, collection_exists):

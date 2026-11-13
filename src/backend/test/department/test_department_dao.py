@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.department import (
+from doberman_agent.database.models.department import (
     Department,
     UserDepartment,
 )

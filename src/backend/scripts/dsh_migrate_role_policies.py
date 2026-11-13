@@ -19,12 +19,12 @@ if _BACKEND_ROOT not in sys.path:
 
 from starlette.requests import Request  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context import close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id  # noqa: E402
-from bisheng.dsh.access_runtime import get_runtime, get_settings  # noqa: E402
-from bisheng.dsh.admin_runtime import get_admin_runtime, read_model_user_permissions  # noqa: E402
-from bisheng.dsh.domain.services.role_migration import migrate_role_policies  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context import close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id  # noqa: E402
+from doberman_agent.dsh.access_runtime import get_runtime, get_settings  # noqa: E402
+from doberman_agent.dsh.admin_runtime import get_admin_runtime, read_model_user_permissions  # noqa: E402
+from doberman_agent.dsh.domain.services.role_migration import migrate_role_policies  # noqa: E402
 
 
 async def main(args):
@@ -33,8 +33,8 @@ async def main(args):
     runtime = None
     try:
         await initialize_app_context(settings, instance_role="script")
-        from bisheng.api.services.f048_permission_runtime import initialize_f048_worker_runtime
-        from bisheng.permission.application.process_runtime import register_f048_permission_runtime_context
+        from doberman_agent.api.services.f048_permission_runtime import initialize_f048_worker_runtime
+        from doberman_agent.permission.application.process_runtime import register_f048_permission_runtime_context
 
         register_f048_permission_runtime_context(initialize_f048_worker_runtime)
         runtime = await get_runtime(request, get_settings())

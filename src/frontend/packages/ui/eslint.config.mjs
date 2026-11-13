@@ -1,4 +1,4 @@
-// ESLint 9 flat config — @bisheng/ui shared package.
+// ESLint 9 flat config — @doberman-agent/ui shared package.
 // This package is new code: NO suppressions file, zero tolerance from day one.
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
@@ -6,7 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'doc_build/**'] },
+  { ignores: ['**/._*', 'dist/**', 'node_modules/**', 'doc_build/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -22,13 +22,13 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
       // Package contract: presentation-only — no HTTP at all.
-      'no-restricted-imports': ['error', { paths: [{ name: 'axios', message: '@bisheng/ui is presentation-only; no HTTP allowed (package contract).' }] }],
+      'no-restricted-imports': ['error', { paths: [{ name: 'axios', message: '@doberman-agent/ui is presentation-only; no HTTP allowed (package contract).' }] }],
       // Package contract: ALL text comes in via props — no hardcoded copy in any language.
       'no-restricted-syntax': [
         'error',
-        { selector: 'Literal[value=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese string — @bisheng/ui components receive all text via props (package contract).' },
-        { selector: 'TemplateElement[value.raw=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese in template string — @bisheng/ui components receive all text via props (package contract).' },
-        { selector: 'JSXText[value=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese JSX text — @bisheng/ui components receive all text via props (package contract).' },
+        { selector: 'Literal[value=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese string — @doberman-agent/ui components receive all text via props (package contract).' },
+        { selector: 'TemplateElement[value.raw=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese in template string — @doberman-agent/ui components receive all text via props (package contract).' },
+        { selector: 'JSXText[value=/[\\u4e00-\\u9fff]/]', message: 'Hardcoded Chinese JSX text — @doberman-agent/ui components receive all text via props (package contract).' },
       ],
     },
   },

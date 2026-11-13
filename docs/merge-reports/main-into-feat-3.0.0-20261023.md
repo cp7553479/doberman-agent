@@ -46,7 +46,7 @@
 | 信息源查询 | 保留来源分支 return_information 参数修复，整合目标分支已有快照边界测试 | 最终信息源客户端相对合并前目标分支无净代码变更；测试同时覆盖 return_information 和 max_create_time，未退回旧同步快照行为 |
 | 发布与依赖 | 前后端版本、compose 镜像和 update.sh 更新至 beta6；声明 jsonschema==4.25.1 | 后续使用默认 compose/update 脚本将选择 beta6 镜像。本次没有构建、拉取或部署镜像；保留目标分支 React Query 4.44.0 和现有依赖架构 |
 
-主要实现入口：`src/backend/bisheng/dsh/`、`src/backend/bisheng/dsh_market/`、`src/backend/bisheng/tool/domain/services/`、`src/frontend/platform/src/pages/SystemPage/dsh/`、`src/frontend/platform/src/pages/BuildPage/dsh/`、`src/frontend/platform/src/controllers/request{,Stream}.ts`。
+主要实现入口：`src/backend/doberman_agent/dsh/`、`src/backend/doberman_agent/dsh_market/`、`src/backend/doberman_agent/tool/domain/services/`、`src/frontend/platform/src/pages/SystemPage/dsh/`、`src/frontend/platform/src/pages/BuildPage/dsh/`、`src/frontend/platform/src/controllers/request{,Stream}.ts`。
 
 ## 冲突与合并补充修复
 
@@ -82,7 +82,7 @@
 | 模型协议、本地认证及工具 HTTP 专项 | 124 passed、1 skipped |
 | 信息源、迁移图和本地会话专项 | 29 passed、1 skipped；包括单 head 和既有 main 迁移文件逐字节不变检查 |
 | 本次前端整合文件 ESLint | 23 个文件通过 |
-| 三语及错误码 | pnpm check-i18n、pnpm --filter @bisheng/locales check 均通过 |
+| 三语及错误码 | pnpm check-i18n、pnpm --filter @doberman-agent/locales check 均通过 |
 | 架构守卫 | 无 VIOLATION；6 个传入测试/fixture 文件触发 RULE-7 模式警告 |
 | 全量 pnpm lint | 未通过：85 个错误；在合并前 38395b198 的主工作区运行得到相同 85 个错误 |
 | 全量 pnpm typecheck | 未通过：缺少本地 @hello-pangea/dnd 安装、clientVoiceDraft.test.tsx 参数个数错误；以相同依赖运行合并前提交，复现相同 2 项错误 |

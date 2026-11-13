@@ -19,13 +19,13 @@ import pytest
 from fastapi import HTTPException
 from langchain_core.documents import Document
 
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.services import knowledge_space_chat_service as chat_mod
-from bisheng.knowledge.domain.services import retrieval_engine as engine_mod
-from bisheng.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
-from bisheng.knowledge.domain.services.retrieval_engine import RetrievalEngine
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services import knowledge_space_chat_service as chat_mod
+from doberman_agent.knowledge.domain.services import retrieval_engine as engine_mod
+from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.knowledge.domain.services.retrieval_engine import RetrievalEngine
 
 
 def _login_user(user_id: int = 42):
@@ -143,7 +143,7 @@ async def test_library_path_requires_use_then_filters_files(monkeypatch):
     engine = RetrievalEngine(_login_user())
     ensure_use = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service."
+        "doberman_agent.knowledge.domain.services.knowledge_service."
         "KnowledgeService.permission_service.ensure_knowledge_use_async",
         ensure_use,
     )
@@ -170,7 +170,7 @@ async def test_library_use_denial_propagates(monkeypatch):
         pass
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service."
+        "doberman_agent.knowledge.domain.services.knowledge_service."
         "KnowledgeService.permission_service.ensure_knowledge_use_async",
         AsyncMock(side_effect=_Denied()),
     )

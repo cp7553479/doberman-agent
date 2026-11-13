@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 from starlette.responses import JSONResponse
 
-from bisheng.dsh.api.responses import AuditObservedResponse
+from doberman_agent.dsh.api.responses import AuditObservedResponse
 
 
 @pytest.mark.parametrize(

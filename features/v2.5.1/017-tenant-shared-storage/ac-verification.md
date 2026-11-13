@@ -57,7 +57,7 @@ Step 5 PATCH invalid resource type=dashboard → 400 19502 ResourceTypeNotSharea
 
 | ID | 描述 | 修复 |
 |----|------|------|
-| F017-BUG-01 | `minio_storage.py` / `knowledge_rag.py` 写了 `from bisheng.core.config.settings import settings`，但该模块无顶层 `settings` 变量（运行时 ImportError） | 改为 `from bisheng.common.services.config_service import settings`（项目标准入口） |
+| F017-BUG-01 | `minio_storage.py` / `knowledge_rag.py` 写了 `from doberman_agent.core.config.settings import settings`，但该模块无顶层 `settings` 变量（运行时 ImportError） | 改为 `from doberman_agent.common.services.config_service import settings`（项目标准入口） |
 | F017-BUG-02 | `resource_share.py` endpoint 用 `getattr(row, 'tenant_id', None)` 但 ORM 未声明 tenant_id 字段（F001 只在 DB schema 加列，ORM 不显式暴露），导致所有 Root 资源误判为非 Root → 19501 | 改为原生 SQL `SELECT tenant_id FROM {table} WHERE id=...`（加 bypass_tenant_filter） |
 | F017-BUG-03 | SQLAlchemy `Row` 非 tuple，`row[0] if isinstance(row, tuple)` 走 `else` 分支导致 `int(Row)` 抛 TypeError | 去掉 isinstance 检查，直接 `row[0]` |
 

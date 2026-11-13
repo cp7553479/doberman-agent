@@ -1,5 +1,5 @@
-import { toast } from '@bisheng/ui';
-import { Tag } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
+import { Tag } from '@doberman-agent/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 
 import { copyText } from '@/utils';
@@ -48,10 +48,10 @@ export function ApiAccessFlow() {
                 </CardHeader>
                 <CardContent>
                     <div className='w-full max-w-[700px] mx-auto'><img src={__APP_ENV__.BASE_URL + '/assets/api/flow.png'} className='size-full' alt="" /></div>
-                    <p className='bisheng-label pb-2'>{t("api.workflowDoc.sequence_intro")}</p>
-                    <p className="bisheng-label pb-2"><span className="font-semibold">{t("api.workflowDoc.step_one")}</span>{t("api.workflowDoc.start_workflow")}</p>
+                    <p className='doberman_agent-label pb-2'>{t("api.workflowDoc.sequence_intro")}</p>
+                    <p className="doberman_agent-label pb-2"><span className="font-semibold">{t("api.workflowDoc.step_one")}</span>{t("api.workflowDoc.start_workflow")}</p>
                     <p className="text-sm pb-2">{t('api.openApiGuide.workflow_sequence_examples')}</p>
-                    <p className="bisheng-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_two")}</span>{t("api.workflowDoc.parse_events")}</p>
+                    <p className="doberman_agent-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_two")}</span>{t("api.workflowDoc.parse_events")}</p>
                     <SyntaxHighlighter
                         className="w-full max-w-[80vw] overflow-auto custom-scroll text-sm"
                         language={'json'}
@@ -60,13 +60,13 @@ export function ApiAccessFlow() {
                         {t("api.workflowDoc.first_response_example")}
                     </SyntaxHighlighter>
                     <div className="mb-6">
-                        <p className="bisheng-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_three")}</span>{t("api.workflowDoc.render_events")}</p>
-                        <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                        <p className="doberman_agent-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_three")}</span>{t("api.workflowDoc.render_events")}</p>
+                        <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                             <li className='mt-2 leading-6'>{t("api.workflowDoc.if_event")}<strong>{t("api.workflowDoc.normal_output")}</strong>{t("api.workflowDoc.for_example")}<code className="bg-gray-200 py-1 rounded">event="output_msg"</code>{t("api.workflowDoc.show_content")}</li>
                             <li className='mt-2 leading-6'>{t("api.workflowDoc.if_event")}<strong>{t("api.workflowDoc.wait_user_input")}</strong>{t("api.workflowDoc.for_example")}<code className="bg-gray-200 p-1 rounded">event="input"</code>{t("api.workflowDoc.or")}<code className="bg-gray-200 p-1 rounded">event="output_with_input_msg"</code>{t("api.workflowDoc.or")}<code className="bg-gray-200 p-1 rounded">event="output_with_choose_msg"</code>{t("api.workflowDoc.render_input_ui")}</li>
                         </ul>
                     </div>
-                    <p className="bisheng-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_four")}</span>{t("api.workflowDoc.submit_again")}<code className="bg-gray-200 p-1 rounded">/invoke</code>{t("api.workflowDoc.endpoint_suffix")}</p>
+                    <p className="doberman_agent-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_four")}</span>{t("api.workflowDoc.submit_again")}<code className="bg-gray-200 p-1 rounded">/invoke</code>{t("api.workflowDoc.endpoint_suffix")}</p>
                     <SyntaxHighlighter
                         className="w-full max-w-[80vw] overflow-auto custom-scroll text-sm"
                         language={'python'}
@@ -74,7 +74,7 @@ export function ApiAccessFlow() {
                     >
                         {t("api.workflowDoc.continue_request_example", { workflowId: id, interpolation: { escapeValue: false } })}
                     </SyntaxHighlighter>
-                    <p className="bisheng-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_five")}</span>{t("api.workflowDoc.continue_events")}<code className="bg-gray-100 p-1 rounded">close</code>{t("api.workflowDoc.close_or_stop")}<code className="bg-gray-100 p-1 rounded">POST /workflow/stop</code>{t("api.workflowDoc.stop_manually")}</p>
+                    <p className="doberman_agent-label py-2"><span className="font-semibold">{t("api.workflowDoc.step_five")}</span>{t("api.workflowDoc.continue_events")}<code className="bg-gray-100 p-1 rounded">close</code>{t("api.workflowDoc.close_or_stop")}<code className="bg-gray-100 p-1 rounded">POST /workflow/stop</code>{t("api.workflowDoc.stop_manually")}</p>
                 </CardContent>
             </Card>
 

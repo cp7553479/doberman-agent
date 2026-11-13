@@ -1,4 +1,4 @@
-import { notification, Select } from '@bisheng/ui';
+import { notification, Select } from '@doberman-agent/ui';
 // One persisted management view across all platform modules.
 
 import { useEffect, useId, useMemo, useState } from "react"

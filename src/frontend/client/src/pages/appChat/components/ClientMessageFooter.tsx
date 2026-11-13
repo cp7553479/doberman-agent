@@ -1,6 +1,6 @@
-import { CopyMessageAction } from '@bisheng/chat';
+import { CopyMessageAction } from '@doberman-agent/chat';
 import { useLocalize } from '~/hooks';
-import { splitMessageContent, type ChatMessage } from '@bisheng/chat/core';
+import { splitMessageContent, type ChatMessage } from '@doberman-agent/chat/core';
 import type { RefObject } from 'react';
 import { useParams } from 'react-router-dom';
 import type { ChatMessageType } from '~/@types/chat';

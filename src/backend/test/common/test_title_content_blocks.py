@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 import pytest
 from langchain_core.messages import AIMessage
 
-from bisheng.common.utils import title_generator
+from doberman_agent.common.utils import title_generator
 
 
 @pytest.mark.parametrize("asynchronous", [False, True])

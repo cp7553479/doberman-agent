@@ -1,8 +1,8 @@
 import { locationContext } from "@/contexts/locationContext";
 import { userContext } from "@/contexts/userContext";
-import { Tabs } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
-// TODO(bisheng-icons): Replace these fallbacks when AI assistant and appearance icons are available.
+import { Tabs } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
+// TODO(@doberman-agent/icons): Replace these fallbacks when AI assistant and appearance icons are available.
 import { Bot, Palette } from "lucide-react";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";

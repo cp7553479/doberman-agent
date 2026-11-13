@@ -31,7 +31,8 @@ else die "请安装 Docker Compose（推荐 V2，也支持 docker-compose 命令
 # An existing .env is never replaced or merged automatically.
 [[ -f "$ENV_FILE" ]] || cp "${SCRIPT_DIR}/.env.example" "$ENV_FILE"
 chmod 600 "$ENV_FILE"
-compose() { "${COMPOSE[@]}" --env-file "$ENV_FILE" -f "${SCRIPT_DIR}/docker-compose.yml" "$@"; }
+COMPOSE_FILES=(-f "${SCRIPT_DIR}/docker-compose.yml")
+compose() { "${COMPOSE[@]}" --env-file "$ENV_FILE" "${COMPOSE_FILES[@]}" "$@"; }
 profiles="$(env_get "$ENV_FILE" COMPOSE_PROFILES)"
 if [[ -n "$LICENSE_FILE" ]]; then
   [[ "$GATEWAY_CHOICE" != false ]] || die "--license-file 不能与 --no-gateway 同时使用"
@@ -41,7 +42,7 @@ if [[ -z "$GATEWAY_CHOICE" ]]; then
   case ",$profiles," in *,gateway,*) GATEWAY_CHOICE=true ;; esac
 fi
 if [[ "$GATEWAY_CHOICE" = true ]]; then
-  LICENSE_FILE="${LICENSE_FILE:-$(env_get "$ENV_FILE" BISHENG_GATEWAY_LICENSE_FILE)}"
+  LICENSE_FILE="${LICENSE_FILE:-$(env_get "$ENV_FILE" DOBERMAN_AGENT_GATEWAY_LICENSE_FILE)}"
   if [[ -z "$LICENSE_FILE" && -t 0 ]]; then
     read -r -p 'Gateway license 文件路径（留空则不启用）：' LICENSE_FILE
   fi
@@ -54,14 +55,17 @@ if [[ "$GATEWAY_CHOICE" = true ]]; then
   fi
 fi
 if [[ "$GATEWAY_CHOICE" = true ]]; then
+  [[ -n "$(env_get "$ENV_FILE" DOBERMAN_AGENT_GATEWAY_IMAGE)" ]] \
+    || die "Gateway 源码不在此仓库；请先提供支持 DOBERMAN_AGENT 配置的兼容 DOBERMAN_AGENT_GATEWAY_IMAGE。"
+  COMPOSE_FILES+=(-f "${SCRIPT_DIR}/docker-compose.gateway.yml")
   LICENSE_FILE="$(cd "$(dirname "$LICENSE_FILE")" && pwd)/$(basename "$LICENSE_FILE")"
   license="$(cat "$LICENSE_FILE")"
   [[ "$license" =~ [^[:space:]] ]] || die "license 文件不能为空"
-  env_set "$ENV_FILE" BISHENG_GATEWAY_LICENSE_FILE "$LICENSE_FILE"
-  PUBLIC_URL="${PUBLIC_URL:-$(env_get "$ENV_FILE" BISHENG_PUBLIC_URL)}"
+  env_set "$ENV_FILE" DOBERMAN_AGENT_GATEWAY_LICENSE_FILE "$LICENSE_FILE"
+  PUBLIC_URL="${PUBLIC_URL:-$(env_get "$ENV_FILE" DOBERMAN_AGENT_PUBLIC_URL)}"
   if [[ -z "$PUBLIC_URL" && -t 0 ]]; then read -r -p '平台对外地址（如 http://服务器IP:3001）：' PUBLIC_URL; fi
   [[ "$PUBLIC_URL" =~ ^https?://[^/?#@[:space:]]+/?$ ]] || die "请填写不带路径的平台 http(s) 地址"
-  for key in BISHENG_GATEWAY_HMAC_SECRET BISHENG_GATEWAY_DB_PASSWORD; do
+  for key in DOBERMAN_AGENT_GATEWAY_HMAC_SECRET DOBERMAN_AGENT_GATEWAY_DB_PASSWORD; do
     if [[ -z "$(env_get "$ENV_FILE" "$key")" ]]; then
       env_set "$ENV_FILE" "$key" "$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n')"
     fi
@@ -78,32 +82,39 @@ if [[ "$GATEWAY_CHOICE" = true ]]; then
   ' "${volume}/nginx/conf.d/default.conf" > "${target}/default.conf"
   sed 's|proxy_pass http://backend:7860;|proxy_pass http://gateway:8080;|g' \
     "${volume}/nginx/conf.d/websocket.conf" > "${target}/websocket.conf"
-  env_set "$ENV_FILE" BISHENG_GATEWAY_LICENSE "$license"
-  env_set "$ENV_FILE" BISHENG_PUBLIC_URL "${PUBLIC_URL%/}"
-  env_set "$ENV_FILE" BISHENG_NGINX_CONF_DIR "$target"
+  env_set "$ENV_FILE" DOBERMAN_AGENT_GATEWAY_LICENSE "$license"
+  env_set "$ENV_FILE" DOBERMAN_AGENT_PUBLIC_URL "${PUBLIC_URL%/}"
+  env_set "$ENV_FILE" DOBERMAN_AGENT_NGINX_CONF_DIR "$target"
 elif [[ -n "$LICENSE_FILE" || -n "$PUBLIC_URL" ]]; then die "Gateway 参数需要同时使用 --gateway";
 fi
 if [[ -n "$GATEWAY_CHOICE" ]]; then
   env_set "$ENV_FILE" COMPOSE_PROFILES "$(set_gateway_profile "$profiles" "$GATEWAY_CHOICE")"
-  env_set "$ENV_FILE" BISHENG_PRO "$GATEWAY_CHOICE"
+  env_set "$ENV_FILE" DOBERMAN_AGENT_PRO "$GATEWAY_CHOICE"
   if [[ "$GATEWAY_CHOICE" = false ]]; then
     volume="$(env_get "$ENV_FILE" DOCKER_VOLUME_DIRECTORY)"; volume="${volume:-.}"
-    env_set "$ENV_FILE" BISHENG_NGINX_CONF_DIR "${volume%/}/nginx/conf.d"
+    env_set "$ENV_FILE" DOBERMAN_AGENT_NGINX_CONF_DIR "${volume%/}/nginx/conf.d"
   fi
 fi
 compose config --quiet
 if [[ "$PREPARE_ONLY" = true ]]; then printf '配置已生成并通过 Compose 校验。\n'; exit 0; fi
-# Authenticate with the public defaults; existing deployments may override them.
+# Optional authentication is only for explicitly configured infrastructure mirrors.
 registry_user="$(env_get "$ENV_FILE" CR_REGISTRY_USERNAME)"
 registry_password="$(env_get "$ENV_FILE" CR_REGISTRY_PASSWORD)"
-printf '%s\n' "${registry_password:-dataelem}" | \
-  docker login cr.dataelem.com --username "${registry_user:-docker}" --password-stdin \
-  || die "CR 镜像源登录失败，请检查网络或 .env 中的 CR_REGISTRY_USERNAME / CR_REGISTRY_PASSWORD"
+if [[ -n "$registry_user" ]]; then
+  printf '%s\n' "$registry_password" | docker login cr.dataelem.com --username "$registry_user" --password-stdin \
+    || die "CR 镜像源登录失败，请检查 .env 中的镜像源凭据。"
+fi
 unset registry_password
-# Pull first so missing images stop deployment before existing services change.
-compose pull || die "镜像拉取失败；请检查网络、镜像权限或 .env 中的 *_IMAGE 地址。不会自动构建。"
+# Build application images before changing running services; pull only middleware.
+DOBERMAN_AGENT_ENV_FILE="$ENV_FILE" bash "${SCRIPT_DIR}/build.sh"
+compose pull mysql openfga openfga-migrate redis elasticsearch etcd minio milvus \
+  || die "基础设施镜像拉取失败；请检查网络、镜像权限或 .env 中的 *_IMAGE 地址。"
 case ",$(env_get "$ENV_FILE" COMPOSE_PROFILES)," in
-  *,gateway,*) compose up -d gateway ;;
+  *,app-runtime,*) compose pull docker-socket-proxy ;;
 esac
-compose up -d
+if [[ "$GATEWAY_CHOICE" = true ]]; then compose pull gateway; fi
+case ",$(env_get "$ENV_FILE" COMPOSE_PROFILES)," in
+  *,gateway,*) compose up -d --pull never gateway ;;
+esac
+compose up -d --pull never
 printf '已执行启动；请使用 Compose ps / logs 确认服务就绪，Gateway 授权结果查看 gateway 日志。\n'

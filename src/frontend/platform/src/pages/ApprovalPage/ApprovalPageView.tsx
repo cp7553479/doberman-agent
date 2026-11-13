@@ -1,9 +1,9 @@
-import { Alert, Segmented } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Alert, Segmented } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { showApiError } from '@/controllers/request';
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { ApprovalDialogs } from "./ApprovalDialogs";
 import { ExceptionPanel } from "./ExceptionPanel";
 import { FlowManagementPanel } from "./FlowManagementPanel";

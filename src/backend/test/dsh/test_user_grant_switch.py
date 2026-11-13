@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
-from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
-from bisheng.dsh.domain.schemas.model_policy import DshModelPolicyState, DshPolicySnapshot
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
+from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
+from doberman_agent.dsh.domain.schemas.model_policy import DshModelPolicyState, DshPolicySnapshot
 from test.dsh.test_policy_service import service_factory, sql_store  # noqa: F401
 from test.dsh.test_subject_policy import subject_store, update  # noqa: F401
 

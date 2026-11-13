@@ -34,8 +34,8 @@ description: 规范当前 Python (FastAPI + SQLAlchemy) 项目的代码开发标
 
 ## 3. 数据库与 ORM (SQLAlchemy & Alembic)
 - 表结构变动：所有数据库表结构的增删改，必须通过 **Alembic** 生成迁移文件（如 `alembic revision --autogenerate`），禁止直接手动修改数据库表结构。
-    - versions 目录所在路径：`bisheng/core/database/alembic/versions`
-    - 可以阅读 `bisheng/core/database/alembic/README.md`
+    - versions 目录所在路径：`doberman_agent/core/database/alembic/versions`
+    - 可以阅读 `doberman_agent/core/database/alembic/README.md`
 - 数据库操作：所有数据库的增删改查必须通过  SQLModel 或 SQLAlchemy ORM 模型进行，止禁直接使用原生 SQL 语句。
     - 数据库会话（Session）应通过依赖注入的方式获取,或者通过装饰器（如 `@db_session`）进行管理，确保事务的一致性和正确的资源释放。
 - 模型定义：使用SQLModel 定义数据库模型，确保与数据库表结构一致，并且支持 Pydantic 的数据验证,使用sa_column等方式定义字段属性。
@@ -48,7 +48,7 @@ description: 规范当前 Python (FastAPI + SQLAlchemy) 项目的代码开发标
 
 ## 4. 异常处理与日志 (Exception Handling & Logging)
 - **分业务自定义异常**：每个业务模块应定义自己的异常类，继承自一个公共的基类（如 `BaseErrorCode`）
-    - 在 `bisheng/common/errcode` 目录下定义不同业务的异常文件，如 `user.py`、`knowledge.py` 等，每个文件中定义该业务相关的异常类。
+    - 在 `doberman_agent/common/errcode` 目录下定义不同业务的异常文件，如 `user.py`、`knowledge.py` 等，每个文件中定义该业务相关的异常类。
     - 自定义异常类集成 `BaseErrorCode`，并设置Code、Msg属性，以便在 API 层统一处理和返回错误响应。
     - 在业务逻辑中，遇到错误情况时应抛出相应的自定义异常，`raise UserNotFoundError()`，而不是直接返回错误码或字符串。API 层应捕获这些异常，并根据异常的 Code 和 Msg 生成统一的错误响应。
 - **日志记录**：在关键业务流程、异常捕获点以及重要的操作步骤中，应使用 Python 的 `logging`或 loguru 进行日志记录，确保日志内容清晰、结构化，并包含必要的上下文信息（如用户ID、请求ID等），以便于后续的调试和问题排查。

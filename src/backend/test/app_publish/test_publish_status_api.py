@@ -31,7 +31,7 @@ def _body(response):
 
 @pytest.fixture()
 def state_actions(monkeypatch):
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
 
     responses: dict[str, object] = {"manual_publish": ActionResult(app_id="app", state="online", ok=True)}
 
@@ -95,7 +95,7 @@ async def test_publish_status_endpoint_path_and_shape(publish_db, api_app, app_f
 
 async def test_publish_status_non_owner_gets_business_code_not_403_404(publish_db, api_app, app_factory, tier_seed):
     """The refusal has to be renderable, or the whole detail page navigates away."""
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     app, _ = await app_factory(with_version=True)
     stranger = UserPayload(user_id=OWNER_USER_ID + 4242, user_name="stranger", user_role=[], tenant_id=ROOT_TENANT_ID)
@@ -157,7 +157,7 @@ async def test_manual_publish_endpoint_owner_only_16254(
     The runtime short-circuits ``is_global_super`` to ALLOW before ReBAC is
     consulted, so owner-only has to be a business pre-check.
     """
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     app, _ = await _parked(app_factory, deployment_factory)
     admin = UserPayload(
@@ -191,8 +191,8 @@ async def test_withdraw_goes_through_existing_approval_endpoint(publish_db):
     there. Adding a second endpoint would duplicate the rule and eventually
     disagree with it.
     """
-    from bisheng.app_publish.api.router import v1_router
-    from bisheng.approval.api.endpoints.approval_user import router as approval_user_router
+    from doberman_agent.app_publish.api.router import v1_router
+    from doberman_agent.approval.api.endpoints.approval_user import router as approval_user_router
 
     ours = {route.path for route in v1_router.routes}
     assert not any("withdraw" in path for path in ours)
@@ -210,8 +210,8 @@ async def test_tenant_admin_check_uses_the_apps_tenant_not_the_callers(
     would never mention which application. Asserted by recording the arguments,
     because both spellings return True in the single-tenant happy path.
     """
-    from bisheng.app_publish.domain.services import publish_status_service
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.app_publish.domain.services import publish_status_service
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     from .conftest import SUB_TENANT_ID
 
@@ -244,9 +244,9 @@ async def test_v1_router_carries_no_open_api_credential_dependency(publish_db):
     a session endpoint declaring itself key-callable, which is the same typo
     seen from the other side.
     """
-    from bisheng.app_publish.api.router import v1_router
-    from bisheng.open_api.api.dependencies import verify_open_api_access
-    from bisheng.open_api.domain.scopes import get_open_api_scope_marker
+    from doberman_agent.app_publish.api.router import v1_router
+    from doberman_agent.open_api.api.dependencies import verify_open_api_access
+    from doberman_agent.open_api.domain.scopes import get_open_api_scope_marker
 
     assert v1_router.routes
     for route in v1_router.routes:

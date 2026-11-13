@@ -1,4 +1,4 @@
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { showApiError } from '~/api/request';
 /**
  * F035 Track H (P4): the artifact hand-off action. Every type opens a menu now —
@@ -28,8 +28,8 @@ import { showApiError } from '~/api/request';
  *               interrupt the copy.
  *   - 'toolbar' preview-panel toolbar icon button.
  */
-import { Dropdown, DropdownItem, DropdownSeparator } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Dropdown, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import type { ChatCitation } from '~/api/chatApi';
 import { getMdDownload } from '~/api/linsight';

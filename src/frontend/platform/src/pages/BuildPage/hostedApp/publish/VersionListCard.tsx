@@ -22,7 +22,7 @@
  * states that look identical in the row data and completely different to the
  * person waiting on them.
  */
-import { Pagination } from "@bisheng/ui";
+import { Pagination } from "@doberman-agent/ui";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import {
   getHostedAppErrorMessage,

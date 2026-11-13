@@ -5,9 +5,9 @@
 
 **启动**（连测试环境 ES / Milvus / MinIO，不改测试部署）：
 
-1. 后端：`export config=config.yaml; uv run uvicorn bisheng.main:app --port 7860`
-2. 灵思 worker：`uv run python bisheng/linsight/worker.py`
-3. client：`pnpm --filter bishengchat start`（:4001，base `/workspace`）
+1. 后端：`export config=config.yaml; uv run uvicorn doberman_agent.main:app --port 7860`
+2. 灵思 worker：`uv run python doberman-agent/linsight/worker.py`
+3. client：`pnpm --filter doberman-agentchat start`（:4001，base `/workspace`）
 
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Generate the built-in PPT templates shipped with the task-mode ``bisheng-pptx`` skill.
+"""Generate the built-in PPT templates shipped with the task-mode ``doberman-agent-pptx`` skill.
 
 Run from ``src/backend/``::
 
@@ -7,7 +7,7 @@ Run from ``src/backend/``::
     python scripts/pptx_templates/build_templates.py gov-red    # one template
 
 Writes ``template.pptx`` + ``layouts.json`` per template and the shared
-``catalog.json`` into ``bisheng/linsight/builtin_skills/bisheng-pptx/templates/``.
+``catalog.json`` into ``doberman_agent/linsight/builtin_skills/doberman-agent-pptx/templates/``.
 The outputs are committed; re-run only when a theme or layout changes (every run
 produces a binary diff because the zip timestamps move).
 """
@@ -29,7 +29,7 @@ from pptx import Presentation  # noqa: E402
 from themes import THEMES, Theme  # noqa: E402
 
 _BACKEND_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))
-OUT_DIR = os.path.join(_BACKEND_ROOT, "bisheng", "linsight", "builtin_skills", "bisheng-pptx", "templates")
+OUT_DIR = os.path.join(_BACKEND_ROOT, "doberman_agent", "linsight", "builtin_skills", "doberman-agent-pptx", "templates")
 MAX_BYTES = 500 * 1024  # pre-commit check-added-large-files limit
 FIXED_TIME = datetime.datetime(2026, 10, 27, 0, 0, 0)
 

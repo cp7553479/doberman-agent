@@ -7,10 +7,10 @@ from datetime import datetime
 
 import sqlalchemy as sa
 
-from bisheng.core.database.alembic_helpers.online import create_missing_model_tables
-from bisheng.dsh.domain.models.local_session import DshRefreshToken, DshSession
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.core.database.alembic_helpers.online import create_missing_model_tables
+from doberman_agent.dsh.domain.models.local_session import DshRefreshToken, DshSession
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 
 REQUEST_COLUMNS = {

@@ -2,7 +2,7 @@
 
 > 状态（2026-10-27）：教程已落地为 `src/frontend/platform/public/tutorial/hosted-app.html`，**以 HTML 为准**。
 > 本文件的正文与 HTML 文案保持一致，用于评审文字内容；改文案时两边一起改。
-> 品牌：页面跟随平台的品牌配置（OEM）。顶栏 logo、favicon 和正文里的品牌名读取 `/api/v1/brand/runtime-config`，下文用默认品牌名 BISHENG 书写。命令名 `bisheng`、`bisheng-app.yaml` 是命令行本身的名字，不随品牌变化。
+> 品牌：页面跟随平台的品牌配置（OEM）。顶栏 logo、favicon 和正文里的品牌名读取 `/api/v1/brand/runtime-config`，下文用默认品牌名 doberman-agent 书写。命令名 `doberman-agent`、`doberman-agent-app.yaml` 是命令行本身的名字，不随品牌变化。
 > 顶部「写在前面」记录当初的取舍，不进教程；分隔线以下是教程正文。
 
 ---
@@ -44,7 +44,7 @@ AI 负责写代码和部署，平台负责构建和运行。你只需对 AI 说�
 
 **一个 AI 编程工具**：Claude Code、Codex、Cursor、Trae、Copilot、Windsurf 都可以。
 
-登录 bisheng 命令行时，它会把平台的技能包放进 Claude Code 和 Codex 的技能目录。技能包是一组写给 AI 看的开发和部署规则。
+登录 doberman-agent 命令行时，它会把平台的技能包放进 Claude Code 和 Codex 的技能目录。技能包是一组写给 AI 看的开发和部署规则。
 
 使用 Cursor、Trae 等其他工具时，第一次部署会在项目里写入 `AGENTS.md`，告诉 AI 技能包在哪里。
 
@@ -61,15 +61,15 @@ AI 负责写代码和部署，平台负责构建和运行。你只需对 AI 说�
 你发给 AI：
 
 ```text
-帮我安装并登录 bisheng 命令行。安装与登录指引见：
+帮我安装并登录 doberman-agent 命令行。安装与登录指引见：
 http://你的平台地址/api/v1/dev-toolkit/install-guide.md
 登录地址用 http://你的平台地址，我的密钥是 bs-sak-把这里换成你的密钥
-装好后确认 bisheng --help 能运行，并告诉我接入了哪些 AI 编程工具。
+装好后确认 doberman-agent --help 能运行，并告诉我接入了哪些 AI 编程工具。
 ```
 
 平台地址已按本页地址填好。你只需把密钥部分换成自己的密钥。
 
-AI 会做：AI 从平台下载并安装 bisheng 命令行，再用你的密钥登录。登录时，命令行会把技能包放进你的 AI 编程工具。最后 AI 会告诉你接入了哪些工具。
+AI 会做：AI 从平台下载并安装 doberman-agent 命令行，再用你的密钥登录。登录时，命令行会把技能包放进你的 AI 编程工具。最后 AI 会告诉你接入了哪些工具。
 
 > **安装完成后，重启 AI 编程工具，新开一个会话。**已经打开的会话读不到新安装的技能包。
 
@@ -78,17 +78,17 @@ AI 会做：AI 从平台下载并安装 bisheng 命令行，再用你的密钥�
 ```bash
 # 下载安装包。-OJ 让 curl 使用平台返回的文件名，pip 只认这个文件名
 curl -OJ http://你的平台地址/api/v1/dev-toolkit/cli/download
-# 用 pipx 安装到用户目录。新开的终端也能运行 bisheng
+# 用 pipx 安装到用户目录。新开的终端也能运行 doberman-agent
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
-python3 -m pipx install ./bisheng_cli-*.whl --force
+python3 -m pipx install ./doberman_agent_cli-*.whl --force
 # 用管理员给的密钥登录。凭据保存在本机，以后不用再输入
-bisheng login http://你的平台地址 --api-key bs-sak-…
+doberman-agent login http://你的平台地址 --api-key bs-sak-…
 ```
 
 以上是 macOS 和 Linux 的命令。Windows 用户在 PowerShell 里执行，把 `curl` 换成 `curl.exe`，把 `python3` 换成 `py`。
 
-安装包从你们的 BISHENG 平台下载，不需要访问公网。安装后新开一个终端，运行 `bisheng --help`。能看到 login 和 deploy 两个命令，就说明安装成功。
+安装包从你们的 doberman-agent 平台下载，不需要访问公网。安装后新开一个终端，运行 `doberman-agent --help`。能看到 login 和 deploy 两个命令，就说明安装成功。
 
 ### 2. 描述你的应用
 
@@ -102,7 +102,7 @@ bisheng login http://你的平台地址 --api-key bs-sak-…
 帮我做一个满意度问卷：5 道单选题，提交后按选项统计比例，给我一个结果页。先在本地运行给我看。
 ```
 
-AI 会做：AI 按技能包里的规则编写应用代码和配置文件 `bisheng-app.yaml`，然后在你的电脑上运行应用。你可以先在本地查看效果。
+AI 会做：AI 按技能包里的规则编写应用代码和配置文件 `doberman-agent-app.yaml`，然后在你的电脑上运行应用。你可以先在本地查看效果。
 
 需要修改时，继续对 AI 说，比如「按钮改成蓝色」「加一列备注」。在本地修改不占用平台资源。
 
@@ -111,7 +111,7 @@ AI 会做：AI 按技能包里的规则编写应用代码和配置文件 `bishen
 你发给 AI：
 
 ```text
-帮我把这个应用部署到 BISHENG 平台。
+帮我把这个应用部署到 doberman-agent 平台。
 ```
 
 平台会做：打包上传 → 敏感信息扫描 → 构建镜像 → 启动检查 → 生成发布审批单。
@@ -172,8 +172,8 @@ AI 会做：AI 按技能包里的规则编写应用代码和配置文件 `bishen
 
 本机没有检测到 Claude Code 或 Codex。
 
-如果你用的是这两个工具，让 AI 运行一次 `bisheng skills sync`。如果你用的是 Cursor、Trae 等其他工具，可以忽略这条提示。第一次部署时，命令行会在项目里写入 `AGENTS.md`，AI 读取它就能找到技能包。
+如果你用的是这两个工具，让 AI 运行一次 `doberman-agent skills sync`。如果你用的是 Cursor、Trae 等其他工具，可以忽略这条提示。第一次部署时，命令行会在项目里写入 `AGENTS.md`，AI 读取它就能找到技能包。
 
 **平台升级后，更新技能包**
 
-让 AI 运行一次 `bisheng skills sync`。这个命令会下载新版技能包。输出的最后一行列出接入了哪些 AI 编程工具。
+让 AI 运行一次 `doberman-agent skills sync`。这个命令会下载新版技能包。输出的最后一行列出接入了哪些 AI 编程工具。

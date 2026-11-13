@@ -2,14 +2,14 @@
 import pytest
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
     KnowledgeDocumentRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.interfaces.knowledge_document_repository import (
+from doberman_agent.knowledge.domain.repositories.interfaces.knowledge_document_repository import (
     KnowledgeDocumentRepository,
 )
 
@@ -65,7 +65,7 @@ async def test_update_primary_version_id(async_db_session: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_dependencies_factory_returns_repo(async_db_session: AsyncSession):
-    from bisheng.knowledge.api.dependencies import (
+    from doberman_agent.knowledge.api.dependencies import (
         get_knowledge_document_repository,
         get_knowledge_document_version_repository,
     )

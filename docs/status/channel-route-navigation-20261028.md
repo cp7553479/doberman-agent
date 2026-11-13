@@ -2,7 +2,7 @@
 
 ## 基线与范围
 
-- 仓库：dataelement/bisheng；目标：feat/bisheng-work-120-main。
+- 仓库：cp7553479/doberman-agent；目标：feat/doberman-agent-work-120-main。
 - 开始基线：e83fad4b8f3f9081e0d68a071402ecf5217e9a87。
 - 分支：codex/channel-route-navigation。
 - 实现位置：client MainLayout 的路由缓存边界；覆盖 Web 与桌面嵌入页面。
@@ -26,4 +26,4 @@
 
 本次验证覆盖源码和本地浏览器。13001 部署与实际 macOS 客户端修复后验收待执行。
 
-更新 BISHENG 前端后，在 macOS 客户端进入订阅并打开频道 A；切到知识空间，再回订阅；确认地址与首页内容一致。继续切换频道 A/B、创建、设置、分享链接并执行前进后退，确认页面对应当前地址。返回聊天确认草稿保留。
+更新 doberman-agent 前端后，在 macOS 客户端进入订阅并打开频道 A；切到知识空间，再回订阅；确认地址与首页内容一致。继续切换频道 A/B、创建、设置、分享链接并执行前进后退，确认页面对应当前地址。返回聊天确认草稿保留。

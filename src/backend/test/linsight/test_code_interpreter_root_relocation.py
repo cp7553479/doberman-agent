@@ -23,11 +23,11 @@ from __future__ import annotations
 
 import os
 
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import (
     RELOCATED_PATH_NOTICE_HEADER,
     BaseExecutor,
 )
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 
 def _executor(tmp_path) -> LocalExecutor:

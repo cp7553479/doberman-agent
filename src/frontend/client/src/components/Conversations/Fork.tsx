@@ -5,7 +5,7 @@ import * as Popover from '@radix-ui/react-popover';
 import { ForkOptions } from '~/types/chat';
 import { GitCommit, GitBranchPlus, ListTree } from 'lucide-react';
 import { HoverCard, HoverCardTrigger, HoverCardPortal, HoverCardContent } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import OptionHover from '~/components/SidePanel/Parameters/OptionHover';
 import { TranslationKeys, useLocalize, useNavigateToConvo } from '~/hooks';
 import { useForkConvoMutation } from '~/hooks/queries/data-provider';

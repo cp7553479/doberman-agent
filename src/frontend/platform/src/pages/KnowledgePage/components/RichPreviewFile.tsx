@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { MarkdownViewer as SharedMarkdownViewer } from '@bisheng/file-viewers/markdown';
-import { MediaTranscriptTabs as SharedMediaTranscriptTabs } from '@bisheng/file-viewers/transcript';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { MarkdownViewer as SharedMarkdownViewer } from '@doberman-agent/file-viewers/markdown';
+import { MediaTranscriptTabs as SharedMediaTranscriptTabs } from '@doberman-agent/file-viewers/transcript';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 import { PlatformMediaPlayer } from '@/components/bs-comp/preview/DocumentPreview';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { useTranslation } from "react-i18next";

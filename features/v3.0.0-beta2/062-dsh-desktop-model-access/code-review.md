@@ -8,7 +8,7 @@
 
 日期：2026-09-09。按仓库 `code-review` 七维度及 `task-review` 清单审查。范围包括工作区修改和全部新增未跟踪源码，不能仅用 `base...HEAD`（本轮未提交）冒充完整差异。
 
-- BiSheng：`feat/3.0.0-beta2-pre`，基线 `v3.0.0-beta1-fix@02592397a3706252c201a05ce68b0640a47fd1ef`。
+- doberman-agent：`feat/3.0.0-beta2-pre`，基线 `v3.0.0-beta1-fix@02592397a3706252c201a05ce68b0640a47fd1ef`。
 - Gateway：`feat/dsh-access`，基线 `main@75a74ff28ea95cba0938ff4912317cade2353337`。
 - 审查结论（完成性复核更新）：**本地实现复核通过，完整发布验收未关闭**。逐项比对发现的 12 类实现遗漏已修复，见 completion-audit.md；DM8 实机本轮暂缓；目标旧二进制和实际部署验收仍缺证据。T114 保留为外部验收汇总门禁。本报告不授权提交、推送、合并或部署。
 

@@ -15,33 +15,33 @@ from fastapi.testclient import TestClient
 from sqlalchemy.dialects import mysql
 from sqlmodel import Session, create_engine
 
-from bisheng.common.errcode.permission import PermissionEnumerationIncompleteError, PermissionFGAUnavailableError
-from bisheng.common.models.space_channel_member import UserRoleEnum
-from bisheng.core.context.tenant import (
+from doberman_agent.common.errcode.permission import PermissionEnumerationIncompleteError, PermissionFGAUnavailableError
+from doberman_agent.common.models.space_channel_member import UserRoleEnum
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.core.database.tenant_filter import register_tenant_filter_events
-from bisheng.knowledge.api.dependencies import get_knowledge_space_service
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models.knowledge import KnowledgeState, KnowledgeTypeEnum
-from bisheng.knowledge.domain.repositories.knowledge_space_listing_repository import KnowledgeSpaceListingRepository
-from bisheng.knowledge.domain.services.knowledge_permission_service import (
+from doberman_agent.core.database.tenant_filter import register_tenant_filter_events
+from doberman_agent.knowledge.api.dependencies import get_knowledge_space_service
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeState, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.repositories.knowledge_space_listing_repository import KnowledgeSpaceListingRepository
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import (
     F048KnowledgeContainerPermissionAdapter,
     KnowledgeContainerDaoPermissionLoader,
 )
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.application.control_state import PermissionResourceSnapshot
-from bisheng.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
-from bisheng.permission.domain.schemas import VisibilityEnumerationStatus, VisibleObjectEnumerationResult
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.application.control_state import PermissionResourceSnapshot
+from doberman_agent.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
+from doberman_agent.permission.domain.schemas import VisibilityEnumerationStatus, VisibleObjectEnumerationResult
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.knowledge.test_knowledge_space_service import _make_login_user, _make_member, _make_space
 
-MODULE = "bisheng.knowledge.domain.services.knowledge_space_service"
-BUSINESS = "bisheng.permission.application.business_authorization"
+MODULE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
+BUSINESS = "doberman_agent.permission.application.business_authorization"
 
 
 @pytest.fixture
@@ -244,7 +244,7 @@ async def test_ac06_stage_errors_propagate_and_emit_terminal_metric(case, stage)
 
 def test_ac05_route_serialization_with_real_service(case):
     """AC-05: actual /managed route returns the unchanged response envelope."""
-    from bisheng.knowledge.api.endpoints.knowledge_space import router
+    from doberman_agent.knowledge.api.endpoints.knowledge_space import router
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")

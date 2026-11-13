@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, SearchInput } from '@bisheng/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import React from 'react';
 import { useTranslation } from "react-i18next";
 

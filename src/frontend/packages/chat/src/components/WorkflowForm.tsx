@@ -1,4 +1,4 @@
-import { Button, Textarea } from '@bisheng/ui';
+import { Button, Textarea } from '@doberman-agent/ui';
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { displayText } from '../core/normalizeHistory';
 import { summarizeFormValues, validateFormValues, type WorkflowFormField } from '../core/workflowForm';
@@ -42,7 +42,7 @@ export function WorkflowForm({ fields, canExecute, submitLabel, requiredMessage,
     } catch (error) { onError?.(error); }
     finally { locked.current = false; setPending(false); }
   };
-  return <div className="bisheng-chat-form max-h-[520px] overflow-y-auto space-y-2">
+  return <div className="doberman_agent-chat-form max-h-[520px] overflow-y-auto space-y-2">
     {fields.map(field => <div key={field.key} className="w-full">
       <label htmlFor={`${formId}-${field.key}`}>{field.label}{field.required && <span className="text-red-500">*</span>}</label>
       <div className="mb-2">

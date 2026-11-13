@@ -21,28 +21,28 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.mcp_face import McpIdentityNotFoundError
-from bisheng.core.context.tenant import set_current_tenant_id
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.role import Role
-from bisheng.database.models.tenant import UserTenant
-from bisheng.department.domain.services.org_directory_service import OrgDirectoryService
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_mcp.registry import TOOL_REGISTRY, list_tools_for
-from bisheng.open_mcp.tools import execute_tool
-from bisheng.user.domain.models.user import User
-from bisheng.user.domain.models.user_role import UserRole
+from doberman_agent.common.errcode.mcp_face import McpIdentityNotFoundError
+from doberman_agent.core.context.tenant import set_current_tenant_id
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.role import Role
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.department.domain.services.org_directory_service import OrgDirectoryService
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_mcp.registry import TOOL_REGISTRY, list_tools_for
+from doberman_agent.open_mcp.tools import execute_tool
+from doberman_agent.user.domain.models.user import User
+from doberman_agent.user.domain.models.user_role import UserRole
 
 TENANT = 9
 OTHER_TENANT = 10
 
 #: Every module whose DAOs must talk to the in-memory engine instead of MySQL.
 _DAO_MODULES = (
-    "bisheng.database.models.department",
-    "bisheng.database.models.role",
-    "bisheng.database.models.tenant",
-    "bisheng.user.domain.models.user",
-    "bisheng.user.domain.models.user_role",
+    "doberman_agent.database.models.department",
+    "doberman_agent.database.models.role",
+    "doberman_agent.database.models.tenant",
+    "doberman_agent.user.domain.models.user",
+    "doberman_agent.user.domain.models.user_role",
 )
 
 
@@ -124,7 +124,7 @@ async def org(monkeypatch):
     try:
         yield session_factory
     finally:
-        from bisheng.core.context.tenant import current_tenant_id
+        from doberman_agent.core.context.tenant import current_tenant_id
 
         current_tenant_id.reset(token)
         await engine.dispose()
@@ -220,9 +220,9 @@ async def test_members_of_another_tenants_department_read_as_missing(org):
 
 
 async def test_the_tools_answer_with_the_identity_scope(org):
-    tree = await execute_tool("bisheng_org_tree", {})
-    user = await execute_tool("bisheng_identity_get_user", {"target_user_id": 101})
-    members = await execute_tool("bisheng_dept_members", {"dept_id": "BS@rd"})
+    tree = await execute_tool("doberman_agent_org_tree", {})
+    user = await execute_tool("doberman_agent_identity_get_user", {"target_user_id": 101})
+    members = await execute_tool("doberman_agent_dept_members", {"dept_id": "BS@rd"})
 
     assert tree.departments[0].dept_id == "BS@root"
     assert user.user_name == "alice"
@@ -231,9 +231,9 @@ async def test_the_tools_answer_with_the_identity_scope(org):
 
 async def test_a_cross_tenant_lookup_and_a_missing_one_give_the_same_answer(org):
     with pytest.raises(McpIdentityNotFoundError) as outsider:
-        await execute_tool("bisheng_identity_get_user", {"target_user_id": 901})
+        await execute_tool("doberman_agent_identity_get_user", {"target_user_id": 901})
     with pytest.raises(McpIdentityNotFoundError) as absent:
-        await execute_tool("bisheng_identity_get_user", {"target_user_id": 99999})
+        await execute_tool("doberman_agent_identity_get_user", {"target_user_id": 99999})
 
     assert outsider.value.to_dict() == absent.value.to_dict()
     assert outsider.value.code == 26306
@@ -247,21 +247,21 @@ async def test_service_accounts_never_appear_among_people(org):
     """
 
     with pytest.raises(McpIdentityNotFoundError):
-        await execute_tool("bisheng_identity_get_user", {"target_user_id": 31})
+        await execute_tool("doberman_agent_identity_get_user", {"target_user_id": 31})
 
 
 def test_without_the_scope_the_tools_are_neither_listed_nor_callable():
     principal = _principal(frozenset({"knowledge:read"}))
     listed = {tool.name for tool in list_tools_for(principal)}
 
-    assert "bisheng_org_tree" not in listed
-    assert not TOOL_REGISTRY["bisheng_dept_members"].visible_to(principal)
+    assert "doberman_agent_org_tree" not in listed
+    assert not TOOL_REGISTRY["doberman_agent_dept_members"].visible_to(principal)
 
 
 def test_with_the_scope_all_three_tools_are_listed():
     listed = {tool.name for tool in list_tools_for(_principal(frozenset({"identity:read"})))}
 
-    assert {"bisheng_identity_get_user", "bisheng_org_tree", "bisheng_dept_members"} <= listed
+    assert {"doberman_agent_identity_get_user", "doberman_agent_org_tree", "doberman_agent_dept_members"} <= listed
 
 
 def _principal(scopes: frozenset[str]) -> OpenApiPrincipal:

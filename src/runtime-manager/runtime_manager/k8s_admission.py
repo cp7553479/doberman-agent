@@ -455,7 +455,7 @@ class AdmissionPolicy:
             _deny("admission_pod_identity_refused")
         if not spec.get("containers") or spec.get("ephemeralContainers"):
             _deny("admission_containers_invalid")
-        if meta.get("labels", {}).get("runtime.bisheng.io/purpose") == "image-check":
+        if meta.get("labels", {}).get("runtime.doberman-agent.io/purpose") == "image-check":
             containers = spec.get("containers", [])
             if (
                 len(containers) != 1
@@ -848,7 +848,7 @@ class CanaryPlanReader:
                 raise ValueError()
             if not name.startswith("preflight-") or meta.get("labels", {}).get(RESOURCE_LABEL) != reference:
                 raise ValueError()
-            if not meta.get("annotations", {}).get("runtime.bisheng.io/operation", "").startswith("preflight-"):
+            if not meta.get("annotations", {}).get("runtime.doberman-agent.io/operation", "").startswith("preflight-"):
                 raise ValueError()
             uid = plan.get("uid")
             if plan.get("allow_create") and uid is not None:
@@ -859,7 +859,7 @@ class CanaryPlanReader:
                 raise ValueError()
             if plan["kind"] == "Pod":
                 spec = template["spec"]
-                if meta.get("labels", {}).get("runtime.bisheng.io/purpose") != "probe":
+                if meta.get("labels", {}).get("runtime.doberman-agent.io/purpose") != "probe":
                     raise ValueError()
                 if type(spec.get("activeDeadlineSeconds")) is not int or not 1 <= spec["activeDeadlineSeconds"] <= 600:
                     raise ValueError()

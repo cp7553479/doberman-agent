@@ -16,7 +16,7 @@
 - `AlertDialogContent` 声明其固定的模态语义。
 - 原生验证页面加入通知区域和业务子树，断言根节点保持可访问；可通过 `DESKTOP_PRELOAD` 指定已发布包内的监听代码，并在超时时保存上下文。
 
-Client 基线：`feat/bisheng-work-120-main@e5941f38e40a32590d2c7a9b618cd6f370de12e2`。
+Client 基线：`feat/doberman-agent-work-120-main@e5941f38e40a32590d2c7a9b618cd6f370de12e2`。
 Desktop 本轮作为验证宿主：已有 `703ad964` 源码，Harness `0.2.1-rc.2` / Electron `43.0.0`；监听代码直接提取自实际 test9 安装包。实现修改范围为 Client。
 
 ## 验证

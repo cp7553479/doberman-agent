@@ -8,7 +8,7 @@ straight to ``async_file_download``; "the file exists" was the only check, so
 
 import pytest
 
-from bisheng.core.cache import utils
+from doberman_agent.core.cache import utils
 
 
 @pytest.fixture

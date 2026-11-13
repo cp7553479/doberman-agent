@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
 
@@ -436,7 +436,7 @@ const WebSearchForm = ({ formData, onSubmit, isApi = false }: WebSearchFormProps
                 />
 
                 <div className="space-y-4">
-                    <Label className="bisheng-label">{t('chatConfig.webSearch.config')}</Label>
+                    <Label className="doberman_agent-label">{t('chatConfig.webSearch.config')}</Label>
                     {renderParams()}
                 </div>
 

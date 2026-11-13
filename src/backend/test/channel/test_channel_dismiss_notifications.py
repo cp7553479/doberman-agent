@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ChannelPermissionDeniedError
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ChannelPermissionDeniedError
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     UserRoleEnum,
@@ -86,11 +86,11 @@ async def test_dismiss_channel_notifies_active_members():
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.require_business_action",
+            "doberman_agent.channel.domain.services.channel_service.require_business_action",
             new=AsyncMock(),
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=adapter),
         ),
     ):
@@ -125,11 +125,11 @@ async def test_dismiss_allowed_for_non_creator_with_delete_channel_permission():
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.require_business_action",
+            "doberman_agent.channel.domain.services.channel_service.require_business_action",
             new=require_action,
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=adapter),
         ),
     ):
@@ -171,11 +171,11 @@ async def test_dismiss_allowed_for_super_admin_without_delete_channel_permission
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.require_business_action",
+            "doberman_agent.channel.domain.services.channel_service.require_business_action",
             new=require_action,
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=adapter),
         ),
     ):
@@ -208,11 +208,11 @@ async def test_dismiss_denied_for_non_creator_without_delete_channel_permission(
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.require_business_action",
+            "doberman_agent.channel.domain.services.channel_service.require_business_action",
             new=AsyncMock(side_effect=ChannelPermissionDeniedError()),
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.get_f048_resource_adapter",
+            "doberman_agent.channel.domain.services.channel_service.get_f048_resource_adapter",
             new=AsyncMock(return_value=adapter),
         ),
     ):

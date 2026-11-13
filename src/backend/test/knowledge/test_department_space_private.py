@@ -5,12 +5,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.knowledge_space import SpacePermissionDeniedError
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.knowledge_space import SpacePermissionDeniedError
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-MODULE = "bisheng.knowledge.domain.services.knowledge_space_service"
+MODULE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 @pytest.fixture

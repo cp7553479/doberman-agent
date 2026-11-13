@@ -7,7 +7,7 @@ Session ``aa352cb4…`` (180 POC, 2026-08-08) paid for that gap twice:
 - forward: `open("/skills/html-ppt-templates/...")` → FileNotFoundError, and three
   model round-trips to work out why;
 - backward: the model handed `read_file` a host path it had seen in the interpreter
-  (`/root/.cache/bisheng/linsight/aa352cb4/output/.../qa/s08.png`), the leading slash
+  (`/root/.cache/doberman_agent/linsight/aa352cb4/output/.../qa/s08.png`), the leading slash
   was simply dropped, and it became the nonsense key
   `workspace/<svid>/root/.cache/...` → four silent "File not found"s.
 
@@ -32,14 +32,14 @@ import pytest
 # resolves as a top-level module.
 from test_workspace_backend import FakeMinioStorage
 
-from bisheng.linsight.domain.services.workspace_backend import (
+from doberman_agent.linsight.domain.services.workspace_backend import (
     WorkspaceBackend,
     normalize_workspace_path,
     strip_executor_host_prefix,
 )
 
 SVID = "aa352cb420f649d2be391cb09d9ad69d"
-FILE_DIR = "/root/.cache/bisheng/linsight/aa352cb4"
+FILE_DIR = "/root/.cache/doberman_agent/linsight/aa352cb4"
 
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ def test_a_real_root_directory_in_the_workspace_is_not_stripped():
     file_dir prefix counts — never a mere ancestor segment."""
     assert normalize_workspace_path("/root/report.md", file_dir=FILE_DIR) == "root/report.md"
     assert normalize_workspace_path("/root/.cache/x", file_dir=FILE_DIR) == "root/.cache/x"
-    assert normalize_workspace_path("/root/.cache/bisheng/x", file_dir=FILE_DIR) == "root/.cache/bisheng/x"
+    assert normalize_workspace_path("/root/.cache/doberman_agent/x", file_dir=FILE_DIR) == "root/.cache/doberman_agent/x"
 
 
 def test_a_prefix_similar_sibling_is_not_stripped():
@@ -85,14 +85,14 @@ def test_another_sessions_task_dir_is_not_stripped():
     unrelated directory that merely shares the parent, and a rewrite rule that
     cannot tell those apart would silently open the wrong file. The measured
     production failure used the CURRENT session's dir, which rule 1 covers."""
-    assert normalize_workspace_path("/root/.cache/bisheng/linsight/bb99ff00/output/a.md", file_dir=FILE_DIR) == (
-        "root/.cache/bisheng/linsight/bb99ff00/output/a.md"
+    assert normalize_workspace_path("/root/.cache/doberman_agent/linsight/bb99ff00/output/a.md", file_dir=FILE_DIR) == (
+        "root/.cache/doberman_agent/linsight/bb99ff00/output/a.md"
     )
 
 
 def test_a_different_subtree_under_the_same_grandparent_is_not_stripped():
-    assert normalize_workspace_path("/root/.cache/bisheng/other/output/a.md", file_dir=FILE_DIR) == (
-        "root/.cache/bisheng/other/output/a.md"
+    assert normalize_workspace_path("/root/.cache/doberman_agent/other/output/a.md", file_dir=FILE_DIR) == (
+        "root/.cache/doberman_agent/other/output/a.md"
     )
 
 
@@ -109,7 +109,7 @@ def test_traversal_is_still_rejected_after_stripping():
 
 def test_without_a_file_dir_the_old_behaviour_is_preserved():
     """``test_skill_provisioning`` calls this as a plain contract function."""
-    assert normalize_workspace_path(f"{FILE_DIR}/output/a.md") == "root/.cache/bisheng/linsight/aa352cb4/output/a.md"
+    assert normalize_workspace_path(f"{FILE_DIR}/output/a.md") == "root/.cache/doberman_agent/linsight/aa352cb4/output/a.md"
 
 
 def test_strip_reports_whether_it_did_anything():

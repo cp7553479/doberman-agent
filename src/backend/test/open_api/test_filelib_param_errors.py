@@ -12,9 +12,9 @@ from fastapi import Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 from starlette.responses import Response
 
-from bisheng.open_api.api import dependencies
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_endpoints.api.endpoints import filelib
+from doberman_agent.open_api.api import dependencies
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_endpoints.api.endpoints import filelib
 from test.open_api.test_dependencies import service_account_principal
 
 AUTH = {"Authorization": "Bearer fixture"}

@@ -79,16 +79,16 @@ class FakeContainer:
 class FakeDockerBackend:
     """In-memory :class:`runtime_manager.docker_backend.DockerBackend`."""
 
-    def __init__(self, network: str = "bisheng-apps") -> None:
+    def __init__(self, network: str = "doberman-agent-apps") -> None:
         self.network = network
         self.containers: dict[str, FakeContainer] = {}
         self.images: list[str] = []
         #: Networks the daemon knows about. Starts with the application network
         #: present; emptying it reproduces the "nobody ran ``docker network
-        #: create bisheng-apps``" state a fresh host is actually in.
+        #: create doberman-agent-apps``" state a fresh host is actually in.
         self.networks: list[str] = [network]
         #: Networks created ``--internal``. Empty by default, which is the state
-        #: 114 is actually in: its ``bisheng-apps`` predates the egress work, so
+        #: 114 is actually in: its ``doberman-agent-apps`` predates the egress work, so
         #: "the pre-flight complains" is the honest starting position.
         self.internal_networks: set[str] = set()
         self.calls: list[tuple[str, dict[str, Any]]] = []

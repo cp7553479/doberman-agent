@@ -4,7 +4,7 @@
  * Triggered when user types '#' in the chat input.
  * Supports keyboard navigation and click selection.
  */
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "~/utils";
 import { useLocalize, useScrollRevealRef } from "~/hooks";

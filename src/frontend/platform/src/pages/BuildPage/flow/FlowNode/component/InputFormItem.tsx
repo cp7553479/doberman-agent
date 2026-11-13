@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Dialog,DialogContent,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 import { acceptsImages } from "@/util/fileAcceptUtils";

@@ -11,7 +11,7 @@ public /workstation/config endpoint relies on:
 import json
 from types import SimpleNamespace
 
-from bisheng.api.v1.schemas import WorkstationConfig, WSPrompt
+from doberman_agent.api.v1.schemas import WorkstationConfig, WSPrompt
 
 
 def _raw(payload: dict) -> SimpleNamespace:
@@ -53,6 +53,6 @@ def test_workstation_config_accepts_skill_entry_wsprompt():
 
 def WorkStationService_parse(payload: dict):
     # Imported lazily so the heavy service module loads once per call site only.
-    from bisheng.workstation.domain.services.workstation_service import WorkStationService
+    from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
     return WorkStationService.parse_config(_raw(payload))

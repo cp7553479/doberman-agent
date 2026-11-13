@@ -1,7 +1,7 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { FileStatus, SortDirection, SortType } from "~/api/knowledge";
-import { Checkbox, Dropdown, DropdownGroup, DropdownItem, Select } from '@bisheng/ui';
+import { Checkbox, Dropdown, DropdownGroup, DropdownItem, Select } from '@doberman-agent/ui';
 import { SELECTION_CHECKBOX_CLASS } from "./selectionCheckboxStyles";
 import { useLocalize } from "~/hooks";
 import useSelectCopy from "~/hooks/useSelectCopy";

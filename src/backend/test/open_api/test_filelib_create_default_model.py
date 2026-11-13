@@ -12,15 +12,15 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException
 
-import bisheng.llm.domain.share_fallback as share_fallback
-import bisheng.open_endpoints.api.endpoints.filelib as filelib
-from bisheng.common.errcode.knowledge import KnowledgeNoEmbeddingError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeCreate, KnowledgeTypeEnum
-from bisheng.knowledge.domain.services import knowledge_service as ks_module
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.llm.domain.schemas import KnowledgeLLMConfig
-from bisheng.llm.domain.services.llm import LLMService
+import doberman_agent.llm.domain.share_fallback as share_fallback
+import doberman_agent.open_endpoints.api.endpoints.filelib as filelib
+from doberman_agent.common.errcode.knowledge import KnowledgeNoEmbeddingError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeCreate, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services import knowledge_service as ks_module
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
+from doberman_agent.llm.domain.services.llm import LLMService
 
 TENANT_ID = 9
 

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useCallback, useState } from 'react';
 import type { FC } from 'react';
 import { Label, OGDialog, OGDialogTrigger } from '~/components/ui';

@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     DEFAULT_ACTION_CODES,
     RESOURCE_ACTION_SCOPES,
 )
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     CatalogAction,
     action_zones,
     calculate_action_impact,

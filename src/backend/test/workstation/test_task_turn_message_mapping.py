@@ -22,11 +22,11 @@ from datetime import datetime
 
 import pytest
 
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.message import ChatMessage
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.user.domain.models.user import UserDao
-from bisheng.workstation.domain.schemas.workstation_schema import WorkstationMessage
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.user.domain.models.user import UserDao
+from doberman_agent.workstation.domain.schemas.workstation_schema import WorkstationMessage
 
 
 def _make_chat_message(

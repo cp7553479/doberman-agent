@@ -6,48 +6,48 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 
 MODEL_FILES = [
-    "bisheng/citation/domain/models/message_citation.py",
-    "bisheng/database/models/flow_version.py",
-    "bisheng/database/models/evaluation.py",
-    "bisheng/database/models/assistant.py",
-    "bisheng/database/models/session.py",
-    "bisheng/database/models/role.py",
-    "bisheng/database/models/message.py",
-    "bisheng/database/models/flow.py",
-    "bisheng/database/models/tenant.py",
-    "bisheng/database/models/template.py",
-    "bisheng/database/models/audit_log.py",
-    "bisheng/llm/domain/models/llm_server.py",
-    "bisheng/message/domain/models/inbox_message.py",
-    "bisheng/finetune/domain/models/finetune.py",
-    "bisheng/channel/domain/models/channel.py",
-    "bisheng/knowledge/domain/models/knowledge_file.py",
-    "bisheng/knowledge/domain/models/knowledge.py",
-    "bisheng/tool/domain/models/gpts_tools.py",
-    "bisheng/approval/domain/models/approval_request.py",
+    "doberman_agent/citation/domain/models/message_citation.py",
+    "doberman_agent/database/models/flow_version.py",
+    "doberman_agent/database/models/evaluation.py",
+    "doberman_agent/database/models/assistant.py",
+    "doberman_agent/database/models/session.py",
+    "doberman_agent/database/models/role.py",
+    "doberman_agent/database/models/message.py",
+    "doberman_agent/database/models/flow.py",
+    "doberman_agent/database/models/tenant.py",
+    "doberman_agent/database/models/template.py",
+    "doberman_agent/database/models/audit_log.py",
+    "doberman_agent/llm/domain/models/llm_server.py",
+    "doberman_agent/message/domain/models/inbox_message.py",
+    "doberman_agent/finetune/domain/models/finetune.py",
+    "doberman_agent/channel/domain/models/channel.py",
+    "doberman_agent/knowledge/domain/models/knowledge_file.py",
+    "doberman_agent/knowledge/domain/models/knowledge.py",
+    "doberman_agent/tool/domain/models/gpts_tools.py",
+    "doberman_agent/approval/domain/models/approval_request.py",
 ]
 
 MIGRATION_FILES = [
-    "bisheng/core/database/alembic/versions/v2_3_0_beta1_9ba42685e830.py",
-    "bisheng/core/database/alembic/versions/v2_5_0_f001_multi_tenant.py",
-    "bisheng/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py",
-    "bisheng/core/database/alembic/versions/v2_5_0_f009_org_sync.py",
-    "bisheng/core/database/alembic/versions/v2_5_1_f011_tenant_tree.py",
-    "bisheng/core/database/alembic/versions/v2_5_1_f022_approval_request.py",
+    "doberman_agent/core/database/alembic/versions/v2_3_0_beta1_9ba42685e830.py",
+    "doberman_agent/core/database/alembic/versions/v2_5_0_f001_multi_tenant.py",
+    "doberman_agent/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py",
+    "doberman_agent/core/database/alembic/versions/v2_5_0_f009_org_sync.py",
+    "doberman_agent/core/database/alembic/versions/v2_5_1_f011_tenant_tree.py",
+    "doberman_agent/core/database/alembic/versions/v2_5_1_f022_approval_request.py",
 ]
 
-IMPORT_LINE = "from bisheng.core.database.dialect_helpers import JsonType"
+IMPORT_LINE = "from doberman_agent.core.database.dialect_helpers import JsonType"
 
 
 def _add_jsontype_import(content: str) -> str:
     """Insert JsonType import, merging with existing dialect_helpers import if present."""
-    if "from bisheng.core.database.dialect_helpers import" in content:
+    if "from doberman_agent.core.database.dialect_helpers import" in content:
         def merge(m: re.Match) -> str:
             existing = m.group(1)
             names = {n.strip() for n in existing.split(",")} | {"JsonType"}
-            return "from bisheng.core.database.dialect_helpers import " + ", ".join(sorted(names))
+            return "from doberman_agent.core.database.dialect_helpers import " + ", ".join(sorted(names))
         return re.sub(
-            r"from bisheng\.core\.database\.dialect_helpers import ([^\n]+)",
+            r"from doberman_agent\.core\.database\.dialect_helpers import ([^\n]+)",
             merge,
             content,
         )

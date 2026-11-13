@@ -1,6 +1,6 @@
 import i18next from 'i18next';
-import { createCitationUtilities } from '@bisheng/chat/citations';
-export * from '@bisheng/chat/citations';
+import { createCitationUtilities } from '@doberman-agent/chat/citations';
+export * from '@doberman-agent/chat/citations';
 const utilities=createCitationUtilities((key,options)=>String(i18next.t(key,options)));
 export const { buildCitationPreview, getLegacyCitationPreview, getCitationArticleUrl, isArticleCitation, isFilePreviewCitation, normalizeCitationType, getCitationSourceLabelKey, createCitationDetailMap, isRagCitation, isTempCitation, getCitationDocumentName, getCitationDocumentFileType, getCitationItem, getCitationItemBBoxes, parseCitationBBoxes, formatCitationWebDate, formatCitationLocation, getCitationDocumentPreviewUrl, getCitationDocumentDownloadUrl, isRagCitationMissingPreviewUrl, isMediaCitation, buildCitationDocumentPreview, buildCitationReferenceItems }=utilities;
 // Platform historically exposes the downloadable original via this alias.

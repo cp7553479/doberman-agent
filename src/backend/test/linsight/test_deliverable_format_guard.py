@@ -22,7 +22,7 @@ from __future__ import annotations
 import os
 import zlib
 
-from bisheng.linsight.domain.utils import (
+from doberman_agent.linsight.domain.utils import (
     deliverable_format_error,
     detect_invalid_deliverables,
 )

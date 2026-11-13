@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from bisheng.common.cursor import (
+from doberman_agent.common.cursor import (
     CURSOR_SCHEMA_VERSION,
     CursorDecodeError,
     decode_cursor,

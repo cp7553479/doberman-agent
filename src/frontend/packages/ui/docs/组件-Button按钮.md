@@ -88,7 +88,7 @@
 
 - 尺寸与三档同高（24 / 32 / 40），形状可选 `square` 或 `circle`。
 - **必须配 Tooltip 说明含义，并设无障碍标签**。没有文字时图标是唯一线索，缺了说明，读屏用户和不认识这个图标的人都会卡住。
-- 图标来源按总纲：bisheng-icons 优先，lucide 兜底。
+- 图标来源按总纲：@doberman-agent/icons 优先，lucide 兜底。
 
 ### 4.3 文字 + icon
 
@@ -204,7 +204,7 @@ size：缺省（h-9） 201 / sm（h-9，与缺省同高名存实亡） 48 / icon
 
 ## 代码锚点
 
-- 基准组件：`src/frontend/packages/ui/src/components/Button/Button.tsx`（2026-07-23 迁入 `@bisheng/ui`；client 旧路径 `~/components/ui/Button` 现为 re-export 壳）
+- 基准组件：`src/frontend/packages/ui/src/components/Button/Button.tsx`（2026-07-23 迁入 `@doberman-agent/ui`；client 旧路径 `~/components/ui/Button` 现为 re-export 壳）
 - 全局类：`src/frontend/client/src/style.css:1419-1545`（btn 系）、`:195-215`（换肤 hack）
 - 灰描边聚类代表：`pages/Subscription/ArticleList/MultiSourceSelect.tsx`、`pages/knowledge/SpaceDetail/EditTagsModal.tsx`
 - 画廊版块：`src/frontend/client/src/pages/_gallery/sections/ButtonSection.tsx`

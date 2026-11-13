@@ -1,4 +1,4 @@
-"""Verify a remote BiSheng rejects STDIO MCP on /mcp/test and /mcp/refresh.
+"""Verify a remote doberman-agent rejects STDIO MCP on /mcp/test and /mcp/refresh.
 
 Patched servers return business code 15025 on /mcp/test (and /mcp/schema)
 without spawning a process. /mcp/refresh stays HTTP 200; any saved STDIO
@@ -12,7 +12,7 @@ Run from src/backend/:
     bash scripts/verify_mcp_stdio_blocked.sh --base-url http://HOST:7860 \\
         --username admin --password '***'
 
-    BISHENG_PASSWORD='***' bash scripts/verify_mcp_stdio_blocked.sh \\
+    DOBERMAN_AGENT_PASSWORD='***' bash scripts/verify_mcp_stdio_blocked.sh \\
         --base-url http://HOST:7860 --username admin
 
 Exit 0 = required checks passed. Exit 1 = login/network. Exit 2 = /mcp/test
@@ -36,7 +36,7 @@ if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
 # Non-existent argv0: if the host is unpatched, spawn fails with ENOENT.
-_PROBE_COMMAND = "bisheng-stdio-probe-not-a-binary"
+_PROBE_COMMAND = "doberman-agent-stdio-probe-not-a-binary"
 _STDIO_SCHEMA = {
     "mcpServers": {
         "stdio-probe": {
@@ -229,14 +229,14 @@ def _check_mcp_refresh(client: httpx.Client, api_base: str) -> tuple[bool, bool]
 def run(args: argparse.Namespace) -> int:
     origin = args.base_url.rstrip("/")
     api_base = origin if origin.endswith("/api/v1") else urljoin(origin + "/", "api/v1")
-    password = args.password or os.environ.get("BISHENG_PASSWORD", "")
-    token = args.token or os.environ.get("BISHENG_TOKEN", "")
+    password = args.password or os.environ.get("DOBERMAN_AGENT_PASSWORD", "")
+    token = args.token or os.environ.get("DOBERMAN_AGENT_TOKEN", "")
 
     try:
         with httpx.Client(timeout=args.timeout, follow_redirects=True) as client:
             if not token:
                 if not args.username or not password:
-                    print("need --username/--password or BISHENG_PASSWORD, or --token", file=sys.stderr)
+                    print("need --username/--password or DOBERMAN_AGENT_PASSWORD, or --token", file=sys.stderr)
                     return 1
                 token = _login(client, api_base, args.username, password, captcha_text=args.captcha)
                 print(f"logged in as {args.username} @ {api_base}")
@@ -267,9 +267,9 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", required=True, help="e.g. http://192.168.1.10:7860")
-    parser.add_argument("--username", default=os.environ.get("BISHENG_USERNAME", ""))
-    parser.add_argument("--password", default="", help="or set BISHENG_PASSWORD")
-    parser.add_argument("--token", default="", help="or set BISHENG_TOKEN (skips login)")
+    parser.add_argument("--username", default=os.environ.get("DOBERMAN_AGENT_USERNAME", ""))
+    parser.add_argument("--password", default="", help="or set DOBERMAN_AGENT_PASSWORD")
+    parser.add_argument("--token", default="", help="or set DOBERMAN_AGENT_TOKEN (skips login)")
     parser.add_argument(
         "--captcha",
         default="",

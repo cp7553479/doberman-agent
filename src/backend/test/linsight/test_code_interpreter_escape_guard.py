@@ -3,7 +3,7 @@
 ``LocalExecutor`` is a subprocess on the SHARED backend host, not a sandbox: a
 script can read anything the service account can. A production daily-chat turn
 walked ``/tmp``, ``/app``, ``/home``, ``/data`` and ``~``, landed in
-``/root/.cache/bisheng/bisheng/`` — the GLOBAL download cache where every user's
+``/root/.cache/doberman_agent/doberman_agent/`` — the GLOBAL download cache where every user's
 uploads pile up under a flat ``<sha256>_<name>`` — and answered from a document
 that belonged to a different conversation.
 
@@ -26,10 +26,10 @@ import os
 
 import pytest
 
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import WORKSPACE_ESCAPE_NOTICE
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import WORKSPACE_ESCAPE_NOTICE
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
-_MINIO = {"public_bucket": "bisheng", "tmp_bucket": "tmp-dir"}
+_MINIO = {"public_bucket": "doberman_agent", "tmp_bucket": "tmp-dir"}
 
 
 def _executor(local_sync_path: str | None = None) -> LocalExecutor:
@@ -45,8 +45,8 @@ def _executor(local_sync_path: str | None = None) -> LocalExecutor:
         # The exact shapes the production run used.
         "import os\nfor root, dirs, files in os.walk('/root'):\n    print(files)",
         "import os\nfor p in ['/tmp', '/app', '/home', '/data']:\n    os.listdir('/app')",
-        "open('/root/.cache/bisheng/bisheng/84da_P_RfB.pdf', 'rb')",
-        'import fitz\ndoc = fitz.open("/root/.cache/bisheng/bisheng/abc_tender.pdf")',
+        "open('/root/.cache/doberman_agent/doberman_agent/84da_P_RfB.pdf', 'rb')",
+        'import fitz\ndoc = fitz.open("/root/.cache/doberman_agent/doberman_agent/abc_tender.pdf")',
         "import glob\nglob.glob('/data/*.pdf')",
         "from pathlib import Path\nPath('/etc/passwd').read_text()",
         "import os\nos.path.exists('/var/log/app.log')",
@@ -100,19 +100,19 @@ def test_guard_allows_workspace_code(code):
 
 def test_guard_allows_absolute_path_into_own_workspace():
     """Linsight shows the model host paths of its own workspace; keep them legal."""
-    file_dir = "/root/.cache/bisheng/linsight/8d2747aa"
+    file_dir = "/root/.cache/doberman_agent/linsight/8d2747aa"
     executor = _executor(local_sync_path=file_dir)
 
     assert executor.workspace_escape_guard(f"open('{file_dir}/output/a.png', 'rb')") == ""
     assert executor.workspace_escape_guard(f"open('{file_dir}')") == ""
     # A sibling task's dir shares the prefix but is NOT this workspace.
     assert (
-        executor.workspace_escape_guard("open('/root/.cache/bisheng/linsight/ffffffff/output/a.png')")
+        executor.workspace_escape_guard("open('/root/.cache/doberman_agent/linsight/ffffffff/output/a.png')")
         == WORKSPACE_ESCAPE_NOTICE
     )
     # The parent cache dir holds every user's uploads — still rejected.
     assert (
-        executor.workspace_escape_guard("import os\nos.listdir('/root/.cache/bisheng/bisheng')")
+        executor.workspace_escape_guard("import os\nos.listdir('/root/.cache/doberman_agent/doberman_agent')")
         == WORKSPACE_ESCAPE_NOTICE
     )
 

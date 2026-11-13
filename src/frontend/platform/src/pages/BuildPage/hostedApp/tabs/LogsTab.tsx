@@ -14,10 +14,10 @@
  */
 import { DatePicker } from "@/components/bs-ui/calendar/datePicker"
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels"
-import { Button } from "@bisheng/ui"
-import { SearchInput } from "@bisheng/ui"
-import { Select } from "@bisheng/ui"
-import { Switch } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
+import { SearchInput } from "@doberman-agent/ui"
+import { Select } from "@doberman-agent/ui"
+import { Switch } from "@doberman-agent/ui"
 import {
   getHostedAppErrorCode,
   getHostedAppErrorMessage,

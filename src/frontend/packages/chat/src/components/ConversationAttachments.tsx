@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { Colored, Outlined } from 'bisheng-icons';
+import { Colored, Outlined } from '@doberman-agent/icons';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ChatAttachment } from '../core/types';
 export interface AttachmentServices {

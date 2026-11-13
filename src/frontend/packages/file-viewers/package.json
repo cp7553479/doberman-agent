@@ -1,8 +1,8 @@
 {
-  "name": "@bisheng/file-viewers",
+  "name": "@doberman-agent/file-viewers",
   "version": "0.1.0",
   "private": true,
-  "description": "Cross-app document preview components (source-shipped; consumed via workspace:*). Copy lives in @bisheng/locales shared domain (namespace shared:).",
+  "description": "Cross-app document preview components (source-shipped; consumed via workspace:*). Copy lives in @doberman-agent/locales shared domain (namespace shared:).",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -42,8 +42,8 @@
     "react-markdown": "^9.0.1",
     "remark-gfm": "^4.0.0",
     "rehype-highlight": "^6.0.0",
-    "bisheng-icons": "catalog:",
-    "@bisheng/ui": "workspace:*",
+    "@doberman-agent/icons": "workspace:*",
+    "@doberman-agent/ui": "workspace:*",
     "pdfjs-dist": "3.10.111"
   },
   "devDependencies": {

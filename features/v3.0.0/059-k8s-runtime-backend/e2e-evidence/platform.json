@@ -16,20 +16,20 @@
     "helper_image": "192.168.106.189:5443/f059/runtime-helper@sha256:5906c51814e24a63356dc69fb5c1dd332bb4eb91b70cf65d41594aefc0841c85",
     "backend_data_cancel_source": "a1de5271f5f00cef0cba06d41f09c673a9190525",
     "backend_data_cancel_files": [
-      "bisheng/app_runtime/domain/services/runtime_data_grant_service.py",
-      "bisheng/app_runtime/domain/services/runtime_data_session_service.py"
+      "doberman-agent/app_runtime/domain/services/runtime_data_grant_service.py",
+      "doberman-agent/app_runtime/domain/services/runtime_data_session_service.py"
     ],
     "helm_revision": 31,
     "suite_source": "d13e9ee91a1014d576d11def1eff9cba21f4c927",
     "backend_data_cpu_source": "6f254f337dd6e8a36733501a2266bf08a04a56e9",
     "backend_data_cpu_files": [
-      "bisheng/app_runtime/domain/services/runtime_data_session_service.py",
-      "bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py"
+      "doberman-agent/app_runtime/domain/services/runtime_data_session_service.py",
+      "doberman-agent/app_runtime/domain/repositories/runtime_delivery_repository.py"
     ],
     "assembler_image": "192.168.106.189:5443/f059/runtime-assembler-ca@sha256:9836c13405df4e4b613712a2e933a73e755d22daeb79d51d6adefc242971c6b9",
     "backend_protection_sources": {
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
     },
     "backend_restore_service_source": "38a7002335bdf5c7c3aa4e13e93d32d6d8150c81",
     "backend_restore_service_sha256": "c06fb408033f4d77c767924908209e92fd06650d7275bac2cb6cba15442327ce"
@@ -1105,7 +1105,7 @@
       "cmd_matches_frozen_startup": true,
       "config_digest": "sha256:b0a5df71c119c602e4c551413524af2b437785b49da0b4cbe120442e49924279",
       "entrypoint": [
-        "/usr/local/bin/bisheng-app-entrypoint"
+        "/usr/local/bin/doberman-agent-app-entrypoint"
       ],
       "exact_base_layer_prefix": true,
       "observed_at": 1792708539.2156847,
@@ -1837,8 +1837,8 @@
     "status_protection": true,
     "binding_protection": true,
     "backend_sources": {
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
     },
     "namespace_uid": "6b72687f-fdaf-4ee9-9a97-cf088a30d88b",
     "descriptor_configmap_uid": "9bcf2c14-d457-4947-bf9c-adb6e70ffd18",

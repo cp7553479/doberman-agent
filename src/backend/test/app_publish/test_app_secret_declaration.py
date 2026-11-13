@@ -3,7 +3,7 @@
 import pytest
 import yaml
 
-from bisheng.common.errcode.app_publish import AppSecretReferenceUnsupportedError
+from doberman_agent.common.errcode.app_publish import AppSecretReferenceUnsupportedError
 from test.app_publish.test_app_secret_repository import secret_repository as secret_repository
 
 
@@ -12,8 +12,8 @@ def body(capabilities):
 
 
 async def test_exact_name_only_declaration_accepted_without_new_scopes(tier_seed):
-    from bisheng.app_publish.domain.services.capability_bus_service import derive_scopes, parse_declaration
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.app_publish.domain.services.capability_bus_service import derive_scopes, parse_declaration
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
 
     result = await validate_manifest(body({"secrets": [{"name": "MY_TOKEN"}, {"name": "Other"}]}))
     declaration = result.manifest.capabilities
@@ -28,7 +28,7 @@ async def test_exact_name_only_declaration_accepted_without_new_scopes(tier_seed
     "references",
     [
         [{"name": "DUP"}, {"name": "DUP"}],
-        [{"name": "BISHENG_TOKEN"}],
+        [{"name": "DOBERMAN_AGENT_TOKEN"}],
         [{"name": "secretref://foo"}],
         [{"name": "ok", "value": "plain-value"}],
         [{"name": "ok", "provider": "vault"}],
@@ -37,8 +37,8 @@ async def test_exact_name_only_declaration_accepted_without_new_scopes(tier_seed
     ],
 )
 async def test_invalid_secret_subtree_is_not_exempt(tier_seed, references):
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
-    from bisheng.common.errcode.app_publish import AppManifestInvalidError
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.common.errcode.app_publish import AppManifestInvalidError
 
     with pytest.raises((AppSecretReferenceUnsupportedError, AppManifestInvalidError)) as exc:
         await validate_manifest(body({"secrets": references}))
@@ -46,7 +46,7 @@ async def test_invalid_secret_subtree_is_not_exempt(tier_seed, references):
 
 
 async def test_other_secret_locations_remain_rejected(tier_seed):
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
 
     for capabilities in [
         {"secrets": [{"name": "TOKEN"}], "token": "do-not-leak"},
@@ -58,7 +58,7 @@ async def test_other_secret_locations_remain_rejected(tier_seed):
 
 
 def test_secret_name_diff_has_no_values():
-    from bisheng.app_publish.domain.services.version_diff_service import VersionDiffService
+    from doberman_agent.app_publish.domain.services.version_diff_service import VersionDiffService
 
     result = VersionDiffService.secret_reference_diff({"secrets": [{"name": "A"}]}, {"secrets": [{"name": "B"}]})
     assert result == {"added": ["B"], "removed": ["A"]}
@@ -68,9 +68,9 @@ async def test_approval_summary_contains_only_names_and_missing_status(
     secret_repository, app_factory, owner_user, monkeypatch
 ):
     """AC-69, AC-72, AC-84: the actual approval summary consumes secret status."""
-    from bisheng.app_publish.application import runtime_secrets
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.application import runtime_secrets
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     app, _ = await app_factory()

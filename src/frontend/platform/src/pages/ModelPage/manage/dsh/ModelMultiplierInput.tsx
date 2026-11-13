@@ -1,5 +1,5 @@
-import { Button } from "@bisheng/ui";
-import { Input } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
+import { Input } from "@doberman-agent/ui";
 import { getModelVisibility, saveModelVisibility } from '@/controllers/API/dshUnified'
 import { getDshRequestErrorKey } from '@/utils/dshRequestError'
 import { Check, Loader2, RotateCw } from 'lucide-react'

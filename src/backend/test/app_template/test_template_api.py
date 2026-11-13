@@ -15,13 +15,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.api.v1 import skillcenter
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.core.context import tenant
-from bisheng.core.database.tenant_filter import register_tenant_filter_events
-from bisheng.permission.application.identity import current_permission_actor
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.api.v1 import skillcenter
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.core.context import tenant
+from doberman_agent.core.database.tenant_filter import register_tenant_filter_events
+from doberman_agent.permission.application.identity import current_permission_actor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.fixtures.table_definitions import TABLE_ASSISTANT, TABLE_FLOW
 
 
@@ -99,19 +99,19 @@ async def api(tmp_path, monkeypatch, mock_settings):
     if hasattr(skillcenter, "get_sync_db_session"):
         monkeypatch.setattr(skillcenter, "get_sync_db_session", sync_session)
     try:
-        repo = import_module("bisheng.app_template.domain.repositories.template_repository")
+        repo = import_module("doberman_agent.app_template.domain.repositories.template_repository")
     except ModuleNotFoundError as exc:
-        if not exc.name.startswith("bisheng.app_template"):
+        if not exc.name.startswith("doberman_agent.app_template"):
             raise
     else:
         monkeypatch.setattr(repo, "get_async_db_session", async_session)
     authorization = AsyncMock()
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.require_business_action", authorization)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.require_business_action", authorization)
     # Service imports the application protocol; patch that bound symbol if loaded.
     try:
-        service = import_module("bisheng.app_template.domain.services.template_service")
+        service = import_module("doberman_agent.app_template.domain.services.template_service")
     except ModuleNotFoundError as exc:
-        if not exc.name.startswith("bisheng.app_template"):
+        if not exc.name.startswith("doberman_agent.app_template"):
             raise
     else:
         monkeypatch.setattr(service, "require_business_action", authorization)
@@ -223,7 +223,7 @@ async def test_admin_cannot_template_other_tenant_source(api, source):
 
 
 async def test_unreadable_source_cannot_be_saved(api):
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     admin()
     api.authorize.side_effect = PermissionDeniedError()
@@ -312,7 +312,7 @@ async def test_single_tenant_mode_falls_back_to_default_tenant(api, mock_setting
 
 
 async def test_report_asset_fallback_is_current_tenant_only(api):
-    from bisheng.api.services.report_template import ais_app_template_asset
+    from doberman_agent.api.services.report_template import ais_app_template_asset
 
     with api.engine.begin() as conn:
         for tid in (1, 2, 3):
@@ -368,7 +368,7 @@ async def test_template_type_must_match_detail(api):
 
 
 async def test_authorization_failure_is_not_downgraded(api):
-    from bisheng.common.errcode.permission import PermissionServiceUnavailableError
+    from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
 
     admin()
     api.authorize.side_effect = PermissionServiceUnavailableError()
@@ -386,7 +386,7 @@ async def test_authorization_failure_is_not_downgraded(api):
 
 
 def test_template_paths_participate_in_management_scope():
-    from bisheng.common.middleware.admin_scope import _is_management_api_path, requires_expected_management_tenant
+    from doberman_agent.common.middleware.admin_scope import _is_management_api_path, requires_expected_management_tenant
 
     for path in ["/api/v1/skill/template", "/api/v1/skill/template/create", "/api/v1/skill/template/210"]:
         assert _is_management_api_path(path)
@@ -399,8 +399,8 @@ def test_template_paths_participate_in_management_scope():
 async def test_assistant_creation_uses_selected_tenant_not_jwt_tenant(api, monkeypatch):
     from starlette.requests import Request
 
-    from bisheng.api.v1 import assistant as endpoint
-    from bisheng.api.v1.schemas import AssistantCreateReq
+    from doberman_agent.api.v1 import assistant as endpoint
+    from doberman_agent.api.v1.schemas import AssistantCreateReq
 
     async def persist(request, login_user, assistant):
         with Session(api.engine) as session:

@@ -1,4 +1,4 @@
-import type { PreviewResource } from '@bisheng/file-viewers/types';
+import type { PreviewResource } from '@doberman-agent/file-viewers/types';
 import type { ChatCitation } from './types';
 /** Each host owns a resolver; only pending requests in the same access scope are reused. */
 export function createCitationResourceResolver(readKnowledgeFile: (id: string) => Promise<PreviewResource>) {

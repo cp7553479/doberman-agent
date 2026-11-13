@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { getOfficeTokenApi } from "@/controllers/API/flow";
 import { getOfficeReachableUrl } from "@/utils/officeUrl";
@@ -33,7 +33,7 @@ export default function Word({ data, workflow }) {
             // Document URL, absolute path
             url: data.path,
             // Document title
-            title: "bisheng.docx",
+            title: "doberman_agent.docx",
             permissions: {
                 changeHistory: true,
                 comment: true,
@@ -64,8 +64,8 @@ export default function Word({ data, workflow }) {
                 unit: "cm",
                 uiTheme: "theme-dark",
                 logo: {
-                    image: location.origin + __APP_ENV__.BASE_URL + "/assets/bisheng/logo.jpeg",
-                    imageDark: location.origin + __APP_ENV__.BASE_URL + "/assets/bisheng/logo.jpeg",
+                    image: location.origin + __APP_ENV__.BASE_URL + "/assets/doberman-agent/logo.jpeg",
+                    imageDark: location.origin + __APP_ENV__.BASE_URL + "/assets/doberman-agent/logo.jpeg",
                     url: "https://example.com",
                 },
             },

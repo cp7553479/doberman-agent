@@ -92,7 +92,7 @@
           LLMService.add_llm_server / update_llm_server
             model_dict[one.model_name] = LLMModel(...)
             落库 llm_model.model_name
-          随后探测：get_bisheng_llm(model_id=...)
+          随后探测：get_doberman-agent_llm(model_id=...)
             params['model'] = model_info.model_name   ← 带空格发给厂商
 ```
 
@@ -131,7 +131,7 @@ LLMService.add/update
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
 | `src/frontend/platform/src/pages/ModelPage/manage/ModelConfig.tsx` | `handleSave` 里统一 trim，再校验、再提交 | 不在 `onChange` 里即时 trim（输入中的空格会被吞掉，无法打字） |
-| `src/backend/bisheng/llm/domain/schemas.py` | `LLMModelCreateReq.model_name` strip；空则校验失败 | 不改 `LLMServerCreateReq.name` |
+| `src/backend/doberman_agent/llm/domain/schemas.py` | `LLMModelCreateReq.model_name` strip；空则校验失败 | 不改 `LLMServerCreateReq.name` |
 | `LLMService.add_llm_server` / `update_llm_server` | 继续按 `model_name` 去重 | 不再手写第二份 strip |
 | `llm/domain/llm/*.py` | 仍把库里的 `model_name` 传给厂商 | 不在调用侧再 trim（写入已干净） |
 
@@ -156,7 +156,7 @@ LLMService.add/update
 | 契约 | 形式 | 谁在用 |
 |---|---|---|
 | `POST /api/v1/llm`、`PUT /api/v1/llm` 的 `models[].model_name` 写入前 strip | 既有 HTTP 请求体语义收紧 | Platform 模型管理；其它直调客户端 |
-| 落库后的 `llm_model.model_name` 不含首尾空白（新写入） | 表字段 | 所有 `get_bisheng_*` 实例化路径 |
+| 落库后的 `llm_model.model_name` 不含首尾空白（新写入） | 表字段 | 所有 `get_doberman-agent_*` 实例化路径 |
 
 无新 API、无新字段、无新错误码。strip 后为空走请求体校验失败（FastAPI 默认 422），不是业务错误码。
 

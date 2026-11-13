@@ -1,4 +1,4 @@
-import { Button, Segmented } from "@bisheng/ui";
+import { Button, Segmented } from "@doberman-agent/ui";
 import { userContext } from "@/contexts/userContext";
 import type {
   ModelAuditQuery,

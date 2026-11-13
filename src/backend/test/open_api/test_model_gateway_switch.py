@@ -1,6 +1,6 @@
 """F051 T012 (switch half): the face exists exactly where it is deployed.
 
-``bisheng.api.router`` evaluates ``open_platform.enabled`` at import time, so a
+``doberman_agent.api.router`` evaluates ``open_platform.enabled`` at import time, so a
 monkeypatched switch does not remount anything. Both states are therefore built
 here with ``importlib.reload`` against a fresh app, which is the only way to see
 the mounting decision actually change.
@@ -13,9 +13,9 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     capture_records,
     install_catalog,
     install_fake_llm,
@@ -29,12 +29,12 @@ CHAT_PATH = "/api/v2/model/v1/chat/completions"
 
 
 def build_app_with_switch(enabled: bool) -> FastAPI:
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     previous = settings.open_platform.enabled
     settings.open_platform.enabled = enabled
     try:
-        router_module = importlib.reload(importlib.import_module("bisheng.api.router"))
+        router_module = importlib.reload(importlib.import_module("doberman_agent.api.router"))
         app = FastAPI()
         register_open_api_exception_handlers(app)
         app.include_router(router_module.router_rpc)
@@ -48,7 +48,7 @@ def _restore_router_module():
     yield
     # Leave the imported router matching the process-wide configuration again,
     # or every later test in this session inherits this file's mounting.
-    importlib.reload(importlib.import_module("bisheng.api.router"))
+    importlib.reload(importlib.import_module("doberman_agent.api.router"))
 
 
 async def _get(app, path, **kwargs):
@@ -59,7 +59,7 @@ async def _get(app, path, **kwargs):
 @pytest.mark.parametrize("authorization", [None, "Bearer bs-sak-something"])
 async def test_the_face_is_indistinguishable_from_nothing_when_not_deployed(monkeypatch, authorization):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     app = build_app_with_switch(False)
@@ -76,7 +76,7 @@ async def test_the_face_is_indistinguishable_from_nothing_when_not_deployed(monk
 
 async def test_chat_completions_is_equally_absent_when_not_deployed(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     app = build_app_with_switch(False)
@@ -91,11 +91,11 @@ async def test_chat_completions_is_equally_absent_when_not_deployed(monkeypatch)
 async def test_the_face_works_on_the_open_capability_layer_alone(monkeypatch):
     # No runtime-manager, no app-proxy, no hosted-app configuration involved.
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     install_catalog(monkeypatch, [server_row(1, "azure-openai")], [model_row(10, 1, "gpt-4o")])
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
     capture_records(monkeypatch)
     app = build_app_with_switch(True)
 

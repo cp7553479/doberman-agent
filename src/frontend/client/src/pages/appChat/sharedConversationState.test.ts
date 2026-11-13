@@ -1,6 +1,6 @@
 /** @jest-environment node */
 import { produce } from 'immer';
-import { assistantStreamForHost, historyForHost, messagesForPresentation, messagesForTransport, startAssistantForHost, workflowStreamForHost } from '@bisheng/chat/core';
+import { assistantStreamForHost, historyForHost, messagesForPresentation, messagesForTransport, startAssistantForHost, workflowStreamForHost } from '@doberman-agent/chat/core';
 
 describe('shared conversations inside the existing client state adapter', () => {
     it('keeps workflow deltas and final identity when Immer passes draft rows', () => {
@@ -32,7 +32,7 @@ describe('shared conversations inside the existing client state adapter', () => 
         expect(ended.messages).toHaveLength(1);
         expect(messagesForPresentation(ended.messages, { mode: 'assistant', sessionKey: 'a' })[0]).toMatchObject({ text: 'Final', sourceMessageId: '8' });
         const outgoing = messagesForTransport(ended.messages);
-        expect(JSON.stringify(outgoing)).not.toContain('__bisheng_chat_snapshot');
+        expect(JSON.stringify(outgoing)).not.toContain('__doberman_agent_chat_snapshot');
         expect(outgoing[0]).not.toHaveProperty('chat_ui_key');
         expect(outgoing[0]).toMatchObject({ message: 'Final', id: 8 });
     });

@@ -7,18 +7,18 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlalchemy import create_engine
 
-import bisheng.api.services.workflow as workflow_module
-import bisheng.database.models.flow as flow_module
-from bisheng.api.services.workflow import WorkFlowService
-from bisheng.core.context.tenant import (
+import doberman_agent.api.services.workflow as workflow_module
+import doberman_agent.database.models.flow as flow_module
+from doberman_agent.api.services.workflow import WorkFlowService
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     is_strict_tenant_filter,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.database.models.flow import FlowDao
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.database.models.flow import FlowDao
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 @pytest.fixture

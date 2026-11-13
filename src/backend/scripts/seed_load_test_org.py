@@ -115,8 +115,8 @@ async def _create_departments(
     refreshed Department rows (index-aligned with the tree plan) and
     parent_edge_ops are the FGA ``on_created`` tuple ops.
     """
-    from bisheng.database.models.department import DepartmentDao
-    from bisheng.department.domain.services.department_change_handler import (
+    from doberman_agent.database.models.department import DepartmentDao
+    from doberman_agent.department.domain.services.department_change_handler import (
         DepartmentChangeHandler,
     )
 
@@ -169,12 +169,12 @@ async def _create_users_batch(
     Returns ``[(user_id, primary_dept_id, secondary_dept_id_or_None), ...]`` so
     the caller can build FGA member ops.
     """
-    from bisheng.core.database import get_async_db_session
-    from bisheng.database.constants import DefaultRole
-    from bisheng.database.models.department import UserDepartment
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.models.user_role import UserRole
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.database.constants import DefaultRole
+    from doberman_agent.database.models.department import UserDepartment
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.models.user_role import UserRole
 
     n = len(dept_ids_primary)
     async with get_async_db_session() as session:
@@ -226,7 +226,7 @@ async def _flush_fga(ops: list, chunk: int = 5000) -> None:
     failed_tuple pre-write table (not every env has run that migration)."""
     if not ops:
         return
-    from bisheng.permission.domain.services.permission_service import PermissionService
+    from doberman_agent.permission.domain.services.permission_service import PermissionService
 
     for i in range(0, len(ops), chunk):
         await PermissionService.batch_write_tuples(ops[i : i + chunk], crash_safe=False)
@@ -239,14 +239,14 @@ async def _flush_fga(ops: list, chunk: int = 5000) -> None:
 async def _purge(*, source: str, with_fga: bool) -> int:
     from sqlmodel import select
 
-    from bisheng.core.database import get_async_db_session
-    from bisheng.database.models.department import Department, UserDepartment
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.department.domain.services.department_change_handler import (
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.database.models.department import Department, UserDepartment
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.department.domain.services.department_change_handler import (
         DepartmentChangeHandler,
     )
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.models.user_role import UserRole
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.models.user_role import UserRole
 
     fga_ops: list = []
     async with get_async_db_session() as session:
@@ -333,15 +333,15 @@ async def _run(args: argparse.Namespace) -> int:
             print("[dry-run] 未写库 / 未写 FGA。确认后加 --apply 执行。")
             return 0
 
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.manager import close_app_context, initialize_app_context
-    from bisheng.core.context.tenant import bypass_tenant_filter, current_tenant_id, set_current_tenant_id
-    from bisheng.database.models.department import DepartmentDao
-    from bisheng.database.models.tenant import TenantDao
-    from bisheng.department.domain.services.department_change_handler import (
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.manager import close_app_context, initialize_app_context
+    from doberman_agent.core.context.tenant import bypass_tenant_filter, current_tenant_id, set_current_tenant_id
+    from doberman_agent.database.models.department import DepartmentDao
+    from doberman_agent.database.models.tenant import TenantDao
+    from doberman_agent.department.domain.services.department_change_handler import (
         DepartmentChangeHandler,
     )
-    from bisheng.utils import md5_hash
+    from doberman_agent.utils import md5_hash
 
     await initialize_app_context(config=settings)
     token = None
@@ -355,7 +355,7 @@ async def _run(args: argparse.Namespace) -> int:
             tenant = await TenantDao.aget_by_id(args.tenant_id)
             if tenant is None or tenant.root_dept_id is None:
                 print(
-                    f"租户 {args.tenant_id} 或其 root_dept_id 缺失，请先完成 BiSheng 初始化。",
+                    f"租户 {args.tenant_id} 或其 root_dept_id 缺失，请先完成 doberman-agent 初始化。",
                     file=sys.stderr,
                 )
                 return 1
@@ -420,8 +420,8 @@ async def _run(args: argparse.Namespace) -> int:
                         member_ops.extend(DepartmentChangeHandler.on_members_added(sdid, [uid]))
 
                 if args.with_role_fga:
-                    from bisheng.database.constants import DefaultRole
-                    from bisheng.permission.domain.services.legacy_rbac_sync_service import (
+                    from doberman_agent.database.constants import DefaultRole
+                    from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (
                         LegacyRBACSyncService,
                     )
 

@@ -31,7 +31,7 @@ APPROVER_USER_ID = OWNER_USER_ID + 700
 OTHER_APPROVER_USER_ID = OWNER_USER_ID + 701
 STRANGER_USER_ID = OWNER_USER_ID + 702
 
-IMAGE_REF = "bisheng-app/f055-app-1:1-abcdef12"
+IMAGE_REF = "doberman-agent-app/f055-app-1:1-abcdef12"
 
 
 def _body(response):
@@ -40,7 +40,7 @@ def _body(response):
 
 
 def _payload(user_id: int, *, is_global_super: bool = False):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(
         user_id=user_id,
@@ -53,7 +53,7 @@ def _payload(user_id: int, *, is_global_super: bool = False):
 
 async def _buildable(publish_db, app_factory, **kwargs):
     """An app whose version has a build behind it — the precondition of a preview."""
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.database.models.app_version import AppVersion
 
     app, version = await app_factory(with_version=True, **kwargs)
     async with publish_db() as session:
@@ -67,8 +67,8 @@ async def _buildable(publish_db, app_factory, **kwargs):
 
 async def _seed_task(publish_db, *, app, version_id: str, approver_user_id: int) -> int:
     """An ``app_publish_request`` instance about ``version_id`` with one task."""
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import SCENARIO_CODE
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstance, ApprovalTask
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import SCENARIO_CODE
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance, ApprovalTask
 
     async with publish_db() as session:
         instance = ApprovalInstance(
@@ -181,7 +181,7 @@ async def test_the_preview_is_handed_the_whole_environment_contract(preview_env,
     """The manager can only build §5's environment from what it is told.
 
     Without ``slug`` / ``version_no`` / ``platform_api_base`` the container
-    comes up missing ``BISHENG_APP_DB_URL`` and friends, and an approver reads
+    comes up missing ``DOBERMAN_AGENT_APP_DB_URL`` and friends, and an approver reads
     "the app exits on start-up" as "this release is broken".
     """
     app, version, orchestrator = preview_env
@@ -300,8 +300,8 @@ async def test_a_failed_start_answers_16266_and_leaves_no_running_row(preview_en
     """AC-26 「拉起失败展示原因并允许重新拉起」."""
     from sqlmodel import select
 
-    from bisheng.app_publish.domain.models.app_preview_session import AppPreviewSession
-    from bisheng.common.errcode.app_factory import AppProbeFailedError
+    from doberman_agent.app_publish.domain.models.app_preview_session import AppPreviewSession
+    from doberman_agent.common.errcode.app_factory import AppProbeFailedError
 
     app, version, orchestrator = preview_env
     orchestrator.responses["preview_start"] = AppProbeFailedError(msg="exited on start-up")
@@ -319,7 +319,7 @@ async def test_a_failed_start_answers_16266_and_leaves_no_running_row(preview_en
 
 
 async def test_a_failed_start_can_be_retried(preview_env, api_app):
-    from bisheng.common.errcode.app_factory import AppCapacityInsufficientError
+    from doberman_agent.common.errcode.app_factory import AppCapacityInsufficientError
 
     app, version, orchestrator = preview_env
     orchestrator.responses["preview_start"] = AppCapacityInsufficientError(msg="no memory")
@@ -446,7 +446,7 @@ async def test_a_terminal_approval_reclaims_every_trial_of_that_version(
     publish_db, app_factory, tier_seed, fake_orchestrator, api_app
 ):
     """AC-28 — rejected / withdrawn / cancelled all go through the same body."""
-    from bisheng.app_publish.domain.services.publish_terminal_service import PublishTerminalService
+    from doberman_agent.app_publish.domain.services.publish_terminal_service import PublishTerminalService
 
     app, version = await _buildable(publish_db, app_factory)
     await _seed_task(publish_db, app=app, version_id=version.id, approver_user_id=APPROVER_USER_ID)
@@ -474,8 +474,8 @@ async def test_a_terminal_approval_reclaims_every_trial_of_that_version(
 
 async def test_a_second_reclaim_changes_no_row_but_still_tells_the_orchestrator(preview_env, api_app, publish_db):
     """Three triggers race; the loser must not overwrite the winner's reason."""
-    from bisheng.app_publish.domain.models.app_preview_session import AppPreviewSession
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.domain.models.app_preview_session import AppPreviewSession
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     app, version, orchestrator = preview_env
     async with api_app(payload=_payload(APPROVER_USER_ID)) as client:
@@ -500,7 +500,7 @@ async def test_a_second_reclaim_changes_no_row_but_still_tells_the_orchestrator(
 
 
 async def _age_session(publish_db, session_id: str, *, days: int) -> None:
-    from bisheng.app_publish.domain.models.app_preview_session import AppPreviewSession
+    from doberman_agent.app_publish.domain.models.app_preview_session import AppPreviewSession
 
     async with publish_db() as session:
         row = await session.get(AppPreviewSession, session_id)
@@ -511,7 +511,7 @@ async def _age_session(publish_db, session_id: str, *, days: int) -> None:
 
 async def test_an_expired_session_cannot_be_opened_even_before_it_is_swept(preview_env, api_app, publish_db):
     """The deadline is exact for a visitor; the container lags by one sweep."""
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     app, version, _orchestrator = preview_env
     async with api_app(payload=_payload(APPROVER_USER_ID)) as client:
@@ -543,12 +543,12 @@ async def test_sweeping_another_tenants_expired_row_does_not_hide_my_own(preview
     filtered — read looking in the wrong place. The panel then says 「未拉起」
     for a trial that is running, and the approver raises a second container.
     """
-    from bisheng.app_publish.domain.models.app_preview_session import (
+    from doberman_agent.app_publish.domain.models.app_preview_session import (
         PREVIEW_STATUS_RUNNING,
         AppPreviewSession,
         AppPreviewSessionDao,
     )
-    from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+    from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
 
     app, version, _orchestrator = preview_env
     async with api_app(payload=_payload(APPROVER_USER_ID)) as client:
@@ -582,7 +582,7 @@ async def test_sweeping_another_tenants_expired_row_does_not_hide_my_own(preview
 
 
 async def test_a_reclaimed_session_is_not_resolvable_as_an_entry(preview_env, api_app):
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     app, version, _orchestrator = preview_env
     async with api_app(payload=_payload(APPROVER_USER_ID)) as client:
@@ -600,7 +600,7 @@ async def test_a_reclaimed_session_is_not_resolvable_as_an_entry(preview_env, ap
 async def test_raising_and_reclaiming_are_both_audited(preview_env, api_app, publish_db):
     from sqlmodel import select
 
-    from bisheng.database.models.audit_log import AuditLog
+    from doberman_agent.database.models.audit_log import AuditLog
 
     app, version, _orchestrator = preview_env
     async with api_app(payload=_payload(APPROVER_USER_ID)) as client:
@@ -625,7 +625,7 @@ async def test_raising_and_reclaiming_are_both_audited(preview_env, api_app, pub
 
 async def test_a_tenant_administrator_and_a_super_admin_may_preview(preview_env, api_app, monkeypatch):
     """Same door as the review view — ``ReviewAccess`` is the one access rule."""
-    from bisheng.app_publish.domain.services import snapshot_browse_service
+    from doberman_agent.app_publish.domain.services import snapshot_browse_service
 
     app, version, _orchestrator = preview_env
 

@@ -261,7 +261,7 @@ describe('stepUtils — top-level steps stay inline alongside team groups', () =
     it('keeps a top-level tool inline and folds namespaced steps under the team group', () => {
         const topLevelTool = frame({
             call_id: 'call_tool_01',
-            name: 'bisheng_code_interpreter',
+            name: 'doberman_agent_code_interpreter',
             step_type: 'tool',
             output: 'ok',
             timestamp: 90,
@@ -703,7 +703,7 @@ describe('stepUtils — summarizeActivity (§3 readable activity meta)', () => {
             step({ name: 'write_file', stepType: 'tool' }),
             step({ name: 'add_text_to_file', stepType: 'tool' }),
             step({ name: 'read_file', stepType: 'tool' }),
-            step({ name: 'bisheng_code_interpreter', stepType: 'tool' }),
+            step({ name: 'doberman_agent_code_interpreter', stepType: 'tool' }),
             step({ name: 'glob', stepType: 'tool' }),
             step({ name: 'grep', stepType: 'tool' }),
         ];

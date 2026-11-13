@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
 import { checkSassUrl } from "@/components/bs-comp/FileView";
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { Dialog, DialogContent } from "@/components/bs-ui/dialog";
-import { Tag, Tooltip as Tip, Tooltip, TooltipProvider } from "@bisheng/ui";
+import { Tag, Tooltip as Tip, Tooltip, TooltipProvider } from "@doberman-agent/ui";
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

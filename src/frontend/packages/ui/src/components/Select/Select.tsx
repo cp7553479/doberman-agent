@@ -164,7 +164,7 @@ export function Select(props: SelectProps) {
   React.useEffect(() => {
     if (!outlined && status !== 'default') {
       console.warn(
-        `[@bisheng/ui] Select variant="${variant}" shows no validation status (Select spec, section 3.1); use variant="outlined" for a field that needs one.`,
+        `[@doberman-agent/ui] Select variant="${variant}" shows no validation status (Select spec, section 3.1); use variant="outlined" for a field that needs one.`,
       );
     }
   }, [outlined, status, variant]);

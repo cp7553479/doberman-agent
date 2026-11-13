@@ -7,7 +7,7 @@ const mock = vi.hoisted(() => ({ update: vi.fn(), report: vi.fn(), notice: vi.fn
 vi.mock('@/controllers/API', () => ({ updateQaStatus: mock.update, deleteQa: vi.fn(), getQaFile: vi.fn(), getQaList: vi.fn() }));
 vi.mock('@/controllers/API/permission', () => ({ checkResourceActionApi: vi.fn().mockResolvedValue({ allowed: true }) }));
 vi.mock('@/controllers/request', () => ({ showApiError: mock.report }));
-vi.mock('@bisheng/ui', async (original) => ({ ...await original<typeof import('@bisheng/ui')>(), notification: { open: mock.notice } }));
+vi.mock('@doberman-agent/ui', async (original) => ({ ...await original<typeof import('@doberman-agent/ui')>(), notification: { open: mock.notice } }));
 vi.mock('react-router-dom', async (original) => ({ ...await original<typeof import('react-router-dom')>(), useParams: () => ({ id: '1' }) }));
 vi.mock('./components/EditQa', () => ({ EditQa: () => null }));
 vi.mock('./components/ImportQa', () => ({ ImportQa: () => null }));

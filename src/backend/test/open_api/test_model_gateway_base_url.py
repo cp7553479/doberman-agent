@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.services.config_service import settings
-from bisheng.open_api.domain.services.public_base_url import MODEL_GATEWAY_BASE_PATH, model_gateway_base_url
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.open_api.domain.services.public_base_url import MODEL_GATEWAY_BASE_PATH, model_gateway_base_url
 from test.open_api.model_gateway_fixtures import service_account_principal
 
 
@@ -29,9 +29,9 @@ def _no_configured_base_url(monkeypatch):
 
 
 def test_the_operator_declared_address_wins(monkeypatch):
-    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/bisheng")
+    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/doberman_agent")
 
-    assert model_gateway_base_url(_FakeRequest({})) == (f"https://portal.example.com/bisheng{MODEL_GATEWAY_BASE_PATH}")
+    assert model_gateway_base_url(_FakeRequest({})) == (f"https://portal.example.com/doberman_agent{MODEL_GATEWAY_BASE_PATH}")
 
 
 def test_the_reverse_proxy_headers_are_used_next():
@@ -56,19 +56,19 @@ def test_the_url_keeps_the_v1_segment_and_has_no_trailing_slash():
 
 
 async def test_whoami_hands_every_key_the_same_address(monkeypatch):
-    from bisheng.main import app
+    from doberman_agent.main import app
 
     monkeypatch.setattr(settings.open_platform, "enabled", True)
     monkeypatch.setattr(settings.open_api, "public_base_url", "https://kb.example.com")
     monkeypatch.setattr(
-        "bisheng.open_api.domain.repositories.credential_repository.CredentialRepository.get",
+        "doberman_agent.open_api.domain.repositories.credential_repository.CredentialRepository.get",
         AsyncMock(return_value=None),
     )
 
     urls = set()
     for tenant_id, credential_id in ((9, 7), (11, 8)):
         monkeypatch.setattr(
-            "bisheng.open_api.api.dependencies.validate_bearer",
+            "doberman_agent.open_api.api.dependencies.validate_bearer",
             AsyncMock(return_value=service_account_principal(tenant_id=tenant_id, credential_id=credential_id)),
         )
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -79,15 +79,15 @@ async def test_whoami_hands_every_key_the_same_address(monkeypatch):
 
 
 async def test_whoami_reports_no_address_where_the_face_is_not_deployed(monkeypatch):
-    from bisheng.main import app
+    from doberman_agent.main import app
 
     monkeypatch.setattr(settings.open_platform, "enabled", False)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.repositories.credential_repository.CredentialRepository.get",
+        "doberman_agent.open_api.domain.repositories.credential_repository.CredentialRepository.get",
         AsyncMock(return_value=None),
     )
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
 

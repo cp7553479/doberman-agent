@@ -8,14 +8,14 @@ UUID documents still must not be treated as citable RAG.
 from langchain_core.documents import Document
 from langchain_core.tools import BaseTool
 
-from bisheng.citation.domain.schemas.citation_schema import CitationType
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.schemas.citation_schema import CitationType
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     _is_citable_rag_document,
     annotate_rag_documents_with_citations,
     annotate_temp_documents_with_citations,
     collect_temp_citation_registry_items,
 )
-from bisheng.workflow.nodes.agent.agent import AgentNode, WorkflowCitationToolWrapper
+from doberman_agent.workflow.nodes.agent.agent import AgentNode, WorkflowCitationToolWrapper
 
 
 class _StubKnowledgeTool(BaseTool):

@@ -16,14 +16,14 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.linsight.api.endpoints import skill as skill_endpoints
-from bisheng.linsight.domain.services import skill_service as service_module
-from bisheng.linsight.domain.services.skill_service import SkillService
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.linsight.api.endpoints import skill as skill_endpoints
+from doberman_agent.linsight.domain.services import skill_service as service_module
+from doberman_agent.linsight.domain.services.skill_service import SkillService
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
-from bisheng.linsight.domain.services.skill_store import SkillStore
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
 from test.linsight.test_skill_service import FakeSkillDao
 
 BASE = "/api/v1/linsight/skill"
@@ -60,7 +60,7 @@ def client(tmp_path, monkeypatch):
 
     @app.exception_handler(BaseErrorCode)
     def handle_business_error(request, exc: BaseErrorCode):
-        # mirror bisheng.main.handle_http_exception shape for BaseErrorCode
+        # mirror doberman_agent.main.handle_http_exception shape for BaseErrorCode
         return JSONResponse(content={"status_code": exc.code, "status_message": exc.message})
 
     async def admin_user():

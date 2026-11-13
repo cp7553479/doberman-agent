@@ -8,12 +8,12 @@ from sqlalchemy import event
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
-from bisheng.dsh.api.endpoints.model_audit_title import router, title_service
-from bisheng.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle as Title
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Query
-from bisheng.dsh.domain.repositories.model_audit_title import DshModelAuditTitleRepository
-from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
-from bisheng.dsh.domain.services.model_audit_title import DshModelAuditTitleService
+from doberman_agent.dsh.api.endpoints.model_audit_title import router, title_service
+from doberman_agent.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle as Title
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Query
+from doberman_agent.dsh.domain.repositories.model_audit_title import DshModelAuditTitleRepository
+from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
+from doberman_agent.dsh.domain.services.model_audit_title import DshModelAuditTitleService
 from test.dsh.test_model_audit_flow import ADMIN, BASE, USER, call, fixture
 from test.dsh.test_model_audit_tree import finish
 

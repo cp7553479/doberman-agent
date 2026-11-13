@@ -4,7 +4,7 @@
 
 代码放在仓库 `tools/taskmode_eval/`。用例材料（输入文件、参考答案、知识空间文件、历史产出）是客户数据，**不进仓库**，只存放在三处：106 `/root/taskmode-eval/`、116 `/data/taskmode-eval/taskmode-eval-v1/`、114 `/opt/taskmode-eval/taskmode-eval-v1/`。
 
-使用时先把本目录复制到材料包的 `harness/` 目录，再在部署了 BiSheng 的机器上运行。运行时生成的 `env.json` 含密钥，权限是 600，不要提交。
+使用时先把本目录复制到材料包的 `harness/` 目录，再在部署了 DobermanAgent 的机器上运行。运行时生成的 `env.json` 含密钥，权限是 600，不要提交。
 
 ## 文件
 
@@ -34,7 +34,7 @@
 
 ```bash
 cd /opt/taskmode-eval/taskmode-eval-v1
-PY=/opt/bisheng/src/backend/.venv/bin/python
+PY=/opt/doberman-agent/src/backend/.venv/bin/python
 
 # 1. 准备环境（只需一次；重复运行会复用已有资源，但会重新签发密钥）
 $PY -I harness/setup_env.py --password '<admin 密码>' --model 9 --judge-model 16 [--vision-model <能读图的模型 id>]
@@ -55,8 +55,8 @@ $PY -I harness/grade.py --run-id <run-id> [--compare baseline-106] [--no-judge]
 
 ```bash
 cd /data/taskmode-eval/taskmode-eval-v1
-export DB_URL=$(docker exec bisheng-test-backend python -c \
-  "from bisheng.common.services.config_service import settings; print(settings.database_url)" 2>/dev/null | tail -1)
+export DB_URL=$(docker exec doberman-agent-test-backend python -c \
+  "from doberman_agent.common.services.config_service import settings; print(settings.database_url)" 2>/dev/null | tail -1)
 bash harness/in-image.sh setup_env.py --base-url http://127.0.0.1:7861 --password '<admin 密码>' \
   --model 935 --judge-model 936 --platform-version "release@<镜像 digest>"
 nohup bash harness/in-image.sh run.py --cases all --repeat 3 --concurrency 4 --run-id <run-id> > runs/<run-id>.log 2>&1 &

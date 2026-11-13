@@ -29,21 +29,21 @@
 
 - [x] **T001**：发布与预览 ORM 字段
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/app_publish/domain/models/app_deployment.py`、`src/backend/bisheng/app_publish/domain/models/app_preview_session.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/models/app_deployment.py`、`src/backend/doberman_agent/app_publish/domain/models/app_preview_session.py`
   **逻辑/验证**：authorization_context 使用 nullable JsonType；预览增加 purpose、instance/task、credential、operation 及 starting 状态；新会话强制完整绑定，旧 NULL 不回填。
   **覆盖 AC**：AC-39、AC-50、AC-53、AC-69
   **依赖**：无
 
 - [x] **T002**：已有表 DDL 与回退
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/database/alembic/versions/f114_app_authorization_context.py`
+  **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f114_app_authorization_context.py`
   **逻辑/验证**：读取 migration AGENTS，接当前唯一 head；仅 additive 字段和普通/唯一索引；降级只撤本 revision 的 DDL，运行前停止新写入并备份，绝不把 downgrade 当业务数据恢复。MySQL/DM8 静态核对，不做数据回填。
   **覆盖 AC**：AC-39、AC-50、AC-53、AC-69
   **依赖**：T001
 
 - [x] **T003**：范围错误码与受信值对象
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/common/errcode/admin_scope.py`、`src/backend/bisheng/app_runtime/domain/schemas/app_authorization.py`
+  **文件**：`src/backend/doberman_agent/common/errcode/admin_scope.py`、`src/backend/doberman_agent/app_runtime/domain/schemas/app_authorization.py`
   **逻辑/验证**：复核 19704/19705 未占用；定义范围变化/无有效范围错误及六动作、内容层级、用户/系统来源、操作用途值对象，禁止原令牌或永久 allowed。
   **覆盖 AC**：AC-01、AC-04、AC-08、AC-13、AC-14、AC-40、AC-56、AC-60、AC-63
   **依赖**：无
@@ -59,7 +59,7 @@
 
 - [x] **T005**：应用授权门面
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_authorization_service.py`、`src/backend/bisheng/app_runtime/application/authorization.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_authorization_service.py`、`src/backend/doberman_agent/app_runtime/application/authorization.py`
   **逻辑/验证**：D1/D8：AppAuthorizationService 先验证 app/tenant/state，复用 F048 adapter；提供 require/allowed_actions/management 基础信息与内容分级；公开端口不泄露 ORM。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-05、AC-06、AC-07、AC-08、AC-62、AC-63、AC-65
   **依赖**：T003、T004
@@ -74,7 +74,7 @@
 
 - [x] **T007**：范围真相与默认回退
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/admin/domain/services/tenant_scope.py`、`src/backend/bisheng/admin/domain/repositories/tenant_scope_repository.py`
+  **文件**：`src/backend/doberman_agent/admin/domain/services/tenant_scope.py`、`src/backend/doberman_agent/admin/domain/repositories/tenant_scope_repository.py`
   **逻辑/验证**：D3：沿 admin_scope 用户级 Redis key/TTL；选择只接受 active 具体租户；默认/过期回本人合法租户，失败不改旧选择；非超管忽略缓存。读取跨租户事实须窄范围受信端口。
   **覆盖 AC**：AC-09、AC-10、AC-11、AC-12、AC-13、AC-14、AC-17、AC-64
   **依赖**：T006
@@ -82,7 +82,7 @@
 
 - [x] **T008**：管理范围端口与切换 API
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/admin/application/tenant_scope.py`、`src/backend/bisheng/admin/api/endpoints/tenant_scope.py`
+  **文件**：`src/backend/doberman_agent/admin/application/tenant_scope.py`、`src/backend/doberman_agent/admin/api/endpoints/tenant_scope.py`
   **逻辑/验证**：返回正整数 scope_tenant_id 和 selected/own 来源；EffectiveManagementScope 公开值对象；新写保护端口核对 X-Management-Tenant，F113 单旧头继续合法。
   **覆盖 AC**：AC-09、AC-11、AC-12、AC-13、AC-14、AC-16、AC-17
   **依赖**：T007、T006
@@ -90,7 +90,7 @@
 
 - [x] **T009**：范围注入与任务隔离
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/common/middleware/admin_scope.py`、`src/backend/bisheng/core/context/tenant.py`
+  **文件**：`src/backend/doberman_agent/common/middleware/admin_scope.py`、`src/backend/doberman_agent/core/context/tenant.py`
   **逻辑/验证**：读取同一有效范围并 pin 请求，具体租户过滤沿 ContextVar；仅明确管理路由接范围，开放 API/SDK/内部执行不继承页面选择；不为共用 GET/调用强制管理头。
   **覆盖 AC**：AC-10、AC-15、AC-16、AC-17、AC-18、AC-66
   **依赖**：T008、T006
@@ -107,7 +107,7 @@
 
 - [x] **T011**：基础查询与版本安全投影
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/apps.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/apps.py`
   **逻辑/验证**：列表/基础详情/实例/版本摘要用任一管理动作，返回 allowed_actions；详细日志 edit；保持不存在保密，版本只读和准确状态提示，不能无条件返回私有 manifest。
   **覆盖 AC**：AC-07、AC-08、AC-20、AC-21、AC-42、AC-55、AC-61、AC-63
   **依赖**：T005、T009、T010
@@ -115,7 +115,7 @@
 
 - [x] **T012**：元信息及生命周期动作
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
   **逻辑/验证**：元信息 edit；上线 publish、下线 unpublish、删除 delete；移除 owner/失效创建人资格分支，保留审批/容量/下线前置、确认、资源与 Grant 清理、实际 actor 审计。
   **覆盖 AC**：AC-05、AC-19、AC-29、AC-30、AC-31、AC-32、AC-54、AC-63、AC-64、AC-65
   **依赖**：T005、T009、T010
@@ -123,7 +123,7 @@
 
 - [x] **T013**：数据读取写入及恢复动作
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_data_session_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_session_service.py`
   **逻辑/验证**：所有表/行/导出/会话结果 edit；恢复按是否启动要求 edit 或 edit AND publish；保留确认、表范围、票据归属和 writer 停止证据，不增加任意 SQL。
   **覆盖 AC**：AC-22、AC-23、AC-28、AC-53、AC-65
   **依赖**：T005、T010
@@ -131,7 +131,7 @@
 
 - [x] **T014**：配置管理与确认重建动作
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/app_secret_service.py`、`src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py`
   **逻辑/验证**：查看/保存配置 edit；确认重建 edit AND publish；沿原 revision/CAS、确认快照与幂等；保存无运行副作用，不改变 owner/密文规则。
   **覆盖 AC**：AC-24、AC-25、AC-26、AC-40、AC-56、AC-65
   **依赖**：T005、T010
@@ -146,7 +146,7 @@
 
 - [x] **T068**：审批拥有的审读资格公开端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/approval/domain/repositories/app_review_repository.py`、`src/backend/bisheng/approval/application/app_review.py`
+  **文件**：`src/backend/doberman_agent/approval/domain/repositories/app_review_repository.py`、`src/backend/doberman_agent/approval/application/app_review.py`
   **逻辑/验证**：窄范围按已验证viewer、应用及pending实例/任务查询，Python解析冻结version，不暴露ORM；返回只读tenant/app/version/task/instance绑定；无新增状态或审批引擎行为。
   **覆盖 AC**：AC-18、AC-20、AC-49、AC-50、AC-53、AC-69
   **依赖**：T067
@@ -161,7 +161,7 @@
 
 - [x] **T015**：快照与版本私有内容授权
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/snapshot_browse_service.py`、`src/backend/bisheng/app_publish/domain/services/version_diff_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/snapshot_browse_service.py`、`src/backend/doberman_agent/app_publish/domain/services/version_diff_service.py`
   **逻辑/验证**：源码快照、文件、完整版本差异 edit；审批临时审读只走可信任务公开端口，不以长期 edit 替代审批，也不凭知晓版本 ID 放行。
   **覆盖 AC**：AC-20、AC-27、AC-42、AC-50、AC-53
   **依赖**：T005、T010、T068
@@ -169,7 +169,7 @@
 
 - [x] **T016**：应用运行管理用途映射
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py`
   **逻辑/验证**：移除 natural_owner_required；私有依赖/快照 edit，恢复组合取可信用途，取消按当前取消者原动作集合；公共 profile/依赖仍平台运维；旧 upgrade/rebind 不注册。
   **覆盖 AC**：AC-27、AC-28、AC-53、AC-55、AC-56、AC-57、AC-58、AC-70、AC-71
   **依赖**：T005、T010
@@ -184,7 +184,7 @@
 
 - [x] **T018**：运行记录查询和导出范围
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/bisheng/app_governance/domain/services/runtime_audit_export_service.py`
+  **文件**：`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_export_service.py`
   **逻辑/验证**：F056 沿 source owner repository 与现有一致导出；单 app 资格改 edit，保留审计入口及具体租户，禁止凭旧导出 URL 继续越权。
   **覆盖 AC**：AC-15、AC-34、AC-62、AC-64
   **依赖**：T005、T009、T017
@@ -201,7 +201,7 @@
 
 - [x] **T020**：创建权限投影传递真实主体
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_provision_service.py`、`src/backend/bisheng/app_runtime/domain/services/f048_app_permission.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_provision_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/f048_app_permission.py`
   **逻辑/验证**：owner/tenant 保持原事实，authorize_created 接真实 PermissionActor；复用 F048 CURRENT CREATOR_GRANT 并验证 edit AND publish；rollback_created 完成后才删孤立行，未知不盲删。
   **覆盖 AC**：AC-05、AC-43、AC-44、AC-48、AC-64
   **依赖**：T005、T019
@@ -209,7 +209,7 @@
 
 - [x] **T021**：发布受理冻结真实授权来源
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/bisheng/app_publish/api/endpoints/deploy.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/doberman_agent/app_publish/api/endpoints/deploy.py`
   **逻辑/验证**：已有 app 按真实 actor edit AND publish，首次沿 create；owner 不变，冻结用户来源与 self_review_user_id；scope/mode/F113 和密钥/扫描/预检规则保留，客户端不能传内部 context。
   **覆盖 AC**：AC-35、AC-36、AC-39、AC-40、AC-41、AC-43、AC-44、AC-45、AC-47、AC-48、AC-64
   **依赖**：T001、T020、T019
@@ -217,7 +217,7 @@
 
 - [x] **T022**：CLI/MCP 查询与管理真实授权
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_mcp/tools/apps.py`、`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`
+  **文件**：`src/backend/doberman_agent/open_mcp/tools/apps.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`
   **逻辑/验证**：列表与状态不按 SA owner 过滤替代资源动作；复用安全摘要/日志 edit，已有 supported scope/mode 原样；不新增 PAT 通道。
   **覆盖 AC**：AC-07、AC-21、AC-43、AC-45、AC-46、AC-47、AC-48
   **依赖**：T005、T011、T021、T019
@@ -232,7 +232,7 @@
 
 - [x] **T024**：应用发布候选与异常重试
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`、`src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`
   **逻辑/验证**：handler 消费冻结提交身份；增加仅应用场景候选校验，双重排除，可信租户管理员数量证明单人例外；无合格候选走既有异常，不自动通过。
   **覆盖 AC**：AC-39、AC-41、AC-49、AC-52、AC-67、AC-68
   **依赖**：T021、T023
@@ -240,7 +240,7 @@
 
 - [x] **T025**：审批引擎扩展点和公开业务撤回
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/approval/domain/services/approval_center_service.py`、`src/backend/bisheng/approval/application/app_publish.py`
+  **文件**：`src/backend/doberman_agent/approval/domain/services/approval_center_service.py`、`src/backend/doberman_agent/approval/application/app_publish.py`
   **逻辑/验证**：仅应用场景可选校验钩子默认不改其它场景；公开可信目标/事务撤回接口复用 withdrawn 引擎、终态与审计；不跨域直接写审批 ORM。
   **覆盖 AC**：AC-37、AC-49、AC-52、AC-54、AC-67、AC-68
   **依赖**：T024、T023
@@ -248,7 +248,7 @@
 
 - [x] **T026**：发布上线与主动撤回动作
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/publish_online_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_terminal_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_terminal_service.py`
   **逻辑/验证**：上线 publish，不再 owner 特判；撤回当前 publish；保留冻结 app/tenant/version、审批结果、取消清理及真实 actor，异常管理当前具体范围和原任务资格。
   **覆盖 AC**：AC-29、AC-37、AC-40、AC-41、AC-49、AC-52、AC-54、AC-64
   **依赖**：T025、T005、T023
@@ -265,7 +265,7 @@
 
 - [x] **T028**：受信来源与一步授权服务
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_authorization_service.py`、`src/backend/bisheng/app_runtime/application/runtime_authorization.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_authorization_service.py`、`src/backend/doberman_agent/app_runtime/application/runtime_authorization.py`
   **逻辑/验证**：按 design §4.5/§6.2 实现 user_request/system_recovery 的生产/加载/验证值对象，复核 credential/current actor/用途动作或可信运行意图；不接受客户端自证，许可绑定完整执行围栏与短期限。
   **覆盖 AC**：AC-04、AC-40、AC-53、AC-56、AC-60、AC-62、AC-64、AC-70
   **依赖**：T005、T027
@@ -273,7 +273,7 @@
 
 - [x] **T029**：维护事实与恢复来源事务
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`
   **逻辑/验证**：recover 同一 UoW 冻结 route/op/version/delivery，保留 pending/幂等；fact 维护前复核并原子记录 maintenance_transition，commit 再复核；用户取消按用途，system 无通用 cancel，由 unpublish 终止意图。
   **覆盖 AC**：AC-26、AC-28、AC-40、AC-53、AC-54、AC-56、AC-60、AC-65、AC-70
   **依赖**：T028、T012、T027
@@ -281,7 +281,7 @@
 
 - [x] **T030**：内部阶段 API 与值对象
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py`
   **逻辑/验证**：新增 manager HMAC/nonce authorize-step，校验 op/node/gen/owner_epoch/stage/lease/deadline；只返回短期 permit，不返回私有 env/用户 token；旧内部 handler 无任意授权写口。
   **覆盖 AC**：AC-40、AC-53、AC-60、AC-65
   **依赖**：T029、T027
@@ -289,7 +289,7 @@
 
 - [x] **T031**：Celery 与预检阶段重验
   **类型**：Worker
-  **文件**：`src/backend/bisheng/worker/app_publish/tasks.py`、`src/backend/bisheng/app_publish/domain/services/precheck_service.py`
+  **文件**：`src/backend/doberman_agent/worker/app_publish/tasks.py`、`src/backend/doberman_agent/app_publish/domain/services/precheck_service.py`
   **逻辑/验证**：tenant_id 由 Celery headers 恢复 ContextVar；准备、创建版本/审批前重载冻结来源；无效落可解释终态与清理，旧版本不被提前中断，预检不注入真密钥。
   **覆盖 AC**：AC-18、AC-35、AC-36、AC-40、AC-41、AC-51、AC-53、AC-54、AC-64
   **依赖**：T021、T030、T027
@@ -321,7 +321,7 @@
 
 - [x] **T035**：预览生命周期仓储
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/repositories/preview_runtime_repository.py`、`src/backend/bisheng/app_publish/application/preview_runtime.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/repositories/preview_runtime_repository.py`、`src/backend/doberman_agent/app_publish/application/preview_runtime.py`
   **逻辑/验证**：提供 caller-owned session 的 Version→operation→session/credential 锁序和 lifecycle值对象，完整绑定查询/ready激活/原子关闭；不独立commit，不跨域暴露ORM。
   **覆盖 AC**：AC-38、AC-50、AC-53、AC-54、AC-65、AC-69
   **依赖**：T001、T002、T034
@@ -329,7 +329,7 @@
 
 - [x] **T036**：预览独立凭据事务端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/application/runtime_credentials.py`、`src/backend/bisheng/app_publish/domain/services/app_credential_service.py`
+  **文件**：`src/backend/doberman_agent/open_api/application/runtime_credentials.py`、`src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py`
   **逻辑/验证**：复用 issue_in_transaction 签发 per-preview凭据，同session单凭据吊销及审计；不使用正式stage_binding/reissue/revoke_subject；无明文返回浏览器。
   **覆盖 AC**：AC-50、AC-51、AC-53、AC-54、AC-59、AC-65、AC-69
   **依赖**：T035、T034
@@ -337,7 +337,7 @@
 
 - [x] **T037**：预览启动和用途 API
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`、`src/backend/bisheng/app_publish/api/endpoints/preview.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`、`src/backend/doberman_agent/app_publish/api/endpoints/preview.py`
   **逻辑/验证**：edit管理预览与当前任务审批预览分型；显式用途或唯一资格推导；原子starting/凭据/op/env，提交后wake/wait；重试同键复用，数据库和附件命名空间隔离；过期终态同端口回收。
   **覆盖 AC**：AC-38、AC-49、AC-50、AC-51、AC-53、AC-54、AC-65、AC-69
   **依赖**：T036、T030、T025、T034
@@ -345,7 +345,7 @@
 
 - [x] **T038**：预览运行事实与清理接线
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_cleanup_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_cleanup_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
   **逻辑/验证**：preview fact/reclaim进入operation锁之前取得Version锁；ready与route事务激活，失败/取消/超时登记单会话清理；停止证据成立才释放容量；沿既有任务，不加驻留进程。
   **覆盖 AC**：AC-50、AC-53、AC-54、AC-60、AC-65、AC-69
   **依赖**：T037、T030、T034
@@ -360,7 +360,7 @@
 
 - [x] **T040**：可信预览访问上下文
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/application/preview_access.py`、`src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/application/preview_access.py`、`src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py`
   **逻辑/验证**：签名之后仍查完整running会话、viewer、tenant/app/version/purpose/credential/op以及当前资格；公开 CapabilityAccessContext，approval任务scope不随页面选择，management具体scope；缺端口拒绝。
   **覆盖 AC**：AC-38、AC-50、AC-51、AC-53、AC-59、AC-69
   **依赖**：T037、T005、T039
@@ -368,7 +368,7 @@
 
 - [x] **T041**：开放认证及模型范围消费
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/domain/services/access_context.py`、`src/backend/bisheng/open_api/domain/services/model_range_policy.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/services/access_context.py`、`src/backend/doberman_agent/open_api/domain/services/model_range_policy.py`
   **逻辑/验证**：正式凭据沿route；预览只认可信会话绑定/OBO；AccessSubject投影保留用途能力主体与冻结声明版本，模型沿原F051租户启用/声明，不能放宽底层授权。
   **覆盖 AC**：AC-38、AC-47、AC-50、AC-51、AC-59、AC-69
   **依赖**：T040、T039
@@ -376,7 +376,7 @@
 
 - [x] **T042**：能力总线与组合根注册
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`、`src/backend/bisheng/app_publish/composition.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`、`src/backend/doberman_agent/app_publish/composition.py`
   **逻辑/验证**：模型/检索/附件用可信上下文，分别实际viewer与能力主体审计；API/worker组合根均注册端口，异步任务仅传引用并执行时重验；SDK附件不是app.delete。
   **覆盖 AC**：AC-18、AC-38、AC-50、AC-51、AC-59、AC-64、AC-69
   **依赖**：T041、T039
@@ -393,7 +393,7 @@
 
 - [x] **T044**：后端唯一控制协议
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_protocol.py`、`src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_protocol.py`、`src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py`
   **逻辑/验证**：固定v2且显式非2拒绝，调用沿v2持久operation；按调用者清理旧RPC分支，不改平台API版本/manifest格式；保留构建、数据、存储公共能力。
   **覆盖 AC**：AC-53、AC-57、AC-58、AC-59、AC-60、AC-65、AC-71
   **依赖**：T043
@@ -417,7 +417,7 @@
 
 - [x] **T047**：旧后端升级路由及配置引用清理
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_runtime/api/router.py`、`src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/api/router.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py`
   **逻辑/验证**：不注册import/upgrade/rebind；审查同名公共工具的消费者，不顺带删除v2保留能力；源代码删除清单/运维前置记录到设计，不执行存量迁移。
   **覆盖 AC**：AC-57、AC-65、AC-71
   **依赖**：T045、T016、T043
@@ -570,7 +570,7 @@
 
 - [x] **T065**：运行数据短票据重验与真实主体
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_data_grant_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_data_grant_service.py`
   **逻辑/验证**：T013接入后，同一数据会话在签发短票据前也复核当前edit；actor_ref采用受信PermissionActor.fga_subject，不能仍调用旧owner检查或借用归属人。共享签名与5秒期限不变。配对测试为T010中新增数据会话/签发拒绝场景。
   **覆盖 AC**：AC-22、AC-23、AC-43、AC-53、AC-62、AC-65
   **依赖**：T010、T013
@@ -596,7 +596,7 @@
 
 - [x] **T070**：新 app 创建投影的逆向清理
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/permission/application/runtime.py`
+  **文件**：`src/backend/doberman_agent/permission/application/runtime.py`
   **逻辑/验证**：已确认D2要求确认 rollback_created 后才能删孤立行；现端口只接受 folder/knowledge_file，扩至新app且仍限制version=0与原创建ledger；未知结果保留行和围栏，不改变其它资源语义。
   **覆盖 AC**：AC-43、AC-44、AC-48
   **依赖**：T019
@@ -604,7 +604,7 @@
 
 - [x] **T071**：无令牌的延迟认证公开端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/application/runtime_authorization.py`、`src/backend/bisheng/user/domain/services/auth.py`
+  **文件**：`src/backend/doberman_agent/open_api/application/runtime_authorization.py`、`src/backend/doberman_agent/user/domain/services/auth.py`
   **逻辑/验证**：公开credential-id实时重验并复用既有mode/S/F113/scopes上下文；Web凭据只冻结已验证JWT的exp和token_version，不存原文；缺失/不确定拒绝，保持原JWT和OpenAPI访问规则。
   **覆盖 AC**：AC-04、AC-18、AC-39、AC-40、AC-43、AC-47、AC-64
   **依赖**：T027
@@ -612,7 +612,7 @@
 
 - [x] **T072**：运行记录应用范围与查询接线
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_governance/domain/services/runtime_audit_query_service.py`、`src/backend/bisheng/app_governance/domain/schemas/runtime_audit.py`
+  **文件**：`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_query_service.py`、`src/backend/doberman_agent/app_governance/domain/schemas/runtime_audit.py`
   **逻辑/验证**：已确认AC-34需要将已授权app集合带入source查询/游标和导出；缺edit的app不贡献记录/候选，单app与跨app菜单资格分别保留；全部是具体租户，无全平台范围。
   **覆盖 AC**：AC-15、AC-34、AC-62、AC-64
   **依赖**：T017
@@ -621,7 +621,7 @@
 
 - [x] **T073**：用户会话当前身份的窄端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/user/application/runtime_identity.py`、`src/backend/bisheng/user/domain/repositories/runtime_identity.py`
+  **文件**：`src/backend/doberman_agent/user/application/runtime_identity.py`、`src/backend/doberman_agent/user/domain/repositories/runtime_identity.py`
   **逻辑/验证**：Web来源续办重读有效人员、唯一当前租户及token_version，返回当前UserPayload值对象；限定user_id，不受页面视角影响，过期或迁租户拒绝，跨域不返回ORM。
   **覆盖 AC**：AC-04、AC-40、AC-64
   **依赖**：T027
@@ -630,7 +630,7 @@
 
 - [x] **T074**：运行记录源仓储按已授权应用收窄
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_governance/domain/repositories/runtime_audit_repository.py`
+  **文件**：`src/backend/doberman_agent/app_governance/domain/repositories/runtime_audit_repository.py`
   **逻辑/验证**：每类记录、候选及一致导出SELECT同样约束具体租户和服务器计算的edit应用集合；空集合返回空，应用范围进入快照和游标，不接受客户端自填。
   **覆盖 AC**：AC-15、AC-34、AC-62、AC-64
   **依赖**：T072
@@ -639,7 +639,7 @@
 
 - [x] **T075**：审批执行的冻结授权来源值对象
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/schemas/release_tenancy.py`、`src/backend/bisheng/app_publish/domain/services/release_tenancy_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/schemas/release_tenancy.py`、`src/backend/doberman_agent/app_publish/domain/services/release_tenancy_service.py`
   **逻辑/验证**：既有受信 ApprovedReleaseSource 携带发布记录冻结的 authorization_context；仅 qualify_approved_release 生成，人工上线仍捕获当前用户，审计不将SA伪装为归属人。
   **覆盖 AC**：AC-39、AC-40、AC-41、AC-64
   **依赖**：T028
@@ -648,7 +648,7 @@
 
 - [x] **T076**：可信审批候选资格及管理员总数
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/approval/application/app_candidates.py`、`src/backend/bisheng/approval/domain/repositories/app_candidate_repository.py`
+  **文件**：`src/backend/doberman_agent/approval/application/app_candidates.py`、`src/backend/doberman_agent/approval/domain/repositories/app_candidate_repository.py`
   **逻辑/验证**：应用发布专用端口验证候选当前有效自然人与租户，可信完整管理员集合独立于节点候选，双重排除；Root沿原平台管理员来源，依赖未知不启用自审例外。
   **覆盖 AC**：AC-49、AC-67、AC-68
   **依赖**：T023
@@ -656,7 +656,7 @@
 
 - [x] **T077**：异常指定与实际任务审批的应用专用钩子
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/approval/domain/services/approval_exception_service.py`、`src/backend/bisheng/approval/domain/services/approval_runtime_handler_factory.py`
+  **文件**：`src/backend/doberman_agent/approval/domain/services/approval_exception_service.py`、`src/backend/doberman_agent/approval/domain/services/approval_runtime_handler_factory.py`
   **逻辑/验证**：构造同一冻结gate request并仅对app场景调用候选钩子；指定/重新指定流程在首次写入之前校验全部指定人；其它场景空钩子保持原逻辑。
   **覆盖 AC**：AC-49、AC-67、AC-68
   **依赖**：T024、T023
@@ -665,7 +665,7 @@
 
 - [x] **T078**：应用业务撤回的原子审批仓储
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/approval/domain/repositories/app_publish_withdrawal_repository.py`
+  **文件**：`src/backend/doberman_agent/approval/domain/repositories/app_publish_withdrawal_repository.py`
   **逻辑/验证**：实例行锁下校验tenant/app/deployment/version/scenario且pending，同事务更改实例、在途任务和withdrawn动作日志；不改其它场景公共applicant资格。
   **覆盖 AC**：AC-37、AC-49、AC-52、AC-54
   **依赖**：T025、T023
@@ -673,7 +673,7 @@
 
 - [x] **T079**：应用撤回管理入口
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_publish/api/endpoints/publish_status.py`
+  **文件**：`src/backend/doberman_agent/app_publish/api/endpoints/publish_status.py`
   **逻辑/验证**：新增appid绑定撤回入口，接expected_instance_id与reason，当前publish授权后从平台数据产生冻结审批目标；旧个人审批撤回入口保持applicant限制，前端只用业务入口。
   **覆盖 AC**：AC-16、AC-37、AC-49、AC-54、AC-63
   **依赖**：T026、T025
@@ -682,7 +682,7 @@
 
 - [x] **T080**：后端启动配置只接受协议2
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/core/config/app_runtime.py`
+  **文件**：`src/backend/doberman_agent/core/config/app_runtime.py`
   **逻辑/验证**：默认2，显式非2或未知值在配置加载时拒绝，包括default_factory环境值校验；不更改manifest或平台API版本号。
   **覆盖 AC**：AC-57、AC-71
   **依赖**：T043
@@ -705,7 +705,7 @@
 
 - [x] **T083**：预览物料初始化与存储授权接线
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_material_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_storage_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_material_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_storage_service.py`
   **逻辑/验证**：starting仅供围栏匹配的初始化物料；存储令牌仍逐次校验会话当前用途。
   **覆盖 AC**：AC-18、AC-50、AC-51、AC-53、AC-59、AC-69
   **依赖**：T034、T035
@@ -713,7 +713,7 @@
 
 - [x] **T084**：预览执行公开事务门面
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/application/preview_operations.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/application/preview_operations.py`
   **逻辑/验证**：同一个repo/UoW内登记并封装环境；commit后wake/wait，不导出跨域ORM。
   **覆盖 AC**：AC-18、AC-50、AC-51、AC-53、AC-59、AC-69
   **依赖**：T034、T035
@@ -721,7 +721,7 @@
 
 - [x] **T085**：预览当前自然人资格端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/user/application/runtime_identity.py`
+  **文件**：`src/backend/doberman_agent/user/application/runtime_identity.py`
   **逻辑/验证**：运行期重新读取真实自然人和有效租户，不借页面选择，不复用历史登录有效性。
   **覆盖 AC**：AC-18、AC-50、AC-51、AC-53、AC-59、AC-69
   **依赖**：T034、T035
@@ -730,7 +730,7 @@
 
 - [x] **T086**：预览当前资格与用途领域策略
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/preview_access_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_access_service.py`
   **逻辑/验证**：管理edit/审批有效任务分型，双资格不猜测；当前人/tenant/app/version/凭据/会话逐次一致，能力主体与实际viewer分开。
   **覆盖 AC**：AC-18、AC-38、AC-50、AC-51、AC-59、AC-69
   **依赖**：T034、T039
@@ -739,7 +739,7 @@
 
 - [x] **T087**：发布拥有的预览交付投影端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/application/runtime_delivery.py`
+  **文件**：`src/backend/doberman_agent/app_publish/application/runtime_delivery.py`
   **逻辑/验证**：预览空基线迁移计划及冻结声明的scope公开投影，不导出ORM或提交独立事务。
   **覆盖 AC**：AC-50、AC-51、AC-53、AC-69
   **依赖**：T034、T035
@@ -747,7 +747,7 @@
 
 - [x] **T088**：OpenAPI预览能力绑定端口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/domain/services/preview_context.py`、`src/backend/bisheng/open_api/domain/context.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/services/preview_context.py`、`src/backend/doberman_agent/open_api/domain/context.py`
   **逻辑/验证**：缺端口默认拒绝，运行期重验完整绑定；排队仅传播引用和已验签OBO截止时间，正式app_self保持。
   **覆盖 AC**：AC-18、AC-38、AC-50、AC-51、AC-59、AC-69
   **依赖**：T039、T040
@@ -796,7 +796,7 @@
 
 - [x] **T094**：构建混合列表托管应用动作映射
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/api/services/workflow.py`、`src/backend/test/app_runtime/test_f114_build_list.py`
+  **文件**：`src/backend/doberman_agent/api/services/workflow.py`、`src/backend/test/app_runtime/test_f114_build_list.py`
   **逻辑/验证**：分页前以托管应用五管理动作OR过滤并投影六动作，工作流助手原动作不变；卡片与详情使用同一资格。
   **覆盖 AC**：AC-06、AC-07、AC-15、AC-33、AC-55、AC-61、AC-62
   **依赖**：T005、T011
@@ -829,7 +829,7 @@
 
 - [x] **T098**：新增查询回收至所属仓储
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/domain/repositories/credential_repository.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/repositories/credential_repository.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
   **逻辑/验证**：新预览凭据精确吊销/审计和可用性读取均由OpenAPI仓储承担；应用动作候选读取由runtime仓储承担，单批最多500个ID，继续调用方UoW/自动租户过滤；不新增DAO入口。
   **覆盖 AC**：AC-06、AC-07、AC-18、AC-50、AC-53、AC-59、AC-65、AC-69
   **依赖**：T004、T034、T039
@@ -838,7 +838,7 @@
 
 - [x] **T099**：私有依赖显式选择按edit授权
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/test/app_runtime/test_f114_private_materials.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/test/app_runtime/test_f114_private_materials.py`
   **逻辑/验证**：清除唯一剩余自然人owner选择门槛和无调用者旧helper；实际SA或自然人持当前edit可选择同应用材料，跨应用/租户继续拒绝，不改变材料归属。
   **覆盖 AC**：AC-27、AC-35、AC-65
   **依赖**：T004、T010

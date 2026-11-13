@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import cn from '@bisheng/ui/cn';
+import cn from '@doberman-agent/ui/cn';
 import { useCitationPreview } from './useCitationPreview';
 import { useCitedPassageLocate } from './useCitedPassageLocate';
 import type { CitationDocumentPreviewState } from './types';

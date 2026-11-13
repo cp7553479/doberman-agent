@@ -5,9 +5,9 @@ from uuid import UUID
 
 parent_dir = os.path.dirname(os.path.abspath(__file__)).replace('test', '')
 sys.path.append(parent_dir)
-os.environ['config'] = os.path.join(parent_dir, 'bisheng/config.dev.yaml')
-from bisheng.api.services.assistant_agent import AssistantAgent
-from bisheng.database.models.assistant import AssistantDao
+os.environ['config'] = os.path.join(parent_dir, 'doberman_agent/config.dev.yaml')
+from doberman_agent.api.services.assistant_agent import AssistantAgent
+from doberman_agent.database.models.assistant import AssistantDao
 
 
 async def test_init_tools():

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { logoutApi } from "@/controllers/API/user";
 import { useState } from "react";

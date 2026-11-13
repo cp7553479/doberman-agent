@@ -32,12 +32,12 @@ _QUESTION = "计算 2 的 10 次方等于多少。把最终答案写入工作区
 async def main() -> int:
     from langgraph.checkpoint.memory import InMemorySaver
 
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync
-    from bisheng.linsight.domain.services.agent_factory import create_linsight_agent
-    from bisheng.linsight.domain.services.stream_event_mapper import StreamEventMapper
-    from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.storage.minio.minio_manager import get_minio_storage_sync
+    from doberman_agent.linsight.domain.services.agent_factory import create_linsight_agent
+    from doberman_agent.linsight.domain.services.stream_event_mapper import StreamEventMapper
+    from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     # Standalone script: the real worker establishes tenant context via
     # _restore_tenant_context; here we set it explicitly so model resolution

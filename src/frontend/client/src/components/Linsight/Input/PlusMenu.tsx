@@ -5,7 +5,7 @@
  */
 import { Check } from "lucide-react";
 import { useState } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui";
 import { useLocalize, useMediaQuery } from "~/hooks";
 import type { TaskModeSkill } from "~/store/linsight";

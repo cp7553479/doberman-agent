@@ -33,7 +33,7 @@ jest.mock('recoil', () => ({
   useSetRecoilState: () => mockSetState,
 }));
 jest.mock('~/store', () => ({ __esModule: true, default: { mobileSystemMenuOpenState: 'menu' } }));
-jest.mock('~/pages/appChat/store/atoms', () => ({ bishengConfState: 'config', currentChatState: 'chat' }));
+jest.mock('~/pages/appChat/store/atoms', () => ({ dobermanAgentConfState: 'config', currentChatState: 'chat' }));
 jest.mock('~/pages/appChat/store/appSidebarAtoms', () => ({ sidebarVisibleState: 'sidebar', appConversationsState: 'conversations' }));
 jest.mock('~/pages/appChat/hooks/useAppSidebar', () => ({ useAppSidebar: () => ({ groups: [], currentApp: { name: 'Assistant' } }) }));
 jest.mock('~/pages/appChat/components/AppSwitcherDropdown', () => ({ AppSwitcherDropdown: () => null }));

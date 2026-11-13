@@ -14,7 +14,7 @@ from typing import Any
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_openai.chat_models.base import _convert_message_to_dict
 
-from bisheng.linsight.domain.services.binary_content_guard import (
+from doberman_agent.linsight.domain.services.binary_content_guard import (
     BinaryReadGuardMiddleware,
     ModelContentGuardMiddleware,
     _looks_like_mojibake,
@@ -69,7 +69,7 @@ async def test_file_block_replaced_with_hint():
     assert isinstance(result.content, str)
     assert "/uploads/report.pdf" in result.content
     assert "/uploads/report.md" in result.content  # points at the text view
-    assert "bisheng_code_interpreter" in result.content
+    assert "doberman_agent_code_interpreter" in result.content
     # the multimodal marker must not survive
     assert result.additional_kwargs == {}
 
@@ -80,7 +80,7 @@ async def test_audio_and_video_blocks_also_replaced():
         msg = file_block_message(mime=mime, block_type=block_type)
         result = await mw.awrap_tool_call(read_call("/uploads/clip.mp4"), handler_returning(msg))
         assert isinstance(result.content, str)
-        assert "bisheng_code_interpreter" in result.content
+        assert "doberman_agent_code_interpreter" in result.content
 
 
 async def test_mojibake_text_replaced():
@@ -213,7 +213,7 @@ async def test_hint_omits_unbound_code_interpreter():
     mw = BinaryReadGuardMiddleware(has_code_interpreter=False)
     result = await mw.awrap_tool_call(read_call(), handler_returning(file_block_message()))
 
-    assert "bisheng_code_interpreter" not in result.content
+    assert "doberman_agent_code_interpreter" not in result.content
     assert "/uploads/report.md" in result.content  # the route that still works
     assert "没有可用的代码执行工具" in result.content
 
@@ -226,7 +226,7 @@ async def test_hint_omits_unbound_code_interpreter():
 async def test_backend_binary_error_upgraded_to_routed_hint():
     """The backend refuses binary reads itself now, but it cannot know whether the
     code interpreter is bound this run — the guard is the layer that does."""
-    from bisheng.linsight.domain.services.workspace_backend import BINARY_READ_ERROR_PREFIX
+    from doberman_agent.linsight.domain.services.workspace_backend import BINARY_READ_ERROR_PREFIX
 
     refusal = ToolMessage(
         content=f"Error: {BINARY_READ_ERROR_PREFIX} 'uploads/data.xlsx' is a binary file and cannot be read as text.",
@@ -237,12 +237,12 @@ async def test_backend_binary_error_upgraded_to_routed_hint():
     mw = BinaryReadGuardMiddleware(has_code_interpreter=True)
     result = await mw.awrap_tool_call(read_call("/uploads/data.xlsx"), handler_returning(refusal))
 
-    assert "bisheng_code_interpreter" in result.content
+    assert "doberman_agent_code_interpreter" in result.content
     assert "pandas" in result.content
 
 
 async def test_backend_binary_error_without_code_interpreter():
-    from bisheng.linsight.domain.services.workspace_backend import BINARY_READ_ERROR_PREFIX
+    from doberman_agent.linsight.domain.services.workspace_backend import BINARY_READ_ERROR_PREFIX
 
     refusal = ToolMessage(
         content=f"Error: {BINARY_READ_ERROR_PREFIX} 'uploads/data.xlsx' is binary.",
@@ -253,7 +253,7 @@ async def test_backend_binary_error_without_code_interpreter():
     mw = BinaryReadGuardMiddleware(has_code_interpreter=False)
     result = await mw.awrap_tool_call(read_call("/uploads/data.xlsx"), handler_returning(refusal))
 
-    assert "bisheng_code_interpreter" not in result.content
+    assert "doberman_agent_code_interpreter" not in result.content
     assert "没有可用的代码执行工具" in result.content
 
 
@@ -316,7 +316,7 @@ async def test_corrupt_image_stripped_before_model_call():
     assert block["type"] == "text"
     assert "base64" in block["text"]
     # prompt ⟺ tool lockstep applies to this replacement text too
-    assert "bisheng_code_interpreter" not in block["text"]
+    assert "doberman_agent_code_interpreter" not in block["text"]
 
 
 async def test_http_image_url_is_not_flagged():
@@ -514,7 +514,7 @@ async def test_image_read_refused_when_the_model_has_no_vision():
     assert isinstance(result.content, str)
     assert "/scratch/page5.png" in result.content
     assert "视觉" in result.content  # names the checkbox the admin has to tick
-    assert "bisheng_code_interpreter" in result.content  # the route that still works
+    assert "doberman_agent_code_interpreter" in result.content  # the route that still works
     assert result.additional_kwargs == {}
 
 
@@ -533,7 +533,7 @@ async def test_no_vision_hint_omits_unbound_code_interpreter():
     mw = BinaryReadGuardMiddleware(has_code_interpreter=False, supports_vision=False)
     result = await mw.awrap_tool_call(read_call("/scratch/p.png"), handler_returning(image_tool_message()))
 
-    assert "bisheng_code_interpreter" not in result.content
+    assert "doberman_agent_code_interpreter" not in result.content
 
 
 async def test_no_vision_model_call_strips_images_in_any_role():
@@ -559,7 +559,7 @@ def test_guards_fail_closed_on_vision():
 def test_build_binary_guards_pairs_both_layers():
     """A new subagent must get both guards by construction — its subgraph is never
     wrapped by the parent's middleware."""
-    from bisheng.linsight.domain.services.binary_content_guard import build_binary_guards
+    from doberman_agent.linsight.domain.services.binary_content_guard import build_binary_guards
 
     guards = build_binary_guards(has_code_interpreter=True, supports_vision=True)
     assert [type(g).__name__ for g in guards] == ["BinaryReadGuardMiddleware", "ModelContentGuardMiddleware"]

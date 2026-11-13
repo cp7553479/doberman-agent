@@ -12,11 +12,11 @@ from unittest.mock import AsyncMock
 import pytest
 from starlette.requests import ClientDisconnect
 
-from bisheng.common.services.config_service import settings
-from bisheng.core.cache import redis_manager
-from bisheng.core.context import tenant as context
-from bisheng.user.domain.models.user import UserDao
-from bisheng.utils import http_middleware
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.core.cache import redis_manager
+from doberman_agent.core.context import tenant as context
+from doberman_agent.user.domain.models.user import UserDao
+from doberman_agent.utils import http_middleware
 from test.dsh import test_content_safety_api as api_tests
 from test.dsh.test_content_safety_api import assert_error, assert_receipt, post, raw_event
 from test.dsh.test_content_safety_ingest import rows
@@ -179,7 +179,7 @@ async def test_neighbors_non_post_and_browser_routes_retain_browser_admission(
     assert not any(path.startswith(prefix) for prefix in http_middleware.TENANT_CHECK_EXEMPT_PATHS)
     raw = raw_event(api, content_safety_event())
     async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=api.app), base_url="https://bisheng.invalid"
+        transport=httpx.ASGITransport(app=api.app), base_url="https://doberman-agent.invalid"
     ) as client:
         response = await client.request(
             method,

@@ -23,9 +23,9 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_publish.domain.schemas.app_manifest import CapabilityDeclaration
-from bisheng.app_publish.domain.services import capability_bus_service
-from bisheng.app_publish.domain.services.capability_bus_service import (
+from doberman_agent.app_publish.domain.schemas.app_manifest import CapabilityDeclaration
+from doberman_agent.app_publish.domain.services import capability_bus_service
+from doberman_agent.app_publish.domain.services.capability_bus_service import (
     KNOWLEDGE_SCOPE,
     MODEL_API_KEY_ENV,
     MODEL_BASE_URL_ENV,
@@ -73,14 +73,14 @@ async def test_the_injected_names_are_the_four_the_contract_fixes(monkeypatch, a
     env = await runtime_capability_env(app_row.id, declaration=_declaration(models=["qwen-max"]))
 
     assert env == {
-        "BISHENG_APP_TOKEN": "bs-app-plaintext",
+        "DOBERMAN_AGENT_APP_TOKEN": "bs-app-plaintext",
         MODEL_API_KEY_ENV: "bs-app-plaintext",
         MODEL_BASE_URL_ENV: "https://kb.example.com/api/v2/model/v1",
         MODEL_BASE_URL_RESERVED_ENV: "https://kb.example.com/api/v2/model/v1",
     }
     # The token is the same value under both names — an official OpenAI client
     # reads OPENAI_API_KEY with no configuration at all (design D13).
-    assert env[MODEL_API_KEY_ENV] == env["BISHENG_APP_TOKEN"]
+    assert env[MODEL_API_KEY_ENV] == env["DOBERMAN_AGENT_APP_TOKEN"]
     assert issued == {"app_id": app_row.id, "scopes": [MODEL_SCOPE]}
 
 
@@ -97,7 +97,7 @@ async def test_an_application_that_declares_no_model_gets_no_model_environment(m
 
     # It still gets an identity — that is what makes retrieval possible — but
     # nothing that would let it dial a model it never declared.
-    assert set(env) == {"BISHENG_APP_TOKEN"}
+    assert set(env) == {"DOBERMAN_AGENT_APP_TOKEN"}
 
 
 async def test_the_base_url_is_derived_never_guessed(monkeypatch):
@@ -125,7 +125,7 @@ async def test_an_undeterminable_base_url_still_injects_the_token(monkeypatch, a
 
     env = await runtime_capability_env(app_row.id, declaration=_declaration(models=["qwen-max"]))
 
-    assert env["BISHENG_APP_TOKEN"] == "bs-app-plaintext"
+    assert env["DOBERMAN_AGENT_APP_TOKEN"] == "bs-app-plaintext"
     assert MODEL_BASE_URL_ENV not in env
 
 
@@ -148,7 +148,7 @@ def test_scopes_come_only_from_what_was_declared(models, knowledge, expected):
 
 
 def test_a_model_declaration_needs_the_extension_scope_this_deployment_may_not_offer(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.open_platform, "enabled", False)
     # ``model:invoke`` is gated on open_platform; ``knowledge:read`` never is.
@@ -165,7 +165,7 @@ def test_a_model_declaration_needs_the_extension_scope_this_deployment_may_not_o
 
 
 async def test_the_port_reports_the_running_versions_models(publish_db, app_factory):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, version = await app_factory(state="online")
     async with publish_db() as session:
@@ -212,8 +212,8 @@ async def test_the_pending_version_does_not_grant_itself_capabilities(publish_db
     """
     from datetime import datetime
 
-    from bisheng.database.models.app import AppDao
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.database.models.app import AppDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     app_row, version = await app_factory(state="online")
     async with publish_db() as session:
@@ -258,7 +258,7 @@ def test_no_capability_surface_accepts_a_provider_account_or_endpoint():
     """
     import inspect
 
-    from bisheng.app_publish.domain.services import capability_bus_service as bus
+    from doberman_agent.app_publish.domain.services import capability_bus_service as bus
 
     forbidden = ("base_url", "endpoint", "api_key", "provider", "account", "secret")
     offenders = []
@@ -295,15 +295,15 @@ async def published_app_client(monkeypatch, publish_db, credential_redis, hosted
 
     The application is online, its running version declares ``models``, and the
     ``Authorization`` header carries the plaintext the publish pipeline would
-    have injected as ``BISHENG_APP_TOKEN``.
+    have injected as ``DOBERMAN_AGENT_APP_TOKEN``.
     """
     from httpx import ASGITransport, AsyncClient
 
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.services.config_service import settings
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.database.models.app_version import AppVersionDao
     from test.open_api.model_gateway_fixtures import (
-        FakeBishengLLM,
+        FakeDobermanAgentLLM,
         build_model_face_app,
         capture_records,
         install_catalog,
@@ -330,7 +330,7 @@ async def published_app_client(monkeypatch, publish_db, credential_redis, hosted
             [server_row(1, "azure-openai", tenant_id=app_row.tenant_id)],
             [model_row(20 + index, 1, name, online=online) for index, (name, online) in enumerate(tenant_models)],
         )
-        install_fake_llm(monkeypatch, FakeBishengLLM())
+        install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
         records = capture_records(monkeypatch)
 
         plaintext = await AppRuntimeCredentialService.issue(app_row.id, scopes=[MODEL_SCOPE])
@@ -375,7 +375,7 @@ async def test_the_tenants_other_models_are_refused_for_this_application(publish
     )
 
     assert response.status_code == 403
-    assert response.json()["error"]["bisheng_code"] == 26515
+    assert response.json()["error"]["doberman_agent_code"] == 26515
 
 
 async def test_taking_a_declared_model_offline_changes_the_verdict_not_the_declaration(published_app_client):
@@ -393,7 +393,7 @@ async def test_taking_a_declared_model_offline_changes_the_verdict_not_the_decla
     )
 
     assert response.status_code == 404
-    assert response.json()["error"]["bisheng_code"] == 26512
+    assert response.json()["error"]["doberman_agent_code"] == 26512
     # Still declared — nothing about the declaration changed.
     assert await HostedAppDeclarationAdapter().declared_model_names(app_row.id, app_row.tenant_id) == frozenset(
         {"gpt-4o"}
@@ -419,7 +419,7 @@ def test_this_features_capability_codes_are_never_raised_for_a_model():
     import ast
     import inspect
 
-    from bisheng.app_publish.domain.services import capability_bus_service as bus
+    from doberman_agent.app_publish.domain.services import capability_bus_service as bus
 
     tree = ast.parse(inspect.getsource(bus))
     raised = [
@@ -456,7 +456,7 @@ async def test_the_model_face_and_the_publish_surface_read_the_same_resolution(p
     re-resolution. F051 tasks.md deviation 20 carries it; do not read this test
     as evidence that the two sides agree in that case.
     """
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
     from test.open_api.model_gateway_fixtures import install_catalog, model_row, server_row
 
     app_row, version = await app_factory(state="online")

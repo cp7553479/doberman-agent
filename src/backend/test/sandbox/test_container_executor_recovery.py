@@ -14,9 +14,9 @@ import pytest
 from fake_runner import FakeResponse
 from fake_runner import FakeRunnerClient as _BaseFakeRunnerClient
 
-from bisheng.common.errcode.sandbox import SandboxExecTimeoutError, SandboxProtocolError
-from bisheng_langchain.gpts.tools.code_interpreter import container_executor as ce
-from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+from doberman_agent.common.errcode.sandbox import SandboxExecTimeoutError, SandboxProtocolError
+from doberman_agent_langchain.gpts.tools.code_interpreter import container_executor as ce
+from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
 
 URL = "http://runner-a:8080"
 
@@ -287,7 +287,7 @@ def test_copy_in_total_cap_skips_without_reading_and_streams(tmp_path, monkeypat
 
 
 def test_copy_in_total_cap_reads_settings_default():
-    from bisheng.core.config.settings import SandboxConf
+    from doberman_agent.core.config.settings import SandboxConf
 
     exe = ContainerExecutor(minio={}, sandbox_conf=SandboxConf(endpoints=[URL]))
     assert exe.max_copy_in_total_bytes == 512 * 1024 * 1024

@@ -1,4 +1,4 @@
-import { Tooltip } from '@bisheng/ui'
+import { Tooltip } from '@doberman-agent/ui'
 import { useTranslation } from 'react-i18next'
 import type { RuntimeAuditKind, RuntimeAuditRow } from '@/controllers/API/runtimeAudit'
 import { formatTimestamp } from '@/utils/displayTimestamp'

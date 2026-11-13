@@ -30,8 +30,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import ENTRY_VISIBLE_STATES, AppState
-from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
+from doberman_agent.app_runtime.domain.constants import ENTRY_VISIBLE_STATES, AppState
+from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator", "fake_permission_projection")
 
@@ -57,7 +57,7 @@ FORM_SPECIFIC_WORDS = (
 
 
 async def _state(app_db, app_id) -> str:
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with app_db() as session:
         row = await AppDao.aget(session, app_id)
@@ -73,8 +73,8 @@ def entry_open(monkeypatch):
     path's own, and a case elsewhere that silently inherited them would be
     testing something it never asked for.
     """
-    from bisheng.app_runtime.domain.services import entry_authz_service
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True, raising=False)
     monkeypatch.setattr(settings.app_runtime, "obo_secret", "f054-stability-obo-secret", raising=False)
@@ -91,13 +91,13 @@ def entry_open(monkeypatch):
 
 
 def _session_token(user_id: int) -> str:
-    from bisheng.user.domain.services.auth import AuthJwt
+    from doberman_agent.user.domain.services.auth import AuthJwt
 
     return AuthJwt().create_access_token({"user_id": user_id, "user_name": "u", "tenant_id": 1, "token_version": 0})
 
 
 async def _entry_verdict(slug: str, user_id: int) -> dict:
-    from bisheng.app_runtime.domain.services.entry_authz_service import authorize_entry
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import authorize_entry
 
     return await authorize_entry(slug=slug, access_token=_session_token(user_id), request_id="req-stability")
 
@@ -118,7 +118,7 @@ class TestSelfHealing:
         self-healing event would turn into an outage that needs a human to press
         「重新上线」 — which is exactly what AC-20 says must not be needed.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         fake_orchestrator.responses["status"] = {"instance_id": "inst-1", "phase": PHASE_UNHEALTHY, "health": "bad"}
@@ -131,7 +131,7 @@ class TestSelfHealing:
 
     async def test_ac20_recovery_is_visible_as_a_phase_change_alone(self, app_factory, app_owner, fake_orchestrator):
         """The only evidence the platform needs — and the only one k8s also has."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
 
@@ -153,7 +153,7 @@ class TestSelfHealing:
         between: the desired state lives in the runtime layer, so a platform that
         re-published on every outage would fight the alignment it is waiting for.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
 
@@ -178,8 +178,8 @@ class TestRuntimeLayerOutage:
         the application as "deleted" on its detail page, which is the single most
         alarming way to report a 20-second blip.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-        from bisheng.common.errcode.app_factory import AppNotFoundError
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         fake_orchestrator.responses["status"] = AppOrchestratorUnavailableError()
@@ -195,7 +195,7 @@ class TestRuntimeLayerOutage:
     ):
         """Already-running applications keep serving, so the platform keeps
         describing them as running: the state column is not a health readout."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         fake_orchestrator.responses["status"] = AppOrchestratorUnavailableError()
@@ -214,8 +214,8 @@ class TestIsolation:
     ):
         """The neighbour is the assertion. A platform-wide effect would show up
         as the second application failing too, or changing state."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-        from bisheng.common.errcode.app_factory import AppProbeFailedError
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.common.errcode.app_factory import AppProbeFailedError
 
         broken, _ = await app_factory(state=AppState.DRAFT.value)
         healthy, _ = await app_factory(state=AppState.DRAFT.value)
@@ -234,7 +234,7 @@ class TestIsolation:
         """AC-47's "only that application is throttled" is expressed as a
         per-application ``tier`` on the deploy intent — the one input the runtime
         layer turns into limits, in either deployment form."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         light, _ = await app_factory(state=AppState.DRAFT.value, tier_id="light")
         standard, _ = await app_factory(state=AppState.DRAFT.value, tier_id="standard")
@@ -247,7 +247,7 @@ class TestIsolation:
         assert set(tiers[light.id]) == {"cpu", "mem"}, "form-agnostic units, not a backend-specific spec"
 
     async def test_ac47_a_stop_touches_exactly_one_application(self, app_db, app_factory, app_owner, fake_orchestrator):
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         target, _ = await app_factory(state=AppState.ONLINE.value)
         bystander, _ = await app_factory(state=AppState.ONLINE.value)
@@ -275,7 +275,7 @@ class TestTransitionalWindow:
         would never succeed — and that regression is invisible to any
         assertion that only reads the state back out of the table.
         """
-        from bisheng.database.models.app_instance import AppInstanceDao
+        from doberman_agent.database.models.app_instance import AppInstanceDao
 
         app, _ = await app_factory(slug=f"transitional-{phase}", state=AppState.ONLINE.value)
         async with app_db() as session:
@@ -293,7 +293,7 @@ class TestTransitionalWindow:
         """``starting`` comes back from a successful deploy intent (the readiness
         gate has passed for the platform's purposes); treating it as a failure
         would park an application that is seconds away from serving."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.DRAFT.value)
         fake_orchestrator.responses["deploy"] = {"instance_id": "inst-1", "phase": PHASE_STARTING}

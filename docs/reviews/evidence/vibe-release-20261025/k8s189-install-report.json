@@ -2,43 +2,43 @@
   "artifacts": {
     "image-cri": [
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-runtime-helper@sha256:468b8e774c1e55a8360a0e0db6c48b001b38168f923ec3d8bbdf2c0f79782e52",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-runtime-helper@sha256:468b8e774c1e55a8360a0e0db6c48b001b38168f923ec3d8bbdf2c0f79782e52",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-runtime-helper@sha256:468b8e774c1e55a8360a0e0db6c48b001b38168f923ec3d8bbdf2c0f79782e52",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-runtime-helper@sha256:468b8e774c1e55a8360a0e0db6c48b001b38168f923ec3d8bbdf2c0f79782e52",
         "platform": "linux/amd64",
         "resource_version": "3521248",
         "uid": "61de8902-7c77-4442-9a82-d2b76209e467"
       },
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-app-python@sha256:585663bd94cb176c0e72a8203941f5b976c561c4271738d634493d4661bd9b67",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-app-python@sha256:585663bd94cb176c0e72a8203941f5b976c561c4271738d634493d4661bd9b67",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-app-python@sha256:585663bd94cb176c0e72a8203941f5b976c561c4271738d634493d4661bd9b67",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-app-python@sha256:585663bd94cb176c0e72a8203941f5b976c561c4271738d634493d4661bd9b67",
         "platform": "linux/amd64",
         "resource_version": "3521328",
         "uid": "58ed4489-5ab0-456d-8ea4-a2b7d5653531"
       },
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-app-python-preparer@sha256:d1be6968edb6209b811ec1bb58b6556580502b7519a6403d5590f96bb5e33802",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-app-python-preparer@sha256:d1be6968edb6209b811ec1bb58b6556580502b7519a6403d5590f96bb5e33802",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-app-python-preparer@sha256:d1be6968edb6209b811ec1bb58b6556580502b7519a6403d5590f96bb5e33802",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-app-python-preparer@sha256:d1be6968edb6209b811ec1bb58b6556580502b7519a6403d5590f96bb5e33802",
         "platform": "linux/amd64",
         "resource_version": "3521386",
         "uid": "8fada07d-cf09-4935-8318-86785b21fb28"
       },
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-app-node@sha256:4e4670b5f669c793ece6f99309ec80c8fd7500405006e8a772554dd4d1be2c98",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-app-node@sha256:4e4670b5f669c793ece6f99309ec80c8fd7500405006e8a772554dd4d1be2c98",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-app-node@sha256:4e4670b5f669c793ece6f99309ec80c8fd7500405006e8a772554dd4d1be2c98",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-app-node@sha256:4e4670b5f669c793ece6f99309ec80c8fd7500405006e8a772554dd4d1be2c98",
         "platform": "linux/amd64",
         "resource_version": "3521447",
         "uid": "8636344f-3ea9-4357-bdcd-be7bbc2f85cd"
       },
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-app-node-preparer@sha256:ab620d24bc1efcccb340ebe6034f6b1e23bea7f828e2a83656f5957ce3992247",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-app-node-preparer@sha256:ab620d24bc1efcccb340ebe6034f6b1e23bea7f828e2a83656f5957ce3992247",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-app-node-preparer@sha256:ab620d24bc1efcccb340ebe6034f6b1e23bea7f828e2a83656f5957ce3992247",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-app-node-preparer@sha256:ab620d24bc1efcccb340ebe6034f6b1e23bea7f828e2a83656f5957ce3992247",
         "platform": "linux/amd64",
         "resource_version": "3521507",
         "uid": "e26a57de-8581-40e5-a72c-76bdd1262fe0"
       },
       {
-        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/bisheng-app-static@sha256:e9d9b7235d02160e71ab6579b4bdec00f7ce74c56c588c4376e8a74926087453",
-        "image_ref": "192.168.106.189:5443/vibe-release/bisheng-app-static@sha256:e9d9b7235d02160e71ab6579b4bdec00f7ce74c56c588c4376e8a74926087453",
+        "image_id": "docker-pullable://192.168.106.189:5443/vibe-release/doberman-agent-app-static@sha256:e9d9b7235d02160e71ab6579b4bdec00f7ce74c56c588c4376e8a74926087453",
+        "image_ref": "192.168.106.189:5443/vibe-release/doberman-agent-app-static@sha256:e9d9b7235d02160e71ab6579b4bdec00f7ce74c56c588c4376e8a74926087453",
         "platform": "linux/amd64",
         "resource_version": "3521569",
         "uid": "efd66ae8-3926-4e37-93cf-523f6f771fce"

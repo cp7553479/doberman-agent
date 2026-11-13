@@ -71,7 +71,7 @@ class TestContract:
                 latency_ms=1.0,
             ),
             EVENT_HEADER_STRIP: lambda: log_header_strip(
-                logging.getLogger("app_proxy.test"), request_id="r1", slug="foo", stripped=["X-BiSheng-User-Id"]
+                logging.getLogger("app_proxy.test"), request_id="r1", slug="foo", stripped=["X-Doberman-Agent-User-Id"]
             ),
             EVENT_FALLBACK: lambda: log_fallback(
                 logging.getLogger("app_proxy.test"), request_id="r1", slug="foo", kind="recovering", reason="no_route"
@@ -197,8 +197,8 @@ class TestHeaderStrip:
             "/apps/foo",
             headers={
                 **NAVIGATE_HEADERS,
-                "X_BiSheng_User_Id": "1",
-                "x-bisheng-user-name": "root",
+                "X_Doberman_Agent_User_Id": "1",
+                "x-doberman-agent-user-name": "root",
             },
         )
 
@@ -206,7 +206,7 @@ class TestHeaderStrip:
         assert len(records) == 1
         assert records[0].levelno == logging.WARNING, "an INFO here would never be alerted on"
         stripped = _fields(records[0])["stripped"].lower()
-        assert "x_bisheng_user_id" in stripped and "x-bisheng-user-name" in stripped
+        assert "x_doberman_agent_user_id" in stripped and "x-doberman-agent-user-name" in stripped
 
     def test_clean_request_logs_no_strip_event(self, logged_in, events):
         """The signal is only useful if the quiet case is quiet."""

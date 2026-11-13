@@ -15,9 +15,9 @@ from dataclasses import dataclass, field
 from runtime_manager.k8s_config import validate_namespace
 from runtime_manager.runtime_environment import BUNDLE_PATH
 
-STOP_FINALIZER = "runtime.bisheng.io/stop-confirmed"
-POLICY_ANNOTATION = "runtime.bisheng.io/status-policy"
-RESOURCE_LABEL = "runtime.bisheng.io/resource"
+STOP_FINALIZER = "runtime.doberman-agent.io/stop-confirmed"
+POLICY_ANNOTATION = "runtime.doberman-agent.io/status-policy"
+RESOURCE_LABEL = "runtime.doberman-agent.io/resource"
 PRODUCTION = {"serve", "migrate", "restore", "data", "purge"}
 PREPARATION = {"prepare-download", "prepare-install", "prepare-upload", "assemble"}
 PURPOSES = PRODUCTION | PREPARATION | {"probe", "preview", "image-check"}
@@ -27,7 +27,7 @@ _IMAGE = re.compile(r"[A-Za-z0-9][A-Za-z0-9./:_-]*@sha256:[a-f0-9]{64}")
 _ENV = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,127}")
 _BLOCKED_ENV = {"LD_PRELOAD", "LD_LIBRARY_PATH", "PYTHONHOME", "PYTHONPATH", "NODE_OPTIONS"}
 _BUNDLE_ENTRYPOINTS = {
-    "static": "/opt/bisheng/entrypoint.sh",
+    "static": "/opt/doberman-agent/entrypoint.sh",
     "node20": "/usr/local/bin/docker-entrypoint.sh",
 }
 
@@ -219,16 +219,16 @@ def metadata(plan: PodPlan, name: str) -> dict:
         "name": name,
         "namespace": plan.namespace,
         "labels": {
-            "bisheng.managed": "v2",
+            "doberman-agent.managed": "v2",
             RESOURCE_LABEL: plan.resource_ref,
-            "runtime.bisheng.io/app": _hash(plan.app_id),
-            "runtime.bisheng.io/node": _hash(plan.node_id),
-            "runtime.bisheng.io/purpose": plan.purpose,
+            "runtime.doberman-agent.io/app": _hash(plan.app_id),
+            "runtime.doberman-agent.io/node": _hash(plan.node_id),
+            "runtime.doberman-agent.io/purpose": plan.purpose,
         },
         "annotations": {
-            "runtime.bisheng.io/operation": plan.operation_id,
-            "runtime.bisheng.io/generation": str(plan.generation),
-            "runtime.bisheng.io/owner-epoch": str(plan.owner_epoch),
+            "runtime.doberman-agent.io/operation": plan.operation_id,
+            "runtime.doberman-agent.io/generation": str(plan.generation),
+            "runtime.doberman-agent.io/owner-epoch": str(plan.owner_epoch),
             POLICY_ANNOTATION: plan.status_policy_revision,
         },
     }
@@ -588,8 +588,8 @@ def pvc_template(plan: PodPlan, *, name: str, size_mb: int, storage_class: str, 
     if static_pool:
         result["spec"]["selector"] = {
             "matchLabels": {
-                "runtime.bisheng.io/namespace": plan.namespace,
-                "runtime.bisheng.io/volume-role": "production" if plan.pvc_name else "scratch",
+                "runtime.doberman-agent.io/namespace": plan.namespace,
+                "runtime.doberman-agent.io/volume-role": "production" if plan.pvc_name else "scratch",
             }
         }
     return result

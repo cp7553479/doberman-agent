@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.models.channel import Channel, ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import UpdateChannelRequest
-from bisheng.channel.domain.services.channel_service import ChannelService
+from doberman_agent.channel.domain.models.channel import Channel, ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import UpdateChannelRequest
+from doberman_agent.channel.domain.services.channel_service import ChannelService
 
-_CS = "bisheng.channel.domain.services.channel_service"
+_CS = "doberman_agent.channel.domain.services.channel_service"
 
 
 def _channel() -> Channel:
@@ -43,7 +43,7 @@ async def test_business_save_failure_does_not_touch_grants_or_memberships() -> N
     adapter_lookup = AsyncMock()
     with (
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=SimpleNamespace())),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=SimpleNamespace())),
         patch(f"{_CS}.get_f048_resource_adapter", new=adapter_lookup),
     ):
         with pytest.raises(RuntimeError, match="save failed"):
@@ -81,7 +81,7 @@ async def test_private_projection_commits_before_membership_cleanup() -> None:
     service = _service(repository, members)
     with (
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=SimpleNamespace())),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=SimpleNamespace())),
         patch(f"{_CS}.get_f048_resource_adapter", new=AsyncMock(return_value=adapter)),
         patch(f"{_CS}.resolve_permission_actor", new=AsyncMock(return_value=SimpleNamespace(user_id=7))),
     ):
@@ -111,7 +111,7 @@ async def test_private_projection_failure_preserves_membership_rows() -> None:
     service = _service(repository, members)
     with (
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=SimpleNamespace())),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=SimpleNamespace())),
         patch(f"{_CS}.get_f048_resource_adapter", new=AsyncMock(return_value=adapter)),
         patch(f"{_CS}.resolve_permission_actor", new=AsyncMock(return_value=SimpleNamespace(user_id=7))),
     ):

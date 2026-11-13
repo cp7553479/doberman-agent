@@ -1,6 +1,6 @@
 # Linsight Agent 框架与 MCP 协议集成
 
-Linsight（灵思）是 BiSheng 平台内置的自主任务执行框架，面向需要多步骤推理、工具调用和人机交互的复杂任务场景。它通过 SOP（标准操作流程）将用户需求拆解为结构化的任务树，由 Agent 自主执行每个步骤，并在必要时暂停等待用户输入。MCP（Model Context Protocol）协议集成为 Linsight 和工作流引擎提供了统一的外部工具接入能力，支持 SSE、Standard I/O 和 Streamable HTTP 三种传输方式。
+Linsight（灵思）是 doberman-agent 平台内置的自主任务执行框架，面向需要多步骤推理、工具调用和人机交互的复杂任务场景。它通过 SOP（标准操作流程）将用户需求拆解为结构化的任务树，由 Agent 自主执行每个步骤，并在必要时暂停等待用户输入。MCP（Model Context Protocol）协议集成为 Linsight 和工作流引擎提供了统一的外部工具接入能力，支持 SSE、Standard I/O 和 Streamable HTTP 三种传输方式。
 
 ## 整体架构
 
@@ -82,7 +82,7 @@ stateDiagram-v2
 
 ## 事件系统
 
-事件是 Agent 执行过程中向上层传递信息的核心机制。所有事件继承自 `BaseEvent`，包含 `task_id` 和 `timestamp` 两个基础字段。事件定义位于 `src/backend/bisheng_langchain/linsight/event.py`。
+事件是 Agent 执行过程中向上层传递信息的核心机制。所有事件继承自 `BaseEvent`，包含 `task_id` 和 `timestamp` 两个基础字段。事件定义位于 `src/backend/doberman_agent_langchain/linsight/event.py`。
 
 | 事件类型 | 类名 | 触发时机 | 核心字段 |
 |---------|------|---------|---------|
@@ -101,10 +101,10 @@ stateDiagram-v2
 Worker 以独立进程运行，与 API 服务完全解耦。启动命令：
 
 ```bash
-.venv/bin/python bisheng/linsight/worker.py --worker_num 4 --max_concurrency 5
+.venv/bin/python doberman-agent/linsight/worker.py --worker_num 4 --max_concurrency 5
 ```
 
-源码位于 `src/backend/bisheng/linsight/worker.py`。
+源码位于 `src/backend/doberman_agent/linsight/worker.py`。
 
 ### 核心组件
 
@@ -132,7 +132,7 @@ Worker 以独立进程运行，与 API 服务完全解耦。启动命令：
 
 ## 任务执行器（LinsightWorkflowTask）
 
-`LinsightWorkflowTask`（位于 `src/backend/bisheng/linsight/domain/task_exec.py`）是单次任务执行的核心控制器，负责完整的执行生命周期。
+`LinsightWorkflowTask`（位于 `src/backend/doberman_agent/linsight/domain/task_exec.py`）是单次任务执行的核心控制器，负责完整的执行生命周期。
 
 ### 执行流程
 
@@ -152,9 +152,9 @@ Worker 以独立进程运行，与 API 服务完全解耦。启动命令：
 
 用户可以主动终止正在执行的任务。终止监控协程每 2 秒检查 Redis 中会话状态是否被设置为 `TERMINATED`，一旦检测到终止信号，通过 `UserTerminationError` 异常中断 Agent 执行，并将所有未完成的子任务标记为 `TERMINATED`。
 
-## bisheng_langchain 运行时
+## doberman_agent_langchain 运行时
 
-Agent 的推理和执行逻辑实现在 `src/backend/bisheng_langchain/linsight/` 包中，作为独立的 LangChain 扩展被主服务导入。
+Agent 的推理和执行逻辑实现在 `src/backend/doberman_agent_langchain/linsight/` 包中，作为独立的 LangChain 扩展被主服务导入。
 
 ### LinsightAgent
 
@@ -188,7 +188,7 @@ Agent 的推理和执行逻辑实现在 `src/backend/bisheng_langchain/linsight/
 
 ## 状态管理
 
-状态管理由 `LinsightStateMessageManager`（位于 `src/backend/bisheng/linsight/domain/services/state_message_manager.py`）统一负责，采用 Redis 缓存 + MySQL 持久化的双写策略。
+状态管理由 `LinsightStateMessageManager`（位于 `src/backend/doberman_agent/linsight/domain/services/state_message_manager.py`）统一负责，采用 Redis 缓存 + MySQL 持久化的双写策略。
 
 ### Redis 键结构
 
@@ -225,7 +225,7 @@ linsight:task:owner:{session_version_id}                     # 任务归属
 
 ### LinsightSessionVersion
 
-会话版本模型，记录一次完整的任务执行过程。位于 `src/backend/bisheng/linsight/domain/models/linsight_session_version.py`。
+会话版本模型，记录一次完整的任务执行过程。位于 `src/backend/doberman_agent/linsight/domain/models/linsight_session_version.py`。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -243,7 +243,7 @@ linsight:task:owner:{session_version_id}                     # 任务归属
 
 ### LinsightExecuteTask
 
-执行任务模型，记录单个步骤的执行状态和历史。位于 `src/backend/bisheng/linsight/domain/models/linsight_execute_task.py`。
+执行任务模型，记录单个步骤的执行状态和历史。位于 `src/backend/doberman_agent/linsight/domain/models/linsight_execute_task.py`。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -260,11 +260,11 @@ linsight:task:owner:{session_version_id}                     # 任务归属
 
 ### LinsightSOP
 
-SOP 模型，存储标准操作流程定义。位于 `src/backend/bisheng/linsight/domain/models/linsight_sop.py`。SOP 内容同时存储在 MySQL（全文）和向量库（前 10000 字符的向量索引 + Elasticsearch 关键词索引），支持语义检索和关键词混合检索。
+SOP 模型，存储标准操作流程定义。位于 `src/backend/doberman_agent/linsight/domain/models/linsight_sop.py`。SOP 内容同时存储在 MySQL（全文）和向量库（前 10000 字符的向量索引 + Elasticsearch 关键词索引），支持语义检索和关键词混合检索。
 
 ## SOP 管理
 
-SOP 管理服务（`SOPManageService`，位于 `src/backend/bisheng/linsight/domain/services/sop_manage.py`）提供 SOP 的完整生命周期管理：
+SOP 管理服务（`SOPManageService`，位于 `src/backend/doberman_agent/linsight/domain/services/sop_manage.py`）提供 SOP 的完整生命周期管理：
 
 - **创建**：将 SOP 内容写入 MySQL，同时在 Milvus（collection: `col_linsight_sop`）和 Elasticsearch 中建立索引。
 - **检索**：使用 `EnsembleRetriever` 混合向量检索和关键词检索，权重各 50%。
@@ -274,7 +274,7 @@ SOP 管理服务（`SOPManageService`，位于 `src/backend/bisheng/linsight/dom
 
 ## MCP 协议集成
 
-MCP（Model Context Protocol）集成模块位于 `src/backend/bisheng/mcp_manage/`，为系统提供统一的外部工具接入能力。
+MCP（Model Context Protocol）集成模块位于 `src/backend/doberman_agent/mcp_manage/`，为系统提供统一的外部工具接入能力。
 
 ### ClientManager 工厂
 
@@ -338,7 +338,7 @@ MCP（Model Context Protocol）集成模块位于 `src/backend/bisheng/mcp_manag
 }
 ```
 
-配置框失去焦点或点击刷新时，BiSheng 就会连接 Parallel 获取工具列表，不必等到保存。确认「可用工具」中出现 `web_search` 和 `web_fetch` 后，可点击工具旁的测试按钮。在 `web_search` 的测试窗口，按参数分别填写下面的值，`search_queries` 使用 JSON 数组：
+配置框失去焦点或点击刷新时，doberman-agent 就会连接 Parallel 获取工具列表，不必等到保存。确认「可用工具」中出现 `web_search` 和 `web_fetch` 后，可点击工具旁的测试按钮。在 `web_search` 的测试窗口，按参数分别填写下面的值，`search_queries` 使用 JSON 数组：
 
 ```json
 {
@@ -371,7 +371,7 @@ MCP（Model Context Protocol）集成模块位于 `src/backend/bisheng/mcp_manag
 
 ### MCP 到 LangChain 适配器
 
-`McpTool`（位于 `src/backend/bisheng/mcp_manage/langchain/tool.py`）负责将 MCP 工具桥接为 LangChain 的 `StructuredTool`，使其可被工作流节点（TOOL/AGENT）和 Linsight Agent 直接调用。
+`McpTool`（位于 `src/backend/doberman_agent/mcp_manage/langchain/tool.py`）负责将 MCP 工具桥接为 LangChain 的 `StructuredTool`，使其可被工作流节点（TOOL/AGENT）和 Linsight Agent 直接调用。
 
 适配流程：
 
@@ -400,7 +400,7 @@ LangChain StructuredTool
 
 ### LinsightConf
 
-位于 `src/backend/bisheng/core/config/settings.py`，通过 `config.yaml` 的 `linsight_conf` 字段配置。
+位于 `src/backend/doberman_agent/core/config/settings.py`，通过 `config.yaml` 的 `linsight_conf` 字段配置。
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|

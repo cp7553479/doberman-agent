@@ -3,8 +3,8 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, expect, it, vi } from 'vitest'
 import PreviewResult from './PreviewResult'
 import { previewFileSplitApi } from '@/controllers/API'
-import { normalizeApiError } from '@bisheng/api-client'
-import { notification } from '@bisheng/ui'
+import { normalizeApiError } from '@doberman-agent/api-client'
+import { notification } from '@doberman-agent/ui'
 
 vi.mock('@/controllers/API', () => ({ previewFileSplitApi: vi.fn(() => vi.fn()), delChunkInPreviewApi: vi.fn(), updatePreviewChunkApi: vi.fn() }))
 vi.mock('@/controllers/request', async (importOriginal) => ({ ...await importOriginal<typeof import('@/controllers/request')>() }))

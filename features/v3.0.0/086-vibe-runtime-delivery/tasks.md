@@ -12,19 +12,19 @@
 ### Wave 1
 
 - [x] **T001**：平台持久对象模型
-  **类型**：基础设施；**文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`
   **逻辑/验收**：定义profile/default、artifact、delivery、operation、assignment、reservation、node、fact、route、policy和transfer。使用JsonType/共享时间默认/关系唯一键，应用对象保留原Owner；新表由model discovery建表，回退先停止新控制写入并保留表和资产，不破坏性drop。
   **覆盖 AC**：AC-06、AC-15、AC-19、AC-35、AC-36、AC-50、AC-61
   **依赖**：无
 
 - [x] **T002**：模型发现注册
-  **类型**：基础设施；**文件**：`src/backend/bisheng/core/database/tenant_filter.py`、`src/backend/bisheng/app_runtime/domain/models/__init__.py`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/core/database/tenant_filter.py`、`src/backend/doberman_agent/app_runtime/domain/models/__init__.py`
   **逻辑/验收**：通过领域包导入模型，租户表在过滤器初始化前注册；全局目录无tenant_id，明确超管入口，应用表保持自动隔离。
   **覆盖 AC**：AC-14、AC-30、AC-50、AC-61
   **依赖**：T001
 
 - [x] **T003**：平台运行交付配置
-  **类型**：基础设施；**文件**：`src/backend/bisheng/core/config/app_runtime.py`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/core/config/app_runtime.py`
   **逻辑/验收**：在已有app_runtime子键增加内部服务身份、文件限额/回收及协议设置，默认fail-closed；不新增YAML顶级键，保留旧配置可加载。
   **覆盖 AC**：AC-03、AC-05、AC-53、AC-58
   **依赖**：无
@@ -44,7 +44,7 @@
   **依赖**：T001、T002
 
 - [x] **T006**：平台操作/容量Repository
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py`
   **逻辑/验收**：SQL事务约束幂等键/请求摘要、node预算锁/预占、app归属CAS、事实顺序和路由提交；隔离未知执行体，确认停止后释放；不在Service写ORM。
   **覆盖 AC**：AC-06、AC-34、AC-35、AC-36、AC-37、AC-39、AC-50、AC-61、AC-63
   **依赖**：T001、T002、T005
@@ -56,7 +56,7 @@
   **依赖**：T003、T004、T006
 
 - [x] **T008**：版本2服务身份与重放保护
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_protocol.py`、`src/runtime-manager/runtime_manager/platform_protocol.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_protocol.py`、`src/runtime-manager/runtime_manager/platform_protocol.py`
   **逻辑/验收**：签名绑定method/path/query/body摘要/时间/nonce/key_id；平台nonce持久端口fail-closed，不同服务动作隔离；上传用范围session，manager禁止任意URL。
   **覆盖 AC**：AC-06、AC-07、AC-49、AC-52、AC-53
   **依赖**：T003、T004、T006、T007
@@ -68,7 +68,7 @@
   **依赖**：T006、T008
 
 - [x] **T010**：平台产物传输
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_artifact_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_object_store.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_artifact_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_object_store.py`
   **逻辑/验收**：streaming限额及hash、MinIO私有桶、upload/finalize/status幂等、代码/依赖/快照各独立上限；内容和元数据确认后verified；确认不明保护快照。
   **覆盖 AC**：AC-05、AC-06、AC-07、AC-10、AC-19、AC-23、AC-28、AC-42、AC-43、AC-53
   **依赖**：T006、T008、T009
@@ -80,7 +80,7 @@
   **依赖**：T006
 
 - [x] **T012**：环境目录和授权边界
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py`、`src/backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py`
   **逻辑/验收**：不可变环境修订/平台镜像记录/默认CAS；超管管理全局、自然人owner管理私包，验证私包app/tenant；精确冻结平台和启动约定，拒绝可变tag假摘要。
   **覆盖 AC**：AC-11、AC-12、AC-14、AC-15、AC-16、AC-17、AC-21、AC-24、AC-30、AC-31、AC-55、AC-56、AC-57、AC-59
   **依赖**：T006、T011
@@ -92,7 +92,7 @@
   **依赖**：T010、T012、T008
 
 - [x] **T014**：内部操作与投影API
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/bisheng/app_runtime/api/router.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py`、`src/backend/doberman_agent/app_runtime/api/router.py`
   **逻辑/验收**：注册internal/app-runtime/v2操作/claim/facts/传输/路由/policy接口，endpoint依赖服务，按节点与scope过滤；日志status仍由F054包装；内部路由不依赖JWT租户header，验服务身份后建立scope。
   **覆盖 AC**：AC-06、AC-34、AC-35、AC-36、AC-37、AC-48、AC-49、AC-50、AC-53
   **依赖**：T010、T012、T008、T013
@@ -104,7 +104,7 @@
   **依赖**：T010、T014
 
 - [x] **T016**：backend附件SDK兼容
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/app_storage_service.py`、`src/backend/bisheng/app_runtime/api/endpoints/app_storage.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_storage_service.py`、`src/backend/doberman_agent/app_runtime/api/endpoints/app_storage.py`
   **逻辑/验收**：实现旧SDKobjects/meta/list/put/get/delete与错误信封，backend唯一MinIO访问；正式/preview独立作用域、大小、token撤销、跨app拒绝。
   **覆盖 AC**：AC-05、AC-08、AC-09、AC-10、AC-38、AC-39、AC-51、AC-53、AC-60
   **依赖**：T010、T014、T015
@@ -118,19 +118,19 @@
   **依赖**：T012
 
 - [x] **T018**：新版清单与旧模式兼容
-  **类型**：实现；**文件**：`src/backend/bisheng/app_publish/domain/schemas/app_manifest.py`、`src/backend/bisheng/app_publish/domain/services/manifest_validator.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py`、`src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py`
   **逻辑/验收**：v2源码默认bundle、显式source-image、完整image判别，v1继续旧构建；image按运行契约不走源码模板过滤，未知字段/冲突启动拒绝。
   **覆盖 AC**：AC-11、AC-12、AC-13、AC-17、AC-18、AC-25、AC-33、AC-60
   **依赖**：T012、T017
 
 - [x] **T019**：CLI应用包交付合同与失败测试
-  **类型**：测试；**文件**：`src/bisheng-cli/tests/test_delivery_v2.py`
+  **类型**：测试；**文件**：`src/doberman-agent-cli/tests/test_delivery_v2.py`
   **逻辑/验收**：init默认v2，保留v1打包和状态轮询；包不带开发机venv/node_modules，锁/前端输入保留；清晰协议不兼容。；测试只调用真实模块，mock外部端口，不用占位模块替代实现。
   **覆盖 AC**：AC-07、AC-11、AC-13、AC-17、AC-25、AC-60
   **依赖**：T018
 
 - [x] **T020**：CLI应用包交付
-  **类型**：实现；**文件**：`src/bisheng-cli/bisheng_cli/project.py`、`src/bisheng-cli/bisheng_cli/packaging.py`
+  **类型**：实现；**文件**：`src/doberman-agent-cli/doberman_agent_cli/project.py`、`src/doberman-agent-cli/doberman_agent_cli/packaging.py`
   **逻辑/验收**：init默认v2，保留v1打包和状态轮询；包不带开发机venv/node_modules，锁/前端输入保留；清晰协议不兼容。
   **覆盖 AC**：AC-07、AC-11、AC-13、AC-17、AC-25、AC-60
   **依赖**：T018、T019
@@ -206,7 +206,7 @@
   **依赖**：T018、T028、T030
 
 - [x] **T032**：F055交付准备接线
-  **类型**：实现；**文件**：`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`
   **逻辑/验收**：F055 的协议2 prepare/probe 接线放在 PublishPipelineService，经 RuntimeDeliveryCoordinator，不改协议1 precheck 的 URL 合同；Celery 仍使用原任务的 tenant headers→ContextVar。v1描述在协议2映射source-image；v2不在协议1静默发布。
   **覆盖 AC**：AC-06、AC-11、AC-12、AC-13、AC-19、AC-29、AC-32、AC-33
   **依赖**：T018、T028、T030、T031
@@ -218,7 +218,7 @@
   **依赖**：T032
 
 - [x] **T034**：版本冻结与凭据代际
-  **类型**：实现；**文件**：`src/backend/bisheng/app_publish/domain/services/version_service.py`、`src/backend/bisheng/app_publish/domain/services/app_credential_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_publish/domain/services/version_service.py`、`src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py`
   **逻辑/验收**：delivery组合冻结，原四要素不变；候选只隔离凭据，切换生效/撤旧≤5秒，外部撤权不延迟；无重复签发/审批。
   **覆盖 AC**：AC-15、AC-16、AC-19、AC-33、AC-36、AC-38、AC-51、AC-57、AC-60
   **依赖**：T032、T033
@@ -230,7 +230,7 @@
   **依赖**：T034、T030、T006
 
 - [x] **T036**：F054/F055安全上线
-  **类型**：实现；**文件**：`src/backend/bisheng/app_publish/domain/services/publish_online_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
   **逻辑/验收**：在停旧/DDL前原子预占，SQLite维护单写/快照确认，ready事实后事务切路由与原状态；失败/容量不足/停用恢复保持真实阶段；worker tenant_id随headers恢复。
   **覆盖 AC**：AC-02、AC-09、AC-34、AC-35、AC-36、AC-37、AC-38、AC-39、AC-40、AC-41、AC-42、AC-43、AC-44、AC-46
   **依赖**：T034、T030、T006、T035
@@ -266,7 +266,7 @@
   **依赖**：T016、T012、T036
 
 - [x] **T042**：环境导入及owner维护API
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py`
   **逻辑/验收**：顶级profile/default/base-import路由，app私包和restore接口；owner自然人业务guard先于管理员短路、expected generation/恢复损失确认及审计，服务账号不能独立发起。
   **覆盖 AC**：AC-14、AC-15、AC-24、AC-28、AC-30、AC-35、AC-45、AC-47、AC-53
   **依赖**：T016、T012、T036、T041
@@ -340,7 +340,7 @@
   **依赖**：T052
 
 - [x] **T054**：CLI可分发wheel及锁定依赖
-  **类型**：基础设施；**文件**：`src/backend/bisheng/dev_toolkit/artifacts/bisheng_cli-3.0.0-py3-none-any.whl`、`src/backend/bisheng/dev_toolkit/artifacts/manifest.json`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_cli-3.0.0-py3-none-any.whl`、`src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json`
   **逻辑/验收**：重建并分发CLI wheel及manifest，保留SDK0.1.1工件；打包脚本干净环境安装/生产入口成功，不执行git add/commit/push。
   **覆盖 AC**：AC-05、AC-13、AC-54、AC-60
   **依赖**：T020、T053
@@ -368,31 +368,31 @@
   **依赖**：T023、T027
 
 - [x] **T058**：发布交付协调器
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`
   **逻辑/验收**：准备/探活/预览/上线/恢复都登记持久操作；固定profile/源码/依赖，范围资产传输；原Owner提交状态，秘密先封装再允许执行。
   **覆盖 AC**：AC-05、AC-15、AC-33、AC-37、AC-39、AC-41、AC-63
   **依赖**：T031、T035
 
 - [x] **T059**：凭据保护与执行代际读取
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_payload.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_credential_repository.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_payload.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_credential_repository.py`
   **逻辑/验收**：部署Fernet key封装可续跑的应用环境；正式和排队调用复用F049认证入口，绑定route operation，candidate/旧同版本/维护均拒绝。
   **覆盖 AC**：AC-39、AC-51、AC-53
   **依赖**：T033
 
 - [x] **T060**：路由和出站投影业务
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_egress_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_egress_service.py`
   **逻辑/验收**：同UoW激活route/原凭据/附件句柄；失败撤销候选；出站稳定operation凭据、正式切换fencing、生成环境平台URL放行及显式UTC时间。
   **覆盖 AC**：AC-39、AC-48、AC-49、AC-50、AC-51、AC-53
   **依赖**：T033、T039
 
 - [x] **T061**：存量与离线内容校验业务
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_upgrade_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_offline_package.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_upgrade_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_offline_package.py`
   **逻辑/验收**：校验有界tar/hash/ABI且拒绝登录文件；存量绑定用签名实时inventory复核，保持AppVersion不变，需确认维护及重新绑定。
   **覆盖 AC**：AC-07、AC-13、AC-27、AC-30、AC-46、AC-57、AC-60
   **依赖**：T041、T045
 
 - [x] **T062**：控制客户端与范围回收
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_control_client.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_cleanup_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_control_client.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_cleanup_service.py`
   **逻辑/验收**：平台独立control HMAC，只唤醒ID/读inventory；确认执行停止后清理该预览/删除动作的附件及指定快照，不改其他应用。
   **覆盖 AC**：AC-06、AC-09、AC-10、AC-26、AC-63
   **依赖**：T013、T015
@@ -440,13 +440,13 @@
   **依赖**：T007、T037
 
 - [x] **T070**：审批预览与授权接线
-  **类型**：实现；**文件**：`src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`、`src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py`
   **逻辑/验收**：原预览session/owner能力例外不变，v2使用冻结delivery；正式维护路由不可被旧授权缓存长期放行。
   **覆盖 AC**：AC-09、AC-33、AC-48、AC-51
   **依赖**：T033、T035
 
 - [x] **T071**：SDK中间件与创建入口约束
-  **类型**：实现；**文件**：`src/backend/bisheng/utils/http_middleware.py`、`src/backend/test/app_runtime/test_runtime_layer_switch.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/utils/http_middleware.py`、`src/backend/test/app_runtime/test_runtime_layer_switch.py`
   **逻辑/验收**：仅SDK storage namespace走句柄认证；新增app-scoped材料/恢复维护POST不成为UI创建应用入口。
   **覆盖 AC**：AC-05、AC-07、AC-53、AC-60
   **依赖**：T015
@@ -458,7 +458,7 @@
   **依赖**：T011
 
 - [x] **T073**：数据恢复审计登记
-  **类型**：基础设施；**文件**：`src/backend/bisheng/database/models/audit_log.py`、`src/backend/bisheng/app_runtime/domain/constants.py`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/database/models/audit_log.py`、`src/backend/doberman_agent/app_runtime/domain/constants.py`
   **逻辑/验收**：登记app.data_restore到原审计枚举和UI可见白名单，使用原system audit流程；不增加新数字错误码。
   **覆盖 AC**：AC-45、AC-47
   **依赖**：T035
@@ -524,7 +524,7 @@
   **依赖**：T044、T046
 
 - [x] **T084**：CLI及版本交付登记
-  **类型**：文档；**文件**：`src/bisheng-cli/README.md`、`features/v3.0.0/release-contract.md`
+  **类型**：文档；**文件**：`src/doberman-agent-cli/README.md`、`features/v3.0.0/release-contract.md`
   **逻辑/验收**：同步owner绑定和SAK发布、F086设计已确认/代码与部署验收分层；原不变量及历史评审输入保持。
   **覆盖 AC**：AC-13、AC-30、AC-54、AC-58、AC-60、AC-62
   **依赖**：T054
@@ -540,19 +540,19 @@
 ### Wave 10
 
 - [x] **T086**：平台执行事实与旧RPC适配
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py`
   **逻辑/验收**：执行身份/阶段/事实/诊断/归属/预览/自愈的领域入口；原logs/status/data RPC通过v2control签名适配，不能旁路业务授权。
   **覆盖 AC**：AC-06、AC-29、AC-35、AC-36、AC-37、AC-48、AC-50、AC-53、AC-63
   **依赖**：T013、T033
 
 - [x] **T087**：CLI既有入口回归适配
-  **类型**：测试；**文件**：`src/bisheng-cli/tests/test_cli.py`
+  **类型**：测试；**文件**：`src/doberman-agent-cli/tests/test_cli.py`
   **逻辑/验收**：显式新版init参数和旧项目兼容，保留CLI原有参数/分发行为；完整383项回归。
   **覆盖 AC**：AC-11、AC-13、AC-17、AC-60
   **依赖**：T017
 
 - [x] **T088**：CLI命令分发接线
-  **类型**：实现；**文件**：`src/bisheng-cli/bisheng_cli/cli.py`、`src/bisheng-cli/bisheng_cli/main.py`
+  **类型**：实现；**文件**：`src/doberman-agent-cli/doberman_agent_cli/cli.py`、`src/doberman-agent-cli/doberman_agent_cli/main.py`
   **逻辑/验收**：将init新版运行描述接入真实CLI入口；不重写已有manifest，不改变普通deploy鉴权。
   **覆盖 AC**：AC-11、AC-13、AC-17、AC-60
   **依赖**：T019、T087
@@ -572,19 +572,19 @@
 ### Wave 2026-10-21：多租户启动验收修复
 
 - [x] **T090**：后台租户上下文执行边界
-  **类型**：实现；**文件**：`src/backend/bisheng/core/context/tenant.py`、`src/backend/test/tenant/test_tenant_execution_scope.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/core/context/tenant.py`、`src/backend/test/tenant/test_tenant_execution_scope.py`
   **逻辑/验收**：绑定已验证目标租户，临时收窄visible set并清除继承的admin override/bypass，嵌套、异常和并发均恢复原上下文。组合回归56 passed；109全新multi_tenant.enabled=true启动与真实首管理员注册通过。
   **覆盖 AC**：AC-61、AC-62
   **依赖**：无
 
 - [x] **T091**：系统资源启动投影租户绑定
-  **类型**：实现；**文件**：`src/backend/bisheng/permission/application/system_resource_reconcile.py`、`src/backend/test/permission/test_f048_system_resource_reconcile.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/permission/application/system_resource_reconcile.py`、`src/backend/test/permission/test_f048_system_resource_reconcile.py`
   **逻辑/验收**：每个系统资源投影使用其可信tenant_id执行，保留原权限授权入口，不以全局bypass规避过滤。组合回归56 passed；109全新multi_tenant.enabled=true启动与真实首管理员注册通过。
   **覆盖 AC**：AC-61、AC-62
   **依赖**：T090
 
 - [x] **T092**：首次管理员仪表盘投影上下文
-  **类型**：实现；**文件**：`src/backend/bisheng/api/services/f048_preset_dashboard_bootstrap.py`、`src/backend/test/permission/test_f048_preset_dashboard_bootstrap.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/api/services/f048_preset_dashboard_bootstrap.py`、`src/backend/test/permission/test_f048_preset_dashboard_bootstrap.py`
   **逻辑/验收**：首次自然注册及启动对账的预置dashboard owner投影显式绑定Root租户；已有owner与投影的幂等逻辑保持。组合回归56 passed；109全新multi_tenant.enabled=true启动与真实首管理员注册通过。
   **覆盖 AC**：AC-61、AC-62
   **依赖**：T090
@@ -594,13 +594,13 @@
 ### Wave 2026-10-21：DM8静态审查与字节边界
 
 - [x] **T093**：字节计数范围与模型规范检查
-  **类型**：实现；**文件**：`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
+  **类型**：实现；**文件**：`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
   **逻辑/验收**：size_bytes和offset使用BigInteger，覆盖15表JsonType/时间默认/租户/唯一约束和索引静态检查，符合2GiB材料和10GiB快照合同；DM8不连接。
   **覆盖 AC**：AC-06、AC-35、AC-61
   **依赖**：T001
 
 - [x] **T094**：已有运行时字节字段扩容迁移
-  **类型**：基础设施；**文件**：`src/backend/bisheng/core/database/alembic/versions/f086_runtime_byte_counters.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
+  **类型**：基础设施；**文件**：`src/backend/doberman_agent/core/database/alembic/versions/f086_runtime_byte_counters.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`
   **逻辑/验收**：挂接已核对single head merge_vibe_f077_heads，DDL-only INTEGER到BIGINT；新库/已扩容跳过，异常类型失败，降级保留宽列；组合28项回归通过。
   **覆盖 AC**：AC-06、AC-35、AC-61
   **依赖**：T093

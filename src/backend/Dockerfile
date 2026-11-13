@@ -1,4 +1,5 @@
-FROM dataelement/bisheng-backend:base.v10
+ARG BACKEND_BASE_IMAGE=doberman-agent-backend-base:local
+FROM ${BACKEND_BASE_IMAGE}
 
 WORKDIR /app
 

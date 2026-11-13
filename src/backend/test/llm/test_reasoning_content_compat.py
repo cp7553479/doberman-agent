@@ -3,9 +3,9 @@ import unittest
 from langchain_core.messages import AIMessage, AIMessageChunk
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, LLMResult
 
-from bisheng.llm.domain.utils import extract_reasoning_content, normalize_reasoning_content
-from bisheng.workflow.callback.base_callback import BaseCallback
-from bisheng.workflow.callback.llm_callback import LLMNodeCallbackHandler
+from doberman_agent.llm.domain.utils import extract_reasoning_content, normalize_reasoning_content
+from doberman_agent.workflow.callback.base_callback import BaseCallback
+from doberman_agent.workflow.callback.llm_callback import LLMNodeCallbackHandler
 
 
 class _DummyCallback(BaseCallback):

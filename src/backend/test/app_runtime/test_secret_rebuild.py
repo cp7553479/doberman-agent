@@ -7,13 +7,13 @@ from test.app_runtime.test_secret_runtime_snapshot import secret_runtime as secr
 
 
 def actor():
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=7, user_name="owner", user_role=[], tenant_id=1)
 
 
 def confirmation(**updates):
-    from bisheng.app_publish.domain.schemas.app_secrets import SecretRebuildInput
+    from doberman_agent.app_publish.domain.schemas.app_secrets import SecretRebuildInput
 
     return SecretRebuildInput(
         **{
@@ -28,11 +28,11 @@ def confirmation(**updates):
 
 
 async def test_rebuild_reuses_delivery_tier_and_pending_and_replays_original_confirmation(secret_runtime, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.app_runtime.domain.services.runtime_payload import unseal
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
-    from bisheng.common.errcode.app_publish import AppSecretRebuildConflictError
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.app_runtime.domain.services.runtime_payload import unseal
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.common.errcode.app_publish import AppSecretRebuildConflictError
 
     repo, app, _ = secret_runtime
     wakes = []
@@ -55,9 +55,9 @@ async def test_rebuild_reuses_delivery_tier_and_pending_and_replays_original_con
 
 
 async def test_unconfirmed_revision_or_wrong_owner_creates_no_operation(secret_runtime):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError, AppSecretRebuildConflictError
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError, AppSecretRebuildConflictError
 
     repo, app, _ = secret_runtime
     service = AppSecretRebuildService(repository=repo)
@@ -70,10 +70,10 @@ async def test_unconfirmed_revision_or_wrong_owner_creates_no_operation(secret_r
 
 
 async def test_maintenance_transition_is_precise_and_idempotent(secret_runtime, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
 
     repo, app, _ = secret_runtime
 
@@ -96,13 +96,13 @@ async def test_maintenance_transition_is_precise_and_idempotent(secret_runtime, 
 async def test_ready_fact_commits_rebuild_without_consuming_pending_version(secret_runtime, monkeypatch):
     from types import SimpleNamespace
 
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
-    from bisheng.database.models.app import App
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.database.models.app import App
+    from doberman_agent.database.models.app_version import AppVersion
 
     repo, app, _ = secret_runtime
 
@@ -148,9 +148,9 @@ async def test_approval_preview_injects_names_with_empty_values(secret_runtime, 
     from datetime import datetime, timedelta
     from types import SimpleNamespace
 
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.app_runtime.domain.services.runtime_payload import unseal
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.app_runtime.domain.services.runtime_payload import unseal
 
     repo, app, version = secret_runtime
     coordinator = RuntimeDeliveryCoordinator(repo)
@@ -177,10 +177,10 @@ async def test_f113_frozen_owner_tenant_is_revalidated_before_config_restart(sec
     """F113 覆盖 AC: AC-16、AC-34、AC-36; rejected rebuild creates no runtime operation."""
     from sqlmodel import select
 
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
-    from bisheng.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
-    from bisheng.database.models.tenant import UserTenant
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
+    from doberman_agent.database.models.tenant import UserTenant
 
     repo, app, _ = secret_runtime
     async with repo.transaction() as session:

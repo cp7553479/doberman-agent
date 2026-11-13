@@ -18,7 +18,7 @@ For every (role_id, tenant_id) that has WEB_MENU ``home`` but not yet
 same tenant_id. Idempotent & re-runnable: rows that already exist are skipped.
 
 The actual logic lives in
-``bisheng.linsight.domain.services.task_mode_menu_backfill`` (shared with the
+``doberman_agent.linsight.domain.services.task_mode_menu_backfill`` (shared with the
 startup auto-backfill in ``main.lifespan``); this script is a dry-run/apply CLI over it.
 
 How to run (from src/backend/)
@@ -42,8 +42,8 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.core.context.manager import close_app_context  # noqa: E402
-from bisheng.linsight.domain.services.task_mode_menu_backfill import (  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context  # noqa: E402
+from doberman_agent.linsight.domain.services.task_mode_menu_backfill import (  # noqa: E402
     LINSIGHT_TASK_MODE,
     backfill_linsight_task_mode_web_menu,
 )

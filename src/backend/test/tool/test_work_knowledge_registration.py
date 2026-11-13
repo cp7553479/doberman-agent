@@ -27,7 +27,7 @@ def row(**kwargs):
 def test_seed_category_and_tool_contract():
     category, tool = seed_records()
     assert tool["type"] == category["id"]
-    assert tool["tool_key"] == "bisheng_knowledge_search"
+    assert tool["tool_key"] == "doberman_agent_knowledge_search"
     assert {p["name"] for p in tool["api_params"]} == {"query", "space_ids"}
     assert category["user_id"] is None
 

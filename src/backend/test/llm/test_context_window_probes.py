@@ -7,8 +7,8 @@ survey table in features/v3.0.0/087-context-window-budget/plan.md §3.1.
 import httpx
 import pytest
 
-from bisheng.llm.domain.services.context_window import ModelSnapshot
-from bisheng.llm.domain.services.context_window_probes import ProbeResult, probe_context_window
+from doberman_agent.llm.domain.services.context_window import ModelSnapshot
+from doberman_agent.llm.domain.services.context_window_probes import ProbeResult, probe_context_window
 
 
 def _snapshot(server_type: str, client_params: dict, model_name: str = "qwen3-32b") -> ModelSnapshot:

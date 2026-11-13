@@ -19,8 +19,8 @@
 **严重性：medium / should-fix。关联 F056 AC-59、F055 AC-81。**
 
 - 设计位置：[F056 design.md:95](../../features/v3.0.0/056-app-square-governance/design.md)、[同文档:142](../../features/v3.0.0/056-app-square-governance/design.md)。D15 将具体新增落点指向 `CredentialService._audit`，但运行期 binding 的失效另有写方。
-- 实际签发入口：[app_credential_service.py:186](../../src/backend/bisheng/app_publish/domain/services/app_credential_service.py) 的 `stage()` 经 CredentialService 签发候选凭据，再保存 operation binding。
-- 实际回收入口：[runtime_projection_service.py:50](../../src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py) 切路由时直接把旧 binding 标成 revoked；[同文件:64](../../src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py) 在失败候选/停止终结时同样直接改 binding。两条路径均不调用 [CredentialService._audit:305](../../src/backend/bisheng/open_api/domain/services/credential_service.py)。不能把 binding 失效等同于 ApiCredential 行已撤销。
+- 实际签发入口：[app_credential_service.py:186](../../src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py) 的 `stage()` 经 CredentialService 签发候选凭据，再保存 operation binding。
+- 实际回收入口：[runtime_projection_service.py:50](../../src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py) 切路由时直接把旧 binding 标成 revoked；[同文件:64](../../src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py) 在失败候选/停止终结时同样直接改 binding。两条路径均不调用 [CredentialService._audit:305](../../src/backend/doberman_agent/open_api/domain/services/credential_service.py)。不能把 binding 失效等同于 ApiCredential 行已撤销。
 - 失败序列：正式 v1 → 发布 v2 或同版本刷新 → 新凭据签发 → 旧 binding 失效 → 按 app 查询操作审计。仅补 `_audit.target_app_id` 能找到新签发，仍没有此次旧 binding 回收事实；读取侧不能补造该事件。
 - 修正方向：将真实 binding 状态变化接入凭据 Owner 的公开应用协议，说明可信 app/credential/operation 关联、事务或持久事件交接，以及重试去重。覆盖切换撤旧、候选失败、停用/删除；区分运行资格回收和 ApiCredential 撤销，避免重复记成两次同一事件。不新建并列凭据管理服务。
 - 定向验证方向：切换撤旧与失败候选回收均能按 app 查到；重复 activate/terminal 不重复留痕；无状态变化不制造回收事件；关联不能来自查看者参数。当前未执行。

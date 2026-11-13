@@ -1,4 +1,4 @@
-import { Alert } from "@bisheng/ui";
+import { Alert } from "@doberman-agent/ui";
 
 import { locationContext } from "@/contexts/locationContext";
 import {

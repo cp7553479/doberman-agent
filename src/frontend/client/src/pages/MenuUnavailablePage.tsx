@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { applyMenuAccessApi, checkMenuAccessPendingApi } from '~/api/approval';
 import { useToastContext } from '~/Providers';
 import { NotificationSeverity } from '~/common';

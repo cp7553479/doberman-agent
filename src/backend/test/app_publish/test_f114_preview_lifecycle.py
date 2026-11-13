@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.app_publish.domain.models.app_preview_session import AppPreviewSession
-from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubject
-from bisheng.common.errcode.app_publish import AppPreviewForbiddenError
+from doberman_agent.app_publish.domain.models.app_preview_session import AppPreviewSession
+from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubject
+from doberman_agent.common.errcode.app_publish import AppPreviewForbiddenError
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def values(**kw):
 
 
 async def test_registration_is_not_committed_by_public_port(db):
-    from bisheng.app_publish.application import preview_runtime as port
+    from doberman_agent.app_publish.application import preview_runtime as port
 
     async with db() as session:
         await port.register(session, values())
@@ -67,9 +67,9 @@ async def test_registration_is_not_committed_by_public_port(db):
 )
 async def test_version_lock_derives_tenant_from_application(tenant_id, app_id, version_id, allowed):
     """AC-50/AC-69: real version rows have no tenant column; lock through their owning app."""
-    from bisheng.app_publish.domain.repositories.preview_runtime_repository import PreviewRuntimeRepository
-    from bisheng.database.models.app import App
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.app_publish.domain.repositories.preview_runtime_repository import PreviewRuntimeRepository
+    from doberman_agent.database.models.app import App
+    from doberman_agent.database.models.app_version import AppVersion
 
     engine = create_async_engine("sqlite+aiosqlite://")
     try:
@@ -100,7 +100,7 @@ async def test_version_lock_derives_tenant_from_application(tenant_id, app_id, v
 
 
 async def test_reuse_key_separates_purpose_and_task(db):
-    from bisheng.app_publish.application import preview_runtime as port
+    from doberman_agent.app_publish.application import preview_runtime as port
 
     async with db() as session:
         await port.register(session, values())
@@ -118,8 +118,8 @@ async def test_reuse_key_separates_purpose_and_task(db):
 
 
 async def test_ready_and_reclaim_bind_exact_operation_and_one_credential(db, monkeypatch):
-    from bisheng.app_publish.application import preview_runtime as port
-    from bisheng.open_api.application import runtime_credentials as credentials
+    from doberman_agent.app_publish.application import preview_runtime as port
+    from doberman_agent.open_api.application import runtime_credentials as credentials
 
     revoke = AsyncMock()
     monkeypatch.setattr(credentials, "revoke_preview_credential", revoke)
@@ -143,17 +143,17 @@ async def test_ready_and_reclaim_bind_exact_operation_and_one_credential(db, mon
 async def test_registration_rollback_covers_operation_capacity_identity_and_sealed_environment(monkeypatch):
     from sqlalchemy import event
 
-    from bisheng.app_publish.application import preview_runtime, runtime_delivery
-    from bisheng.app_publish.domain.repositories.preview_runtime_repository import PreviewRuntimeRepository
-    from bisheng.app_publish.domain.services.preview_access_service import PreviewQualification
-    from bisheng.app_runtime.application import preview_operations as api
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeOperation
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeDeliveryRepository
-    from bisheng.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.database.models.app_version import AppVersion
-    from bisheng.database.models.audit_log import AuditLog
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.app_publish.application import preview_runtime, runtime_delivery
+    from doberman_agent.app_publish.domain.repositories.preview_runtime_repository import PreviewRuntimeRepository
+    from doberman_agent.app_publish.domain.services.preview_access_service import PreviewQualification
+    from doberman_agent.app_runtime.application import preview_operations as api
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeOperation
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeDeliveryRepository
+    from doberman_agent.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.database.models.app_version import AppVersion
+    from doberman_agent.database.models.audit_log import AuditLog
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
 
     engine = create_async_engine("sqlite+aiosqlite://")
 
@@ -270,7 +270,7 @@ async def test_registration_rollback_covers_operation_capacity_identity_and_seal
             "egress_domains": [],
         }
 
-    from bisheng.core.context.tenant import tenant_execution_scope
+    from doberman_agent.core.context.tenant import tenant_execution_scope
 
     with tenant_execution_scope(3), pytest.raises(ValueError, match="seal failed"):
         await api.start_preview(q, actor=object(), payload_factory=payload, coordinator=c)
@@ -284,7 +284,7 @@ async def test_registration_rollback_covers_operation_capacity_identity_and_seal
 async def test_preview_payload_expiry_is_utc_on_non_utc_hosts(monkeypatch):
     """AC-50、AC-69: the stamped UTC preview lifetime is independent of host local timezone."""
 
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     monkeypatch.setattr(PreviewInstanceService, "_tier_payload", AsyncMock(return_value={"cpu": 0.1, "mem": 64}))
     expiry = datetime(2030, 1, 2, 3, 4, 5)
@@ -297,7 +297,7 @@ async def test_preview_payload_expiry_is_utc_on_non_utc_hosts(monkeypatch):
 
 async def test_legacy_null_sessions_are_not_adopted_or_starve_new_expiry_sweep(db, monkeypatch):
     """AC-50、AC-69、AC-71: legacy preview cleanup is a pre-upgrade gate, never an implicit adoption."""
-    from bisheng.app_publish.domain.repositories import preview_runtime_repository as mod
+    from doberman_agent.app_publish.domain.repositories import preview_runtime_repository as mod
 
     monkeypatch.setattr(mod, "get_async_db_session", db)
     async with db() as session:

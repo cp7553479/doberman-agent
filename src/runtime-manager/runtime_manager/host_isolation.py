@@ -25,9 +25,9 @@ import httpx
 
 from runtime_manager.platform_protocol import canonical_json, content_digest, signed_headers
 
-INPUT = "BISHENG_APP_INPUT"
-FORWARD = "BISHENG_APP_FORWARD"
-TABLE = "bisheng_egress"
+INPUT = "DOBERMAN_AGENT_APP_INPUT"
+FORWARD = "DOBERMAN_AGENT_APP_FORWARD"
+TABLE = "doberman_agent_egress"
 
 
 def ingress_names(document):
@@ -100,7 +100,7 @@ def discover(api, config):
     for name in trusted:
         actual = api.inspect_container(name)
         if not actual.get("State", {}).get("Running") or (actual.get("Config", {}).get("Labels") or {}).get(
-            "bisheng.managed"
+            "doberman-agent.managed"
         ):
             raise ValueError("host_ingress_container_refused")
         controls[name] = actual
@@ -343,7 +343,7 @@ def apply_rules(descriptor, backend, *, remove=False):
 def stop_managed(api, descriptor):
     """Confirm stop by exact container ID; never remove applications or volumes."""
     network_ids = {item["id"] for item in descriptor["networks"]}
-    for candidate in api.containers(all=True, filters={"label": "bisheng.managed"}):
+    for candidate in api.containers(all=True, filters={"label": "doberman-agent.managed"}):
         ident = candidate["Id"]
         actual = api.inspect_container(ident)
         labels = actual.get("Config", {}).get("Labels") or {}
@@ -351,11 +351,11 @@ def stop_managed(api, descriptor):
         if not attached & network_ids:
             continue
         if (
-            labels.get("bisheng.managed") in {"v2", "probe"}
-            and labels.get("bisheng.runtime.node") != descriptor["node_id"]
+            labels.get("doberman-agent.managed") in {"v2", "probe"}
+            and labels.get("doberman-agent.runtime.node") != descriptor["node_id"]
         ):
             continue
-        if labels.get("bisheng.managed") not in {"v2", "true", "preview", "probe"}:
+        if labels.get("doberman-agent.managed") not in {"v2", "true", "preview", "probe"}:
             continue
         if actual["State"]["Running"]:
             api.stop(ident, timeout=10)
@@ -364,18 +364,18 @@ def stop_managed(api, descriptor):
 
 
 def reclaim_canaries(api, node_id):
-    for row in api.containers(all=True, filters={"label": "bisheng.isolation.node=" + node_id}):
+    for row in api.containers(all=True, filters={"label": "doberman-agent.isolation.node=" + node_id}):
         ref = row["Id"]
         actual = api.inspect_container(ref)
         labels = actual.get("Config", {}).get("Labels") or {}
-        nonce = labels.get("bisheng.isolation.canary", "")
+        nonce = labels.get("doberman-agent.isolation.canary", "")
         try:
-            expired = 0 < int(labels.get("bisheng.isolation.expires", "0")) <= time.time()
+            expired = 0 < int(labels.get("doberman-agent.isolation.expires", "0")) <= time.time()
         except ValueError:
             expired = False
         if (
             actual.get("Id") != ref
-            or labels.get("bisheng.isolation.node") != node_id
+            or labels.get("doberman-agent.isolation.node") != node_id
             or not re.fullmatch(r"[a-f0-9]{32}", nonce)
             or not expired
         ):
@@ -385,7 +385,7 @@ def reclaim_canaries(api, node_id):
         stopped = api.inspect_container(ref)
         if (
             stopped.get("Id") != ref
-            or (stopped.get("Config", {}).get("Labels") or {}).get("bisheng.isolation.canary") != nonce
+            or (stopped.get("Config", {}).get("Labels") or {}).get("doberman-agent.isolation.canary") != nonce
             or stopped["State"]["Running"]
         ):
             raise ValueError("host_canary_stop_unconfirmed")
@@ -402,14 +402,14 @@ def canary(api, descriptor):
     for network in descriptor["networks"]:
         nonce = uuid4().hex
         labels = {
-            "bisheng.isolation.canary": nonce,
-            "bisheng.isolation.node": descriptor["node_id"],
-            "bisheng.isolation.expires": str(int(time.time()) + 120),
+            "doberman-agent.isolation.canary": nonce,
+            "doberman-agent.isolation.node": descriptor["node_id"],
+            "doberman-agent.isolation.expires": str(int(time.time()) + 120),
         }
         server = 'from http.server import HTTPServer,BaseHTTPRequestHandler\nclass H(BaseHTTPRequestHandler):\n def do_GET(self):\n  self.send_response(200); self.end_headers(); self.wfile.write(b"ok")\nHTTPServer(("0.0.0.0",8080),H).serve_forever()'
         ref = api.create_container(
             image=descriptor["canary_image"],
-            name="bisheng-isolation-" + nonce,
+            name="doberman-agent-isolation-" + nonce,
             command=["python", "-u", "-c", server],
             entrypoint=[],
             user="10001:10001",
@@ -564,17 +564,17 @@ def main():
         return
     if os.geteuid() != 0 or Path("/.dockerenv").exists():
         raise ValueError("run_on_docker_host_as_root")
-    with open("/run/lock/bisheng-host-isolation.lock", "a") as lock:
+    with open("/run/lock/doberman-agent-host-isolation.lock", "a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         try:
             descriptor = discover(api, config)
         except Exception:
-            for candidate in api.containers(all=True, filters={"label": "bisheng.managed"}):
+            for candidate in api.containers(all=True, filters={"label": "doberman-agent.managed"}):
                 actual = api.inspect_container(candidate["Id"])
                 labels = actual.get("Config", {}).get("Labels") or {}
                 attached = actual.get("NetworkSettings", {}).get("Networks", {})
-                owned = labels.get("bisheng.runtime.node") == config["node_id"] or (
-                    labels.get("bisheng.managed") in {"true", "preview"}
+                owned = labels.get("doberman-agent.runtime.node") == config["node_id"] or (
+                    labels.get("doberman-agent.managed") in {"true", "preview"}
                     and bool(set(attached) & set(config["network_names"]))
                 )
                 if owned and actual["State"]["Running"]:

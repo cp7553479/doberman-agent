@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 
-MODULE = 'bisheng.admin.domain.services.tenant_scope'
+MODULE = 'doberman_agent.admin.domain.services.tenant_scope'
 
 
 class _FakeRedis:
@@ -111,7 +111,7 @@ def all_mocks(fake_redis, fake_settings, mock_tenant_dao, mock_audit_dao):
 async def test_set_scope_first_time(all_mocks):
     """AC-01: fresh scope set — Redis key written with TTL, audit records
     from_scope=None / to_scope=5, response carries expires_at."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
     result = await TenantScopeService.set_scope(
         user_id=42,
@@ -134,7 +134,7 @@ async def test_set_scope_first_time(all_mocks):
 async def test_set_scope_override_existing(all_mocks):
     """AC-01 continuation: replacing scope 3 with 5 — audit records the
     prior value so operators can reconstruct the session."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.redis.store['admin_scope:42'] = '3'
 
     await TenantScopeService.set_scope(user_id=42, tenant_id=5, request_context={})
@@ -148,7 +148,7 @@ async def test_set_scope_override_existing(all_mocks):
 @pytest.mark.asyncio
 async def test_set_scope_clear_with_none(all_mocks):
     """AC-03: body tenant_id=null → Redis DEL; audit records the clear."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.redis.store['admin_scope:42'] = '5'
 
     result = await TenantScopeService.set_scope(user_id=42, tenant_id=None, request_context={})
@@ -165,8 +165,8 @@ async def test_set_scope_clear_with_none(all_mocks):
 @pytest.mark.asyncio
 async def test_set_scope_tenant_not_found_raises_19702(all_mocks):
     """AC-15: unknown tenant id → 19702 before Redis is touched."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
-    from bisheng.common.errcode.admin_scope import AdminScopeTenantNotFoundError
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.common.errcode.admin_scope import AdminScopeTenantNotFoundError
     all_mocks.tenant.aexists.return_value = False
 
     with pytest.raises(AdminScopeTenantNotFoundError):
@@ -181,7 +181,7 @@ async def test_set_scope_tenant_not_found_raises_19702(all_mocks):
 @pytest.mark.asyncio
 async def test_set_scope_ttl_applied(all_mocks):
     """AC-08: TTL on the Redis key matches settings.admin_scope_ttl_seconds."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.settings.multi_tenant.admin_scope_ttl_seconds = 7200  # override
 
     await TenantScopeService.set_scope(user_id=42, tenant_id=5, request_context={})
@@ -193,7 +193,7 @@ async def test_set_scope_ttl_applied(all_mocks):
 async def test_set_scope_audit_uses_root_operator_tenant_id(all_mocks):
     """AC-14: operator_tenant_id is always Root (INV-T11 — super admin
     leaf is always Root, Root is unique and indestructible)."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
     await TenantScopeService.set_scope(
         user_id=42, tenant_id=5,
@@ -218,7 +218,7 @@ async def test_set_scope_audit_uses_root_operator_tenant_id(all_mocks):
 @pytest.mark.asyncio
 async def test_get_scope_empty(all_mocks):
     """AC-02 edge: unset scope returns both fields as None."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
     result = await TenantScopeService.get_scope(user_id=42)
 
@@ -229,7 +229,7 @@ async def test_get_scope_empty(all_mocks):
 async def test_get_scope_with_value(all_mocks):
     """AC-02: existing scope returns tenant id + ISO expiry derived from
     remaining TTL (not a heuristic)."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.redis.store['admin_scope:42'] = '5'
     all_mocks.redis.ttls['admin_scope:42'] = 3600
 
@@ -249,7 +249,7 @@ async def test_get_scope_with_value(all_mocks):
 @pytest.mark.asyncio
 async def test_clear_on_logout_deletes_key(all_mocks):
     """AC-10 method body: logout hook removes the scope key."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.redis.store['admin_scope:42'] = '5'
 
     await TenantScopeService.clear_on_logout(user_id=42)
@@ -264,7 +264,7 @@ async def test_clear_on_logout_deletes_key(all_mocks):
 async def test_clear_hooks_all_delegate_to_same_del(all_mocks):
     """AC-11/12 method bodies: token_version_bump and role_revoke hooks
     share the same DEL path as logout — single source of truth."""
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     all_mocks.redis.store['admin_scope:42'] = '5'
     await TenantScopeService.clear_on_token_version_bump(user_id=42)
     assert 'admin_scope:42' not in all_mocks.redis.store

@@ -1,9 +1,9 @@
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.channel.domain.services.information_subscription_reconcile_service import DesiredSubscriptionSnapshot
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.worker.information import reconcile as reconcile_mod
+from doberman_agent.channel.domain.services.information_subscription_reconcile_service import DesiredSubscriptionSnapshot
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.worker.information import reconcile as reconcile_mod
 
 
 def test_subscription_dispatcher_uses_random_countdown_without_sleep():

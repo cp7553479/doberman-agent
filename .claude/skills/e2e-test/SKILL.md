@@ -1,7 +1,7 @@
 ---
 name: e2e-test
 description: >-
-  为 BiSheng 生成和运行 E2E 测试。两种模式：
+  为 DobermanAgent 生成和运行 E2E 测试。两种模式：
   (1) SDD 模式 — 基于 feature spec.md 的 AC 生成覆盖；
   (2) 自由模式 — 对指定页面/功能写测试。
   采用双层策略：API 端到端测试（pytest + httpx）+ 页面手动验证清单。
@@ -15,7 +15,7 @@ description: >-
 
 ## 概述
 
-生成并运行 BiSheng 的 E2E 测试，覆盖 API 链路和 UI 交互流程。自动处理 JWT 认证、多租户数据隔离、OpenFGA 权限检查验证、UnifiedResponseModel 响应断言等 BiSheng 特有问题。
+生成并运行 DobermanAgent 的 E2E 测试，覆盖 API 链路和 UI 交互流程。自动处理 JWT 认证、多租户数据隔离、OpenFGA 权限检查验证、UnifiedResponseModel 响应断言等 DobermanAgent 特有问题。
 
 ## 调用方式
 
@@ -202,7 +202,7 @@ cd src/backend
 | 文件 | 用途 | 何时阅读 |
 |------|------|---------|
 | `references/test-template.md` | pytest E2E 测试骨架模板 | 生成新测试文件时 |
-| `references/common-pitfalls.md` | BiSheng E2E 常见陷阱诊断表 | 测试失败时 |
+| `references/common-pitfalls.md` | DobermanAgent E2E 常见陷阱诊断表 | 测试失败时 |
 
 ---
 

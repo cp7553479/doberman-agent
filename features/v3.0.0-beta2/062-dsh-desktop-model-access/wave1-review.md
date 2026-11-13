@@ -18,7 +18,7 @@
 
 **任务**：固定两仓公共样例<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[identity-and-errors.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/identity-and-errors.json)、[client-0.1.0.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/client-0.1.0.json)
+**文件**：[identity-and-errors.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/identity-and-errors.json)、[client-0.1.0.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/client-0.1.0.json)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -38,7 +38,7 @@
 
 **任务**：固定厂商签名与旧字段绑定格式<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[license-entitlement-v1.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/license-entitlement-v1.json)、[license-issuer-contract.md](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/license-issuer-contract.md)
+**文件**：[license-entitlement-v1.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts/license-entitlement-v1.json)、[license-issuer-contract.md](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/license-issuer-contract.md)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -58,7 +58,7 @@
 
 **任务**：Python 测试隔离<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[conftest.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/conftest.py)、[fixtures.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/fixtures.py)
+**文件**：[conftest.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/conftest.py)、[fixtures.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/fixtures.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -78,7 +78,7 @@
 
 **任务**：策略与操作 ORM<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[user_policy.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/domain/models/user_policy.py)、[admin_operation.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/domain/models/admin_operation.py)
+**文件**：[user_policy.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/domain/models/user_policy.py)、[admin_operation.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/domain/models/admin_operation.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -98,7 +98,7 @@
 
 **任务**：用量汇总与调用 ORM<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[monthly_usage.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/domain/models/monthly_usage.py)、[model_call.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/domain/models/model_call.py)
+**文件**：[monthly_usage.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/domain/models/monthly_usage.py)、[model_call.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/domain/models/model_call.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -118,7 +118,7 @@
 
 **任务**：Python DSH 可选配置与 DTO<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[contracts.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/domain/schemas/contracts.py)、[config.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/dsh/config.py)
+**文件**：[contracts.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/domain/schemas/contracts.py)、[config.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/dsh/config.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -138,7 +138,7 @@
 
 **任务**：分配 Python 错误码<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[dsh.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/common/errcode/dsh.py)、[release-contract.md](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/release-contract.md)
+**文件**：[dsh.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/common/errcode/dsh.py)、[release-contract.md](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/release-contract.md)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -158,7 +158,7 @@
 
 **任务**：错误文案 zh/en<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[zh-Hans.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/zh-Hans.json)、[en.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/en.json)
+**文件**：[zh-Hans.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/zh-Hans.json)、[en.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/en.json)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -178,7 +178,7 @@
 
 **任务**：错误文案 ja<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[ja.json](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/ja.json)
+**文件**：[ja.json](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/frontend/packages/locales/src/api_errors/ja.json)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -198,7 +198,7 @@
 
 **任务**：基础契约、模型与配置验证<br>
 **类型**：测试<br>
-**文件**：[test_foundation.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_foundation.py)
+**文件**：[test_foundation.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_foundation.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -218,7 +218,7 @@
 
 **任务**：C5 模块注册同步<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[constitution.md](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/docs/constitution.md)
+**文件**：[constitution.md](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/docs/constitution.md)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -238,7 +238,7 @@
 
 **任务**：Gateway 测试隔离<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[DshFixtures.java](/Users/zhangguoqing/works/bisheng-gateway/src/test/java/com/dataelem/gateway/dsh/DshFixtures.java)、[application-dsh-test.yml](/Users/zhangguoqing/works/bisheng-gateway/src/test/resources/application-dsh-test.yml)
+**文件**：[DshFixtures.java](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/java/com/dataelem/gateway/dsh/DshFixtures.java)、[application-dsh-test.yml](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/resources/application-dsh-test.yml)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -258,7 +258,7 @@
 
 **任务**：用户资料单调版本字段<br>
 **类型**：基础设施 / 契约<br>
-**文件**：[user.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/user/domain/models/user.py)、[v3_0_0_f062_profile_version.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/bisheng/core/database/alembic/versions/v3_0_0_f062_profile_version.py)
+**文件**：[user.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/user/domain/models/user.py)、[v3_0_0_f062_profile_version.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f062_profile_version.py)
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|

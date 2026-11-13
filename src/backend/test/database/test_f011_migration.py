@@ -65,7 +65,7 @@ class TestEnsureRootTenantShape:
     def test_existing_root_gets_tree_fields_set(self, mysql_like_engine):
         """When tenant id=1 already exists (F001 inserted it), F011 only
         fills in parent_tenant_id=NULL and share_default_to_children=1."""
-        from bisheng.core.database.alembic_helpers.f011 import ensure_root_tenant_shape
+        from doberman_agent.core.database.alembic_helpers.f011 import ensure_root_tenant_shape
 
         with mysql_like_engine.begin() as conn:
             conn.execute(text(
@@ -85,7 +85,7 @@ class TestEnsureRootTenantShape:
 
     def test_missing_root_is_created(self, mysql_like_engine):
         """If tenant table is empty (non-standard deploy), backstop INSERTs Root."""
-        from bisheng.core.database.alembic_helpers.f011 import ensure_root_tenant_shape
+        from doberman_agent.core.database.alembic_helpers.f011 import ensure_root_tenant_shape
 
         with mysql_like_engine.begin() as conn:
             ensure_root_tenant_shape(conn)
@@ -107,7 +107,7 @@ class TestEnsureRootTenantShape:
 class TestDeduplicateMultiActiveUserTenants:
 
     def test_single_active_row_unchanged(self, mysql_like_engine):
-        from bisheng.core.database.alembic_helpers.f011 import (
+        from doberman_agent.core.database.alembic_helpers.f011 import (
             backfill_is_active,
             deduplicate_multi_active_user_tenants,
         )
@@ -129,7 +129,7 @@ class TestDeduplicateMultiActiveUserTenants:
     def test_multi_active_keeps_latest_access_time(self, mysql_like_engine):
         """When same user has multiple active rows, keep the one with
         the most recent last_access_time; demote the rest to NULL."""
-        from bisheng.core.database.alembic_helpers.f011 import (
+        from doberman_agent.core.database.alembic_helpers.f011 import (
             backfill_is_active,
             deduplicate_multi_active_user_tenants,
         )
@@ -162,7 +162,7 @@ class TestDeduplicateMultiActiveUserTenants:
 
     def test_only_primary_default_becomes_active(self, mysql_like_engine):
         """backfill_is_active sets is_active=1 only where status='active' AND is_default=1."""
-        from bisheng.core.database.alembic_helpers.f011 import backfill_is_active
+        from doberman_agent.core.database.alembic_helpers.f011 import backfill_is_active
 
         with mysql_like_engine.begin() as conn:
             conn.execute(text(

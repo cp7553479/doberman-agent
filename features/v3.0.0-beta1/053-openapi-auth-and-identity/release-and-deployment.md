@@ -100,7 +100,7 @@ export PYTHONPATH=./
 
 ## 发布阻断项
 
-- **商业网关**：源码不在本仓。目标私有仓库为 `dataelement/bisheng-gateway`；依据现有架构文档，待该仓负责人核对的完整候选路径为 `src/main/resources/application.yml`、`src/main/java/com/dataelem/gateway/config/BishengConfig.java`、`src/main/java/com/dataelem/gateway/filter/SelfWebsocketRoutingFilter.java`、`src/main/java/com/dataelem/gateway/filter/PathRateGlobalFilter.java` 和 `src/main/java/com/dataelem/gateway/filter/SensitiveWordsFilter.java`。需使 `/api/v3/**` HTTP 和两个 WebSocket 不进入登录或 API Key 网关。当前工作区没有该仓源码，也没有负责人信息，路径尚不能以源码复核，因此 F07/R03 未完成。
+- **商业网关**：源码不在本仓。目标私有仓库为 `cp7553479/doberman-agent-gateway`；依据现有架构文档，待该仓负责人核对的完整候选路径为 `src/main/resources/application.yml`、`src/main/java/com/dataelem/gateway/config/DobermanAgentConfig.java`、`src/main/java/com/dataelem/gateway/filter/SelfWebsocketRoutingFilter.java`、`src/main/java/com/dataelem/gateway/filter/PathRateGlobalFilter.java` 和 `src/main/java/com/dataelem/gateway/filter/SensitiveWordsFilter.java`。需使 `/api/v3/**` HTTP 和两个 WebSocket 不进入登录或 API Key 网关。当前工作区没有该仓源码，也没有负责人信息，路径尚不能以源码复核，因此 F07/R03 未完成。
 - **剩余中间件与数据库**：MySQL、Redis、OpenFGA 模型发布及 API 权限链路已在 192.168.106.116 验证；Milvus/ES/MinIO 的成功写入/检索链路和 DM8 105 migration 往返仍需在对应专用环境复核。
 - **商业入口许可证**：`192.168.106.116:3001` 的公开 v3 请求当前返回业务码 11001（软件授权已过期）；直连同机后端 `:7861` 的 v3 与 OpenAPI schema 验证通过。浏览器 guest 与对外入口验收前须续期许可证，并通过实际商业入口复测 HTTP/WS。
 - **人工导入与浏览器证据**：Apifox/Postman 导入、无痕 guest HTTP/WS、platform/client Network、既有分享链接和商业版端到端验证仍需按 `e2e-checklist.md` 执行并附截图或日志。

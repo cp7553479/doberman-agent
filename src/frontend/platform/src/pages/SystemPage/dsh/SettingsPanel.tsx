@@ -1,4 +1,4 @@
-import { Button, Input, toast } from '@bisheng/ui';
+import { Button, Input, toast } from '@doberman-agent/ui';
 
 
 import { saveDshManagementSettings, type DshManagementSettings } from "@/controllers/API/dshSettings";

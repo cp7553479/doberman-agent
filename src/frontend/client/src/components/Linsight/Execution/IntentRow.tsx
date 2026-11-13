@@ -8,7 +8,7 @@
  * (py-1) padding, the whole node carries 12px (pb-3) below, and the expanded body
  * is indented pl-6 under the title.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';

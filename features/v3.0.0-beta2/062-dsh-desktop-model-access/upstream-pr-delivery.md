@@ -2,9 +2,9 @@
 
 ## 交付范围与基线
 
-本次交付覆盖 DSH 企业后台及配套页面、接口、迁移和修复。目标为 `dataelement/bisheng:feat/3.0.0-beta2-pre`，核验基线为 `dff62d2519f69bc425cb11bbe8c3b50fc215889c`。
+本次交付覆盖 DSH 企业后台及配套页面、接口、迁移和修复。目标为 `cp7553479/doberman-agent:feat/3.0.0-beta2-pre`，核验基线为 `dff62d2519f69bc425cb11bbe8c3b50fc215889c`。
 
-候选分支为 `codex/dsh-enterprise-beta2-upstream-20260920`，推送到 `SuperstructureJH/bisheng`。原整合分支 `codex/dsh-enterprise-beta2@7374d699a6815cef7451bfa94e88deee9f2fcbb6` 通过常规合并完整保留，上游新增的客户端版本元数据合同一并保留。
+候选分支为 `codex/dsh-enterprise-beta2-upstream-20260920`，推送到 `SuperstructureJH/doberman-agent`。原整合分支 `codex/dsh-enterprise-beta2@7374d699a6815cef7451bfa94e88deee9f2fcbb6` 通过常规合并完整保留，上游新增的客户端版本元数据合同一并保留。
 
 ## 功能核对
 

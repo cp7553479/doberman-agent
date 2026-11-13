@@ -82,7 +82,7 @@ def test_bundle_public_environment_matches_preview_and_preserves_credentials(tmp
     op["payload"].update(
         base_path="/apps/example/_preview/session",
         version_no=7,
-        runtime_env={"BISHENG_APP_TOKEN": "fixture-app-token", "BISHENG_APP_DB_PATH": "wrong"},
+        runtime_env={"DOBERMAN_AGENT_APP_TOKEN": "fixture-app-token", "DOBERMAN_AGENT_APP_DB_PATH": "wrong"},
     )
     delivery = {
         "mode": "bundle",
@@ -93,13 +93,13 @@ def test_bundle_public_environment_matches_preview_and_preserves_credentials(tmp
         op, delivery, code_dir=source, data_dir=data, preview=True
     )
     env = dict(item.split("=", 1) for item in payload["Env"])
-    assert env["BISHENG_APP_DB_PATH"] == "/data/app.db"
-    assert env["BISHENG_APP_DB_URL"] == "sqlite:////data/app.db"
-    assert env["BISHENG_APP_VERSION"] == "7"
-    assert env["BISHENG_APP_VERSION_ID"] == "version-a"
-    assert env["BISHENG_APP_SLUG"] == "example"
-    assert env["BISHENG_APP_HEALTH_PATH"] == "/"
-    assert env["BISHENG_APP_TOKEN"] == "fixture-app-token"
+    assert env["DOBERMAN_AGENT_APP_DB_PATH"] == "/data/app.db"
+    assert env["DOBERMAN_AGENT_APP_DB_URL"] == "sqlite:////data/app.db"
+    assert env["DOBERMAN_AGENT_APP_VERSION"] == "7"
+    assert env["DOBERMAN_AGENT_APP_VERSION_ID"] == "version-a"
+    assert env["DOBERMAN_AGENT_APP_SLUG"] == "example"
+    assert env["DOBERMAN_AGENT_APP_HEALTH_PATH"] == "/"
+    assert env["DOBERMAN_AGENT_APP_TOKEN"] == "fixture-app-token"
     assert any(str(data) in bind and bind.endswith(":/data:rw") for bind in payload["HostConfig"]["Binds"])
     if language == "node20":
         assert env["BASE_PATH"] == "/apps/example/_preview/session"
@@ -117,6 +117,6 @@ def test_probe_unknown_version_is_empty_and_full_image_path_is_preserved(tmp_pat
     delivery = {"mode": "image", "image_ref": "sha256:" + "a" * 64, "platform": "linux/arm64"}
     payload = BundleLauncher(Config(data_root=tmp_path), Images()).payload(op, delivery)
     env = dict(item.split("=", 1) for item in payload["Env"])
-    assert env["BISHENG_APP_VERSION"] == ""
+    assert env["DOBERMAN_AGENT_APP_VERSION"] == ""
     assert env["PATH"] == "/custom/bin"
     assert "Cmd" not in payload and "Entrypoint" not in payload

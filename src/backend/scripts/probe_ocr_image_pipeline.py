@@ -59,7 +59,7 @@ def _verify_indexes(content: str, metadata: Dict, label: str, n: int = 5):
 
 def _check_minio_object(object_key: str) -> bool:
     try:
-        from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync
+        from doberman_agent.core.storage.minio.minio_manager import get_minio_storage_sync
         client = get_minio_storage_sync()
         path = object_key.lstrip("/")
         if path.startswith(client.bucket + "/"):
@@ -71,7 +71,7 @@ def _check_minio_object(object_key: str) -> bool:
 
 
 def _run_image_upload_transformer(loader, documents, document_id="probe-doc", knowledge_id=999999):
-    from bisheng.knowledge.rag.pipeline.transformer.image_upload import ImageUploadTransformer
+    from doberman_agent.knowledge.rag.pipeline.transformer.image_upload import ImageUploadTransformer
     t = ImageUploadTransformer(
         loader=loader, document_id=document_id, knowledge_id=knowledge_id, retain_images=True,
     )
@@ -109,8 +109,8 @@ def _assert_filename_consistency(loader, documents, label: str):
 
 
 def probe_paddleocr(tmp_dir: str):
-    from bisheng.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
-    from bisheng.common.services.config_service import settings as bs_settings
+    from doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
+    from doberman_agent.common.services.config_service import settings as bs_settings
 
     conf = bs_settings.get_knowledge().paddle_ocr
     print("=" * 80)
@@ -156,8 +156,8 @@ def probe_paddleocr(tmp_dir: str):
 
 
 def probe_mineru(tmp_dir: str):
-    from bisheng.knowledge.rag.pipeline.loader.mineru import MineruLoader
-    from bisheng.common.services.config_service import settings as bs_settings
+    from doberman_agent.knowledge.rag.pipeline.loader.mineru import MineruLoader
+    from doberman_agent.common.services.config_service import settings as bs_settings
 
     conf = bs_settings.get_knowledge().mineru
     print("=" * 80)
@@ -192,8 +192,8 @@ def probe_mineru(tmp_dir: str):
 
 
 def probe_etl4lm(tmp_dir: str):
-    from bisheng.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
-    from bisheng.common.services.config_service import settings as bs_settings
+    from doberman_agent.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
+    from doberman_agent.common.services.config_service import settings as bs_settings
 
     conf = bs_settings.get_knowledge().etl4lm
     print("=" * 80)
@@ -229,8 +229,8 @@ async def main():
         print(f"FILE NOT FOUND: {FILE_PATH}")
         sys.exit(1)
 
-    from bisheng.core.context import initialize_app_context
-    from bisheng.common.services.config_service import settings as bs_settings
+    from doberman_agent.core.context import initialize_app_context
+    from doberman_agent.common.services.config_service import settings as bs_settings
     await initialize_app_context(config=bs_settings)
 
     with tempfile.TemporaryDirectory() as tmp_dir:

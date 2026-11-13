@@ -1,6 +1,6 @@
 import { bsConfirm } from '@/components/bs-ui/alertDialog/useConfirm'
-import { Button } from "@bisheng/ui";
-import { Switch } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
+import { Switch } from "@doberman-agent/ui";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/bs-ui/dialog'
 import {
     getModelVisibility, getPolicySubjects, saveModelVisibility,

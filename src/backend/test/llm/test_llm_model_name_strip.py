@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
+from doberman_agent.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
 
 
 def _model(**overrides) -> LLMModelCreateReq:

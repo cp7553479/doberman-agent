@@ -31,7 +31,7 @@ pytestmark = pytest.mark.asyncio
 
 
 def _service():
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     return PublishStatusService
 
@@ -43,7 +43,7 @@ def _actor(user_id: int, *, tenant_id: int = ROOT_TENANT_ID, is_global_super: bo
 @pytest.fixture()
 def state_actions(monkeypatch):
     """Programmable ``manual_publish`` — a real one needs a live orchestrator."""
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
 
     calls: list[dict] = []
     responses: dict[str, object] = {"manual_publish": ActionResult(app_id="app", state="online", ok=True)}
@@ -61,7 +61,7 @@ def state_actions(monkeypatch):
 
 async def _parked(app_factory, deployment_factory, *, reason: str = "capacity"):
     """An application parked in ``pending_capacity`` with the attempt that parked it."""
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PENDING_ONLINE, STATUS_SUCCEEDED
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PENDING_ONLINE, STATUS_SUCCEEDED
 
     app, version = await app_factory(state="pending_capacity", with_version=True)
     deployment = await deployment_factory(
@@ -90,7 +90,7 @@ async def test_status_service_is_single_implementation_for_ui_and_mcp():
     """Structural, not behavioural: there is one function, so two callers cannot diverge."""
     import inspect
 
-    from bisheng.app_publish.domain.services import publish_status_service
+    from doberman_agent.app_publish.domain.services import publish_status_service
 
     getters = [
         name
@@ -223,9 +223,9 @@ async def test_status_returns_reject_reason_full_text(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """The rejection reason survives the decision — otherwise the owner cannot act on it."""
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     reason = "驳回原因：" + "接口缺少鉴权。" * 30
     app, version = await app_factory(with_version=True)
@@ -251,7 +251,7 @@ async def test_status_returns_reject_reason_full_text(
 async def test_status_lists_approver_names(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     app, version = await app_factory(with_version=True)
     deployment = await deployment_factory(
@@ -280,7 +280,7 @@ async def test_deleted_app_status_reports_independently(publish_db, app_factory,
 
 async def test_missing_app_is_a_business_code_not_a_404(publish_db):
     """404 would navigate the whole SPA away from the detail page."""
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     with pytest.raises(AppPublishOwnerOnlyError) as excinfo:
         await _service().get_publish_status("no-such-app", actor=_actor(OWNER_USER_ID))
@@ -295,7 +295,7 @@ async def test_missing_app_is_a_business_code_not_a_404(publish_db):
 
 async def test_status_no_permission_returns_business_code_not_403(publish_db, app_factory, tier_seed):
     """A stranger gets a refusal it can render, not a page navigation."""
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     app, _ = await app_factory(with_version=True)
 
@@ -323,8 +323,8 @@ async def test_tenant_admin_can_view_but_cannot_manual_publish(
     exactly why "only the owner may publish manually" cannot be a permission
     check.
     """
-    from bisheng.app_publish.domain.services import publish_status_service
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.app_publish.domain.services import publish_status_service
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     async def _is_tenant_admin(user_id: int, tenant_id: int) -> bool:
         return user_id == TENANT_ADMIN_USER_ID
@@ -346,7 +346,7 @@ async def test_can_flags_reflect_role_and_state(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """``withdraw`` needs an open request; ``manual_publish`` needs a parked app; ``submit`` is never true here."""
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     app, version = await app_factory(with_version=True)
     deployment = await deployment_factory(
@@ -383,8 +383,8 @@ async def test_withdraw_is_offered_only_where_the_approval_centre_accepts_it(
     why the flag used to be drawn for them; the click then only produced an
     error toast.
     """
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, version = await app_factory(with_version=True)
     deployment = await deployment_factory(
@@ -418,7 +418,7 @@ async def test_manual_publish_does_not_re_approve_and_marks_online(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, tier_seed
 ):
     """A success latches the same version ``online`` and creates **no** new version record."""
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app, version, _ = await _parked(app_factory, deployment_factory)
 
@@ -437,8 +437,8 @@ async def test_manual_publish_failure_keeps_pending_and_does_not_change_approval
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications, tier_seed
 ):
     """Still no room: the app stays parked, the version stays undecided, the approval is untouched."""
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app, version, _ = await _parked(app_factory, deployment_factory)
     state_actions.responses["manual_publish"] = ActionResult(
@@ -462,7 +462,7 @@ async def test_manual_publish_owner_only_prefilter_not_permission_runtime(
     consulted, so an owner-only rule expressed there would be a rule that never
     fires.
     """
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     app, _, _ = await _parked(app_factory, deployment_factory)
 
@@ -479,7 +479,7 @@ async def test_manual_publish_acts_before_asking_the_client(
     """The action re-checks ownership itself rather than trusting the ``can`` flag it emitted."""
     import inspect
 
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     source = inspect.getsource(PublishStatusService.request_manual_publish)
 
@@ -498,7 +498,7 @@ async def test_runtime_hint_reports_state_so_empty_logs_are_explainable(publish_
     Printing "no logs" for both reads as a broken log query and sends the owner
     off to check the wrong thing.
     """
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     app_row, _ = await app_factory()
 
@@ -515,7 +515,7 @@ async def test_runtime_hint_never_breaks_the_payload_it_decorates(publish_db):
     would turn "your app printed nothing yet" into "the log endpoint is
     broken" — strictly worse than the missing hint.
     """
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     hint = await PublishStatusService.runtime_hint("no-such-app-id")
 
@@ -545,8 +545,8 @@ async def test_a_tenant_administrator_reads_it_on_the_page_but_not_through_a_key
     the platform UI. A developer key's blast radius has to stay predictable
     when it leaks, so the credential door does not inherit it.
     """
-    from bisheng.app_publish.domain.services import publish_status_service
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.app_publish.domain.services import publish_status_service
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     async def _is_tenant_admin(user_id: int, tenant_id: int) -> bool:
         return user_id == TENANT_ADMIN_USER_ID
@@ -563,7 +563,7 @@ async def test_a_tenant_administrator_reads_it_on_the_page_but_not_through_a_key
 
 
 async def test_a_super_admin_key_gets_no_bypass_on_the_credential_door(publish_db, app_factory, tier_seed):
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     app, _ = await app_factory(with_version=True)
     actor = _actor(SUPER_ADMIN_USER_ID, is_global_super=True)
@@ -582,7 +582,7 @@ async def test_a_stranger_and_a_missing_application_share_one_error_code(publish
     bare ``McpAppNotOwnedError(app_id=...)`` and never forwards ``details``.
     ``test_mcp_tools_apps.py`` asserts the two payloads byte for byte.
     """
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     app, _ = await app_factory(with_version=True)
 

@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { asRecord } from '@bisheng/chat/core';
+import { asRecord } from '@doberman-agent/chat/core';
 import { PlatformConversationMessages } from '@/components/bs-comp/appChat/PlatformConversationMessages';
 import { useRef } from 'react';
-import { SuggestedQuestions, useConversationScroll } from '@bisheng/chat';
-import { messagesForPresentation } from '@bisheng/chat/core';
+import { SuggestedQuestions, useConversationScroll } from '@doberman-agent/chat';
+import { messagesForPresentation } from '@doberman-agent/chat/core';
 import InputForm from './InputForm';
 import { useMessageStore } from './messageStore';
 

@@ -38,7 +38,7 @@ from typing import Dict, List, Optional, Tuple
 
 from pymilvus import Collection, connections, utility
 
-from bisheng.common.services.config_service import settings
+from doberman_agent.common.services.config_service import settings
 
 # Substrings that identify a delegator/consistency problem specifically.
 _DELEGATOR_MARKERS = ("timestamp lag too large", "delegator", "channel checkpoint", "not ready")
@@ -69,7 +69,7 @@ def _collection_to_knowledge() -> Dict[str, str]:
     """Map collection_name -> 'kb_id:kb_name' for readable output."""
     mapping: Dict[str, str] = {}
     try:
-        from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+        from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
 
         page = 1
         while True:
@@ -155,7 +155,7 @@ def main() -> int:
     elif args.collection:
         names = list(args.collection)
     else:
-        from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+        from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
 
         names = []
         for kid in args.knowledge_id:

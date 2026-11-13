@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import DailyChatView from './ChatView';
 import AppChatView from '~/pages/appChat/ChatView';
 import { importMessagesToKnowledgeApi } from '~/api/messageExport';

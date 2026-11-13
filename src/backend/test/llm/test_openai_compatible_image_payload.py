@@ -1,6 +1,6 @@
 from langchain_core.messages import HumanMessage
 
-from bisheng.core.ai.llm.chat_qwen import ChatQwen
+from doberman_agent.core.ai.llm.chat_qwen import ChatQwen
 
 
 def test_qwen_payload_converts_standard_base64_image_block_to_image_url():

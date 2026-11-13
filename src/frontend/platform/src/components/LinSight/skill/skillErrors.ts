@@ -2,8 +2,8 @@
 // skillApi mutation calls run in `silent` mode so the structured error reaches the
 // caller and validation copy can go through i18n instead of backend English.
 import type { SkillUploadLimit } from "@/controllers/API/linsight";
-import { isApiError } from '@bisheng/api-client';
-import { notification } from '@bisheng/ui';
+import { isApiError } from '@doberman-agent/api-client';
+import { notification } from '@doberman-agent/ui';
 
 const SKILL_ERROR_KEYS: Record<number, string> = {
     11051: 'skillManage.errors.validation',

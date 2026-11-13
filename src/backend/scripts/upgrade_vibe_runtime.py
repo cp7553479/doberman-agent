@@ -29,7 +29,7 @@ def validate_inventory(document):
             raise ValueError("duplicate app")
         seen.add(item["app_id"])
         labels = item.get("labels", {})
-        if labels.get("bisheng.app.id") != item["app_id"] or labels.get("bisheng.version.id") != item["version_id"]:
+        if labels.get("doberman_agent.app.id") != item["app_id"] or labels.get("doberman_agent.version.id") != item["version_id"]:
             raise ValueError("inventory scope mismatch")
         if not item["image_id"].startswith("sha256:"):
             raise ValueError("immutable local image ID required")
@@ -37,9 +37,9 @@ def validate_inventory(document):
 
 
 def api(base, path, body):
-    token = os.environ.get("BISHENG_MANAGEMENT_TOKEN", "")
+    token = os.environ.get("DOBERMAN_AGENT_MANAGEMENT_TOKEN", "")
     if not token:
-        raise ValueError("set the authorized platform session in BISHENG_MANAGEMENT_TOKEN")
+        raise ValueError("set the authorized platform session in DOBERMAN_AGENT_MANAGEMENT_TOKEN")
     request = urllib.request.Request(
         base.rstrip("/") + path,
         data=json.dumps(body).encode(),

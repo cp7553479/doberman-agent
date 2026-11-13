@@ -8,8 +8,8 @@ from datetime import timedelta
 
 from sqlalchemy import event
 
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.user.domain.models.user import User
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.user.domain.models.user import User
 from test.dsh.model_audit_fixtures import NOW, audit_session
 from test.dsh.test_model_audit_flow import ADMIN, BASE, LOCAL_ADMIN, USER, fixture
 from test.dsh.test_model_audit_groups import row

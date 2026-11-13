@@ -1,5 +1,5 @@
 import { cname } from "@/components/bs-ui/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { BookOpenCheck,Bot,Brain,Code2,FlagTriangleRight,Keyboard,MessagesSquareIcon,Split } from "lucide-react";
 export const Icons = {
     'start': Outlined.Home,

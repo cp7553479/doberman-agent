@@ -18,20 +18,20 @@ from sqlalchemy import create_engine, event, insert
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, SQLModel, select
 
-from bisheng.common.errcode.dsh import DshContentSafetyExpiredError, DshOperationConflictError
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditEvidence, DshModelAuditManifest
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState as State
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.repositories import content_safety, content_safety_projection
-from bisheng.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Queries
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
-from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
+from doberman_agent.common.errcode.dsh import DshContentSafetyExpiredError, DshOperationConflictError
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditEvidence, DshModelAuditManifest
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState as State
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.repositories import content_safety, content_safety_projection
+from doberman_agent.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Queries
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
+from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
 from test.dsh.content_safety_fixtures import SafetyIdentity, safety_database
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 from test.dsh.test_content_safety_groups import native, project, summary
@@ -52,7 +52,7 @@ def retention_engine(tmp_path):
 
 
 def maintenance(session):
-    module = importlib.import_module("bisheng.dsh.domain.repositories.content_safety_maintenance")
+    module = importlib.import_module("doberman_agent.dsh.domain.repositories.content_safety_maintenance")
     return module.ContentSafetyMaintenanceRepository(session)
 
 

@@ -12,8 +12,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.unattended_run import caller_instructions, is_unattended_run
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.unattended_run import caller_instructions, is_unattended_run
 
 FLAG_SETS = [
     {},
@@ -85,7 +85,7 @@ def factory_env(monkeypatch: pytest.MonkeyPatch):
         captured.update(kwargs)
         return SimpleNamespace(name="agent")
 
-    from bisheng.core.config.settings import LinsightConf
+    from doberman_agent.core.config.settings import LinsightConf
 
     monkeypatch.setattr("deepagents.create_deep_agent", fake_create_deep_agent)
     monkeypatch.setattr(agent_factory, "_resolve_model", AsyncMock(return_value=(SimpleNamespace(), False)))

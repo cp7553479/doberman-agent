@@ -126,7 +126,7 @@ class IdentityRun:
         _require(
             len(identifiers) == len(rows)
             and all(
-                isinstance(item, str) and item.startswith("bisheng:") and item[8:].isdecimal() for item in identifiers
+                isinstance(item, str) and item.startswith("doberman_agent:") and item[8:].isdecimal() for item in identifiers
             )
             and len(set(identifiers)) == len(identifiers),
             "Native catalog contains invalid or duplicate governed model identifiers",
@@ -156,7 +156,7 @@ class IdentityRun:
             self.base + "/dsh/chat/completions",
             headers=self.headers(tokens),
             json={
-                "model": f"bisheng:{self.http.settings.chat_model_id}",
+                "model": f"doberman_agent:{self.http.settings.chat_model_id}",
                 "stream": False,
                 "messages": [{"role": "user", "content": f"F111_SCENARIO:{scenario} {word}"}],
             },
@@ -269,12 +269,12 @@ async def test_administrative_visibility_guard_is_independent_of_native_identity
     run = live_identity
     tokens = await run.issue()
     rows = await run.models(tokens)
-    owned = next((row for row in rows if row["id"] == f"bisheng:{run.http.settings.chat_model_id}"), None)
+    owned = next((row for row in rows if row["id"] == f"doberman_agent:{run.http.settings.chat_model_id}"), None)
     _require(
         owned is not None and owned.get("display_name", "").startswith(run.http.settings.prefix),
         "Management denial test requires the explicit test-owned model",
     )
-    model_id = owned["id"].removeprefix("bisheng:")
+    model_id = owned["id"].removeprefix("doberman_agent:")
     path = run.base + f"/dsh/admin/models/{model_id}/visibility"
     before = checked_json(await run.http.admin.get(path, params={"tenant_id": 1}))
     _require(isinstance(before, dict) and type(before.get("version")) is int, "Admin visibility snapshot missing")
@@ -330,7 +330,7 @@ async def live_policy(live_identity):
     tokens = await run.issue()
     rows = await run.models(tokens)
     identifier = run.http.settings.chat_model_id
-    model = next((row for row in rows if row["id"] == f"bisheng:{identifier}"), None)
+    model = next((row for row in rows if row["id"] == f"doberman_agent:{identifier}"), None)
     _require(
         identifier is not None
         and model is not None

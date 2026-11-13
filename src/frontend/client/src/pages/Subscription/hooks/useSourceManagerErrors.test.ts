@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { addWechatSourceApi } from '~/api/channels';
 import { useSourceManager } from './useSourceManager';
 const mockConfirm = jest.fn();

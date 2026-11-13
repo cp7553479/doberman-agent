@@ -13,9 +13,9 @@ pytest_plugins = ("test.linsight.test_skill_api",)
 
 @pytest.fixture(autouse=True)
 def runtime_permission_scope(monkeypatch):
-    from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-    from bisheng.linsight.domain.models.linsight_skill import LinsightSkillDao
-    from bisheng.linsight.domain.services.user_skills import SkillAvailabilityRepository
+    from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+    from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkillDao
+    from doberman_agent.linsight.domain.services.user_skills import SkillAvailabilityRepository
     from test.linsight.test_skill_service import FakeSkillDao
 
     async def enabled(*, owner_user_id=0):
@@ -23,13 +23,13 @@ def runtime_permission_scope(monkeypatch):
 
     monkeypatch.setattr(LinsightSkillDao, "list_enabled", enabled)
     monkeypatch.setattr(SkillAvailabilityRepository, "disabled_ids", AsyncMock(return_value=set()))
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
     allowed = {"enabled": True}
 
     async def decisions(user, *, resource_type, resource_ids, actions):
         return {str(i): {"use"} for i in resource_ids} if allowed["enabled"] else {}
 
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.batch_check_business_actions", decisions)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.batch_check_business_actions", decisions)
     token = set_current_tenant_id(1)
     yield allowed
     current_tenant_id.reset(token)
@@ -82,7 +82,7 @@ def test_runtime_rejects_foreign_tenant_unknown_and_old_revision(client):
 def test_runtime_requires_login(client):
     from fastapi import HTTPException
 
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     async def logged_out():
         raise HTTPException(status_code=401)

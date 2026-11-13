@@ -6,7 +6,7 @@
 | --- | --- |
 | `/bin/bash docker/test-install.sh` | 12 项通过；Bash 3.2 + 系统 awk，Docker 命令录制，阻断宿主机 Python。覆盖默认原样复制、保留旧配置、pull 失败中止、Gateway 文件路径强制要求、缓存 license 不绕过、参数/凭据/转发、重复执行、关闭 profile 和两种 Compose 入口。 |
 | 既有 `test/tool/test_work_knowledge_deploy.py` | 隔离 conftest 执行，23 项通过。原更新、预览、失败中止和服务范围保持。本轮使用 `-p no:cacheprovider` 重跑，无缓存写入警告。 |
-| 直接复制模板后真实 Compose 展开 | 不经过安装脚本：默认 13 服务、app-runtime 17 服务；所有镜像地址为 cr.dataelem.com，MinIO/后端/Milvus 凭据一致，主网络实际名 bisheng-network、沙箱网 bisheng-sandbox。 |
+| 直接复制模板后真实 Compose 展开 | 不经过安装脚本：默认 13 服务、app-runtime 17 服务；所有镜像地址为 cr.dataelem.com，MinIO/后端/Milvus 凭据一致，主网络实际名 doberman-agent-network、沙箱网 doberman-agent-sandbox。 |
 | Gateway profile 与依赖链 | 主 Compose 的 gateway profile 为 15 服务（包含 gateway-db-init）；叠加 app-runtime 为 19 服务。初始化成功依赖、Gateway 无宿主端口、HMAC 一致与独立数据库密码通过检查。 |
 | Gateway 配置生成/关闭 | 真实 Compose 校验通过；关闭恢复 13 服务和直接转发。显式使用多个 --profile 时应列出所有所需 profile；本机 Compose 的命令行 profile 会覆盖 COMPOSE_PROFILES。 |
 | 原应用运行时静态契约 | 全部通过，默认/app-runtime 的 13/17 服务计数、变量读取契约和隔离网络保持。主网络仍用逻辑键 default，实际名称已显式指定。 |
@@ -25,7 +25,7 @@
 
 镜像已使用 166 的 CR 认证重新核对：基础默认地址全部 200，当前为 AMD64。
 沙箱使用用户给定 `feat_3.0.0`。默认 VibeApp 的 CR :v3.0.0 及 socket-proxy 地址
-返回 404；旧 Docker Hub 测试版本七个毕昇镜像族的 14 个 AMD64/ARM64 tag 均 200，
+返回 404；旧 Docker Hub 测试版本七个doberman-agent镜像族的 14 个 AMD64/ARM64 tag 均 200，
 socket-proxy 上游有双架构。详见 [镜像核对](vibe-image-audit.md)。
 
 镜像获取存在环境限制：普通 Docker 拉取遇到 TLS 握手超时及异常慢速，已通过相同

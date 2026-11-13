@@ -13,8 +13,8 @@ from unittest.mock import MagicMock
 from deepagents.backends.filesystem import FilesystemBackend
 from langchain_core.messages import SystemMessage
 
-from bisheng.linsight.domain.services.agent_factory import SKILL_SELECTED_NOTE, SkillSelectionMiddleware
-from bisheng.linsight.domain.services.skills_prompt import LINSIGHT_SKILLS_HEADING, LinsightSkillsMiddleware
+from doberman_agent.linsight.domain.services.agent_factory import SKILL_SELECTED_NOTE, SkillSelectionMiddleware
+from doberman_agent.linsight.domain.services.skills_prompt import LINSIGHT_SKILLS_HEADING, LinsightSkillsMiddleware
 
 
 class _Request:

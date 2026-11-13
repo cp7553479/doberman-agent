@@ -8,8 +8,8 @@ import pytest
 from runtime_manager.k8s_admission import AdmissionPolicy, AdmissionRefused, template_projection
 from runtime_manager.k8s_templates import PodPlan, pod_template
 
-NAMESPACE = "bisheng-runtime-apps"
-MANAGER = "system:serviceaccount:bisheng-system:runtime-manager"
+NAMESPACE = "doberman-agent-runtime-apps"
+MANAGER = "system:serviceaccount:doberman-agent-system:runtime-manager"
 LOGGER = "runtime_manager.k8s_admission"
 PRIVATE_MARKER = "synthetic-sensitive-diagnostic-marker"
 
@@ -96,7 +96,7 @@ def test_real_policy_refusals_log_only_fixed_reason_and_keep_response(case, capl
     elif change == "baseline":
         review["request"]["object"]["spec"]["hostNetwork"] = True
     elif change == "actor":
-        review["request"]["userInfo"]["username"] = "system:serviceaccount:bisheng-system:untrusted"
+        review["request"]["userInfo"]["username"] = "system:serviceaccount:doberman-agent-system:untrusted"
     elif change == "plan-scope":
         plan["kind"] = "Service"
     caplog.set_level(logging.WARNING, logger=LOGGER)

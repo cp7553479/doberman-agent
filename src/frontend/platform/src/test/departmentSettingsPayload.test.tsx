@@ -39,8 +39,8 @@ vi.mock("@/controllers/request", async (importOriginal) => ({
   captureAndAlertRequestErrorHoc: vi.fn((promise: Promise<unknown>) => promise),
 }));
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   toast: vi.fn(),
 }))();

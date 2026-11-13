@@ -81,7 +81,7 @@ REQUIRED_ENV_OVERRIDE: dict[str, tuple[str, ...]] = {
 #: raw Docker API ``NetworkMode`` both use this literal name, so compose must
 #: pin ``name:`` — otherwise compose prefixes it with the project name and every
 #: container create fails with "network not found".
-APP_NETWORK = "bisheng-apps"
+APP_NETWORK = "doberman-agent-apps"
 
 #: Both runtime-layer services must keep the implicit network too: nginx
 #: resolves ``app-proxy`` and backend resolves ``runtime-manager`` by service
@@ -298,7 +298,7 @@ def check_data_root_mapping(report: Report, doc: dict) -> None:
 
 #: The build network (F054 D12). Same "must be pinned by ``name:``" reason as
 #: the application network: ``docker build`` is given the literal name.
-BUILD_NETWORK = "bisheng-build"
+BUILD_NETWORK = "doberman-agent-build"
 
 DOCKER_SOCKET = "/var/run/docker.sock"
 

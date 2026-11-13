@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { FileText, GanttChartIcon, Globe, LogOut } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import { Dropdown, DropdownGroup, DropdownItem, DropdownSub } from '@bisheng/ui';
+import { Dropdown, DropdownGroup, DropdownItem, DropdownSub } from '@doberman-agent/ui';
 import { GearIcon, UserIcon } from '~/components/svg';
 import { useGetStartupConfig, useGetUserBalance } from '~/hooks/queries/data-provider';
 import { useLocalize } from '~/hooks';

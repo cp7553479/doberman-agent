@@ -2,8 +2,8 @@
 
 ## 基线
 
-- 版本：`dataelement/bisheng:feat/bisheng-work-120-main@780723543c408013d0011a2d8053fdc6bb712420`，本轮 fetch 核对。
-- 独立目录 `.worktrees/bisheng-app-chat-scale-20261102`，分支 `codex/app-chat-scaled-layout`。
+- 版本：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@780723543c408013d0011a2d8053fdc6bb712420`，本轮 fetch 核对。
+- 独立目录 `.worktrees/doberman-agent-app-chat-scale-20261102`，分支 `codex/app-chat-scaled-layout`。
 - 本轮改动位于网页 AppRoot。桌面参考沿用已核对 `V1.2.0@09c22fe34e5c89193c15387685810fbaa45e73fc`；本机 Harness 依赖 `0.2.1-rc.2`，Electron `43.0.0`，pnpm `9.15.9`。
 
 ## 发现和修正

@@ -3,9 +3,9 @@
 ## 交付范围与基线
 
 - 日期：2026-10-29。
-- 目标仓库与分支：`dataelement/bisheng` / `feat/bisheng-work-120-main`。
+- 目标仓库与分支：`cp7553479/doberman-agent` / `feat/doberman-agent-work-120-main`。
 - 创建修复分支及提交前复核的远端基线：`3950752273b75a120a0f8e25ecd5d903c94f8106`。
-- 修复分支：`codex/work120-subscription-url-errors`；独立目录：`.worktrees/bisheng-subscription-url-errors`。
+- 修复分支：`codex/work120-subscription-url-errors`；独立目录：`.worktrees/doberman-agent-subscription-url-errors`。
 - 本次采用现有行为缺陷修复流程，覆盖 Web 订阅界面；Desktop Harness 版本与安装包交付属于独立验证范围。
 
 ## 根因与实现

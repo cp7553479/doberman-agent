@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 import { AppType } from "@/types/app";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -45,11 +45,11 @@ export default function Templates() {
             });
         };
         load();
-        window.addEventListener('bisheng:management-scope-changed', load);
+        window.addEventListener('doberman_agent:management-scope-changed', load);
         const invalidate = () => { active = false; ++generation.current; };
         return () => {
             invalidate();
-            window.removeEventListener('bisheng:management-scope-changed', load);
+            window.removeEventListener('doberman_agent:management-scope-changed', load);
         };
     }, [type, canManageTemplates, user?.tenant_id])
 

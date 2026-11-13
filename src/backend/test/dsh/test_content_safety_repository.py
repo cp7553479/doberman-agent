@@ -17,17 +17,17 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
-from bisheng.common.errcode.dsh import DshContentSafetyConflictError, DshContentSafetyExpiredError
-from bisheng.core.context.tenant import set_current_tenant_id, strict_tenant_filter, visible_tenant_ids
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-from bisheng.dsh.domain.schemas.content_safety import ContentSafetyEvent
+from doberman_agent.common.errcode.dsh import DshContentSafetyConflictError, DshContentSafetyExpiredError
+from doberman_agent.core.context.tenant import set_current_tenant_id, strict_tenant_filter, visible_tenant_ids
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+from doberman_agent.dsh.domain.schemas.content_safety import ContentSafetyEvent
 from test.dsh.content_safety_fixtures import safety_database
 
 
 def repository_port():
-    return importlib.import_module("bisheng.dsh.domain.repositories.content_safety")
+    return importlib.import_module("doberman_agent.dsh.domain.repositories.content_safety")
 
 
 def wire_hash(payload):

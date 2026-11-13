@@ -1,6 +1,6 @@
 # SDD Guide — Spec-Driven Development Workflow
 
-> The full spec for how features get built in BiSheng. Root `AGENTS.md §6` is the quick-reference flow; **this file is the authoritative detail and the single source for the workflow**.
+> The full spec for how features get built in doberman-agent. Root `AGENTS.md §6` is the quick-reference flow; **this file is the authoritative detail and the single source for the workflow**.
 > Architecture laws every feature must obey → `docs/constitution.md`. Document templates → `features/_templates/`.
 >
 > **Status convention**: items marked **✅** are live today; **🚧** are planned and **must not be assumed active**. Full status list → §8.

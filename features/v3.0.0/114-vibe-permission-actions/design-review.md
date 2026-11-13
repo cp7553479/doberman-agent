@@ -36,10 +36,10 @@ LGTM
 ### 2.1 本轮静态核对依据
 
 - [Compose](../../../docker/docker-compose.yml) 默认 backend 为 2，manager/入口/出口配置为 2；[K8s Chart](../../../deploy/kubernetes/app-runtime/templates/workloads.yaml) 同样为 2。源码 config 仍存在默认 1，故列为明确清理项，而非声称只改开关即可完成。
-- [DockerExecutor](../../../src/runtime-manager/runtime_manager/executors/docker.py) 已有 bundle/image/source-image；[RuntimeDeliveryCoordinator](../../../src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py) 将缺少 delivery 的已有源码包转为 source-image；K8s 使用其现有执行后端，未新增编排体系。
+- [DockerExecutor](../../../src/runtime-manager/runtime_manager/executors/docker.py) 已有 bundle/image/source-image；[RuntimeDeliveryCoordinator](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py) 将缺少 delivery 的已有源码包转为 source-image；K8s 使用其现有执行后端，未新增编排体系。
 - [legacy_prepare](../../../src/runtime-manager/runtime_manager/legacy_prepare.py) 及 [OCI assembler](../../../src/runtime-manager/runtime_manager/oci_assembler.py) 仍引用 builder 模板；v2 预览/data_worker/K8s helper 使用 appdb。设计明确提取共用能力后再删除旧 RPC 壳，防止删旧代码时破坏现行功能。
 - [manager main](../../../src/runtime-manager/runtime_manager/main.py) 仍按协议启动不同对账循环并注册旧 routers；[旧 inventory](../../../src/runtime-manager/runtime_manager/api/upgrade.py) 虽以 /v2 命名仍读取旧 desired-state。清理按调用用途而非数字或文件名。
-- [RuntimeUpgradeService](../../../src/backend/bisheng/app_runtime/domain/services/runtime_upgrade_service.py) 的 import_binding 是旧执行体/存储导入；rebind 虽调用 v2 coordinator，但正常在线同版本会命中既有实例返回分支。上一轮以“调用 v2 coordinator”推断“现有通用 v2 受控重建”的结论不充分，详见 R3。
+- [RuntimeUpgradeService](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_upgrade_service.py) 的 import_binding 是旧执行体/存储导入；rebind 虽调用 v2 coordinator，但正常在线同版本会命中既有实例返回分支。上一轮以“调用 v2 coordinator”推断“现有通用 v2 受控重建”的结论不充分，详见 R3。
 - 唯一阶段授权端口位于现有 `/api/v1/internal/app-runtime/v2/operations/{operation_id}/authorize-step`，复用 RuntimeRoute、manager 服务角色及 v2 签名/nonce，不另建旧签名通道。
 
 ### 2.2 实施前保留事项
@@ -52,10 +52,10 @@ LGTM
 
 **静态证据**：
 
-1. [runtime_management.py](../../../src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py) 第 112–125 行将 `/runtime/upgrade` 接至 import_binding，将 `/runtime/upgrade/rebind` 接至 rebind。
-2. [runtime_upgrade_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_upgrade_service.py) 第 131–159 行将旧导入 route 写为 `maintenance` 并返回 `requires_rebind`；第 161–166 行的 rebind 只加载 current_version 后调用 `coordinator.deploy(..., preserve_pending=True)`。
-3. [runtime_delivery_coordinator.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py) 第 356–358 行：route 为 `serving`、version 等于 current version 且 app 为 `online` 时，直接返回既有 exec_ref/operation_id。该分支没有创建重建操作、增加 generation 或启动新实例。旧导入 route 的 maintenance 状态不会命中它，但这不构成原生 v2 通用重建能力。
-4. 已有配置确认重建是另一条真实链路：[secret_rebuild_service.py](../../../src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py) 第 117–154 行验证 delivery/确认快照，写入 `purpose=config_restart`，直接 submit 新 deploy operation。它对应 AC-26，不能作为存在独立 runtime_upgrade 能力的证明。源码扫描也未发现业务代码写入 `purpose=runtime_upgrade`。
+1. [runtime_management.py](../../../src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py) 第 112–125 行将 `/runtime/upgrade` 接至 import_binding，将 `/runtime/upgrade/rebind` 接至 rebind。
+2. [runtime_upgrade_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_upgrade_service.py) 第 131–159 行将旧导入 route 写为 `maintenance` 并返回 `requires_rebind`；第 161–166 行的 rebind 只加载 current_version 后调用 `coordinator.deploy(..., preserve_pending=True)`。
+3. [runtime_delivery_coordinator.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py) 第 356–358 行：route 为 `serving`、version 等于 current version 且 app 为 `online` 时，直接返回既有 exec_ref/operation_id。该分支没有创建重建操作、增加 generation 或启动新实例。旧导入 route 的 maintenance 状态不会命中它，但这不构成原生 v2 通用重建能力。
+4. 已有配置确认重建是另一条真实链路：[secret_rebuild_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py) 第 117–154 行验证 delivery/确认快照，写入 `purpose=config_restart`，直接 submit 新 deploy operation。它对应 AC-26，不能作为存在独立 runtime_upgrade 能力的证明。源码扫描也未发现业务代码写入 `purpose=runtime_upgrade`。
 
 **影响**：接手实现者可能保留一个点击后仍返回原实例的“重建”入口，或在权限映射任务中临时增加通用重建行为；AC-57 的交付边界、旧入口删除和验证对象因此不清楚。这是现状依据和执行契约深度问题，未发现因此直接突破权限边界，严重度为 medium。
 
@@ -71,21 +71,21 @@ LGTM
 
 #### R4：给系统自愈一个可验证的授权来源（high）
 
-- **当前源头**：[RuntimeOperationService.observation](../../../src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py) 第 701–723 行验证观测与 route 围栏后调用 recover；[RuntimeDeliveryCoordinator.recover](../../../src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py) 第 481–542 行新建 deploy，写 auto_commit，重新注入环境；fact 第 571–574 行还会自动提交新路由。
+- **当前源头**：[RuntimeOperationService.observation](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py) 第 701–723 行验证观测与 route 围栏后调用 recover；[RuntimeDeliveryCoordinator.recover](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py) 第 481–542 行新建 deploy，写 auto_commit，重新注入环境；fact 第 571–574 行还会自动提交新路由。
 - **设计缺口**：D6/§4.5/§4.8 只说明用户主体、凭据与 F048 当前资格，缺来源或未知用途拒绝；但 AC-60 要求自愈不依赖历史操作者。配置确认重建也使用 deploy/auto_commit，不能靠这两个通用字段辨认系统资格。
 - **建议**：沿现有 authorization_context 区分用户意图与 backend 生成的系统自愈意图，说明 observation/recover 如何绑定原 operation、route/epoch、tenant、批准版本及当前有效运行意图，authorize-step 和 route commit 如何验证；用户不可自证系统来源。明确系统自愈取消与应用下线的既有动作边界。不新增授权引擎或恢复框架。
 - **仅需的定向验证**：历史发布人撤权后，原批准版本仍能受控自愈；伪造系统来源、版本/route 变化被拒绝；用户配置重建仍须 edit AND publish，不能借 auto_commit 豁免。
 
 #### R5：检查需要早于旧服务被影响（medium）
 
-- **当前首个效果**：[OperationExecutor._deploy](../../../src/runtime-manager/runtime_manager/operations.py) 第 304–318 行先 report maintenance、stop_instances，之后才备份和迁移；backend fact 第 491–497 行在 maintenance 即调用投影阻断；[RuntimeProjectionService.block](../../../src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py) 第 20–28 行修改 route 并撤销出站策略。
+- **当前首个效果**：[OperationExecutor._deploy](../../../src/runtime-manager/runtime_manager/operations.py) 第 304–318 行先 report maintenance、stop_instances，之后才备份和迁移；backend fact 第 491–497 行在 maintenance 即调用投影阻断；[RuntimeProjectionService.block](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py) 第 20–28 行修改 route 并撤销出站策略。
 - **设计缺口**：仅列“迁移/正式启动/新路由”之前检查，不足以保证 AC-40 的旧服务保护；实现者若在迁移前才检查，已撤权请求可能先停掉旧服务。
 - **建议**：给出最小阶段顺序表，首次准入必须在 maintenance 投影与停止旧 writer 之前；分别说明迁移、启动、路由提交的检查和已进入维护后的必要收尾。保留既有围栏和清理，不要求跨进程全局事务。
 - **仅需的定向验证**：准备完成、维护开始前撤权，旧 route、出站策略和 writer 不变；进入维护后拒绝新效果时能够按原意图安全收尾，不重新发布未授权内容。
 
 #### R6：预览会话、凭据和操作需要共同收敛（medium）
 
-- **当前提交顺序**：[PreviewInstanceService.start](../../../src/backend/bisheng/app_publish/domain/services/preview_instance_service.py) 第 165–181 行先查后建，会话在 _insert_session 第 429–444 行独立提交 running，之后才提交运行操作；启动异常只关闭会话。既有查询索引不保证活跃会话唯一。
+- **当前提交顺序**：[PreviewInstanceService.start](../../../src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py) 第 165–181 行先查后建，会话在 _insert_session 第 429–444 行独立提交 running，之后才提交运行操作；启动异常只关闭会话。既有查询索引不保证活跃会话唯一。
 - **设计缺口**：§4.7/§4.9 新增 per-preview credential 和用途复用键，但没有声明并发启动的串行点、凭据签发的事务参与关系、崩溃与未知结果后的幂等回收。认证拒绝未绑定凭据只能限制访问，不能自动消除重复会话或遗留凭据。
 - **建议**：明确同一 version/viewer/purpose/task 的串行点，复用可参与事务的凭据签发方式；定义会话/credential/operation 一起提交或可续办的最小状态，失败只回收本会话 credential，重复处理保持幂等，不影响生产凭据。
 - **仅需的定向验证**：同键并发启动只获得一个有效预览；签发失败、签发后崩溃、operation 提交未知结果、启动失败及重复回收不会留下可用孤立凭据，也不撤销生产凭据。

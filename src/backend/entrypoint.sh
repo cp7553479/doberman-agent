@@ -7,36 +7,36 @@ start_mode=${1:-api}
 
 start_knowledge(){
   # 知识库解析的celery worker
-    celery -A bisheng.worker.main worker -l info -c 50 -P threads -Q knowledge_celery -n knowledge@%h
+    celery -A doberman_agent.worker.main worker -l info -c 50 -P threads -Q knowledge_celery -n knowledge@%h
 }
 
 start_knowledge_ocr(){
   # 知识库解析的ocr服务的celery worker，如果开启了单独的ocr解析队列（config.yaml里knowledge_file_worker.ocr_queue_enabled=true），则需要启动这个worker来处理ocr相关的任务，否则ocr相关的任务会一直积压在队列里无法被处理
-    celery -A bisheng.worker.main worker -l info -c 5 -P threads -Q ocr_celery -n knowledge_ocr@%h
+    celery -A doberman_agent.worker.main worker -l info -c 5 -P threads -Q ocr_celery -n knowledge_ocr@%h
 }
 
 start_workflow(){
   # 工作流相关的celery worker。支持多节点运行，但是需要保证各节点的队列名称不冲突且都以workflow_celery开头
-    celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
+    celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
 }
 
 start_beat(){
   # 定时任务调度
-    celery -A bisheng.worker.main beat -l info
+    celery -A doberman_agent.worker.main beat -l info
 }
 
 start_linsight(){
   # 灵思后台任务worker
-    python bisheng/linsight/worker.py --worker_num 1 --max_concurrency 5
+    python doberman_agent/linsight/worker.py --worker_num 1 --max_concurrency 5
 }
 start_default(){
     # 默认其他任务的执行worker，目前是定时统计埋点数据
-    celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q celery -n celery@%h
+    celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q celery -n celery@%h
 }
 
 start_min_worker(){
     # 最小化worker进程数，减少资源占用
-    celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q knowledge_celery,ocr_celery,workflow_celery,celery -n min_worker@%h
+    celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q knowledge_celery,ocr_celery,workflow_celery,celery -n min_worker@%h
 }
 
 if [ "$start_mode" = "api" ]; then
@@ -53,7 +53,7 @@ if [ "$start_mode" = "api" ]; then
         exit 1
     fi
     echo "Starting API server..."
-    uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --no-access-log --workers 2
+    uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --no-access-log --workers 2
 elif [ "$start_mode" = "upgrade-work-knowledge" ]; then
     shift
     exec python scripts/register_work_knowledge_tool.py "$@"

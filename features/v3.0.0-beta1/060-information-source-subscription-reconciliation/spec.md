@@ -5,7 +5,7 @@
 > 本文档只定义信息源订阅、文章同步和知识空间投递的业务目标、保证边界与验收标准。
 > 实现决策、数据流、字段、任务、锁、文件清单与运维步骤由后续 `design.md` / `tasks.md` 维护。
 
-**关联需求**: [毕昇侧信息源订阅对账与新增文章同步轻量改造方案](../../../docs/architecture/proposals/2026-08-20-information-source-subscription-reconciliation.md)
+**关联需求**: [doberman-agent侧信息源订阅对账与新增文章同步轻量改造方案](../../../docs/architecture/proposals/2026-08-20-information-source-subscription-reconciliation.md)
 **优先级**: P1
 **所属版本**: v3.0.0-beta1
 **依赖**: v2.6.0 F031、Information 同步查询协议 v1.1、既有频道知识同步能力
@@ -46,8 +46,8 @@
 ### 1.2 信息消费者
 
 作为频道信息消费者，
-我希望毕昇在 Information 当天真正完成采集后及时同步新增文章，
-以便不会因为毕昇任务执行过早而错过当天稍后才出现的文章。
+我希望doberman-agent在 Information 当天真正完成采集后及时同步新增文章，
+以便不会因为doberman-agent任务执行过早而错过当天稍后才出现的文章。
 
 ### 1.3 知识空间管理者
 
@@ -122,7 +122,7 @@
 - 活跃租户枚举、任一租户频道快照或远端订阅分页不完整时，不得用局部集合执行取消订阅。
 - 自动取消订阅默认开启；灰度期间关闭后，只允许订阅集合向“补齐”方向变化，多余项保持可观测。
 - 单个来源订阅或取消失败时，其他来源继续处理；失败项在下一周期重新进入差集。
-- Information 当天同步晚于毕昇首次轮询时，毕昇不得因早先执行过空同步而跳过当天后续轮询。
+- Information 当天同步晚于doberman-agent首次轮询时，doberman-agent不得因早先执行过空同步而跳过当天后续轮询。
 - 上游在增量边界返回多个相同创建时间的文章时，全部边界文章都应被处理，本地重复写入无副作用。
 - 公共文章写入部分成功时，成功的新文章可进入一次知识投递；公共文章进度仍不得推进，失败文章后续继续同步。
 - 新文章写入成功后、知识任务成功发出前进程崩溃可能造成漏投；本期接受该窗口，不以扫描知识空间方式补偿。
@@ -152,4 +152,4 @@
 - 已确认技术方案: [2026-08-20-information-source-subscription-reconciliation.md](../../../docs/architecture/proposals/2026-08-20-information-source-subscription-reconciliation.md)
 - 被替代的订阅语义: [v2.6.0 F031](../../v2.6.0/031-channel-source-subscription-reconcile/spec.md)
 - 架构宪法: [docs/constitution.md](../../../docs/constitution.md)
-- 上游协议: `bisheng-information/docs/information-source-sync-api.md` v1.1
+- 上游协议: `doberman-agent-information/docs/information-source-sync-api.md` v1.1

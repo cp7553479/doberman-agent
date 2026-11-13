@@ -7,15 +7,15 @@ from datetime import UTC, datetime, timedelta
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import (
     ImmutableStandardModelError,
     InvalidCatalogActionError,
     PermissionVersionConflictError,
     SameLevelGrantRequiresManagePermissionError,
 )
-from bisheng.permission.api.dependencies import get_catalog_api
-from bisheng.permission.api.endpoints.catalog import router
+from doberman_agent.permission.api.dependencies import get_catalog_api
+from doberman_agent.permission.api.endpoints.catalog import router
 
 
 class _CatalogApi:

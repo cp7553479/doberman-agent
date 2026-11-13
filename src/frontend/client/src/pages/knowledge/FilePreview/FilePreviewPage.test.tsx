@@ -42,14 +42,14 @@ describe("knowledge preview resource contract", () => {
     }
 
     it.each([
-        ["file.pdf", "", "pdf", "/bisheng/original/file.pdf"],
-        ["file.pptx", "/bisheng/preview/file.pdf", "pdf", "/bisheng/preview/file.pdf"],
-        ["file.docx", "", "docx", "/bisheng/original/file.docx"],
-        ["file.xlsx", "", "xlsx", "/bisheng/original/file.xlsx"],
-        ["file.md", "", "md", "/bisheng/original/file.md"],
-        ["file.txt", "", "txt", "/bisheng/original/file.txt"],
+        ["file.pdf", "", "pdf", "/doberman_agent/original/file.pdf"],
+        ["file.pptx", "/doberman_agent/preview/file.pdf", "pdf", "/doberman_agent/preview/file.pdf"],
+        ["file.docx", "", "docx", "/doberman_agent/original/file.docx"],
+        ["file.xlsx", "", "xlsx", "/doberman_agent/original/file.xlsx"],
+        ["file.md", "", "md", "/doberman_agent/original/file.md"],
+        ["file.txt", "", "txt", "/doberman_agent/original/file.txt"],
     ])("opens %s using its actual object URL", async (name, preview, type, expected) => {
-        previewApi.mockResolvedValue({ ...metadata, original_url: `/bisheng/original/${name}`, preview_url: preview });
+        previewApi.mockResolvedValue({ ...metadata, original_url: `/doberman_agent/original/${name}`, preview_url: preview });
         openPreview(name);
         await waitFor(() => expect(screen.getByTestId("viewer")).toHaveTextContent(expected));
         expect(screen.getByTestId("viewer")).toHaveAttribute("data-type", type);
@@ -57,23 +57,23 @@ describe("knowledge preview resource contract", () => {
     });
 
     it("shows conversion failure when PPTX has no derived preview", async () => {
-        previewApi.mockResolvedValue({ ...metadata, original_url: "/bisheng/original/file.pptx", preview_url: "" });
+        previewApi.mockResolvedValue({ ...metadata, original_url: "/doberman_agent/original/file.pptx", preview_url: "" });
         openPreview("file.pptx");
         await waitFor(() => expect(screen.getByTestId("viewer")).toHaveAttribute("data-conversion-failed", "true"));
     });
 
     it("downloads the original PPTX through the protected download endpoint", async () => {
-        previewApi.mockResolvedValue({ ...metadata, original_url: "/bisheng/original/file.pptx", preview_url: "/bisheng/preview/file.pdf" });
-        downloadApi.mockResolvedValue({ original_url: "/workspace/bisheng/original/file.pptx?signature=download", preview_url: "" });
+        previewApi.mockResolvedValue({ ...metadata, original_url: "/doberman_agent/original/file.pptx", preview_url: "/doberman_agent/preview/file.pdf" });
+        downloadApi.mockResolvedValue({ original_url: "/workspace/doberman_agent/original/file.pptx?signature=download", preview_url: "" });
         const clicks: string[] = [];
         jest.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
             clicks.push(this.getAttribute("href") || "");
         });
         openPreview("file.pptx");
         fireEvent.click(await screen.findByRole("button", { name: "Download" }));
-        await waitFor(() => expect(clicks).toEqual(["/bisheng/original/file.pptx?signature=download"]));
+        await waitFor(() => expect(clicks).toEqual(["/doberman_agent/original/file.pptx?signature=download"]));
         expect(downloadApi).toHaveBeenCalledWith("6", "4");
-        triggerUrlDownload("/bisheng/original/file.pdf?signature=list", "file.pdf");
-        expect(clicks[1]).toBe("/bisheng/original/file.pdf?signature=list");
+        triggerUrlDownload("/doberman_agent/original/file.pdf?signature=list", "file.pdf");
+        expect(clicks[1]).toBe("/doberman_agent/original/file.pdf?signature=list");
     });
 });

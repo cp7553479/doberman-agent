@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This application (`bishengchat`, the BiSheng end-user chat UI) is derived from
+This application (`doberman-agent-client`, the DobermanAgent end-user chat UI) is derived from
 **LibreChat** (https://github.com/danny-avila/LibreChat), which is distributed
 under the MIT License. Portions of this codebase are based on or copied from
 LibreChat and remain subject to the MIT License terms reproduced below.

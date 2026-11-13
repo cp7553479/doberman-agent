@@ -7,8 +7,8 @@ whether we ever send it a key outside ``apps/{app_id}/attachments/`` is ours.
 
 Two of these are absence tests and rot silently if nobody re-reads them:
 
-* the bucket is ``bisheng-apps`` and **no bucket policy is ever written** —
-  design pit 20: the public ``bisheng`` bucket sits behind an nginx location
+* the bucket is ``doberman-agent-apps`` and **no bucket policy is ever written** —
+  design pit 20: the public ``doberman-agent`` bucket sits behind an nginx location
   that forwards any key to MinIO, so "private" there is one policy edit away
   from "public";
 * there is **no tenant-quota accounting** — this process has no platform
@@ -39,7 +39,7 @@ from tests.fakes import FakeHostProbe
 
 APP = "app-1"
 OTHER = "app-2"
-BUCKET = "bisheng-apps"
+BUCKET = "doberman-agent-apps"
 
 
 def _service(config, store) -> AppStorageService:
@@ -72,14 +72,14 @@ def _deploy(config, fake_docker, app_id: str = APP, slug: str = "sales-report"):
             slug=slug,
             version_id="ver-0123456789abcdef",
             version_no=1,
-            image_ref="bisheng-app/x:1",
+            image_ref="doberman-agent-app/x:1",
             tier=TierIn(cpu=0.5, mem=512),
             port=8080,
             env={},
-            platform_api_base="https://bisheng.example.com/api",
+            platform_api_base="https://doberman-agent.example.com/api",
         )
     )
-    return get_store(config).get(app_id).env["BISHENG_APP_STORAGE_TOKEN"]
+    return get_store(config).get(app_id).env["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]
 
 
 # ---------------------------------------------------------------------------
@@ -229,7 +229,7 @@ def test_single_file_size_limit_enforced(rtm_config, fake_object_store):
     assert fake_object_store.keys(BUCKET) == [attachment_prefix(APP) + "ok.bin"]
 
 
-def test_bucket_is_bisheng_apps_not_public_bucket(rtm_config, fake_object_store):
+def test_bucket_is_doberman_agent_apps_not_public_bucket(rtm_config, fake_object_store):
     """Pit 20 — separate private bucket, created on demand, **no policy ever written**."""
     assert rtm_config.storage_bucket == BUCKET
     assert BUCKET != PUBLIC_PLATFORM_BUCKET
@@ -250,7 +250,7 @@ def test_bucket_is_bisheng_apps_not_public_bucket(rtm_config, fake_object_store)
 
 
 def test_public_bucket_is_refused_outright(rtm_config, fake_object_store):
-    """A config typo pointing at ``bisheng`` must fail closed, not leak."""
+    """A config typo pointing at ``doberman-agent`` must fail closed, not leak."""
     public = rtm_config.with_overrides(storage_bucket=PUBLIC_PLATFORM_BUCKET)
     svc = _service(public, fake_object_store)
     with pytest.raises(StorageUnavailableError):
@@ -317,7 +317,7 @@ def test_preflight_flags_an_advertised_address_this_process_does_not_answer_on(r
     """Setting the variable without moving the bind is the half-configuration that bit us.
 
     Verified on 114 (2026-09-16): with ``RTM_APP_FACING_BASE_URL`` pointed at the
-    ``bisheng-apps`` gateway while the unit's ExecStart still hardcoded
+    ``doberman-agent-apps`` gateway while the unit's ExecStart still hardcoded
     ``--host 127.0.0.1``, this row answered ok and a container dialling the
     advertised address got nothing (``curl`` exit 7 from inside the network).
     The earlier version of this test asserted exactly that ok, which is how the
@@ -456,9 +456,9 @@ def test_minio_adapter_translates_sdk_answers(rtm_config, monkeypatch):
 
 def test_storage_env_names_are_the_contract():
     assert STORAGE_ENV_NAMES == (
-        "BISHENG_APP_STORAGE_ENDPOINT",
-        "BISHENG_APP_STORAGE_TOKEN",
-        "BISHENG_APP_STORAGE_MAX_FILE_MB",
+        "DOBERMAN_AGENT_APP_STORAGE_ENDPOINT",
+        "DOBERMAN_AGENT_APP_STORAGE_TOKEN",
+        "DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB",
     )
 
 

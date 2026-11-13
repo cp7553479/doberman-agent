@@ -16,7 +16,7 @@ jest.mock('~/api/voice', () => ({
 jest.mock('~/hooks/useVoice', () => ({ useVoiceTarget: jest.fn() }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/Providers', () => ({ useToastContext: () => ({ showToast: jest.fn() }) }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
   Tooltip: ({ content, children }: { content: string; children: React.ReactNode }) => (
     <span data-tooltip={content}>{children}</span>
   ),
@@ -35,7 +35,7 @@ jest.mock('recoil', () => ({ useRecoilState: () => [false, jest.fn()] }));
 jest.mock('./textToSpeechStore', () => ({
   interruptAudioAtom: {}, useRecordingAudioLoading: () => [false, jest.fn()],
 }));
-jest.mock('bisheng-icons', () => ({ Outlined: { Microphone: () => null, PlayerPause: () => null } }));
+jest.mock('@doberman-agent/icons', () => ({ Outlined: { Microphone: () => null, PlayerPause: () => null } }));
 jest.mock('../../../../shared/voice/session', () => ({
   VoiceSession: jest.fn().mockImplementation((_options, callbacks) => {
     mockVoiceHarness.callbacks = callbacks;

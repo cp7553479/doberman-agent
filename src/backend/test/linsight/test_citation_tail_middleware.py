@@ -17,13 +17,13 @@ from langchain_core.messages import SystemMessage
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import (
     _LINSIGHT_CITATION_TAIL_ZH,
     _build_linsight_system_prompt,
     _CitationTailMiddleware,
 )
-from bisheng.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
+from doberman_agent.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
 
 CITATION_LINE_MARK = "按 Citation Rules 逐字复制来源标识"
 
@@ -150,7 +150,7 @@ def factory_env(monkeypatch: pytest.MonkeyPatch):
         captured.update(kwargs)
         return SimpleNamespace(name="agent")
 
-    from bisheng.core.config.settings import LinsightConf
+    from doberman_agent.core.config.settings import LinsightConf
 
     monkeypatch.setattr("deepagents.create_deep_agent", fake_create_deep_agent)
     monkeypatch.setattr(agent_factory, "_resolve_model", AsyncMock(return_value=(SimpleNamespace(), False)))
@@ -195,7 +195,7 @@ async def test_no_citation_tail_without_retrieval_tools(factory_env):
 # F069 P1: handle-contract wording
 # --------------------------------------------------------------------------
 def test_deliverable_line_switches_to_handles():
-    from bisheng.linsight.domain.services.agent_factory import _LINSIGHT_CITATION_TAIL_HANDLES_ZH
+    from doberman_agent.linsight.domain.services.agent_factory import _LINSIGHT_CITATION_TAIL_HANDLES_ZH
 
     prompt = _build_linsight_system_prompt(True, citation_handles=True)
     assert "[S3] 或 [S3][S7]" in prompt
@@ -205,7 +205,7 @@ def test_deliverable_line_switches_to_handles():
 
 
 async def test_stacks_use_handle_tail_and_rules_when_scope_enabled(factory_env):
-    from bisheng.linsight.domain.services.agent_factory import _LINSIGHT_CITATION_TAIL_HANDLES_ZH
+    from doberman_agent.linsight.domain.services.agent_factory import _LINSIGHT_CITATION_TAIL_HANDLES_ZH
 
     session = SimpleNamespace(id="sv-1", session_id="chat-1", tenant_id=1, user_id=1, question="q")
     scope = SimpleNamespace(enabled=True, entries=[], handles={}, record_seen=AsyncMock())

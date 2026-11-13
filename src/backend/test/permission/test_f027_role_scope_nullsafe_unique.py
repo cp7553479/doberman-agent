@@ -8,7 +8,7 @@ These tests patch alembic ``op.*`` calls instead of touching a real DB.
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-MIGRATION_MOD = 'bisheng.core.database.alembic.versions.v2_5_1_f027_role_scope_nullsafe_unique'
+MIGRATION_MOD = 'doberman_agent.core.database.alembic.versions.v2_5_1_f027_role_scope_nullsafe_unique'
 
 
 def _build_conn(*, column_exists, constraint_exists, duplicate_rows):

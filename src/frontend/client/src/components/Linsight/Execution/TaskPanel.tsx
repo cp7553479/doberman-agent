@@ -4,7 +4,7 @@
  * Status icons: done = gray CheckCircle / running = blue spinning Loading /
  * not-started = gray hollow Circle. Styled to the design mockup.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';

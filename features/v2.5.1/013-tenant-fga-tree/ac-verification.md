@@ -11,9 +11,9 @@
 
 | Layer | Used | Notes |
 |-------|------|-------|
-| Local mac | partial | `py_compile` + import smoke only; no BiShengVENV conda env |
+| Local mac | partial | `py_compile` + import smoke only; no DobermanAgentVENV conda env |
 | Test server (192.168.106.114) | ✅ executed 2026-04-19 | pytest after `uv sync --extra test`; OpenFGA docker already up at :8080 |
-| Real OpenFGA store | ✅ verified 2026-04-19 | `bisheng` store `01KP3NQ94E4JC3BZK4FPMZG4QQ`; new model deployed `01KPJP967NH4PM3WRRRX80E0YY` |
+| Real OpenFGA store | ✅ verified 2026-04-19 | `doberman-agent` store `01KP3NQ94E4JC3BZK4FPMZG4QQ`; new model deployed `01KPJP967NH4PM3WRRRX80E0YY` |
 
 ---
 
@@ -57,7 +57,7 @@
 
 ### §9.1 DSL Upgrade
 
-- [ ] Export current authorization_model.py to JSON via `python -c "import json, bisheng.core.openfga.authorization_model as m; print(json.dumps(m.get_authorization_model()))"` > /tmp/model_v2.json
+- [ ] Export current authorization_model.py to JSON via `python -c "import json, doberman_agent.core.openfga.authorization_model as m; print(json.dumps(m.get_authorization_model()))"` > /tmp/model_v2.json
 - [ ] Deploy: `fga model write --store-id=$STORE_ID --file=/tmp/model_v2.json`
 - [ ] Verify: `fga model get --store-id=$STORE_ID --model-id=$NEW_MODEL_ID` shows tenant.shared_to relation
 - [ ] Verify legacy model still readable: `fga model get --store-id=$STORE_ID --model-id=$OLD_MODEL_ID`
@@ -115,8 +115,8 @@
 
 All 5 manual QA categories require the test server (192.168.106.114) with running OpenFGA Docker. Recommended sequence on the test server:
 
-1. `cd /Users/lilu/Projects/bisheng/docker && docker compose -p bisheng up -d openfga`
-2. SSH to 114, `cd /opt/bisheng/src/backend && .venv/bin/pytest test/test_openfga_authorization_model.py test/test_fga_client_dual_write.py test/test_user_payload_tenant.py test/test_tenant_admin_service.py test/test_permission_service_f013.py test/test_f013_tenant_fga_tree.py -v`
+1. `cd /Users/lilu/Projects/doberman-agent/docker && docker compose -p doberman-agent up -d openfga`
+2. SSH to 114, `cd /opt/doberman-agent/src/backend && .venv/bin/pytest test/test_openfga_authorization_model.py test/test_fga_client_dual_write.py test/test_user_payload_tenant.py test/test_tenant_admin_service.py test/test_permission_service_f013.py test/test_f013_tenant_fga_tree.py -v`
 3. Manually walk through §9.1-§9.5 above and tick the boxes; capture log snippets / screenshots in `evidence/` subdirectory if needed.
 
 When done, update statuses above to ✅ + record date + executor handle.

@@ -5,7 +5,7 @@
 - **需求输入**：[已确认方案](../../../docs/architecture/proposals/2026-10-22-dsh-gateway-content-safety.md)
 - **状态**：已用户确认；核心实现及真实109单实例子集已完成，完整验收PARTIAL，详见tasks与交付记录
 - **最后更新**：2026-10-27
-- **工作分支**：feat/bisheng-work-dsh-guardrails
+- **工作分支**：feat/doberman-agent-work-dsh-guardrails
 - **执行流水**：[tasks.md](./tasks.md) 已按确认设计拆解并评审，用户已授权按依赖持续实施；验证证据见 [implementation-verification.md](./implementation-verification.md)
 
 本文区分已核实的代码现状与拟新增行为。下述新增类型、表、字段、接口和参数均为设计，不能据此认定功能已交付。后续实现变化应覆盖更新本文，同时保留决策原因；推翻已确认需求时按 [SDD 流程](../../../docs/SDD-Guide.md) 重新确认。
@@ -61,7 +61,7 @@ Gateway 根据可信租户身份，对 DSH Chat Completions、Responses 的输�
 
 ### 2.4 本轮用户评审取舍
 
-用户于 2026-10-23 明确：审计分页沿用既有方式，不纳入固定默认筛选窗口；身份以毕昇成功验证结果为准，接受其可信变化，不新增跨事件身份冻结、独立请求绑定表或针对该变化的冲突拒绝。两项复审意见撤回，不再作为本期设计或验收门槛。
+用户于 2026-10-23 明确：审计分页沿用既有方式，不纳入固定默认筛选窗口；身份以doberman-agent成功验证结果为准，接受其可信变化，不新增跨事件身份冻结、独立请求绑定表或针对该变化的冲突拒绝。两项复审意见撤回，不再作为本期设计或验收门槛。
 
 该取舍已同步 spec AC-38、AC-42、AC-49。服务来源认证、来源允许租户范围、查询权限、同事件异载荷冲突及已持久化事件的幂等重试继续按既有契约执行；不依据用户当前状态重写历史事件或模型执行、用量事实。
 
@@ -122,9 +122,9 @@ Gateway 根据可信租户身份，对 DSH Chat Completions、Responses 的输�
 
 | 仓库 | 核查基线 | 已有行为 |
 |---|---|---|
-| BiSheng 本工作树 | 2e6b5ae0fb1dcd2e32d480545e1d1ea57e77cd24 | F110 本地接入、两个 DSH 模型协议、异步审计及会话树 |
-| bisheng-gateway | feat/bisheng-work-dsh-guardrails / main 基线 2995df6fdf9c51b70617a86a803aec9c6633b69e | DSH 认证与席位逻辑已移除；应用敏感词仍为旧资源策略 |
-| bisheng-work Desktop | feat/bisheng-work-dsh-guardrails / main 基线 01e09d027ba729f6021ec37c33937f5745cee992 | Chat 识别 content_filter；Responses 把错误事件统一归为 UPSTREAM_ERROR |
+| doberman-agent 本工作树 | 2e6b5ae0fb1dcd2e32d480545e1d1ea57e77cd24 | F110 本地接入、两个 DSH 模型协议、异步审计及会话树 |
+| doberman-agent-gateway | feat/doberman-agent-work-dsh-guardrails / main 基线 2995df6fdf9c51b70617a86a803aec9c6633b69e | DSH 认证与席位逻辑已移除；应用敏感词仍为旧资源策略 |
+| doberman-agent-work Desktop | feat/doberman-agent-work-dsh-guardrails / main 基线 01e09d027ba729f6021ec37c33937f5745cee992 | Chat 识别 content_filter；Responses 把错误事件统一归为 UPSTREAM_ERROR |
 
 当前 backend 入口在 models.py：desktop_principal → read_model_request → DshModelService.complete → Chat 或原生 Responses adapter。DshRoute 按通用 HTTP 约定复用入站唯一规范、非零 UUID（统一转小写）；缺失、非法、零 UUID 或多值时创建编号，并在响应头返回 X-Request-ID；AuditObservedResponse 只观察 backend 到直接下游的 ASGI 发送事实。
 
@@ -161,7 +161,7 @@ sequenceDiagram
 
 ### 4.3 模块职责与改动范围
 
-表中“新增”是拟建文件，不是现有实现。Gateway 路径基于 com/dataelem/gateway，backend 路径基于 src/backend/bisheng。
+表中“新增”是拟建文件，不是现有实现。Gateway 路径基于 com/dataelem/gateway，backend 路径基于 src/backend/doberman_agent。
 
 | 范围 / 模块 | 做什么 | 不做什么 |
 |---|---|---|
@@ -253,7 +253,7 @@ backend 专用接收端依次执行：
 
 1. 限定方法、路径、64 KiB 正文及签名时间窗口，验证服务来源；解析严格事件结构后验证 ID、时间、版本及字段界限。
 2. 根据已认证事件设置严格 TenantContext，清理浏览器残留的可见租户、管理范围和 bypass；上下文在 finally 恢复。每次 SQL 执行线程也在 verified_source 指定租户的 profile_scope 内建立严格上下文，不能假定线程池自动继承 ContextVar。调用方沿用共享 HMAC 配置认证为部署内 Gateway 服务；source_id 用于幂等和诊断，不能仅凭自报来源扩大部署已允许的租户范围，不依赖用户 Token 当前有效。
-3. 在 SQL 事务内检查相同事件、载荷摘要和保留水位。相同来源与编号、相同内容返回已提交确认；同编号异载荷或同请求同版本异事实返回 409。不同版本来自毕昇的可信身份变化按事实接收，不作跨事件身份冻结或冲突拒绝。
+3. 在 SQL 事务内检查相同事件、载荷摘要和保留水位。相同来源与编号、相同内容返回已提交确认；同编号异载荷或同请求同版本异事实返回 409。不同版本来自doberman-agent的可信身份变化按事实接收，不作跨事件身份冻结或冲突拒绝。
 4. 保存事件；沿用模型记录自身的归属和既有权限核对可关联性，无法确认时保存未关联事实。已关联或可建立外部条目时锁定主行、归并安全摘要、写持久 dirty。创建竞争遇唯一键冲突时回滚本次短事务并重读，不在失效事务中继续；因可信身份变化无法建立原关联时保留事件并按未关联事实确认，不覆盖其他归属的模型历史。
 5. 事务提交后才 ACK。未关联事件可提交并确认事实，但不猜测模型主行。会话、目录汇总异步执行，ACK 不承诺树已经发布；readiness 和水位须表达延迟。
 
@@ -266,14 +266,14 @@ backend 新表 dsh_content_safety_event 采用现有 SQLModel 基类和 dialect_
 | 字段组 | 类型 / 用途 |
 |---|---|
 | event_id、source_id | UUID 文本 / 有界来源；唯一约束 source_id + event_id；另约束同来源/Gateway 请求/event_version 不重复 |
-| tenant_id、user_id、model_id | BigInteger；身份取毕昇验证结果，模型取本次请求或调用事实，租户自动注入 |
+| tenant_id、user_id、model_id | BigInteger；身份取doberman-agent验证结果，模型取本次请求或调用事实，租户自动注入 |
 | gateway_request_id、backend_request_id、audit_request_id | UUID；后两者可空，区分来源编号、模型编号和审计关联 |
 | event_version、schema_version、event_kind、protocol | 有界整数或枚举；版本按同一来源、同一 Gateway 请求单调产生 |
 | request_started_at、occurred_at、received_at | UTC 微秒时间；不把回传到达当事件发生 |
 | payload_hash、stage_results、policy_version、builtin_digest | 摘要和结构化事实；JSON 用 JsonType，正文缺省且禁止接收 |
 | hit_count、rule_refs、matched_words、forwarded、drain_status、association_status | 有限诊断；rule_refs为稳定规则标识，matched_words为可空的冻结词值快照，旧记录NULL表示未保存 |
 
-每条事件按 Gateway 从毕昇成功取得的身份和本次模型事实归档；可信身份结果变化予以接受，不以首个事件冻结所有后续版本的租户、用户或模型，不增加独立请求绑定表。索引 (tenant_id, source_id, gateway_request_id, event_version, event_id) 用于租户范围内的请求事件查询，不作为跨事件身份冻结机制。历史补报复用原持久化载荷，不按用户当前调租、退出状态重新生成或拒绝历史事实。
+每条事件按 Gateway 从doberman-agent成功取得的身份和本次模型事实归档；可信身份结果变化予以接受，不以首个事件冻结所有后续版本的租户、用户或模型，不增加独立请求绑定表。索引 (tenant_id, source_id, gateway_request_id, event_version, event_id) 用于租户范围内的请求事件查询，不作为跨事件身份冻结机制。历史补报复用原持久化载荷，不按用户当前调租、退出状态重新生成或拒绝历史事实。
 
 主表 dsh_model_audit_request 增加：
 
@@ -293,7 +293,7 @@ backend 新表 dsh_content_safety_event 采用现有 SQLModel 基类和 dialect_
 
 仅有外部事件不证明模型执行；接收端可读取相同 tenant/user/model/request_id 的 dsh_model_call 或原生证据确认 model_entered，但不能由 forwarded 或收到响应头推断执行成功。查到调用用量可按既有补数逻辑展示，模型审计模式和 ASGI 交付结果仍不能编造。
 
-NULL 表示未知的可选关联可由真实原审计补齐；安全事件采用毕昇可信结果并接受变化，模型审计仍保留其自身的执行和用量归属。无法确认关联时保存未关联事实，不以跨事件身份变化拒收，也不覆盖其他归属的模型历史。外部会话提示需复用既有 AuditContext 的字段校验：conversation_id、parent_conversation_id 为合法 UTF-8 的 1–256 字符；request_kind 为 chat/compaction/session-title；session_origin 为 main/subagent，父会话须有子会话、来源为 subagent 且不能指向自身。Gateway 仅提取这些可选字段，backend 接收时再次清洗；非法提示只影响关联，不阻断模型或关闭检查，不把原始 audit_context 或 message_sources 复制进事件。ConversationHint 的供应商亲和默认值不能代替 AuditContext 的审计绑定值，特别是缺失 request_kind 不能私自补 chat。未确认字段与已确认的空值须在合并规则中区分，原生审计提升来源时确认模型事实和关联。
+NULL 表示未知的可选关联可由真实原审计补齐；安全事件采用doberman-agent可信结果并接受变化，模型审计仍保留其自身的执行和用量归属。无法确认关联时保存未关联事实，不以跨事件身份变化拒收，也不覆盖其他归属的模型历史。外部会话提示需复用既有 AuditContext 的字段校验：conversation_id、parent_conversation_id 为合法 UTF-8 的 1–256 字符；request_kind 为 chat/compaction/session-title；session_origin 为 main/subagent，父会话须有子会话、来源为 subagent 且不能指向自身。Gateway 仅提取这些可选字段，backend 接收时再次清洗；非法提示只影响关联，不阻断模型或关闭检查，不把原始 audit_context 或 message_sources 复制进事件。ConversationHint 的供应商亲和默认值不能代替 AuditContext 的审计绑定值，特别是缺失 request_kind 不能私自补 chat。未确认字段与已确认的空值须在合并规则中区分，原生审计提升来源时确认模型事实和关联。
 
 主表 started_at 首次建立后固定；安全先到时使用经校验的 request_started_at，原审计后到将实际起点放 model_started_at。request_started_at 和 occurred_at 不得晚于签名保护的 sent_at 加 300 秒，发生时间不得早于请求开始超过 5 秒；历史重试不改这些时间且仍受保留水位约束，不用回调时间移动游标位置。
 
@@ -351,7 +351,7 @@ API wrapper 留在 controllers/API，新取数遵循当前根 AGENTS 约定的 @
 
 Desktop 将 content_blocked/content_filter 统一映射为不可重试的 CONTENT_FILTERED，check_unavailable 映射为 CONTENT_CHECK_UNAVAILABLE。Responses 必须在普通事件 sequence_number 校验前识别合法 error 事件；不把阻断变成 UPSTREAM_ERROR。终止时清掉当前轮次的待执行工具，不用错误结束的 block-end 触发执行；只有完整参数通过并且该轮正常结束才进入工具执行。实现阶段必须沿 adapter 的 finish 事件追到实际工具 runner 调用点验证该屏障；若现有 runner 提前执行，应在该消费边界阻止错误轮次的执行，不只修改提示文案。
 
-运行配置采用既有配置入口：Gateway 新增 DshSafetyProperties（dsh.content-safety.*），默认 enabled=false，backend 目标复用已配置 bisheng-api-url，另设稳定 backend-namespace 和 source-id。回传直接使用 Gateway 的 bisheng.gateway-hmac-secret 与 backend 的 sso_sync.gateway_hmac_secret（既有环境变量 BS_SSO_SYNC__GATEWAY_HMAC_SECRET），两端值必须一致；签名头沿用双方既有 signature-header / signature_header，默认 X-Signature。不新增 DSH 独立密钥变量或密钥登记表。接收端按需读取既有配置；密钥未配置时该接收端返回不可用，验签失败按认证失败处理，不新增模型 runtime 对 HMAC 配置的初始化前置校验。实际密钥沿用部署安全配置注入，不写入 Git、示例 YAML 或日志；不新增 backend Gateway URL，不在旧 YAML 增加未识别的顶层键。
+运行配置采用既有配置入口：Gateway 新增 DshSafetyProperties（dsh.content-safety.*），默认 enabled=false，backend 目标复用已配置 doberman-agent-api-url，另设稳定 backend-namespace 和 source-id。回传直接使用 Gateway 的 doberman_agent.gateway-hmac-secret 与 backend 的 sso_sync.gateway_hmac_secret（既有环境变量 BS_SSO_SYNC__GATEWAY_HMAC_SECRET），两端值必须一致；签名头沿用双方既有 signature-header / signature_header，默认 X-Signature。不新增 DSH 独立密钥变量或密钥登记表。接收端按需读取既有配置；密钥未配置时该接收端返回不可用，验签失败按认证失败处理，不新增模型 runtime 对 HMAC 配置的初始化前置校验。实际密钥沿用部署安全配置注入，不写入 Git、示例 YAML 或日志；不新增 backend Gateway URL，不在旧 YAML 增加未识别的顶层键。
 
 ### 4.11 迁移与启用顺序
 
@@ -417,7 +417,7 @@ POST /api/v1/internal/dsh/content-safety-events，仅服务认证，无 query �
 
 接收端使用 DSH 的真实 HTTP 状态和错误 envelope；成功直接返回 receipt 对象，不包平台 resp_200。Gateway 必须同时核对 HTTP 200、receipt=COMMITTED 和本次 event_id，不能把任意 2xx 或仅入队结果当确认。正文只限长读取一次，签名验证后从同一 raw bytes 做严格 DTO 解析；不复制旧 SSO dependency 的 request._receive 回放实现。校验错误只返回错误类型和安全字段路径，不回显输入值、签名或正文。
 
-签名算法及密钥直接复用既有 Gateway—backend 互信：HMAC-SHA256(secret, upper(METHOD) + LF + PATH + LF + 完整原始正文)，签名输出为小写十六进制，比较采用常量时间比较。Gateway 读取 bisheng.gateway-hmac-secret，backend 读取 sso_sync.gateway_hmac_secret，两端配置相同值；签名头读取各自既有配置，默认 X-Signature。路径固定为接收路径，不含查询；时间、来源和事件编号均在签名保护内。发送时间默认允许前后 300 秒，重试重新生成 sent_at 和签名，event 不变。密钥轮换沿用已有共享配置的双方协调更新，不新增独立 key_id 协议或另一套密钥配置。共享密钥认证 Gateway 服务身份，事件按部署已允许的租户范围和严格租户上下文处理；不接受请求指定回传目标。
+签名算法及密钥直接复用既有 Gateway—backend 互信：HMAC-SHA256(secret, upper(METHOD) + LF + PATH + LF + 完整原始正文)，签名输出为小写十六进制，比较采用常量时间比较。Gateway 读取 doberman_agent.gateway-hmac-secret，backend 读取 sso_sync.gateway_hmac_secret，两端配置相同值；签名头读取各自既有配置，默认 X-Signature。路径固定为接收路径，不含查询；时间、来源和事件编号均在签名保护内。发送时间默认允许前后 300 秒，重试重新生成 sent_at 和签名，event 不变。密钥轮换沿用已有共享配置的双方协调更新，不新增独立 key_id 协议或另一套密钥配置。共享密钥认证 Gateway 服务身份，事件按部署已允许的租户范围和严格租户上下文处理；不接受请求指定回传目标。
 
 | event 字段 | v1 类型 / 约束 |
 |---|---|
@@ -573,10 +573,10 @@ curl --fail-with-body -N "$GATEWAY_ORIGIN/api/v1/dsh/responses" \
 
 | 仓库 | 路径 / 入口 |
 |---|---|
-| BiSheng | [models.py](../../../src/backend/bisheng/dsh/api/endpoints/models.py)、[DshRoute](../../../src/backend/bisheng/dsh/api/responses.py)、[access_runtime](../../../src/backend/bisheng/dsh/access_runtime.py) |
-| BiSheng | [审计写入](../../../src/backend/bisheng/dsh/domain/repositories/model_audit_write.py)、[writer](../../../src/backend/bisheng/dsh/domain/services/model_audit_writer.py)、[状态](../../../src/backend/bisheng/dsh/domain/schemas/model_audit_status.py) |
-| BiSheng | [请求查询](../../../src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py)、[会话投影](../../../src/backend/bisheng/dsh/domain/repositories/model_audit_conversations.py)、[目录构建](../../../src/backend/bisheng/dsh/domain/repositories/model_audit_tree_build.py) |
-| BiSheng | [HTTP 租户中间件](../../../src/backend/bisheng/utils/http_middleware.py)、[HMAC 算法](../../../src/backend/bisheng/sso_sync/domain/services/hmac_auth.py)、[管理 API](../../../src/backend/bisheng/dsh/api/endpoints/model_audit_admin.py) |
+| doberman-agent | [models.py](../../../src/backend/doberman_agent/dsh/api/endpoints/models.py)、[DshRoute](../../../src/backend/doberman_agent/dsh/api/responses.py)、[access_runtime](../../../src/backend/doberman_agent/dsh/access_runtime.py) |
+| doberman-agent | [审计写入](../../../src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py)、[writer](../../../src/backend/doberman_agent/dsh/domain/services/model_audit_writer.py)、[状态](../../../src/backend/doberman_agent/dsh/domain/schemas/model_audit_status.py) |
+| doberman-agent | [请求查询](../../../src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py)、[会话投影](../../../src/backend/doberman_agent/dsh/domain/repositories/model_audit_conversations.py)、[目录构建](../../../src/backend/doberman_agent/dsh/domain/repositories/model_audit_tree_build.py) |
+| doberman-agent | [HTTP 租户中间件](../../../src/backend/doberman_agent/utils/http_middleware.py)、[HMAC 算法](../../../src/backend/doberman_agent/sso_sync/domain/services/hmac_auth.py)、[管理 API](../../../src/backend/doberman_agent/dsh/api/endpoints/model_audit_admin.py) |
 | Gateway | src/main/java/com/dataelem/gateway/filter/{SensitiveWordsFilter,CustomResponseFilter,LicenseExpiredGlobalFilter}.java；utils/{FileUtil,HmacSignatureUtil}.java；config/{CustomerConfig,SpringCustomConfig}.java |
 | Desktop | packages/dsh-desktop-enterprise/{openai,responses,error-copy}.js |
 | 平台 | [DSH 导航](../../../src/frontend/platform/src/pages/DshPage/sections.ts)、[审计 API](../../../src/frontend/platform/src/controllers/API/dshModelAudit.ts)、[审计类型](../../../src/frontend/platform/src/types/dshModelAudit.ts) |
@@ -597,7 +597,7 @@ curl --fail-with-body -N "$GATEWAY_ORIGIN/api/v1/dsh/responses" \
 | 2026-10-27 | AC-62、AC-63：Gateway 预生成并透传模型 UUID，backend 通用复用；无响应头可关联外部摘要，保留历史异常入口 | 用户确认统一编号方案并要求实现、测试与文档同步；不提交、不推送、不部署 |
 | 2026-10-23 | 初版设计；承接已确认的 59 条 AC | 用户确认 spec，要求产出并评审 design；尚未实现 |
 | 2026-10-23 | 自审修正管理授权探针、专用代理生命周期和会话组合条件口径 | 静态代码与契约复核；保持已确认需求 |
-| 2026-10-23 | 撤回固定分页窗口与跨事件身份冻结两项复审意见，同步 spec、接收及分页契约 | 用户明确沿用既有分页并接受毕昇可信身份变化；未进入 tasks 或业务实现 |
+| 2026-10-23 | 撤回固定分页窗口与跨事件身份冻结两项复审意见，同步 spec、接收及分页契约 | 用户明确沿用既有分页并接受doberman-agent可信身份变化；未进入 tasks 或业务实现 |
 | 2026-10-23 | 回传复用现有 HMAC 密钥、签名头及规则；补明 profile 的服务端验证和返回字段 | 用户确认使用相同密钥配置并询问 profile 定义；仅同步设计及评审文档 |
 | 2026-10-23 | 用户确认 design，进入 tasks 拆解及静态评审；补明既定 v4 约定的依赖与局部 Provider 接线 | 用户明确仅产出任务文档，暂不修改业务代码；主决策与对外接口不变 |
 | 2026-10-24 | Wave8完成事务投影、Profile有界合并、管理入口和Unicode扫描；同步实际边界与后续唯一竞争恢复 | 集中回归通过，仍不代表入口接线或双库验收 |
@@ -625,7 +625,7 @@ T058 身份缓存已实现：L1 正/负合计 LRU 最多4096条，Redis值最多
 
 Wave 6 已完成 T022/T058/T064；Gateway13类195测试及真实隔离Redis端口验证通过，证据边界见implementation-verification。候选编译不占用已提交版本键，CAS后不再竞争编译资源；恰20项命中不标截断，观察到第21项才标记，收集始终有界。AC局部terminal output链接避免每字符扫描非终端失配链。未接线入口、回传、页面或后续owner fencing，不宣称全特性交付。
 
-策略管理补齐：settings和capabilities均携带明确目标tenant_id并实时走同一管理授权。AdminClient在既有实时链成功后返回/user/info校验的可信用户编号，供updated_by使用；旧Void授权入口保持兼容，不从body/header自报操作者取值。Origin允许范围复用bisheng.homeUrl规范化的scheme/host/effectivePort，配置路径不参与比较；写请求缺失/多值/null/含路径/假前缀Origin拒绝，homeUrl无效明确不可用，不新增配置或后台RPC。该返回契约补齐列为T135，未变更已确认权限策略。
+策略管理补齐：settings和capabilities均携带明确目标tenant_id并实时走同一管理授权。AdminClient在既有实时链成功后返回/user/info校验的可信用户编号，供updated_by使用；旧Void授权入口保持兼容，不从body/header自报操作者取值。Origin允许范围复用doberman-agent.homeUrl规范化的scheme/host/effectivePort，配置路径不参与比较；写请求缺失/多值/null/含路径/假前缀Origin拒绝，homeUrl无效明确不可用，不新增配置或后台RPC。该返回契约补齐列为T135，未变更已确认权限策略。
 
 T069 冻结后续扫描边界：newDomain(label) 创建独立请求内逻辑域，feedDecodedText(domain,text)/completeDomain(domain) 返回不可变 Outcome(blocked,checkedThrough,observedUnits,hitCount,hitCountTruncated,ruleRefs)。水位采用绝对UTF16单位，与AC索引兼容；尾部按Unicode码点保留，不拆补充平面字符。不同消息/choice/工具不能拼词，外部请求的Domain拒绝；阻断不再开放、完成幂等。增量UTF8与JSON解析属于协议适配器，scanner接收已解码文字并安全处理回调间拆分的代理项。
 
@@ -689,7 +689,7 @@ T090真实传输内存复核：Spring writeWith的首帧屏障在writer零需求
 T090最终writer清理：guard只负责沿既有ioTimeout终止写入信号，不能在timeout/cancel时立即退款。Mono.usingWhen的error/cancel清理通过公开Spring native response与Reactor Connection.dispose/onDispose关闭实际下游，并等事件循环下一turn完成缓冲释放后close租约；成功写完直接close。租约开始拒绝clientGone，abort标志及优先订阅stopped覆盖begin→shutdown→guard间隙。模型owner完成不是拒绝HTTP writer的条件，确定命中的独立模型续读不随下游取消而中断。真实慢TCP timeout/socket-close/manager-close已验证32MiB缓冲释放后额度归零，吞吐/heap与完整链验收仍属后续任务。
 
 
-Wave18 HTTP/配置落地：content_safety_events仅注册精确POST，query前拒且不读流，原request.stream累计最多64KiB，不信Content-Length且不改_receive；原raw/Headers/METHOD/url.path验签后才构造惰性service，直接返回ContentSafetyReceipt。已登记业务错保留状态，断连/取消向上传播不假ACK；其他依赖错误仅记录类型并503，不含正文/SQL。两份Gateway YAML的两精确POST路由order=-10、URI引用既有bisheng.bisheng-api-url，无CacheRequestBody；Path显式matchTrailingSlash:false与预检查一致。默认enabled:false，backend-namespace/source-id留空由启用时既有Properties校验，不增加密钥或codec上限。普通及DM配置继承与关闭透传由真实Gateway路由工厂/默认Netty及Profile/Proxy验证；完整Spring组件组装仍T139。
+Wave18 HTTP/配置落地：content_safety_events仅注册精确POST，query前拒且不读流，原request.stream累计最多64KiB，不信Content-Length且不改_receive；原raw/Headers/METHOD/url.path验签后才构造惰性service，直接返回ContentSafetyReceipt。已登记业务错保留状态，断连/取消向上传播不假ACK；其他依赖错误仅记录类型并503，不含正文/SQL。两份Gateway YAML的两精确POST路由order=-10、URI引用既有doberman-agent.doberman-agent-api-url，无CacheRequestBody；Path显式matchTrailingSlash:false与预检查一致。默认enabled:false，backend-namespace/source-id留空由启用时既有Properties校验，不增加密钥或codec上限。普通及DM配置继承与关闭透传由真实Gateway路由工厂/默认Netty及Profile/Proxy验证；完整Spring组件组装仍T139。
 
 
 Desktop队列语言实施修订：真实公开SessionController.queue证明后续请求沿首轮AgentLoop driver继承ALS，单独connection/request scope不足以代表queued请求语言。宿主使用现成inbox inserted/claimed/discarded公开事件：按session+稳定Message.id捕获入队时固定copy，insert仅pending，claim才晋升当前turn，discard/匹配turn-end/agent dispose及unload回收。display-only旁路不进入Message/source、持久日志、attribution或模型请求。两adapter通过可选同步contentSafetyFormatterFor({sessionId,purpose})在实际stream开始取得冻结formatter，未来turn/入队不改在途提示；无factory沿旧localizeContentSafety，异常/非法值安全fallback，不影响普通模型。无session及title/compaction沿发起时请求ALS；原tenant提示/分类/编号不改。T144/T145与T146/T147分别先测试后实现；不引入第三方patch或全局last-language。
@@ -744,7 +744,7 @@ T162请求诊断：检查命中沿真实DECISION一次计数，后续DRAIN不重
 T160策略诊断：缓存年龄复用既有单调采样点及固定validUntil，不新增探针或延长L1/Redis有效期；编译active为原Semaphore真实已持有permit，更新与采样同锁避免旧样本覆盖新状态。固定busy/node/weight容量拒绝一次、输入400/413仍原语义，摘要不一致在实际拒绝边界一次告警；旧构造noop，生产Redis适配构造将同Telemetry传内部matcher。T050沿既有DSH Beat配置加入周期dirty扫描，所有任务事实与持久readiness复用既有API assembly，不新增模型运行时接收密钥依赖。
 
 
-T170 → Platform开发预优化须保留共享UI的包内依赖图；实际锁定的UI merge1.14与Platform merge2.6并存，Vite5按裸包名合并会删除UI语义字号类。optimizeDeps.include仅预编译@bisheng/ui，生产Rollup保持原包边界；不升级全站依赖或用业务样式覆盖设计组件。验证同时包含实际dev DOM、Platform原cname及生产三语合成预览，不能等同账号E2E。
+T170 → Platform开发预优化须保留共享UI的包内依赖图；实际锁定的UI merge1.14与Platform merge2.6并存，Vite5按裸包名合并会删除UI语义字号类。optimizeDeps.include仅预编译@doberman-agent/ui，生产Rollup保持原包边界；不升级全站依赖或用业务样式覆盖设计组件。验证同时包含实际dev DOM、Platform原cname及生产三语合成预览，不能等同账号E2E。
 
 
 T052/T054 → 明细清理必须显式include_audits=False：即便租户已有另一次主审计cleanup_before及续跑游标，也只删本次明细窗口，保留主摘要和全部主清理checkpoint/cursor。主审计清理命令独立提交水位后才分批继续，默认不产生自动保留期。

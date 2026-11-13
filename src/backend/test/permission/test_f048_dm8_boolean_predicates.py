@@ -7,9 +7,9 @@ import inspect
 from sqlalchemy.engine.default import DefaultDialect
 from sqlmodel import select
 
-from bisheng.permission.application import control_state, sql_runtime
-from bisheng.permission.domain.models import PermissionGrantAssignee
-from bisheng.permission.migration import f048_runtime_verification
+from doberman_agent.permission.application import control_state, sql_runtime
+from doberman_agent.permission.domain.models import PermissionGrantAssignee
+from doberman_agent.permission.migration import f048_runtime_verification
 
 
 class _DmDialect(DefaultDialect):

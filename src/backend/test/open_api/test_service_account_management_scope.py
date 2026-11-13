@@ -5,13 +5,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiAuthDependencyUnavailableError,
     ServiceAccountManagementScopeChangedError,
 )
-from bisheng.common.errcode.tenant import TenantDisabledError
-from bisheng.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids, set_admin_scope_tenant_id
-from bisheng.open_api.domain.services import service_account_scope_service as service
+from doberman_agent.common.errcode.tenant import TenantDisabledError
+from doberman_agent.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids, set_admin_scope_tenant_id
+from doberman_agent.open_api.domain.services import service_account_scope_service as service
 
 
 def caller(*, super_admin=True, tenant=1):
@@ -29,7 +29,7 @@ def scope_ports(monkeypatch):
 
 
 async def test_verified_scope_overrides_stale_middleware_and_restores_it(scope_ports):
-    from bisheng.core.context.tenant import set_is_management_api
+    from doberman_agent.core.context.tenant import set_is_management_api
 
     management_token = set_is_management_api(True)
     old = set_admin_scope_tenant_id(9)
@@ -103,9 +103,9 @@ async def test_new_read_with_stale_expected_scope_is_refused(scope_ports):
 
 
 def test_write_inventory_covers_every_account_mutation_and_keeps_filter_read_only():
-    from bisheng.open_api.api.dependencies import get_service_account_manager, is_service_account_write
-    from bisheng.open_api.api.endpoints.service_account import router as accounts
-    from bisheng.open_api.api.endpoints.service_account_keys import router as keys
+    from doberman_agent.open_api.api.dependencies import get_service_account_manager, is_service_account_write
+    from doberman_agent.open_api.api.endpoints.service_account import router as accounts
+    from doberman_agent.open_api.api.endpoints.service_account_keys import router as keys
 
     count = 0
     for route in [*accounts.routes, *keys.routes]:
@@ -119,9 +119,9 @@ def test_write_inventory_covers_every_account_mutation_and_keeps_filter_read_onl
 
 
 async def test_scoped_owner_candidates_are_paginated_and_exclude_other_tenants(open_api_db):
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.open_api.domain.repositories.owner_repository import OwnerRepository
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.open_api.domain.repositories.owner_repository import OwnerRepository
+    from doberman_agent.user.domain.models.user import User
 
     async with open_api_db() as session:
         for uid, tid, deleted in [(21, 1, 0), (22, 2, 0), (23, 2, 0), (24, 2, 1)]:
@@ -145,15 +145,15 @@ async def test_management_api_creation_follows_selected_tenant_and_rejects_old_f
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.core.context.tenant import tenant_execution_scope
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.open_api.api.dependencies import get_service_account_admin
-    from bisheng.open_api.api.endpoints.service_account import router as accounts
-    from bisheng.open_api.api.endpoints.service_account_scope import router as scope_router
-    from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-    from bisheng.open_api.domain.models.service_account import ServiceAccount
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.core.context.tenant import tenant_execution_scope
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.open_api.api.dependencies import get_service_account_admin
+    from doberman_agent.open_api.api.endpoints.service_account import router as accounts
+    from doberman_agent.open_api.api.endpoints.service_account_scope import router as scope_router
+    from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+    from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+    from doberman_agent.user.domain.models.user import User
 
     async with open_api_db() as session:
         for uid, tid in [(21, 1), (22, 2)]:
@@ -201,10 +201,10 @@ async def test_management_scope_http_requires_super_and_keeps_selection_when_tar
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.open_api.api.dependencies import get_service_account_admin
-    from bisheng.open_api.api.endpoints.service_account_scope import router
-    from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.open_api.api.dependencies import get_service_account_admin
+    from doberman_agent.open_api.api.endpoints.service_account_scope import router
+    from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
 
     monkeypatch.setattr(service.settings.multi_tenant, "enabled", True)
     current = {"scope_tenant_id": 2, "expires_at": None}
@@ -246,7 +246,7 @@ async def test_management_scope_http_requires_super_and_keeps_selection_when_tar
 
 @pytest.mark.parametrize("super_admin,writing", [(True, False), (True, True), (False, False)])
 async def test_global_list_scope_is_retired_for_every_actor(scope_ports, super_admin, writing):
-    from bisheng.core.context.tenant import is_tenant_filter_bypassed
+    from doberman_agent.core.context.tenant import is_tenant_filter_bypassed
 
     scope_ports[0].return_value = None
     with pytest.raises(ServiceAccountManagementScopeChangedError):
@@ -263,13 +263,13 @@ async def test_list_http_is_concrete_and_rejects_legacy_global_requests(open_api
     import httpx
     from fastapi import FastAPI
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.core.context.tenant import bypass_tenant_filter
-    from bisheng.database.models.tenant import Tenant
-    from bisheng.open_api.api.dependencies import get_service_account_admin
-    from bisheng.open_api.api.endpoints.service_account import router
-    from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-    from bisheng.open_api.domain.models.service_account import ServiceAccount
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.database.models.tenant import Tenant
+    from doberman_agent.open_api.api.dependencies import get_service_account_admin
+    from doberman_agent.open_api.api.endpoints.service_account import router
+    from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+    from doberman_agent.open_api.domain.models.service_account import ServiceAccount
 
     with bypass_tenant_filter():
         async with open_api_db() as db:

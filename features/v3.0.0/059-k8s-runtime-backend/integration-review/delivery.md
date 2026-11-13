@@ -37,7 +37,7 @@ root 指定的新组：`runtime-images-${{ inputs.version || github.ref_name }}`
 ### Docker Compose
 
 - `docker/docker-compose.yml:305` 起的 `app-runtime` 可选 profile 保留 manager、app-proxy、egress-proxy、docker-socket-proxy 四进程。manager/egress 共用服务镜像，入口独立镜像；不 publish 每个应用的端口。
-- 正式 Compose 使用预构建镜像；开发 build override 在独立文件。默认服务 tag `v3.0.0` 只是一条配置，不能证明它已按本次新源码发行；实际部署须通过 `BISHENG_RUNTIME_MANAGER_IMAGE`、`BISHENG_APP_PROXY_IMAGE` 选择已验证引用。
+- 正式 Compose 使用预构建镜像；开发 build override 在独立文件。默认服务 tag `v3.0.0` 只是一条配置，不能证明它已按本次新源码发行；实际部署须通过 `DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE`、`DOBERMAN_AGENT_APP_PROXY_IMAGE` 选择已验证引用。
 - `RTM_PROTOCOL_VERSION=2`、分离角色 HMAC、backend URL、原绝对 host data root 与容器 bind 对应；应用数据/helper 在 daemon 宿主解释路径。仅 socket-proxy 挂 docker.sock，manager 经 Engine HTTP API；无需安装 Docker CLI，但 API 权限仍然强。
 - app/build 内网与独立 runtime-control 网络、socket API 白名单保留。backend/Celery 还须启用 app_runtime/open_platform、配置 payload/OBO/key IDs、节点和库存；只启动四容器不等于功能可用。
 - 运行基础镜像由 backend 冻结 profile 和默认映射选择，不由更换 manager 镜像或 RTM_IMAGE_PREFIX 决定。
@@ -106,7 +106,7 @@ F086 T053的确有历史真实结果：tag `v3.0.0-test-vibe`，源码 `755d4456
 
 **结论：MEDIUM M1 已关闭；本次已审交付代码范围可合并。** 本补充只复核 root 本轮两文件增量，不重写上文 cda 固定源码的历史发现，不代表剩余验收或正式镜像发行已完成。
 
-- 复核工作树：`/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration`；检查时 HEAD 为 `575984069ff15e994caa53bda1785e769f6d80f5`，本轮修改尚在该工作树 diff 中。
+- 复核工作树：`/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration`；检查时 HEAD 为 `575984069ff15e994caa53bda1785e769f6d80f5`，本轮修改尚在该工作树 diff 中。
 - `.github/workflows/runtime-images.yml:14` 已改为 `group: runtime-images-${{ inputs.version || github.ref_name }}`，`:15` 保留 `cancel-in-progress: false`。该表达式与 `:37`、`:43` 的实际 `RUNTIME_RELEASE` 完全相同：不同 ref 手动指定同 version、同名 tag 与手动 version 均进入同一并发组；正在执行的同组发行不会被新请求主动取消。
 - `src/runtime-manager/tests/test_image_release.py:138` 的既有契约测试新增精确 group 和 `cancel-in-progress: false` 两条断言；原原生 runner、无仿真、digest/index 门仍在。本轮定向红绿为 root 提供的 **1 failed → 1 passed**，本独立复核只读 diff/调用处，未再次运行测试或触发 CI。
 - 两架构继续使用各自平台 tag，catalog 继续依赖两个 native job；本轮没有改变镜像构建、推送、索引或发行资料的验证顺序。

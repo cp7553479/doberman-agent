@@ -39,7 +39,7 @@ jest.mock('~/hooks/useEffectiveQuota', () => ({ useEffectiveQuota: () => ({ isOv
 jest.mock('~/Providers', () => ({ useToastContext: () => ({ showToast: jest.fn() }), useConfirm: () => mockSpaceActionConfirm }));
 jest.mock('recoil', () => ({ useRecoilState: () => jest.requireActual('react').useState({}), useRecoilValue: () => ({}), useSetRecoilState: () => jest.fn() }));
 jest.mock('~/store', () => ({ __esModule: true, default: { mobileSystemMenuOpenState: {} } }));
-jest.mock('~/pages/appChat/store/atoms', () => ({ bishengConfState: {} }));
+jest.mock('~/pages/appChat/store/atoms', () => ({ dobermanAgentConfState: {} }));
 jest.mock('react-activation', () => ({ __esModule: true, ...jest.requireActual('react-activation'), useActivate: () => undefined, useUnactivate: () => undefined }));
 jest.mock('~/utils', () => ({ cn: (...values: string[]) => values.filter(Boolean).join(' ') }));
 jest.mock('./sidebar/SectionHeader', () => ({ SectionHeader: () => null }));

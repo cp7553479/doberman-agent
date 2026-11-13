@@ -50,7 +50,7 @@ successful create.
 Prerequisites (the caller is expected to have checked them; see the suite that
 uses this helper):
 
-* a **deployed** BiSheng with MySQL, Redis, OpenFGA, MinIO, Milvus and
+* a **deployed** doberman-agent with MySQL, Redis, OpenFGA, MinIO, Milvus and
   Elasticsearch, **and a running knowledge Celery worker** — without the worker
   the uploaded files never reach Milvus/ES and every set is trivially empty;
 * an embedding model configured on at least one existing knowledge base;
@@ -436,13 +436,13 @@ async def seed_retrieval_sample(
     """
 
     nonce = uuid4().hex[:10]
-    query = f"bisheng f052 retrieval sample {nonce}"
+    query = f"doberman_agent f052 retrieval sample {nonce}"
 
     def document_bytes(marker: str) -> bytes:
         """The shared sentence, plus the one line that keeps the md5 unique."""
 
         return (
-            f"BiSheng F052 retrieval sample document. {query}. "
+            f"doberman-agent F052 retrieval sample document. {query}. "
             "This sentence exists so one query matches every seeded file and the "
             "returned set is decided by permissions alone.\n"
             f"Sample slot: {marker}.\n"

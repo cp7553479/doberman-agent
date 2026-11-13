@@ -17,7 +17,7 @@
  *   consumers can keep using this configured full address.
  */
 import axios from "@/controllers/request"
-import { isApiError } from "@bisheng/api-client"
+import { isApiError } from "@doberman-agent/api-client"
 
 /** The five application states (design D8 / AC-03). */
 export type HostedAppState =

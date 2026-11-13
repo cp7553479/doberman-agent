@@ -12,13 +12,13 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.linsight.domain.models.linsight_skill import (
+from doberman_agent.linsight.domain.models.linsight_skill import (
     SKILL_SOURCE_BUILTIN,
     SKILL_SOURCE_MANUAL,
     LinsightSkill,
 )
-from bisheng.linsight.domain.services import skill_bundle_backfill as backfill
-from bisheng.linsight.domain.services.skill_store import LEGACY_TENANT_SKILLS_DIR, SkillStore
+from doberman_agent.linsight.domain.services import skill_bundle_backfill as backfill
+from doberman_agent.linsight.domain.services.skill_store import LEGACY_TENANT_SKILLS_DIR, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 1
@@ -72,7 +72,7 @@ def env(tmp_path, monkeypatch):
         def get_linsight_conf():
             return _Conf()
 
-    monkeypatch.setattr(backfill, "bisheng_settings", _Settings)
+    monkeypatch.setattr(backfill, "doberman_agent_settings", _Settings)
     store = SkillStore(root=tmp_path / "cache", minio=FakeMinioStorage())
     return legacy_root, store
 

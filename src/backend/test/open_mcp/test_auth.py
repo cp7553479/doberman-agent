@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 
 import pytest
 
-from bisheng.common.errcode.open_api import OpenApiCredentialMissingError
-from bisheng.open_mcp.auth import OpenMcpTransportAuth, get_current_mcp_scope
+from doberman_agent.common.errcode.open_api import OpenApiCredentialMissingError
+from doberman_agent.open_mcp.auth import OpenMcpTransportAuth, get_current_mcp_scope
 
 
 def _scope(*, headers=None):
@@ -50,7 +50,7 @@ async def test_transport_auth_propagates_identity_headers_and_scope(monkeypatch)
         message = await receive()
         captured["body"] = message["body"]
 
-    monkeypatch.setattr("bisheng.open_mcp.auth.open_api_access_context", _access_context)
+    monkeypatch.setattr("doberman_agent.open_mcp.auth.open_api_access_context", _access_context)
     app = OpenMcpTransportAuth(inner)
     headers = [
         (b"authorization", b"Bearer f067"),
@@ -81,7 +81,7 @@ async def test_transport_auth_returns_existing_open_api_auth_envelope(monkeypatc
         raise OpenApiCredentialMissingError()
         yield  # pragma: no cover
 
-    monkeypatch.setattr("bisheng.open_mcp.auth.open_api_access_context", _reject)
+    monkeypatch.setattr("doberman_agent.open_mcp.auth.open_api_access_context", _reject)
     sent = await _invoke(
         OpenMcpTransportAuth(lambda scope, receive, send: None),
         _scope(),
@@ -105,8 +105,8 @@ async def test_transport_rejects_declared_body_over_limit_before_inner_app(monke
         nonlocal called
         called = True
 
-    monkeypatch.setattr("bisheng.open_mcp.auth.open_api_access_context", _access_context)
-    from bisheng.open_mcp.auth import settings
+    monkeypatch.setattr("doberman_agent.open_mcp.auth.open_api_access_context", _access_context)
+    from doberman_agent.open_mcp.auth import settings
 
     monkeypatch.setattr(
         type(settings.open_mcp),
@@ -134,8 +134,8 @@ async def test_transport_rejects_streamed_body_over_limit(monkeypatch):
         await receive()
         await receive()
 
-    monkeypatch.setattr("bisheng.open_mcp.auth.open_api_access_context", _access_context)
-    from bisheng.open_mcp.auth import settings
+    monkeypatch.setattr("doberman_agent.open_mcp.auth.open_api_access_context", _access_context)
+    from doberman_agent.open_mcp.auth import settings
 
     monkeypatch.setattr(
         type(settings.open_mcp),

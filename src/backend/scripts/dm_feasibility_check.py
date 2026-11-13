@@ -4,7 +4,7 @@ DaMeng (达梦) Feasibility Validation Script
 Run on a machine with dmPython + sqlalchemy-dm installed:
 
     uv run python scripts/dm_feasibility_check.py \
-        --url "dm+dmPython://SYSDBA:password@192.168.107.9:5236/BISHENG"
+        --url "dm+dmPython://SYSDBA:password@192.168.107.9:5236/DOBERMAN_AGENT"
 
 Checks every MySQL→DaMeng substitution in the design spec and prints a
 pass/fail report so we know what works before writing implementation code.
@@ -297,7 +297,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="DaMeng feasibility check")
     parser.add_argument(
         "--url",
-        default="dm+dmPython://SYSDBA:6o+%s3z2NK7J@192.168.107.9:5236/BISHENG",
+        default="dm+dmPython://SYSDBA:6o+%s3z2NK7J@192.168.107.9:5236/DOBERMAN_AGENT",
         help="SQLAlchemy connection URL for DaMeng",
     )
     args = parser.parse_args()

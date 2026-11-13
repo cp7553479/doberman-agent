@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode.knowledge import OfdConvertError
-from bisheng.knowledge.rag.pipeline.loader.utils.ofd_converter import convert_ofd_to_pdf
+from doberman_agent.common.errcode.knowledge import OfdConvertError
+from doberman_agent.knowledge.rag.pipeline.loader.utils.ofd_converter import convert_ofd_to_pdf
 
 FIXTURE = Path(__file__).parent / "fixtures" / "sample.ofd"
 
@@ -44,7 +44,7 @@ def test_unknown_annotation_type_does_not_lose_the_document():
     customer file (a Suwell-produced doc carrying a ``PreSeal`` seal) lost both of
     its pages that way, and the failure was reported as a successful conversion.
     """
-    from bisheng.knowledge.rag.pipeline.loader.utils.ofd_converter import (
+    from doberman_agent.knowledge.rag.pipeline.loader.utils.ofd_converter import (
         _ensure_easyofd_patched,
     )
 

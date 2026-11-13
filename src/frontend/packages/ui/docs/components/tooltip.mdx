@@ -5,7 +5,7 @@ component: Tooltip
 
 # 文字提示 Tooltip
 
-悬停 / 聚焦触发的一句纯文字说明。组件库 `@bisheng/ui` 导出 **`Tooltip`**（外加可选的 `TooltipProvider`），基座 Radix Tooltip。规范全文见「文档 → 组件规范 → 文字提示 Tooltip」。
+悬停 / 聚焦触发的一句纯文字说明。组件库 `@doberman-agent/ui` 导出 **`Tooltip`**（外加可选的 `TooltipProvider`），基座 Radix Tooltip。规范全文见「文档 → 组件规范 → 文字提示 Tooltip」。
 
 **内容里有链接、按钮、输入框的任何一个，它就不是 Tooltip，用 Popover**——键盘焦点永远进不去 tooltip，里面的可点元素对键盘用户等于不存在。所以也没有「带标题和按钮的加强版 tooltip」。
 
@@ -16,7 +16,7 @@ component: Tooltip
 深灰实色底 + 白字，14/22 正文档，上下 6px / 左右 12px 内边距（单行总高 34px），圆角 6px，最大宽度 250px 超出自动换行，浮层投影档、不描边；箭头恒定带（没有无箭头档），是 8×8 旋转方块，与气泡同底色。悬停下面两个按钮看气泡。
 
 ```tsx
-import { Button, Tooltip } from '@bisheng/ui';
+import { Button, Tooltip } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '48px 0 8px' }}>
@@ -39,8 +39,8 @@ export default () => (
 「300ms 内不再等一次」需要一个**共享的** `TooltipProvider`——所以应用根上挂一个。不挂也能用（每个 `Tooltip` 自带兜底 provider），只是各自计时。试试在下面一排图标按钮上滑动，或用 Tab 逐个聚焦：
 
 ```tsx
-import { Outlined } from 'bisheng-icons';
-import { Button, Tooltip, TooltipProvider } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Button, Tooltip, TooltipProvider } from '@doberman-agent/ui';
 
 // 单 icon 按钮的 aria-label 与 tooltip 文案同源，不写两份——读屏用户不悬停
 const Item = ({ label, icon }: { label: string; icon: React.ReactNode }) => (
@@ -68,7 +68,7 @@ export default () => (
 `side` × `align`：上 / 下 / 左 / 右 × 居中 / 首端 / 尾端，**默认上方居中**；空间不够时自动翻到对面，任何情况下不被视口裁掉。同一排控件统一用同一个方位——提示位置跳来跳去会打断视线。
 
 ```tsx
-import { Button, Tooltip, TooltipProvider } from '@bisheng/ui';
+import { Button, Tooltip, TooltipProvider } from '@doberman-agent/ui';
 
 const Cell = ({ side, align, label, row, col }: {
   side: 'top' | 'bottom' | 'left' | 'right';
@@ -119,7 +119,7 @@ export default () => (
 禁用控件也要能出提示，说明满足什么条件才能用。禁用元素不派发鼠标事件，**组件内部**会给它包一层可聚焦热区（`span` + `tabIndex=0`）——业务页照常写 `<Tooltip><Button disabled>`，不用自己包，也不许自己包。
 
 ```tsx
-import { Button, Tooltip } from '@bisheng/ui';
+import { Button, Tooltip } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ padding: '48px 0 8px' }}>

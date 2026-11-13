@@ -1,6 +1,6 @@
 # Work120 申请加入审批假待审修复
 
-2026-11-03；直接基于 `origin/feat/bisheng-work-120-main@2169eeb538cb7c5f97a4d055713c241d42ade9fb` 开发，分支 `codex/work120-join-approval-20261103`。未移植此前发布线修复提交。没有数据库迁移、部署或109业务数据操作。
+2026-11-03；直接基于 `origin/feat/doberman-agent-work-120-main@2169eeb538cb7c5f97a4d055713c241d42ade9fb` 开发，分支 `codex/work120-join-approval-20261103`。未移植此前发布线修复提交。没有数据库迁移、部署或109业务数据操作。
 
 ## 问题与修复
 

@@ -7,7 +7,7 @@ We mock version_repo.find_non_primary_file_ids_by_knowledge_ids directly.
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
 
 
 def _make_service() -> KnowledgeSpaceChatService:

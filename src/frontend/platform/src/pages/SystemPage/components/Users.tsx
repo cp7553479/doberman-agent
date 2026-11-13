@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { Pagination, Button, SearchInput } from '@bisheng/ui';
+import { Pagination, Button, SearchInput } from '@doberman-agent/ui';
 import { SubjectBusinessId,SubjectSearchStatus } from "@/components/bs-comp/selectComponent/SubjectSearchStatus";
 import { useSubjectTable } from "@/components/bs-comp/selectComponent/useSubjectTable";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
@@ -279,7 +279,7 @@ export default function Users(params) {
         </div>
         {/* 分页 */}
 
-        <div className="bisheng-table-footer px-6 bg-background-login">
+        <div className="doberman_agent-table-footer px-6 bg-background-login">
             <div className="flex items-center gap-2">
                 <p className="desc">{t('system.userList')}</p>
             </div>

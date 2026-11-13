@@ -4,7 +4,7 @@ import messages from '../../public/locales/en-US/api_errors.json';
 import request, { showApiError } from './request';
 
 const notices = vi.hoisted(() => vi.fn());
-vi.mock('@bisheng/ui', () => ({ notification: { open: notices } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: notices } }));
 const adapter = request.defaults.adapter;
 beforeEach(async () => {
   notices.mockClear();

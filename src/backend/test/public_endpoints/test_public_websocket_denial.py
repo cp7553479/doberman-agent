@@ -19,11 +19,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
-from bisheng.database.models.assistant import AssistantStatus
-from bisheng.database.models.flow import FlowStatus, FlowType
-from bisheng.public_endpoints.api.exception_handlers import register_public_exception_handlers
-from bisheng.public_endpoints.api.router import router_public
-from bisheng.public_endpoints.domain.services import guest_policy
+from doberman_agent.database.models.assistant import AssistantStatus
+from doberman_agent.database.models.flow import FlowStatus, FlowType
+from doberman_agent.public_endpoints.api.exception_handlers import register_public_exception_handlers
+from doberman_agent.public_endpoints.api.router import router_public
+from doberman_agent.public_endpoints.domain.services import guest_policy
 
 WORKFLOW_ID = UUID(int=201).hex
 

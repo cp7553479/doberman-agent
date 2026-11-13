@@ -30,7 +30,7 @@ def _decode(response):
 )
 def test_add_users_endpoint_returns_410_gone(tenant_id):
     """AC-08: POST /tenants/{id}/users always returns 410 Gone."""
-    from bisheng.tenant.api.endpoints.tenant_users import add_users_deprecated
+    from doberman_agent.tenant.api.endpoints.tenant_users import add_users_deprecated
 
     response = asyncio.run(add_users_deprecated(tenant_id))
     status, body = _decode(response)
@@ -48,7 +48,7 @@ def test_add_users_endpoint_returns_410_gone(tenant_id):
 )
 def test_remove_user_endpoint_returns_410_gone(tenant_id, user_id):
     """AC-09: DELETE /tenants/{id}/users/{user_id} always returns 410 Gone."""
-    from bisheng.tenant.api.endpoints.tenant_users import remove_user_deprecated
+    from doberman_agent.tenant.api.endpoints.tenant_users import remove_user_deprecated
 
     response = asyncio.run(remove_user_deprecated(tenant_id, user_id))
     status, body = _decode(response)
@@ -65,7 +65,7 @@ def test_deprecated_endpoints_have_no_auth_dependency():
 
     Verified by inspecting the FastAPI route's dependency tree.
     """
-    from bisheng.tenant.api.endpoints import tenant_users as m
+    from doberman_agent.tenant.api.endpoints import tenant_users as m
 
     add_route = next(
         r for r in m.router.routes
@@ -93,7 +93,7 @@ def test_deprecated_endpoints_have_no_auth_dependency():
 
 def test_get_endpoint_still_takes_auth_dependency():
     """AC-10: GET /tenants/{id}/users is preserved (auth + service call)."""
-    from bisheng.tenant.api.endpoints import tenant_users as m
+    from doberman_agent.tenant.api.endpoints import tenant_users as m
 
     get_route = next(
         r for r in m.router.routes

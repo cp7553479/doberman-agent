@@ -11,10 +11,10 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from sqlmodel import select
 
-import bisheng.database.models.audit_log as audit_module
-import bisheng.linsight.domain.models.linsight_skill as model_module
-import bisheng.linsight.domain.services.personal_skill_service as service_module
-from bisheng.common.errcode.linsight import (
+import doberman_agent.database.models.audit_log as audit_module
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+import doberman_agent.linsight.domain.services.personal_skill_service as service_module
+from doberman_agent.common.errcode.linsight import (
     SkillCountLimitError,
     SkillEmptyFileError,
     SkillImportMismatchError,
@@ -22,21 +22,21 @@ from bisheng.common.errcode.linsight import (
     SkillNotFoundError,
     SkillStorageLimitError,
 )
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.database.models.audit_log import AuditLog
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.personal_skill_service import (
+from doberman_agent.database.models.audit_log import AuditLog
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.personal_skill_service import (
     PERSONAL_SKILL_BYTES_LIMIT,
     PERSONAL_SKILL_COUNT_LIMIT,
     PersonalSkillService,
 )
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
@@ -90,7 +90,7 @@ async def env(tmp_path, monkeypatch):
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{tmp_path}/skills.db",
@@ -332,7 +332,7 @@ class TestPersonalSkillCreate:
             user_id=USER, filename="pdf.md", data=_md("pdf"), import_id="imp-load", content_type="text/plain"
         )
         with patch(
-            "bisheng.permission.application.business_authorization.require_business_action",
+            "doberman_agent.permission.application.business_authorization.require_business_action",
             new_callable=AsyncMock,
         ) as gate:
             assert (await env.service._load_own_skill(USER, skill.id)).id == skill.id

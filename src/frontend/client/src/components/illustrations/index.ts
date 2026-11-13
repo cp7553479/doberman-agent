@@ -1,5 +1,5 @@
 /**
- * Re-export shim — the illustrations themselves now live in `@bisheng/ui`
+ * Re-export shim — the illustrations themselves now live in `@doberman-agent/ui`
  * (`packages/ui/src/components/Illustration/`), so both apps draw the same
  * artwork from one place. Call sites keep importing `~/components/illustrations`.
  *
@@ -16,7 +16,7 @@ export {
   SuccessIllustration,
   SystemErrorIllustration,
   SystemMaintenanceIllustration,
-} from '@bisheng/ui';
-export type { IllustrationProps } from '@bisheng/ui';
+} from '@doberman-agent/ui';
+export type { IllustrationProps } from '@doberman-agent/ui';
 
 export { KnowledgeSpaceIcon } from './KnowledgeSpaceIcon';

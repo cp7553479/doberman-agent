@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash/debounce';

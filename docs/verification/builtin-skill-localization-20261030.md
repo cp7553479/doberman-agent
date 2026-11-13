@@ -2,7 +2,7 @@
 
 ## 问题与根因
 
-PR #2524 为工具目录复用工具词典；「工具与技能」中的技能区域实际由 `SkillCenterPane`、`useSkillCenter` 和 `/api/v1/dsh/skills` 提供数据。技能接口把 `builtin` 与其他企业技能统一归为 `platform`，前端据此展示服务端原始中文。三个随版本发布的技能为 `bisheng-docx`、`bisheng-pptx`、`bisheng-xlsx`。
+PR #2524 为工具目录复用工具词典；「工具与技能」中的技能区域实际由 `SkillCenterPane`、`useSkillCenter` 和 `/api/v1/dsh/skills` 提供数据。技能接口把 `builtin` 与其他企业技能统一归为 `platform`，前端据此展示服务端原始中文。三个随版本发布的技能为 `doberman-agent-docx`、`doberman-agent-pptx`、`doberman-agent-xlsx`。
 
 ## 实现
 
@@ -13,9 +13,9 @@ PR #2524 为工具目录复用工具词典；「工具与技能」中的技能�
 
 ## 基线与交付范围
 
-- 已核对远端 `dataelement/bisheng:feat/bisheng-work-120-main@b82c38b09e829cd8e740b20ba00bc6133d79c10c`。
-- 工作目录 `.worktrees/bisheng-work120-builtin-skill-localization`；分支 `codex/work120-builtin-skill-localization`。
-- 修改范围为 BiSheng 后端与 Client 网页，Desktop/Harness 源码保持现状。
+- 已核对远端 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@b82c38b09e829cd8e740b20ba00bc6133d79c10c`。
+- 工作目录 `.worktrees/doberman-agent-work120-builtin-skill-localization`；分支 `codex/work120-builtin-skill-localization`。
+- 修改范围为 doberman-agent 后端与 Client 网页，Desktop/Harness 源码保持现状。
 - 生效需要同时更新后端与 Client 网页资源。数据库结构沿用现状。
 
 ## 自动化验证
@@ -33,7 +33,7 @@ PR #2524 为工具目录复用工具词典；「工具与技能」中的技能�
 
 ## PR #2563 合并冲突处理
 
-- 2026-10-30 同步目标分支 `feat/bisheng-work-120-main@78815c66e00b4628b96c80393000b25ff4aabc22`。唯一冲突为 `docs/STATUS.md` 开头的新增记录，完整保留内置 Skill、授权空态和订阅抓取三项记录。
+- 2026-10-30 同步目标分支 `feat/doberman-agent-work-120-main@78815c66e00b4628b96c80393000b25ff4aabc22`。唯一冲突为 `docs/STATUS.md` 开头的新增记录，完整保留内置 Skill、授权空态和订阅抓取三项记录。
 - 同步后技能 API、Hook、页面及后端实现保持原 PR 内容。三语言文件逐键核对，完整保留目标分支全部文案与本 PR 每种语言新增的 6 个键。
 - 本轮重新运行 API 适配、翻译解析及真实列表/详情测试，3 个文件 / 18 项通过；三语言 key 检查、文案完整性检查与差异检查通过。完整静态检查、构建及后端测试结果为初始提交时的证据。
 - 后端与 Client 网页部署、真实账号和安装客户端验收继续待执行。

@@ -1,13 +1,13 @@
 # 双前端架构
 
-BiSheng 前端由两个独立的 React 应用构成：**Platform**（管理端）和 **Client**（用户端）。Platform 面向管理员和应用构建者，提供知识库管理、工作流编排、模型配置、系统设置等完整的 DevOps 操作界面；Client 面向终端用户，提供轻量化的对话交互、智能体调用和知识库浏览体验，并支持 PWA 离线访问。两个应用共享同一套后端 API（`/api/v1`、`/api/v2`），通过 Vite 代理分别转发到 FastAPI 后端。
+doberman-agent 前端由两个独立的 React 应用构成：**Platform**（管理端）和 **Client**（用户端）。Platform 面向管理员和应用构建者，提供知识库管理、工作流编排、模型配置、系统设置等完整的 DevOps 操作界面；Client 面向终端用户，提供轻量化的对话交互、智能体调用和知识库浏览体验，并支持 PWA 离线访问。两个应用共享同一套后端 API（`/api/v1`、`/api/v2`），通过 Vite 代理分别转发到 FastAPI 后端。
 
 ## 应用对比
 
 | 维度 | Platform | Client |
 |------|----------|--------|
 | 位置 | `src/frontend/platform/` | `src/frontend/client/` |
-| 包名 | bisheng | bishengchat |
+| 包名 | doberman-agent | doberman-agentchat |
 | 版本 | 2.4.0_beta1 | 2.4.0 |
 | React | 18.3.1 | 18.2.0 |
 | Vite | 6.4.x（Babel React 插件） | 6.4.x（Babel React 插件） |
@@ -173,7 +173,7 @@ Platform 的 HTTP 通信基于 Axios 封装（`src/frontend/platform/src/control
 **请求拦截器**：
 - 从 `localStorage.ws_token` 读取 JWT token
 - 注入 `Authorization: Bearer {token}` 请求头
-- 跳过 MinIO 文件请求（`/bisheng` 前缀）的认证头注入
+- 跳过 MinIO 文件请求（`/doberman-agent` 前缀）的认证头注入
 
 **响应拦截器**：
 - 正常响应：解包 `{ status_code, data, status_message }` 格式，`status_code === 200` 时返回 `data`
@@ -264,7 +264,7 @@ Platform 基于 Radix UI 原语 + Tailwind CSS 封装了一套业务组件库，
 |----------|------|------|
 | `/api/` | `http://127.0.0.1:7860` | FastAPI 后端 API |
 | `/health` | `http://127.0.0.1:7860` | 健康检查 |
-| `/bisheng` | `http://localhost:9000` | MinIO 对象存储（文件/图片） |
+| `/doberman-agent` | `http://localhost:9000` | MinIO 对象存储（文件/图片） |
 | `/tmp-dir` | `http://localhost:9000` | MinIO 临时文件目录 |
 
 #### Client 代理（端口 4001）
@@ -272,7 +272,7 @@ Platform 基于 Radix UI 原语 + Tailwind CSS 封装了一套业务组件库，
 | 路径匹配 | 目标 | 路径重写 | 说明 |
 |----------|------|---------|------|
 | `/workspace/api` | `http://127.0.0.1:7860` | 去除 `/workspace` 前缀 | 后端 API |
-| `/workspace/bisheng` | `http://localhost:9000` | 去除 `/workspace` 前缀 | MinIO 文件 |
+| `/workspace/doberman-agent` | `http://localhost:9000` | 去除 `/workspace` 前缀 | MinIO 文件 |
 | `/workspace/tmp-dir` | `http://localhost:9000` | 去除 `/workspace` 前缀 | MinIO 临时文件 |
 
 Client 的所有代理规则都需要重写路径，去除 `/workspace` 基础路径前缀后再转发。

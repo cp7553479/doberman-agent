@@ -3,12 +3,12 @@
 import httpx
 from fastapi import FastAPI
 
-from bisheng.core.context.tenant import get_current_tenant_id, is_tenant_filter_bypassed
-from bisheng.utils.http_middleware import CustomMiddleware
+from doberman_agent.core.context.tenant import get_current_tenant_id, is_tenant_filter_bypassed
+from doberman_agent.utils.http_middleware import CustomMiddleware
 
 
 async def test_dsh_paths_never_decode_browser_cookie_or_enable_tenant_bypass(monkeypatch):
-    import bisheng.utils.http_middleware as middleware
+    import doberman_agent.utils.http_middleware as middleware
 
     decoded = []
     monkeypatch.setattr(middleware, "_decode_jwt_subject", lambda token: decoded.append(token))
@@ -23,7 +23,7 @@ async def test_dsh_paths_never_decode_browser_cookie_or_enable_tenant_bypass(mon
     async def other():
         return {}
 
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         response = await client.get(
             "/api/v1/dsh/models",
             headers={"Authorization": "Bearer dsh-token"},

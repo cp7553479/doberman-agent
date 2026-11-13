@@ -11,32 +11,32 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantRelocateBlockedError
-from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+from doberman_agent.common.errcode.tenant_resolver import TenantRelocateBlockedError
+from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
 
 def _load_tasks_module() -> ModuleType:
-    celery_stub = MagicMock(name="bisheng_celery")
+    celery_stub = MagicMock(name="doberman_agent_celery")
     celery_stub.task = lambda *args, **kwargs: lambda function: function
-    sys.modules["bisheng.worker.main"] = MagicMock(bisheng_celery=celery_stub)
+    sys.modules["doberman_agent.worker.main"] = MagicMock(doberman_agent_celery=celery_stub)
 
-    worker_path = getattr(sys.modules.get("bisheng.worker"), "__path__", None)
+    worker_path = getattr(sys.modules.get("doberman_agent.worker"), "__path__", None)
     if not (isinstance(worker_path, list) and worker_path):
-        package = ModuleType("bisheng.worker")
-        package.__path__ = [str(Path(__file__).resolve().parent.parent.parent / "bisheng" / "worker")]
-        sys.modules["bisheng.worker"] = package
-    if "bisheng.worker.tenant_reconcile" not in sys.modules:
-        package = ModuleType("bisheng.worker.tenant_reconcile")
-        package.__path__ = [str(Path(sys.modules["bisheng.worker"].__path__[0]) / "tenant_reconcile")]
-        sys.modules["bisheng.worker.tenant_reconcile"] = package
+        package = ModuleType("doberman_agent.worker")
+        package.__path__ = [str(Path(__file__).resolve().parent.parent.parent / "doberman_agent" / "worker")]
+        sys.modules["doberman_agent.worker"] = package
+    if "doberman_agent.worker.tenant_reconcile" not in sys.modules:
+        package = ModuleType("doberman_agent.worker.tenant_reconcile")
+        package.__path__ = [str(Path(sys.modules["doberman_agent.worker"].__path__[0]) / "tenant_reconcile")]
+        sys.modules["doberman_agent.worker.tenant_reconcile"] = package
 
-    tasks_path = Path(sys.modules["bisheng.worker"].__path__[0]) / "tenant_reconcile" / "tasks.py"
+    tasks_path = Path(sys.modules["doberman_agent.worker"].__path__[0]) / "tenant_reconcile" / "tasks.py"
     spec = importlib.util.spec_from_file_location(
-        "bisheng.worker.tenant_reconcile.tasks",
+        "doberman_agent.worker.tenant_reconcile.tasks",
         tasks_path,
     )
     module = importlib.util.module_from_spec(spec)
-    sys.modules["bisheng.worker.tenant_reconcile.tasks"] = module
+    sys.modules["doberman_agent.worker.tenant_reconcile.tasks"] = module
     spec.loader.exec_module(module)
     return module
 
@@ -55,13 +55,13 @@ def patches(monkeypatch):
     find_drifted = AsyncMock(name="find_drifted_user_ids")
     sync = AsyncMock(name="sync_user")
 
-    import bisheng.tenant.domain.services.user_tenant_reconcile_service as reconcile_mod
-    import bisheng.tenant.domain.services.user_tenant_sync_service as sync_mod
+    import doberman_agent.tenant.domain.services.user_tenant_reconcile_service as reconcile_mod
+    import doberman_agent.tenant.domain.services.user_tenant_sync_service as sync_mod
 
-    user_mod = sys.modules.get("bisheng.user.domain.models.user")
+    user_mod = sys.modules.get("doberman_agent.user.domain.models.user")
     if user_mod is None:
         user_mod = MagicMock()
-        sys.modules["bisheng.user.domain.models.user"] = user_mod
+        sys.modules["doberman_agent.user.domain.models.user"] = user_mod
     user_dao = MagicMock()
     user_dao.alist_users_after_id = list_users
     user_mod.UserDao = user_dao

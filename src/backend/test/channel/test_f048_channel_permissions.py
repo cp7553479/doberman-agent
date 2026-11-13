@@ -6,23 +6,23 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.channel.domain.services.channel_service import (
+from doberman_agent.channel.domain.services.channel_service import (
     ChannelResourceAuthorizationPort,
 )
-from bisheng.channel.domain.services.f048_channel_permission import (
+from doberman_agent.channel.domain.services.f048_channel_permission import (
     ChannelPermissionRecord,
     ChannelSubjectRecord,
     F048ChannelPermissionAdapter,
 )
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionFGAUnavailableError,
     PermissionInvalidResourceError,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

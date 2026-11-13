@@ -1,13 +1,13 @@
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { Button, Input, notification, Tooltip as QuestionTooltip } from '@bisheng/ui';
+import { Button, Input, notification, Tooltip as QuestionTooltip } from '@doberman-agent/ui';
 import { TreeDepartmentSelect } from "@/components/bs-comp/department/TreeDepartmentSelect";
 import DepartmentUsersSelect,{
 type DepartmentUserOption,
 } from "@/components/bs-comp/selectComponent/DepartmentUsersSelect";
 
 import { DatePicker } from "@/components/bs-ui/calendar/datePicker";
-import { Checkbox } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import {
 Dialog,

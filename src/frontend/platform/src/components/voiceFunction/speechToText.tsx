@@ -1,6 +1,6 @@
-import { Button, notification } from "@bisheng/ui";
+import { Button, notification } from "@doberman-agent/ui";
 import { speechToText } from "@/controllers/API/workbench";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { VoiceSession } from "../../../../shared/voice/session";

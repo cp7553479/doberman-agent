@@ -14,12 +14,12 @@ Two defects:
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.linsight.domain.models.linsight_execute_task import (
+from doberman_agent.linsight.domain.models.linsight_execute_task import (
     ExecuteTaskStatusEnum,
     ExecuteTaskTypeEnum,
     LinsightExecuteTask,
 )
-from bisheng_langchain.linsight.event import ExecStep, NeedUserInput
+from doberman_agent_langchain.linsight.event import ExecStep, NeedUserInput
 
 
 def _make_manager(monkeypatch):
@@ -29,7 +29,7 @@ def _make_manager(monkeypatch):
     accumulation across add_execution_task_step calls is observable, while Redis
     writes are stubbed.
     """
-    from bisheng.linsight.domain.services import state_message_manager as smm
+    from doberman_agent.linsight.domain.services import state_message_manager as smm
 
     monkeypatch.setattr(smm, "get_redis_client_sync", lambda: MagicMock())
     mgr = smm.LinsightStateMessageManager("svid")
@@ -211,7 +211,7 @@ async def test_final_thinking_segment_reaches_db_on_status_update(monkeypatch):
             history=store["history"],
         )
 
-    from bisheng.linsight.domain.services import state_message_manager as smm
+    from doberman_agent.linsight.domain.services import state_message_manager as smm
 
     monkeypatch.setattr(smm.LinsightExecuteTaskDao, "update_by_id", fake_update)
     monkeypatch.setattr(smm.LinsightExecuteTaskDao, "update_fields_by_id", fake_update)
@@ -232,7 +232,7 @@ async def test_session_info_write_flushes_pending_history(monkeypatch):
     """Terminal paths save the session info before announcing it; by then every
     task's throttled history must be in the DB."""
     mgr, store = _make_manager(monkeypatch)
-    from bisheng.linsight.domain.services import state_message_manager as smm
+    from doberman_agent.linsight.domain.services import state_message_manager as smm
 
     await mgr.add_execution_task_step("t1", _thinking("c9", "The"))
     await mgr.add_execution_task_step("t1", _thinking("c9", " end"))
@@ -280,7 +280,7 @@ async def test_flushed_step_clears_pending_history(monkeypatch):
 
 
 async def test_ensure_session_pseudo_task_creates_once(monkeypatch):
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     created = []
 
@@ -308,7 +308,7 @@ async def test_ensure_session_pseudo_task_creates_once(monkeypatch):
 
 
 async def test_ensure_session_pseudo_task_idempotent(monkeypatch):
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     created = []
 
@@ -336,7 +336,7 @@ async def test_direct_answer_greeting_skips_report_despite_pseudo_task(monkeypat
     must NOT trigger report synthesis (regression guard for F035 problem 2):
     _handle_direct_answer_completion gates on REAL planned todos only.
     """
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     exec_task = te.LinsightWorkflowTask()
     exec_task.session_version_id = "svid"
@@ -383,7 +383,7 @@ async def test_direct_answer_collects_output_deliverables_without_planned_todos(
     no todo. The direct-answer completion must still collect those deliverables —
     regression for the empty result panel ('暂无产物文件') despite files existing.
     """
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     exec_task = te.LinsightWorkflowTask()
     exec_task.session_version_id = "svid"
@@ -433,7 +433,7 @@ async def test_direct_answer_flags_a_phantom_deliverable_without_repairing_it(mo
     final_files. An earlier revision answered this exact case by creating
     详细分析报告.md, which hid the defect and invented a document nobody asked for.
     """
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     exec_task = te.LinsightWorkflowTask()
     exec_task.session_version_id = "svid"
@@ -494,7 +494,7 @@ def _real_task(tid):
 
 
 async def test_detail_drops_empty_pseudo_task(monkeypatch):
-    from bisheng.linsight.domain.services import workbench_impl as wi
+    from doberman_agent.linsight.domain.services import workbench_impl as wi
 
     tasks = [_pseudo([]), _real_task("aaaa")]
 
@@ -510,7 +510,7 @@ async def test_detail_drops_empty_pseudo_task(monkeypatch):
 
 
 async def test_detail_surfaces_nonempty_pseudo_first(monkeypatch):
-    from bisheng.linsight.domain.services import workbench_impl as wi
+    from doberman_agent.linsight.domain.services import workbench_impl as wi
 
     tasks = [_real_task("aaaa"), _pseudo([{"call_id": "c1", "output": "x"}])]
 
@@ -543,7 +543,7 @@ async def test_detail_does_not_replay_an_overlapping_chain(monkeypatch):
     while that head keeps ``previous_task_id = None`` — two heads, one tail.
     Session 8a570723 on 114 held 11 rows and this endpoint returned 20.
     """
-    from bisheng.linsight.domain.services import workbench_impl as wi
+    from doberman_agent.linsight.domain.services import workbench_impl as wi
 
     rows = _chain("aaaa", "bbbb", "cccc")
     newcomer = _real_task("dddd")
@@ -567,7 +567,7 @@ async def test_detail_survives_a_cyclic_chain(monkeypatch):
     Defensive: nothing writes a cycle today, but the walk had no visited guard at
     all, so a single bad pointer pair would have hung the endpoint.
     """
-    from bisheng.linsight.domain.services import workbench_impl as wi
+    from doberman_agent.linsight.domain.services import workbench_impl as wi
 
     a, b = _real_task("aaaa"), _real_task("bbbb")
     a.next_task_id, b.next_task_id = "bbbb", "aaaa"
@@ -592,7 +592,7 @@ def _make_answer_manager(monkeypatch, history, task_data):
     Unlike _make_manager this also tracks task_data so set_user_input's
     clarify_answers append and restamp_clarify_answers can be observed.
     """
-    from bisheng.linsight.domain.services import state_message_manager as smm
+    from doberman_agent.linsight.domain.services import state_message_manager as smm
 
     monkeypatch.setattr(smm, "get_redis_client_sync", lambda: MagicMock())
     mgr = smm.LinsightStateMessageManager("svid")

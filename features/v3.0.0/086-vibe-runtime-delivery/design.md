@@ -72,7 +72,7 @@
 
 ### 4.1 基线真实调用链
 
-1. `bisheng deploy` → backend `POST /api/v2/apps/deploy`：包校验、归属及代码快照，由 F055 接收，Celery 接续扫描/预检。
+1. `doberman-agent deploy` → backend `POST /api/v2/apps/deploy`：包校验、归属及代码快照，由 F055 接收，Celery 接续扫描/预检。
 2. `precheck_service.precheck_build()` 生成短效 MinIO `code_url`，调用 manager build；`builder.BuildService` 解包、渲染语言模板并调用 Docker Engine build；`precheck_probe()` 拉起隔离临时容器探活。
 3. `VersionService.record_version()` **先提交审批，再插入版本**，插入失败补偿撤销审批；不能把静态图上的“先版本后审批”当实际事务顺序。
 4. 审批回调 → `publish_online_service._settle()` 先调用 schema migration，再经 F054 action 进行上线；现状容量时序与凭据切换需按 §4.7 修改。
@@ -81,15 +81,15 @@
 
 | 代码锚点 | 当前事实与本轮影响 |
 | --- | --- |
-| [precheck_service.py](../../../src/backend/bisheng/app_publish/domain/services/precheck_service.py) `precheck_build/precheck_probe` | 协议1保留；协议2在 PublishPipelineService 分支进入 RuntimeDeliveryCoordinator，不经过旧 code_url |
+| [precheck_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/precheck_service.py) `precheck_build/precheck_probe` | 协议1保留；协议2在 PublishPipelineService 分支进入 RuntimeDeliveryCoordinator，不经过旧 code_url |
 | [builder.py](../../../src/runtime-manager/runtime_manager/builder.py) `BASE_IMAGES/BuildService` | 固定 python3.11、node20、static 模板；保留 legacy，新增 bundle preparer |
-| [publish_online_service.py](../../../src/backend/bisheng/app_publish/domain/services/publish_online_service.py) `_settle` | 调整容量、维护、快照、凭据及切换时序 |
-| [version_service.py](../../../src/backend/bisheng/app_publish/domain/services/version_service.py) `record_version/_insert_version` | 保留审批失败补偿和既有版本 Owner，新增不可变 delivery 绑定 |
+| [publish_online_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py) `_settle` | 调整容量、维护、快照、凭据及切换时序 |
+| [version_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/version_service.py) `record_version/_insert_version` | 保留审批失败补偿和既有版本 Owner，新增不可变 delivery 绑定 |
 | [desired_state.py](../../../src/runtime-manager/runtime_manager/desired_state.py) `DesiredStateStore` | 移为仅本地观测缓存，权威操作和节点归属改平台 API |
 | [clients.py](../../../src/app-proxy/app_proxy/clients.py) `RouteClient` | 路由改读 backend 持久投影，入口不再需要 manager 管理密钥 |
 | [egress.py](../../../src/runtime-manager/runtime_manager/egress.py) `EgressPolicyStore` | 策略文件改成可失效本地缓存，权威来自平台策略 API |
 | [storage.py](../../../src/runtime-manager/runtime_manager/storage.py) `AppStorageService`、[appdb.py](../../../src/runtime-manager/runtime_manager/appdb.py) | 前者移入 backend 存储适配；后者保留本地 DB 执行，远程内容走 backend |
-| [app_data_service.py](../../../src/backend/bisheng/app_runtime/domain/services/app_data_service.py) `_require_owner` | 已有 owner-only 业务前置；新增私有补包/恢复沿用该主体边界 |
+| [app_data_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py) `_require_owner` | 已有 owner-only 业务前置；新增私有补包/恢复沿用该主体边界 |
 | [docker-compose.yml](../../../docker/docker-compose.yml)、[CI](../../../.github/workflows/ci.yml)、[Release](../../../.github/workflows/release.yml) | 当前 manager/egress/app-proxy 为现场 build；改成正式镜像，CI 延续 backend 的双架构发布方式 |
 
 ### 4.2 目标进程及数据流
@@ -183,10 +183,10 @@ v2 没有 delivery.mode 时为 bundle；没写 profile 时由 backend SQL 默认
   "official": true,
   "platforms": {
     "linux/amd64": {
-      "runtime_image": "dataelement/bisheng-app-python@sha256:<child-manifest>",
+      "runtime_image": "cp7553479/doberman-agent-app-python@sha256:<child-manifest>",
       "runtime_digest": "sha256:<child-manifest>",
       "runtime_image_id": "sha256:<image-config>",
-      "preparer_image": "dataelement/bisheng-app-python-preparer@sha256:<child-manifest>",
+      "preparer_image": "cp7553479/doberman-agent-app-python-preparer@sha256:<child-manifest>",
       "preparer_digest": "sha256:<child-manifest>",
       "preparer_image_id": "sha256:<image-config>",
       "abi": "cp311", "toolchain": {"python": "3.11", "pip": "base-image"},
@@ -204,7 +204,7 @@ v2 没有 delivery.mode 时为 bundle；没写 profile 时由 backend SQL 默认
 
 ### 4.5 产物布局、传输与应用启动
 
-**平台内容**继续使用现有私有 `bisheng-apps` 桶和同一 MinIO 实例；业务不要求第二套实例或 manager 专用桶。新写入对象统一规范命名：
+**平台内容**继续使用现有私有 `doberman-agent-apps` 桶和同一 MinIO 实例；业务不要求第二套实例或 manager 专用桶。新写入对象统一规范命名：
 
 | 内容 | 对象路径 | 持久性和清理 |
 | --- | --- | --- |
@@ -231,9 +231,9 @@ v2 没有 delivery.mode 时为 bundle；没写 profile 时由 backend SQL 默认
   protected-backups/{app_id}/{operation_id}.sqlite        # 尚未获平台确认的本地备份
 ```
 
-manager 容器内 `RTM_DATA_ROOT=/app-data`，宿主对应 `RTM_HOST_DATA_ROOT=${BISHENG_APP_DATA_ROOT}`；交给 Engine 的 bind 源必须使用宿主路径，不能使用 manager 容器内路径。正式应用固定挂载 `代码/本次编译产物 → /workspace/app:ro`、`依赖环境 → /opt/venv:ro` 或 `/workspace/app/node_modules:ro`、`应用 DB 目录 → /data:rw`，工作目录 `/workspace/app`。容器只读 rootfs、非 root app UID、cap_drop ALL、no-new-privileges、限制 CPU/内存/PID/日志、独立 tmpfs，无宿主端口映射。应用 UID/目录属主在安装自检与预备阶段核验；默认应用 UID/GID 为10001。正式manager容器沿用root进程以便交还专属挂载目录属主，不使用privileged或挂载宿主根；systemd/自定义非root进程需预置匹配UID与目录权限。不同profile UID无法满足时失败，不临时扩大宿主权限。通过Engine API持有的编排权限仍按高权限隔离。
+manager 容器内 `RTM_DATA_ROOT=/app-data`，宿主对应 `RTM_HOST_DATA_ROOT=${DOBERMAN_AGENT_APP_DATA_ROOT}`；交给 Engine 的 bind 源必须使用宿主路径，不能使用 manager 容器内路径。正式应用固定挂载 `代码/本次编译产物 → /workspace/app:ro`、`依赖环境 → /opt/venv:ro` 或 `/workspace/app/node_modules:ro`、`应用 DB 目录 → /data:rw`，工作目录 `/workspace/app`。容器只读 rootfs、非 root app UID、cap_drop ALL、no-new-privileges、限制 CPU/内存/PID/日志、独立 tmpfs，无宿主端口映射。应用 UID/目录属主在安装自检与预备阶段核验；默认应用 UID/GID 为10001。正式manager容器沿用root进程以便交还专属挂载目录属主，不使用privileged或挂载宿主根；systemd/自定义非root进程需预置匹配UID与目录权限。不同profile UID无法满足时失败，不临时扩大宿主权限。通过Engine API持有的编排权限仍按高权限隔离。
 
-Python 启动器设置 `PATH=/opt/venv/bin:...`、禁写 pyc、`BISHENG_APP_DB_URL=sqlite:////data/app.db`，按冻结的 argv 启动。不在启动脚本 pip install。静态 profile 用固定 nginx 配置服务 `/workspace/app`，支持统一路径前缀；Node 保持标准模块解析目录。自定义 command 只在受限容器中执行，接口不接受 host bind、privileged、设备或 Docker 参数。
+Python 启动器设置 `PATH=/opt/venv/bin:...`、禁写 pyc、`DOBERMAN_AGENT_APP_DB_URL=sqlite:////data/app.db`，按冻结的 argv 启动。不在启动脚本 pip install。静态 profile 用固定 nginx 配置服务 `/workspace/app`，支持统一路径前缀；Node 保持标准模块解析目录。自定义 command 只在受限容器中执行，接口不接受 host bind、privileged、设备或 Docker 参数。
 
 ### 4.6 依赖准备、缓存与离线补包
 
@@ -334,7 +334,7 @@ MySQL 竞争实现：重复幂等插入在 savepoint 失败后以共享当前读
 
 旧模板 Engine build 在调用前持久标记 started，只有读到完整结束流才记 finished。中断且不能确认 daemon build 已退出时，报告 legacy_build_stop_unconfirmed 并保留容量，不因容器列表为空就清理/重建。该状态需要专门维护窗口核对并停止未知构建；不能仅通过 owner cancel 或修改缓存让资源重新可用。原生构建中断与恢复仍须在专用 Engine 故障验收中验证。
 
-依赖失败的 diagnostic_tail 先在manager按包源/代理/密钥及URL参数脱敏，再由backend限制16KiB写入operation/fact；临时容器回收后仍可定位缺失包。backend app_runtime.runtime_diagnostic_days默认7天，过期终态在下一轮node plan按100条批量清除诊断尾部，保留阶段/归属/摘要等控制事实。manager离线时顺延至恢复对账；未声明固定日历时刻必定擦除SQL。任务deadline通过BISHENG_RUNTIME_TASK_TIMEOUT_SECONDS同时提供给backend和manager；nonce120秒及严格小于60秒窗口是协议常量，不另设无效配置副本。
+依赖失败的 diagnostic_tail 先在manager按包源/代理/密钥及URL参数脱敏，再由backend限制16KiB写入operation/fact；临时容器回收后仍可定位缺失包。backend app_runtime.runtime_diagnostic_days默认7天，过期终态在下一轮node plan按100条批量清除诊断尾部，保留阶段/归属/摘要等控制事实。manager离线时顺延至恢复对账；未声明固定日历时刻必定擦除SQL。任务deadline通过doberman-agent_RUNTIME_TASK_TIMEOUT_SECONDS同时提供给backend和manager；nonce120秒及严格小于60秒窗口是协议常量，不另设无效配置副本。
 
 ### 4.9 SQLite 一致备份、恢复及数据界面
 
@@ -363,7 +363,7 @@ egress-proxy 以独立只读身份拉取 policy revision/增量，内存缓存�
 | manager `RTM_*` | Docker host、数据根、固定 node_id、platform base、受控传输/事实身份、Engine 网络、准备源/超时/资源保留 | RTM_IMAGE_PREFIX 仍仅 legacy 输出镜像前缀；不是基础运行镜像配置 |
 | app-proxy 配置 | 授权/路由均指 backend，保留独立只读/授权服务身份 | 去除 APP_PROXY_MANAGER_SECRET；不持有写意图身份 |
 | egress 配置 | backend policy URL、独立只读身份、监听及 TTL | 不挂载应用数据根，不继承 RTM_HMAC_SECRET/Engine 地址 |
-| 应用注入 | 保留 BISHENG_APP_TOKEN、模型 base、DB URL、base path、SDK storage 三变量及可信 OBO | backend 生成 scope 限定 storage endpoint/token；不注入 MinIO、内部任务票据、镜像凭据 |
+| 应用注入 | 保留 DOBERMAN_AGENT_APP_TOKEN、模型 base、DB URL、base path、SDK storage 三变量及可信 OBO | backend 生成 scope 限定 storage endpoint/token；不注入 MinIO、内部任务票据、镜像凭据 |
 
 同域 `/apps/{slug}` 保留现有产品行为。服务端清洗请求头不等同于浏览器源隔离，批准的应用前端仍运行在平台源下；不把该机制宣传为可安全承载任意恶意前端的浏览器沙箱。独立应用域/Cookie 策略属于后续安全增强，若客户要求运行不可信第三方前端需单独完成该门禁。
 
@@ -472,7 +472,7 @@ owner 的运行环境列表只读公开描述，镜像拉取 secret 和全局维
 
 | 消费者 | 基线/目标兼容策略 | 必须验证 |
 | --- | --- | --- |
-| SDK Python 0.1.1 | `BISHENG_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB` 保持；backend实现原 relative objects/meta API、attachment metadata、错误detail和分页 | 原测试针对backend适配重跑，不能把FastAPI平台信封误发给旧RemoteBackend |
+| SDK Python 0.1.1 | `DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB` 保持；backend实现原 relative objects/meta API、attachment metadata、错误detail和分页 | 原测试针对backend适配重跑，不能把FastAPI平台信封误发给旧RemoteBackend |
 | CLI 3.0.0 的v1清单 | deploy路径/认证/轮询保留，仍legacy | 旧CLI无需删除未知键或改Procfile才能继续发布 |
 | 新CLI v2清单 | schema/协议能力检查；init默认bundle | 平台不支持v2则明确版本错误，不静默回落 |
 | 原manager内部v1 RPC | 升级窗口停止新写任务，协调替换backend/worker/manager/代理到v2 | 升级完成关闭旧无nonce管理写入口；不长期保留可重放旁路 |
@@ -497,11 +497,11 @@ owner 的运行环境列表只读公开描述，镜像拉取 secret 和全局维
 
 CI 使用新增 `.github/workflows/runtime-images.yml`，复用现有发行的Docker Hub账号方式，不改 backend 的既有构建脚本：
 
-- `dataelement/bisheng-runtime-manager:{version}`；egress用同镜像、`python -m runtime_manager.egress_proxy` 独立command。
-- `dataelement/bisheng-app-proxy:{version}`。
-- `dataelement/bisheng-app-python:3.11-r{revision}` 与 `...-preparer:3.11-r{revision}`；Node20与static同类固定修订镜像。首轮官方目录为当前已支持的三运行时，不扩展任意语言。
+- `cp7553479/doberman-agent-runtime-manager:{version}`；egress用同镜像、`python -m runtime_manager.egress_proxy` 独立command。
+- `cp7553479/doberman-agent-app-proxy:{version}`。
+- `cp7553479/doberman-agent-app-python:3.11-r{revision}` 与 `...-preparer:3.11-r{revision}`；Node20与static同类固定修订镜像。首轮官方目录为当前已支持的三运行时，不扩展任意语言。
 - 每种镜像先构建 `{tag}-amd64`、`{tag}-arm64`，各自验证启动/依赖物化/ABI和运行契约，再发布multiarch index及版本清单；清单关联源码SHA、配置/child/index digest、SDK/工具链版本和测试证据。QEMU构建成功不代替双架构运行验证。
-- 正式 `docker/docker-compose.yml` 改 `image: dataelement/bisheng-runtime-manager:${BISHENG_RUNTIME_VERSION}` 等，无build；开发现场build放独立override，不成为安装前置。`app-runtime` profile仍可选装；只改镜像变量不会修改SQL中历史应用运行环境。
+- 正式 `docker/docker-compose.yml` 改 `image: cp7553479/doberman-agent-runtime-manager:${DOBERMAN_AGENT_RUNTIME_VERSION}` 等，无build；开发现场build放独立override，不成为安装前置。`app-runtime` profile仍可选装；只改镜像变量不会修改SQL中历史应用运行环境。
 - 离线发行物含双架构服务/runtime/preparer/socket-proxy镜像归档与SHA清单、profiles输入、公开基础依赖集合、SDK/CLI离线安装材料、必要包源/CA/网络/目录配置、安装检查与升级工具、备份恢复手册。应用新增私有依赖仍由owner准备补包，不宣称基础包覆盖任意应用。
 
 ## 7. 验证与可观测
@@ -546,7 +546,7 @@ uv run pytest tests
 ```
 
 ```bash
-cd src/bisheng-sdk
+cd src/doberman-agent-sdk
 uv run pytest tests
 ```
 
@@ -560,7 +560,7 @@ uv run pytest test/database/test_alembic_single_head.py test/app_runtime test/ap
 
 工具与安装示例见 [OPERATIONS.md](../../../src/runtime-manager/OPERATIONS.md)。`verify-offline --profile profile.json --file app-offline.tar.gz` 验包；`prepare-offline` 执行联网下载加禁网安装验证；`import-profile --base-url ... --file runtime-profiles.json --set-defaults` 导入后设置默认。CI 容器集成入口为 `scripts/smoke_runtime_delivery.py`，在manager镜像内执行、真实Engine、内存产物端口，不等同于完整平台E2E。
 
-安装后由交付人员使用既有超管、两个不同租户的普通owner及非owner账号，凭据从现场安全环境注入，不写进文档。既有CLI在测试项目执行 `bisheng deploy`；平台审批页完成审批，浏览器访问 `/apps/{slug}/` 并验证WS、附件、模型/检索。管理API的完整路径见 §6.2。
+安装后由交付人员使用既有超管、两个不同租户的普通owner及非owner账号，凭据从现场安全环境注入，不写进文档。既有CLI在测试项目执行 `doberman-agent deploy`；平台审批页完成审批，浏览器访问 `/apps/{slug}/` 并验证WS、附件、模型/检索。管理API的完整路径见 §6.2。
 
 验收必须留存以下可对照记录：
 

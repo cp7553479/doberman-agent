@@ -20,12 +20,12 @@ from pathlib import Path
 import httpx
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     build_authorization_model_f048,
 )
-from bisheng.core.openfga.client import FGAClient
-from bisheng.core.openfga.exceptions import FGAWriteError
+from doberman_agent.core.openfga.client import FGAClient
+from doberman_agent.core.openfga.exceptions import FGAWriteError
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("F048_OPENFGA_INTEGRATION") != "1",

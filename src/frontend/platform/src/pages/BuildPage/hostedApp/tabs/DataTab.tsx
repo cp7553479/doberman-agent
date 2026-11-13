@@ -15,7 +15,7 @@
  * row key as a server-side tiebreaker, so paging
  * never repeats or skips a row.
  */
-import { Button, Pagination } from "@bisheng/ui"
+import { Button, Pagination } from "@doberman-agent/ui"
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import {
   Table,
@@ -29,7 +29,7 @@ import {
   ColumnResizeHandle,
   useResizableColumns,
 } from "@/components/bs-ui/table/useResizableColumns"
-import { notification } from "@bisheng/ui"
+import { notification } from "@doberman-agent/ui"
 import { cname } from "@/components/bs-ui/utils"
 import {
   getHostedAppErrorCode,

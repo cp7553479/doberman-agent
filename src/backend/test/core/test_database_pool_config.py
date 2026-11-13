@@ -13,9 +13,9 @@ import ssl
 
 import pytest
 
-from bisheng.core.config.settings import DatabasePoolConf, Settings
-from bisheng.core.database.connection import DatabaseConnectionManager
-from bisheng.core.database.manager import DatabaseManager
+from doberman_agent.core.config.settings import DatabasePoolConf, Settings
+from doberman_agent.core.database.connection import DatabaseConnectionManager
+from doberman_agent.core.database.manager import DatabaseManager
 
 _MYSQL_URL = "mysql+pymysql://u:p@localhost/db"
 

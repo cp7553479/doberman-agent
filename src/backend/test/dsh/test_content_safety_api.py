@@ -18,10 +18,10 @@ from fastapi import FastAPI, Request
 from sqlalchemy.exc import OperationalError
 from starlette.requests import ClientDisconnect
 
-from bisheng.dsh.api.responses import DshRoute
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-from bisheng.dsh.domain.schemas.content_safety import MAX_EVENT_BYTES
-from bisheng.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService
+from doberman_agent.dsh.api.responses import DshRoute
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+from doberman_agent.dsh.domain.schemas.content_safety import MAX_EVENT_BYTES
+from doberman_agent.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService
 from test.dsh.test_content_safety_ingest import SessionPort, rows
 from test.dsh.test_content_safety_repository import tenant_session, wire_hash
 from test.dsh.test_content_safety_runtime import PATH, configure, encode, envelope, headers, runtime_port
@@ -30,8 +30,8 @@ from test.dsh.test_content_safety_runtime import PATH, configure, encode, envelo
 @pytest.fixture
 def api(monkeypatch, content_safety_engine, content_safety_clock):
     # Import the missing paired endpoint rather than supplying a replacement route.
-    endpoint = importlib.import_module("bisheng.dsh.api.endpoints.content_safety_events")
-    composition = importlib.import_module("bisheng.dsh.api.router")
+    endpoint = importlib.import_module("doberman_agent.dsh.api.endpoints.content_safety_events")
+    composition = importlib.import_module("doberman_agent.dsh.api.router")
     runtime = runtime_port()
     settings = configure(monkeypatch, runtime)
     original_verify = runtime.verify_source
@@ -67,7 +67,7 @@ def api(monkeypatch, content_safety_engine, content_safety_clock):
 
 async def post(api, raw, *, path=PATH, request_headers=None, content=None):
     async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=api.app), base_url="https://bisheng.invalid"
+        transport=httpx.ASGITransport(app=api.app), base_url="https://doberman-agent.invalid"
     ) as client:
         return await client.post(
             path,
@@ -192,7 +192,7 @@ async def test_query_cannot_override_signed_scope_or_trigger_body_read(api, cont
 async def test_other_http_methods_cannot_ingest_or_construct_service(api, method, content_safety_event):
     raw = raw_event(api, content_safety_event())
     async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=api.app), base_url="https://bisheng.invalid"
+        transport=httpx.ASGITransport(app=api.app), base_url="https://doberman-agent.invalid"
     ) as client:
         response = await client.request(method, PATH, content=raw, headers=headers(raw))
     assert response.status_code == 405
@@ -428,7 +428,7 @@ async def test_upload_disconnect_never_fabricates_a_committed_response(api, cont
         "root_path": "",
         "headers": [(key.lower().encode(), value.encode()) for key, value in headers(raw).items()],
         "client": ("127.0.0.1", 1),
-        "server": ("bisheng.invalid", 443),
+        "server": ("doberman_agent.invalid", 443),
     }
     try:
         await api.app(scope, receive, send)

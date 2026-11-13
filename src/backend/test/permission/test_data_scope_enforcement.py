@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import pytest
 
-import bisheng.permission.domain.services.data_scope as data_scope_module
-from bisheng.common.errcode.open_api import PersonalTokenDataScopeError
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.data_scope import DATA_SCOPE_PERSONAL
-from bisheng.permission.domain.services.permission_action_service import (
+import doberman_agent.permission.domain.services.data_scope as data_scope_module
+from doberman_agent.common.errcode.open_api import PersonalTokenDataScopeError
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.data_scope import DATA_SCOPE_PERSONAL
+from doberman_agent.permission.domain.services.permission_action_service import (
     F048PermissionService,
     PermissionActor,
 )
@@ -233,7 +233,7 @@ class StubRegistry:
 
 
 def _wire_business_layer(monkeypatch, runtime):
-    import bisheng.permission.application.business_authorization as ba
+    import doberman_agent.permission.application.business_authorization as ba
 
     registry = StubRegistry()
 
@@ -251,7 +251,7 @@ def _wire_business_layer(monkeypatch, runtime):
 async def test_business_action_shortcut_yields_to_narrowed_scope(resolver, monkeypatch):
     from types import SimpleNamespace
 
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )
@@ -283,7 +283,7 @@ async def test_business_action_shortcut_yields_to_narrowed_scope(resolver, monke
 async def test_business_action_shortcut_intact_for_wide_scope(monkeypatch, no_resolver):
     from types import SimpleNamespace
 
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )

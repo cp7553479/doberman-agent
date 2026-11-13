@@ -19,9 +19,9 @@ for mod in ('celery', 'celery.schedules', 'celery.app', 'celery.app.task'):
 from test.fixtures.mock_services import premock_import_chain
 premock_import_chain()
 
-from bisheng.user_group.api.router import router as user_group_router
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.user_group import (
+from doberman_agent.user_group.api.router import router as user_group_router
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.user_group import (
     UserGroupMemberExistsError,
     UserGroupMemberNotFoundError,
     UserGroupNameDuplicateError,
@@ -59,7 +59,7 @@ SAMPLE_GROUP = {
     'group_admins': [{'user_id': 1, 'user_name': 'admin'}],
 }
 
-SERVICE_PATH = 'bisheng.user_group.domain.services.user_group_service.UserGroupService'
+SERVICE_PATH = 'doberman_agent.user_group.domain.services.user_group_service.UserGroupService'
 
 
 def _make_app(user_cls):

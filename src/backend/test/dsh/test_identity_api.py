@@ -7,10 +7,10 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.dsh.api.dependencies import get_runtime, get_settings
-from bisheng.dsh.api.endpoints.identity import browser_user, router
-from bisheng.dsh.config import DshSettings
-from bisheng.dsh.domain.schemas.contracts import DshIdentitySnapshot
+from doberman_agent.dsh.api.dependencies import get_runtime, get_settings
+from doberman_agent.dsh.api.endpoints.identity import browser_user, router
+from doberman_agent.dsh.config import DshSettings
+from doberman_agent.dsh.domain.schemas.contracts import DshIdentitySnapshot
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def http_app():
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
     runtime = SimpleNamespace(
-        settings=SimpleNamespace(platform_public_url="https://bisheng.example"),
+        settings=SimpleNamespace(platform_public_url="https://doberman-agent.example"),
         identity=SimpleNamespace(
             authorize=AsyncMock(
                 return_value={
@@ -47,7 +47,7 @@ async def test_disabled_probe_does_not_construct_runtime(http_app):
         raise AssertionError("Disabled discovery must not build dependencies")
 
     app.dependency_overrides[get_runtime] = fail
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         response = await client.get("/api/v1/dsh/config")
         assert response.json() == {"enabled": False}
         assert response.headers["cache-control"] == "no-store"
@@ -55,11 +55,11 @@ async def test_disabled_probe_does_not_construct_runtime(http_app):
 
 async def test_browser_requires_matching_origin_and_refuses_body_identity(http_app):
     app, runtime = http_app
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         for headers in (
             {},
             {"Origin": "https://evil.example"},
-            {"Origin": "https://bisheng.example", "Sec-Fetch-Site": "cross-site"},
+            {"Origin": "https://doberman-agent.example", "Sec-Fetch-Site": "cross-site"},
         ):
             assert (
                 await client.post("/api/v1/dsh/authorize", json={"auth_id": "a"}, headers=headers)
@@ -67,12 +67,12 @@ async def test_browser_requires_matching_origin_and_refuses_body_identity(http_a
         response = await client.post(
             "/api/v1/dsh/authorize",
             json={"auth_id": "a", "user_id": "999"},
-            headers={"Origin": "https://bisheng.example"},
+            headers={"Origin": "https://doberman-agent.example"},
         )
         assert response.status_code == 400
         assert runtime.identity.authorize.await_count == 0
         response = await client.post(
-            "/api/v1/dsh/authorize", json={"auth_id": "a"}, headers={"Origin": "https://bisheng.example"}
+            "/api/v1/dsh/authorize", json={"auth_id": "a"}, headers={"Origin": "https://doberman-agent.example"}
         )
         assert response.json()["data"]["identity_ticket"] == "test"
         assert response.headers["referrer-policy"] == "no-referrer"

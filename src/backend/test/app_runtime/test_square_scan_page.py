@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.database.models.flow import FlowStatus, FlowType
+from doberman_agent.database.models.flow import FlowStatus, FlowType
 
 from .conftest import OWNER_USER_ID, ROOT_TENANT_ID
 
@@ -32,13 +32,13 @@ ASSISTANT = FlowType.ASSISTANT.value
 
 
 def _payload(user_id: int = OWNER_USER_ID, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name=f"user-{user_id}", user_role=[], tenant_id=tenant_id)
 
 
 async def _tagged_tab(env, *, user=None, cursor=None, page_size=20, name=None, tag_id=None):
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     envelope = await WorkFlowService.get_online_flows_cursor(
         user or _payload(),
@@ -53,7 +53,7 @@ async def _tagged_tab(env, *, user=None, cursor=None, page_size=20, name=None, t
 
 
 async def _uncategorized_tab(env, *, user=None, cursor=None, page_size=20):
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     envelope = await WorkFlowService.get_uncategorized_flows_envelope(
         user or _payload(),
@@ -74,7 +74,7 @@ def square_env(build_list_env, monkeypatch):
     from contextlib import contextmanager
     from types import SimpleNamespace
 
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     build_list_env.enable_runtime_layer()
 
@@ -91,7 +91,7 @@ def square_env(build_list_env, monkeypatch):
                 result[str(resource_id)] = frozenset(allowed)
         return result
 
-    monkeypatch.setattr("bisheng.api.services.workflow.batch_check_business_actions", _batch_check)
+    monkeypatch.setattr("doberman_agent.api.services.workflow.batch_check_business_actions", _batch_check)
 
     def only_allow(resource_ids, actions=("use", "edit", "share")):
         grant_all["value"] = False
@@ -215,7 +215,7 @@ async def test_can_share_false_for_app(square_env, tenant_scope):
     the answer is ``False`` even when FGA would grant everything — asking would
     fabricate a capability and come back as business code 25001 besides.
     """
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     tenant_scope(ROOT_TENANT_ID)
     square_env.seed_app(name="hosted")
@@ -298,7 +298,7 @@ async def test_square_state_narrowing_hardcoded(square_env, tenant_scope, entry)
 
 async def test_build_page_still_filters_by_status(square_env, tenant_scope):
     """The status exemption is the square's alone — the build page is untouched."""
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     tenant_scope(ROOT_TENANT_ID)
     online = square_env.seed_app(name="online", state="online")
@@ -328,7 +328,7 @@ async def test_tagged_hosted_app_appears_under_its_tag(square_env, tenant_scope)
     tag prefilter and selecting a tag simply returns nothing hosted. The filter
     still "works", the list is just short, and nobody looks at the tag service.
     """
-    from bisheng.database.models.group_resource import ResourceTypeEnum
+    from doberman_agent.database.models.group_resource import ResourceTypeEnum
 
     tenant_scope(ROOT_TENANT_ID)
     tagged = square_env.seed_app(name="tagged-hosted")
@@ -351,7 +351,7 @@ async def test_untagged_hosted_app_stays_in_the_default_category(square_env, ten
     tagged — the mirror image of the bug above, and it puts the same card on
     two tabs at once.
     """
-    from bisheng.database.models.group_resource import ResourceTypeEnum
+    from doberman_agent.database.models.group_resource import ResourceTypeEnum
 
     tenant_scope(ROOT_TENANT_ID)
     tagged = square_env.seed_app(name="tagged-hosted")
@@ -375,8 +375,8 @@ def test_tag_prefilter_spans_all_three_types_and_follows_the_switch(build_list_e
     must drop out, or "select a tag" would query a type this deployment does
     not have.
     """
-    from bisheng.api.services.workflow import WorkFlowService
-    from bisheng.database.models.group_resource import ResourceTypeEnum
+    from doberman_agent.api.services.workflow import WorkFlowService
+    from doberman_agent.database.models.group_resource import ResourceTypeEnum
 
     build_list_env.enable_runtime_layer()
     assert WorkFlowService._tag_resource_types() == [

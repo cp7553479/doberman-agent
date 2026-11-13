@@ -8,16 +8,16 @@ dropped with their marker; the prose stays.
 AC-11.
 """
 
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER as E,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_SEPARATOR_MARKER as SEP,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_START_MARKER as S,
 )
-from bisheng.citation.domain.services.daily_citation_handles import markers_to_handles
+from doberman_agent.citation.domain.services.daily_citation_handles import markers_to_handles
 
 K3 = "knowledgesearch_bbbb2222:1"
 K7 = "websearch_cccc3333:0"

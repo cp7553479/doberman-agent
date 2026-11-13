@@ -13,10 +13,10 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.rag.pipeline.base import NormalPipeline
-from bisheng.knowledge.rag.pipeline.transformer.abstract import AbstractTransformer
-from bisheng.knowledge.rag.pipeline.types import PipelineConfig, PipelineStage
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.rag.pipeline.base import NormalPipeline
+from doberman_agent.knowledge.rag.pipeline.transformer.abstract import AbstractTransformer
+from doberman_agent.knowledge.rag.pipeline.types import PipelineConfig, PipelineStage
 
 
 class _StubLLM:

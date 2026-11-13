@@ -1,6 +1,6 @@
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
-// `GitBranch` stays on lucide: bisheng-icons has no "inherited / branch" glyph,
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
+// `GitBranch` stays on lucide: @doberman-agent/icons has no "inherited / branch" glyph,
 // so this is the documented no-matching-semantic-icon fallback.
 import { GitBranch } from "lucide-react";
 import type { PermissionGrantSource } from "~/api/permission";

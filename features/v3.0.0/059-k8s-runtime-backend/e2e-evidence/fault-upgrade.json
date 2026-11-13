@@ -186,7 +186,7 @@
       "source_revision": "2ac60f808be170e73f0094ba5c8d041f8a9e10cd",
       "platform": "linux/amd64",
       "manager_image": {
-        "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-28-r2-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-28-r2-amd64",
         "image_id": "sha256:586bdc40a1a2b0d2b8f1a1c2485c8da1a8dbb76f2c9eb939be7e5243ab4898ac"
       },
       "kubernetes_source_sha256": "038b8d95c3efd19ab7d5be2405890a7b21f334c025b2fecda0db50205af824a0",
@@ -224,7 +224,7 @@
     "private_push": {
       "egress_admission_helper_assembler_profiles_updated": false,
       "image": "192.168.106.189:5443/f059/runtime-manager@sha256:5619057b1c026d9ff545f4090f6c84c9aaef5fc1050604162770c7f4d018830c",
-      "local_tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-28-r2-amd64",
+      "local_tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-28-r2-amd64",
       "manager_image_id": "sha256:586bdc40a1a2b0d2b8f1a1c2485c8da1a8dbb76f2c9eb939be7e5243ab4898ac",
       "native_smoke": "nonroot_isolated_import_and_fixed_source_bytes",
       "observed_at": 1792712005.052754,
@@ -447,7 +447,7 @@
                 "created_at": "2026-10-22T20:18:53Z",
                 "deletion_at": "2026-10-22T23:42:48Z",
                 "finalizers": [
-                  "runtime.bisheng.io/stop-confirmed"
+                  "runtime.doberman_agent.io/stop-confirmed"
                 ],
                 "node_name": "binfeng-k8s-node189",
                 "phase": "Failed",
@@ -519,7 +519,7 @@
                 "created_at": "2026-10-22T20:34:01Z",
                 "deletion_at": null,
                 "finalizers": [
-                  "runtime.bisheng.io/stop-confirmed"
+                  "runtime.doberman_agent.io/stop-confirmed"
                 ],
                 "node_name": "binfeng-k8s-node189",
                 "phase": "Running",
@@ -591,7 +591,7 @@
                 "created_at": "2026-10-22T21:06:24Z",
                 "deletion_at": null,
                 "finalizers": [
-                  "runtime.bisheng.io/stop-confirmed"
+                  "runtime.doberman_agent.io/stop-confirmed"
                 ],
                 "node_name": "binfeng-k8s-node189",
                 "phase": "Running",
@@ -663,7 +663,7 @@
                 "created_at": "2026-10-22T22:44:11Z",
                 "deletion_at": null,
                 "finalizers": [
-                  "runtime.bisheng.io/stop-confirmed"
+                  "runtime.doberman_agent.io/stop-confirmed"
                 ],
                 "node_name": "binfeng-k8s-node189",
                 "phase": "Running",
@@ -723,7 +723,7 @@
                 "created_at": "2026-10-22T23:26:23Z",
                 "deletion_at": null,
                 "finalizers": [
-                  "runtime.bisheng.io/stop-confirmed"
+                  "runtime.doberman_agent.io/stop-confirmed"
                 ],
                 "node_name": "binfeng-k8s-node189",
                 "phase": "Running",

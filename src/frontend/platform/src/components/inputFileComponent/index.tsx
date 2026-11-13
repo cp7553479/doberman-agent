@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import type { WorkflowFileFieldProps } from '@bisheng/chat';
+import type { WorkflowFileFieldProps } from '@doberman-agent/chat';
 import type { ReactNode } from 'react';
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 import { locationContext } from "@/contexts/locationContext";
 import { MAX_MEDIA_FILES, isMediaFileName } from "@/util/fileAcceptUtils";
 import { FileSearch2 } from "lucide-react";

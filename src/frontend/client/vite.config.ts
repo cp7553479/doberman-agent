@@ -31,19 +31,19 @@ function buildVersion(): string {
 
 const app_env = {
   BASE_URL: '/workspace',
-  BISHENG_HOST: '/admin'
+  DOBERMAN_AGENT_HOST: '/admin'
 }
 
-const minioPathRE = /^\/(?:workspace\/)?(?:bisheng|tmp-dir)(?:\/|$)/;
+const minioPathRE = /^\/(?:workspace\/)?(?:doberman_agent|tmp-dir)(?:\/|$)/;
 
 function minioFileProxyPlugin(minioTarget: string): Plugin {
   const warnMinio = createMinioWarning('VITE_MINIO_PROXY_TARGET', minioTarget);
   return {
-    name: 'bisheng:minio-file-proxy',
+    name: 'doberman_agent:minio-file-proxy',
     apply: 'serve',
     configureServer(server) {
       console.log(
-        `[bisheng:minio-proxy] dev object proxy -> ${minioTarget} ` +
+        `[doberman_agent:minio-proxy] dev object proxy -> ${minioTarget} ` +
         `(host must equal backend sharepoint; 127.0.0.1 ≠ localhost)`,
       );
       const minioProxyMiddleware = (req, res, next) => {
@@ -54,7 +54,7 @@ function minioFileProxyPlugin(minioTarget: string): Plugin {
           return;
         }
 
-        const rewrittenUrl = requestUrl.replace(/^\/workspace(?=\/(?:bisheng|tmp-dir)(?:\/|$))/, '');
+        const rewrittenUrl = requestUrl.replace(/^\/workspace(?=\/(?:doberman_agent|tmp-dir)(?:\/|$))/, '');
         const targetUrl = new URL(rewrittenUrl, minioTarget);
         const proxyReq = http.request(
           {
@@ -98,7 +98,7 @@ function minioFileProxyPlugin(minioTarget: string): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadFrontendEnv(mode, __dirname);
-  // MinIO object proxy for bucket paths (/bisheng/...): these must reach MinIO,
+  // MinIO object proxy for bucket paths (/doberman_agent/...): these must reach MinIO,
   // NOT the backend (7860 only 404s on object keys). Override per environment via
   // VITE_DEV_MINIO_TARGET, whose host MUST match the backend `sharepoint` config —
   // SigV4 presigned URLs sign the Host header, so a mismatch yields 403
@@ -132,7 +132,7 @@ export default defineConfig(({ command, mode }) => {
       // Pin to 4001: fail loudly if the port is taken instead of drifting to 4002+.
       strictPort: true,
       proxy: {
-        '^(/workspace)?/bisheng': {
+        '^(/workspace)?/doberman_agent': {
           target: minioTarget,
           changeOrigin: true,
           secure: false,
@@ -183,41 +183,16 @@ export default defineConfig(({ command, mode }) => {
           navigateFallbackDenylist: [/^\/oauth/],
         },
         includeAssets: [],
-        // manifest: {
-        //   name: 'Deepseek',
-        //   short_name: 'Deepseek',
-        //   display: 'standalone',
-        //   background_color: '#000000',
-        //   theme_color: '#009688',
-        //   icons: [
-        //     {
-        //       src: 'assets/favicon-32x32.png',
-        //       sizes: '32x32',
-        //       type: 'image/png',
-        //     },
-        //     {
-        //       src: 'assets/favicon-16x16.png',
-        //       sizes: '16x16',
-        //       type: 'image/png',
-        //     },
-        //     {
-        //       src: 'assets/apple-touch-icon-180x180.png',
-        //       sizes: '180x180',
-        //       type: 'image/png',
-        //     },
-        //     {
-        //       src: 'assets/icon-192x192.png',
-        //       sizes: '192x192',
-        //       type: 'image/png',
-        //     },
-        //     {
-        //       src: 'assets/maskable-icon.png',
-        //       sizes: '512x512',
-        //       type: 'image/png',
-        //       purpose: 'maskable',
-        //     },
-        //   ],
-        // },
+        manifest: {
+          name: 'doberman-agent',
+          short_name: 'doberman-agent',
+          background_color: '#ffffff',
+          theme_color: '#ffffff',
+          icons: [
+            { src: 'assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'assets/maskable-icon.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          ],
+        },
       }),
       sourcemapExclude({ excludeNodeModules: true }),
       compression({

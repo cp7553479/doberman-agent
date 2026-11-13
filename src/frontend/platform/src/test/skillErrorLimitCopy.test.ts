@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
-import { normalizeApiError } from '@bisheng/api-client'
-import { notification } from '@bisheng/ui'
+import { normalizeApiError } from '@doberman-agent/api-client'
+import { notification } from '@doberman-agent/ui'
 
 import { getSkillErrorMessage, showSkillError } from "@/components/LinSight/skill/skillErrors"
 import type { SkillUploadLimit } from "@/controllers/API/linsight"

@@ -28,7 +28,7 @@ export default frontendConfig({
       {
         name: 'xlsx',
         message:
-          'Direct xlsx imports remain frozen (ledger #7). Reuse @bisheng/file-viewers for previews; shared SheetJS versions must come from the workspace catalog.',
+          'Direct xlsx imports remain frozen (ledger #7). Reuse @doberman-agent/file-viewers for previews; shared SheetJS versions must come from the workspace catalog.',
       },
       {
         name: 'react-color',

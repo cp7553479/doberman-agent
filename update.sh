@@ -9,6 +9,6 @@ sed -i.bak '/^name = "backend"$/ {
 n
 s/^version = .*/version = "'"${new_version/-beta/b}"'"/
 }' ./src/backend/uv.lock
-sed -i.bak "s/$old_version/$new_version/g" ./src/backend/bisheng/__init__.py
+sed -i.bak "s/$old_version/$new_version/g" ./src/backend/doberman_agent/__init__.py
 sed -i.bak "s/$old_version/$new_version/g" ./src/frontend/platform/package.json
 sed -i.bak "s/$old_version/$new_version/g" ./src/frontend/client/package.json

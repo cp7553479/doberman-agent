@@ -13,25 +13,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, AIMessageChunk
 from sqlmodel import SQLModel
 
-from bisheng.core.context.tenant import get_current_tenant_id
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import model_audit_admin, models
-from bisheng.dsh.audit_admin_runtime import ModelAuditAdministration
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities
-from bisheng.dsh.domain.schemas.model_audit_context import AUDIT_FIELDS, AuditContext
-from bisheng.dsh.domain.services.access import DshPrincipal
-from bisheng.dsh.domain.services.model import DshModelService
-from bisheng.dsh.domain.services.model_audit_body_access import DshModelAuditBodyAccessService
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
-from bisheng.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
-from bisheng.dsh.domain.services.model_audit_setting import DshModelAuditSettingService
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
-from bisheng.dsh.infrastructure.model_audit_blocking import run_audit_blocking
-from bisheng.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
+from doberman_agent.core.context.tenant import get_current_tenant_id
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import model_audit_admin, models
+from doberman_agent.dsh.audit_admin_runtime import ModelAuditAdministration
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities
+from doberman_agent.dsh.domain.schemas.model_audit_context import AUDIT_FIELDS, AuditContext
+from doberman_agent.dsh.domain.services.access import DshPrincipal
+from doberman_agent.dsh.domain.services.model import DshModelService
+from doberman_agent.dsh.domain.services.model_audit_body_access import DshModelAuditBodyAccessService
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
+from doberman_agent.dsh.domain.services.model_audit_setting import DshModelAuditSettingService
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+from doberman_agent.dsh.infrastructure.model_audit_blocking import run_audit_blocking
+from doberman_agent.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
 from test.dsh.model_audit_fixtures import audit_session
 
 
@@ -40,7 +40,7 @@ class AuditHarness:
         self.engine, self.storage, self.tokens, self.activity = engine, storage, tokens, activity
         self.lock = RLock()
         SQLModel.metadata.create_all(engine, tables=[DshModelCall.__table__])
-        from bisheng.core.database import tenant_filter
+        from doberman_agent.core.database import tenant_filter
 
         tenant_filter._tenant_aware_tables.add(DshModelCall.__tablename__)
         self.writer = DshModelAuditWriter(lambda: self.scope(DshModelAuditWriteRepository), lambda: storage, attempts=2)
@@ -198,7 +198,7 @@ class AuditHarness:
         app = FastAPI()
         from fastapi.responses import JSONResponse
 
-        from bisheng.common.errcode.base import BaseErrorCode
+        from doberman_agent.common.errcode.base import BaseErrorCode
 
         @app.exception_handler(BaseErrorCode)
         async def business_error(_request, error):

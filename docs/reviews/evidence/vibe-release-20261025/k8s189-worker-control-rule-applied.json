@@ -3,7 +3,7 @@
   "kind": "NetworkPolicy",
   "metadata": {
     "name": "vibe-platform-control-ingress",
-    "namespace": "bisheng-vibe-runtime-system"
+    "namespace": "doberman-agent-vibe-runtime-system"
   },
   "spec": {
     "podSelector": {
@@ -20,7 +20,7 @@
           {
             "namespaceSelector": {
               "matchLabels": {
-                "kubernetes.io/metadata.name": "bisheng-vibe-platform"
+                "kubernetes.io/metadata.name": "doberman-agent-vibe-platform"
               }
             },
             "podSelector": {

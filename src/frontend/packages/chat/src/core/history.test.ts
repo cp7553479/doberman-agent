@@ -7,7 +7,7 @@ it('strips internal presentation metadata from host transport payloads', () => {
   const host = historyForHost([raw], options);
   const transported = messagesForTransport(host);
   expect(transported[0]).toMatchObject(raw);
-  expect(JSON.stringify(transported)).not.toContain('__bisheng_chat_snapshot');
+  expect(JSON.stringify(transported)).not.toContain('__doberman_agent_chat_snapshot');
   expect(transported[0]).not.toHaveProperty('chat_ui_key');
   expect(transported[0]).not.toHaveProperty('chat_source_message_id');
 });

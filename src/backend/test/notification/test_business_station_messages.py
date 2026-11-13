@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.channel.domain.schemas.channel_manager_schema import UpdateMemberRoleRequest
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.channel.domain.schemas.channel_manager_schema import UpdateMemberRoleRequest
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,

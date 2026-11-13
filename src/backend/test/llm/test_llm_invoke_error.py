@@ -7,8 +7,8 @@ from types import SimpleNamespace
 import httpx
 import openai
 
-from bisheng.common.errcode.server import LlmInvokeError, LlmModelOfflineError
-from bisheng.llm.domain.utils import to_llm_invoke_error
+from doberman_agent.common.errcode.server import LlmInvokeError, LlmModelOfflineError
+from doberman_agent.llm.domain.utils import to_llm_invoke_error
 
 
 def _model():
@@ -70,7 +70,7 @@ def test_model_without_info_still_builds_error():
 
 
 class _FailingLLM:
-    """Stands in for BishengLLM: carries model/server info, every call fails."""
+    """Stands in for DobermanAgentLLM: carries model/server info, every call fails."""
 
     model_info = SimpleNamespace(model_name="qwen-max")
     server_info = SimpleNamespace(name="bailian")
@@ -94,7 +94,7 @@ def _runnable_failing_llm():
 def test_opening_dialog_propagates_provider_error_instead_of_unbound_local():
     import pytest
 
-    from bisheng_langchain.gpts.auto_optimization import generate_opening_dialog
+    from doberman_agent_langchain.gpts.auto_optimization import generate_opening_dialog
 
     with pytest.raises(openai.APIConnectionError):
         generate_opening_dialog(_runnable_failing_llm(), "desc")
@@ -103,7 +103,7 @@ def test_opening_dialog_propagates_provider_error_instead_of_unbound_local():
 def test_assistant_agent_auto_calls_raise_llm_invoke_error():
     import pytest
 
-    from bisheng.api.services.assistant_agent import AssistantAgent
+    from doberman_agent.api.services.assistant_agent import AssistantAgent
 
     agent = AssistantAgent.__new__(AssistantAgent)
     agent.llm = _runnable_failing_llm()
@@ -122,7 +122,7 @@ def test_assistant_agent_auto_calls_raise_llm_invoke_error():
 async def test_assistant_prompt_optimization_stream_raises_llm_invoke_error():
     import pytest
 
-    from bisheng.api.services.assistant_agent import AssistantAgent
+    from doberman_agent.api.services.assistant_agent import AssistantAgent
 
     agent = AssistantAgent.__new__(AssistantAgent)
     agent.llm = _runnable_failing_llm()

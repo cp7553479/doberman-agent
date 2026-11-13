@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import type { ComponentType } from "react";
 import type { ApprovalCenterTab } from "~/api/approval";
 

@@ -1,9 +1,9 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Alert,AlertDescription,AlertTitle } from "@/components/bs-ui/alert";
 
 import { Popover,PopoverContent,PopoverTrigger } from "@/components/bs-ui/popover";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -1,4 +1,4 @@
-import { isApiError } from "@bisheng/api-client";
+import { isApiError } from "@doberman-agent/api-client";
 import { useCallback, useMemo, useState } from "react";
 import { useUnactivate } from "react-activation";
 import { useLocation, useNavigate, useParams } from "react-router-dom";

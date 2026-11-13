@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.knowledge import KnowledgeFileNotExistError
-from bisheng.knowledge.domain.schemas.knowledge_schema import ModifyKnowledgeFileMetaDataReq
-from bisheng.knowledge.domain.services.knowledge_file_service import KnowledgeFileService
-from bisheng.open_api.api.exception_handlers import open_api_http_status
-from bisheng.open_endpoints.domain.schemas.knowledge import DeleteUserMetadataReq
+from doberman_agent.common.errcode.knowledge import KnowledgeFileNotExistError
+from doberman_agent.knowledge.domain.schemas.knowledge_schema import ModifyKnowledgeFileMetaDataReq
+from doberman_agent.knowledge.domain.services.knowledge_file_service import KnowledgeFileService
+from doberman_agent.open_api.api.exception_handlers import open_api_http_status
+from doberman_agent.open_endpoints.domain.schemas.knowledge import DeleteUserMetadataReq
 
 KNOWLEDGE_ID = 1
 OTHER_KNOWLEDGE_ID = 2

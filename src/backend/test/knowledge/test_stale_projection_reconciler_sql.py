@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.dialects import mysql, sqlite
 
-from bisheng.knowledge.domain.services.stale_projection_reconciler import (
+from doberman_agent.knowledge.domain.services.stale_projection_reconciler import (
     _compute_correct_parent,
     _mismatch_query,
 )

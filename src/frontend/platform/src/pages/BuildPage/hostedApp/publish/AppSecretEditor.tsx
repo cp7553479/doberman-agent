@@ -1,4 +1,4 @@
-import { Button, Input, Textarea } from '@bisheng/ui'
+import { Button, Input, Textarea } from '@doberman-agent/ui'
 import { showApiError } from '@/controllers/request'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'

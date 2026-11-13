@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useLocalize } from '~/hooks';
 import { useState } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { copyTrackingApi, disLikeCommentApi, likeChatApi } from "~/api/apps";
 import { MessageFeedbackButtons } from "~/components/Chat/MessageFeedbackButtons";
@@ -9,7 +9,7 @@ import { TextToSpeechButton } from "~/components/Voice/TextToSpeechButton";
 import { chatIdState, chatsState } from "../store/atoms";
 
 // Shared action-icon button — matches ExportSelectionButton (size-6 hit area,
-// 14px bisheng-icons Outlined glyph, text-3 idle / brand-500 active) so the
+// 14px @doberman-agent/icons Outlined glyph, text-3 idle / brand-500 active) so the
 // whole workflow action row reads as one consistent set.
 const ACTION_BTN =
     "flex size-6 items-center justify-center rounded-md transition-colors hover:bg-fill-1";

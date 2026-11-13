@@ -16,8 +16,8 @@
   },
   "decoded_valid_payload": {
     "schema_version": 2,
-    "iss": "bisheng-license-issuer",
-    "aud": "bisheng-gateway:dsh",
+    "iss": "doberman-agent-license-issuer",
+    "aud": "doberman-agent-gateway:dsh",
     "jti": "license_fixture_001",
     "iat": 1788919200,
     "nbf": 1788919200,

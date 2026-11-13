@@ -1,4 +1,4 @@
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { isDemoId } from './ids';
 

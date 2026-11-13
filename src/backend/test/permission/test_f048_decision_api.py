@@ -6,21 +6,21 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionFGAUnavailableError,
     PermissionInvalidResourceError,
 )
-from bisheng.permission.api.dependencies import get_permission_decision_api
-from bisheng.permission.api.endpoints import decision as decision_endpoints
-from bisheng.permission.api.endpoints.decision import router
-from bisheng.permission.application.resource_authorization import (
+from doberman_agent.permission.api.dependencies import get_permission_decision_api
+from doberman_agent.permission.api.endpoints import decision as decision_endpoints
+from doberman_agent.permission.api.endpoints.decision import router
+from doberman_agent.permission.application.resource_authorization import (
     PermissionDecisionApplication,
     ResourceAuthorizationRegistry,
 )
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 @pytest.fixture(autouse=True)

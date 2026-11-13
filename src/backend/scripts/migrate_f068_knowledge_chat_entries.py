@@ -35,13 +35,13 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.models.flow import FlowType  # noqa: E402
-from bisheng.database.models.session import MessageSession  # noqa: E402
-from bisheng.knowledge.domain.models.knowledge import Knowledge  # noqa: E402
-from bisheng.knowledge.domain.models.knowledge_file import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.models.flow import FlowType  # noqa: E402
+from doberman_agent.database.models.session import MessageSession  # noqa: E402
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge  # noqa: E402
+from doberman_agent.knowledge.domain.models.knowledge_file import (  # noqa: E402
     FileType,
     KnowledgeFile,
 )

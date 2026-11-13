@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { Download } from "lucide-react";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";

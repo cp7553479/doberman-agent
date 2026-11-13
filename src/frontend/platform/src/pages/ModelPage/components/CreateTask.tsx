@@ -1,16 +1,16 @@
 // @ts-strict-ignore
-import { Button, Input, Select } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Select } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { useContext, useEffect, useRef, useState } from "react";
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Tooltip } from "@bisheng/ui";
+import { Tooltip } from "@doberman-agent/ui";
 
 import { useTranslation } from "react-i18next";
 
 import { Label } from "../../../components/bs-ui/label";
-import { RadioGroup, Radio as RadioGroupItem } from "@bisheng/ui";
+import { RadioGroup, Radio as RadioGroupItem } from "@doberman-agent/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/bs-ui/table";
 import { alertContext } from "../../../contexts/alertContext";
 import { getFTServicesApi, getServicesApi } from "../../../controllers/API";

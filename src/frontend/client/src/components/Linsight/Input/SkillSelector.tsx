@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 /**
  * F035 Track H: multi-select list of enabled skills, rendered inside the
  * "+" menu's "Add Skill" submenu. Data: GET /api/v1/linsight/skill/selectable
@@ -7,12 +7,12 @@ import { Tooltip as SharedTooltip } from '@bisheng/ui';
  * search over display name + description.
  */
 import { Loader2 } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSelectableSkills } from '~/api/linsight';
 import { DropdownMenuItem } from '~/components/ui';
-import { SearchInput, StateView } from '@bisheng/ui';
+import { SearchInput, StateView } from '@doberman-agent/ui';
 
 import { useLocalize } from '~/hooks';
 import { useIsClipped } from '~/hooks/useIsClipped';

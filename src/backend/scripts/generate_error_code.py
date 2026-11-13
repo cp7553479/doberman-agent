@@ -3,7 +3,7 @@ import inspect
 import json
 import os
 
-from bisheng.common.errcode import BaseErrorCode
+from doberman_agent.common.errcode import BaseErrorCode
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     for root, dirs, files in os.walk(error_code_path):
         for file in files:
             if file.endswith(".py") and file != '__init__.py' and file != 'base.py':
-                module = importlib.import_module('bisheng.common.errcode.' + file.replace('.py', ''))
+                module = importlib.import_module('doberman_agent.common.errcode.' + file.replace('.py', ''))
                 for name, obj in inspect.getmembers(module):
                     if inspect.isclass(obj) and issubclass(obj, BaseErrorCode) and obj is not BaseErrorCode:
                         code = getattr(obj, 'Code')

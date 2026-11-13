@@ -1,4 +1,4 @@
-# BiSheng 文档导航
+# doberman-agent 文档导航
 
 > 找文档从这里开始。原则:**规范看根目录、架构看 `architecture/`、功能文档看 `../features/`**。
 

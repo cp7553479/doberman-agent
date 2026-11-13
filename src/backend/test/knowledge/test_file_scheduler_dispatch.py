@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from bisheng.worker.knowledge.scheduler import FileScheduler, run_dispatch_round, trigger_dispatch_task
+from doberman_agent.worker.knowledge.scheduler import FileScheduler, run_dispatch_round, trigger_dispatch_task
 
 
 def _conf(**overrides):
@@ -42,10 +42,10 @@ def test_single_user_backfills_until_queue_capacity(monkeypatch):
         "file_ext": "txt",
     }
     apply_async = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", apply_async)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", apply_async)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"knowledge_celery": 5}),
     )
 
@@ -87,10 +87,10 @@ def test_fair_share_across_users_least_inflight_first(monkeypatch):
         "callback_url": "",
         "file_ext": "txt",
     }
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", MagicMock())
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", MagicMock())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"knowledge_celery": 20}),
     )
 
@@ -123,10 +123,10 @@ def test_freed_slot_goes_to_least_inflight_user_not_longest_queue(monkeypatch):
     sched.dispatch_one.side_effect = _pop
     sched.get_payload.side_effect = lambda *, file_id: {"file_ext": "txt"}
     sched.confirm_dispatch.side_effect = lambda *, file_id, queue: confirmed.append(owner[file_id])
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", MagicMock())
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", MagicMock())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"knowledge_celery": 20}),
     )
 
@@ -156,10 +156,10 @@ def test_weighted_user_gets_proportionally_more(monkeypatch):
         owner[file_id], confirmed[owner[file_id]] + 1
     )
     sched.get_payload.side_effect = lambda *, file_id: {"file_ext": "txt"}
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", MagicMock())
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", MagicMock())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"knowledge_celery": 20}, user_overrides={"1": 3}),
     )
 
@@ -199,13 +199,13 @@ def test_ocr_and_normal_queues_capped_independently(monkeypatch):
         confirmed_queues.append(queue)
 
     sched.confirm_dispatch.side_effect = _confirm
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", MagicMock())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", MagicMock())
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler.decide_queue",
+        "doberman_agent.worker.knowledge.scheduler.decide_queue",
         lambda ext: "ocr_celery" if ext == "pdf" else "knowledge_celery",
     )
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"knowledge_celery": 5, "ocr_celery": 3}),
     )
 
@@ -222,10 +222,10 @@ def test_saturated_queue_rolls_back_and_skips_user_no_infinite_loop(monkeypatch)
     sched.inflight_total.side_effect = lambda *, queue: 3 if queue == "ocr_celery" else 0
     sched.dispatch_one.side_effect = ["100", None]
     sched.get_payload.return_value = {"file_ext": "png"}  # → ocr_celery (full)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", MagicMock())
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "ocr_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", MagicMock())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "ocr_celery")
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._fair_scheduler_conf",
+        "doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf",
         lambda: _conf(queue_concurrency={"ocr_celery": 3}),
     )
 
@@ -242,11 +242,11 @@ def test_rollback_on_apply_async_failure(monkeypatch):
     sched.dispatch_one.side_effect = ["10", None]
     sched.get_payload.return_value = {"preview_cache_key": "pk", "callback_url": "", "file_ext": "txt"}
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler._parse_apply_async",
+        "doberman_agent.worker.knowledge.scheduler._parse_apply_async",
         MagicMock(side_effect=RuntimeError("broker down")),
     )
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     run_dispatch_round(scheduler=sched)
 
@@ -258,7 +258,7 @@ def test_rollback_on_apply_async_failure(monkeypatch):
 def test_no_lock_returns_early(monkeypatch):
     sched = _sched()
     sched.acquire_dispatch_lock.return_value = None
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     run_dispatch_round(scheduler=sched)
 
@@ -283,7 +283,7 @@ def _patch_dao(monkeypatch, by_id):
         return [r for r in rows if r is not None]
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
         _get,
     )
 
@@ -291,7 +291,7 @@ def _patch_dao(monkeypatch, by_id):
 def test_missing_payload_waiting_file_rebuilds_and_dispatches(monkeypatch):
     """A still-WAITING file whose payload expired must be self-healed: rebuild the
     payload from the DB row and dispatch it — NOT rolled back, NOT dropped."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
 
     sched = _sched()
     sched.active_users.return_value = ["a"]
@@ -299,9 +299,9 @@ def test_missing_payload_waiting_file_rebuilds_and_dispatches(monkeypatch):
     sched.get_payload.return_value = {}  # payload expired
     _patch_dao(monkeypatch, {50: _db_row(KnowledgeFileStatus.WAITING, file_name="x.pdf", tenant_id=7)})
     apply_async = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", apply_async)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", apply_async)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     run_dispatch_round(scheduler=sched)
 
@@ -316,7 +316,7 @@ def test_missing_payload_waiting_file_rebuilds_and_dispatches(monkeypatch):
 def test_missing_payload_ghost_file_is_discarded_not_requeued(monkeypatch):
     """A popped file with no payload AND a terminal/deleted DB row is a ghost: it
     must be discarded (drop_inflight), never re-queued (no poison pill)."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
 
     sched = _sched()
     sched.active_users.return_value = ["a"]
@@ -324,8 +324,8 @@ def test_missing_payload_ghost_file_is_discarded_not_requeued(monkeypatch):
     sched.get_payload.return_value = {}
     _patch_dao(monkeypatch, {94238: _db_row(KnowledgeFileStatus.SUCCESS)})
     apply_async = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", apply_async)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", apply_async)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     run_dispatch_round(scheduler=sched)
 
@@ -338,7 +338,7 @@ def test_ghost_at_queue_tail_does_not_block_files_behind_it(monkeypatch):
     """Regression for the poison-pill / head-of-line-blocking bug: a ghost popped
     first must NOT cause the user to be skipped — the live file behind it must
     still be dispatched in the same round."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
 
     sched = _sched()
     sched.active_users.return_value = ["a"]
@@ -347,9 +347,9 @@ def test_ghost_at_queue_tail_does_not_block_files_behind_it(monkeypatch):
     sched.get_payload.side_effect = lambda *, file_id: {} if file_id == "94238" else {"file_ext": "txt"}
     _patch_dao(monkeypatch, {94238: _db_row(KnowledgeFileStatus.SUCCESS)})
     apply_async = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", apply_async)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", apply_async)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     run_dispatch_round(scheduler=sched)
 
@@ -362,7 +362,7 @@ def test_ghost_at_queue_tail_does_not_block_files_behind_it(monkeypatch):
 
 def test_stamps_owning_tenant(monkeypatch):
     """The dispatched parse task must run under the file's OWNING tenant."""
-    from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
 
     sched = _sched()
     sched.active_users.return_value = ["a"]
@@ -378,9 +378,9 @@ def test_stamps_owning_tenant(monkeypatch):
     def _capture(*, args, queue):
         seen["tenant"] = current_tenant_id.get()
 
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._parse_apply_async", _capture)
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._parse_apply_async", _capture)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.decide_queue", lambda ext: "knowledge_celery")
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_conf", lambda: _conf())
 
     set_current_tenant_id(1)
     run_dispatch_round(scheduler=sched)
@@ -390,8 +390,8 @@ def test_stamps_owning_tenant(monkeypatch):
 
 
 def test_trigger_dispatch_task_returns_early_when_fair_disabled(monkeypatch):
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler._fair_scheduler_enabled", lambda: False)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler._fair_scheduler_enabled", lambda: False)
     run_round = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.run_dispatch_round", run_round)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.run_dispatch_round", run_round)
     trigger_dispatch_task.run()
     run_round.assert_not_called()

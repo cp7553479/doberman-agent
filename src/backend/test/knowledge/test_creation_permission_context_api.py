@@ -8,9 +8,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceLimitError
-from bisheng.knowledge.api.endpoints import knowledge_space as endpoints
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.common.errcode.knowledge_space import SpaceLimitError
+from doberman_agent.knowledge.api.endpoints import knowledge_space as endpoints
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 
 class _Prospective:
@@ -57,15 +57,15 @@ async def test_creation_context_and_candidates_use_server_tenant_and_same_shape(
     service = _service(prospective)
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
             new=AsyncMock(return_value=50),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
             new=AsyncMock(return_value=0),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
             new=AsyncMock(return_value=SimpleNamespace(embedding_model=SimpleNamespace(id=3))),
         ),
     ):
@@ -95,11 +95,11 @@ async def test_creation_qualification_fails_closed_before_permission_directory()
     service = _service(prospective)
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
             new=AsyncMock(return_value=30),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
             new=AsyncMock(return_value=30),
         ),
     ):

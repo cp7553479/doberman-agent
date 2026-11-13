@@ -11,7 +11,7 @@ from test.database.test_alembic_single_head import _script_directory
 
 BACKEND = Path(__file__).resolve().parents[2]
 MANIFEST = json.loads((Path(__file__).parent / "fixtures/work110_main_migrations.json").read_text())
-VERSIONS = BACKEND / "bisheng/core/database/alembic/versions"
+VERSIONS = BACKEND / "doberman_agent/core/database/alembic/versions"
 
 
 def test_main_migrations_are_byte_for_byte_unchanged():
@@ -102,10 +102,10 @@ def _f111():
 
 
 def _safety_tables():
-    from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-    from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-    from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-    from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreeState
+    from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+    from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+    from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+    from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreeState
 
     return {
         model.__tablename__: model.__table__
@@ -198,7 +198,7 @@ def test_f111_repeated_upgrade_control_flow_is_schema_only(monkeypatch, fresh):
 
 @pytest.mark.parametrize("uppercase", [False, True])
 def test_f111_constraint_helpers_preserve_reflected_names(monkeypatch, uppercase):
-    from bisheng.core.database.alembic_helpers import online
+    from doberman_agent.core.database.alembic_helpers import online
 
     def name(value):
         return value.upper() if uppercase else value

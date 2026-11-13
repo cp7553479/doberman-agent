@@ -11,12 +11,12 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 BACKEND_ROOT = REPOSITORY_ROOT / "src" / "backend"
 sys.path.insert(0, str(BACKEND_ROOT))
 # The model protocol face (F051) is the one v2 sub-router mounted only where
-# ``open_platform.enabled`` is on, and ``bisheng.api.router`` decides that at
+# ``open_platform.enabled`` is on, and ``doberman_agent.api.router`` decides that at
 # import time. The customer contract documents the complete surface, so force
 # the switch on **before** importing the app rather than depending on whichever
 # config.yaml the person running this happens to have.
-importlib.import_module("bisheng.common.services.config_service").settings.open_platform.enabled = True
-app = importlib.import_module("bisheng.main").app
+importlib.import_module("doberman_agent.common.services.config_service").settings.open_platform.enabled = True
+app = importlib.import_module("doberman_agent.main").app
 
 OUTPUT = Path(__file__).with_name("openapi-v2-key-auth-api.json")
 
@@ -54,7 +54,7 @@ def generate() -> dict:
     return {
         "openapi": source.get("openapi", "3.1.0"),
         "info": {
-            "title": "BiSheng API-key API",
+            "title": "doberman-agent API-key API",
             "version": "2.0",
             "description": "HTTP and WebSocket endpoints authenticated with a Bearer API key.",
         },

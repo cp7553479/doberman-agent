@@ -1,4 +1,4 @@
-import { InputNumber, type InputNumberError, type InputNumberProps } from '@bisheng/ui';
+import { InputNumber, type InputNumberError, type InputNumberProps } from '@doberman-agent/ui';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -44,10 +44,10 @@ export const NonNegativeInput = React.forwardRef<HTMLInputElement, NonNegativeIn
     };
 
     return <div className={className}>
-        {label && <label htmlFor={id} className="bisheng-label flex items-center gap-1 mb-2">
+        {label && <label htmlFor={id} className="doberman_agent-label flex items-center gap-1 mb-2">
             {label}
             {tooltip && <QuestionTooltip content={tooltip} />}
-            {required && <span className="bisheng-tip">*</span>}
+            {required && <span className="doberman_agent-tip">*</span>}
         </label>}
         <InputNumber
             {...props}
@@ -80,6 +80,6 @@ export const NonNegativeInput = React.forwardRef<HTMLInputElement, NonNegativeIn
                 onBlur?.(event);
             }}
         />
-        {error && !fieldErrorShown && <p className="bisheng-tip mt-1">{error}</p>}
+        {error && !fieldErrorShown && <p className="doberman_agent-tip mt-1">{error}</p>}
     </div>;
 });

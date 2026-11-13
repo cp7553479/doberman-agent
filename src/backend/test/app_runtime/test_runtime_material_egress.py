@@ -4,9 +4,9 @@ from datetime import UTC
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeNode
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
-from bisheng.app_runtime.domain.services.runtime_protocol import ServiceIdentity
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeNode
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
+from doberman_agent.app_runtime.domain.services.runtime_protocol import ServiceIdentity
 from test.app_runtime.test_runtime_material_service import bind, create, reframe, serving
 from test.app_runtime.test_runtime_material_service import control as control
 from test.app_runtime.test_runtime_material_service import materials as materials
@@ -17,7 +17,7 @@ EGRESS = ServiceIdentity("egress", "node-a", ("egress",))
 
 @pytest.fixture
 async def policies(materials):
-    from bisheng.app_runtime.domain.services.runtime_material_policy_service import RuntimeMaterialPolicyService
+    from doberman_agent.app_runtime.domain.services.runtime_material_policy_service import RuntimeMaterialPolicyService
 
     return RuntimeMaterialPolicyService(
         materials.repo,
@@ -85,12 +85,12 @@ async def test_only_prepare_download_can_reach_configured_package_endpoints(mate
 
 
 async def test_operation_service_egress_projection_includes_material_rows(materials, policies, monkeypatch):
-    from bisheng.app_runtime.domain.services import runtime_operation_service as mod
+    from doberman_agent.app_runtime.domain.services import runtime_operation_service as mod
 
     grant = await create(materials)
     await bind(materials, grant)
     monkeypatch.setattr(
-        "bisheng.app_runtime.domain.services.runtime_material_policy_service.RuntimeMaterialPolicyService",
+        "doberman_agent.app_runtime.domain.services.runtime_material_policy_service.RuntimeMaterialPolicyService",
         lambda *a, **k: policies,
     )
     result = await mod.RuntimeOperationService(materials.repo, clock=lambda: materials.clock["now"]).policies(EGRESS)

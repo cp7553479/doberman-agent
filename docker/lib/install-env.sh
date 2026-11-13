@@ -9,7 +9,7 @@ env_set() {
     *$'\n'*|*$'\r'*) die "配置项不能包含换行：${key}" ;;
   esac
   temporary="$(mktemp "${file}.XXXXXX")"
-  if BISHENG_ENV_VALUE="$value" awk -v MODE=set -v KEY="$key" \
+  if DOBERMAN_AGENT_ENV_VALUE="$value" awk -v MODE=set -v KEY="$key" \
       -f "${SCRIPT_DIR}/lib/env.awk" "$file" > "$temporary"; then
     chmod 600 "$temporary"
     mv "$temporary" "$file"

@@ -10,10 +10,10 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.tenant_sharing import TenantContextMissingError
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.llm.domain.services.call_logger import ModelCallLogger
-from bisheng.llm.domain.services.token_tracker import LLMTokenTracker
+from doberman_agent.common.errcode.tenant_sharing import TenantContextMissingError
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.llm.domain.services.call_logger import ModelCallLogger
+from doberman_agent.llm.domain.services.token_tracker import LLMTokenTracker
 
 
 # ── LLMTokenTracker ──────────────────────────────────────────────
@@ -30,7 +30,7 @@ async def test_record_usage_stamps_leaf_tenant_and_sums_total():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.llm.domain.services.token_tracker.LLMTokenLogDao.acreate',
+            'doberman_agent.llm.domain.services.token_tracker.LLMTokenLogDao.acreate',
             side_effect=_fake_acreate,
         ):
             await LLMTokenTracker.record_usage(
@@ -69,7 +69,7 @@ async def test_record_usage_accepts_explicit_total_override():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.llm.domain.services.token_tracker.LLMTokenLogDao.acreate',
+            'doberman_agent.llm.domain.services.token_tracker.LLMTokenLogDao.acreate',
             side_effect=_fake_acreate,
         ):
             await LLMTokenTracker.record_usage(
@@ -97,7 +97,7 @@ async def test_log_success_stamps_leaf_tenant():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.llm.domain.services.call_logger.LLMCallLogDao.acreate',
+            'doberman_agent.llm.domain.services.call_logger.LLMCallLogDao.acreate',
             side_effect=_fake_acreate,
         ):
             await ModelCallLogger.log_success(
@@ -128,7 +128,7 @@ async def test_log_error_truncates_long_messages():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.llm.domain.services.call_logger.LLMCallLogDao.acreate',
+            'doberman_agent.llm.domain.services.call_logger.LLMCallLogDao.acreate',
             side_effect=_fake_acreate,
         ):
             await ModelCallLogger.log_error(user_id=100, error_msg=long_err)

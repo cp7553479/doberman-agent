@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { UploadIcon } from "@/components/bs-icons";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";

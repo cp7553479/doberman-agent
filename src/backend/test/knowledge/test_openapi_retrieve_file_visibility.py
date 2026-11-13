@@ -5,16 +5,16 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
-from bisheng.knowledge.domain.services.retrieval_engine import RetrievalEngine
-from bisheng.permission.application.identity import (
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.knowledge.domain.services.retrieval_engine import RetrievalEngine
+from doberman_agent.permission.application.identity import (
     reset_current_permission_actor,
     set_current_permission_actor,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 def service() -> KnowledgeSpaceChatService:
@@ -48,7 +48,7 @@ async def test_both_retrieve_branches_use_the_shared_file_filter(
     engine.resolve_library_file_ids_by_tags = AsyncMock(return_value=[10, 11])
     engine.retrieve_and_filter = AsyncMock(return_value=[doc(10, "allowed")])
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service."
+        "doberman_agent.knowledge.domain.services.knowledge_service."
         "KnowledgeService.permission_service.ensure_knowledge_use_async",
         AsyncMock(),
     )
@@ -83,17 +83,17 @@ async def test_prefilter_reaches_both_indexes_and_postfilter_removes_forbidden_c
     milvus = MagicMock()
     elastic = MagicMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_milvus_vectorstore",
         AsyncMock(return_value=milvus),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRag.init_knowledge_es_vectorstore",
         AsyncMock(return_value=elastic),
     )
     retriever = MagicMock()
     retriever.ainvoke = AsyncMock(return_value=[doc(10, "allowed"), doc(11, "forbidden-body")])
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
+        "doberman_agent.knowledge.domain.services.retrieval_engine.KnowledgeRetrieverTool",
         MagicMock(return_value=retriever),
     )
 
@@ -134,19 +134,19 @@ async def test_service_account_actor_is_not_replaced_by_compatibility_owner(monk
     visibility._config = lambda: MagicMock(index_filter_threshold=100)
     targets = (MagicMock(resource_type="knowledge_file", resource_id="10"),)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=MagicMock(id=8)),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.aget_file_by_ids",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.aget_file_by_ids",
         AsyncMock(return_value=[MagicMock(id=10, knowledge_id=8, file_type=1)]),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service.get_f048_resource_adapter",
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service.get_f048_resource_adapter",
         AsyncMock(return_value=MagicMock(resolve_permission_targets_from_rows=AsyncMock(return_value=targets))),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service.batch_check_verified_business_visible",
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service.batch_check_verified_business_visible",
         batch_check,
     )
     try:
@@ -181,12 +181,12 @@ async def test_v2_adapter_maps_permission_outage_to_503_without_chunks(monkeypat
     look at the wrong subsystem. The transport status is still 503.
     """
 
-    from bisheng.open_api.api.exception_handlers import open_api_http_status
-    from bisheng.open_endpoints.api.endpoints.filelib import retrieve_chunks
-    from bisheng.open_endpoints.domain.schemas.filelib import RetrieveReq
+    from doberman_agent.open_api.api.exception_handlers import open_api_http_status
+    from doberman_agent.open_endpoints.api.endpoints.filelib import retrieve_chunks
+    from doberman_agent.open_endpoints.domain.schemas.filelib import RetrieveReq
 
     monkeypatch.setattr(
-        "bisheng.open_endpoints.api.endpoints.filelib.get_current_open_api_principal",
+        "doberman_agent.open_endpoints.api.endpoints.filelib.get_current_open_api_principal",
         lambda: MagicMock(
             authorization_subject_type="service_account",
             authorization_subject_id=7,
@@ -197,7 +197,7 @@ async def test_v2_adapter_maps_permission_outage_to_503_without_chunks(monkeypat
         ),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_facade_service.RetrievalFacadeService.retrieve",
+        "doberman_agent.knowledge.domain.services.retrieval_facade_service.RetrievalFacadeService.retrieve",
         AsyncMock(side_effect=PermissionServiceUnavailableError()),
     )
 

@@ -1,4 +1,4 @@
-import { TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import { ReactNode } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 

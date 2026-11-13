@@ -28,9 +28,9 @@ import yaml
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.errors import GraphRecursionError
 
-from bisheng.linsight.domain.services.resilience_middleware import _MAX_STATE_ONLY_REFUNDS
-from bisheng.linsight.domain.services.tool_loop_middleware import LinsightToolLoopError
-from bisheng.linsight.domain.task_exec import (
+from doberman_agent.linsight.domain.services.resilience_middleware import _MAX_STATE_ONLY_REFUNDS
+from doberman_agent.linsight.domain.services.tool_loop_middleware import LinsightToolLoopError
+from doberman_agent.linsight.domain.task_exec import (
     _PARTIAL_NO_SALVAGE_STEP_LIMIT,
     _PARTIAL_NO_SALVAGE_TOOL_LOOP,
     _PARTIAL_RESULT_PREAMBLE_STEP_LIMIT,
@@ -50,7 +50,7 @@ _CLOSING_ANSWER = (
 )
 
 
-def _tool_call(name: str = "bisheng_code_interpreter") -> dict:
+def _tool_call(name: str = "doberman_agent_code_interpreter") -> dict:
     return {"name": name, "args": {}, "id": "call_1"}
 
 
@@ -69,7 +69,7 @@ def test_trailing_tool_message_still_counts_as_mid_loop():
     """Cut off mid-loop: the last AIMessage still carries the call being run."""
     messages = [
         AIMessage(content="", tool_calls=[_tool_call()]),
-        ToolMessage(content='{"exitcode": 0}', tool_call_id="call_1", name="bisheng_code_interpreter"),
+        ToolMessage(content='{"exitcode": 0}', tool_call_id="call_1", name="doberman_agent_code_interpreter"),
     ]
     assert pending(messages) is True
 
@@ -216,7 +216,7 @@ def test_shipped_default_is_already_above_the_floor():
     "max_steps is below ..." warning on every task.
     """
     shipped = yaml.safe_load(
-        (Path(__file__).resolve().parents[2] / "bisheng" / "initdb_config.yaml").read_text(encoding="utf-8")
+        (Path(__file__).resolve().parents[2] / "doberman_agent" / "initdb_config.yaml").read_text(encoding="utf-8")
     )["linsight"]["max_steps"]
     assert _resolve_recursion_limit(_Conf(max_steps=shipped)) == shipped
 

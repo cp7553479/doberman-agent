@@ -10,12 +10,12 @@ from unittest.mock import MagicMock
 
 from langchain_core.messages import ToolMessage
 
-from bisheng.linsight.domain.services.agent_factory import SkillSelectionMiddleware
-from bisheng.linsight.domain.services.skill_runtime_guard import (
+from doberman_agent.linsight.domain.services.agent_factory import SkillSelectionMiddleware
+from doberman_agent.linsight.domain.services.skill_runtime_guard import (
     SKILL_USE_REFUSAL,
     skill_names_in_code,
 )
-from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend
+from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend
 
 PERSONAL_ID = 7
 ENTERPRISE_ID = 9
@@ -23,7 +23,7 @@ ENTERPRISE_ID = 9
 
 def _backend(tmp_path) -> WorkspaceBackend:
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     backend = WorkspaceBackend(svid="sv-guard", minio=minio, file_dir=str(tmp_path))
     backend.skill_snapshot = [{"name": "pdf", "skill_id": PERSONAL_ID, "owner_user_id": 3, "content_hash": "abc"}]
     return backend
@@ -111,7 +111,7 @@ def test_content_already_returned_is_not_taken_back(tmp_path):
 
 def test_no_snapshot_still_reads_the_skills_zone(tmp_path):
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     backend = WorkspaceBackend(svid="sv-old", minio=minio, file_dir=str(tmp_path))
     _seed(backend, "skills/pdf/SKILL.md", b"# old session\n")
     result = backend.read("/skills/pdf/SKILL.md")
@@ -130,7 +130,7 @@ def _selection(enabled) -> SkillSelectionMiddleware:
     )
     return SkillSelectionMiddleware(
         selected_names=["pdf"],
-        tool_names={"bisheng_code_interpreter"},
+        tool_names={"doberman_agent_code_interpreter"},
         session=session,
         skill_row_enabled=enabled,
     )
@@ -138,7 +138,7 @@ def _selection(enabled) -> SkillSelectionMiddleware:
 
 def _code_request(code: str):
     return SimpleNamespace(
-        tool_call={"name": "bisheng_code_interpreter", "id": "call-code", "args": {"python_code": code}},
+        tool_call={"name": "doberman_agent_code_interpreter", "id": "call-code", "args": {"python_code": code}},
         tool=object(),
         state={},
     )

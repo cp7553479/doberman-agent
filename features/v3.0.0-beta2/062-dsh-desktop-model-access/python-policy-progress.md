@@ -59,7 +59,7 @@ T044/T045 的真实 MySQL/DM8 并发条件仍未证明；T054/T055 的真实 Red
 ## T056–T061：模型强读、协议及执行闭环
 
 - `LLMService.get_dsh_model_snapshot(id)`：strict tenant scope 复用当前 `get_model_for_call`；当前模型/供应商强读，拒绝删除、下线、非 LLM、跨租户及取消共享。合法 Root 共享继续走原模型治理。
-- `BishengBase.get_class_instance_from_snapshot(...)`、`LLMService.build_dsh_llm(...)`：使用同一对快照的深拷贝构造外层 BishengLLM，不再访问 60 秒配置缓存；DSH 在复制的 provider user_kwargs 上强制 `max_retries=0`，不改变普通调用和存储配置。
+- `DobermanAgentBase.get_class_instance_from_snapshot(...)`、`LLMService.build_dsh_llm(...)`：使用同一对快照的深拷贝构造外层 DobermanAgentLLM，不再访问 60 秒配置缓存；DSH 在复制的 provider user_kwargs 上强制 `max_retries=0`，不改变普通调用和存储配置。
 - `schemas/chat.py`：冻结字段的严格请求 schema、工具多轮 call ID 完整性、JSON 字符串参数、唯一函数名、互斥输出限制、stream_options/n/参数边界。
 - `infrastructure/chat_adapter.py`：仅通过外层 `bind_tools/ainvoke/astream`，保持既有治理包装；保留 tool argument 增量、验证完成后的 JSON/函数名、受控 reasoning 扩展、可靠 usage 与未知分离。缺失正常 finish 或工具参数不完整不产生成功结果。
 - `services/model.py`：当前 policy 与模型交集列表；principal → 强读 policy/model → Redis 准入 → 外层 LLM → 真实用量结算 → JSON/终止 SSE。额度不预占，在途超额照实记账；换模型不清总额，结算回执丢失只查原 request，不重发推理。未知非流 503、流中 error 且无 DONE。
@@ -85,7 +85,7 @@ DshModelService(
 
 ### 当前模型验证
 
-- 10 项真实 `LLMService` / `BishengBase` / `BishengLLM` 类测试（DAO 与 SDK 构造依赖替身），使用主线生成的不含业务凭据的测试配置；已用真实类替换早期源方法隔离测试。
+- 10 项真实 `LLMService` / `DobermanAgentBase` / `DobermanAgentLLM` 类测试（DAO 与 SDK 构造依赖替身），使用主线生成的不含业务凭据的测试配置；已用真实类替换早期源方法隔离测试。
 - 14 项 Chat schema/协议测试，包括工具分块、不完整参数拒绝、strict bool、未知字段、替代输出参数拒绝、缺 usage 不归零。
 - 12 项模型服务测试，包括实时首块、取消关闭上游、未读即取消可靠零、UNKNOWN 无 DONE、结算回执丢失和 **2 项真实 Redis** 超额/换模型总量/回执丢失验证。
 - 上述新增文件及两个 LLM 窄入口 Ruff format/check 通过；继承 SDK 的 langchain-community DeprecationWarning 属于现有依赖提示。
@@ -108,7 +108,7 @@ DshModelService(
 - 新 `admin_runtime.py` 与 `services/admin.py`/`schemas/admin.py` 提供当前平台权限、用户业务批量补齐、严格 Gateway 响应验证和持久撤销/重分配。Root 实例范围保持既有 `is_global_super && admin_scope is None`，显式 Child/Root scope 均保持限定；租户管理员不能传入其它 tenant。
 - Root 全局只在验证实例管理员后通过专属 repository 定位操作所属租户，然后回到 strict scope 读审计；租户用户不获得此定位能力。操作请求 actor 只从平台 JWT 提取；operation_id、原 actor/target/版本/负载不变。超时先读 Gateway 原 operation；UNKNOWN 才按当前权限重试原命令，撤权则 FAILED/permission_denied，不能造新命令或伪成功。
 - 八端点在 `api/endpoints/admin.py`，普通管理统一 `status_code/status_message/data` 包装，不能套客户端 DSH error envelope；由主线挂载 `/api/v1`。请求体禁止额外 actor/tenant 字段；历史席位/策略可用受授权的 tenant_id 查询参数定位。
-- 用户页只对 Gateway 已分页当前页做一次用户业务批量补齐，不查询模型/用量；不存在过 Seat 的用户通过既有 BiSheng 用户选择器预先配置策略，不伪造跨库全用户分页。设备视图使用 Gateway SQL `target.user_id` 精确查唯一 Seat，之后按 seat_id 查询会话。
+- 用户页只对 Gateway 已分页当前页做一次用户业务批量补齐，不查询模型/用量；不存在过 Seat 的用户通过既有 doberman-agent 用户选择器预先配置策略，不伪造跨库全用户分页。设备视图使用 Gateway SQL `target.user_id` 精确查唯一 Seat，之后按 seat_id 查询会话。
 - policy 使用实时月账本，先受控新月初始化；失败降级 SQL 历史，不能清零：`usage.source=live|persisted|unavailable`、`quota_state=available|exhausted|unavailable`、`used/limit/remaining/as_of`，新增管理字段 `models: Record<string,number>|null` 与 `unknown_pending: number|null`，未知与统计不可用分开显示。客户端固定 usage 响应未添加这些管理字段。
 - UPDATE_POLICY 首次 expected_version=0 时，SQL 持有当次 op/fence 且 policy0、无任何 model_call/monthly_usage 历史才能产生 `new_user_proof`，再由 QuotaRedis.ensure_new_user 在已批准 epoch 且无 Redis 历史上受控创建 gate0。真实 Redis 已验证从完全无 gate 到策略1，正常已用量策略1→2恢复不会借此重建账本。
 

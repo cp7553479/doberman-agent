@@ -12,8 +12,8 @@ import pytest
 from sqlalchemy.sql.dml import Update
 from sqlalchemy.sql.selectable import Select
 
-from bisheng.linsight.domain.models import linsight_execute_task as dao_module
-from bisheng.linsight.domain.models.linsight_execute_task import LinsightExecuteTaskDao
+from doberman_agent.linsight.domain.models import linsight_execute_task as dao_module
+from doberman_agent.linsight.domain.models.linsight_execute_task import LinsightExecuteTaskDao
 
 
 def _fake_session_factory(executed: list, opened: list):

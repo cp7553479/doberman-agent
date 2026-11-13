@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { userContext } from "@/contexts/userContext"
 import { getMyResourcePermissionsApi } from "@/controllers/API/permission"

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogTrigger } from "@/components/bs-ui/dialog";
 
 import {
@@ -12,7 +12,7 @@ setFileTagsApi
 } from "@/controllers/API/knowledgeTags";
 import { showApiError } from "@/controllers/request";
 import { truncateString } from "@/util/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";

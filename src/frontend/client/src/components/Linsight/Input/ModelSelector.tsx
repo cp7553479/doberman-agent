@@ -6,7 +6,7 @@
  * falling back to the first option when absent. The picked id is sent as the
  * `model` field of the task submission.
  */
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { getLinsightModelConfig } from '~/api/linsight';

@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 import { departmentDisplayName } from "@/components/bs-comp/department/departmentDisplayName";
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Button, Input, Select, notification } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Button, Input, Select, notification } from '@doberman-agent/ui';
 import { TreeDepartmentSelect } from "@/components/bs-comp/department/TreeDepartmentSelect"
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels"
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm"

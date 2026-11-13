@@ -13,7 +13,7 @@ from sqlalchemy import create_engine, func, text
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.tenant import ROOT_TENANT_ID, Tenant
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID, Tenant
 
 
 @pytest.fixture(scope='module')

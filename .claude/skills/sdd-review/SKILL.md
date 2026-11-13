@@ -1,6 +1,6 @@
 ---
 name: sdd-review
-description: 对 BiSheng 项目的 SDD 文档执行审查。
+description: 对 DobermanAgent 项目的 SDD 文档执行审查。
   - spec：写完 spec.md 后调用，同时检查 PRD gap 和架构合规性，生成报告供用户参考
   - design：写完 design.md 后调用，检查"接手测试"四要素（现状/决策/坑/契约），生成报告供用户参考
   - tasks：写完 tasks.md 后自动调用，检查 AC 追溯、任务拆解质量和技术债预防

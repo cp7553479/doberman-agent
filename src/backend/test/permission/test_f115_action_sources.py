@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_source_service import GrantModelSnapshot
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_source_service import GrantModelSnapshot
 
 
 def runtime(pages):
@@ -53,7 +53,7 @@ async def test_inactive_model_still_contributes_existing_action_sources():
 
 
 async def test_projection_change_refuses_partial_roster():
-    from bisheng.common.errcode.permission import PermissionPublishNotReadyError
+    from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
 
     service, target = runtime([((), False)])
     service._state.source_read_stamp.side_effect = [(1,), (2,)]
@@ -62,7 +62,7 @@ async def test_projection_change_refuses_partial_roster():
 
 
 async def test_nonadvancing_page_refuses_empty_owner_only():
-    from bisheng.common.errcode.permission import PermissionEnumerationIncompleteError
+    from doberman_agent.common.errcode.permission import PermissionEnumerationIncompleteError
 
     service, target = runtime([((), True)])
     with pytest.raises(PermissionEnumerationIncompleteError):
@@ -70,7 +70,7 @@ async def test_nonadvancing_page_refuses_empty_owner_only():
 
 
 async def test_catalog_change_refuses_old_action_meanings():
-    from bisheng.common.errcode.permission import PermissionPublishNotReadyError
+    from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
 
     service, target = runtime([((), False)])
     catalog = await service._runtime_catalog()
@@ -81,8 +81,8 @@ async def test_catalog_change_refuses_old_action_meanings():
 
 
 async def test_inherited_source_stamp_checks_every_ancestor(monkeypatch):
-    from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-    from bisheng.permission.application import control_state as module
+    from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+    from doberman_agent.permission.application import control_state as module
 
     _service, target = runtime([])
     modes = {

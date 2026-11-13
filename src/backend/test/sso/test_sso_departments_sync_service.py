@@ -13,12 +13,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.sso_sync.domain.schemas.payloads import (
+from doberman_agent.sso_sync.domain.schemas.payloads import (
     DepartmentsSyncRequest,
     DepartmentUpsertItem,
 )
 
-MODULE = "bisheng.sso_sync.domain.services.departments_sync_service"
+MODULE = "doberman_agent.sso_sync.domain.services.departments_sync_service"
 
 
 @pytest.fixture(autouse=True)
@@ -83,7 +83,7 @@ def _dept(
 )
 def test_parent_first_order_retains_unresolvable_items(relationships, expected_order):
     """Ordering must keep malformed items for the existing per-item error handler."""
-    from bisheng.sso_sync.domain.services.departments_sync_service import (
+    from doberman_agent.sso_sync.domain.services.departments_sync_service import (
         DepartmentsSyncService,
     )
 
@@ -101,7 +101,7 @@ def test_parent_first_order_retains_unresolvable_items(relationships, expected_o
 class TestUpsertBatch:
     async def test_child_before_parent_is_applied_in_parent_first_order(self):
         """A flat Gateway payload need not be ordered like the org tree."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -143,7 +143,7 @@ class TestUpsertBatch:
         assert result.errors == []
 
     async def test_happy_path_new_items_applied(self):
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -179,7 +179,7 @@ class TestUpsertBatch:
         once and forwards it to every per-item upsert so top-level
         departments hang under it.
         """
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -211,7 +211,7 @@ class TestUpsertBatch:
 
     async def test_upsert_does_not_use_after_commit_projection_bridge(self):
         """The upsert gate owns the business mutation and projection binding."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -249,7 +249,7 @@ class TestUpsertBatch:
         project.assert_not_awaited()
 
     async def test_stale_ts_counts_as_skipped(self):
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -281,7 +281,7 @@ class TestUpsertBatch:
     async def test_item_ts_falls_back_to_source_ts(self):
         """Missing ``item.ts`` → use batch-level source_ts. Verifies the
         fallback used by legacy Gateway versions."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -308,7 +308,7 @@ class TestUpsertBatch:
 
     async def test_single_item_failure_does_not_abort_batch(self):
         """AC-11: one error → other items still processed."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -367,10 +367,10 @@ class TestUpsertBatch:
 @pytest.mark.asyncio
 class TestRemoveBatch:
     async def test_remove_mounted_triggers_deletion_handler(self):
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
-        from bisheng.tenant.domain.constants import DeletionSource
+        from doberman_agent.tenant.domain.constants import DeletionSource
 
         dept = _dept("D99", id=99, last_sync_ts=10, mounted_tenant_id=42)
         payload = DepartmentsSyncRequest(
@@ -405,7 +405,7 @@ class TestRemoveBatch:
 
     async def test_remove_uses_atomic_archive_projection(self):
         """The archive gate binds edge deletion before its business commit."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -439,7 +439,7 @@ class TestRemoveBatch:
         )
 
     async def test_remove_unmounted_no_orphan(self):
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -471,7 +471,7 @@ class TestRemoveBatch:
         assert result.orphan_triggered == []
 
     async def test_remove_missing_dept_is_silent(self):
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -505,7 +505,7 @@ class TestRemoveBatch:
     async def test_same_ts_upsert_after_remove_is_skipped_inv_t12(self):
         """INV-T12 same-ts tie-breaker: upsert arriving with the same ts on
         a row that already has is_deleted=1 + last_sync_ts=X is dropped."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 
@@ -533,7 +533,7 @@ class TestRemoveBatch:
 
     async def test_mixed_upsert_and_remove_counters(self):
         """End-to-end counter aggregation sanity check."""
-        from bisheng.sso_sync.domain.services.departments_sync_service import (
+        from doberman_agent.sso_sync.domain.services.departments_sync_service import (
             DepartmentsSyncService,
         )
 

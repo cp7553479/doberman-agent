@@ -2,10 +2,10 @@
 
 ## 基线与范围
 
-- 已读取远端 `dataelement/bisheng:feat/bisheng-work-120-main`，基线为 `1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`。
+- 已读取远端 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main`，基线为 `1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`。
 - 合并前同步目标分支 `8dc820f0afcd75ff8942deb553c072d97a691b15`，保留同期状态记录并验证组合源码。
-- 工作目录：`.worktrees/bisheng-knowledge-exit-access`；分支：`codex/knowledge-exit-access`。
-- 本次修改毕昇后端。Desktop、Harness 及客户端代码沿用现有版本。
+- 工作目录：`.worktrees/doberman-agent-knowledge-exit-access`；分支：`codex/knowledge-exit-access`。
+- 本次修改doberman-agent后端。Desktop、Harness 及客户端代码沿用现有版本。
 - 对应入口：`/workspace/knowledge/file/{fileId}?spaceId=...` 调用的知识空间资料预览接口。
 
 ## 根因与实现

@@ -4,8 +4,8 @@ import json
 
 from pydantic import BaseModel
 
-from bisheng.dsh.domain.schemas.model_audit_events import ChannelExpectation
-from bisheng.dsh.infrastructure.model_audit_codec import AuditScope, encode_chunks
+from doberman_agent.dsh.domain.schemas.model_audit_events import ChannelExpectation
+from doberman_agent.dsh.infrastructure.model_audit_codec import AuditScope, encode_chunks
 
 
 def test_model_encoding_is_shallow_incremental_and_preserves_required_nulls():

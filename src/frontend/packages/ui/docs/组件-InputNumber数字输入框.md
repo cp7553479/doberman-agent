@@ -107,9 +107,9 @@
 <!-- site-hide -->
 ## 落地（给实现窗口）
 
-1. 组件放 `packages/ui/src/components/InputNumber/`，**复用 Input 外壳**（`Input/shared.ts` 的外壳 cva、三档取值、`status`、`borderless`、`.input-no-zoom` / `.input-touch-hit`），步进列作为外壳内的右侧插槽；单位走 `suffix` 插槽，排在步进列**右侧**（步进列两侧各一条分隔线），单位右边只留外壳的常规内边距。由 `@bisheng/ui` 导出。
+1. 组件放 `packages/ui/src/components/InputNumber/`，**复用 Input 外壳**（`Input/shared.ts` 的外壳 cva、三档取值、`status`、`borderless`、`.input-no-zoom` / `.input-touch-hit`），步进列作为外壳内的右侧插槽；单位走 `suffix` 插槽，排在步进列**右侧**（步进列两侧各一条分隔线），单位右边只留外壳的常规内边距。由 `@doberman-agent/ui` 导出。
 2. `<input type="text" inputMode="decimal">`（整数场景 `inputMode="numeric"`），**不用 `type="number"`**：原生 number 会带浏览器自带微调箭头、响应滚轮、接受 `e` 科学计数法。无障碍：`role="spinbutton"` + `aria-valuemin` / `aria-valuemax` / `aria-valuenow` 落在 `<input>` 本身（spinbutton 必须是拿焦点的那个元素），报错显示时置 `aria-invalid`；两个按钮 `aria-label` 走 `increaseLabel` / `decreaseLabel` prop（组件库不带文案，「增加」「减少」的 i18n key 由接入方三语同 PR 加），`tabIndex={-1}`（键盘走 ↑↓，不进 Tab 序）。
-3. 步进列：宽 20px（`w-5`），`border-l border-border-base`，两按钮中间 `border-t border-border-base`；按钮透明底，`hover:bg-fill-1`，图标 `Outlined.Up` / `Outlined.Down`（bisheng-icons 0.2.36 已有）12px 内联样式钉死（同清除图标的教训：行容器 `[&_svg]:size-*` 会压过图标 class），`text-text-3`，按钮 hover `text-text-2`，禁用 `text-text-4 cursor-not-allowed`；触屏按下 `fill-2` 走 `coarse-pointer:active:`，同按钮口径。
+3. 步进列：宽 20px（`w-5`），`border-l border-border-base`，两按钮中间 `border-t border-border-base`；按钮透明底，`hover:bg-fill-1`，图标 `Outlined.Up` / `Outlined.Down`（@doberman-agent/icons 0.2.36 已有）12px 内联样式钉死（同清除图标的教训：行容器 `[&_svg]:size-*` 会压过图标 class），`text-text-3`，按钮 hover `text-text-2`，禁用 `text-text-4 cursor-not-allowed`；触屏按下 `fill-2` 走 `coarse-pointer:active:`，同按钮口径。
 4. 显隐：外壳 `group`，步进列 `opacity-0 group-hover:opacity-100`，`readOnly` / `disabled` 时整列不渲染；**输入区 `padding-right` 恒预留 20px**，显隐不改布局。`hoverOnlyWhenSupported` 已全局开启，触屏下 `group-hover` 不生效，再以 `@media (hover: none) and (pointer: coarse)` 把整列 `display:none` 兜底（§6）。
 5. 交互数值：长按 300ms 后开始连发、每 100ms 一步；Shift + ↑↓ = 10 × step；**不监听 wheel**。步进结果按 `precision` 用十进制字符串运算（避免 0.1 + 0.2 浮点误差），结果 clamp 到 `[min, max]`；当前值越界时点按钮 = 先落到最近边界（§5.2）。
 6. 校验：输入过滤只拦「非数字、多余小数点、min ≥ 0 时的负号」；粘贴去千分位逗号。范围 / 精度校验在 `blur` 触发首次报错，之后 `onChange` 实时重算、合法即清（「迟报早清」）。**组件不 clamp、不 round 用户输入**；`onChange` 回传解析后的 number 与校验结果（越界 / 超精度 / 合法），空值回传 `null`。错误文案由调用方通过 `errorMessage(error)` 按 `min` / `max` / `precision` 拼句（组件库契约：所有文案走 prop，不内置默认句）；`onErrorChange` 在「显示出来的错误」变化时触发。
@@ -127,6 +127,6 @@
 | 日期 | 改了什么 | 提交 |
 |---|---|---|
 | 2026-10-21 | 建档 v1：独立成组件，外壳 / 尺寸 / 状态全部引用《组件-Input输入框.md》；设计师拍板步进按钮右侧上下叠放、悬停才显示（位置常驻预留）、越界报错不回正；配套定「不替用户改值」（超精度也报错、清空不补 0）、到边界按钮禁用、滚轮不改值、触屏隐藏步进按钮、深浅色全走 token；现状扫描旧 rc-input-number 壳 22 处 / 8 文件存档于落地区 7 | 待 committer 窗口提交 |
-| 2026-10-21 | 落地 `@bisheng/ui` InputNumber：落地区 2 的 `role` 改落 `<input>`、按钮文案走 prop；落地区 6 的错误文案改由 `errorMessage` 回调给出（库契约不内置文案） | 未提交 |
+| 2026-10-21 | 落地 `@doberman-agent/ui` InputNumber：落地区 2 的 `role` 改落 `<input>`、按钮文案走 prop；落地区 6 的错误文案改由 `errorMessage` 回调给出（库契约不内置文案） | 未提交 |
 | 2026-10-21 | 设计师调整：有单位时步进按钮排到单位左边（原为单位在数值和步进按钮之间），避免步进列隐藏时单位右侧空一大块；§2 结构表、§2.1 推荐表、落地区 1 同步 | 未提交 |
 | 2026-10-21 | §1 滑块一条补链接指向新建的《组件-Slider滑块.md》。规则未增未减未改 | 待 committer 窗口提交 |

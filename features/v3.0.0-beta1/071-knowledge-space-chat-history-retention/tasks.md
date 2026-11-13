@@ -26,7 +26,7 @@
 - 存量恢复由独立 DB-only 脚本完成，Alembic 只做 DDL；脚本默认 dry-run，apply 必须带输入摘要，并支持 checkpoint 分批提交。
 - 前端 URL、`FolderSession` 与状态管理不变，不新增轮询或视觉改动；通过 API 契约测试和 E2E 验证既有页面可消费回收结果。
 - 本地缺少 worktree 配置时，从 `src/backend/` 运行命令前使用
-  `export config=/Users/zhangguoqing/works/bisheng/src/backend/bisheng/config.yaml`；MySQL、DM8、Celery 和浏览器场景在可用集成环境验证。
+  `export config=/Users/zhangguoqing/works/doberman-agent/src/backend/doberman_agent/config.yaml`；MySQL、DM8、Celery 和浏览器场景在可用集成环境验证。
 
 ---
 
@@ -45,8 +45,8 @@
   **依赖**: 无
 
 - [x] **T002**: ORM 字段与双数据库 Alembic DDL
-  **文件**: `src/backend/bisheng/database/models/session.py`,
-  `src/backend/bisheng/core/database/alembic/versions/<f068_revision>.py`
+  **文件**: `src/backend/doberman_agent/database/models/session.py`,
+  `src/backend/doberman_agent/core/database/alembic/versions/<f068_revision>.py`
   **逻辑**: 在 `message_session` 增加 nullable `entry_flow_id` 和单列索引；revision 的
   `down_revision` 取实施时唯一 head，使用共享 `column_exists/index_exists` 类 helper 防止
   `create_all()` 与升级路径冲突，upgrade/downgrade 对称且不做任何数据回填。复核 MySQL/DM8
@@ -68,8 +68,8 @@
   **依赖**: T002
 
 - [x] **T004**: `KnowledgeChatSessionRepository` 合同与实现
-  **文件**: `src/backend/bisheng/knowledge/domain/repositories/interfaces/knowledge_chat_session_repository.py`,
-  `src/backend/bisheng/knowledge/domain/repositories/implementations/knowledge_chat_session_repository_impl.py`,
+  **文件**: `src/backend/doberman_agent/knowledge/domain/repositories/interfaces/knowledge_chat_session_repository.py`,
+  `src/backend/doberman_agent/knowledge/domain/repositories/implementations/knowledge_chat_session_repository_impl.py`,
   两级 `__init__.py`
   **逻辑**: 提供按 effective entry 列表、按 chat+entry 取活动会话、单文件有效会话查找、按精确
   flow chunk 幂等回收到 source root 的接口；列表查询保留租户自动过滤，系统 fan-out UPDATE
@@ -97,10 +97,10 @@
   **依赖**: T004
 
 - [x] **T006**: chat service 与响应契约接入 effective entry
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py`,
-  `src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py`,
-  `src/backend/bisheng/knowledge/domain/schemas/knowledge_space_schema.py`,
-  `src/backend/bisheng/chat_session/domain/chat.py`（仅在需要接收已验证 session 时修改）
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py`,
+  `src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py`,
+  `src/backend/doberman_agent/knowledge/domain/schemas/knowledge_space_schema.py`,
+  `src/backend/doberman_agent/chat_session/domain/chat.py`（仅在需要接收已验证 session 时修改）
   **逻辑**: Service 先做原空间/具体资源权限校验，再通过 Repository 验证 requested entry 与 chat；
   把真实 `session.flow_id` 传给历史与消息链。recovered root 的检索范围切为原空间全量可见文件；
   单文件查找/复用按 effective entry。若 endpoint 当前直接序列化 ORM，改为显式既有字段 schema，
@@ -119,17 +119,17 @@
   `src/backend/test/knowledge/test_celery_wiring.py`
   **逻辑**: 验证 service 只接受同一 source space 的合法 folder/file flow chunk，source root 固定为
   `space_{source_space_id}_folder_0`，空集 no-op，越界/错误 grammar 失败关闭；worker task 名固定为
-  `bisheng.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions`，由
-  `worker/__init__.py` 显式注册并命中 `bisheng.worker.knowledge.* -> knowledge_celery` 路由。覆盖
+  `doberman_agent.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions`，由
+  `worker/__init__.py` 显式注册并命中 `doberman_agent.worker.knowledge.* -> knowledge_celery` 路由。覆盖
   `acks_late`、有界 retry、幂等重放，以及 dispatch/rehome/failure 日志字段和敏感内容不落日志。
   **覆盖 AC**: AC-04, AC-04A, AC-15, AC-19, AC-20
   **验证**: `cd src/backend && uv run pytest test/knowledge/test_knowledge_chat_history_retention.py test/knowledge/test_knowledge_chat_history_retention_worker.py test/knowledge/test_celery_wiring.py`
   **依赖**: T004
 
 - [x] **T008**: retention service、worker 与任务注册实现
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_history_retention_service.py`,
-  `src/backend/bisheng/worker/knowledge/knowledge_chat_history_retention.py`,
-  `src/backend/bisheng/worker/__init__.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_history_retention_service.py`,
+  `src/backend/doberman_agent/worker/knowledge/knowledge_chat_history_retention.py`,
+  `src/backend/doberman_agent/worker/__init__.py`
   **逻辑**: service 校验服务端生成的 source space/root/flow chunk 后调用 Repository；worker 通过共享
   worker asyncio bridge 执行，使用 `acks_late` 与有限次数 retry，输出 design §7.3 定义的结构化日志。
   提供统一 best-effort 派发 helper：去重后每 500 flow 分片、默认 `countdown=5`；捕获可预期发布异常并
@@ -155,7 +155,7 @@
   **依赖**: T008
 
 - [x] **T010**: 资源影响集合冻结与 commit 后 best-effort 派发
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
   **逻辑**: batch 在任何删除前对 file/folder 去重，并移除已被选中祖先覆盖的顶层后代；删除在资源行消失
   前冻结实际硬删除 folder/file（含删除路径扩展出的版本链）flow，并在每个 hard-delete commit 后派发。
   `clear_space` 复用 `_list_space_child_resources` 的提交前结果，在 `async_delete_knowledge(...,
@@ -231,9 +231,9 @@
   **验证**:
   - `cd src/backend && uv run pytest test/knowledge/ -k "chat or move or filelib"`
   - `cd src/backend && uv run pytest test/chat_session/ test/database/test_alembic_single_head.py`
-  - `cd src/backend && uv run ruff format --check bisheng/knowledge bisheng/worker/knowledge scripts/migrate_f068_knowledge_chat_entries.py test/knowledge`
-  - `cd src/backend && uv run ruff check bisheng/knowledge bisheng/worker/knowledge scripts/migrate_f068_knowledge_chat_entries.py test/knowledge`
-  - `cd /Users/zhangguoqing/works/bisheng/.worktrees/feat-923-3.0.0-beta1 && bash scripts/arch-guard.sh`
+  - `cd src/backend && uv run ruff format --check doberman-agent/knowledge doberman-agent/worker/knowledge scripts/migrate_f068_knowledge_chat_entries.py test/knowledge`
+  - `cd src/backend && uv run ruff check doberman-agent/knowledge doberman-agent/worker/knowledge scripts/migrate_f068_knowledge_chat_entries.py test/knowledge`
+  - `cd /Users/zhangguoqing/works/doberman-agent/.worktrees/feat-923-3.0.0-beta1 && bash scripts/arch-guard.sh`
   **依赖**: T014
 
 ---

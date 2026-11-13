@@ -3,7 +3,7 @@
  * Default open while running, auto-collapses on completion — unless the user
  * toggled manually, in which case the manual choice wins.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { Wrench } from 'lucide-react';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { cn } from '~/utils';

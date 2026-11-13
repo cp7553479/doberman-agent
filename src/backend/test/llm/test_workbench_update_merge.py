@@ -17,9 +17,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.llm import WorkbenchChatDefaultModelError, WorkbenchEmbeddingError
-from bisheng.llm.domain.schemas import WorkbenchModelConfig, WSModel
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.common.errcode.llm import WorkbenchChatDefaultModelError, WorkbenchEmbeddingError
+from doberman_agent.llm.domain.schemas import WorkbenchModelConfig, WSModel
+from doberman_agent.llm.domain.services.llm import LLMService
 
 _OLD = WorkbenchModelConfig(
     models=[WSModel(id="727", name="deepseek"), WSModel(id="774", name="qwen")],
@@ -32,15 +32,15 @@ async def _run_and_capture(config_obj: WorkbenchModelConfig) -> dict:
     payload handed to aupsert."""
     with (
         patch(
-            "bisheng.llm.domain.services.llm.avalidate_system_model_refs",
+            "doberman_agent.llm.domain.services.llm.avalidate_system_model_refs",
             new=AsyncMock(),
         ),
         patch(
-            "bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
+            "doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
             new=AsyncMock(return_value=(json.dumps(_OLD.model_dump()), False, False)),
         ),
         patch(
-            "bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert",
+            "doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert",
             new=AsyncMock(),
         ) as mock_upsert,
     ):
@@ -85,7 +85,7 @@ async def test_invalid_embedding_model_id_returns_business_error(invalid_model_i
     )
 
     with patch(
-        "bisheng.llm.domain.services.llm.avalidate_system_model_refs",
+        "doberman_agent.llm.domain.services.llm.avalidate_system_model_refs",
         new=AsyncMock(),
     ) as mock_validate:
         with pytest.raises(WorkbenchEmbeddingError) as exc_info:
@@ -131,10 +131,10 @@ async def test_chat_default_model_id_must_come_from_models_list():
         embedding_model=None,
     )
     with patch(
-        "bisheng.llm.domain.services.llm.avalidate_system_model_refs",
+        "doberman_agent.llm.domain.services.llm.avalidate_system_model_refs",
         new=AsyncMock(),
     ), patch(
-        "bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
+        "doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
         new=AsyncMock(return_value=(json.dumps(_OLD.model_dump()), False, False)),
     ):
         with pytest.raises(WorkbenchChatDefaultModelError) as exc_info:
@@ -152,10 +152,10 @@ async def test_chat_default_model_id_rejects_non_model_values(invalid_model_id: 
         embedding_model=None,
     )
     with patch(
-        "bisheng.llm.domain.services.llm.avalidate_system_model_refs",
+        "doberman_agent.llm.domain.services.llm.avalidate_system_model_refs",
         new=AsyncMock(),
     ), patch(
-        "bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
+        "doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
         new=AsyncMock(return_value=(json.dumps(_OLD.model_dump()), False, False)),
     ):
         with pytest.raises(WorkbenchChatDefaultModelError):
@@ -175,10 +175,10 @@ async def test_chat_default_model_id_validated_against_merged_old_models():
 
     incoming_bad = WorkbenchModelConfig(chat_default_model_id="840", embedding_model=None)
     with patch(
-        "bisheng.llm.domain.services.llm.avalidate_system_model_refs",
+        "doberman_agent.llm.domain.services.llm.avalidate_system_model_refs",
         new=AsyncMock(),
     ), patch(
-        "bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
+        "doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve",
         new=AsyncMock(return_value=(json.dumps(_OLD.model_dump()), False, False)),
     ):
         with pytest.raises(WorkbenchChatDefaultModelError):

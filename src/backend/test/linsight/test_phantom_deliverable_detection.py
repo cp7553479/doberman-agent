@@ -17,7 +17,7 @@ turn that reads a user file.
 
 from unittest.mock import AsyncMock, patch
 
-from bisheng.linsight.domain.utils import (
+from doberman_agent.linsight.domain.utils import (
     FALLBACK_REPORT_NAME,
     build_fallback_report_file,
     detect_phantom_deliverables,
@@ -101,7 +101,7 @@ def test_a_bare_filename_link_is_a_claim():
 
 class _FakeMinio:
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.store: dict[tuple[str, str], str] = {}
 
     async def put_object(self, *, bucket_name=None, object_name, file, **kwargs):
@@ -118,7 +118,7 @@ async def test_fallback_writes_exactly_one_verbatim_report(tmp_path):
     session = type("S", (), {"id": "sv-1"})()
     fake_minio = _FakeMinio()
 
-    with patch("bisheng.linsight.domain.utils.get_minio_storage", new=AsyncMock(return_value=fake_minio)):
+    with patch("doberman_agent.linsight.domain.utils.get_minio_storage", new=AsyncMock(return_value=fake_minio)):
         files = await build_fallback_report_file(session_model=session, answer=answer, file_dir=str(tmp_path))
 
     assert len(files) == 1
@@ -137,7 +137,7 @@ async def test_fallback_unescapes_citation_markers(tmp_path):
     session = type("S", (), {"id": "sv-cite"})()
     fake_minio = _FakeMinio()
 
-    with patch("bisheng.linsight.domain.utils.get_minio_storage", new=AsyncMock(return_value=fake_minio)):
+    with patch("doberman_agent.linsight.domain.utils.get_minio_storage", new=AsyncMock(return_value=fake_minio)):
         files = await build_fallback_report_file(session_model=session, answer=answer, file_dir=str(tmp_path))
 
     written = (tmp_path / "output" / FALLBACK_REPORT_NAME).read_text(encoding="utf-8")

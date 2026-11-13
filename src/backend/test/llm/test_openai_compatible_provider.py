@@ -4,14 +4,14 @@ import httpx
 from langchain_core.messages import HumanMessage
 from langchain_openai import OpenAIEmbeddings
 
-from bisheng.core.ai import CommonRerank
-from bisheng.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
-from bisheng.llm.domain.const import LLMServerType
-from bisheng.llm.domain.llm import embedding as embedding_module
-from bisheng.llm.domain.llm import llm as llm_module
-from bisheng.llm.domain.llm import rerank as rerank_module
-from bisheng.llm.domain.services.context_window import ModelSnapshot
-from bisheng.llm.domain.services.context_window_probes import PROBES, ProbeResult, probe_context_window
+from doberman_agent.core.ai import CommonRerank
+from doberman_agent.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
+from doberman_agent.llm.domain.const import LLMServerType
+from doberman_agent.llm.domain.llm import embedding as embedding_module
+from doberman_agent.llm.domain.llm import llm as llm_module
+from doberman_agent.llm.domain.llm import rerank as rerank_module
+from doberman_agent.llm.domain.services.context_window import ModelSnapshot
+from doberman_agent.llm.domain.services.context_window_probes import PROBES, ProbeResult, probe_context_window
 
 TYPE = LLMServerType.OPENAI_COMPATIBLE.value
 SERVER_CONFIG = {"openai_api_base": "https://gateway.example.com/v1/", "openai_api_key": "sk-test"}

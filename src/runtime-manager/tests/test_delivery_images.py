@@ -28,5 +28,5 @@ def test_native_jobs_and_frozen_sdk_are_in_delivery():
     workflow = (ROOT / ".github/workflows/runtime-images.yml").read_text()
     assert "ubuntu-22.04-arm" in workflow and "arch: amd64" in workflow
     dockerfile = (ROOT / "src/app-runtime/python3.11/Dockerfile").read_text()
-    assert "bisheng_sdk-0.1.1" in dockerfile and "AS preparer" in dockerfile
+    assert "doberman_agent_sdk-0.1.1" in dockerfile and "AS preparer" in dockerfile
     assert "docker.sock" not in section("runtime-manager")

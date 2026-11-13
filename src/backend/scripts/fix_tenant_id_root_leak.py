@@ -5,7 +5,7 @@
 
 早期 v2.5 分支里，下列 ORM 表把 ``tenant_id`` 字段的 Python 默认值写成
 ``Field(default=1, ...)``。SQLModel 实例化时立刻把字段填成 ``1``，绕过
-``bisheng.core.database.tenant_filter._on_before_flush`` 的自动注入
+``doberman_agent.core.database.tenant_filter._on_before_flush`` 的自动注入
 （钩子条件 ``current_val is None or current_val == 0``）。
 
 子租户（leaf tenant）的用户创建 Knowledge / Flow / Group 等资源时被静
@@ -62,7 +62,7 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlalchemy import text as sa_text  # noqa: E402
 
-from bisheng.core.database import get_sync_db_session  # noqa: E402
+from doberman_agent.core.database import get_sync_db_session  # noqa: E402
 
 
 @dataclass

@@ -10,10 +10,10 @@ from test.app_publish.test_app_secret_repository import secret_repository as sec
 
 
 async def test_save_is_encrypted_and_has_no_runtime_side_effects(secret_repository, app_factory, owner_user):
-    from bisheng.app_publish.domain.models.app_secret_config import AppSecretConfig
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
-    from bisheng.common.errcode.app_publish import AppSecretRevisionConflictError
-    from bisheng.database.models.audit_log import AuditLog
+    from doberman_agent.app_publish.domain.models.app_secret_config import AppSecretConfig
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.common.errcode.app_publish import AppSecretRevisionConflictError
+    from doberman_agent.database.models.audit_log import AuditLog
 
     repo, cipher = secret_repository
     app, _ = await app_factory()
@@ -41,9 +41,9 @@ async def test_save_is_encrypted_and_has_no_runtime_side_effects(secret_reposito
 
 
 async def test_owner_only_and_cross_tenant_denial(secret_repository, app_factory, owner_user, monkeypatch):
-    from bisheng.app_publish.domain.services import app_secret_service as module
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+    from doberman_agent.app_publish.domain.services import app_secret_service as module
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
     repo, cipher = secret_repository
     app, _ = await app_factory()
@@ -68,8 +68,8 @@ async def test_owner_only_and_cross_tenant_denial(secret_repository, app_factory
 async def test_delete_online_reference_requires_confirmation_and_deleted_app_cannot_save(
     secret_repository, app_factory, owner_user
 ):
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
-    from bisheng.common.errcode.app_publish import AppPublishStateConflictError, AppSecretInvalidError
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.common.errcode.app_publish import AppPublishStateConflictError, AppSecretInvalidError
 
     repo, cipher = secret_repository
     app, version = await app_factory(state="online", terminal_state="online")
@@ -92,7 +92,7 @@ async def test_delete_online_reference_requires_confirmation_and_deleted_app_can
 
 async def test_saved_empty_value_has_metadata_and_can_be_deleted(secret_repository, app_factory, owner_user):
     """AC-67, AC-79: an empty saved value is missing for injection but remains removable."""
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     app, _ = await app_factory()
@@ -112,8 +112,8 @@ async def test_pending_approval_declaration_visible_before_pending_online_pointe
     secret_repository, app_factory, deployment_factory, owner_user
 ):
     """AC-67: approval-time version references are shown before go-live approval."""
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.database.models.app_version import AppVersion
 
     repo, cipher = secret_repository
     app, current = await app_factory()

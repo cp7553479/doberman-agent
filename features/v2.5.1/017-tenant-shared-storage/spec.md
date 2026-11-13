@@ -112,10 +112,10 @@ class ChildMountService:
 
 | 服务 / 组件 | 改造点 | 文件路径 |
 |-----------|-------|---------|
-| `ChatMessageService.acreate` | 创建消息时 `tenant_id = get_current_tenant_id()`（叶子），**不**继承所读资源的 tenant_id | `src/backend/bisheng/chat_session/domain/services/message_service.py` |
-| `MessageSessionService.acreate` | 会话 tenant_id = 用户叶子（与所属应用资源 tenant_id 解耦） | `src/backend/bisheng/chat_session/domain/services/session_service.py` |
-| `LLMTokenTracker.record_usage` | token 用量记录 tenant_id = 用户叶子，计入 Child `model_tokens_monthly` | `src/backend/bisheng/llm/domain/services/token_tracker.py`（若未建则新增） |
-| `ModelCallLogger.log` | 调用日志 tenant_id = 用户叶子 | `src/backend/bisheng/llm/domain/services/call_logger.py`（若未建则新增） |
+| `ChatMessageService.acreate` | 创建消息时 `tenant_id = get_current_tenant_id()`（叶子），**不**继承所读资源的 tenant_id | `src/backend/doberman_agent/chat_session/domain/services/message_service.py` |
+| `MessageSessionService.acreate` | 会话 tenant_id = 用户叶子（与所属应用资源 tenant_id 解耦） | `src/backend/doberman_agent/chat_session/domain/services/session_service.py` |
+| `LLMTokenTracker.record_usage` | token 用量记录 tenant_id = 用户叶子，计入 Child `model_tokens_monthly` | `src/backend/doberman_agent/llm/domain/services/token_tracker.py`（若未建则新增） |
+| `ModelCallLogger.log` | 调用日志 tenant_id = 用户叶子 | `src/backend/doberman_agent/llm/domain/services/call_logger.py`（若未建则新增） |
 
 **伪代码示例**：
 

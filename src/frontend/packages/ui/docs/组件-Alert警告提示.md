@@ -138,7 +138,7 @@ v1 不做。桌面规则在窄屏下照用；等移动端出现真实场景再�
 ## 9. 落地要求（给实现窗口）
 
 1. 组件形态：JSX 挂载式 `<Alert type="warning" title=... description=... actions=[...] closable onClose />`，不做命令式 API——它跟着页面状态走，由业务 state 控制显隐。
-2. 位置：放在 `packages/ui/src/components/Alert/`，`@bisheng/ui` 导出 `Alert`；demo 页 `docs/components/alert.mdx`（ASCII 文件名）。
+2. 位置：放在 `packages/ui/src/components/Alert/`，`@doberman-agent/ui` 导出 `Alert`；demo 页 `docs/components/alert.mdx`（ASCII 文件名）。
 3. 样式 token：`rounded-xl` + 四类 `*-tint` 浅底（与 `Toaster.tsx` 同一组类名，含暗色自动翻转），禁止裸 hex、禁止边框、禁止投影；单行 `h-10 px-4`，多行 `px-4 py-3`；标题 `text-body font-medium text-text-1`，正文 `text-body text-text-2`（无标题时 `text-text-1`）；图标 16px 取功能色主色（成功 / 危险 / 警告）与品牌色（信息），类名以 `packages/ui/design-token.cjs` 的 FUNCTIONAL / BRAND 导出为准；关闭按钮 `text-text-4 hover:text-text-2`。暗色模式三处上调（2026-10-21 实测后加）：正文 `dark:text-text-1`、关闭按钮 `dark:text-text-2 dark:hover:text-text-1`、主动作 `dark:text-blue-700`，两个操作按钮 `dark:hover:text-text-1`；浅色模式一个值都不动。
 4. 外边距 8px 由组件自带（`m-2`），业务不再另包一层。
 5. 文字截断：标题 `line-clamp-1`，正文 `line-clamp-2`；被截断的完整文案放 `title` 属性兜底。
@@ -165,5 +165,5 @@ v1 不做。桌面规则在窄屏下照用；等移动端出现真实场景再�
 | 日期 | 改了什么 | 提交 |
 |---|---|---|
 | 2026-10-21 | 暗色模式文字取色修正（§4 正文 / 关闭按钮两行、§5.3、§9.3）：深色浅底上实测次要文字色 4.4:1、品牌色主色 2.7:1、`text-4` 1.58:1（都按最吃亏的成功色底算），关闭按钮几乎看不见、主动作沉进底色里。暗色下正文上调到 `text-1`（层级交给字重）、关闭按钮上调到 `text-2`（悬停 `text-1`）、主动作取 `blue-700`（悬停转 `text-1`，因为品牌色自己的悬停档在暗色里是往暗走的）；浅色模式一个值都不动。同时记下三条待决策：浅色关闭按钮 1.49:1、轻提示有同样的缺口、成功色暗色浅底偏亮 | 待 committer 窗口提交 |
-| 2026-10-21 | 基准组件落地：`@bisheng/ui` 新增 `Alert`（JSX 挂载式，无命令式 API），四类型浅底 + 自带 `m-2` 外边距 + 单行 40px / 带标题或换行改 12px 内边距（按正文实测行高判定，带 ResizeObserver 跟随容器宽度）+ 标题 1 行 / 正文 2 行截断（只给截到的挂原生 `title`）+ 最多两个操作按钮（超出只渲染前两项并 warn）+ 可选关闭按钮与 200ms 淡出收起（动画走完才回调 `onClose`，组件不存关闭状态）+ `live` 控制 role；demo 页 `docs/components/alert.mdx` 上线并挂两处侧栏。偏离规范一处（操作按钮用 `link` 档而非 `text` 档）记入 §10 待设计师拍板；业务侧暂无调用点（设计师明示不扫存量） | 待 committer 窗口提交 |
+| 2026-10-21 | 基准组件落地：`@doberman-agent/ui` 新增 `Alert`（JSX 挂载式，无命令式 API），四类型浅底 + 自带 `m-2` 外边距 + 单行 40px / 带标题或换行改 12px 内边距（按正文实测行高判定，带 ResizeObserver 跟随容器宽度）+ 标题 1 行 / 正文 2 行截断（只给截到的挂原生 `title`）+ 最多两个操作按钮（超出只渲染前两项并 warn）+ 可选关闭按钮与 200ms 淡出收起（动画走完才回调 `onClose`，组件不存关闭状态）+ `live` 控制 role；demo 页 `docs/components/alert.mdx` 上线并挂两处侧栏。偏离规范一处（操作按钮用 `link` 档而非 `text` 档）记入 §10 待设计师拍板；业务侧暂无调用点（设计师明示不扫存量） | 待 committer 窗口提交 |
 | 2026-10-21 | 建档 v1：先调研 antd / Arco / TDesign / Semi / Carbon / Atlassian / Apple HIG 七家，再由设计师拍板十项——命名 Alert、视觉同轻提示（浅语义色底无边框）、圆角 12px、图标始终 16px、最多两个操作按钮 + 关闭按钮固定右侧、撑满容器四周 8px 外边距保留圆角不做贴边通告、正文最多两行、关闭记忆由业务做、移动端 v1 不做、不扫描现有代码。同次拍板把 Notification 图标回填为 16px。共 8 节展示层 + 落地与待决策两节隐藏区 | 待 committer 窗口提交 |

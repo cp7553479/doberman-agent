@@ -1,4 +1,4 @@
-import { Segmented } from "@bisheng/ui";
+import { Segmented } from "@doberman-agent/ui";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocalize } from "~/hooks";
 import { cn } from "~/utils";

@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng_langchain.gpts.tools.web_search import tool as web_search_tool
-from bisheng_langchain.gpts.tools.web_search.tool import SearchTool
+from doberman_agent_langchain.gpts.tools.web_search import tool as web_search_tool
+from doberman_agent_langchain.gpts.tools.web_search.tool import SearchTool
 
 
 def _ok_response(payload):

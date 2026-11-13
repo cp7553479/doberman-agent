@@ -1,6 +1,6 @@
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { permissionModelLabel } from "./permissionModelLabel";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize } from "~/hooks";
 import { cn } from "~/utils";
 import type { RelationModelOption } from "./RelationSelect";

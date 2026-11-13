@@ -47,7 +47,7 @@ _RESOURCES = {
     "Secret": "secrets",
     "PersistentVolumeClaim": "persistentvolumeclaims",
 }
-_RESULT = "BISHENG_RUNTIME_RESULT "
+_RESULT = "DOBERMAN_AGENT_RUNTIME_RESULT "
 
 
 def workload_signer(seed: bytes, resource_ref: str) -> Ed25519PrivateKey:
@@ -56,7 +56,7 @@ def workload_signer(seed: bytes, resource_ref: str) -> Ed25519PrivateKey:
     child = HKDF(
         algorithm=hashes.SHA256(),
         length=32,
-        salt=b"bisheng-runtime-material-v1",
+        salt=b"doberman-agent-runtime-material-v1",
         info=b"workload-ed25519\x00" + resource_ref.encode("ascii"),
     ).derive(seed)
     return Ed25519PrivateKey.from_private_bytes(child)
@@ -71,7 +71,7 @@ def _seconds(value):
 
 
 def _ref(operation, purpose, ordinal="pod"):
-    return str(uuid5(NAMESPACE_URL, "bisheng-runtime-v2:" + operation["operation_id"] + ":" + purpose + ":" + ordinal))
+    return str(uuid5(NAMESPACE_URL, "doberman-agent-runtime-v2:" + operation["operation_id"] + ":" + purpose + ":" + ordinal))
 
 
 def _name(prefix, reference):
@@ -168,7 +168,7 @@ class KubernetesExecutor:
     def heartbeat_snapshot(self):
         capabilities = copy.deepcopy(self.document.get("capabilities", {}))
         try:
-            self.client.list("pods", label_selector="bisheng.managed=v2")
+            self.client.list("pods", label_selector="doberman-agent.managed=v2")
             available = True
         except KubernetesAPIError:
             available = False
@@ -550,7 +550,7 @@ class KubernetesExecutor:
         production = bool(plan.pvc_name)
         name = plan.pvc_name or plan.scratch_pvc
         reference = (
-            str(uuid5(NAMESPACE_URL, "bisheng-volume:" + self.config.node_id + ":" + operation["app_id"]))
+            str(uuid5(NAMESPACE_URL, "doberman-agent-volume:" + self.config.node_id + ":" + operation["app_id"]))
             if production
             else _ref(operation, "prepare", "scratch")
         )
@@ -1128,7 +1128,7 @@ class KubernetesExecutor:
         return {"complete": True}
 
     def purge_volume(self, operation):
-        reference = str(uuid5(NAMESPACE_URL, "bisheng-volume:" + self.config.node_id + ":" + operation["app_id"]))
+        reference = str(uuid5(NAMESPACE_URL, "doberman-agent-volume:" + self.config.node_id + ":" + operation["app_id"]))
         row = self.platform.resource(reference)
         if row["cleanup_state"] == "complete":
             return {"complete": True}

@@ -26,13 +26,13 @@
   - **依赖**: 无
 
 - [x] **T002 Knowledge/Channel 创建幂等 ORM 字段**
-  - **文件**: `src/backend/bisheng/knowledge/domain/models/knowledge.py`, `src/backend/bisheng/channel/domain/models/channel.py`
+  - **文件**: `src/backend/doberman_agent/knowledge/domain/models/knowledge.py`, `src/backend/doberman_agent/channel/domain/models/channel.py`
   - **逻辑**: 两表增加 nullable `creation_request_id VARCHAR(64)` 和 `creation_payload_hash VARCHAR(64)`；不回填存量，不把创建草稿存 JSON。
   - **影响**: 修改 Knowledge/Channel 已有对象，仅增加 F050 幂等事实，不改 F048 Grant 归属。
   - **依赖**: T001
 
 - [x] **T003 双库 DDL 与唯一索引**
-  - **文件**: `src/backend/bisheng/core/database/alembic/versions/v3_0_0_beta1_f050_creation_idempotency.py`
+  - **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_beta1_f050_creation_idempotency.py`
   - **逻辑**: 仅 DDL；Knowledge 唯一范围 tenant + creator + type + request ID，Channel 为 tenant + creator + request ID；MySQL/DM8 兼容的 nullable 列和索引长度。
   - **回滚**: downgrade 先删索引再删两列；不做 SELECT/UPDATE/回填/seed。
   - **依赖**: T002
@@ -48,7 +48,7 @@
   - **依赖**: T003
 
 - [x] **T005 Prospective Grant 协议实现**
-  - **文件**: `src/backend/bisheng/permission/application/prospective_grant.py`, `src/backend/bisheng/permission/application/ports.py`
+  - **文件**: `src/backend/doberman_agent/permission/application/prospective_grant.py`, `src/backend/doberman_agent/permission/application/ports.py`
   - **逻辑**: 实现 `ProspectiveGrantApplicationPort`；只读 Catalog/subject directory，返回 release + grantable models，禁止业务 ORM 查询和权限写入。
   - **验证**: T004 全部通过。
   - **依赖**: T004
@@ -60,7 +60,7 @@
   - **依赖**: T005
 
 - [x] **T007 Initial Grant 协议实现**
-  - **文件**: `src/backend/bisheng/permission/application/initial_grant.py`, `src/backend/bisheng/permission/application/ports.py`
+  - **文件**: `src/backend/doberman_agent/permission/application/initial_grant.py`, `src/backend/doberman_agent/permission/application/ports.py`
   - **逻辑**: 实现 `InitialGrantApplicationPort`，只调 F048 durable mutation；返回真实 version/assignee/result，不创建或删除业务资源。
   - **验证**: T006 全部通过。
   - **依赖**: T006
@@ -76,7 +76,7 @@
   - **依赖**: T007
 
 - [x] **T009 Knowledge 创建编排实现**
-  - **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`, `src/backend/bisheng/knowledge/domain/schemas/knowledge_space_schema.py`
+  - **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`, `src/backend/doberman_agent/knowledge/domain/schemas/knowledge_space_schema.py`
   - **逻辑**: 业务资源与 protected owner 先成功，再调 Initial Grant port；持久 request/hash；返回原资源形状 + 可选 result；保留自动标签及既有副作用。
   - **验证**: T008 全部通过。
   - **依赖**: T008
@@ -88,7 +88,7 @@
   - **依赖**: T007
 
 - [x] **T011 Channel 创建编排实现**
-  - **文件**: `src/backend/bisheng/channel/domain/services/channel_service.py`, `src/backend/bisheng/channel/domain/schemas/channel_manager_schema.py`
+  - **文件**: `src/backend/doberman_agent/channel/domain/services/channel_service.py`, `src/backend/doberman_agent/channel/domain/schemas/channel_manager_schema.py`
   - **逻辑**: 持久 request/hash；对已完成外部订阅的重试跳过重复副作用；资源 + owner 后调 Initial Grant port；保留知识同步/通知。
   - **验证**: T010 全部通过。
   - **依赖**: T010
@@ -100,7 +100,7 @@
   - **依赖**: T009, T011
 
 - [x] **T013 创建 context/candidates API 实现**
-  - **文件**: `src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py`, `src/backend/bisheng/channel/api/endpoints/channel_manager.py`
+  - **文件**: `src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py`, `src/backend/doberman_agent/channel/api/endpoints/channel_manager.py`
   - **逻辑**: 实现 Design §4.6.1 路由；Endpoint 只注入 actor 并委托业务 Service/Prospective port，不查组织 ORM，不接受 tenant_id。
   - **验证**: T012 全部通过。
   - **依赖**: T012
@@ -116,7 +116,7 @@
   - **依赖**: T013
 
 - [x] **T015 Knowledge/Channel 编辑顺序与 private 实现**
-  - **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`, `src/backend/bisheng/channel/domain/services/channel_service.py`
+  - **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`, `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   - **逻辑**: 保持业务可见性的 source ownership；private 复用 `remove_ordinary_sources`；投影成功后才清 membership/通知；不恢复旧 relation fallback。
   - **验证**: T014 全部通过。
   - **依赖**: T014

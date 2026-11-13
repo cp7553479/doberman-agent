@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { addMetadata,getKnowledgeDetailApi,getMetaFile,saveUserMetadataApi } from '@/controllers/API'
 import type { TFunction } from 'i18next'

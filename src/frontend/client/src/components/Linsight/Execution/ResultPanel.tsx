@@ -8,7 +8,7 @@
  * (ExecutionFlow / TaskTurnPanel) — the caller still owns ResultSection and
  * passes it as children.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import type { ReactNode } from 'react';
 import { useLocalize } from '~/hooks';
 import { MessageFeedbackButtons } from '~/components/Chat/MessageFeedbackButtons';

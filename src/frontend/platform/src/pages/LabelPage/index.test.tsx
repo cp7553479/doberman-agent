@@ -8,8 +8,8 @@ vi.mock('@/contexts/userContext', async () => ({ userContext: (await import('rea
 vi.mock('@/controllers/API/assistant', () => ({ getChatOnlineApi: vi.fn().mockResolvedValue({ list: [{ id: 'app-1', name: 'App', count: 5 }], nextCursor: null }) }))
 vi.mock('@/controllers/API/log', () => ({ createMarkApi: mock.create, getMarksApi: vi.fn(), deleteMarkApi: vi.fn() }))
 vi.mock('@/controllers/request', async (importOriginal) => ({ ...await importOriginal<typeof import('@/controllers/request')>() }))
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({ useToast: () => ({ message: vi.fn() }) }))();
 const hooks = Reflect.get(previous, 'useToast')?.() ?? {};
 return { ...actual, notification: { ...actual.notification, open: Reflect.get(previous, 'toast') ?? Reflect.get(hooks, 'toast') ?? actual.notification.open }, toast: { ...actual.toast, show: Reflect.get(previous, 'message') ?? Reflect.get(hooks, 'message') ?? actual.toast.show } };

@@ -43,7 +43,7 @@ def _config_problems(client) -> list[str]:
     problems: list[str] = []
     item = code_interpreter_type(tool_categories(client))
     if item is None:
-        return ["未测：工具列表没有 bisheng_code_interpreter 所在分类"]
+        return ["未测：工具列表没有 doberman_agent_code_interpreter 所在分类"]
     original = extra_of(item).get("type")
     try:
         for mode in ("local", "container", "e2b"):

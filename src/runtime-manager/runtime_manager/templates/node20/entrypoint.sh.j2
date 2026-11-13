@@ -1,24 +1,24 @@
 #!/bin/sh
-# BiSheng hosted-app entrypoint (D5.2) — node20 runtime.
+# DobermanAgent hosted-app entrypoint (D5.2) — node20 runtime.
 #
-# The platform serves every app under /apps/{slug}, and so does `bisheng dev`.
+# The platform serves every app under /apps/{slug}, and so does `doberman-agent dev`.
 # INV-32 makes the variable name identical in both places
-# (BISHENG_APP_BASE_PATH); this wrapper is what connects that variable
+# (DOBERMAN_AGENT_APP_BASE_PATH); this wrapper is what connects that variable
 # to whichever framework the app happens to use, so an app that follows the
 # DEV-04 contract needs no per-environment branching of its own.
 set -eu
 
-BISHENG_APP_BASE_PATH="${BISHENG_APP_BASE_PATH:-}"
-PORT="${PORT:-${BISHENG_APP_PORT:-{{ port }}}}"
-BISHENG_APP_PORT="$PORT"
-export PORT BISHENG_APP_PORT BISHENG_APP_BASE_PATH
+DOBERMAN_AGENT_APP_BASE_PATH="${DOBERMAN_AGENT_APP_BASE_PATH:-}"
+PORT="${PORT:-${DOBERMAN_AGENT_APP_PORT:-{{ port }}}}"
+DOBERMAN_AGENT_APP_PORT="$PORT"
+export PORT DOBERMAN_AGENT_APP_PORT DOBERMAN_AGENT_APP_BASE_PATH
 
 # Node has no framework-wide root-path variable the way uvicorn / streamlit do;
 # BASE_PATH is the spelling most server templates read at run time. Set
 # unconditionally so behaviour is identical in dev and prod. It does not exist
 # yet when `npm run build` runs in the image, so a bundler's `base` has to be
 # relative ('./') rather than read from it.
-export BASE_PATH="$BISHENG_APP_BASE_PATH"
+export BASE_PATH="$DOBERMAN_AGENT_APP_BASE_PATH"
 export NODE_ENV="${NODE_ENV:-production}"
 # What `npm start` would have put on PATH — resolved here so the start script
 # can be exec'd directly (see below) and still find its local binaries.
@@ -41,8 +41,8 @@ pkg_field() {
 # loop all assume SIGTERM reaches the application itself. `npm start` is on
 # purpose *not* in the chain: it would sit between pid 1 and the app, and it
 # writes logs under $HOME, which is read-only here.
-if [ -n "${BISHENG_APP_START:-}" ]; then
-    exec /bin/sh -c "$BISHENG_APP_START"
+if [ -n "${DOBERMAN_AGENT_APP_START:-}" ]; then
+    exec /bin/sh -c "$DOBERMAN_AGENT_APP_START"
 fi
 
 if [ -f /app/Procfile ]; then
@@ -69,6 +69,6 @@ for candidate in server.js index.js app.js main.js; do
     fi
 done
 
-echo "bisheng: no start command found." >&2
-echo "Provide one of: BISHENG_APP_START, a Procfile 'web:' line, package.json scripts.start or main, server.js, index.js, app.js or main.js." >&2
+echo "doberman-agent: no start command found." >&2
+echo "Provide one of: DOBERMAN_AGENT_APP_START, a Procfile 'web:' line, package.json scripts.start or main, server.js, index.js, app.js or main.js." >&2
 exit 78

@@ -1,4 +1,4 @@
-from bisheng.llm.domain.llm.llm import _get_tencent_params
+from doberman_agent.llm.domain.llm.llm import _get_tencent_params
 
 SERVER = {"openai_api_key": "key", "openai_api_base": "https://api.hunyuan.cloud.tencent.com/v1/"}
 

@@ -244,7 +244,7 @@ F055 查询服务消费 F054 公开 `running_environment_snapshot(app_id)` 只�
 
 
 
-保留 `BISHENG_*`、`RTM_*`、`KUBERNETES_*`、`MINIO_*`、`OPENAI_*`、`HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY`（含小写），及 `PATH/HOME/LD_*/PYTHONPATH/PYTHONHOME/NODE_OPTIONS/PORT/HOST`、启动器实际保留项，统一 deny policy、两侧测试锁定。禁止别名覆盖平台身份、模型通道、启动/依赖路径或出口；后续新增平台注入名必须同改 policy。
+保留 `doberman-agent_*`、`RTM_*`、`KUBERNETES_*`、`MINIO_*`、`OPENAI_*`、`HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY`（含小写），及 `PATH/HOME/LD_*/PYTHONPATH/PYTHONHOME/NODE_OPTIONS/PORT/HOST`、启动器实际保留项，统一 deny policy、两侧测试锁定。禁止别名覆盖平台身份、模型通道、启动/依赖路径或出口；后续新增平台注入名必须同改 policy。
 
 平台不打印写请求体/环境/引擎创建请求，错误只含 ref 与安全原因；runtime status/diagnostic 递归白名单序列化，禁 raw inspect/Secret 内容，日志下载不得拼接 env。客户端埋点不得读取密钥输入。
 

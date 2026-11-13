@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, PasswordInput, toast } from '@bisheng/ui';
+import { Button, PasswordInput, toast } from '@doberman-agent/ui';
 
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
@@ -63,12 +63,12 @@ const UserPwdModal = forwardRef<UserPwdModalRef, UserPwdModalProps>((props, ref)
                 </DialogHeader>
                 <div className="flex flex-col gap-8 py-6">
                     <div>
-                        <label htmlFor="password" className="bisheng-label">
+                        <label htmlFor="password" className="doberman_agent-label">
                             {t("resetPassword.newPassword")}
-                            <span className="bisheng-tip">*</span>
+                            <span className="doberman_agent-tip">*</span>
                         </label>
                         <PasswordInput ref={passwordRef} id="password" name="password" placeholder={t("resetPassword.newPassword")} onChange={(e) => (passwordRef.current.value = e.target.value)} className={"mt-2"} revealLabel={t('sharedUi.showPassword')} hideLabel={t('sharedUi.hidePassword')} />
-                        {error && <p className="bisheng-tip mt-1">{error}</p>}
+                        {error && <p className="doberman_agent-tip mt-1">{error}</p>}
                     </div>
                 </div>
                 <DialogFooter>

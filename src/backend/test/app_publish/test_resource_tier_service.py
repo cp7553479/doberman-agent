@@ -28,7 +28,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def _service():
-    from bisheng.app_publish.domain.services.resource_tier_service import ResourceTierService
+    from doberman_agent.app_publish.domain.services.resource_tier_service import ResourceTierService
 
     return ResourceTierService
 
@@ -40,7 +40,7 @@ async def _service():
 
 async def test_seed_creates_three_platform_level_tiers(publish_db, tier_seed):
     """轻量 0.5C/1G · 标准 2C/4G · 性能 4C/8G, shared across tenants (no ``tenant_id``)."""
-    from bisheng.database.models.resource_tier import ResourceTier
+    from doberman_agent.database.models.resource_tier import ResourceTier
 
     by_code = {tier.code: tier for tier in tier_seed}
     assert set(by_code) == {"light", "standard", "performance"}
@@ -61,7 +61,7 @@ async def test_seed_creates_three_platform_level_tiers(publish_db, tier_seed):
 
 async def test_seed_values_come_from_f054_default_tiers_constant(tier_seed):
     """The DB rows and the F054 constant describe the same three tiers (design D11 / 坑 27)."""
-    from bisheng.app_runtime.domain.constants import DEFAULT_TIERS
+    from doberman_agent.app_runtime.domain.constants import DEFAULT_TIERS
 
     constant = {spec["tier_id"]: spec for spec in DEFAULT_TIERS}
     assert set(constant) == {row.code for row in tier_seed}
@@ -74,7 +74,7 @@ async def test_seed_values_come_from_f054_default_tiers_constant(tier_seed):
 
 async def test_settings_default_tiers_overrides_constant(publish_db, app_runtime_settings):
     """``settings.app_runtime.default_tiers`` wins — this is how 114 shrinks ``light`` (坑 27)."""
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     service = await _service()
     app_runtime_settings(
@@ -92,7 +92,7 @@ async def test_settings_default_tiers_overrides_constant(publish_db, app_runtime
 
 async def test_seed_idempotent_by_code_does_not_reset_admin_edits(publish_db, tier_seed):
     """Re-seeding neither duplicates rows nor undoes a super admin's retune (same judgement as AC-19)."""
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     service = await _service()
     async with publish_db() as session:
@@ -120,7 +120,7 @@ async def test_manifest_without_tier_resolves_light(tier_seed):
 
 
 async def test_unknown_tier_rejected_16223_reason_not_found(tier_seed):
-    from bisheng.common.errcode.app_publish import AppTierUnavailableError
+    from doberman_agent.common.errcode.app_publish import AppTierUnavailableError
 
     service = await _service()
     with pytest.raises(AppTierUnavailableError) as excinfo:
@@ -131,8 +131,8 @@ async def test_unknown_tier_rejected_16223_reason_not_found(tier_seed):
 
 async def test_disabled_tier_rejected_16223_reason_disabled(publish_db, tier_seed):
     """Same code as "not found" — the reason is a field, not a second code."""
-    from bisheng.common.errcode.app_publish import AppTierUnavailableError
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.common.errcode.app_publish import AppTierUnavailableError
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     service = await _service()
     async with publish_db() as session:
@@ -147,7 +147,7 @@ async def test_disabled_tier_rejected_16223_reason_disabled(publish_db, tier_see
 
 async def test_disabled_tier_existing_apps_keep_running_and_resolve_spec(publish_db, tier_seed):
     """Retirement blocks *new* selections only; a frozen ``tier_id`` still resolves (AC-47)."""
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     service = await _service()
     async with publish_db() as session:
@@ -164,8 +164,8 @@ async def test_disabled_tier_existing_apps_keep_running_and_resolve_spec(publish
 
 async def test_dao_has_no_delete_method():
     """ "``tier_id`` always resolves" is an invariant F054 relies on (AC-47 / design D11)."""
-    from bisheng.app_publish.domain.services import resource_tier_service
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.app_publish.domain.services import resource_tier_service
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     forbidden = [name for name in dir(ResourceTierDao) if "delete" in name.lower() or "remove" in name.lower()]
     assert forbidden == [], f"ResourceTierDao must not offer deletion: {forbidden}"
@@ -184,8 +184,8 @@ async def test_dao_has_no_delete_method():
 
 async def test_tier_code_written_into_version_snapshot_spec_read_at_runtime(publish_db, tier_seed, app_factory):
     """The snapshot freezes the *code*; the spec is whatever the tier says today (AC-48)."""
-    from bisheng.database.models.app_version import AppVersionDao
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     service = await _service()
     app_row, version_row = await app_factory(tier_id="light")

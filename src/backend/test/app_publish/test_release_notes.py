@@ -19,15 +19,15 @@ import pytest
     ids=["null", "empty", "whitespace", "newlines", "unicode", "limit", "emoji-limit"],
 )
 def test_normalizes_without_changing_internal_text(raw, expected):
-    from bisheng.app_publish.domain.release_notes import normalize_release_notes
+    from doberman_agent.app_publish.domain.release_notes import normalize_release_notes
 
     assert normalize_release_notes(raw) == expected
 
 
 @pytest.mark.parametrize("raw", ["x" * 2001, "😀" * 2001], ids=["ascii", "emoji"])
 def test_too_long_never_echoes_text(raw):
-    from bisheng.app_publish.domain.release_notes import normalize_release_notes
-    from bisheng.common.errcode.app_publish import AppReleaseNotesInvalidError
+    from doberman_agent.app_publish.domain.release_notes import normalize_release_notes
+    from doberman_agent.common.errcode.app_publish import AppReleaseNotesInvalidError
 
     with pytest.raises(AppReleaseNotesInvalidError) as caught:
         normalize_release_notes(raw)
@@ -37,8 +37,8 @@ def test_too_long_never_echoes_text(raw):
 
 
 async def test_rejects_before_creating_app_storing_package_or_scheduling(app_runtime_settings, monkeypatch, tmp_path):
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
-    from bisheng.common.errcode.app_publish import AppReleaseNotesInvalidError
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.common.errcode.app_publish import AppReleaseNotesInvalidError
 
     app_runtime_settings(enabled=True)
     create = AsyncMock()
@@ -69,9 +69,9 @@ async def test_accept_persists_notes_for_a_separate_worker_session(
     app_runtime_settings,
     monkeypatch,
 ):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     set_current_tenant_id(1)
     app_runtime_settings(enabled=True)
@@ -93,7 +93,7 @@ def test_migration_is_idempotent_and_keeps_old_rows_null():
     from alembic.migration import MigrationContext
     from alembic.operations import Operations
 
-    migration = importlib.import_module("bisheng.core.database.alembic.versions.v3_0_0_f112_release_notes")
+    migration = importlib.import_module("doberman_agent.core.database.alembic.versions.v3_0_0_f112_release_notes")
     engine = sa.create_engine("sqlite://")
     with engine.begin() as connection:
         for table in ("app_deployment", "app_version"):

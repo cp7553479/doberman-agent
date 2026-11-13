@@ -5,7 +5,7 @@ component: Toast
 
 # 轻提示 Toast
 
-组件库 `@bisheng/ui` Toast 的实时预览（client 经 `~/components/ui/Toast` 挂载同一实现）。**命令式 API**：业务代码任何地方 `toast.success('已保存')` 即可，不需要为它维护 state；页面只在根节点挂一个 `<Toaster />` 容器。规范全文见「文档 → 组件规范 → 轻提示 Toast」。
+组件库 `@doberman-agent/ui` Toast 的实时预览（client 经 `~/components/ui/Toast` 挂载同一实现）。**命令式 API**：业务代码任何地方 `toast.success('已保存')` 即可，不需要为它维护 state；页面只在根节点挂一个 `<Toaster />` 容器。规范全文见「文档 → 组件规范 → 轻提示 Toast」。
 
 > 本页每个 demo 都自带一个 `<Toaster />`，但**只有第一个挂载的容器会真正渲染**（同一队列，单例容器），所以下面任一按钮弹出的提示都出现在页面顶部同一处。
 
@@ -14,7 +14,7 @@ component: Toast
 靠**图标 + 浅色底**区分语义。每种类型必须带图标——颜色分不清的用户靠图标读语义；拿不准用哪种就用 Info，别把「没成功」的事包装成 Info。
 
 ```tsx
-import { Button, Toaster, toast } from '@bisheng/ui';
+import { Button, Toaster, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -40,7 +40,7 @@ export default () => (
 最多同时 3 条，新的追加在最下方；第 4 条来的时候最旧的立即让位。**同一条消息重复触发只更新已有那条并重新计时**——用户连点三次保存，只该看到一条「已保存」。
 
 ```tsx
-import { Button, Toaster, toast } from '@bisheng/ui';
+import { Button, Toaster, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -68,7 +68,7 @@ export default () => (
 最多一个操作按钮，链接按钮样式，放在文案右侧。**必须是能撤回或跟进的实际动作**（撤销、查看），不许是「关闭」「取消」「知道了」——那是轻提示自己会做的事。带按钮时停留时长自动翻倍，按钮短到来不及点等于没给。
 
 ```tsx
-import { Button, Toaster, toast } from '@bisheng/ui';
+import { Button, Toaster, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -106,7 +106,7 @@ export default () => (
 算出来超过 10 秒说明文案太长了，回去改文案，不是靠延长时间硬撑。
 
 ```tsx
-import { Button, Toaster, computeDuration, toast } from '@bisheng/ui';
+import { Button, Toaster, computeDuration, toast } from '@doberman-agent/ui';
 
 const SHORT = '已保存';
 const LONG = '已保存草稿，其中 3 项配置因为超出当前空间的容量上限没有同步，请清理后重试';
@@ -173,4 +173,4 @@ interface ToastOptions {
 }
 ```
 
-client 里存量的 `showToast({ message, severity })` 调用点全部照旧可用（`useToastContext()` 已转接到这套实现），新代码直接 `import { toast } from '@bisheng/ui'`。
+client 里存量的 `showToast({ message, severity })` 调用点全部照旧可用（`useToastContext()` 已转接到这套实现），新代码直接 `import { toast } from '@doberman-agent/ui'`。

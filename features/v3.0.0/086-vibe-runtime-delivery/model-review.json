@@ -1111,8 +1111,8 @@
     "one_alembic_head": "pass"
   },
   "new_fix_files": {
-    "src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py": "9528e794cc697ed43ca0a920c7f1db1d3f005f0e8dfd692dfd95c09be98b87a5",
-    "src/backend/bisheng/core/database/alembic/versions/f086_runtime_byte_counters.py": "41f9343e6416da09302e40dea79e799dd30f2971d18afd2b0c36147d861a7f44",
+    "src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py": "9528e794cc697ed43ca0a920c7f1db1d3f005f0e8dfd692dfd95c09be98b87a5",
+    "src/backend/doberman_agent/core/database/alembic/versions/f086_runtime_byte_counters.py": "41f9343e6416da09302e40dea79e799dd30f2971d18afd2b0c36147d861a7f44",
     "src/backend/test/app_runtime/test_runtime_model_contracts.py": "41faf1de224f00ae226e214b037c66a6e096568ba9acfd745c6c623800f54979"
   }
 }

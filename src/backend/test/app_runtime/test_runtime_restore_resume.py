@@ -16,7 +16,7 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from sqlalchemy.orm.attributes import flag_modified
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RuntimeArtifact,
     RuntimeAssignment,
     RuntimeDelivery,
@@ -24,13 +24,13 @@ from bisheng.app_runtime.domain.models.runtime_delivery import (
     RuntimeNode,
     RuntimeRoute,
 )
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_material_service import RuntimeMaterialService
-from bisheng.app_runtime.domain.services.runtime_protocol import content_digest
-from bisheng.database.models.app import App
-from bisheng.database.models.app_instance import AppInstance
-from bisheng.database.models.app_version import AppVersion
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_material_service import RuntimeMaterialService
+from doberman_agent.app_runtime.domain.services.runtime_protocol import content_digest
+from doberman_agent.database.models.app import App
+from doberman_agent.database.models.app_instance import AppInstance
+from doberman_agent.database.models.app_version import AppVersion
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import HELPER, IMAGE, MANAGER, REF, short_hash
@@ -81,7 +81,7 @@ def body(case, kind="Pod", *, purpose="serve"):
     if kind == "Service":
         template = templates.service(plan)
         # The executor keeps the selector on the Pod while freezing the Service's own ref.
-        template["metadata"]["labels"]["runtime.bisheng.io/resource"] = SERVICE_REF
+        template["metadata"]["labels"]["runtime.doberman_agent.io/resource"] = SERVICE_REF
         reference = SERVICE_REF
     elif kind == "Secret":
         reference = SECRET_REF
@@ -165,7 +165,7 @@ async def restoring(control):
         op=op,
         app=app,
         delivery=delivery,
-        helper_ref=str(uuid5(NAMESPACE_URL, "bisheng-maintenance:" + op.id + ":restore")),
+        helper_ref=str(uuid5(NAMESPACE_URL, "doberman-agent-maintenance:" + op.id + ":restore")),
     )
     helper = body(case, purpose="restore")
     await service.register_resource(MANAGER, helper)
@@ -405,9 +405,9 @@ async def test_direct_template_validation_keeps_default_restore_serve_refusal(re
 
 @pytest.mark.parametrize("change", ["success", "restore-only", "pending-drift"])
 async def test_restore_ready_fact_auto_commit_preserves_v1_and_activates_exact_route(restoring, change):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     case = restoring
     async with case.repo._factory() as session:

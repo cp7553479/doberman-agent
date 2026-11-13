@@ -1,4 +1,4 @@
-"""Tar copy-in / copy-out for one session. Must not import bisheng."""
+"""Tar copy-in / copy-out for one session. Must not import doberman_agent."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 """Regression tests for the new simhash / similar_status columns on KnowledgeFile."""
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
 
 
 def test_knowledge_file_has_simhash_field():

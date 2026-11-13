@@ -134,7 +134,7 @@
 
 **复审结论：D1 CLOSED；后台开发合入 L2：PASS。** 本节取代前文因 D1 暂列 NEEDS_FIX 的结论；原发现及审查过程保留。
 
-仅检查整合工作树 `/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration` 的本次 `design.md` 文档 diff，未做新的代码审计或测试，未操作远端。
+仅检查整合工作树 `/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration` 的本次 `design.md` 文档 diff，未做新的代码审计或测试，未操作远端。
 
 - 第 120–124 行当前快照已更新为 R32、原 267/271 加 T274 后 268/272，并明确余项属于交付门，不等同四块未实现业务代码。
 - 第 266 行将正式初始化与准备实证列为已验证，完整续期故障矩阵仍保留待验。

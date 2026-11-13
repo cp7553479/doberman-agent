@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import type { WorkflowFormProps } from '@bisheng/chat';
+import type { WorkflowFormProps } from '@doberman-agent/chat';
 import { uploadFileWithProgress } from '~/api/apps';
 import { InputForm } from './InputForm';
 import InputFileComponent from './InputFileComponent';
@@ -7,18 +7,18 @@ import InputFileComponent from './InputFileComponent';
 const mockShowToast = jest.fn();
 jest.mock('~/api/apps', () => ({ uploadFile: jest.fn(), uploadFileWithProgress: jest.fn() }));
 jest.mock('recoil', () => ({ useRecoilValue: () => ({}), useRecoilState: () => [{}] }));
-jest.mock('../store/atoms', () => ({ bishengConfState: {} }));
+jest.mock('../store/atoms', () => ({ dobermanAgentConfState: {} }));
 jest.mock('~/Providers', () => ({ useToastContext: () => ({ showToast: mockShowToast }) }));
 jest.mock('~/components', () => ({ Button: () => null }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/hooks/useLocalize', () => ({ __esModule: true, default: () => (key: string) => key }));
 jest.mock('../useAreaText', () => ({ emitAreaTextEvent: jest.fn(), EVENT_TYPE: {} }));
-jest.mock('@bisheng/chat', () => ({
+jest.mock('@doberman-agent/chat', () => ({
     MessageFrame: ({ children }: { children: React.ReactNode }) => children,
     WorkflowFileField: () => null,
     WorkflowForm: ({ fields, renderField }: WorkflowFormProps) => renderField?.({ id: 'upload', field: fields[0], value: undefined, disabled: false, onChange: () => {}, onFileNameChange: () => {} }),
 }));
-jest.mock('@bisheng/ui', () => ({ Select: () => null }));
+jest.mock('@doberman-agent/ui', () => ({ Select: () => null }));
 afterEach(() => { cleanup(); jest.clearAllMocks(); });
 const extensions = ['.PNG', '.JPEG', '.JPG', '.BMP'];
 function pick(container: HTMLElement, files: File[]) {

@@ -13,7 +13,7 @@
 
 ## 任务拆解
 
-> 全部测试落 `test/permission/`（`asyncio_mode=auto`，无需 `@pytest.mark.asyncio`）。后端单文件 = `src/backend/bisheng/permission/api/endpoints/resource_permission.py`；文件锚点见 design.md §4.3（后端）/ §4.4（前端 Client）/ §4.5（脚本）。本 feature 无新增 ORM / 错误码 / 配置（复用 `PermissionDeniedError`），故无独立基础设施任务。
+> 全部测试落 `test/permission/`（`asyncio_mode=auto`，无需 `@pytest.mark.asyncio`）。后端单文件 = `src/backend/doberman_agent/permission/api/endpoints/resource_permission.py`；文件锚点见 design.md §4.3（后端）/ §4.4（前端 Client）/ §4.5（脚本）。本 feature 无新增 ORM / 错误码 / 配置（复用 `PermissionDeniedError`），故无独立基础设施任务。
 
 ### Wave 1 — 后端范围判定（Test-First）
 

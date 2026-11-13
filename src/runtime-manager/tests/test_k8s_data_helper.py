@@ -36,7 +36,7 @@ def grant(action="tables", parameters=None, *, request_id=None, now=1000):
         "deadline": now + 60,
     }
     document = {"key_id": "data-key", "claims": claims}
-    return {**document, "signature": KEY.sign(b"BISHENG-RUNTIME-DATA-V1\n" + encoded(document)).hex()}
+    return {**document, "signature": KEY.sign(b"DOBERMAN_AGENT-RUNTIME-DATA-V1\n" + encoded(document)).hex()}
 
 
 def verify(ticket, params=None, *, now=1001):
@@ -98,7 +98,7 @@ def test_even_valid_signatures_cannot_widen_scope_or_deadlines(field, value):
     ticket = grant()
     ticket["claims"][field] = value
     body = {key: ticket[key] for key in ("key_id", "claims")}
-    ticket["signature"] = KEY.sign(b"BISHENG-RUNTIME-DATA-V1\n" + encoded(body)).hex()
+    ticket["signature"] = KEY.sign(b"DOBERMAN_AGENT-RUNTIME-DATA-V1\n" + encoded(body)).hex()
     with pytest.raises(DataGrantError):
         verify(ticket)
 
@@ -229,7 +229,7 @@ def test_action_deadline_terminates_worker_and_preserves_unknown(helper, monkeyp
     ticket = grant()
     ticket["claims"]["deadline"] = 1005
     ticket["signature"] = KEY.sign(
-        b"BISHENG-RUNTIME-DATA-V1\n" + encoded({key: ticket[key] for key in ("key_id", "claims")})
+        b"DOBERMAN_AGENT-RUNTIME-DATA-V1\n" + encoded({key: ticket[key] for key in ("key_id", "claims")})
     ).hex()
 
     def slow(*args):

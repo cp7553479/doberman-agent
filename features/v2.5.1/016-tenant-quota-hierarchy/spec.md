@@ -60,7 +60,7 @@
 
 ## 5. 配额检查逻辑
 
-> **实现映射**：下列 `QuotaChecker` 为算法示意；实际落地合并入已有的 `QuotaService`（`src/backend/bisheng/role/domain/services/quota_service.py`），通过重写 `_apply_tenant_cap → _apply_tenant_chain_cap` 并新增 `_count_usage_strict` / `_aggregate_root_usage` 两个 classmethod 实现同等效果，保持 `@require_quota` 装饰器与 `check_quota` 签名不变。
+> **实现映射**：下列 `QuotaChecker` 为算法示意；实际落地合并入已有的 `QuotaService`（`src/backend/doberman_agent/role/domain/services/quota_service.py`），通过重写 `_apply_tenant_cap → _apply_tenant_chain_cap` 并新增 `_count_usage_strict` / `_aggregate_root_usage` 两个 classmethod 实现同等效果，保持 `@require_quota` 装饰器与 `check_quota` 签名不变。
 
 ```python
 class QuotaChecker:
@@ -171,7 +171,7 @@ class QuotaChecker:
 
 **权限**：`UserPayload.get_admin_user`（仅全局超管）
 
-**现状**：v2.5.1 F010 已实现此端点（`src/backend/bisheng/tenant/api/endpoints/tenant_crud.py:141`）；F016 **不改路径/签名**，仅扩展 `QuotaService.validate_quota_config` 校验的合法 key 集合（新增 `storage_gb / user_count / model_tokens_monthly`）。
+**现状**：v2.5.1 F010 已实现此端点（`src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py:141`）；F016 **不改路径/签名**，仅扩展 `QuotaService.validate_quota_config` 校验的合法 key 集合（新增 `storage_gb / user_count / model_tokens_monthly`）。
 
 请求体（`TenantQuotaUpdate`）：
 ```json

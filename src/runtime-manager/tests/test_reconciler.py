@@ -100,11 +100,11 @@ def _request(**overrides) -> DeployRequest:
         "slug": "sales-report",
         "version_id": "ver-0123456789abcdef",
         "version_no": 3,
-        "image_ref": "bisheng-app/sales-report:3-ver-0123",
+        "image_ref": "doberman-agent-app/sales-report:3-ver-0123",
         "tier": TierIn(cpu=0.5, mem=512),
         "port": 8080,
         "env": {},
-        "platform_api_base": "https://bisheng.example.com/api",
+        "platform_api_base": "https://doberman-agent.example.com/api",
     }
     payload.update(overrides)
     return DeployRequest(**payload)
@@ -327,11 +327,11 @@ def test_recovery_budget_within_5min(rtm_config, fake_docker):
 def test_orphan_container_reclaimed(rtm_config, fake_docker):
     """A managed container nobody declared is capacity nobody is accounting for."""
     _deploy(rtm_config, fake_docker)
-    orphan = "bisheng-app-ghost-deadbeef"
+    orphan = "doberman-agent-app-ghost-deadbeef"
     fake_docker.create_container(
         orphan,
         {
-            "Image": "bisheng-app/ghost:1",
+            "Image": "doberman-agent-app/ghost:1",
             "Labels": {LABEL_MANAGED: "true", LABEL_APP_ID: "app-ghost", LABEL_GENERATION: "1"},
         },
     )
@@ -354,15 +354,15 @@ def test_foreign_and_probe_containers_are_never_touched(rtm_config, fake_docker)
     _deploy(rtm_config, fake_docker)
     _foreign(fake_docker, "onlyoffice-documentserver")
     fake_docker.create_container(
-        "bisheng-probe-abc123",
-        {"Image": "bisheng-app/x:1", "Labels": {LABEL_MANAGED: "probe"}},
+        "doberman-agent-probe-abc123",
+        {"Image": "doberman-agent-app/x:1", "Labels": {LABEL_MANAGED: "probe"}},
     )
 
     report = _reconciler(rtm_config, fake_docker).reconcile_once()
 
     assert report.reclaimed == []
     assert fake_docker.get("onlyoffice-documentserver") is not None
-    assert fake_docker.get("bisheng-probe-abc123") is not None
+    assert fake_docker.get("doberman-agent-probe-abc123") is not None
     assert fake_docker.call_count("remove_container") == 0
 
 
@@ -473,7 +473,7 @@ def test_startup_full_reconcile_from_labels(rtm_config, fake_docker):
     assert recovered.generation == generation
     assert recovered.container_name == name
     assert recovered.container_id == fake_docker.get(name).id
-    assert recovered.env["BISHENG_APP_ID"] == "app-1"
+    assert recovered.env["DOBERMAN_AGENT_APP_ID"] == "app-1"
     assert recovered.phase in ALL_PHASES
     assert fake_docker.get(name).running is True
     # Recovered capacity is charged again — otherwise the next admission would

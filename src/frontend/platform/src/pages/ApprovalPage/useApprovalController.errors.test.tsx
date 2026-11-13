@@ -1,10 +1,10 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import * as api from '@/controllers/API/approval';
 import { getRolesApi } from '@/controllers/API/user';
 import { showApiError } from '@/controllers/request';
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { useApprovalController } from './useApprovalController';
 
 vi.mock('@/controllers/API/user', () => ({ getRolesApi: vi.fn().mockResolvedValue({ data: [] }) }));
@@ -14,7 +14,7 @@ vi.mock('@/controllers/API/approval', () => ({
     listApprovalRoutesApi: vi.fn(), listApprovalFlowsApi: vi.fn(), listApprovalNodesApi: vi.fn(),
 }));
 vi.mock('@/controllers/request', () => ({ showApiError: vi.fn() }));
-vi.mock('@bisheng/ui', () => ({ notification: { open: vi.fn() } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: vi.fn() } }));
 beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(getRolesApi).mockResolvedValue({ data: [] });

@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.app_publish import AppVersionReviewForbiddenError
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.core.context import tenant
+from doberman_agent.common.errcode.app_publish import AppVersionReviewForbiddenError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.core.context import tenant
 
 
 @pytest.fixture
 def review_access(monkeypatch):
-    from bisheng.app_publish.domain.services import snapshot_browse_service as mod
+    from doberman_agent.app_publish.domain.services import snapshot_browse_service as mod
 
     app = SimpleNamespace(id="target", tenant_id=3, owner_user_id=81, state="draft", current_version_id="base")
     actor = SimpleNamespace(user_id=42, tenant_id=3, is_global_super=False)
@@ -39,7 +39,7 @@ async def test_publish_only_cannot_read_source(review_access):
 
 
 async def test_valid_personal_task_ignores_view_selection_and_restores_it(review_access):
-    from bisheng.approval.application.app_review import AppReviewGrant
+    from doberman_agent.approval.application.app_review import AppReviewGrant
 
     mod, app, actor = review_access
     mod.pending_app_reviews.return_value = (
@@ -54,7 +54,7 @@ async def test_valid_personal_task_ignores_view_selection_and_restores_it(review
 
 
 async def test_task_does_not_open_unrelated_version(review_access):
-    from bisheng.approval.application.app_review import AppReviewGrant
+    from doberman_agent.approval.application.app_review import AppReviewGrant
 
     mod, app, actor = review_access
     mod.pending_app_reviews.return_value = (AppReviewGrant(3, app.id, "pending", 7, 8),)

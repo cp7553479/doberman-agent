@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-MIGRATION_MOD = "bisheng.core.database.alembic.versions.v2_5_1_f020_llm_tenant"
+MIGRATION_MOD = "doberman_agent.core.database.alembic.versions.v2_5_1_f020_llm_tenant"
 
 
 def _build_conn(duplicate_rows):

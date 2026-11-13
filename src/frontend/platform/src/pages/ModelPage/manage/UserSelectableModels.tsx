@@ -1,6 +1,6 @@
-import { Button } from "@bisheng/ui";
-import { Input } from "@bisheng/ui";
-import { Switch } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
+import { Input } from "@doberman-agent/ui";
+import { Switch } from "@doberman-agent/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/bs-ui/table'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'

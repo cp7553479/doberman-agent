@@ -2,7 +2,7 @@
 
 import pytest
 
-from bisheng.common.utils.think_tags import ThinkBlockStreamFilter
+from doberman_agent.common.utils.think_tags import ThinkBlockStreamFilter
 
 
 @pytest.mark.parametrize(

@@ -14,8 +14,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.session import MessageSession
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.session import MessageSession
 
 _SCRIPT = Path(__file__).parents[2] / "scripts" / "migrate_f068_knowledge_chat_entries.py"
 _SPEC = importlib.util.spec_from_file_location("migrate_f068_knowledge_chat_entries", _SCRIPT)
@@ -109,7 +109,7 @@ def test_entry_validation_and_report_mask_sensitive_values(monkeypatch):
     monkeypatch.setattr(
         migration,
         "settings",
-        SimpleNamespace(database_url="mysql+pymysql://user:secret@db:3306/bisheng"),
+        SimpleNamespace(database_url="mysql+pymysql://user:secret@db:3306/doberman_agent"),
     )
     scan = migration.ScanResult(
         sessions=(valid,),

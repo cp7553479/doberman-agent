@@ -13,24 +13,24 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.api.services import f048_system_resource_bootstrap as bootstrap
-from bisheng.common.errcode.permission import (
+from doberman_agent.api.services import f048_system_resource_bootstrap as bootstrap
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
 )
-from bisheng.core.context.tenant import get_current_tenant_id, tenant_execution_scope
-from bisheng.permission.application import control_state, sql_runtime, system_resource_reconcile
-from bisheng.permission.application.control_state import (
+from doberman_agent.core.context.tenant import get_current_tenant_id, tenant_execution_scope
+from doberman_agent.permission.application import control_state, sql_runtime, system_resource_reconcile
+from doberman_agent.permission.application.control_state import (
     RuntimeCatalogSnapshot,
     RuntimeModelSnapshot,
     SqlOwnerProjectionState,
     SqlPermissionControlState,
 )
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.application.system_resource_reconcile import (
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.application.system_resource_reconcile import (
     SystemOwnedResourceSpec,
     reconcile_system_owned_resources,
 )
-from bisheng.permission.domain.models import (
+from doberman_agent.permission.domain.models import (
     PermissionCatalogRelease,
     PermissionGrant,
     PermissionGrantAssignee,
@@ -38,10 +38,10 @@ from bisheng.permission.domain.models import (
     PermissionProjectionTuple,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.projection_repository import ProjectionRepository
-from bisheng.permission.domain.services.grant_source_service import GrantModelSnapshot, GrantSourceService
-from bisheng.permission.domain.services.owner_service import F048OwnerProjectionService
-from bisheng.permission.domain.services.projection_service import ProjectionService
+from doberman_agent.permission.domain.repositories.projection_repository import ProjectionRepository
+from doberman_agent.permission.domain.services.grant_source_service import GrantModelSnapshot, GrantSourceService
+from doberman_agent.permission.domain.services.owner_service import F048OwnerProjectionService
+from doberman_agent.permission.domain.services.projection_service import ProjectionService
 from test.permission.test_f048_projection_service import FakeFGAProjection, FakeRecentMarker
 
 
@@ -288,8 +288,8 @@ async def test_non_current_resources_fail_closed(repair_env, status):
 
 
 async def test_builtin_skill_entrypoint_uses_real_permission_creation(repair_env, monkeypatch):
-    from bisheng.linsight.domain.services.skill_permission import ensure_builtin_skill_permission
-    from bisheng.permission.application import process_runtime
+    from doberman_agent.linsight.domain.services.skill_permission import ensure_builtin_skill_permission
+    from doberman_agent.permission.application import process_runtime
 
     env = repair_env
     monkeypatch.setattr(

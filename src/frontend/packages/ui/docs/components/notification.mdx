@@ -5,7 +5,7 @@ component: Notification
 
 # 通知提醒 Notification
 
-组件库 `@bisheng/ui` Notification 的实时预览（client 经 `~/components/ui/Notification` 挂载同一实现）。**命令式 API**：业务代码任何地方 `notification.success('…')` 即可，不需要为它维护 state；页面只在根节点挂一个 `<Notifier />` 容器。规范全文见「文档 → 组件规范 → 通知提醒 Notification」。
+组件库 `@doberman-agent/ui` Notification 的实时预览（client 经 `~/components/ui/Notification` 挂载同一实现）。**命令式 API**：业务代码任何地方 `notification.success('…')` 即可，不需要为它维护 state；页面只在根节点挂一个 `<Notifier />` 容器。规范全文见「文档 → 组件规范 → 通知提醒 Notification」。
 
 > 本页每个 demo 都自带一个 `<Notifier />`，但**只有第一个挂载的容器会真正渲染**（同一队列，单例容器），所以下面任一按钮弹出的通知都出现在页面右上角同一处。
 
@@ -18,7 +18,7 @@ component: Notification
 靠**左上角的图标**区分语义，卡片一律白底（暗色模式随主题变深并加描边）。每种类型必须带图标；拿不准用哪种就用 Info，别把「没成功」的事包装成 Info。
 
 ```tsx
-import { Button, Notifier, notification } from '@bisheng/ui';
+import { Button, Notifier, notification } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -72,7 +72,7 @@ export default () => (
 固定在右上角，最多同时 3 条，纵向间距 16px，新的追加在最下方；第 4 条来的时候最旧的立即让位。**同一条通知重复触发只更新已有那条并重新计时**——去重按 `id`，不传时按「类型 + 标题 + 描述」。
 
 ```tsx
-import { Button, Notifier, notification } from '@bisheng/ui';
+import { Button, Notifier, notification } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -109,7 +109,7 @@ export default () => (
 最多两个，右对齐放在操作行：**主动作用次强调按钮，次动作用文字按钮**，都是 24px 小号——不放实心主按钮，通知不该抢页面的视线。按钮必须是跟进这件事的实际动作（查看、重试、前往），不许是「关闭」「知道了」。**带操作按钮时停留 10 秒**（默认 5 秒）；点了任一按钮，通知随即关闭。
 
 ```tsx
-import { Button, Notifier, notification, toast } from '@bisheng/ui';
+import { Button, Notifier, notification, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -152,7 +152,7 @@ export default () => (
 描述不做字数限制，但**默认最多显示 3 行**，超出的部分截断加省略号，操作行左侧自动出现「展开」。点「展开」在原地展开全文，卡片变高，最高不超过视口高度减 48px，再长的部分在卡片内滚动。**展开即视为用户在读，停止自动关闭**，改为等用户手动关闭。
 
 ```tsx
-import { Button, Notifier, notification } from '@bisheng/ui';
+import { Button, Notifier, notification } from '@doberman-agent/ui';
 
 const LONG =
   '「年度采购合同」已解析完成，共 412 个分段。其中 3 个附件为扫描件，已走 OCR 识别，识别置信度较低的 7 页已标记，建议在知识库详情页逐页核对；另有 2 个附件因加密无法读取，已跳过，如需纳入请解密后重新上传。解析完成后即可在对话中提问，首次提问可能需要几秒钟建立索引。';
@@ -190,7 +190,7 @@ export default () => (
 `duration: 0` 是「必须等用户处理」的少数场景才用的档位；拿不准就用默认值——一屏常驻的通知多了，用户只会整片关掉。
 
 ```tsx
-import { Button, Notifier, notification, toast } from '@bisheng/ui';
+import { Button, Notifier, notification, toast } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>

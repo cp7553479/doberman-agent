@@ -2,12 +2,12 @@
 
 - 日期：2026-10-22
 - 状态：待评审；本轮仅新增方案文档
-- BiSheng 分支：feat/bisheng-work-dsh-guardrails
-- BiSheng 基线：2e6b5ae0fb1dcd2e32d480545e1d1ea57e77cd24
+- doberman-agent 分支：feat/doberman-agent-work-dsh-guardrails
+- doberman-agent 基线：2e6b5ae0fb1dcd2e32d480545e1d1ea57e77cd24
 - Gateway 核查基线：feat/remove-dsh-seat，f6160db4ec40bfb815bdcde22f41fd9804008d0a
 - Desktop 核查基线：codex/dsh-without-gateway，025fa9198218e989ebec51ff25b48622a1926291
 
-本期由 Gateway 按租户执行 DSH 输入与输出敏感词检查，并可靠地将检查结果回传到 BiSheng 审计。backend 的模型鉴权、执行、额度和计量链路继续独立运行，审计模块新增外部内容安全事件接收、投影和查询能力。
+本期由 Gateway 按租户执行 DSH 输入与输出敏感词检查，并可靠地将检查结果回传到 doberman-agent 审计。backend 的模型鉴权、执行、额度和计量链路继续独立运行，审计模块新增外部内容安全事件接收、投影和查询能力。
 
 内容安全事件单独保存事实明细；审计列表的命中标记及筛选直接读取现有审计主表上的摘要字段。默认列表不关联全量事件表，不临时聚合事件历史。会话和树形目录同步维护命中汇总。
 
@@ -28,7 +28,7 @@ backend 不新增 Gateway URL、敏感词检查 RPC、词库或阻断判断。�
 
 ## 2 当前实现与可复用能力
 
-DSH 的 Chat Completions 和 Responses 共用 DshModelService.complete。Chat 通过 BishengLLM.ainvoke/astream 执行；原生 Responses 使用所配置 SDK Client 的 responses 接口，因此只包装 LangChain 的调用不能覆盖两条路径。
+DSH 的 Chat Completions 和 Responses 共用 DshModelService.complete。Chat 通过 DobermanAgentLLM.ainvoke/astream 执行；原生 Responses 使用所配置 SDK Client 的 responses 接口，因此只包装 LangChain 的调用不能覆盖两条路径。
 
 Gateway 的 HTTP 敏感词过滤目前仅覆盖助手对话和旧 process 路由。HTTP 响应检查逐个 SSE 事件匹配，缺少跨事件词语匹配。已有 testWords 接口返回命中话术，并沿用旧过滤器的原文日志及 BlockRecord 写入，不作为新的执行接口直接调用。
 
@@ -413,31 +413,31 @@ MySQL 与 DM8 分别查看执行计划、扫描行数、排序、p95/p99、索�
 
 | 仓库 | 路径 | 核查内容 |
 |---|---|---|
-| BiSheng | src/backend/bisheng/dsh/api/endpoints/models.py | 两个模型入口、profile和SSE资源关闭 |
-| BiSheng | src/backend/bisheng/dsh/domain/services/model.py | 准入、供应商执行、结算与SSE出口 |
-| BiSheng | src/backend/bisheng/dsh/infrastructure/chat_adapter.py | Chat调用、工具片段、推理和usage |
-| BiSheng | src/backend/bisheng/dsh/infrastructure/responses_adapter.py | 原生SDK、事件、终态及大小限制 |
-| BiSheng | src/backend/bisheng/dsh/access_runtime.py | profile依赖与DSH设置读取 |
-| BiSheng | src/backend/bisheng/dsh/domain/services/access.py | Token、身份和会话验证 |
-| BiSheng | src/backend/bisheng/dsh/domain/services/identity.py | profile重复身份读取 |
-| BiSheng | src/backend/bisheng/dsh/domain/repositories/identities.py | 用户、归属和租户的三次读取 |
-| BiSheng | src/backend/bisheng/dsh/api/responses.py | X-Request-ID和ASGI审计观察边界 |
-| BiSheng | src/backend/bisheng/dsh/domain/models/model_audit_request.py | 主表、证据和现有索引 |
-| BiSheng | src/backend/bisheng/dsh/domain/schemas/model_audit.py | 当前状态类型和元数据DTO约束 |
-| BiSheng | src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py | 主表过滤、游标和页面补数 |
-| BiSheng | src/backend/bisheng/dsh/domain/repositories/model_audit_write.py | 严格身份绑定和异步主行创建 |
-| BiSheng | src/backend/bisheng/dsh/domain/services/model_audit_writer.py | 元数据、正文写入及字段更新 |
-| BiSheng | src/backend/bisheng/dsh/domain/repositories/model_audit_conversations.py | 会话计数、dirty标记及有界候选查询 |
-| BiSheng | src/backend/bisheng/dsh/domain/repositories/model_audit_tree_build.py | 会话树代际构建与汇总发布 |
-| BiSheng | src/backend/bisheng/sso_sync/domain/services/hmac_auth.py | 可提取复用的签名计算模式 |
-| BiSheng | src/backend/bisheng/user/api/user.py | 浏览器用户信息和管理标识 |
-| BiSheng | src/backend/bisheng/tenant/api/endpoints/tenant_crud.py | 已有租户读取和管理鉴权 |
+| doberman-agent | src/backend/doberman_agent/dsh/api/endpoints/models.py | 两个模型入口、profile和SSE资源关闭 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/services/model.py | 准入、供应商执行、结算与SSE出口 |
+| doberman-agent | src/backend/doberman_agent/dsh/infrastructure/chat_adapter.py | Chat调用、工具片段、推理和usage |
+| doberman-agent | src/backend/doberman_agent/dsh/infrastructure/responses_adapter.py | 原生SDK、事件、终态及大小限制 |
+| doberman-agent | src/backend/doberman_agent/dsh/access_runtime.py | profile依赖与DSH设置读取 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/services/access.py | Token、身份和会话验证 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/services/identity.py | profile重复身份读取 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/repositories/identities.py | 用户、归属和租户的三次读取 |
+| doberman-agent | src/backend/doberman_agent/dsh/api/responses.py | X-Request-ID和ASGI审计观察边界 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/models/model_audit_request.py | 主表、证据和现有索引 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/schemas/model_audit.py | 当前状态类型和元数据DTO约束 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py | 主表过滤、游标和页面补数 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py | 严格身份绑定和异步主行创建 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/services/model_audit_writer.py | 元数据、正文写入及字段更新 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/repositories/model_audit_conversations.py | 会话计数、dirty标记及有界候选查询 |
+| doberman-agent | src/backend/doberman_agent/dsh/domain/repositories/model_audit_tree_build.py | 会话树代际构建与汇总发布 |
+| doberman-agent | src/backend/doberman_agent/sso_sync/domain/services/hmac_auth.py | 可提取复用的签名计算模式 |
+| doberman-agent | src/backend/doberman_agent/user/api/user.py | 浏览器用户信息和管理标识 |
+| doberman-agent | src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py | 已有租户读取和管理鉴权 |
 | Gateway | src/main/java/com/dataelem/gateway/filter/SensitiveWordsFilter.java | 旧路由、缓存、匹配及日志副作用 |
 | Gateway | src/main/java/com/dataelem/gateway/filter/CustomResponseFilter.java | HTTP响应过滤及逐SSE事件检查 |
 | Gateway | src/main/java/com/dataelem/gateway/entity/SensitiveWords.java | 旧应用策略没有tenant_id |
 | Gateway | src/main/java/com/dataelem/gateway/utils/ac/ACPlus.java | 可复用匹配引擎 |
 | Gateway | src/main/java/com/dataelem/gateway/config/SpringCustomConfig.java | WebClient、Redis与请求头日志 |
-| Gateway | src/main/java/com/dataelem/gateway/client/BishengSsoPushClient.java | 已有HMAC发送模式 |
+| Gateway | src/main/java/com/dataelem/gateway/client/DobermanAgentSsoPushClient.java | 已有HMAC发送模式 |
 | Gateway | src/main/java/com/dataelem/gateway/filter/LicenseExpiredGlobalFilter.java | 商业端点和透传端点的现有边界 |
 | Desktop | packages/dsh-desktop-enterprise/openai.js | content_filter及错误码处理 |
 | Desktop | packages/dsh-desktop-enterprise/responses.js | 错误事件归类、事件顺序验证 |

@@ -1,9 +1,9 @@
 import { SubjectSelectionSummary } from "./SubjectSelectionSummary";
-import { Button, Radio, RadioGroup } from "@bisheng/ui";
+import { Button, Radio, RadioGroup } from "@doberman-agent/ui";
 import type { ComponentProps } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { ResourceType, SelectedSubject, SubjectType } from "~/api/permission";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import {
   Dialog,
   DialogContent,

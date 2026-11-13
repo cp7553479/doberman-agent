@@ -3,7 +3,7 @@
 The upgrade takes the **same** road as an HTTP request up to the forward: the
 verdict is the backend's (``main.handle_entry_ws`` asked it before calling in
 here), the header list is built by the one function the HTTP path uses
-(:func:`app_proxy.proxy.upstream_headers_for` — strip the whole ``x-bisheng-``
+(:func:`app_proxy.proxy.upstream_headers_for` — strip the whole ``x-doberman-agent-``
 equivalence class, inject the ten, rewrite ``X-Forwarded-*``, AC-32), the
 address is the manager's with the same invalidate-and-retry-once (D5.1). What
 is specific to sockets is what happens *after* the handshake, and that is the
@@ -337,7 +337,7 @@ async def proxy_websocket(
     started = time.monotonic()
     config = get_config()
     app_id = verdict.app_id
-    user_id = verdict.material.get("X-BiSheng-User-Id")
+    user_id = verdict.material.get("X-Doberman-Agent-User-Id")
     if not app_id:
         log_request(
             logger,

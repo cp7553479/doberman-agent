@@ -1,17 +1,17 @@
 import pytest
 
-from bisheng.common.errcode.knowledge import KnowledgeSpaceTagLibraryInvalidError
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import (
+from doberman_agent.common.errcode.knowledge import KnowledgeSpaceTagLibraryInvalidError
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import (
     FileSource,
     FileType,
     KnowledgeFile,
     KnowledgeFileStatus,
 )
-from bisheng.knowledge.domain.services.knowledge_space_auto_tag_service import (
+from doberman_agent.knowledge.domain.services.knowledge_space_auto_tag_service import (
     KnowledgeSpaceAutoTagService,
 )
-from bisheng.knowledge.domain.services.knowledge_space_tag_library_service import (
+from doberman_agent.knowledge.domain.services.knowledge_space_tag_library_service import (
     KnowledgeSpaceTagLibraryService,
 )
 

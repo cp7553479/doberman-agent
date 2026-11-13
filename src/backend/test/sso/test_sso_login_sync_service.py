@@ -38,7 +38,7 @@ def _payload(
     tenant_mapping=None,
     account_disabled=None,
 ):
-    from bisheng.sso_sync.domain.schemas.payloads import (
+    from doberman_agent.sso_sync.domain.schemas.payloads import (
         LoginSyncRequest,
         UserAttrsDTO,
     )
@@ -91,7 +91,7 @@ def _tenant(tid=1, status="active"):
 def patches(monkeypatch):
     """Wire every collaborator LoginSyncService touches. The individual
     tests override the return values as needed."""
-    from bisheng.sso_sync.domain.services import login_sync_service as m
+    from doberman_agent.sso_sync.domain.services import login_sync_service as m
 
     # Redis lock: default acquire=True, release no-op. The atomic SET
     # NX EX call lives on ``async_connection.set`` — simplify R1 swapped
@@ -144,7 +144,7 @@ def patches(monkeypatch):
         "aget_token_version",
         AsyncMock(return_value=0),
     )
-    from bisheng.database.models.tenant import UserTenantDao
+    from doberman_agent.database.models.tenant import UserTenantDao
 
     monkeypatch.setattr(
         UserTenantDao,
@@ -228,7 +228,7 @@ def patches(monkeypatch):
         "adelete",
         AsyncMock(return_value=None),
     )
-    from bisheng.knowledge.domain.services.department_knowledge_space_service import (
+    from doberman_agent.knowledge.domain.services.department_knowledge_space_service import (
         DepartmentKnowledgeSpaceService,
     )
 
@@ -237,7 +237,7 @@ def patches(monkeypatch):
         "cleanup_removed_department_admins",
         AsyncMock(return_value=None),
     )
-    from bisheng.department.domain.services import department_change_handler as dch
+    from doberman_agent.department.domain.services import department_change_handler as dch
 
     dept_execute = AsyncMock()
     monkeypatch.setattr(dch.DepartmentChangeHandler, "execute_async", dept_execute)
@@ -286,7 +286,7 @@ def patches(monkeypatch):
 @pytest.mark.asyncio
 class TestNewUserHappyPath:
     async def test_returns_user_leaf_tenant_and_token(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -300,10 +300,10 @@ class TestNewUserHappyPath:
         assert resp.token == "jwt-token-xyz"
 
     async def test_sync_user_called_with_login_trigger(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         primary = _dept("D1", id=11)
         patches.assert_chain.return_value = {"D1": primary}
@@ -319,7 +319,7 @@ class TestNewUserHappyPath:
         self,
         patches,
     ):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -340,11 +340,11 @@ class TestSecondaryDeptReconcileRemove:
         patches,
         monkeypatch,
     ):
-        from bisheng.sso_sync.domain.schemas.payloads import (
+        from doberman_agent.sso_sync.domain.schemas.payloads import (
             LoginSyncRequest,
             UserAttrsDTO,
         )
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -389,11 +389,11 @@ class TestSecondaryDeptReconcileRemove:
         patches,
         monkeypatch,
     ):
-        from bisheng.sso_sync.domain.schemas.payloads import (
+        from doberman_agent.sso_sync.domain.schemas.payloads import (
             LoginSyncRequest,
             UserAttrsDTO,
         )
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -429,7 +429,7 @@ class TestSecondaryDeptReconcileRemove:
 
     async def test_omitted_secondary_field_skips_removal_queries(self, patches, monkeypatch):
         """Backward compat: field omitted → no reconcile-remove."""
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -447,7 +447,7 @@ class TestSecondaryDeptReconcileRemove:
 @pytest.mark.asyncio
 class TestPrimaryDeptMissingFallback:
     async def test_empty_primary_skips_parent_chain(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -464,8 +464,8 @@ class TestPrimaryDeptMissingFallback:
 @pytest.mark.asyncio
 class TestParentChainMissing:
     async def test_missing_parent_bubbles_19312(self, patches):
-        from bisheng.common.errcode.sso_sync import SsoDeptParentMissingError
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.common.errcode.sso_sync import SsoDeptParentMissingError
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -482,8 +482,8 @@ class TestParentChainMissing:
 @pytest.mark.asyncio
 class TestUserLockBusy:
     async def test_setnx_false_returns_19311(self, patches):
-        from bisheng.common.errcode.sso_sync import SsoUserLockBusyError
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.common.errcode.sso_sync import SsoUserLockBusyError
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -500,8 +500,8 @@ class TestUserLockBusy:
 @pytest.mark.asyncio
 class TestDisabledSsoUser:
     async def test_existing_disabled_user_raises_forbidden(self, patches):
-        from bisheng.common.errcode.user import UserForbiddenError
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.common.errcode.user import UserForbiddenError
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -518,8 +518,8 @@ class TestDisabledSsoUser:
         assert getattr(exc_info.value, "status_code", 0) == UserForbiddenError.Code
 
     async def test_wecom_explicit_re_enable_clears_delete(self, patches):
-        """Gateway sends account_disabled=false after 企微 re-enable; bisheng must flip delete."""
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        """Gateway sends account_disabled=false after 企微 re-enable; doberman_agent must flip delete."""
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -548,8 +548,8 @@ class TestDisabledSsoUser:
 class TestTenantStatusBlocks:
     @pytest.mark.parametrize("status", ["disabled", "archived", "orphaned"])
     async def test_non_active_leaf_returns_19303(self, patches, status):
-        from bisheng.common.errcode.sso_sync import SsoTenantDisabledError
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.common.errcode.sso_sync import SsoTenantDisabledError
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -571,7 +571,7 @@ class TestTenantStatusBlocks:
 @pytest.mark.asyncio
 class TestDepartmentAdminFgaReconcile:
     async def test_omitted_admin_field_skips_membership_query(self, patches, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -595,14 +595,14 @@ class TestDepartmentAdminFgaReconcile:
         patches,
         monkeypatch,
     ):
-        from bisheng.department.domain.services import (
+        from doberman_agent.department.domain.services import (
             department_change_handler as dch,
         )
-        from bisheng.sso_sync.domain.schemas.payloads import (
+        from doberman_agent.sso_sync.domain.schemas.payloads import (
             LoginSyncRequest,
             UserAttrsDTO,
         )
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -654,14 +654,14 @@ class TestDepartmentAdminFgaReconcile:
         patches,
         monkeypatch,
     ):
-        from bisheng.department.domain.services import (
+        from doberman_agent.department.domain.services import (
             department_change_handler as dch,
         )
-        from bisheng.sso_sync.domain.schemas.payloads import (
+        from doberman_agent.sso_sync.domain.schemas.payloads import (
             LoginSyncRequest,
             UserAttrsDTO,
         )
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -701,14 +701,14 @@ class TestDepartmentAdminFgaReconcile:
         assert [op for op in ops if op.relation == "admin"] == []
 
     async def test_leader_dept_grants_admin_tuple(self, patches, monkeypatch):
-        from bisheng.department.domain.services import (
+        from doberman_agent.department.domain.services import (
             department_change_handler as dch,
         )
-        from bisheng.sso_sync.domain.schemas.payloads import (
+        from doberman_agent.sso_sync.domain.schemas.payloads import (
             LoginSyncRequest,
             UserAttrsDTO,
         )
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -747,7 +747,7 @@ class TestDepartmentAdminFgaReconcile:
         assert len(admin_ops) == 1
         op = admin_ops[0]
         assert op.action == "write"
-        from bisheng.database.models.department_admin_grant import (
+        from doberman_agent.database.models.department_admin_grant import (
             DEPARTMENT_ADMIN_GRANT_SOURCE_SSO,
         )
 
@@ -757,7 +757,7 @@ class TestDepartmentAdminFgaReconcile:
 @pytest.mark.asyncio
 class TestExistingUserAttrUpdate:
     async def test_name_change_triggers_update(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -775,7 +775,7 @@ class TestExistingUserAttrUpdate:
         assert updated_user.email == "new@x.com"
 
     async def test_successful_existing_user_sync_touches_update_time(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -817,7 +817,7 @@ def _wire_reconcile(monkeypatch, *, memberships, guest_status="active", guest=Tr
     Unit-level: the full ``execute`` path needs live middleware, so the guest
     reconcile is exercised in isolation (mirrors test_admin_grant_binding_cleanup).
     """
-    from bisheng.sso_sync.domain.services import login_sync_service as mod
+    from doberman_agent.sso_sync.domain.services import login_sync_service as mod
 
     guest_dept = _dept("BS@guest", id=_GUEST_ID, source="local", status=guest_status) if guest else None
     monkeypatch.setattr(mod.DepartmentDao, "aget_by_dept_id", AsyncMock(return_value=guest_dept))
@@ -839,7 +839,7 @@ def _wire_reconcile(monkeypatch, *, memberships, guest_status="active", guest=Tr
     monkeypatch.setattr(mod.DepartmentChangeHandler, "execute_async", execute)
     # `_remove_department_membership` (vacate path) touches these too.
     monkeypatch.setattr(mod.DepartmentAdminGrantDao, "adelete", AsyncMock())
-    from bisheng.knowledge.domain.services import (
+    from doberman_agent.knowledge.domain.services import (
         department_knowledge_space_service as ks_module,
     )
 
@@ -856,7 +856,7 @@ class TestGuestMembershipReconcile:
     department iff they have no other department"."""
 
     def test_orphan_joins_guest_as_primary(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -864,7 +864,7 @@ class TestGuestMembershipReconcile:
 
         asyncio.run(LoginSyncService._reconcile_guest_membership(7, row_source="sso"))
 
-        # Guest added as primary, tracked as a bisheng-internal placeholder.
+        # Guest added as primary, tracked as a doberman-agent-internal placeholder.
         mocks.add.assert_awaited_once_with(
             user_id=7,
             department_id=_GUEST_ID,
@@ -874,7 +874,7 @@ class TestGuestMembershipReconcile:
         mocks.remove.assert_not_awaited()
 
     def test_real_department_only_is_noop(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -886,7 +886,7 @@ class TestGuestMembershipReconcile:
         mocks.remove.assert_not_awaited()
 
     def test_guest_plus_real_vacates_guest(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -905,7 +905,7 @@ class TestGuestMembershipReconcile:
         mocks.add.assert_not_awaited()
 
     def test_guest_only_stays(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -918,7 +918,7 @@ class TestGuestMembershipReconcile:
         mocks.remove.assert_not_awaited()
 
     def test_missing_guest_department_is_noop(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -932,7 +932,7 @@ class TestGuestMembershipReconcile:
         mocks.remove.assert_not_awaited()
 
     def test_inactive_guest_department_is_noop(self, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -951,7 +951,7 @@ class TestGuestFallbackPlacement:
     placeholder users are not given a guest membership."""
 
     async def test_disabled_user_skips_guest_reconcile(self, patches, monkeypatch):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 

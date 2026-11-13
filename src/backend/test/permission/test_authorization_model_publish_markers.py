@@ -9,11 +9,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     build_authorization_model_f048,
 )
-from bisheng.permission.domain.models import ResourcePermissionMode
+from doberman_agent.permission.domain.models import ResourcePermissionMode
 from scripts import publish_authorization_model_change as cli
 from scripts import reconcile_f048_visible_projection as reconcile
 from test.permission.test_f048_authorization_model import (

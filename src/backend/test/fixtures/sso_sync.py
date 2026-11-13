@@ -17,7 +17,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.config.sso_sync import SSOSyncConf
+from doberman_agent.core.config.sso_sync import SSOSyncConf
 
 
 _DEFAULT_TEST_SECRET = 'test-hmac-secret-ABC123'
@@ -51,7 +51,7 @@ def configure_sso_secret(monkeypatch, hmac_secret):
     proxy so the dependency passes / fails on controlled inputs rather than
     on the MagicMock auto-attribute maze installed by ``premock_import_chain``.
     """
-    import bisheng.sso_sync.domain.services.hmac_auth as mod
+    import doberman_agent.sso_sync.domain.services.hmac_auth as mod
 
     conf = SSOSyncConf(
         gateway_hmac_secret=hmac_secret,
@@ -68,7 +68,7 @@ def configure_sso_secret(monkeypatch, hmac_secret):
 @pytest.fixture
 def disable_sso_secret(monkeypatch):
     """Force ``gateway_hmac_secret=''`` to exercise the fail-closed branch."""
-    import bisheng.sso_sync.domain.services.hmac_auth as mod
+    import doberman_agent.sso_sync.domain.services.hmac_auth as mod
 
     conf = SSOSyncConf(
         gateway_hmac_secret='',

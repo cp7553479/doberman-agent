@@ -15,7 +15,7 @@ guard against the flag being removed by a future "cleanup".
 from contextlib import asynccontextmanager, contextmanager
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.database.models.department import DepartmentDao
+from doberman_agent.database.models.department import DepartmentDao
 
 
 def _make_sync_factory():
@@ -54,7 +54,7 @@ def _sync_disabled(stmt) -> bool:
 
 def test_update_paths_batch_disables_session_sync():
     factory, captured = _make_sync_factory()
-    with patch("bisheng.database.models.department.get_sync_db_session", factory):
+    with patch("doberman_agent.database.models.department.get_sync_db_session", factory):
         DepartmentDao.update_paths_batch("/3/", "/1/3/")
 
     assert captured, "update_paths_batch should emit an UPDATE"
@@ -63,7 +63,7 @@ def test_update_paths_batch_disables_session_sync():
 
 async def test_aupdate_paths_batch_disables_session_sync():
     factory, captured = _make_async_factory()
-    with patch("bisheng.database.models.department.get_async_db_session", factory):
+    with patch("doberman_agent.database.models.department.get_async_db_session", factory):
         await DepartmentDao.aupdate_paths_batch("/3/", "/1/3/")
 
     assert captured, "aupdate_paths_batch should emit an UPDATE"
@@ -72,7 +72,7 @@ async def test_aupdate_paths_batch_disables_session_sync():
 
 async def test_areparent_root_under_disables_sync_on_subtree_rewrite():
     factory, captured = _make_async_factory()
-    with patch("bisheng.database.models.department.get_async_db_session", factory):
+    with patch("doberman_agent.database.models.department.get_async_db_session", factory):
         await DepartmentDao.areparent_root_under(dept_id=3, old_path="/3/", new_path="/1/3/", new_parent_id=1)
 
     # First statement is the multi-row LIKE-prefix subtree rewrite — the one that

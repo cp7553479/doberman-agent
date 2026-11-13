@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from bisheng.open_mcp.registry import TOOL_DEFINITIONS
+from doberman_agent.open_mcp.registry import TOOL_DEFINITIONS
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_DOC = BACKEND_ROOT / "docs/api/open-mcp.md"
@@ -10,7 +10,7 @@ def test_public_doc_covers_the_exact_registry_allowlist():
     content = PUBLIC_DOC.read_text(encoding="utf-8")
 
     assert "10 个知识资源和知识文件工具" in content
-    assert "https://<BISHENG_HOST>/api/v2/mcp" in content
+    assert "https://<DOBERMAN_AGENT_HOST>/api/v2/mcp" in content
     for definition in TOOL_DEFINITIONS:
         assert content.count(f"`{definition.name}`") >= 1
 
@@ -27,4 +27,4 @@ def test_public_doc_covers_contract_and_security_boundaries():
     assert "不暴露 `callback_url`" in content
     assert "不转成 `permission_ids`" in content
     assert "TagItem[]" in content
-    assert "<BISHENG_API_KEY>" in content
+    assert "<DOBERMAN_AGENT_API_KEY>" in content

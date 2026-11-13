@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Button, Input, Select } from '@bisheng/ui';
+import { Button, Input, Select } from '@doberman-agent/ui';
 
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { generateUUID } from "@/components/bs-ui/utils";
 import { FlowTooltip as Tip } from "@/pages/BuildPage/flow/FlowTooltip";
 import { isVarInFlow,updateVariableNameByCondition } from "@/util/flowUtils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect,useMemo,useState } from "react";
 import { useTranslation } from 'react-i18next';

@@ -5,12 +5,12 @@ from dataclasses import replace
 
 from sqlmodel import select
 
-from bisheng.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
-from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-from bisheng.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
+from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+from doberman_agent.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
 from test.dsh.model_audit_fixtures import (
     NOW,
     ControlledAuditQueue,

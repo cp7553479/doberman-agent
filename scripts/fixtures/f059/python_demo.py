@@ -13,13 +13,13 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from uuid import uuid4
 
-from bisheng_sdk import auth, retrieve, storage
+from doberman_agent_sdk import auth, retrieve, storage
 
 HERE = Path(__file__).resolve().parent
 VERSION = (HERE / "fixture-version.txt").read_text().strip()
 CAPABILITIES = json.loads((HERE / "capabilities.json").read_text())
-DATABASE = Path(os.environ.get("BISHENG_APP_DB_PATH", "/data/app.db"))
-BASE = os.environ.get("BISHENG_APP_BASE_PATH", "").rstrip("/")
+DATABASE = Path(os.environ.get("DOBERMAN_AGENT_APP_DB_PATH", "/data/app.db"))
+BASE = os.environ.get("DOBERMAN_AGENT_APP_BASE_PATH", "").rstrip("/")
 
 
 def initialize():
@@ -65,8 +65,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self.reply(
                         {
                             "subject_kind": identity.subject_kind,
-                            "app_id_matches": identity.app_id == os.environ.get("BISHENG_APP_ID"),
-                            "obo_present": bool(self.headers.get("X-BiSheng-Access-Token")),
+                            "app_id_matches": identity.app_id == os.environ.get("DOBERMAN_AGENT_APP_ID"),
+                            "obo_present": bool(self.headers.get("X-Doberman-Agent-Access-Token")),
                         }
                     )
                 if path == "/sdk/storage-roundtrip":
@@ -110,7 +110,7 @@ class Handler(BaseHTTPRequestHandler):
         name = CAPABILITIES.get("model_name")
         if not name:
             return self.reply({"error": "model_not_configured"}, 409)
-        visitor = self.headers.get("X-BiSheng-Access-Token")
+        visitor = self.headers.get("X-Doberman-Agent-Access-Token")
         base, token = os.environ.get("OPENAI_BASE_URL"), os.environ.get("OPENAI_API_KEY")
         if not visitor or not base or not token:
             return self.reply({"error": "model_or_visitor_handle_missing"}, 503)
@@ -119,7 +119,7 @@ class Handler(BaseHTTPRequestHandler):
         with httpx.Client(timeout=45, trust_env=True, follow_redirects=False) as client:
             response = client.post(
                 base.rstrip("/") + "/chat/completions",
-                headers={"Authorization": "Bearer " + token, "X-BiSheng-Access-Token": visitor},
+                headers={"Authorization": "Bearer " + token, "X-Doberman-Agent-Access-Token": visitor},
                 json={
                     "model": name,
                     "messages": [{"role": "user", "content": "Reply with one short greeting."}],

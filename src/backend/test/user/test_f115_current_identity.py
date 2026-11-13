@@ -8,7 +8,7 @@ import pytest
 
 
 async def test_person_facts_do_not_use_request_actor(monkeypatch):
-    from bisheng.user.application import runtime_identity as module
+    from doberman_agent.user.application import runtime_identity as module
 
     user = SimpleNamespace(user_id=9, user_name="owner", delete=0, token_version=2)
     monkeypatch.setattr(module, "current_person_rows", AsyncMock(return_value=[(user, 60), (user, 61)]))
@@ -18,7 +18,7 @@ async def test_person_facts_do_not_use_request_actor(monkeypatch):
 
 
 async def test_disabled_or_missing_person_is_ineligible(monkeypatch):
-    from bisheng.user.application import runtime_identity as module
+    from doberman_agent.user.application import runtime_identity as module
 
     user = SimpleNamespace(user_id=9, user_name="owner", delete=1, token_version=2)
     monkeypatch.setattr(module, "current_person_rows", AsyncMock(return_value=[(user, None)]))
@@ -28,7 +28,7 @@ async def test_disabled_or_missing_person_is_ineligible(monkeypatch):
 
 
 async def test_single_tenant_person_needs_no_membership_row(monkeypatch):
-    from bisheng.user.application import runtime_identity as module
+    from doberman_agent.user.application import runtime_identity as module
 
     user = SimpleNamespace(user_id=9, user_name="owner", delete=0, token_version=2)
     monkeypatch.setattr(module, "current_person_rows", AsyncMock(return_value=[(user, None)]))
@@ -39,8 +39,8 @@ async def test_single_tenant_person_needs_no_membership_row(monkeypatch):
 
 @pytest.mark.parametrize("tenant,version", [(61, 2), (60, 1)])
 async def test_creation_refuses_changed_tenant_or_session(monkeypatch, tenant, version):
-    from bisheng.common.errcode.permission import PermissionDeniedError
-    from bisheng.user.application import runtime_identity as module
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.user.application import runtime_identity as module
 
     monkeypatch.setattr(
         module,

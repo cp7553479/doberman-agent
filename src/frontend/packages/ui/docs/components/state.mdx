@@ -5,7 +5,7 @@ component: StateView
 
 # 状态页 State
 
-一块区域没有正常内容可显示时，用来替代那片空白的一组图文——空状态与结果反馈都走这一个壳。组件库 `@bisheng/ui` 导出名为 **`StateView`**（`State` 在 React 代码里容易被当成状态变量读），设计语言里仍叫「状态页 / State」。规范全文见「文档 → 组件规范 → 状态页 State」。
+一块区域没有正常内容可显示时，用来替代那片空白的一组图文——空状态与结果反馈都走这一个壳。组件库 `@doberman-agent/ui` 导出名为 **`StateView`**（`State` 在 React 代码里容易被当成状态变量读），设计语言里仍叫「状态页 / State」。规范全文见「文档 → 组件规范 → 状态页 State」。
 
 **只有 `size` 一根轴**：看容器有多大（`page` 120px 插画 / `panel` 80px / `inline` 不放）。场景是空状态还是结果反馈，只决定你写什么字、配哪张图——排版只有一套，所以没有 `variant` 这类 prop。「抽屉里的创建成功」就是 `size="panel"`。
 
@@ -18,7 +18,7 @@ component: StateView
 自上而下：插画 → 主提示（必需）→ 辅助说明（可选）→ 按钮（可选）。
 
 ```tsx
-import { Button, EmptyStateIllustration, ListWebLinkIllustration, NoPermissionIllustration, StateView } from '@bisheng/ui';
+import { Button, EmptyStateIllustration, ListWebLinkIllustration, NoPermissionIllustration, StateView } from '@doberman-agent/ui';
 
 const Box = ({ label, children }) => (
   <div style={{ flex: '1 1 280px', minWidth: 260 }}>
@@ -63,7 +63,7 @@ export default () => (
 同一套排版，只是话不一样：报结果时主提示是一句结论，下面那句说明用户接下来能做什么。**只做成功与 404 / 500 三类**——保存失败、上传失败这类用轻提示，关键失败用弹窗。
 
 ```tsx
-import { Button, StateView, SuccessIllustration, SystemErrorIllustration, SystemMaintenanceIllustration } from '@bisheng/ui';
+import { Button, StateView, SuccessIllustration, SystemErrorIllustration, SystemMaintenanceIllustration } from '@doberman-agent/ui';
 
 const Box = ({ label, children }) => (
   <div style={{ flex: '1 1 280px', minWidth: 260 }}>
@@ -113,7 +113,7 @@ export default () => (
 **看容器有多大，不看是哪个场景。** 放不下就不放插画，不缩小——80px 的图加一行字再加上下呼吸就要 200px，硬塞进去会挤成一团。
 
 ```tsx
-import { EmptyStateIllustration, StateView } from '@bisheng/ui';
+import { EmptyStateIllustration, StateView } from '@doberman-agent/ui';
 
 const Box = ({ label, note, children }) => (
   <div style={{ flex: '1 1 280px', minWidth: 260 }}>
@@ -147,7 +147,7 @@ export default () => (
 少数容器需要把内容往上挪：容器比内容高出太多，或者底部压着悬浮元素（AI dock、批量操作条）。**这时业务侧自己加一个不对称的下内边距**，居中在剩下的框里重新解算，内容上移一半的量。
 
 ```tsx
-import { EmptyStateIllustration, StateView } from '@bisheng/ui';
+import { EmptyStateIllustration, StateView } from '@doberman-agent/ui';
 
 const Frame = ({ label, children }) => (
   <div style={{ flex: '1 1 280px', minWidth: 260 }}>

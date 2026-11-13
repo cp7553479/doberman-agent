@@ -7,11 +7,11 @@ from test.app_runtime.test_secret_runtime_snapshot import secret_runtime as secr
 
 
 async def candidate(env):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
 
     repo, app, _ = env
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
 
     op = await repo.get(RuntimeOperation, "origin")
     async with repo.transaction() as session:
@@ -23,17 +23,17 @@ async def candidate(env):
 async def audits(repo):
     from sqlmodel import select
 
-    from bisheng.database.models.audit_log import AuditLog
+    from doberman_agent.database.models.audit_log import AuditLog
 
     async with repo.transaction() as session:
         return list((await session.exec(select(AuditLog))).all())
 
 
 async def test_issue_and_revoke_are_app_associated_and_replay_once(secret_runtime):
-    from bisheng.open_api.domain.services.credential_service import CredentialService
+    from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
     repo, app, _ = secret_runtime
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
 
     op = await repo.get(RuntimeOperation, "origin")
     binding = await candidate(secret_runtime)
@@ -49,11 +49,11 @@ async def test_issue_and_revoke_are_app_associated_and_replay_once(secret_runtim
 
 
 async def test_foreign_binding_cannot_forge_app_association(secret_runtime):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
-    from bisheng.open_api.domain.services.credential_service import CredentialService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
+    from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
     repo, _, _ = secret_runtime
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
 
     op = await repo.get(RuntimeOperation, "origin")
     binding = await candidate(secret_runtime)
@@ -68,12 +68,12 @@ async def test_foreign_binding_cannot_forge_app_association(secret_runtime):
 
 
 async def test_audit_failure_rolls_back_revocation(secret_runtime, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
-    from bisheng.open_api.domain.services.credential_service import CredentialService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
     repo, _, _ = secret_runtime
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
 
     op = await repo.get(RuntimeOperation, "origin")
     binding = await candidate(secret_runtime)
@@ -91,8 +91,8 @@ async def test_audit_failure_rolls_back_revocation(secret_runtime, monkeypatch):
 
 
 async def test_terminal_stop_revokes_serving_binding(secret_runtime):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding, RuntimeOperation
-    from bisheng.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCredentialBinding, RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.runtime_projection_service import RuntimeProjectionService
 
     repo, _, _ = secret_runtime
     origin = await repo.get(RuntimeOperation, "origin")

@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { getMyApprovalTaskDetailApi, listMyApprovalTasksApi, decideApprovalTaskApi } from '~/api/approval';
 import { ApprovalPane } from './ApprovalPane';
 jest.mock('~/api/approval', () => ({

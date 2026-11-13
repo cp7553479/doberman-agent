@@ -51,7 +51,7 @@
 
 ### 4.1 执行入口
 
-`bisheng/workflow/nodes/input/input.py`
+`doberman-agent/workflow/nodes/input/input.py`
 - `_run`：对话框分支组装 `key_info`（`file_parse_mode` = 单字符串、`file_type` = `dialog_file_accept`）；表单分支按每个文件表单项（`file_parse_mode` = 数组）。
 - `parse_upload_file`：逐文件**始终**记录 path + image；按需解析文本（含 extract 或 ingest 时）；含 ingest 时写临时库。**注意：该函数本就总记录 path+image、总按需解析**，真正决定"暴露哪些变量"的是下一个函数。
 - `_parse_upload_file_variables`：**本次核心改动**——由「按所选模式精确暴露」改为「按统一规则产并集」。

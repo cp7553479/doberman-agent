@@ -4,10 +4,10 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from fastapi import HTTPException
 
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum
-from bisheng.open_mcp import application
-from bisheng.open_mcp.contracts import (
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum
+from doberman_agent.open_mcp import application
+from doberman_agent.open_mcp.contracts import (
     KnowledgeCreateInput,
     KnowledgeFileUploadInput,
     KnowledgeListInput,

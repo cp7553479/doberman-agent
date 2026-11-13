@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from bisheng.tenant.domain.services import permission_migration_source
-from bisheng.tenant.domain.services.permission_migration_source import (
+from doberman_agent.tenant.domain.services import permission_migration_source
+from doberman_agent.tenant.domain.services.permission_migration_source import (
     LegacyIdentityPermissionMigrationSource,
 )
 

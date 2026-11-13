@@ -6,9 +6,9 @@ REBUILDING→SUCCESS; failure → FAILED; idempotent no-op when source is empty.
 
 from unittest.mock import MagicMock, patch
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileStatus
 
-_W = "bisheng.worker.knowledge.move_worker"
+_W = "doberman_agent.worker.knowledge.move_worker"
 
 
 def _file(file_id=100, kid=2, status=KnowledgeFileStatus.REBUILDING.value):
@@ -22,7 +22,7 @@ def _space(sid, index=None, col=None):
 def _run(*, file, source, target, chunks, target_milvus=None, target_es=None, source_es=None, source_milvus=None):
     """Invoke migrate_file_vectors with all I/O boundaries patched; return the
     status-update calls made on KnowledgeFileDao."""
-    from bisheng.worker.knowledge.move_worker import migrate_file_vectors
+    from doberman_agent.worker.knowledge.move_worker import migrate_file_vectors
 
     status_calls = []
     src_es = source_es or MagicMock()

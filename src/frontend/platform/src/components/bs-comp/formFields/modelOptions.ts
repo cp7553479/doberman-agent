@@ -1,4 +1,4 @@
-import type { CascaderOption, CascaderPath, SelectOption } from '@bisheng/ui';
+import type { CascaderOption, CascaderPath, SelectOption } from '@doberman-agent/ui';
 
 /** Provider → models tree as `useModel()` builds it. */
 export interface ModelProviderNode {

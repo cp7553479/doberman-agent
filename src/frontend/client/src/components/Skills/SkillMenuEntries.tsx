@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { PlusMenuSub } from '~/components/Chat/Input/PlusMenuSub';
 import { DropdownMenuItem } from '~/components/ui';
 import { useLocalize } from '~/hooks';

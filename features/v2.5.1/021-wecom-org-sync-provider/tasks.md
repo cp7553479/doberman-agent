@@ -29,7 +29,7 @@
 ### 基础适配（无测试配对）
 
 - [x] **T001**: `auth_config` WeCom 分支校验（**R2 修订：删除脱敏扩展**）
-  **文件**: `src/backend/bisheng/org_sync/domain/schemas/org_sync_schema.py`
+  **文件**: `src/backend/doberman_agent/org_sync/domain/schemas/org_sync_schema.py`
   **逻辑**:
   - `OrgSyncConfigCreate` 新增 `model_validator(mode='after')` `validate_auth_config`：当 `provider='wecom'` 时校验 `auth_config['corpid']` / `['corpsecret']` / `['agent_id']` 必须是非空字符串；`allow_dept_ids` 如存在必须是 `list[int]` 且每个元素 `isinstance(x, int)` 并且不是 bool（防 `True`/`False`）。
   - `OrgSyncConfigUpdate` 对称加分支，允许 `corpsecret='****'`（保留原值语义）。
@@ -40,7 +40,7 @@
   **依赖**: 无
 
 - [x] **T002**: `OrgSyncService` 注入 `_config_id` 到 auth_config
-  **文件**: `src/backend/bisheng/org_sync/domain/services/org_sync_service.py`
+  **文件**: `src/backend/doberman_agent/org_sync/domain/services/org_sync_service.py`
   **逻辑**:
   - 在 `execute_sync` / `test_connection` / `preview_remote_tree` 调 `get_provider(provider, auth_config)` 之前，先 `auth_config['_config_id'] = config.id`（只在内存字典改，不回写 DB）。
   - 加上注释：`_config_id 仅供 Provider 内部使用（如 WeCom Redis key），不加密不持久化。`
@@ -52,7 +52,7 @@
 
 - [x] **T003**: WeComProvider 单元测试（**R5 修订**）
   **文件**: `src/backend/test/test_wecom_provider.py`
-  **逻辑**: 使用 `httpx.MockTransport`（标准库，零新增依赖）桩住企微 API；Redis 用 `fakeredis.aioredis.FakeRedis`，monkeypatch `bisheng.org_sync.domain.providers.wecom.get_redis_client` 返回含 `async_connection` 属性的 stub。
+  **逻辑**: 使用 `httpx.MockTransport`（标准库，零新增依赖）桩住企微 API；Redis 用 `fakeredis.aioredis.FakeRedis`，monkeypatch `doberman_agent.org_sync.domain.providers.wecom.get_redis_client` 返回含 `async_connection` 属性的 stub。
   用例清单：
   - `test_ensure_token_cache_hit` → AC-51：Redis 预置 token，`_ensure_token` 不调 gettoken
   - `test_ensure_token_first_call` → AC-50：首次调用写 Redis，TTL ≈ 6900s
@@ -76,7 +76,7 @@
   **依赖**: T001, T002
 
 - [x] **T004**: WeComProvider 实现
-  **文件**: `src/backend/bisheng/org_sync/domain/providers/wecom.py`
+  **文件**: `src/backend/doberman_agent/org_sync/domain/providers/wecom.py`
   **逻辑**:
   - 完全替换现有 stub（36 行 → 预计 250~300 行），参照 `feishu.py` 风格。
   - 常量：`WECOM_BASE_URL = 'https://qyapi.weixin.qq.com'`；`TOKEN_TTL_BUFFER = 300`；`MAX_RETRIES = 4`；`BACKOFF_BASE = 1`。

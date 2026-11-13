@@ -1,6 +1,6 @@
 {
   "admin": "管理员",
-  "bisheng": "{{bishengZh}}",
+  "doberman_agent": "{{dobermanAgentZh}}",
   "cancel": "取消",
   "com_a11y_ai_composing": "AI 仍在撰写中。",
   "com_a11y_end": "AI 已完成回复。",
@@ -30,7 +30,7 @@
   "com_account_info_username_suffix": "（用户名）",
   "com_addAnything": "添加任何内容",
   "com_agents_allow_editing": "允许其他用户编辑您的助手",
-  "com_agents_by_librechat": "由毕昇提供",
+  "com_agents_by_librechat": "由doberman-agent提供",
   "com_agents_code_interpreter": "启用后，您的代理可以安全地使用代码解释器API来运行生成的代码，包括文件处理功能。需要有效的API密钥。",
   "com_agents_code_interpreter_title": "代码解释器 API",
   "com_agents_create_error": "更新代理时出现错误。",
@@ -47,7 +47,7 @@
   "com_agents_update_error": "更新代理时出现错误。",
   "com_app_center_description": "您可以在这里选择需要的智能体来进行生产与工作～",
   "com_app_center_title": "应用中心",
-  "com_app_center_welcome": "探索$t(bisheng)的智能体",
+  "com_app_center_welcome": "探索$t(doberman_agent)的智能体",
   "com_app_explore_end_of_list": "—— 已经到底啦 ——",
   "com_app_explore_loading_more": "正在加载更多智能体...",
   "com_app_explore_no_agents": "暂无找到相关的智能体",
@@ -364,7 +364,7 @@
   "com_inputfiles_exceed_limit": "文件：{{0}}超过{{1}}M，已移除",
   "com_inputfiles_upload_failed": "文件上传失败: {{0}}",
   "com_invite_apply_access": "点击这里申请体验资格",
-  "com_invite_desc": "输入 BISHENG 提供的邀请码，开启你的$t(linsight)之旅。",
+  "com_invite_desc": "输入 doberman-agent 提供的邀请码，开启你的$t(linsight)之旅。",
   "com_invite_no_code_tip": "没有邀请码？",
   "com_invite_placeholder": "请输入",
   "com_invite_please_input_code": "请输入邀请码",
@@ -392,7 +392,7 @@
   "com_label_save": "保存",
   "com_linsight_add_skill": "添加技能",
   "com_linsight_exit_task_mode": "关闭深度研究",
-  "com_linsight_input_placeholder": "请输入你的任务目标，然后交给$t(bisheng)$t(linsight)",
+  "com_linsight_input_placeholder": "请输入你的任务目标，然后交给$t(doberman_agent)$t(linsight)",
   "com_linsight_awaiting_reply": "请在上方回答问题后继续任务",
   "com_linsight_skill_empty": "暂无可用技能",
   "com_linsight_skill_search": "搜索技能",
@@ -574,7 +574,7 @@
   "com_notifications_action_app_publish_deploy_failed": "「{{target}}」审批已通过，但启动失败，暂未上线；请查看运行日志后在应用详情页手动上线",
   "com_notifications_action_app_stopped_by_admin": "你的应用「{{target}}」已被管理员下线，访问入口将显示已下线提示",
   "com_notifications_action_app_resumed_by_admin": "你的应用「{{target}}」已被管理员重新上线",
-  "com_notifications_action_app_publish_iteration_failed": "「{{target}}」审批已通过，但新版本未能上线；线上版本仍在正常服务，可修复后重新执行 bisheng deploy",
+  "com_notifications_action_app_publish_iteration_failed": "「{{target}}」审批已通过，但新版本未能上线；线上版本仍在正常服务，可修复后重新执行 doberman_agent deploy",
   "com_notifications_action_approval_instance_cancelled": "你的「{{target}}」审批申请已被取消",
   "com_notifications_action_menu_grant_revoked": "你对菜单「{{target}}」的访问权限已被撤回",
   "com_notifications_action_revoked_channel_admin": "你已不再是频道「{{target}}」的管理员",
@@ -2385,7 +2385,7 @@
     "copy_failed": "复制失败，请重试。",
     "copy_key": "复制 API Key",
     "copy_send_all": "一键复制，发给 AI 助手",
-    "copy_send_all_body": "请把这把密钥交给 $t(bisheng) 知识检索技能保存：进入技能目录运行\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\n不要把密钥写进 shell 配置文件或环境变量文件。",
+    "copy_send_all_body": "请把这把密钥交给 $t(doberman_agent) 知识检索技能保存：进入技能目录运行\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\n不要把密钥写进 shell 配置文件或环境变量文件。",
     "copy_send_all_done": "已复制，粘贴发给你的 AI 助手即可完成配置",
     "delete": "删除密钥",
     "delete_confirmation": "删除后，你的 AI 助手将无法再访问平台知识。之后可以随时重新生成。",
@@ -2396,7 +2396,7 @@
     "expires_label": "有效期至",
     "get_key": "生成我的密钥",
     "guide_title": "连接 AI 助手",
-    "install_prompt": "请安装 $t(bisheng) 知识检索技能。\n技能包下载地址：{{skillPackUrl}}\n密钥获取地址：{{tokenPageUrl}}",
+    "install_prompt": "请安装 $t(doberman_agent) 知识检索技能。\n技能包下载地址：{{skillPackUrl}}\n密钥获取地址：{{tokenPageUrl}}",
     "install_step": "第 1 步：复制安装指令，发给 AI 助手安装检索技能",
     "key_label": "API Key",
     "key_step": "第 2 步：生成密钥，发给 AI 助手完成配置",
@@ -2758,7 +2758,7 @@
     "tool_enabled_setting": "启用工具",
     "availability_failed": "保存失败，请重试。",
     "web_search_setting": "启用联网搜索",
-    "eyebrow": "BISHENG · 企业能力",
+    "eyebrow": "doberman-agent · 企业能力",
     "title": "工具与技能",
     "description": "把企业工具和专业方法带进每一次工作。能力由企业统一提供，按当前账号的权限使用。",
     "all": "全部",
@@ -2780,7 +2780,7 @@
     "try_action": "立即体验",
     "try_title": "运行一次，看看结果",
     "demo_explanation": "调用真实工具接口，使用合成业务数据。可以切换示例编号，观察返回结果。",
-    "live_explanation": "通过毕昇内置工具查询实际时间，沿用当前账号权限。",
+    "live_explanation": "通过doberman-agent内置工具查询实际时间，沿用当前账号权限。",
     "field_timezone": "时区",
     "field_order_id": "订单编号",
     "field_product_code": "物料编号",
@@ -2795,7 +2795,7 @@
     "setup_title": "由企业统一开通",
     "setup_hint": "由企业管理员配置和授权。开放给 Work 后，当前账号即可沿用企业登录使用。",
     "skill_prompt": "请按这个技能完成一次示例任务，展示实际工具调用，并生成结果报告。",
-    "tool_prompt": "请调用毕昇企业工具",
+    "tool_prompt": "请调用doberman-agent企业工具",
     "prompt_title": "在 Work 中继续",
     "copy_prompt": "复制使用指令",
     "copied": "已复制",
@@ -2810,15 +2810,15 @@
     "scenario_inventory": "库存查询"
   },
   "com_builtin_skills": {
-    "bisheng-docx": {
+    "doberman_agent-docx": {
       "name": "Word 文档制作",
       "description": "创建、读取和修改 Word 文档（.docx），适用于报告、方案、纪要、通知、合同初稿和简历等。支持标题层级、目录、页码、表格和图表，并在交付前检查排版。"
     },
-    "bisheng-pptx": {
+    "doberman_agent-pptx": {
       "name": "PPT 制作",
       "description": "创建、读取和修改 PowerPoint 演示文稿（.pptx），适用于企业介绍、工作汇报、项目方案、产品发布和培训课件。支持套用提供的 .pptx 或 .potx 模板，并在交付前检查幻灯片排版。"
     },
-    "bisheng-xlsx": {
+    "doberman_agent-xlsx": {
       "name": "Excel 表格制作",
       "description": "创建和修改 Excel 工作簿（.xlsx），适用于数据表、汇总表、预算表、财务模型、报价单和台账。支持读取和清洗 .xlsx、.xls、.csv 数据，设置公式与格式，并在交付前重算和检查工作簿。"
     }

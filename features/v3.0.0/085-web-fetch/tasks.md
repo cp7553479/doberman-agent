@@ -31,7 +31,7 @@
 ### Wave 1 — 基础设施与工具本体
 
 - [x] **T001**: 种子数据新增「网页读取」
-  **文件**: `src/backend/bisheng/database/data/t_gpts_tools_type.json`, `src/backend/bisheng/database/data/t_gpts_tools.json`
+  **文件**: `src/backend/doberman_agent/database/data/t_gpts_tools_type.json`, `src/backend/doberman_agent/database/data/t_gpts_tools.json`
   **逻辑**: 分类行 id=18，`name="网页读取"`，`is_preset=1`，`user_id=null`，`extra` 为 `{"type":"deepseek","config":{"deepseek":{"api_key":"","base_url":""}},"max_chars":20000}`。工具行 id=40，`tool_key="web_fetch"`，`type=18`，`is_preset=1`，`user_id=null`，`api_params` 为单个必填参数 `url`（`in: query`，`schema.type: string`）。名称和描述与 T014 的补数据函数保持一致（design 坑 9）。
   **依赖**: 无
 
@@ -42,7 +42,7 @@
   **依赖**: 无
 
 - [x] **T003**: 网页读取工具本体实现
-  **文件**: `src/backend/bisheng_langchain/gpts/tools/web_fetch/tool.py`（新，含 `__init__.py`）, `src/backend/bisheng_langchain/gpts/load_tools.py`
+  **文件**: `src/backend/doberman_agent_langchain/gpts/tools/web_fetch/tool.py`（新，含 `__init__.py`）, `src/backend/doberman_agent_langchain/gpts/load_tools.py`
   **逻辑**: `FetchTool` 引擎基类（`request_timeout=(10, 60)`、`init_fetch_tool(type, **cfg)` 注册表）+ `DeepSeekFetch`（默认地址 `https://api.deepseek.com/v1/tools/fetch`）。`WebFetchTool(BaseTool)`：`name="web_fetch"`，参数 `url`，持有 `api_wrapper` 和 `max_chars`（默认 20000，限定 1000～200000）。成功时返回 JSON 对象 `{"title","url","source","content","truncated","total_chars"}`；失败、未配置、网址不合法、空正文返回文字。`load_tools.py` 在 `_EXTRA_PARAM_TOOLS` 注册 `"web_fetch": (_get_web_fetch, [], ["type","config","max_chars"])`，配置缺失也能构建工具（design 决策 7）。
   **测试**: T002 全部通过
   **覆盖 AC**: AC-05, AC-07, AC-08, AC-09, AC-10, AC-11, AC-12, AC-13
@@ -55,7 +55,7 @@
   **依赖**: 无
 
 - [x] **T005**: 网页读取引用标注实现
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_prompt_helper.py`, `src/backend/bisheng/citation/domain/services/citation_handle_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_prompt_helper.py`, `src/backend/doberman_agent/citation/domain/services/citation_handle_service.py`
   **逻辑**: 新增 `WEB_CITATION_TOOL_NAMES`、`is_web_citation_tool(tool)`；新增 `FetchedPageCitationRegistry`（以规范化网址为键缓存注册条目）和 `annotate_fetched_page_with_citation(page, registry)`，返回 `(带 citation_key 的网页对象, 注册条目)`，复用 `CitationRegistryService` 的 WEB 构建函数。句柄改写和去 key 函数对 dict 做与列表单项相同的处理（design 决策 3、决策 4）。
   **测试**: T004 全部通过
   **覆盖 AC**: AC-19, AC-21
@@ -70,14 +70,14 @@
   **依赖**: T005
 
 - [x] **T007**: 助手和工作流 agent 节点接入
-  **文件**: `src/backend/bisheng/api/services/assistant_agent.py`, `src/backend/bisheng/workflow/nodes/agent/agent.py`
+  **文件**: `src/backend/doberman_agent/api/services/assistant_agent.py`, `src/backend/doberman_agent/workflow/nodes/agent/agent.py`
   **逻辑**: 识别改用 `is_web_citation_tool`；`_run/_arun` 改为 `**kwargs` 透传；按工具名分派：`web_search` 走原列表标注，`web_fetch` 走 `annotate_fetched_page_with_citation`，`FetchedPageCitationRegistry` 挂在包装实例上（design 决策 5）。
   **测试**: T006 中助手和工作流 agent 用例通过
   **覆盖 AC**: AC-14, AC-15, AC-19
   **依赖**: T006
 
 - [x] **T008**: 工作流工具节点接入
-  **文件**: `src/backend/bisheng/workflow/nodes/tool/tool.py`
+  **文件**: `src/backend/doberman_agent/workflow/nodes/tool/tool.py`
   **逻辑**: `_is_web_search_tool` 改用 `is_web_citation_tool`；`web_fetch` 输出为 JSON 对象时做单页标注并写入 `WORKFLOW_CITATION_REGISTRY_ITEMS_KEY`。
   **测试**: T006 中工具节点用例通过
   **覆盖 AC**: AC-16, AC-19
@@ -90,7 +90,7 @@
   **依赖**: T005
 
 - [x] **T010**: 日常模式接入实现
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`, `src/backend/bisheng/core/prompts/yaml/citation_handles.yaml`
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`, `src/backend/doberman_agent/core/prompts/yaml/citation_handles.yaml`
   **逻辑**: 包装层识别、透传、分派同 T007；`_build_tool_meta` 把 `web_fetch` 归为 `web`；短句柄规则文字补「网页读取结果」（design 决策 9）。
   **测试**: T009 全部通过
   **覆盖 AC**: AC-18, AC-19, AC-23
@@ -103,7 +103,7 @@
   **依赖**: T005
 
 - [x] **T012**: 任务模式接入实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`, `src/backend/bisheng/core/prompts/yaml/citation.yaml`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`, `src/backend/doberman_agent/core/prompts/yaml/citation.yaml`
   **逻辑**: `_is_web_search_tool` 改用 `is_web_citation_tool`（影响 `has_web` 三处和包装选择）；包装层对 `web_fetch` 做单页标注；`citation.yaml`「来源 ID」一节补网页读取结果的说明（design 决策 9）。
   **测试**: T011 全部通过
   **覆盖 AC**: AC-17, AC-19
@@ -116,7 +116,7 @@
   **依赖**: T001
 
 - [x] **T014**: 升级补数据实现
-  **文件**: `src/backend/bisheng/common/init_data.py`
+  **文件**: `src/backend/doberman_agent/common/init_data.py`
   **逻辑**: 新增 `_ensure_web_fetch_tool(session) -> bool`（照 `_ensure_image_view_tool`），在其后调用；释放租户过滤绕过后，若新插入且 `settings.openfga.enabled`：为根租户新分类调用 `reconcile_system_owned_resources`（规格同 `acopy_root_builtin_tools_to_tenant` 末尾）；多租户开启时对每个已有子租户调用 `acopy_root_builtin_tools_to_tenant`，单个租户失败只记日志（design 决策 8）。
   **测试**: T013 全部通过
   **覆盖 AC**: AC-01, AC-26

@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy import String
 
-from bisheng.core.database.alembic.versions import v3_0_0_beta1_f056_user_string_lengths as migration
-from bisheng.user.domain.models.user import User
+from doberman_agent.core.database.alembic.versions import v3_0_0_beta1_f056_user_string_lengths as migration
+from doberman_agent.user.domain.models.user import User
 
 _EXPECTED_COLUMNS = (
     ("user_name", 128, False),

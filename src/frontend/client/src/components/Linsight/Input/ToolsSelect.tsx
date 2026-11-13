@@ -6,7 +6,7 @@
  * bsConfig.linsightConfig.tools. No chips are generated for tools.
  */
 import { ChevronDown, Hammer } from 'lucide-react';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import useSelectCopy from '~/hooks/useSelectCopy';
 import type { TaskModeToolItem } from '~/store/linsight';

@@ -26,14 +26,14 @@
 
 - **备选**：继续在每个服务补 owner/admin 特判；或把所有业务状态塞进 permission 模块；或薄的应用授权门面复用 F048。
 - **选定**：在 app_runtime 新增 `AppAuthorizationService`，经 `app_runtime/application/authorization.py` 对外发布；负责验证 app/tenant/state、可信操作用途与内容层级，调用已有 app adapter/F048 runtime 判定具体动作。
-- **原因**：现有 [业务鉴权入口](../../../src/backend/bisheng/permission/application/business_authorization.py) 对不受数据范围限制的超管有提前允许路径。调用者必须先验证目标事实，不能把这一允许当作存在、租户或状态验证。app adapter 的已加载记录批量校验可复用，不新增授权引擎。
+- **原因**：现有 [业务鉴权入口](../../../src/backend/doberman_agent/permission/application/business_authorization.py) 对不受数据范围限制的超管有提前允许路径。调用者必须先验证目标事实，不能把这一允许当作存在、租户或状态验证。app adapter 的已加载记录批量校验可复用，不新增授权引擎。
 - **何时重审**：F048 提供等价的统一已验证目标接口时，可收敛薄门面；不能借机改变其他资源动作。
 
 ### D2：首次创建传递真实主体，复用现有创建授权
 
 - **备选**：借用自然人 owner 的权限；创建后由业务代码手写 Grant；重新创建一种发布者模型；复用已有 F048 创建生命周期。
 - **选定**：创建函数同时接收“自然人归属事实”和经准入的真实 `PermissionActor`，二者不互相推导。`authorize_created` 继续为自然人登记受保护 owner；实际创建主体为服务账号时，复用 F048 已有、可撤销的 manager `CREATOR_GRANT` 来源。
-- **原因**：[runtime.authorize_created](../../../src/backend/bisheng/permission/application/runtime.py) 已经有这条服务账号分支；[AppProvisionService._project_owner](../../../src/backend/bisheng/app_runtime/domain/services/app_provision_service.py) 当前人为构造自然人 actor，导致该分支未用于 Vibe 首发。只改真实主体传递，保持资源归属和权限投影真相。
+- **原因**：[runtime.authorize_created](../../../src/backend/doberman_agent/permission/application/runtime.py) 已经有这条服务账号分支；[AppProvisionService._project_owner](../../../src/backend/doberman_agent/app_runtime/domain/services/app_provision_service.py) 当前人为构造自然人 actor，导致该分支未用于 Vibe 首发。只改真实主体传递，保持资源归属和权限投影真相。
 - **约束**：读取 CURRENT Catalog 验证初始化后的真实主体确有 edit 与 publish，记录实际生效模型/动作；不把 manager 名称硬编码成固定动作，不升级成 owner 兜底。初始来源按既有 F048 规则可撤销、仅限新 app；历史 app 不自动补权。已有 CREATOR_GRANT 的 F048 语义原样保留，应用层不再另写创建者特判。
 - **失败处理**：使用既有投影账本及 `rollback_created`，确认逆向投影完成后才删除孤立业务行；不确定结果保留围栏和可治理记录，返回失败，不排发布任务。不在 FGA 状态不明时直接 SQL 删除 app 留下孤立授权。
 - **何时重审**：CURRENT 模型不覆盖首发所需动作时，先报告权限初始化失败；如需另造模型或扩大授予范围，回到已确认规格边界评审。
@@ -74,7 +74,7 @@
 
 - **备选**：所有 deploy 取消仅校验 publish；复用原发起者的权限；按受信业务用途对当前取消者检查原动作集合。
 - **选定**：服务端写入 operation 的 `authorization_context.purpose`，映射 spec §3.1。`config_restart` 和新内容发布准备取消需 edit AND publish，`approved_start` 需 publish，restore 按冻结的是否启动区分。不登记 `runtime_upgrade` 用途，旧 upgrade/rebind 入口退役；代码、镜像和运行环境变更沿新版本发布。`system_recovery` 不提供用户通用取消入口或按钮；当前有 unpublish 的用户通过既有应用下线流程终止运行意图、取消/清理相关在途恢复。系统停止与清理不模拟原发布人，也不依赖原发布人仍持权。
-- **原因**：[secret_rebuild_service](../../../src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py) 与普通上线都使用 deploy kind；kind 不能作为唯一授权依据。操作用途、app/version/generation 一致性由服务端记录，取消请求不能重写它。
+- **原因**：[secret_rebuild_service](../../../src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py) 与普通上线都使用 deploy kind；kind 不能作为唯一授权依据。操作用途、app/version/generation 一致性由服务端记录，取消请求不能重写它。
 - **何时重审**：新增业务用途时必须登记动作集合和可取消阶段；未知用途拒绝用户取消，系统安全清理照常运行。
 
 ### D8：基础响应与私有内容分别授权
@@ -288,7 +288,7 @@
 - platform：HeaderTenantScope/useAdminScope 移除 global/null，展示实际具体租户。管理页增加范围快照、旧响应保护与清表单；预期头仅由登记的专用管理写 API 使用，不对助手/工作流等共用读取加必填头。服务账号页保持 F113 旧头保护，store 不发 HTTP。
 - Build app：按 allowed_actions 决定列表、详情与 tab；publish-only 等用户仅加载安全摘要。数据/日志/密钥读取、管理预览需 edit，确认重建需 edit 与 publish，Grant 区需 manage_permission；上下线/删除沿原确认与状态守卫。移除额外 owner/admin 分支及未实现的提交发布按钮。
 - client：现有助手、工作流、知识空间共用读取/调用保持原 API 及最小权限，不为 F114 新增管理租户头或接口分流。Vibe 审批审读/预览继续用任务接口并显式传 approval；通知区分申请人、实际提交主体和归属人。
-- 已阅读 UI docs/index.md、components/index.mdx、Select 规范；复用现有 Header 中的 @bisheng/ui Select 与已有确认/通知实现。当前 Select demo 标为 draft，故沿用已在 Header 落地的用法，不新增组件或改视觉。其它组件按实施时当前 done 清单复核。
+- 已阅读 UI docs/index.md、components/index.mdx、Select 规范；复用现有 Header 中的 @doberman-agent/ui Select 与已有确认/通知实现。当前 Select demo 标为 draft，故沿用已在 Header 落地的用法，不新增组件或改视觉。其它组件按实施时当前 done 清单复核。
 - 新提示三语同批交付，错误文案只写 packages/locales 源并生成，不手改产物。当前范围无法确认、范围已变化、缺少动作、审批/运行条件失败分别提示；403 继续由请求拦截器处理。
 
 ### 4.11 v2 收敛清单与测试环境处理

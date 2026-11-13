@@ -1,4 +1,4 @@
-import { Input, Textarea } from '@bisheng/ui';
+import { Input, Textarea } from '@doberman-agent/ui';
 // src/features/chat-config/components/FormInput.tsx
 
 import { ReactNode, useId, useState } from "react";

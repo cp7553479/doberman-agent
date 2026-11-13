@@ -21,7 +21,7 @@ from types import SimpleNamespace
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _BUDGET_BUCKETS_MAX,
     _DELIVERABLE_TOOLS,
     _MAX_STATE_ONLY_REFUNDS,
@@ -49,7 +49,7 @@ class FakeRequest:
                 FakeTool("write_file"),
                 FakeTool("edit_file"),
                 FakeTool("export_docx"),
-                FakeTool("bisheng_code_interpreter"),
+                FakeTool("doberman_agent_code_interpreter"),
                 FakeTool("read_file"),
             ]
         )
@@ -174,7 +174,7 @@ async def test_nudge_appended_at_the_tail_within_soft_landing_window():
     assert isinstance(nudged.messages[-1], HumanMessage)
     assert "预算即将耗尽" in last_text(nudged)
     # Every tool is still available at this stage.
-    assert "bisheng_code_interpreter" in tool_names(nudged)
+    assert "doberman_agent_code_interpreter" in tool_names(nudged)
 
 
 async def test_nudge_is_ephemeral_and_never_mutates_the_original_request():
@@ -288,7 +288,7 @@ async def test_exploratory_tools_are_refused_once_the_budget_is_spent():
     mw = make_mw(turn_limit=1)
     await mw.awrap_model_call(FakeRequest(), capturing_handler())  # spend the budget
     handler = tool_handler()
-    result = await mw.awrap_tool_call(FakeToolRequest("bisheng_code_interpreter"), handler)
+    result = await mw.awrap_tool_call(FakeToolRequest("doberman_agent_code_interpreter"), handler)
     assert handler.state["calls"] == 0  # never reached the tool
     assert "预算已用尽" in result.content
     assert result.tool_call_id == "call_1"
@@ -328,7 +328,7 @@ async def test_nothing_is_refused_while_budget_remains():
     mw = make_mw(turn_limit=10)
     await mw.awrap_model_call(FakeRequest(), capturing_handler())
     handler = tool_handler()
-    result = await mw.awrap_tool_call(FakeToolRequest("bisheng_code_interpreter"), handler)
+    result = await mw.awrap_tool_call(FakeToolRequest("doberman_agent_code_interpreter"), handler)
     assert handler.state["calls"] == 1
     assert result.content == "executed"
 
@@ -341,12 +341,12 @@ async def test_the_114_overrun_scenario_is_now_bounded():
         await mw.awrap_model_call(FakeRequest(), capturing_handler())
 
     executed, refused = [], []
-    for name in ("bisheng_code_interpreter", "write_file", "read_file", "write_todos", "task"):
+    for name in ("doberman_agent_code_interpreter", "write_file", "read_file", "write_todos", "task"):
         handler = tool_handler()
         result = await mw.awrap_tool_call(FakeToolRequest(name), handler)
         (executed if handler.state["calls"] else refused).append(name)
     assert executed == ["write_file", "write_todos"]
-    assert refused == ["bisheng_code_interpreter", "read_file", "task"]
+    assert refused == ["doberman_agent_code_interpreter", "read_file", "task"]
 
 
 def test_build_falls_back_to_defaults_on_a_legacy_conf():

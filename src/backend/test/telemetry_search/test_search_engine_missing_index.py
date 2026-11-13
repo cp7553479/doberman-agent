@@ -1,8 +1,8 @@
 import pytest
 
-from bisheng.telemetry_search.domain.schemas.query_builder import AggregationExpression, AggsTypeEnum
-from bisheng.telemetry_search.domain.services import search_engine_service
-from bisheng.telemetry_search.domain.services.search_engine_service import SearchEngineService, SearchParameters
+from doberman_agent.telemetry_search.domain.schemas.query_builder import AggregationExpression, AggsTypeEnum
+from doberman_agent.telemetry_search.domain.services import search_engine_service
+from doberman_agent.telemetry_search.domain.services.search_engine_service import SearchEngineService, SearchParameters
 
 
 class FakeIndexNotFoundError(Exception):

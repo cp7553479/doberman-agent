@@ -20,10 +20,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
-from bisheng.api.v1.schemas import KnowledgeSpaceConfig
-from bisheng.citation.domain.services.citation_prompt_helper import CITATION_PROMPT_RULES
-from bisheng.core.prompts.prompt_loader import PromptLoader
-from bisheng.knowledge.domain.services import knowledge_space_chat_service as chat_module
+from doberman_agent.api.v1.schemas import KnowledgeSpaceConfig
+from doberman_agent.citation.domain.services.citation_prompt_helper import CITATION_PROMPT_RULES
+from doberman_agent.core.prompts.prompt_loader import PromptLoader
+from doberman_agent.knowledge.domain.services import knowledge_space_chat_service as chat_module
 
 _RULES_HEADING = "# Citation Rules"
 _START_MARKER = chr(0xE200)
@@ -33,8 +33,8 @@ _LITERAL_START_MARKER = chr(92) + "ue200"
 _FROZEN_NOW = datetime(2026, 1, 2, 3, 4, 5)
 _FROZEN_DATE = "2026-01-02"
 
-_QUESTION = "what is bisheng"
-_CHUNK = "chunk body about bisheng"
+_QUESTION = "what is doberman_agent"
+_CHUNK = "chunk body about doberman_agent"
 
 _CUSTOM_PROMPT = "你是一个严谨的AI问答助手。当前时间是{cur_date}。"
 _USER_PROMPT = "{retrieved_file_content}\n{question}"
@@ -69,14 +69,14 @@ async def _real_prompt_loader() -> PromptLoader:
     """Return a real ``PromptLoader`` regardless of test ordering.
 
     ``test_knowledge_space_chat_permissions.py`` installs a fake
-    ``bisheng.core.prompts.manager`` (whose ``render_prompt`` yields empty
+    ``doberman_agent.core.prompts.manager`` (whose ``render_prompt`` yields empty
     strings) into ``sys.modules`` when the real module has not been imported yet.
     The fake exposes only ``get_prompt_manager``; the real module also exposes
     ``PromptManager``. When the real module is present, derive the loader through
     the real manager's initialisation path; otherwise build the loader directly —
     ``prompt_loader`` is a module the fake never touches.
     """
-    manager_module = importlib.import_module("bisheng.core.prompts.manager")
+    manager_module = importlib.import_module("doberman_agent.core.prompts.manager")
     if hasattr(manager_module, "PromptManager"):
         loader = await manager_module.PromptManager()._async_initialize()
     else:
@@ -99,7 +99,7 @@ async def _drive_render(monkeypatch, space_conf, prompt_loader) -> list[BaseMess
     monkeypatch.setattr(service, "get_history", AsyncMock(return_value=[]))
     # ``_render_rag_response`` resolves ``get_prompt_manager`` through the service
     # module's own binding, so patch that name explicitly instead of relying on
-    # whatever ``bisheng.core.prompts.manager`` happens to be in ``sys.modules``.
+    # whatever ``doberman_agent.core.prompts.manager`` happens to be in ``sys.modules``.
     monkeypatch.setattr(chat_module, "get_prompt_manager", AsyncMock(return_value=prompt_loader))
     monkeypatch.setattr(chat_module, "datetime", _FrozenDatetime)
 
@@ -155,7 +155,7 @@ async def test_yaml_fallback_branch_gets_rules_once_and_cur_date_substituted(mon
     system_text, human_text = _split(await _drive_render(monkeypatch, space_conf, prompt_loader))
 
     # The real yaml was rendered: its role header and the substituted date are there.
-    assert "BISHENG 智能问答助手" in system_text
+    assert "DOBERMAN_AGENT 智能问答助手" in system_text
     assert f"当前时间：{_FROZEN_DATE}" in system_text
     assert "{cur_date}" not in system_text
     assert "${cur_date}" not in system_text

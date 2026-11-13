@@ -18,8 +18,8 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
-from bisheng.linsight.domain.schemas.linsight_schema import SubmitFileSchema
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.linsight.domain.schemas.linsight_schema import SubmitFileSchema
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
 
 # ---------------------------------------------------------------------------
@@ -27,7 +27,7 @@ from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImp
 # ---------------------------------------------------------------------------
 class FakeMinio:
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         self.store: dict[tuple[str, str], bytes] = {}
         self.copies: list[tuple[str, str]] = []
@@ -81,7 +81,7 @@ async def test_process_writes_workspace_and_pointer_meta():
     with (
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=fake_redis),
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
         ),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([_submit()], "chat1")
@@ -100,7 +100,7 @@ async def test_process_writes_workspace_and_pointer_meta():
 
 
 async def test_prepare_file_list_pointer_block_format():
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
 
     sv = LinsightSessionVersion(
         session_id="chat1",
@@ -127,7 +127,7 @@ async def test_prepare_file_list_pointer_block_format():
 
 
 async def test_prepare_file_list_media_asr_pointer_note():
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
 
     sv = LinsightSessionVersion(
         session_id="chat1",
@@ -153,7 +153,7 @@ async def test_prepare_file_list_media_asr_pointer_note():
 
 async def test_prepare_file_list_media_and_docx_headers_both_present():
     """Media ASR note must not be dropped when docx raw guidance is also emitted."""
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
 
     sv = LinsightSessionVersion(
         session_id="chat1",
@@ -185,7 +185,7 @@ async def test_prepare_file_list_media_and_docx_headers_both_present():
 
 
 async def test_prepare_file_list_empty():
-    from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+    from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
 
     sv = LinsightSessionVersion(session_id="c", user_id=1, question="q", files=None)
     assert await LinsightWorkbenchImpl.prepare_file_list(sv) == []
@@ -204,7 +204,7 @@ async def test_idempotent_reuse_skips_copy(monkeypatch):
     with (
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=fake_redis),
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
         ),
     ):
         first = await LinsightWorkbenchImpl._process_submitted_files([_submit()], "chat1")
@@ -256,15 +256,15 @@ async def test_daily_file_ingested_into_workspace(monkeypatch):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=("/tmp/abc.pdf", "Report.pdf")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([_daily_submit()], "svid1", user_id=7)
 
@@ -288,12 +288,12 @@ async def test_daily_file_ingest_failure_degrades_gracefully(monkeypatch):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(side_effect=ValueError("minio download boom")),
         ),
     ):
@@ -327,15 +327,15 @@ async def test_daily_parse_failure_keeps_original_in_workspace(tmp_path, monkeyp
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=(str(local), "委托书.pdf")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _BoomPipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _BoomPipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files(
             [_daily_submit(file_id="d1", name="委托书.pdf")], "svid1", user_id=7
@@ -346,8 +346,8 @@ async def test_daily_parse_failure_keeps_original_in_workspace(tmp_path, monkeyp
     assert entry["parsing_status"] == "failed"
     # original (with extension, real name) kept in the workspace -> ls sees it
     assert entry["workspace_path"] == "/uploads/委托书.pdf"
-    assert ("bisheng", "workspace/svid1/uploads/委托书.pdf") in fake_minio.store
-    assert fake_minio.store[("bisheng", "workspace/svid1/uploads/委托书.pdf")] == b"%PDF-1.4 raw bytes"
+    assert ("doberman_agent", "workspace/svid1/uploads/委托书.pdf") in fake_minio.store
+    assert fake_minio.store[("doberman_agent", "workspace/svid1/uploads/委托书.pdf")] == b"%PDF-1.4 raw bytes"
 
 
 async def test_daily_files_preserve_chinese_names_and_dedupe(monkeypatch):
@@ -370,15 +370,15 @@ async def test_daily_files_preserve_chinese_names_and_dedupe(monkeypatch):
     fake_minio = FakeMinio()
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=("/tmp/x", "x")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _OkPipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _OkPipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files(
             [
@@ -464,7 +464,7 @@ async def test_expired_temp_no_formal_marks_invalid():
     with (
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=fake_redis),
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage", new=AsyncMock(return_value=fake_minio)
         ),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([_submit()], "chat1")
@@ -500,15 +500,15 @@ async def test_daily_passthrough_file_never_touches_the_parser(tmp_path):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=(str(local), "analyze.py")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([submit], "svid9", user_id=7)
 
@@ -544,15 +544,15 @@ async def test_daily_unsupported_type_short_circuits_the_parser(tmp_path):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=(str(local), "setup.exe")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([submit], "svid10", user_id=7)
 
@@ -585,15 +585,15 @@ async def test_daily_csv_passes_through_as_one_file(tmp_path):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=(str(local), "data.csv")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([submit], "svid11", user_id=7)
 
@@ -638,15 +638,15 @@ async def test_daily_html_still_parses(tmp_path):
 
     with (
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
         patch(
-            "bisheng.core.cache.utils.async_file_download",
+            "doberman_agent.core.cache.utils.async_file_download",
             new=AsyncMock(return_value=(str(local), "page.html")),
         ),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _FakePipeline),
     ):
         result = await LinsightWorkbenchImpl._process_submitted_files([submit], "svid12", user_id=7)
 

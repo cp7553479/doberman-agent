@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownItem, DropdownSeparator, Input, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Dropdown, DropdownItem, DropdownSeparator, Input, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import type React from "react";
 
@@ -9,7 +9,7 @@ import type React from "react";
 
 import { locationContext } from "@/contexts/locationContext";
 import { cn } from "@/utils";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 
 import { useContext,useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

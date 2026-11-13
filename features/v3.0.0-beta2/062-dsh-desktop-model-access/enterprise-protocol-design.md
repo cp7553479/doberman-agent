@@ -6,26 +6,26 @@
 
 ## 1. 目标与边界
 
-在既有企业模型访问链路中补齐思考深度、稳定对话身份、可恢复图片限制和原生 Responses。身份、模型授权与配额继续由 Bisheng 负责，企业凭据保留在 Electron main。
+在既有企业模型访问链路中补齐思考深度、稳定对话身份、可恢复图片限制和原生 Responses。身份、模型授权与配额继续由 doberman-agent 负责，企业凭据保留在 Electron main。
 
 本轮不发布、不部署，不保证供应商缓存命中，不扩展 contextWindow、模型 UI、供应商托管工具或远端会话存储。Responses 第一版只开放文本、图片、function 工具和 reasoning；不支持的类型明确拒绝。
 
 ## 2. 设计前实现与约束
 
-现有链路：`EnterpriseLlmAdapter → serializer → credential broker → EnterpriseService → /api/v1/dsh/chat/completions → DshModelService → DshChatAdapter → BishengLLM → supplier`。
+现有链路：`EnterpriseLlmAdapter → serializer → credential broker → EnterpriseService → /api/v1/dsh/chat/completions → DshModelService → DshChatAdapter → DobermanAgentLLM → supplier`。
 
 | 当前模块 | 已有职责与缺口 |
 | --- | --- |
 | Desktop `contract.js`、`enterprise-service.ts` | 工作区已保留可选 reasoning 目录元数据；尚非完整服务端能力 |
 | Desktop `openai.js`、`enterprise-chat.ts` | serializer 已生成 reasoning_effort，本地主进程白名单修复已有定向测试；后端 schema 尚不接受 |
-| Bisheng `domain/schemas/chat.py` | strict/extra=forbid；没有 reasoning_effort；client_fields 只返回既有能力 |
-| Bisheng `infrastructure/model_capabilities.py` | 从模型类型和权威视觉配置产生能力，尚无管理员 reasoning 档位声明 |
-| Bisheng `domain/services/model.py` | 实时策略检查、READY 检查、prepare 后准入、实际用量结算；输出包装和 PreparedStream 为 Chat 专用 |
-| Bisheng `infrastructure/chat_adapter.py` | LangChain Chat 转换，不能承载原生 Responses 全部输出项 |
-| Bisheng `api/responses.py` | 企业错误响应封装，不是 Responses API 实现 |
+| doberman-agent `domain/schemas/chat.py` | strict/extra=forbid；没有 reasoning_effort；client_fields 只返回既有能力 |
+| doberman-agent `infrastructure/model_capabilities.py` | 从模型类型和权威视觉配置产生能力，尚无管理员 reasoning 档位声明 |
+| doberman-agent `domain/services/model.py` | 实时策略检查、READY 检查、prepare 后准入、实际用量结算；输出包装和 PreparedStream 为 Chat 专用 |
+| doberman-agent `infrastructure/chat_adapter.py` | LangChain Chat 转换，不能承载原生 Responses 全部输出项 |
+| doberman-agent `api/responses.py` | 企业错误响应封装，不是 Responses API 实现 |
 | Desktop `request-images.js` | 工作区正在接入 Harness 卸载契约；真实 Session 重试和完整回归尚待完成 |
 
-限制保持现状：单图原始数据 5 MiB、合计 20 MiB；Bisheng 单个 data URL 长度 7,000,000、合计 28,000,000；本地 Chat JSON envelope 32 MiB。broker 的 base64 解码长度估算包含 padding，客户端预算必须与它一致。
+限制保持现状：单图原始数据 5 MiB、合计 20 MiB；doberman-agent 单个 data URL 长度 7,000,000、合计 28,000,000；本地 Chat JSON envelope 32 MiB。broker 的 base64 解码长度估算包含 padding，客户端预算必须与它一致。
 
 ## 3. 关键决策
 
@@ -35,7 +35,7 @@
 
 配置最多 32 档，ID 为 1–128 个 ASCII 字符，匹配 `[A-Za-z0-9][A-Za-z0-9._-]*`；name 非空且最多 256 字符；ID 唯一、默认值必须在列表内。默认字段存在但列表缺失也是配置错误。目录省略错误配置的模型并记录脱敏诊断，直接请求则拒绝；不得退回猜测能力。
 
-请求显式值优先，未指定则采用管理员默认，均未配置则不发送。Bisheng 每次读取当前模型快照重新验证，发生在供应商调用及配额 admission 前。客户端目录仅用于选择与提前校验，不是授权来源。
+请求显式值优先，未指定则采用管理员默认，均未配置则不发送。doberman-agent 每次读取当前模型快照重新验证，发生在供应商调用及配额 admission 前。客户端目录仅用于选择与提前校验，不是授权来源。
 
 Chat 使用 `reasoning_effort`，Responses 使用 `reasoning.effort`。供应商适配器必须声明可接受的参数及值；只有管理员声明和适配器支持的交集可服务。非 OpenAI 节点通过其明确映射实现，否则拒绝深度参数。`reasoning_content` 只表示思考文本输出，与深度独立。
 
@@ -102,7 +102,7 @@ native execution 暴露 usage、invoke、stream、close；治理对象只依赖�
 | Desktop enterprise contract/service | 新能力与 reasoning 元数据校验、冻结快照 | 不推断供应商能力 |
 | Desktop Chat adapter / 新 native bridge | Harness 转换、图片预算、回放来源校验 | 不持有企业 token，不决定授权 |
 | main broker / enterprise-request | 固定操作、大小与字段白名单、真实凭据发送、取消 | 不允许任意 URL/头 |
-| Bisheng schemas / endpoint | 严格协议和重复头检查、principal 获取、响应传输 | 不直接访问 ORM 或供应商配置 |
+| doberman-agent schemas / endpoint | 严格协议和重复头检查、principal 获取、响应传输 | 不直接访问 ORM 或供应商配置 |
 | DshModelService | 当前授权、协议选择、准入与结算 | 不实现协议字段转换 |
 | model_capabilities / adapters | 配置能力、SDK 映射、使用量归一、协议事件 | 不跳过治理直连供应商 |
 
@@ -136,7 +136,7 @@ Responses 请求延用 32 MiB 完整 broker envelope 上限及图片限制；本
 
 Desktop 定向运行 `npx vitest run test/enterprise-chat.test.ts test/enterprise-openai-adapter.test.mjs`，实现时增加真实 broker/native/Session 测试；代码交付前按仓库规则执行 typecheck、build、完整 npm test、git diff --check。
 
-Bisheng 从 `src/backend` 用隔离环境运行 `.venv/bin/python -m pytest --confcutdir=test/dsh test/dsh/test_models_api.py test/dsh/test_model_service.py test/dsh/test_vision.py -q`，清除进程代理变量后执行；新增原生及身份测试纳入同一套 isolated fixtures。不得为测试写入真实配置或连接生产资源。DM8、真实上游、Gateway/代理转发和各目标平台安装包单独报告。
+doberman-agent 从 `src/backend` 用隔离环境运行 `.venv/bin/python -m pytest --confcutdir=test/dsh test/dsh/test_models_api.py test/dsh/test_model_service.py test/dsh/test_vision.py -q`，清除进程代理变量后执行；新增原生及身份测试纳入同一套 isolated fixtures。不得为测试写入真实配置或连接生产资源。DM8、真实上游、Gateway/代理转发和各目标平台安装包单独报告。
 
 联调使用独立开发 Profile/测试租户：管理员设置档位与 Responses 能力 → 登录刷新目录 → 同一对话连续工具调用并切换深度 → 独立标题/压缩调用 → 累计图片触发卸载 → 重启继续。对比 SDK 接收端脱敏的协议、effort、摘要、request_id、usage 和结算记录；浏览器或安装包 UI 需另外验证。日志只记录阶段、协议、公开模型 ID、请求 ID、大小、失败码及用途，不记录正文、密文、原始会话 ID 或凭据。
 

@@ -1,22 +1,22 @@
-# @bisheng/chat
+# @doberman-agent/chat
 
 Source-shipped workflow and assistant conversations, extracted from the client.
 Daily chat and task/Linsight retain their existing implementations.
 
 ## Boundaries
 
-`@bisheng/chat/core` consumes raw API history before host transformations and
+`@doberman-agent/chat/core` consumes raw API history before host transformations and
 interprets workflow/assistant frames. It owns message identity, category/role,
 reasoning/files, final reconciliation, QA matching and captured operation context.
 It is independent of React, application stores, routing and network clients.
 
-`@bisheng/chat` exports controlled messages, Markdown/citations/diagrams,
+`@doberman-agent/chat` exports controlled messages, Markdown/citations/diagrams,
 attachments, choice/input forms, composer and scroll policy. It requires neither
 Recoil nor Zustand nor a query/router provider. The presentation follows the
 client baseline; Tailwind must scan `packages/chat/src/**/*.{ts,tsx}` and load the
 shared UI tokens. The renderer imports the scoped client Markdown/highlight
 styles itself; host legacy Markdown sheets cannot redefine this conversation
-scope. `@bisheng/chat/styles.css` is also an explicit CSS entry.
+scope. `@doberman-agent/chat/styles.css` is also an explicit CSS entry.
 
 Composer action positioning belongs to the shared toolbar: pass `onAttach` and
 an inline voice control. The attachments slot owns selected-file content, not
@@ -53,7 +53,7 @@ Media queries update on resize. Client's existing LaTeX preference may override
 that default; host auth/resource/code-execution capabilities remain separate.
 
 Typography, lists, tables/zebra rows, inline code and code syntax colors derive
-from the current client CSS and are scoped to `.bs-mkdown.bisheng-chat-markdown`.
+from the current client CSS and are scoped to `.bs-mkdown.doberman_agent-chat-markdown`.
 The host's legacy CSS remains for daily/task and unrelated pages. Code bars keep
 the client's copy label, three-second copied state and inline-code double click.
 
@@ -68,7 +68,7 @@ No design-system primitives or new state-management libraries are introduced.
 
 ## Checks
 
-From `src/frontend`: `pnpm --filter @bisheng/chat test`,
-`pnpm --filter @bisheng/chat typecheck`, `pnpm --filter @bisheng/chat lint`.
+From `src/frontend`: `pnpm --filter @doberman-agent/chat test`,
+`pnpm --filter @doberman-agent/chat typecheck`, `pnpm --filter @doberman-agent/chat lint`.
 Tests use one worker. Full integration evidence and manual acceptance are in
 `features/v3.0.0/086-shared-app-chat/e2e-checklist.md`.

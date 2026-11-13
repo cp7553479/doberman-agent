@@ -33,7 +33,7 @@ def _body(response):
 
 async def _second_version(publish_db, app):
     """A version-2 row for ``app`` (the app factory only seeds version 1)."""
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     async with publish_db() as session:
         row = AppVersion(
@@ -154,7 +154,7 @@ async def test_binary_files_are_listed_but_not_compared(publish_db, api_app, two
 
 
 async def test_oversized_text_file_is_not_compared(publish_db, api_app, two_versions, owner_user):
-    from bisheng.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
+    from doberman_agent.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
 
     app, v1, v2 = await two_versions(
         {"big.txt": "a" * (MAX_SCAN_FILE_BYTES + 1)},
@@ -201,7 +201,7 @@ async def test_secrets_are_masked_inside_hunks(publish_db, api_app, two_versions
 
 
 async def test_per_file_patch_cap_marks_truncated(publish_db, api_app, two_versions, owner_user, monkeypatch):
-    from bisheng.app_publish.domain.services import version_diff_service
+    from doberman_agent.app_publish.domain.services import version_diff_service
 
     monkeypatch.setattr(version_diff_service, "MAX_PATCH_LINES_PER_FILE", 5)
     app, v1, v2 = await two_versions(
@@ -222,7 +222,7 @@ async def test_per_file_patch_cap_marks_truncated(publish_db, api_app, two_versi
 async def test_total_patch_budget_drops_later_patches_not_files(
     publish_db, api_app, two_versions, owner_user, monkeypatch
 ):
-    from bisheng.app_publish.domain.services import version_diff_service
+    from doberman_agent.app_publish.domain.services import version_diff_service
 
     monkeypatch.setattr(version_diff_service, "MAX_TOTAL_PATCH_BYTES", 1)
     app, v1, v2 = await two_versions(
@@ -247,7 +247,7 @@ async def test_total_patch_budget_drops_later_patches_not_files(
 
 
 async def test_file_list_cap_marks_summary_truncated(publish_db, api_app, two_versions, owner_user, monkeypatch):
-    from bisheng.app_publish.domain.services import version_diff_service
+    from doberman_agent.app_publish.domain.services import version_diff_service
 
     monkeypatch.setattr(version_diff_service, "MAX_DIFF_FILES", 2)
     app, v1, v2 = await two_versions({}, {f"f{i}.txt": "x\n" for i in range(5)})
@@ -289,8 +289,8 @@ async def test_stranger_and_unrelated_approver_get_16257(publish_db, api_app, tw
 
 
 async def test_unknown_version_is_16253_and_swept_snapshot_16256(publish_db, api_app, two_versions, owner_user):
-    from bisheng.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key
-    from bisheng.core.storage.minio.minio_manager import get_minio_storage
+    from doberman_agent.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key
+    from doberman_agent.core.storage.minio.minio_manager import get_minio_storage
 
     app, v1, v2 = await two_versions({"main.py": _MAIN_V1}, {"main.py": _MAIN_V2})
     storage = await get_minio_storage()
@@ -318,8 +318,8 @@ async def test_corrupt_snapshot_is_16256_not_a_deploy_code(publish_db, api_app, 
 
 
 async def test_diff_route_is_session_only_and_registered(publish_db):
-    from bisheng.app_publish.api.router import v1_router
-    from bisheng.open_api.domain.scopes import get_open_api_scope_marker
+    from doberman_agent.app_publish.api.router import v1_router
+    from doberman_agent.open_api.domain.scopes import get_open_api_scope_marker
 
     route = next(r for r in v1_router.routes if r.path.endswith("/diff/{target_version_id}"))
     assert route.path == "/apps/{app_id}/versions/{base_version_id}/diff/{target_version_id}"
@@ -327,7 +327,7 @@ async def test_diff_route_is_session_only_and_registered(publish_db):
 
 
 async def test_tenant_admin_check_is_asked_with_the_apps_tenant(publish_db, api_app, two_versions, monkeypatch):
-    from bisheng.app_publish.domain.services import snapshot_browse_service
+    from doberman_agent.app_publish.domain.services import snapshot_browse_service
 
     asked: list[tuple[int, int]] = []
 

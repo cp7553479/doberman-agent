@@ -634,21 +634,21 @@ F005 后端变更对前端的影响（F010 需要处理）：
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/role/__init__.py` | 模块初始化 |
-| `src/backend/bisheng/role/api/__init__.py` | API 包 |
-| `src/backend/bisheng/role/api/router.py` | 模块路由注册 |
-| `src/backend/bisheng/role/api/endpoints/__init__.py` | 端点包 |
-| `src/backend/bisheng/role/api/endpoints/role.py` | 角色 CRUD 端点 |
-| `src/backend/bisheng/role/api/endpoints/role_access.py` | 菜单权限端点 |
-| `src/backend/bisheng/role/api/endpoints/quota.py` | 配额查询端点 |
-| `src/backend/bisheng/role/domain/__init__.py` | Domain 包 |
-| `src/backend/bisheng/role/domain/schemas/__init__.py` | Schema 包 |
-| `src/backend/bisheng/role/domain/schemas/role_schema.py` | Pydantic DTO |
-| `src/backend/bisheng/role/domain/services/__init__.py` | Service 包 |
-| `src/backend/bisheng/role/domain/services/role_service.py` | 角色 CRUD 业务逻辑 |
-| `src/backend/bisheng/role/domain/services/quota_service.py` | 配额执行服务 |
-| `src/backend/bisheng/common/errcode/role.py` | 错误码 240xx |
-| `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py` | 迁移脚本 |
+| `src/backend/doberman_agent/role/__init__.py` | 模块初始化 |
+| `src/backend/doberman_agent/role/api/__init__.py` | API 包 |
+| `src/backend/doberman_agent/role/api/router.py` | 模块路由注册 |
+| `src/backend/doberman_agent/role/api/endpoints/__init__.py` | 端点包 |
+| `src/backend/doberman_agent/role/api/endpoints/role.py` | 角色 CRUD 端点 |
+| `src/backend/doberman_agent/role/api/endpoints/role_access.py` | 菜单权限端点 |
+| `src/backend/doberman_agent/role/api/endpoints/quota.py` | 配额查询端点 |
+| `src/backend/doberman_agent/role/domain/__init__.py` | Domain 包 |
+| `src/backend/doberman_agent/role/domain/schemas/__init__.py` | Schema 包 |
+| `src/backend/doberman_agent/role/domain/schemas/role_schema.py` | Pydantic DTO |
+| `src/backend/doberman_agent/role/domain/services/__init__.py` | Service 包 |
+| `src/backend/doberman_agent/role/domain/services/role_service.py` | 角色 CRUD 业务逻辑 |
+| `src/backend/doberman_agent/role/domain/services/quota_service.py` | 配额执行服务 |
+| `src/backend/doberman_agent/common/errcode/role.py` | 错误码 240xx |
+| `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f005_role_menu_quota.py` | 迁移脚本 |
 | `src/backend/test/test_quota_service.py` | QuotaService 单元测试 |
 | `src/backend/test/test_role_service.py` | RoleService 单元测试 |
 | `src/backend/test/test_role_api.py` | API 集成测试 |
@@ -657,12 +657,12 @@ F005 后端变更对前端的影响（F010 需要处理）：
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/database/models/role.py` | 新增 role_type/department_id/quota_config 字段 + 新 DAO 方法 + 唯一约束变更 |
-| `src/backend/bisheng/database/models/role_access.py` | 更新 WebMenuResource 枚举 |
-| `src/backend/bisheng/user/domain/services/auth.py` | get_roles_web_menu() 适配新 role_type；WebMenuResource 全集更新 |
-| `src/backend/bisheng/user/api/user.py` | 旧角色端点内部委托 RoleService |
-| `src/backend/bisheng/common/init_data.py` | 内置角色设置 role_type='global' + 默认 quota_config + 新菜单权限 |
-| `src/backend/bisheng/api/router.py` | 注册 role 模块路由 |
+| `src/backend/doberman_agent/database/models/role.py` | 新增 role_type/department_id/quota_config 字段 + 新 DAO 方法 + 唯一约束变更 |
+| `src/backend/doberman_agent/database/models/role_access.py` | 更新 WebMenuResource 枚举 |
+| `src/backend/doberman_agent/user/domain/services/auth.py` | get_roles_web_menu() 适配新 role_type；WebMenuResource 全集更新 |
+| `src/backend/doberman_agent/user/api/user.py` | 旧角色端点内部委托 RoleService |
+| `src/backend/doberman_agent/common/init_data.py` | 内置角色设置 role_type='global' + 默认 quota_config + 新菜单权限 |
+| `src/backend/doberman_agent/api/router.py` | 注册 role 模块路由 |
 | `features/v2.5.0/release-contract.md` | 注册 240 模块编码 |
 
 ---

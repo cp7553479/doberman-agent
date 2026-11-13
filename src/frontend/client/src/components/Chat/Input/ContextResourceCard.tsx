@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { cn } from "~/utils";
 
 /** Compact context resource with a theme-aware surface and optional remove action. */

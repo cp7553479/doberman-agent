@@ -39,11 +39,11 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.models.app import App  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.models.app import App  # noqa: E402
 
 # A live state the app adapter accepts; only used to rebuild the pre-deletion target.
 _PRE_DELETION_STATE = "stopped"
@@ -60,9 +60,9 @@ async def _deleted_apps(app_id: str | None) -> list[App]:
 
 
 async def run(args: argparse.Namespace) -> int:
-    from bisheng.core.openfga.manager import aget_fga_client
-    from bisheng.permission.application.access import get_f048_resource_adapter
-    from bisheng.permission.domain.services.permission_action_service import PermissionActor
+    from doberman_agent.core.openfga.manager import aget_fga_client
+    from doberman_agent.permission.application.access import get_f048_resource_adapter
+    from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
     fga = await aget_fga_client()
     if fga is None:
@@ -117,8 +117,8 @@ def main() -> int:
     async def _main() -> int:
         try:
             await initialize_app_context(settings, instance_role="script")
-            from bisheng.api.services.f048_permission_runtime import initialize_f048_worker_runtime
-            from bisheng.permission.application.process_runtime import register_f048_permission_runtime_context
+            from doberman_agent.api.services.f048_permission_runtime import initialize_f048_worker_runtime
+            from doberman_agent.permission.application.process_runtime import register_f048_permission_runtime_context
 
             register_f048_permission_runtime_context(initialize_f048_worker_runtime)
             return await run(args)

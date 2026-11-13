@@ -16,7 +16,7 @@ suite worth exactly nothing. Everything the square is asked here is asked as a
 normal user who neither owns the application nor administers anything.
 
 What the environment must provide, and why it is not created here: a hosted
-application only comes into existence through ``bisheng deploy`` → approval →
+application only comes into existence through ``doberman-agent deploy`` → approval →
 online, and there is no REST endpoint that creates one. So the suite
 **discovers** hosted applications with the administrator session and skips —
 loudly, naming what is missing — when the deployment has none in the state a
@@ -293,7 +293,7 @@ async def hosted_apps(client: httpx.AsyncClient, admin_token: str, normal_user: 
     if not grouped.get("online"):
         pytest.skip(
             "no hosted application in state 'online' owned by somebody other than the test user; "
-            "deploy one with `bisheng deploy` before running F056 T016"
+            "deploy one with `doberman-agent deploy` before running F056 T016"
         )
     return grouped
 

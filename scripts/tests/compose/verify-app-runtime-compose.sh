@@ -79,37 +79,37 @@ if [ "${1:-}" = "--howto" ] || [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; t
 #    不加的话 compose 会把 backend 连同 mysql/redis/openfga 一起拖起来。
 #    密钥随便给，两边一致即可；数据根指一个本机可写的绝对路径
 #    （macOS 上 /opt 默认不在 Docker Desktop 的共享目录里，务必改）。
-  export BISHENG_RTM_HMAC_SECRET=dev-rtm-secret
-  export BISHENG_APP_PROXY_HMAC_SECRET=dev-proxy-secret
-  export BISHENG_APP_DATA_ROOT=/tmp/bisheng-app-data
+  export DOBERMAN_AGENT_RTM_HMAC_SECRET=dev-rtm-secret
+  export DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET=dev-proxy-secret
+  export DOBERMAN_AGENT_APP_DATA_ROOT=/tmp/doberman-agent-app-data
   docker compose --profile app-runtime up -d --no-deps runtime-manager app-proxy
 
 # 3) 断言。注意：**「容器 Up / healthy」在这一层不构成任何证据**——
 #    两个进程都是「配错了照样启动」的形状，所以下面每条都要亲眼看输出。
 
 # 3.1 网络存在、实名没被项目名前缀污染（缺陷 2）
-  docker network inspect bisheng-apps --format '{{.Name}}'
-  # 期望：bisheng-apps
+  docker network inspect doberman-agent-apps --format '{{.Name}}'
+  # 期望：doberman-agent-apps
 
-# 3.2 两个容器都接在 bisheng-apps 与 docker_default 上（缺陷 2）
-  docker inspect bisheng-runtime-manager --format '{{range $n,$_ := .NetworkSettings.Networks}}{{$n}} {{end}}'
-  docker inspect bisheng-app-proxy       --format '{{range $n,$_ := .NetworkSettings.Networks}}{{$n}} {{end}}'
-  # 期望两行都含：bisheng-apps docker_default
+# 3.2 两个容器都接在 doberman-agent-apps 与 docker_default 上（缺陷 2）
+  docker inspect doberman-agent-runtime-manager --format '{{range $n,$_ := .NetworkSettings.Networks}}{{$n}} {{end}}'
+  docker inspect doberman-agent-app-proxy       --format '{{range $n,$_ := .NetworkSettings.Networks}}{{$n}} {{end}}'
+  # 期望两行都含：doberman-agent-apps docker_default
 
 # 3.3 变量名真的被读进去了（缺陷 1）——只有这一条能证明；env 里有变量不算
-  docker exec bisheng-app-proxy python -c "from app_proxy.config import load_config as l; c=l(); print(c.backend_base, c.manager_base, bool(c.backend_secret), bool(c.manager_secret))"
+  docker exec doberman-agent-app-proxy python -c "from app_proxy.config import load_config as l; c=l(); print(c.backend_base, c.manager_base, bool(c.backend_secret), bool(c.manager_secret))"
   # 期望：http://backend:7860 http://runtime-manager:8091 True True
   # 若看到 http://127.0.0.1:7860 ... False False，就是变量名又漂了。
 
-  docker exec bisheng-runtime-manager python -c "from runtime_manager.config import load_config as l; c=l(); print(c.data_root, c.host_data_root, bool(c.hmac_secret))"
-  # 期望：/app-data /tmp/bisheng-app-data True
+  docker exec doberman-agent-runtime-manager python -c "from runtime_manager.config import load_config as l; c=l(); print(c.data_root, c.host_data_root, bool(c.hmac_secret))"
+  # 期望：/app-data /tmp/doberman-agent-app-data True
 
 # 3.4 两个进程活着（/healthz 是唯一免签名的端点）
-  docker exec bisheng-runtime-manager python -c "import urllib.request;print(urllib.request.urlopen('http://127.0.0.1:8091/healthz').read())"
-  docker exec bisheng-app-proxy       python -c "import urllib.request;print(urllib.request.urlopen('http://127.0.0.1:8090/healthz').read())"
+  docker exec doberman-agent-runtime-manager python -c "import urllib.request;print(urllib.request.urlopen('http://127.0.0.1:8091/healthz').read())"
+  docker exec doberman-agent-app-proxy       python -c "import urllib.request;print(urllib.request.urlopen('http://127.0.0.1:8090/healthz').read())"
 
 # 3.5 预检自检。/v1/runtime/status 要 HMAC 签名，签名串 = METHOD + \n + PATH + \n + body
-  docker exec bisheng-runtime-manager python -c '
+  docker exec doberman-agent-runtime-manager python -c '
 import hashlib, hmac, json, os, urllib.request
 secret = os.environ["RTM_HMAC_SECRET"]; path = "/v1/runtime/status"
 sig = hmac.new(secret.encode(), ("GET\n" + path + "\n").encode(), hashlib.sha256).hexdigest()
@@ -121,8 +121,8 @@ for c in json.load(urllib.request.urlopen(req))["preflight"]:
   # base_images 会 FAIL（本机还没拉运行时基础镜像），与本次修复无关。
 
 # 3.6 bind 语义（缺陷 3）——容器内写的东西必须出现在**宿主**的数据根下
-  docker exec bisheng-runtime-manager sh -c 'mkdir -p /app-data/apps/probe/db && echo hi > /app-data/apps/probe/db/x'
-  cat "${BISHENG_APP_DATA_ROOT}/apps/probe/db/x"     # 期望：hi
+  docker exec doberman-agent-runtime-manager sh -c 'mkdir -p /app-data/apps/probe/db && echo hi > /app-data/apps/probe/db/x'
+  cat "${DOBERMAN_AGENT_APP_DATA_ROOT}/apps/probe/db/x"     # 期望：hi
   # 反例长什么样：修复前 manager 交给宿主 dockerd 的 bind 源写的是容器内路径，
   # 宿主会在 /app-data/... 凭空建一个空目录，上面这个 cat 会找不到文件。
 
@@ -132,7 +132,7 @@ for c in json.load(urllib.request.urlopen(req))["preflight"]:
 # 5) 端到端（真发一个应用）还需要 backend：backend 侧要有
 #    app_runtime.enabled=true / manager_base_url=http://runtime-manager:8091 /
 #    manager_hmac_secret 与 proxy_hmac_secret 与上面两个环境变量一致。
-#    模板见 docker/bisheng/config/config.yaml 的 app_runtime: 段（默认 enabled: false）。
+#    模板见 docker/doberman-agent/config/config.yaml 的 app_runtime: 段（默认 enabled: false）。
 #    ⚠️ 那段配置要求 backend 镜像已认识 app_runtime 这个顶级键（v3.0+）；
 #    加在旧镜像上后端会拒绝启动（表现为容器反复重启，不是"功能没生效"）。
 HOWTO

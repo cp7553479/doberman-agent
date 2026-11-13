@@ -6,13 +6,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.app_publish import AppPreviewForbiddenError
+from doberman_agent.common.errcode.app_publish import AppPreviewForbiddenError
 
 
 @pytest.fixture
 def access(monkeypatch):
-    from bisheng.app_publish.domain.services import preview_access_service as mod
-    from bisheng.app_runtime.application import preview_operations
+    from doberman_agent.app_publish.domain.services import preview_access_service as mod
+    from doberman_agent.app_runtime.application import preview_operations
 
     monkeypatch.setattr(preview_operations, "verify_preview_execution", AsyncMock(return_value=True))
     monkeypatch.setattr(mod, "preview_credential_is_live", AsyncMock(return_value=True))
@@ -94,7 +94,7 @@ async def test_ambiguous_purpose_is_not_inferred(access):
 
 async def test_running_row_does_not_revive_a_cancelled_operation_or_revoked_key(access, monkeypatch):
     mod, _app, _viewer, row = access
-    from bisheng.app_runtime.application import preview_operations
+    from doberman_agent.app_runtime.application import preview_operations
 
     monkeypatch.setattr(preview_operations, "verify_preview_execution", AsyncMock(return_value=False))
     with pytest.raises(AppPreviewForbiddenError):

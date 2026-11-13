@@ -1,6 +1,6 @@
-import { MessageFrame, WorkflowFileField, WorkflowForm } from '@bisheng/chat';
-import { normalizeFormFields, type RawMessage } from '@bisheng/chat/core';
-import { Select, toast } from '@bisheng/ui';
+import { MessageFrame, WorkflowFileField, WorkflowForm } from '@doberman-agent/chat';
+import { normalizeFormFields, type RawMessage } from '@doberman-agent/chat/core';
+import { Select, toast } from '@doberman-agent/ui';
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
 import InputFileComponent from '@/components/inputFileComponent';
 import { locationContext } from '@/contexts/locationContext';

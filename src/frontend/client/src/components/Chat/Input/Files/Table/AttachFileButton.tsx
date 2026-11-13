@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import React, { useRef } from 'react';
 import { Button, FileUpload } from '~/components/ui';
 import { AttachmentIcon } from '~/components/svg';

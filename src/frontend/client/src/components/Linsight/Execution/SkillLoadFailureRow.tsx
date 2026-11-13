@@ -11,7 +11,7 @@
  * Renders as preparation (like the ingest row), not as an agent tool call: the
  * agent did not do this, and it must not count toward the group's activity tally.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import type { FC } from 'react';
 import { useLocalize } from '~/hooks';
 import { MUTED } from './execTokens';

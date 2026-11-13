@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import type { TConversationTag, TConversationTagRequest } from '~/types/chat';
 import { Label, TextareaAutosize, Input } from '~/components';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useBookmarkContext } from '~/Providers/BookmarkContext';
 import { useConversationTagMutation } from '~/hooks/queries/data-provider';
 import { useToastContext } from '~/Providers';

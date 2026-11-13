@@ -116,11 +116,11 @@ flowchart LR
 
 **② backend 状态动作 / 读口**：`AppStateService.{publish,manual_publish,stop,resume,delete,stage_version}` 仍是 F055 的领域入口；`GET /api/v1/apps`、`/{id}`、`/{id}/instance`、`/{id}/versions`、`/{id}/logs`，PATCH 元信息与 actions 路由保持。版本列表只读，不提供绕过审批的直接切版本；`AppMetaService.update_meta` 为管线与页面共用。runtime-status 只供有权管理员；owner/租户范围由读服务决定，不拿 UI can 标志当后端权限。
 
-**③ app-proxy 注入头**：`X-BiSheng-User-Id/User-Name/Tenant-Id/Dept-Id/Dept-Name/Dept-Path/Subject-Kind/App-Id/Access-Token/Request-Id`；姓名/部门等非 ASCII 值用现有 percent-encoding；入站 header lower + 下划线→连字符归一后剥离整个 x-bisheng 等价类。X-Forwarded-Prefix/Proto/Host 由 proxy 覆盖，不信客户端。OBO 现已有消费者，不能继续引用旧“可无 token 放行”例外。
+**③ app-proxy 注入头**：`X-doberman-agent-User-Id/User-Name/Tenant-Id/Dept-Id/Dept-Name/Dept-Path/Subject-Kind/App-Id/Access-Token/Request-Id`；姓名/部门等非 ASCII 值用现有 percent-encoding；入站 header lower + 下划线→连字符归一后剥离整个 x-doberman-agent 等价类。X-Forwarded-Prefix/Proto/Host 由 proxy 覆盖，不信客户端。OBO 现已有消费者，不能继续引用旧“可无 token 放行”例外。
 
 **④ manifest 消费**：形态归 F055；runtime/port/tier/database/egress/delivery/startup 由当前 schema 冻结后进入执行，见 F055 design §4.2③。新增业务 secret 名仅消费可信 formal 环境，不允许任何运行形态覆盖保留名。
 
-**⑤ 环境变量**：`BISHENG_APP_DB_URL`、应用 base path、平台/模型/storage endpoint 与 operation-bound 凭据仍按 F086/F059 注入；本轮不改已有公开 SDK 变量名。正式、preview、probe 的身份/数据空间不可混用，构建进程不取得正式环境。
+**⑤ 环境变量**：`DOBERMAN_AGENT_APP_DB_URL`、应用 base path、平台/模型/storage endpoint 与 operation-bound 凭据仍按 F086/F059 注入；本轮不改已有公开 SDK 变量名。正式、preview、probe 的身份/数据空间不可混用，构建进程不取得正式环境。
 
 **⑥ SQLite / 日志**：DB URL 指向运行实例的 `/data/app.db`；Docker bind 与 K8s 独占 PVC 的宿主/集群映射由执行层持有。日志 `tail/since/keyword`、状态和数据动作先验 owner/租户；backend 只传意图，manager 执行备份/数据维护，经 backend 传快照。
 
@@ -129,7 +129,7 @@ flowchart LR
 | 模块 / 落点 | 做什么 | 不做什么 |
 |---|---|---|
 | `app_runtime/domain/services/entry_authz_service.py` | 统一 OBO 配置检查与正式/预览判定 | 不接触容器、不匿名降级 |
-| `bisheng/main.py:lifespan` | 运行时开启时输出脱敏启动诊断 | 不因此阻塞整个平台 |
+| `doberman-agent/main.py:lifespan` | 运行时开启时输出脱敏启动诊断 | 不因此阻塞整个平台 |
 | `runtime_manager/egress.py` + 新 host verifier CLI / unit | 同源渲染、宿主安装、只读验证、配对 canary 报告 | 不持有应用真实密钥，不清全局防火墙 |
 | `app_runtime` 新 host isolation Repository/Service/Endpoint | 验证独立角色、保存证明、节点准入读取 | 不执行宿主命令、不访问 Engine |
 | `RuntimeOperationService` / `RuntimeDeliveryCoordinator` | 部署、恢复、用户确认重建准入和原有围栏 | 不拥有 F055 密钥配置资产 |
@@ -146,8 +146,8 @@ flowchart LR
 
 | 路径 | 规则与验证 |
 |---|---|
-| iptables | 自有 `BISHENG_APP_INPUT` / `BISHENG_APP_FORWARD` 链。宿主 INPUT 在其他宽泛 accept 之前跳转；FORWARD 由 DOCKER-USER 首部跳转。跳转匹配实际 app bridge 与源子网；自有链内只允许固定 egress IP/3128 的 ORIGINAL，以及源 app、`ctdir REPLY`、ESTABLISHED 的合法入口/探活响应，其余 DROP。`RELATED` 不宽泛放行 |
-| nftables | 自有 `inet bisheng_egress`，同时具有 input / forward hook，优先级先于普通 filter 接受；匹配 bridge/源子网，允许条件与 iptables 同源生成。nft accept 仍需通过后续链，不能承诺绕过已有宿主拒绝策略 |
+| iptables | 自有 `DOBERMAN_AGENT_APP_INPUT` / `DOBERMAN_AGENT_APP_FORWARD` 链。宿主 INPUT 在其他宽泛 accept 之前跳转；FORWARD 由 DOCKER-USER 首部跳转。跳转匹配实际 app bridge 与源子网；自有链内只允许固定 egress IP/3128 的 ORIGINAL，以及源 app、`ctdir REPLY`、ESTABLISHED 的合法入口/探活响应，其余 DROP。`RELATED` 不宽泛放行 |
+| nftables | 自有 `inet doberman_agent_egress`，同时具有 input / forward hook，优先级先于普通 filter 接受；匹配 bridge/源子网，允许条件与 iptables 同源生成。nft accept 仍需通过后续链，不能承诺绕过已有宿主拒绝策略 |
 | 更新 | root 安装工具获取独占锁，先构建新规则并 dry-run 校验，再以 iptables-restore `--noflush` 或 nft 单事务切换；初始化跳转失败保持/恢复拒绝态，不先删全部规则再逐条添加。重跑不重复，卸载只移除有标识的跳转/自有链表 |
 | 动态地址 | installer 通过 Engine 网络检查冻结 network ID / bridge / 子网 / egress IP、端口、宿主网关/发布地址。代理 IP 变化立即使旧配置证明不匹配，重新安装校验；不在 L3 中放行 hostname 或不受限端口 |
 | 不支持 | IPv6/未知 family、Docker rootless/不可确认 bridge、不可识别防火墙后端先报告缺能力；不静默省略一部分网络。K8s 使用 F059 的 CNI 证明，不套用宿主 Docker 规则 |

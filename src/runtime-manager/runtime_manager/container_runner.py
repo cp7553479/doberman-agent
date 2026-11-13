@@ -15,8 +15,8 @@ from runtime_manager.secret_redaction import bounded_diagnostic, diagnostic_envi
 
 logger = logging.getLogger(__name__)
 
-OP_LABEL = "bisheng.runtime.operation"
-PHASE_LABEL = "bisheng.runtime.phase"
+OP_LABEL = "doberman-agent.runtime.operation"
+PHASE_LABEL = "doberman-agent.runtime.phase"
 
 
 def host_path(config: Config, path: Path):
@@ -87,19 +87,19 @@ class ContainerRunner:
         env = env or {}
         timeout = timeout or self.config.task_timeout_seconds
         labels = {
-            "bisheng.managed": "v2",
+            "doberman-agent.managed": "v2",
             OP_LABEL: operation["operation_id"],
             PHASE_LABEL: phase,
-            "bisheng.runtime.node": self.config.node_id,
-            "bisheng.app.id": operation["app_id"],
-            "bisheng.runtime.epoch": str(operation["owner_epoch"]),
+            "doberman-agent.runtime.node": self.config.node_id,
+            "doberman-agent.app.id": operation["app_id"],
+            "doberman-agent.runtime.epoch": str(operation["owner_epoch"]),
         }
-        name = f"bisheng-v2-{operation['operation_id']}-{phase}"
+        name = f"doberman-agent-v2-{operation['operation_id']}-{phase}"
         matches = self.docker.list_containers(
             all_states=True,
             filters={
                 "label": [
-                    f"bisheng.runtime.node={self.config.node_id}",
+                    f"doberman-agent.runtime.node={self.config.node_id}",
                     f"{OP_LABEL}={operation['operation_id']}",
                     f"{PHASE_LABEL}={phase}",
                 ]
@@ -171,7 +171,7 @@ class ContainerRunner:
         pending = []
         for item in self.docker.list_containers(
             all_states=True,
-            filters={"label": [f"bisheng.runtime.node={self.config.node_id}", f"{OP_LABEL}={operation_id}"]},
+            filters={"label": [f"doberman-agent.runtime.node={self.config.node_id}", f"{OP_LABEL}={operation_id}"]},
         ):
             if item.get("Labels", {}).get(PHASE_LABEL) == "serve":
                 continue
@@ -199,7 +199,7 @@ class ContainerRunner:
             all_states=True,
             filters={
                 "label": [
-                    f"bisheng.runtime.node={self.config.node_id}",
+                    f"doberman-agent.runtime.node={self.config.node_id}",
                     f"{OP_LABEL}={operation_id}",
                     f"{PHASE_LABEL}={phase}",
                 ]

@@ -1,4 +1,4 @@
-import { Select } from "@bisheng/ui"
+import { Select } from "@doberman-agent/ui"
 import { getUsersApi } from "@/controllers/API/user"
 import { useSubjectSearch } from "../selectComponent/useSubjectSearch"
 import { useSelectLabels } from "../formFields/useSelectLabels"

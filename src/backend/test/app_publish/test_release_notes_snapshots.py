@@ -18,12 +18,12 @@ async def test_deployment_snapshot_drives_approval_and_version_after_reload(
     audit_sink,
     monkeypatch,
 ):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
-    from bisheng.app_publish.domain.services.version_service import VersionService
-    from bisheng.app_runtime.domain.services import app_query_service
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.version_service import VersionService
+    from doberman_agent.app_runtime.domain.services import app_query_service
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     from .test_version_service import _FakeApproval
 
@@ -71,8 +71,8 @@ async def test_deployment_snapshot_drives_approval_and_version_after_reload(
 
 
 async def test_later_version_does_not_overwrite_earlier_notes(publish_db, app_factory, deployment_factory):
-    from bisheng.app_publish.domain.services.version_service import VersionService
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.services.version_service import VersionService
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app, _ = await app_factory(with_version=False)
     for idx, notes in enumerate(["First", "Second"], start=1):
@@ -95,8 +95,8 @@ async def test_notes_do_not_bypass_version_read_permissions(
 ):
     from unittest.mock import AsyncMock
 
-    from bisheng.app_runtime.domain.services import app_query_service
-    from bisheng.common.errcode.base import BaseErrorCode
+    from doberman_agent.app_runtime.domain.services import app_query_service
+    from doberman_agent.common.errcode.base import BaseErrorCode
 
     app, _ = await app_factory()
     monkeypatch.setattr(app_query_service, "get_async_db_session", publish_db)

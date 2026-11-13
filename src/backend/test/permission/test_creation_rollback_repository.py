@@ -3,17 +3,17 @@
 import pytest
 from sqlmodel import select
 
-from bisheng.common.errcode.permission import PermissionVersionConflictError
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.permission.domain.models import (
+from doberman_agent.common.errcode.permission import PermissionVersionConflictError
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.permission.domain.models import (
     PermissionGrant,
     PermissionGrantAssignee,
     PermissionProjectionOperation,
     PermissionVisibleSourceProjection,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.creation_rollback_repository import CreationRollbackRepository
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.repositories.creation_rollback_repository import CreationRollbackRepository
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 from test.permission.test_f048_projection_sql_runtime import _seed_projecting_state
 from test.permission.test_f048_projection_sql_runtime import session_factory as session_factory
 from test.permission.test_f048_projection_sql_runtime import tenant_context as tenant_context

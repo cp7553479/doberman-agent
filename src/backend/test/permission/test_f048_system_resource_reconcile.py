@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.permission.application import system_resource_reconcile as reconcile_module
-from bisheng.permission.application.system_resource_reconcile import (
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.permission.application import system_resource_reconcile as reconcile_module
+from doberman_agent.permission.application.system_resource_reconcile import (
     SystemOwnedResourceSpec,
     SystemOwnedResourceState,
     reconcile_system_owned_resources,
@@ -124,7 +124,7 @@ async def test_non_current_resource_is_never_reinterpreted_as_missing(monkeypatc
 async def test_bootstrap_binds_each_verified_tenant_and_restores_caller(monkeypatch, fail):
     from dataclasses import replace
 
-    from bisheng.core.context import tenant
+    from doberman_agent.core.context import tenant
 
     resources = (_spec("6"), replace(_spec("16"), tenant_id=2))
     missing = tuple(SystemOwnedResourceState(resource=one, state="MISSING") for one in resources)

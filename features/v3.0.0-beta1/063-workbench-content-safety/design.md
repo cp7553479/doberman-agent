@@ -26,7 +26,7 @@
 
 全局铁律遵循 `docs/constitution.md` C1–C7。本功能特有：
 
-- **商业版**：UI 用 `appConfig.isPro`，运行时用 `settings.get_system_login_method().bisheng_pro`。开源进程即使库里有策略行，也跳过审查。
+- **商业版**：UI 用 `appConfig.isPro`，运行时用 `settings.get_system_login_method().doberman_agent_pro`。开源进程即使库里有策略行，也跳过审查。
 - **一份策略**：PRD 只有首页一个面板，日常和任务共用 `business_type=workbench_chat`。
 - **只审文本**：用户输入取 `APIChatCompletion.text` / 灵思 `question`；不读 `files[]`、不读解析结果。语音识别后进输入框的字算用户文本，要审。
 - **日常输出只审最终回答**：累积对象是 `final_msg`（`agent_answer/stream` 的正文），不是 `agent_thinking`、不是 tool_call。
@@ -167,7 +167,7 @@ POST /workstation/chat/completions  (task_mode=false)
 
 ### 4.4 改造后：日常输出（100 字）
 
-在 `_agent_stream_chat_completion` 里，**两处**往 `final_msg` 追加正文的循环都要接扫描器（有工具的 `astream_events` 和无工具的 `bisheng_llm.astream`）。不要只改一处。
+在 `_agent_stream_chat_completion` 里，**两处**往 `final_msg` 追加正文的循环都要接扫描器（有工具的 `astream_events` 和无工具的 `doberman_agent_llm.astream`）。不要只改一处。
 
 ```
 scanner = StreamContentSafetyScanner(tenant, workbench_chat)
@@ -251,7 +251,7 @@ check_text(question)
 | 7 | 知识空间默认自动回复是上传场景文案 | 工作台未填回复时用户看到「上传内容命中敏感词」 | 按 `business_type` 分默认句 |
 | 8 | 首页 `ScopeBar` 是部门工作台配置继承；词表 API 是**租户**行 | 管理员以为按部门各配一份，其实全租户共用 | 文档写明；本期不做部门 scope |
 | 9 | `aupsert` 在 `enabled=false` 时仍写入词表 | 这正是 AC-06；不要在关闭时清空 `custom_words` | 关闭只改 `enabled` |
-| 10 | 开源环境 `BISHENG_PRO` 为 false | 只藏 UI 不够，API 仍可能被直接 PUT 出策略 | 运行时第一句判断 `bisheng_pro` |
+| 10 | 开源环境 `DOBERMAN_AGENT_PRO` 为 false | 只藏 UI 不够，API 仍可能被直接 PUT 出策略 | 运行时第一句判断 `doberman_agent_pro` |
 | 11 | 输入命中若跳过 initialize | 新会话没有 `conversationId`，前端气泡对不上 | 命中也走会话初始化，只跳过 LLM |
 | 12 | 输出命中后若把半截 `final_msg` 落库 | 刷新又能看到违规正文 | persist 前把 `msg/events` 换成自动回复 |
 | 13 | 知识空间面板**没有**自动回复框，工作流 FormSet 有 | 复制知识空间组件会漏 PRD 字段 | 以 FormSet + 知识空间布局拼工作台面板 |
@@ -278,7 +278,7 @@ check_text(question)
 | 依赖 | 形式 | 风险点 |
 |---|---|---|
 | `sensitive_word_policy` 表与 AC 实现 | F036 已上线 | 改 `check_text` 语义会同时影响知识空间/频道 |
-| `env.pro` / `BISHENG_PRO` | 现有商业开关 | 开关误关则整页不出现、运行时不审 |
+| `env.pro` / `DOBERMAN_AGENT_PRO` | 现有商业开关 | 开关误关则整页不出现、运行时不审 |
 | `agent_answer/end` 覆盖语义 | client SSE | 若以后 end 改为「只补 delta」，替换会失效，必须回归 |
 | F035 任务 handoff | `linsight_task_handoff` | 命中路径不得发该事件 |
 | 工作台首页保存 | `DailyChatConfig` `handleSave` | 盲存保护（`is_fallback`）不要误伤策略 PUT |

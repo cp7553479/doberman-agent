@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useState, useId, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as Ariakit from '@ariakit/react';

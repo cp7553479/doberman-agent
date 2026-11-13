@@ -1,7 +1,7 @@
 /**
  * Version diff on the detail page's version tab (F055 AC-41 / T064).
  *
- * The rendering is `@bisheng/file-viewers`' `VersionDiffView` — the *same*
+ * The rendering is `@doberman-agent/file-viewers`' `VersionDiffView` — the *same*
  * component the client's review view mounts, which is what AC-41 means by
  * "版本 tab 与审读视图同一呈现". Everything app-specific stays here: which two
  * versions to compare, how to fetch them, and how a refusal reads.
@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/bs-ui/select"
-import { VersionDiffView } from "@bisheng/file-viewers"
+import { VersionDiffView } from "@doberman-agent/file-viewers"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 

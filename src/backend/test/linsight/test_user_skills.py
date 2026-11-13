@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException
 
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.linsight.domain.services.user_skills import SkillAvailabilityRepository, UserSkillsService, visible_to
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.linsight.domain.services.user_skills import SkillAvailabilityRepository, UserSkillsService, visible_to
 
 
 @pytest.fixture(autouse=True)
@@ -26,12 +26,12 @@ def test_personal_ownership(owner, current, allowed):
 
 
 async def test_account_switches_keep_disabled_entries_manageable_and_filter_runtime(monkeypatch):
-    from bisheng.linsight.domain.models.linsight_skill import LinsightSkillDao
+    from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkillDao
 
     set_current_tenant_id(1)
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         AsyncMock(return_value={"1": {"use"}, "2": {"use"}}),
     )
     rows = [record(1), record(2, "personal", 7), record(3, "personal", 8)]
@@ -63,13 +63,13 @@ def test_durable_settings_include_tenant_account_and_skill_namespace():
 
 
 async def test_revoked_skill_cannot_be_listed_downloaded_or_reenabled(monkeypatch):
-    from bisheng.linsight.domain.models.linsight_skill import LinsightSkillDao
+    from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkillDao
 
     set_current_tenant_id(1)
     monkeypatch.setattr(LinsightSkillDao, "list_enabled", AsyncMock(return_value=[record(1), record(2)]))
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
     decisions = AsyncMock(return_value={"1": {"use"}})
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.batch_check_business_actions", decisions)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.batch_check_business_actions", decisions)
     repo = SimpleNamespace(disabled_ids=AsyncMock(return_value=set()), save=AsyncMock())
     service = UserSkillsService(7, repo)
     assert [row.id for row, _ in await service.records()] == [1]

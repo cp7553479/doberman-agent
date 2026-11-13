@@ -21,7 +21,7 @@ import pytest
     ],
 )
 def test_only_actual_startup_failures_use_startup_code(kind, stage, status, code):
-    from bisheng.app_runtime.domain.services.runtime_public_diagnostics import runtime_failure_error
+    from doberman_agent.app_runtime.domain.services.runtime_public_diagnostics import runtime_failure_error
 
     op = SimpleNamespace(
         id="op",
@@ -46,7 +46,7 @@ def test_only_actual_startup_failures_use_startup_code(kind, stage, status, code
 
 @pytest.mark.parametrize("changed", ["none", "expired", "tenant", "app", "version", "deployment", "missing"])
 async def test_publish_reader_checks_expiry_and_exact_association_before_returning_tail(monkeypatch, changed):
-    from bisheng.app_runtime.application import authorization, publish_diagnostics
+    from doberman_agent.app_runtime.application import authorization, publish_diagnostics
 
     auth = AsyncMock()
     monkeypatch.setattr(authorization, "authorize_app", auth)
@@ -89,7 +89,7 @@ async def test_publish_reader_checks_expiry_and_exact_association_before_returni
 
 
 async def test_publish_only_caller_is_denied_before_operation_read(monkeypatch):
-    from bisheng.app_runtime.application import authorization, publish_diagnostics
+    from doberman_agent.app_runtime.application import authorization, publish_diagnostics
 
     monkeypatch.setattr(authorization, "authorize_app", AsyncMock(side_effect=PermissionError("edit required")))
     repo = SimpleNamespace(get=AsyncMock(), get_application=AsyncMock())
@@ -103,7 +103,7 @@ async def test_publish_only_caller_is_denied_before_operation_read(monkeypatch):
 
 
 def test_long_lived_failure_never_copies_nested_diagnostics():
-    from bisheng.app_runtime.domain.services.runtime_public_diagnostics import stored_failure
+    from doberman_agent.app_runtime.domain.services.runtime_public_diagnostics import stored_failure
 
     before = {
         "code": 16228,
@@ -124,7 +124,7 @@ def test_long_lived_failure_never_copies_nested_diagnostics():
     "reference", ["registry.invalid/runtime@sha256:" + "a" * 64, "https://user:password@private.invalid/image"]
 )
 def test_missing_image_context_is_safe_and_points_to_the_exact_material(reference):
-    from bisheng.app_runtime.domain.services.runtime_public_diagnostics import runtime_failure_error
+    from doberman_agent.app_runtime.domain.services.runtime_public_diagnostics import runtime_failure_error
 
     op = SimpleNamespace(
         id="op",
@@ -145,8 +145,8 @@ def test_missing_image_context_is_safe_and_points_to_the_exact_material(referenc
 async def test_pipeline_storage_and_audit_strip_logs_even_when_an_exception_supplies_them(monkeypatch):
     from contextlib import asynccontextmanager
 
-    from bisheng.app_publish.domain.services import publish_pipeline_service as module
-    from bisheng.common.errcode.app_publish import AppStartupProbeFailedError
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as module
+    from doberman_agent.common.errcode.app_publish import AppStartupProbeFailedError
 
     session = SimpleNamespace(commit=AsyncMock())
 
@@ -169,7 +169,7 @@ async def test_pipeline_storage_and_audit_strip_logs_even_when_an_exception_supp
 
 @pytest.mark.parametrize("expired", [False, True])
 def test_runtime_management_read_enforces_expiry_without_waiting_for_purge(expired):
-    from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+    from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
 
     row = SimpleNamespace(
         failure={"reason": "startup_exited", "diagnostic_tail": "retained output"},
@@ -182,10 +182,10 @@ def test_runtime_management_read_enforces_expiry_without_waiting_for_purge(expir
 
 @pytest.mark.parametrize("recovered", [False, True])
 async def test_prepare_failure_classification_is_identical_for_new_and_recovered_operations(recovered):
-    from bisheng.app_publish.domain.schemas.app_manifest import AppManifest
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
-    from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
-    from bisheng.common.errcode.app_publish import AppDependencyBuildFailedError
+    from doberman_agent.app_publish.domain.schemas.app_manifest import AppManifest
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+    from doberman_agent.common.errcode.app_publish import AppDependencyBuildFailedError
 
     op = SimpleNamespace(
         id="op",

@@ -2,8 +2,8 @@
 
 from unittest.mock import Mock, patch
 
-from bisheng.core.config.settings import Etl4lmConf
-from bisheng.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
+from doberman_agent.core.config.settings import Etl4lmConf
+from doberman_agent.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
 
 
 def test_request_kwargs_are_forwarded_and_override_defaults(tmp_path):
@@ -24,7 +24,7 @@ def test_request_kwargs_are_forwarded_and_override_defaults(tmp_path):
     response = Mock(status_code=200)
     response.json.return_value = {"status_code": 200, "partitions": [], "text": "parsed"}
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.etl4lm.requests.post", return_value=response) as post:
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.etl4lm.requests.post", return_value=response) as post:
         documents = loader.load()
 
     payload = post.call_args.kwargs["json"]
@@ -50,7 +50,7 @@ def test_request_kwargs_default_keeps_existing_payload(tmp_path):
     response = Mock(status_code=200)
     response.json.return_value = {"status_code": 200, "partitions": [], "text": "parsed"}
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.etl4lm.requests.post", return_value=response) as post:
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.etl4lm.requests.post", return_value=response) as post:
         loader.load()
 
     payload = post.call_args.kwargs["json"]

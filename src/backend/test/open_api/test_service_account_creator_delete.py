@@ -7,18 +7,18 @@ grants that ``authorize_created`` writes for a service-account creation.
 
 from types import SimpleNamespace
 
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.permission.application.control_state import RuntimeCatalogSnapshot, RuntimeModelSnapshot
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.permission.application.control_state import RuntimeCatalogSnapshot, RuntimeModelSnapshot
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceRecord,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.permission.domain.services.permission_explain_service import InheritedGrantSet
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_explain_service import InheritedGrantSet
 
 TENANT = 4
 CREATOR_SA = 7

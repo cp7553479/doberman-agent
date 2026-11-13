@@ -9,9 +9,9 @@ from fastapi import APIRouter, Depends, FastAPI, File, UploadFile
 from httpx import ASGITransport, AsyncClient
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from bisheng.common.errcode import open_api
-from bisheng.common.errcode.knowledge import KnowledgeTypeNotSupportedError
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode import open_api
+from doberman_agent.common.errcode.knowledge import KnowledgeTypeNotSupportedError
+from doberman_agent.common.errcode.permission import (
     AuthorizationModelMismatchError,
     PermissionCheckFailedError,
     PermissionDeniedError,
@@ -20,9 +20,9 @@ from bisheng.common.errcode.permission import (
     PermissionPublishNotReadyError,
     PermissionServiceUnavailableError,
 )
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.scopes import open_api_scope
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.scopes import open_api_scope
 from test.open_api.test_dependencies import natural_person_principal, service_account_principal
 
 # Literal expectations come from PRD appendix C, not production http_status.
@@ -73,7 +73,7 @@ class BodyPayload(BaseModel):
 @pytest.fixture
 def contract_app(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     app = FastAPI()
@@ -187,7 +187,7 @@ async def test_credential_checks_precede_body_parser_errors(
         26030: open_api.OpenApiAuthDependencyUnavailableError,
     }
     if code is not None:
-        monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", AsyncMock(side_effect=errors[code]()))
+        monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", AsyncMock(side_effect=errors[code]()))
     async with AsyncClient(transport=ASGITransport(app=contract_app), base_url="http://test") as client:
         response = await client.post("/api/v2" + path, content=body, headers={"Content-Type": content_type})
     assert response.status_code == http_status
@@ -210,7 +210,7 @@ async def test_removed_user_id_is_rejected_for_all_json_media_types(contract_app
 @pytest.mark.parametrize("target", ["9" * 5000, str(2**63)])
 async def test_out_of_range_delegate_id_has_same_error_as_missing_target(contract_app, monkeypatch, target):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal(scopes=frozenset({"knowledge:read", "delegate"}))),
     )
     async with AsyncClient(transport=ASGITransport(app=contract_app), base_url="http://test") as client:
@@ -221,11 +221,11 @@ async def test_out_of_range_delegate_id_has_same_error_as_missing_target(contrac
 @pytest.mark.parametrize("deployment_enabled,tenant_enabled", [(False, True), (True, False)])
 async def test_pat_disabled_gates_return_26040(contract_app, monkeypatch, deployment_enabled, tenant_enabled):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer", AsyncMock(return_value=natural_person_principal())
+        "doberman_agent.open_api.api.dependencies.validate_bearer", AsyncMock(return_value=natural_person_principal())
     )
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.settings.open_api.pat_enabled", deployment_enabled)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.settings.open_api.pat_enabled", deployment_enabled)
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.TenantSettingService.get_policy",
+        "doberman_agent.open_api.api.dependencies.TenantSettingService.get_policy",
         AsyncMock(return_value=SimpleNamespace(enabled=tenant_enabled, data_scope="all_visible")),
     )
     async with AsyncClient(transport=ASGITransport(app=contract_app), base_url="http://test") as client:
@@ -234,7 +234,7 @@ async def test_pat_disabled_gates_return_26040(contract_app, monkeypatch, deploy
 
 
 async def test_v1_handlers_and_non_v2_paths_keep_existing_contract():
-    from bisheng.main import _EXCEPTION_HANDLERS
+    from doberman_agent.main import _EXCEPTION_HANDLERS
 
     app = FastAPI(exception_handlers=_EXCEPTION_HANDLERS)
     register_open_api_exception_handlers(app)
@@ -258,7 +258,7 @@ async def test_v1_handlers_and_non_v2_paths_keep_existing_contract():
         ({"X-End-User": ""}, 26018, 400),
         ({"X-End-User": "a" * 129}, 26018, 400),
         ({"X-End-User": "tab\tvalue"}, 26018, 400),
-        ({"X-Bisheng-End-User": "external"}, 26019, 400),
+        ({"X-Doberman-Agent-End-User": "external"}, 26019, 400),
         ({"X-Custom-On-Behalf-Of": "7"}, 26019, 400),
         ({"X-On-Behalf-Of": "username"}, 26005, 403),
         ({"X-On-Behalf-Of": "7"}, 26004, 403),

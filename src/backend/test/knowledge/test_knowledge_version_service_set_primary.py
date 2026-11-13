@@ -3,30 +3,30 @@ import pytest
 from fastapi import HTTPException
 from unittest.mock import MagicMock, AsyncMock
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
     KnowledgeDocumentRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
-from bisheng.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
+from doberman_agent.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
 
 
 @pytest.fixture
 def enable_switch(monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = True
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
 
 
 async def _seed_two_version_doc(session):
@@ -63,7 +63,7 @@ def _build_svc(session):
 async def test_set_primary_demotes_old_and_points_doc(enable_switch, async_db_session, monkeypatch):
     doc, v1, v2 = await _seed_two_version_doc(async_db_session)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_set_primary_version",
         MagicMock(return_value=None),
     )
@@ -89,7 +89,7 @@ async def test_set_primary_rejects_failed_parse_target(enable_switch, async_db_s
     kf.status = 3
     await file_repo.update(kf)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_set_primary_version",
         MagicMock(return_value=None),
     )
@@ -103,7 +103,7 @@ async def test_set_primary_rejects_failed_parse_target(enable_switch, async_db_s
 async def test_set_primary_no_op_when_already_primary(enable_switch, async_db_session, monkeypatch):
     doc, v1, v2 = await _seed_two_version_doc(async_db_session)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_set_primary_version",
         MagicMock(return_value=None),
     )
@@ -118,12 +118,12 @@ async def test_set_primary_no_op_when_already_primary(enable_switch, async_db_se
 
 @pytest.mark.asyncio
 async def test_set_primary_rejected_when_switch_off(async_db_session, monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = False
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
     svc = _build_svc(async_db_session)
     with pytest.raises(HTTPException) as ctx:
         await svc.set_primary_version(version_id=1)

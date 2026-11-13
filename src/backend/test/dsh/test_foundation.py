@@ -61,7 +61,7 @@ def test_license_vectors_signed_by_test_public_key_only(dsh_contracts):
 
 
 def test_config_default_off_and_enabled_requires_trust():
-    from bisheng.dsh.config import DshSettings
+    from doberman_agent.dsh.config import DshSettings
 
     assert DshSettings().enabled is False
     with pytest.raises(ValidationError):
@@ -73,7 +73,7 @@ def test_config_default_off_and_enabled_requires_trust():
 
 
 def test_identity_contract_is_strict(dsh_contracts):
-    from bisheng.dsh.domain.schemas.contracts import DshIdentitySnapshot
+    from doberman_agent.dsh.domain.schemas.contracts import DshIdentitySnapshot
 
     fixture = dsh_contracts["identity-and-errors"]
     for key in ["snapshot", "snapshot_name_fallback", "inactive_snapshot"]:
@@ -90,7 +90,7 @@ def test_identity_contract_is_strict(dsh_contracts):
 
 
 def test_usage_dto_does_not_turn_unknown_into_zero():
-    from bisheng.dsh.domain.schemas.contracts import DshTokenUsage
+    from doberman_agent.dsh.domain.schemas.contracts import DshTokenUsage
 
     assert DshTokenUsage().total_tokens is None
     with pytest.raises(ValidationError):
@@ -101,11 +101,11 @@ def test_usage_dto_does_not_turn_unknown_into_zero():
 
 
 def test_models_preserve_unknown_and_policy_history():
-    from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-    from bisheng.dsh.domain.models.model_call import DshModelCall
-    from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-    from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-    from bisheng.dsh.domain.services.profile import profile_scope
+    from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+    from doberman_agent.dsh.domain.models.model_call import DshModelCall
+    from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+    from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+    from doberman_agent.dsh.domain.services.profile import profile_scope
 
     models = (DshUserPolicy, DshAdminOperation, DshMonthlyUsage, DshModelCall)
     engine = create_engine("sqlite://")
@@ -161,7 +161,7 @@ def test_profile_migration_is_additive_and_retained(monkeypatch):
     from alembic.operations import Operations
     from sqlalchemy import inspect, text
 
-    path = Path(__file__).resolve().parents[2] / "bisheng/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
+    path = Path(__file__).resolve().parents[2] / "doberman_agent/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
     spec = importlib.util.spec_from_file_location("dsh_profile_migration", path)
     migration = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migration)
@@ -191,7 +191,7 @@ def test_profile_migration_is_additive_and_retained(monkeypatch):
 
 
 def test_error_registry_matches_frozen_envelope(dsh_contracts):
-    from bisheng.common.errcode.dsh import ERROR_BY_CLIENT_CODE
+    from doberman_agent.common.errcode.dsh import ERROR_BY_CLIENT_CODE
 
     for case in dsh_contracts["client-0.5.0"]["errors"]:
         detail = case["body"]["error"]
@@ -203,11 +203,11 @@ def test_error_registry_matches_frozen_envelope(dsh_contracts):
 
 
 def test_enabled_config_has_no_duplicate_secret_or_redis_fields():
-    from bisheng.dsh.config import DshSettings
+    from doberman_agent.dsh.config import DshSettings
 
     settings = DshSettings(
         enabled=True,
-        platform_public_url="https://bisheng.example.com",
+        platform_public_url="https://doberman-agent.example.com",
         gateway_internal_url="https://gateway.example.com",
     )
     fields = settings.model_dump()
@@ -227,7 +227,7 @@ def test_missing_external_stores_fail_explicitly(monkeypatch):
 
 @pytest.mark.parametrize("scheme", ["http", "https"])
 def test_config_accepts_http_and_https_origins(scheme):
-    from bisheng.dsh.config import DshSettings
+    from doberman_agent.dsh.config import DshSettings
 
     settings = DshSettings(
         platform_public_url=f"{scheme}://192.168.106.109:13001/",
@@ -250,7 +250,7 @@ def test_config_accepts_http_and_https_origins(scheme):
     ],
 )
 def test_config_rejects_non_origin_addresses(origin):
-    from bisheng.dsh.config import DshSettings
+    from doberman_agent.dsh.config import DshSettings
 
     for field in ("platform_public_url", "gateway_internal_url"):
         with pytest.raises(ValidationError):

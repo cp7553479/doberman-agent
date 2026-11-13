@@ -12,7 +12,7 @@ statusNote: 组件未落地，本页只是样式标本
 白底（跟随暗色主题）+ 1px 描边 + 浮层投影档，圆角 12px（弹窗 16px，Popover 小一号），内边距 16px（弹窗 20px，轻一档），宽度随内容、最大 320px。从上到下三段各自可选：标题（14/22 · 500 · 一级文字色）、正文（14/22 常规 · 二级文字色）、操作区（small 24px 按钮 · 间距 8px · 右对齐、主按钮最右）。
 
 ```tsx
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 const card: React.CSSProperties = {
   display: 'inline-block',
@@ -92,7 +92,7 @@ export default () => (
     <HoverCard.Portal>
       <HoverCard.Content side="top" sideOffset={4} style={card}>
         <div style={{ fontSize: 14, lineHeight: '22px', fontWeight: 500, color: 'rgb(var(--text-1))' }}>
-          毕昇 · 知识库管理员
+          doberman-agent · 知识库管理员
         </div>
         <div style={{ marginTop: 8, fontSize: 14, lineHeight: '22px', color: 'rgb(var(--text-2))' }}>
           负责产品知识空间的文档审核与目录维护，最近活跃于 3 天前。
@@ -111,7 +111,7 @@ export default () => (
 ```tsx
 import { useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 const card: React.CSSProperties = {
   width: 240,

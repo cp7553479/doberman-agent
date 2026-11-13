@@ -11,9 +11,9 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.api.services import audit_log as service_module
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.api.services import audit_log as service_module
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
 from test.audit.conftest import insert_audit, make_app, make_credential, make_user_payload
 
 SECRET = "sk-live-THIS-MUST-NEVER-LEAVE"
@@ -31,8 +31,8 @@ def global_super():
 
 async def _export(user, *, current_tenant=2, **kwargs):
     with (
-        patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-        patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=current_tenant),
+        patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+        patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=current_tenant),
     ):
         return await AuditLogService.export_audit_log(
             user,
@@ -81,7 +81,7 @@ class TestExportBoundary:
             return []
 
         monkeypatch.setattr(AuditLogService, "_user_has_log_web_menu", _no_menu)
-        monkeypatch.setattr("bisheng.api.services.audit_log.UserGroupDao.aget_user_admin_group", _no_groups)
+        monkeypatch.setattr("doberman_agent.api.services.audit_log.UserGroupDao.aget_user_admin_group", _no_groups)
         with pytest.raises(UnAuthorizedError):
             await _export(user)
 

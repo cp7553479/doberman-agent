@@ -1,6 +1,6 @@
 # F088 实施与验收记录
 
-日期：2026-10-22。隔离工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/bisheng`；分支`codex/3.0.0-088-request-error-contract`；基线`bc6ca25ba`。本节为实施验收时点记录；随后用户授权合并推送，最新发版线集成验证见integration-report.md。
+日期：2026-10-22。隔离工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/doberman-agent`；分支`codex/3.0.0-088-request-error-contract`；基线`bc6ca25ba`。本节为实施验收时点记录；随后用户授权合并推送，最新发版线集成验证见integration-report.md。
 
 ## 结论
 

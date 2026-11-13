@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 
-MODULE = 'bisheng.org_sync.domain.services.relink_conflict_store'
+MODULE = 'doberman_agent.org_sync.domain.services.relink_conflict_store'
 
 
 class _FakeRedisHash:
@@ -79,7 +79,7 @@ def fake_store(monkeypatch):
 class TestRelinkConflictStore:
 
     async def test_save_and_get_returns_candidates_list(self, fake_store):
-        from bisheng.org_sync.domain.services.relink_conflict_store import (
+        from doberman_agent.org_sync.domain.services.relink_conflict_store import (
             RelinkConflictStore,
         )
         candidates = [
@@ -94,7 +94,7 @@ class TestRelinkConflictStore:
         assert all('path' in c and 'name' in c for c in got)
 
     async def test_save_sets_ttl_7_days(self, fake_store):
-        from bisheng.org_sync.domain.services.relink_conflict_store import (
+        from doberman_agent.org_sync.domain.services.relink_conflict_store import (
             RelinkConflictStore,
         )
         await RelinkConflictStore.save(
@@ -103,7 +103,7 @@ class TestRelinkConflictStore:
         assert fake_store._ttls['relink_conflict:7'] == 604_800
 
     async def test_get_returns_empty_after_delete(self, fake_store):
-        from bisheng.org_sync.domain.services.relink_conflict_store import (
+        from doberman_agent.org_sync.domain.services.relink_conflict_store import (
             RelinkConflictStore,
         )
         await RelinkConflictStore.save(
@@ -114,7 +114,7 @@ class TestRelinkConflictStore:
         assert await RelinkConflictStore.get(8) == []
 
     async def test_get_returns_empty_when_no_entry(self, fake_store):
-        from bisheng.org_sync.domain.services.relink_conflict_store import (
+        from doberman_agent.org_sync.domain.services.relink_conflict_store import (
             RelinkConflictStore,
         )
         assert await RelinkConflictStore.get(9999) == []
@@ -125,7 +125,7 @@ class TestRelinkConflictStore:
         """Re-saving for the same dept_id must reset the candidate set,
         not merge with the stale one — otherwise operators would see old
         candidates bleed into new runs after an SSO migration retry."""
-        from bisheng.org_sync.domain.services.relink_conflict_store import (
+        from doberman_agent.org_sync.domain.services.relink_conflict_store import (
             RelinkConflictStore,
         )
         await RelinkConflictStore.save(11, [

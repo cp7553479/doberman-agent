@@ -18,7 +18,7 @@
 | AC-14 | 服务账号提交用户 2 能用、服务账号无权的知识库 368 → 403 / 19000；知识空间 3404 → 403 / 18040；未授权工具 → 26067 | ✅ |
 | AC-16 | 他人分区的附件引用 → 404 | ✅ |
 | AC-17 | 传 `conversationId` → 26061 | ✅ |
-| AC-19 | 代表他人提交 `bisheng-docx`：worker 日志 `materialized ['bisheng-docx'] failed []` | ✅（缺失即失败的分支由单测覆盖，未做线上停用时序） |
+| AC-19 | 代表他人提交 `doberman-agent-docx`：worker 日志 `materialized ['doberman-agent-docx'] failed []` | ✅（缺失即失败的分支由单测覆盖，未做线上停用时序） |
 | AC-21 | 两个任务全程无 `ask_user`（worker 日志 0 次）；代表他人任务答复末尾单列「所做假设」 | ✅ |
 | AC-23 | 执行中终止 → terminated、无 result，worker 日志「Task was actively terminated」；再次终止 → 26064；已完成任务终止 → 26064 | ✅ |
 | AC-24、AC-25 | 轮询：running 时 `progress` 0/4 → 3/4 → 4/4 单调；排队位置为空（本地 worker 立即取走） | ✅（排队位置非空的情形由单测覆盖） |

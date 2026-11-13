@@ -1,11 +1,11 @@
 from types import SimpleNamespace
 
-from bisheng.permission.application.identity import (
+from doberman_agent.permission.application.identity import (
     reset_current_permission_actor,
     resolve_permission_actor,
     set_current_permission_actor,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 def test_user_and_service_account_with_same_numeric_id_are_distinct():

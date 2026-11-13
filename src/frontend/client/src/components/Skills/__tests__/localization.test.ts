@@ -3,7 +3,7 @@ import { resources } from '~/locales/i18n';
 import { localizeSkill, matchesSkillSearch } from '../localization';
 import type { PlatformSkill } from '../types';
 
-const keys = ['bisheng-docx', 'bisheng-pptx', 'bisheng-xlsx'] as const;
+const keys = ['doberman_agent-docx', 'doberman_agent-pptx', 'doberman_agent-xlsx'] as const;
 function builtin(key: typeof keys[number]): PlatformSkill {
   const copy = resources['zh-Hans'].translation.com_builtin_skills[key];
   return { id: `platform:${key}`, resourceId: 7, name: key, builtinKey: key,
@@ -32,7 +32,7 @@ describe.each(['en', 'zh-Hans', 'ja'] as const)('%s builtin skills', lng => {
 
 test('language changes use original catalog data', async () => {
   const i18n = await language('en');
-  const source = builtin('bisheng-docx');
+  const source = builtin('doberman_agent-docx');
   expect(localizeSkill(source, i18n.t.bind(i18n)).displayName).toBe('Word document creation');
   await i18n.changeLanguage('zh-Hans');
   expect(localizeSkill(source, i18n.t.bind(i18n)).displayName).toBe(source.displayName);
@@ -40,6 +40,6 @@ test('language changes use original catalog data', async () => {
 
 test.each([undefined, null, 'future-skill'])('custom, older and unknown entries keep configured copy (%s)', async builtinKey => {
   const i18n = await language('en');
-  const source = { ...builtin('bisheng-docx'), builtinKey, displayName: 'Tenant template', description: 'Tenant instructions' };
+  const source = { ...builtin('doberman_agent-docx'), builtinKey, displayName: 'Tenant template', description: 'Tenant instructions' };
   expect(localizeSkill(source, i18n.t.bind(i18n))).toMatchObject(source);
 });

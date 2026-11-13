@@ -6,7 +6,7 @@
 **版本**: v3.0.0
 **纵切**: [mvp-114-path.md](../mvp-114-path.md) **§6 MVP-核心**（预算受限版，本轮裁剪基准）与 §2 F055 行——**Wave 1–3 全部标 `[MVP-核心]`**，Wave 4–7 为 release 必做但本轮顺延，只列标题 / 文件 / 测试载体 / 覆盖 AC，不展开逻辑。
 **§6 字面读法的两处对齐**：① §6 F055 顺延栏写「`withdraw` 守卫**以外**的事件触达全表」→ 守卫（AC-22）留在 MVP 内 → **T051 归 Wave 3.9**（修点一行 + 一个测试文件，成本极低，无理由为省一行而偏离基准）；② 顺延栏其余项（审读视图 / 预览 / 能力总线 / 结构演进 / 版本差异 / 档位 tab）照 §6 顺延。
-**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe`，2026-08-17 核实，路径以 `src/backend/bisheng/` 为根；前端另注 `platform/` = `src/frontend/platform/src/`、`client/` = `src/frontend/client/src/`）。**行号会漂移、符号名不会——落地前一律以符号名重定位。**
+**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe`，2026-08-17 核实，路径以 `src/backend/doberman_agent/` 为根；前端另注 `platform/` = `src/frontend/platform/src/`、`client/` = `src/frontend/client/src/`）。**行号会漂移、符号名不会——落地前一律以符号名重定位。**
 
 ---
 
@@ -62,7 +62,7 @@ T001–T007（Wave 1，可并行）
 - **T029**（`approval/domain/services/approval_registry.py` 加 preset + `approval_runtime_handler_factory.py` 加分支）—— 审批模块注册表扩展，漏工厂分支 = 审批通过后应用永不上线（K1 ③）。
 - **T035**（`approval/domain/services/approval_center_service.py` 新增 `cancel_instance_by_business`）—— 新增审批模块公共 API，**不改** `withdraw_instance` 既有行为（守卫是 T051，Wave 3.8）。
 - **T035**（`main.py` lifespan `:82` 与 `worker/main.py` `on_worker_init`（`celeryd_after_setup`，`:80-87`）各调一次 `app_publish.composition.register()`）—— **组合根接线是两处、不是一处**：只挂 API lifespan 则 Celery worker 进程里删除钩子与场景 handler 从未注册，审批通过后工厂找不到 handler（K1 ③）、应用删除不取消在途单（AC-35 破），且形态是"API 里测都对、生产不生效"。
-- **T023**（`worker/__init__.py` 顶部 `# register tasks` 显式 import 块追加一行）—— celery app 是 `Celery("bisheng", include=["bisheng.worker"])`（`worker/main.py:22`），**所有任务靠该 import 块注册**（审批 outbox 亦然）；漏登记 = `apply_async` 后 worker `NotRegistered`，表现为「deploy 返回成功、状态永远卡在 `received`」。
+- **T023**（`worker/__init__.py` 顶部 `# register tasks` 显式 import 块追加一行）—— celery app 是 `Celery("doberman-agent", include=["doberman_agent.worker"])`（`worker/main.py:22`），**所有任务靠该 import 块注册**（审批 outbox 亦然）；漏登记 = `apply_async` 后 worker `NotRegistered`，表现为「deploy 返回成功、状态永远卡在 `received`」。
 - **T006 / T045**（`database/models/audit_log.py` 两处白名单 + platform `controllers/API/log.ts` + `bs.json` 三语）—— 审计可见性四处 lockstep，**审计对象的查询面归 F056、写入归本 Feature**（坑 21）。
 - **T015**（回写 F054 `app_runtime/domain/constants.py` 的 `DEFAULT_TIERS` 数值与第三档名称）—— F054 领域常量，档位实体归 F055（表 1），数值以本 spec AC-44 为准（坑 27）。
 - **T044b**（platform `BuildPage/hostedApp/tabs/PublishTab.tsx` 填 slot）—— **F054 T067 已交付的应用态徽标 / 入口链接 / 下线 / 重新上线 / 手动上线三按钮一律不重做**，F055 只填 slot 内容并把 `can.manual_publish` 等条件经 props 下传（design D15）。
@@ -78,43 +78,43 @@ T001–T007（Wave 1，可并行）
 ### Wave 1 · `[MVP-核心]` 基础设施（无测试配对，排最前）
 
 - [x] **T001**: `[MVP-核心]` ORM `app_deployment` 模型 + DAO + 租户感知登记
-  **文件**: `src/backend/bisheng/app_publish/domain/models/app_deployment.py`（新）, `src/backend/bisheng/core/database/tenant_filter.py`（`_TENANT_AWARE_MODEL_MODULES:39` 登记 `bisheng.app_publish.domain.models`）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/models/app_deployment.py`（新）, `src/backend/doberman_agent/core/database/tenant_filter.py`（`_TENANT_AWARE_MODEL_MODULES:39` 登记 `doberman_agent.app_publish.domain.models`）
   **逻辑**: 按 design §4.2 ⑤ 建表（继承 `SQLModelSerializable`，含 `tenant_id` / `create_time` / `update_time`）：`id`(str PK) · `tenant_id` · `app_id`(str，首发时在 `create_app` 后回填) · `owner_user_id`(int，自然人) · `submitted_by_user_id`(int，服务账号) · `version_id`(str null) · `approval_instance_id`(int null) · **`stage` VARCHAR(32) 显式列** · **`status` VARCHAR(16) 显式列** · `code_object_key` · `manifest`(`JsonType`) · `tier_code` · `failure`(`JsonType`) · `scan_result`(`JsonType`)。**凡需 SQL 筛选的一律拆显式列**、JSON 列禁 `JSON_EXTRACT` / `JSON_CONTAINS`（C2 / K6）。DAO `AppDeploymentDao.{acreate, aget, aget_active_by_app, aadvance_stage, aset_failed}`——`aadvance_stage` 是**单行 UPDATE**；**禁批量 UPDATE / DELETE**（租户监听器只拦 SELECT，坑见 memory `reference_tenant_filter_in_list_trap`）。`stage` 取值集合 `{received, secret_scan, precheck_manifest, precheck_build, precheck_probe, version_recorded, approval_created, approved, publishing, online, pending_online}`、`status` 取值 `{running, waiting_approval, succeeded, failed}`（D1）。
   **回滚**: 建表 DDL 在 T003；本任务纯模型，回滚 = 删文件 + 撤销 tenant_filter 登记。
   **依赖**: 无
 
 - [x] **T002**: `[MVP-核心]` ORM `resource_tier` 模型（**落共享层**）+ DAO
-  **文件**: `src/backend/bisheng/database/models/resource_tier.py`（新）, `src/backend/bisheng/core/database/tenant_filter.py`（登记 `bisheng.database.models.resource_tier`，并在登记处写一行注释「无 `tenant_id` 列，登记只为 metadata import、不受自动过滤」）
+  **文件**: `src/backend/doberman_agent/database/models/resource_tier.py`（新）, `src/backend/doberman_agent/core/database/tenant_filter.py`（登记 `doberman_agent.database.models.resource_tier`，并在登记处写一行注释「无 `tenant_id` 列，登记只为 metadata import、不受自动过滤」）
   **逻辑**: 列：`id`(PK) · `code`(unique，`light` / `standard` / `performance`) · `name` · `cpu_millicores`(int) · `memory_mb`(int) · `description` · `enabled`(bool) · `sort_order` · `create_time` / `update_time`。**用整数毫核与 MB，不用浮点 vCPU**（DM8 与 JSON 往返会给出 `0.30000000000000004`，D11）。**平台级、无 `tenant_id` 列**（AC-44 跨租户共享，K6 ②）。DAO `ResourceTierDao.{alist, aget_by_code, acreate, aupdate_row}`——**不提供 delete**（AC-47 的前提：`app_version.tier_id` 是历史快照引用，删档会让老版本重新上线时解析不出规格，D11）。
   **⚠️ 为什么不落 `app_publish/domain/models/`**：`ResourceTier` 归 F055、**F054 只读**（release-contract 表 1 / F054 design D11），放进 `app_publish` 会逼 `app_runtime` 反向 import，双向依赖当场成立且**没有任何 arch-guard 规则会拦**（design C1 / D16 的订正）。业务逻辑仍全在 T015 的 `ResourceTierService`。
   **回滚**: 同 T001（DDL 在 T003）。
   **依赖**: 无
 
 - [x] **T003**: `[MVP-核心]` Alembic revision：`app_deployment` + `resource_tier` 两表
-  **文件**: `src/backend/bisheng/core/database/alembic/versions/v3_0_0_f055_app_publish_tables.py`（新）
+  **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f055_app_publish_tables.py`（新）
   **逻辑**: **DDL-only**（`core/database/alembic/AGENTS.md`）；`down_revision` 取 `uv run alembic heads` 的**唯一头**（F054 的建表 revision 落地后头会变，落码时现取）；**不传 `mysql_charset` / `mysql_collate`**（DM8 双方言，C2）；JSON 列用 `JsonType` 对应方言类型（DM8 落 CLOB）；索引：`resource_tier.code` 唯一、`app_deployment(app_id, status)`、`app_deployment(tenant_id, create_time)`。**seed 不写在 revision 里**（档位 seed 归 T015 的 `init_default_data`，幂等按 `code`）。
   **回滚**: `downgrade()` 按 `app_deployment → resource_tier` 顺序 drop（无外键，仍按此序）；**回滚前提**：`app_version.tier_id` 会变成悬空引用 → downgrade 前须确认无托管应用在运行，说明写进 revision docstring。
   **依赖**: T001, T002
 
 - [x] **T004**: `[MVP-核心]` 错误码 162 段 + 三语 `api_errors`
-  **文件**: `src/backend/bisheng/common/errcode/app_publish.py`（新，**勿写进 F054 的 `app_factory.py`**）, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（三语视为一组）
-  **逻辑**: 按 design §4.2 ⑧ 定义 `AppPublishError(BaseErrorCode)` 家族：`16201` 包超上限 · `16202` 包解析失败 / 非法路径条目 · `16203` 缺 `bisheng-app.yaml` · `16205` 该应用归属他人 · `16207` 工场运行时层未启用 · `16221` manifest 校验失败 · `16222` `runtime` 不支持 · `16223` 档位不存在或已停用 · `16224` 能力声明引用不可解析 · **`16225` 审批场景未启用** · **`16226` 运行环境容量不足** · `16227` 依赖构建失败 · `16228` 启动探活失败 · `16229` 结构变更未确认 · `16230` 能力声明含密钥引用（本版不支持）· `16231` 本环境未启用能力总线 · `16241` 密钥扫描命中 · `16251` 已存在在途审批单 · `16252` 待上线态不接受新提交 · `16253` 版本记录不存在 · `16254` 仅 owner 可执行 · `16255` 当前应用态不允许该动作 · `16273` 该能力已被收回（Wave 5 才有写入方，一次登记到位）· `16274` 未在能力声明中的能力 · `16291` 运行期凭据主体不可用。三语文案落 `packages/locales`（生成物 `platform/public/locales/*/api_errors.json` / `client/src/locales/*/api_errors.gen.json` **由脚本生成、不手改**，CI `pnpm check-i18n`）。**不改 `release-contract.md` 与 `constitution.md` 的分配表**（K9：已是对的，改动只制造 diff 噪声）。
+  **文件**: `src/backend/doberman_agent/common/errcode/app_publish.py`（新，**勿写进 F054 的 `app_factory.py`**）, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（三语视为一组）
+  **逻辑**: 按 design §4.2 ⑧ 定义 `AppPublishError(BaseErrorCode)` 家族：`16201` 包超上限 · `16202` 包解析失败 / 非法路径条目 · `16203` 缺 `doberman-agent-app.yaml` · `16205` 该应用归属他人 · `16207` 工场运行时层未启用 · `16221` manifest 校验失败 · `16222` `runtime` 不支持 · `16223` 档位不存在或已停用 · `16224` 能力声明引用不可解析 · **`16225` 审批场景未启用** · **`16226` 运行环境容量不足** · `16227` 依赖构建失败 · `16228` 启动探活失败 · `16229` 结构变更未确认 · `16230` 能力声明含密钥引用（本版不支持）· `16231` 本环境未启用能力总线 · `16241` 密钥扫描命中 · `16251` 已存在在途审批单 · `16252` 待上线态不接受新提交 · `16253` 版本记录不存在 · `16254` 仅 owner 可执行 · `16255` 当前应用态不允许该动作 · `16273` 该能力已被收回（Wave 5 才有写入方，一次登记到位）· `16274` 未在能力声明中的能力 · `16291` 运行期凭据主体不可用。三语文案落 `packages/locales`（生成物 `platform/public/locales/*/api_errors.json` / `client/src/locales/*/api_errors.gen.json` **由脚本生成、不手改**，CI `pnpm check-i18n`）。**不改 `release-contract.md` 与 `constitution.md` 的分配表**（K9：已是对的，改动只制造 diff 噪声）。
   **依赖**: 无
 
 - [x] **T005**: `[MVP-核心]` `settings.app_runtime` 新增五个键
-  **文件**: `src/backend/bisheng/core/config/app_runtime.py`（F054 已建的配置块，**增量加字段**）
+  **文件**: `src/backend/doberman_agent/core/config/app_runtime.py`（F054 已建的配置块，**增量加字段**）
   **逻辑**: 加 `max_package_mb: int = 50` · `max_unpacked_mb: int = 200` · `max_package_entries: int = 20000`（D2 三闸，**本期就做**——F053 AC-32 要求 CLI 按"部署配置的上限"自查，上限若只是后端常量 CLI 只能硬编码）· `default_tiers: dict | None = None`（档位出厂规格覆盖，AC-44「规格初始默认值为部署配置项」）· `preview_ttl_days: int = 7`（决议-5，Wave 4 才消费，一次加到位避免二次改同一文件）。**一律挂进 F054 已开的 `app_runtime` 块、不开顶层键**（K10）。
   **⚠️ 部署顺序**（`common/services/config_service.py:91-107` 对未知顶层键直接 `raise KeyError`）：**先发代码 → 再改 `config.yaml` → 再重启**，顺序反了直接拒启。写进 T049 的部署清单。
   **依赖**: 无
 
 - [x] **T006**: `[MVP-核心]` 审计事件族 `app.release.*` 后端 lockstep 登记
-  **文件**: `src/backend/bisheng/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS`，元组 `:193`–`:259`）
+  **文件**: `src/backend/doberman_agent/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS`，元组 `:193`–`:259`）
   **逻辑**: 追加 design §4.2 ⑥ 的全部 action：`app.release.{submit, precheck_failed, scan_blocked, version_created, approval_created, approval_exception, self_approval, approved, rejected, withdrawn, cancelled, online, pending_online, manual_publish, capability_declared, rollback}`（后两者本轮写入方少但**一次登记到位**，避免二次改同一处）。**`_V2_NAMESPACE_TO_ACTION_PREFIX` 的 `"app": "app."` 已由 F054 落码建好（`:266`），不要重复建命名空间**。**不在 `app.publish.*` 前缀下追加**——F054 已把 `app.publish` 用作"上线动作"的 action 名，同前缀混用会让审计筛选与命名空间映射两头别扭（D12）。
   **⚠️ 四处 lockstep 缺一即"写库了但审计页看不到"**（坑 21）：本任务是第 1 处；第 2–4 处（platform `controllers/API/log.ts` 的 `actions` / `getModulesApi` + `bs.json` 三语的 `log.systemIdEnum` / `log.eventTypeEnum`）在 **T045**，**必须与本任务同 PR**。
   **依赖**: 无
 
 - [x] **T007**: `[MVP-核心]` pytest 基础设施 `test/app_publish/conftest.py`
-  **文件**: `src/backend/test/app_publish/conftest.py`（新）, `src/backend/test/app_publish/fixtures/minimal_app/`（新，最小可用应用包素材：`bisheng-app.yaml` + `main.py` + `requirements.txt`）
+  **文件**: `src/backend/test/app_publish/conftest.py`（新）, `src/backend/test/app_publish/fixtures/minimal_app/`（新，最小可用应用包素材：`doberman-agent-app.yaml` + `main.py` + `requirements.txt`）
   **逻辑**: fixtures：`service_account_principal`（构造 `OpenApiPrincipal`，可参数化 `scopes` 与 `resource_owner_user_id`，F049 T005 的形状）· `owner_user` / `dept_admin_user` / `tenant_admin_user` / `super_admin_user`（**审批人解析矩阵四类身份；`tenant_admin_user` 必须是非超管的真租户管理员**，否则 AC-21 的护栏测不出来）· `app_factory`（复用 F054 conftest 的同名 fixture，直接经 DAO 落 `app` + `app_version`）· `deployment_factory` · **`tier_seed`**（跑一次 T015 的 `seed_resource_tiers()` 落三档；**T008/T009 的 `tier` 解析测试与 T014 共用同一份 seed**，避免两处各造一份档位数据）· `fake_orchestrator`（monkeypatch F054 `orchestrator_client` 的 `build` / `build_status` / `probe` / `admission` / `deploy`，返回 design §4.2 ① 的响应形状，可编程成功 / 容量不足 / 失败三态）· `fake_minio`（monkeypatch `MinioStorage.put_object` / `get_object` 到临时目录，避免单测连真 MinIO）· `tarball_factory`（按参数生成 tar.gz：正常包 / 缺 manifest / 含符号链接 / 含 `..` 穿越 / 含硬链接 / 含设备文件 / 含 FIFO / 超条目数 / 解包超大 / 含密钥样本）· `audit_sink`（捕获 `AuditLogDao.ainsert_v2` 调用）· `approval_env`（跑一次 T027a 的 seed，让 Gate 不抛 `ApprovalScenarioDisabledError`）。**autouse fixture 清 `HTTP(S)_PROXY` / `ALL_PROXY` env**（缺 `socksio` 会整批误报 ERROR，memory `reference_local_backend_pytest_socks_proxy`）。fixture 体内**惰性 import** 业务 Service，避免尚未落地的模块让整包收集失败。
   **依赖**: T001, T002
 
@@ -130,7 +130,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007, T015（`tier_seed` fixture + `resolve_tier` 已存在）
 
 - [x] **T009**: `[MVP-核心]` AppManifest schema + 本地引用校验实现
-  **文件**: `src/backend/bisheng/app_publish/domain/schemas/app_manifest.py`（新，**AppManifest 权威 schema，release-contract 表 1 归本 Feature**）, `src/backend/bisheng/app_publish/domain/services/manifest_validator.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py`（新，**AppManifest 权威 schema，release-contract 表 1 归本 Feature**）, `src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py`（新）
   **逻辑**: pydantic v2 模型 + `extra='forbid'`（D3，零新依赖；`ValidationError.errors()` 的 `{loc,msg,type}` 三元组直接映射 AC-11 双形态）。字段按 design §4.2 ③ 表：必填 `name`(1–64) / `runtime`(枚举) / `port`(1–65535)；可选 `description` / `icon` / `slug` / `tier`(默认 `light`) / `capabilities{models[],knowledge_bases[]}` / `database.tables[]` / `egress.domains[]` / `manifest_version`(默认 1)。`SUPPORTED_RUNTIMES` **本地枚举常量**（MVP 期仅 `python3.11`）——它是 F054 manager `supported_runtimes` 的**副本**，与 manager 的复核**下沉到 T019 的异步段**（同步段不发 RPC，D4）；在常量旁写一行注释「F054 加运行时模板时必须同批改这里」。`manifest_validator`：YAML `yaml.safe_load`（**禁 `full_load` / `unsafe_load`**）→ pydantic → 本地引用校验（`tier` **直接调 T015 的 `ResourceTierService.resolve_tier(code)`** · 能力声明格式 · 密钥引用出现即拒 16230 · `capabilities` 非空即拒 16231）→ 失败一律构造五元组。
   **⚠️ 档位解析只有一份实现**：`manifest_validator` **不得自己再写一遍**"查表 + 判 `enabled` + 拼 `details.reason`"——两份实现必然在 `details.reason ∈ {not_found, disabled}` 的口径上分叉（AC-46 / AC-47 的判据就落在这个字段上）。`resolve_tier` 抛出的 `16223` 原样上抛，`manifest_validator` 只负责包成五元组。
   **测试**: T008 全部通过。
@@ -141,13 +141,13 @@ T001–T007（Wave 1，可并行）
 - [x] **T010**: `[MVP-核心]` 包接收、解包安全闸与快照存储测试
   **文件**: `src/backend/test/app_publish/test_package_service.py`（新）
   **逻辑**: 用 `tarball_factory` 造六类恶意条目与三类超限包，断言全部被拒且错误码正确；断言快照键布局与"不整包进内存"。
-  **测试**: `test_reject_absolute_path_entry` / `test_reject_dotdot_traversal` / `test_reject_symlink` / `test_reject_hardlink` / `test_reject_device_file` / `test_reject_fifo`（**tar 比 zip 多后四类**，仓内唯一先例 `skill_store.py:171-176 _safe_rel_path` 只防前两类，坑 15）→ 各自 `16202` / `test_reject_over_max_package_mb_16201` → AC-02 / `test_reject_over_max_unpacked_mb`（tar bomb）→ AC-02 / `test_reject_over_max_package_entries` → AC-02 / `test_snapshot_key_layout_matches_f054`（`apps/{app_id}/versions/{version_id}/code.tar.gz`，`version_id` 在**接收时**生成、预检通过后被 `app_version` 复用；**不先写 deployments 键再 server-side copy**——那是幻觉优化，memory `project_linsight_skill_object_storage`）→ AC-02, AC-43 / `test_upload_never_read_into_memory`（断言走 `put_object(file=Path(...))` 而非 `await file.read()`）→ AC-02 / `test_bucket_ensured_idempotently_on_first_use`（`minio_storage.py:291 _init_bucket_conf` **只建 public / tmp 两桶**，坑 14 → `bisheng-apps` 由 `package_service` 自己 ensure；断言首次 `store_package` 会建桶、第二次不重复建、且**不修改 `_init_bucket_conf`**）→ AC-02 / `test_snapshot_immutable_and_retrievable`（快照可完整取回、内容不可改）→ AC-43 / `test_orphan_cleanup_on_next_deploy_same_app`（超 7 天且无 deployment 引用的孤儿键被清；**不起 Beat**，D2）→ AC-02
+  **测试**: `test_reject_absolute_path_entry` / `test_reject_dotdot_traversal` / `test_reject_symlink` / `test_reject_hardlink` / `test_reject_device_file` / `test_reject_fifo`（**tar 比 zip 多后四类**，仓内唯一先例 `skill_store.py:171-176 _safe_rel_path` 只防前两类，坑 15）→ 各自 `16202` / `test_reject_over_max_package_mb_16201` → AC-02 / `test_reject_over_max_unpacked_mb`（tar bomb）→ AC-02 / `test_reject_over_max_package_entries` → AC-02 / `test_snapshot_key_layout_matches_f054`（`apps/{app_id}/versions/{version_id}/code.tar.gz`，`version_id` 在**接收时**生成、预检通过后被 `app_version` 复用；**不先写 deployments 键再 server-side copy**——那是幻觉优化，memory `project_linsight_skill_object_storage`）→ AC-02, AC-43 / `test_upload_never_read_into_memory`（断言走 `put_object(file=Path(...))` 而非 `await file.read()`）→ AC-02 / `test_bucket_ensured_idempotently_on_first_use`（`minio_storage.py:291 _init_bucket_conf` **只建 public / tmp 两桶**，坑 14 → `doberman-agent-apps` 由 `package_service` 自己 ensure；断言首次 `store_package` 会建桶、第二次不重复建、且**不修改 `_init_bucket_conf`**）→ AC-02 / `test_snapshot_immutable_and_retrievable`（快照可完整取回、内容不可改）→ AC-43 / `test_orphan_cleanup_on_next_deploy_same_app`（超 7 天且无 deployment 引用的孤儿键被清；**不起 Beat**，D2）→ AC-02
   **覆盖 AC**: AC-02, AC-43
   **依赖**: T007, T005
 
 - [x] **T011**: `[MVP-核心]` `package_service` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/package_service.py`（新）
-  **逻辑**: `store_package(upload, app_id, version_id)`：`UploadFile` **落临时盘后** `put_object(file=Path(...))`（走 `fput_object` + `asyncio.to_thread`，`minio_storage.py:359-407`），键 `apps/{app_id}/versions/{version_id}/code.tar.gz`，桶 `bisheng-apps`（**独立桶，不挂 nginx location、不设匿名策略**——`src/frontend/nginx.conf:49` 的 `location ~ ^(/workspace/bisheng|bisheng|tmp-dir)/` 会把公共桶任意 key 匿名转发出去，K5 / 坑 13）；**桶由 `package_service` 内部 `_ensure_bucket()` 幂等保证**——首次 `store_package` 时 `create_bucket_sync(bucket_name='bisheng-apps')`（存在即 no-op），进程内加一个 `_bucket_ready` 标志避免每次调用都发 `bucket_exists`。**不改 `minio_storage.py:291 _init_bucket_conf`、不挂 lifespan**（坑 14：那里只建 public / tmp 两桶且给 public 桶设了匿名读策略；把 `bisheng-apps` 塞进去等于把独立桶的生命周期绑到共享初始化路径上，还会诱导后人顺手给它加匿名策略——K5 明令禁止）。`safe_extract(tar_path, dest)`：照抄 `skill_store.py:171-176 _safe_rel_path` 拒绝绝对路径与 `..`，**额外拒 `TarInfo.issym() / islnk() / isdev() / isfifo()`**；边解包边累计大小与条目数，越限即中止。`cleanup_orphans(app_id)`：同 `app_id` 前缀下无 `app_version` 行、无 deployment 引用且超 7 天的键删除，**挂在下一次同应用 deploy 的接收阶段顺手做**（不引 Beat，D2）。三闸阈值读 `settings.app_runtime.*`（T005）。
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/package_service.py`（新）
+  **逻辑**: `store_package(upload, app_id, version_id)`：`UploadFile` **落临时盘后** `put_object(file=Path(...))`（走 `fput_object` + `asyncio.to_thread`，`minio_storage.py:359-407`），键 `apps/{app_id}/versions/{version_id}/code.tar.gz`，桶 `doberman-agent-apps`（**独立桶，不挂 nginx location、不设匿名策略**——`src/frontend/nginx.conf:49` 的 `location ~ ^(/workspace/doberman-agent|doberman-agent|tmp-dir)/` 会把公共桶任意 key 匿名转发出去，K5 / 坑 13）；**桶由 `package_service` 内部 `_ensure_bucket()` 幂等保证**——首次 `store_package` 时 `create_bucket_sync(bucket_name='doberman-agent-apps')`（存在即 no-op），进程内加一个 `_bucket_ready` 标志避免每次调用都发 `bucket_exists`。**不改 `minio_storage.py:291 _init_bucket_conf`、不挂 lifespan**（坑 14：那里只建 public / tmp 两桶且给 public 桶设了匿名读策略；把 `doberman-agent-apps` 塞进去等于把独立桶的生命周期绑到共享初始化路径上，还会诱导后人顺手给它加匿名策略——K5 明令禁止）。`safe_extract(tar_path, dest)`：照抄 `skill_store.py:171-176 _safe_rel_path` 拒绝绝对路径与 `..`，**额外拒 `TarInfo.issym() / islnk() / isdev() / isfifo()`**；边解包边累计大小与条目数，越限即中止。`cleanup_orphans(app_id)`：同 `app_id` 前缀下无 `app_version` 行、无 deployment 引用且超 7 天的键删除，**挂在下一次同应用 deploy 的接收阶段顺手做**（不引 Beat，D2）。三闸阈值读 `settings.app_runtime.*`（T005）。
   **测试**: T010 全部通过。
   **覆盖 AC**: AC-02, AC-43
   **依赖**: T010, T005
@@ -160,7 +160,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007
 
 - [x] **T013**: `[MVP-核心]` `secret_scanner` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/secret_scanner.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/secret_scanner.py`（新）
   **逻辑**: `SECRET_SCAN_RULES: tuple[SecretRule, ...]` 常量表（形态同 `open_api/domain/scopes.py:66-185 OPEN_API_SCOPES`），`SecretRule(rule_id, name_i18n_key, pattern: re.Pattern, description_i18n_key)`。首批规则见 design D5：`bs_sak`（**引 F049 常量拼**）· `aws_akid` · `openai_sk` · `private_key_pem` · `db_conn_string`（用户名密码都在串里才算命中）· `generic_high_entropy`（带占位符白名单）。`scan_package(root) -> ScanResult`：逐文件；跳过 `.git/` / `node_modules/` / `venv/` / `__pycache__/` / `dist/` / `build/`；二进制嗅探（前 8KB 含 `\x00` 即跳过）；单文件 > 1 MiB 标 `skipped`。命中 → `16241` 阻断，`hits: [{rule_id, name_i18n_key, file, line}]`——**永不含值**（AC-10 硬承诺）。**不引 `detect-secrets` / `gitleaks`**（全仓零先例 + 规则集不可控，D5）；**不做行级抑制机制**（一开就会被用来绕过，design §8）。**本常量是 AC-10「与平台内发布同一规则集」的落地手段**——PRD-2 平台内发布直接复用它，只有一份（§6.1 Outgoing）。
   **测试**: T012 全部通过。
   **覆盖 AC**: AC-10, AC-11
@@ -174,7 +174,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007, T002
 
 - [x] **T015**: `[MVP-核心]` `ResourceTierService` + 三档 seed 实现（含回写 F054 常量）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/resource_tier_service.py`（新）, `src/backend/bisheng/common/init_data.py`（`init_default_data` 内加档位 seed 调用）, `src/backend/bisheng/app_runtime/domain/constants.py`（**回写 F054 `DEFAULT_TIERS`**）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/resource_tier_service.py`（新）, `src/backend/doberman_agent/common/init_data.py`（`init_default_data` 内加档位 seed 调用）, `src/backend/doberman_agent/app_runtime/domain/constants.py`（**回写 F054 `DEFAULT_TIERS`**）
   **逻辑**: `seed_resource_tiers()`：优先级 `settings.app_runtime.default_tiers`（T005）> F054 `DEFAULT_TIERS` 常量；**幂等按 `code` 存在即跳过**。`resolve_tier(code | None) -> ResourceTier`：`None` → `light`；不存在或 `enabled=False` → `16223`（`details.reason ∈ {not_found, disabled}`，**不拆码**）。`list_tiers()` / `update_tier(code, patch)`（Wave 7 的管理 tab 消费）/ `count_apps_using(tier_id)` = `SELECT COUNT(DISTINCT app_id) FROM app_version WHERE tier_id=? AND terminal_state='online'`。**无 delete**（D11）。
   **跨 Feature 回写**（design §8 回写项 1）：F054 `DEFAULT_TIERS` 现为 `0.5 vCPU/512 MiB · 1/1024 · 2/2048「增强」`，与本 spec **AC-44** 的 `1C/2G · 2C/4G · 4C/8G「性能」` 数值与命名皆冲突（坑 27）→ **以本 spec 的产品口径为准**，改数值 + 第三档名「增强」→「性能」，并把 F054 design D11「何时重新考虑」里的"支持删档"改为"档位只可停用不可删"。**改常量不影响存量表**（seed 幂等按 `code` 跳过）。**⚠️ 2026-09-09 后续修订**：轻量档已按实测改为 0.5C/1G（spec 决议-10），标准与性能两档维持原值。
   **测试**: T014 全部通过。
@@ -189,7 +189,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007, T011
 
 - [x] **T017**: `[MVP-核心]` `VersionService` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/version_service.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/version_service.py`（新）
   **逻辑**: `insert_version(deployment, approval_instance_id | None)`：`version_no = MAX(version_no)+1 WHERE app_id=?` 在同一事务内取；`kind` = `initial`（该 app 首条）/ `iteration`；写 `code_object_key` / `manifest` / `capabilities` / `injections` / `tier_id`（**四者同属一个快照**，F054 AC-02 已定"任何写入方不得只改其一"）。`mark_terminal_state(app_id, version_id, state)`：**唯一被授权 UPDATE `terminal_state` 的函数**（F054 D8 的只增不改例外），单行带前态断言。`derive_display_state(app, version)`：派生「待上线」/「待审」，**不落库**。`get_snapshot(app_id, version_id)`：经 `package_service` 取回 tar（供审读视图 / 预览拉起 / 将来回滚）。**每个按 `version_id` 起手的方法签名强制带 `app_id`**（坑 19）。
   **测试**: T016 全部通过。
   **覆盖 AC**: AC-02, AC-18, AC-39, AC-40, AC-43
@@ -198,13 +198,13 @@ T001–T007（Wave 1，可并行）
 - [x] **T018**: `[MVP-核心]` 托管预检编排测试（线性 fail-fast + 五元组）
   **文件**: `src/backend/test/app_publish/test_precheck_service.py`（新）
   **逻辑**: 用 `fake_orchestrator` 编程构建 / 探活的成功与三类失败，断言阶段序、fail-fast 与失败五元组。
-  **测试**: `test_stage_order_manifest_build_probe_then_scan`（**spec AC-01 / F053 AC-31a 的字面顺序**；扫描提前是待 ★ 确认的偏离，**不得在此实现**）→ AC-07 / `test_fail_fast_stops_at_first_failing_stage`（manifest 层内部一次性报全，跨阶段 fail-fast）→ AC-07 / `test_manifest_stage_makes_no_rpc`（同步段不发任何 RPC——manager 不可达就会把 `deploy` 变成挂在超时上的请求，D4/D1-C 的兑现）→ AC-07 / `test_runtime_rechecked_against_manager_in_async_stage_16222`（本地枚举与 manager `supported_runtimes` 取交，复核在 `precheck_build` 起手）→ AC-07 / `test_build_capacity_shortage_is_16226_not_16225`（**一码一义红线**：16225 专归"审批场景未启用"）→ AC-07 / `test_build_failure_16227_carries_manager_stage_message_tail` → AC-07, AC-11 / `test_probe_failure_16228_with_hosting_contract_hints`（AC-08 的判据**下沉为探活失败**：本轮不做静态依赖分析，`hints` 给"平台不提供自带数据库 / 消息队列 / 缓存；数据请改接 `BISHENG_APP_DB_URL`"）→ AC-08 / `test_egress_domains_format_only_this_round` → AC-08 / `test_failure_shape_is_five_tuple_in_all_stages` → AC-11 / `test_precheck_failure_produces_no_approval_and_no_version`（AC-07 的硬承诺）→ AC-07
+  **测试**: `test_stage_order_manifest_build_probe_then_scan`（**spec AC-01 / F053 AC-31a 的字面顺序**；扫描提前是待 ★ 确认的偏离，**不得在此实现**）→ AC-07 / `test_fail_fast_stops_at_first_failing_stage`（manifest 层内部一次性报全，跨阶段 fail-fast）→ AC-07 / `test_manifest_stage_makes_no_rpc`（同步段不发任何 RPC——manager 不可达就会把 `deploy` 变成挂在超时上的请求，D4/D1-C 的兑现）→ AC-07 / `test_runtime_rechecked_against_manager_in_async_stage_16222`（本地枚举与 manager `supported_runtimes` 取交，复核在 `precheck_build` 起手）→ AC-07 / `test_build_capacity_shortage_is_16226_not_16225`（**一码一义红线**：16225 专归"审批场景未启用"）→ AC-07 / `test_build_failure_16227_carries_manager_stage_message_tail` → AC-07, AC-11 / `test_probe_failure_16228_with_hosting_contract_hints`（AC-08 的判据**下沉为探活失败**：本轮不做静态依赖分析，`hints` 给"平台不提供自带数据库 / 消息队列 / 缓存；数据请改接 `DOBERMAN_AGENT_APP_DB_URL`"）→ AC-08 / `test_egress_domains_format_only_this_round` → AC-08 / `test_failure_shape_is_five_tuple_in_all_stages` → AC-11 / `test_precheck_failure_produces_no_approval_and_no_version`（AC-07 的硬承诺）→ AC-07
   **覆盖 AC**: AC-07, AC-08, AC-11
   **依赖**: T009, T013, T015
   **⚠️ 编号 ≠ 执行顺序**：本任务依赖 T009 / T013 / T015 三个实现任务的产出（`manifest_validator` / `secret_scanner` / `ResourceTierService` 接口），故实际排在它们之后；编号保留在此只为与 T019 相邻。
 
 - [x] **T019**: `[MVP-核心]` `precheck_service` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/precheck_service.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/precheck_service.py`（新）
   **逻辑**: 线性 fail-fast 阶段机（design D4 阶段表）：① `precheck_manifest`（**同步段**：YAML + pydantic，16221/16203）② `precheck_manifest`（**同步段**：本地可判的引用校验——`runtime` ∈ 本地枚举常量 · `tier` 查本地表 · 能力声明格式 · 密钥引用，16222/16223/16224/16230/16231）③ `precheck_build`（**异步段**：起手 `GET /v1/runtime/status.supported_runtimes` 复核 `runtime` → `POST /v1/intents/build` → 轮询 `GET /v1/builds/{id}`；容量不足 **16226**、失败 16227）④ `precheck_probe`（异步段：`POST /v1/intents/probe` 临时形态，不占实例名额，16228）。失败原因恒为 `{stage, code, message, details, hints[]}` **五元组**，同一结构同时出现在 CLI 轮询返回、发布面审批状态区、`app_deployment.failure` 落库（AC-11）。**编排器一律经 F054 `orchestrator_client` 门面**，backend 零 docker 依赖。
   **测试**: T018 全部通过。
   **覆盖 AC**: AC-07, AC-08, AC-11
@@ -219,8 +219,8 @@ T001–T007（Wave 1，可并行）
   **⚠️ 执行顺序（Wave 编号 ≠ 拓扑序）**：本任务与 T021 / T022 / T023 依赖 T031（在途闸 / 待上线闸 / Gate 提交都落在 `publish_approval_service`，Wave 3.2），而 T031 → T030 → T029 → T028 → T027a/T027b → T025 整条链都在 Wave 3 —— **实际执行序见「开发模式 · 跨 Wave 执行序」：Wave 3.1–3.2 先跑完再回来做 T020–T023**。测试可先落盘（红测即预期），实现一律按 `依赖:` 排。
 
 - [x] **T021**: `[MVP-核心]` `publish_pipeline_service.accept()` 实现（同步前段）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`（新，本任务只落 `accept()`）
-  **逻辑**: 按 design §4.1-A ① 的顺序：归属判定（`principal.resource_owner_user_id == app.owner_user_id`，否 → 16205）→ 大小闸 → 落临时盘 → `put_object` 到 `bisheng-apps` → 解包安全闸 + 解包大小闸 + 条目数闸 → 读 `bisheng-app.yaml` → `manifest_validator`（T009）→ 本地引用校验 → **首发**：调 F054 `AppProvisionService.create_draft(name, slug, description, owner_user_id, tenant_id)` 建草稿应用（**不直写 `app` 表**；本文原写 `AppStateService.create_app`，2026-08-19 按实现真名更正——「建应用」不是状态迁移，故不在 `AppStateService` 上）→ 在途审批单闸（16251）/ 待上线态闸（16252）→ INSERT `app_deployment(stage=received, status=running)` → `apply_async` 后段 → 返回 `{deployment_id, app_id, version_id}`。**本段绝不发任何编排器 RPC**（D1-C 的兑现：秒级错误秒级回）。审计 `app.release.submit`。
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`（新，本任务只落 `accept()`）
+  **逻辑**: 按 design §4.1-A ① 的顺序：归属判定（`principal.resource_owner_user_id == app.owner_user_id`，否 → 16205）→ 大小闸 → 落临时盘 → `put_object` 到 `doberman-agent-apps` → 解包安全闸 + 解包大小闸 + 条目数闸 → 读 `doberman-agent-app.yaml` → `manifest_validator`（T009）→ 本地引用校验 → **首发**：调 F054 `AppProvisionService.create_draft(name, slug, description, owner_user_id, tenant_id)` 建草稿应用（**不直写 `app` 表**；本文原写 `AppStateService.create_app`，2026-08-19 按实现真名更正——「建应用」不是状态迁移，故不在 `AppStateService` 上）→ 在途审批单闸（16251）/ 待上线态闸（16252）→ INSERT `app_deployment(stage=received, status=running)` → `apply_async` 后段 → 返回 `{deployment_id, app_id, version_id}`。**本段绝不发任何编排器 RPC**（D1-C 的兑现：秒级错误秒级回）。审计 `app.release.submit`。
   **测试**: T020 全部通过。
   **覆盖 AC**: AC-01, AC-02, AC-03, AC-04, AC-05
   **依赖**: T020, T031
@@ -233,11 +233,11 @@ T001–T007（Wave 1，可并行）
   **依赖**: T019, T021
 
 - [x] **T023**: `[MVP-核心]` `run_pipeline()` 实现 + Celery 任务
-  **文件**: `src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`（**增量**加 `run_pipeline()`，不改 T021 已落的 `accept()`）, `src/backend/bisheng/worker/app_publish/tasks.py`（新）, `src/backend/bisheng/worker/app_publish/__init__.py`（新，空）, **`src/backend/bisheng/worker/__init__.py`（存量：顶部 `# register tasks` 块追加 `from bisheng.worker.app_publish.tasks import run_publish_pipeline`）**
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`（**增量**加 `run_pipeline()`，不改 T021 已落的 `accept()`）, `src/backend/doberman_agent/worker/app_publish/tasks.py`（新）, `src/backend/doberman_agent/worker/app_publish/__init__.py`（新，空）, **`src/backend/doberman_agent/worker/__init__.py`（存量：顶部 `# register tasks` 块追加 `from doberman_agent.worker.app_publish.tasks import run_publish_pipeline`）**
   **逻辑**: `run_pipeline(deployment_id)`：`precheck_build → precheck_probe → secret_scan → update_meta（含图标）→ approval_created`（**spec 字面顺序**，扫描提前是待 ★ 确认的偏离，勿自行调换）。每次阶段推进 = 一次 `app_deployment` 单行 UPDATE + 一条 `app.release.*` 审计。
-  **⚠️ Celery 任务必须显式登记**（否则整条异步后段永不执行）：celery app 是 `Celery("bisheng", include=["bisheng.worker"])`（`worker/main.py:22`），**只 import 包、不扫子模块** → 任务全靠 `worker/__init__.py` 顶部 `# register tasks` 的显式 import 块注册（`admin_scope` / `approval`（outbox）/ `knowledge` / `workflow` 全在那里）。漏这一行的现象是**最难定位的形态**：`apply_async` 正常返回、`deploy` 报成功、worker 侧 `NotRegistered`、114 上表现为「状态永远卡在 `received`」且后端日志无异常。落码后自检：`uv run celery -A bisheng.worker.main:bisheng_celery inspect registered | grep app_publish`。
+  **⚠️ Celery 任务必须显式登记**（否则整条异步后段永不执行）：celery app 是 `Celery("doberman-agent", include=["doberman_agent.worker"])`（`worker/main.py:22`），**只 import 包、不扫子模块** → 任务全靠 `worker/__init__.py` 顶部 `# register tasks` 的显式 import 块注册（`admin_scope` / `approval`（outbox）/ `knowledge` / `workflow` 全在那里）。漏这一行的现象是**最难定位的形态**：`apply_async` 正常返回、`deploy` 报成功、worker 侧 `NotRegistered`、114 上表现为「状态永远卡在 `received`」且后端日志无异常。落码后自检：`uv run celery -A doberman_agent.worker.main:doberman_agent_celery inspect registered | grep app_publish`。
   **元信息更新（含图标落地，AC-05）**：调 F054 `AppMetaService.update_meta(app_id, name/description/slug)`；**图标由本任务负责落地**（design D12）——从已解包目录按 `manifest.icon` 相对路径取字节 → 校验 ≤ 1 MiB 且扩展名 ∈ {jpeg, jpg, png} → `MinioStorage.put_object(bucket=public_bucket, object_name=f"icon/{uuid4()}.png", ...)` → 把 **object_name**（不是预签名 URL、不是包内相对路径）写进 `app.logo`。**校验不过只跳过图标 + 记 `hints`，不阻断发布**（图标是元信息、不是发布前提）。终止时写 `failure` 五元组 + `status=failed`。审计写法：`AuditLogDao.ainsert_v2(...)`——该方法**内部自带 `bypass_tenant_filter()` + 独立 session + commit**，调用方**不需要也不应该**再包事务；写失败会抛，用 `approval_outbox_service.py:105-121` 的"审计失败不影响主流程"包法。
-  **Worker / tenant_id**: Celery 任务 `bisheng.worker.app_publish.tasks.run_publish_pipeline(deployment_id)`，**走默认 `celery` 队列**（与审批 outbox 同队列，114 已有 default worker；**不新建队列**，D1）。`tenant_id` 由 `accept()` 侧 `apply_async` 时经 **Celery header 自动透传**（`worker/tenant_context.py:63-90`），worker 内**不需要**手动 `set_current_tenant_id`；但任务体第一行须断言 `current_tenant_id` 非空并记日志（无 header 时框架兜底 `DEFAULT_TENANT_ID`，静默串租户是最坏形态）。
+  **Worker / tenant_id**: Celery 任务 `doberman_agent.worker.app_publish.tasks.run_publish_pipeline(deployment_id)`，**走默认 `celery` 队列**（与审批 outbox 同队列，114 已有 default worker；**不新建队列**，D1）。`tenant_id` 由 `accept()` 侧 `apply_async` 时经 **Celery header 自动透传**（`worker/tenant_context.py:63-90`），worker 内**不需要**手动 `set_current_tenant_id`；但任务体第一行须断言 `current_tenant_id` 非空并记日志（无 header 时框架兜底 `DEFAULT_TENANT_ID`，静默串租户是最坏形态）。
   **可观测**: 结构化日志 `app_publish.pipeline`（`deployment_id / app_id / stage / status / duration_ms / failure_code`，**每阶段一条**）与 `app_publish.scan`（`files_scanned / files_skipped / hits`，**不含命中值**）。
   **测试**: T022 全部通过。
   **覆盖 AC**: AC-01, AC-02, AC-05, AC-10, AC-11, AC-48, AC-55
@@ -257,7 +257,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007
 
 - [x] **T025**: `[MVP-核心]` `approver_resolver` 修正实现（**跨 Feature 行为变更**）
-  **文件**: `src/backend/bisheng/approval/domain/services/approver_resolver.py`（存量改动）
+  **文件**: `src/backend/doberman_agent/approval/domain/services/approver_resolver.py`（存量改动）
   **逻辑**: 顶部**新增函数** `resolve_tenant_admin_user_ids(tenant_id) -> list[int]`：`ids = await TenantAdminService.list_tenant_admins(tenant_id)`；`if not ids and tenant_id == ROOT_TENANT_ID: ids = AdminRole 用户`。把 `tenant_admin` 分支的 `UserRoleDao.aget_roles_user([AdminRole])` 换成它。
   **⚠️ 三条不得违反的边界**：① **绝不与 `_get_admin_recipient_ids` 合并**——那个是通知侧的**无条件 union**（任何租户都并入全站超管），拿它做审批人解析等于把 AC-21 要修的缺陷原样搬过来；反过来改它则悄悄改掉审批异常态的管理员通知收件人（坑 2）。② **不用 `TenantService._get_tenant_admin_users`**——private、分页上限 100、返回 dict 且**含 super_admin**（`tenant_service.py:771/780-790`）；`list_tenant_admins`（`tenant_admin_service.py:90-106`）是干净公共 API、返回 `list[int]`、权限后端异常 `return []`（fail-closed 成空 → 走 approver_empty 异常态，正合 AC-18）。③ **不在这里做申请人过滤**（那是场景 handler 的出口过滤，塞进公共解析器会污染频道 / 知识空间两个既有场景）。
   **跨 Feature 副作用**: **对一切使用 `tenant_admin` 来源的既有场景与人工配置立即生效**（AC-21）→ **release note 必须显著声明**；T024 的两条回归测试是护栏。同 PR 更新 `.claude/skills/approval-module/SKILL.md`（T050）。
@@ -273,7 +273,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T007
 
 - [x] **T027a**: `[MVP-核心]` seed 参数化 + 「应用发布」场景条目（**不碰 Tenant 领域**）
-  **文件**: `src/backend/bisheng/approval/domain/services/approval_seed_service.py`（新，对外暴露 `seed_approval_scenarios_for_tenant(tenant_id)`）, `src/backend/bisheng/common/init_data.py`（`_init_default_approval_scenarios(session)` → `(session, tenant_id)`，**六处硬编码 `DEFAULT_TENANT_ID`**（`:365/374/384/402/414/425`）改参数）
+  **文件**: `src/backend/doberman_agent/approval/domain/services/approval_seed_service.py`（新，对外暴露 `seed_approval_scenarios_for_tenant(tenant_id)`）, `src/backend/doberman_agent/common/init_data.py`（`_init_default_approval_scenarios(session)` → `(session, tenant_id)`，**六处硬编码 `DEFAULT_TENANT_ID`**（`:365/374/384/402/414/425`）改参数）
   **逻辑**: 新增 seed 条目 `{scenario_code:'app_publish_request', scenario_name:'应用发布', sources:[{"type":"department_admin"},{"type":"tenant_admin"}]}`，落 5 行（形态见 T026）。幂等判据**不动**（按 `tenant_id + scenario_code`）。`init_data.py` 的 `init_default_data()` 仍按 `DEFAULT_TENANT_ID` 调一次（行为不变）。
   **⚠️ 签名变更需全量 grep 调用方**：`_init_default_approval_scenarios` 加参数后，**先 `grep -rn "_init_default_approval_scenarios\|seed_approval_scenarios" src/backend/`** 确认全部调用点都传了 `tenant_id`；六处 `DEFAULT_TENANT_ID` 改参数时逐处核对——漏改一处的现象是"某类 seed 行永远落在默认租户"，不报错。
   **测试**: T026 中除两条路径钩子外的全部用例通过（`test_fresh_deploy_has_app_publish_scenario_enabled` / `test_seed_shape_*` / `test_sources_are_*` / `test_seed_idempotent_*` / `test_manual_reconfig_survives_reseed` / `test_menu_access_scenario_not_touched`）。
@@ -281,7 +281,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T026
 
 - [x] **T027b**: `[MVP-核心]` **两条**租户创建路径挂 seed 钩子（**跨 Feature：改 Tenant 领域，单独 review**）
-  **文件**: `src/backend/bisheng/tenant/domain/services/tenant_service.py`（`acreate_tenant` 挂一次）, `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`（`mount_child` 挂一次）
+  **文件**: `src/backend/doberman_agent/tenant/domain/services/tenant_service.py`（`acreate_tenant` 挂一次）, `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`（`mount_child` 挂一次）
   **逻辑**: 各**追加**一次 `seed_approval_scenarios_for_tenant(tenant.id)`，形状照抄 `tenant_service.py:140-149` 的 `seed_builtin_skills([tenant.id])`（`try/except` 包住 + `logger.warning`，其注释已明说"startup seeding 只覆盖当时存在的租户"）。**只加这一步、不动创建流程里的任何既有步骤**。
   **⚠️ 两条路径缺一必漏**（坑 3）：`mvp-114-path.md:50` 与 PRD-1 §3.3 锚点表**都只写了 `tenant_mount_service`，口径不全**——`TenantService.acreate_tenant` 才是管理后台主路径，漏它则从管理后台建的租户永远没有发布审批场景，第一次 deploy 就 `ApprovalScenarioDisabledError`，且这类 bug 要等客户建第二个租户才暴露。**本任务之所以从 T027a 拆出来单独提交，就是为了让这两行改动被单独 review 一次。**
   **跨 Feature 副作用**: 改 Tenant 领域（F011 / F012）的创建流程；`seed_builtin_skills` 是同位置的现成先例，review 时逐字比对两者形状是否一致。
@@ -299,7 +299,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T025, T027a, T027b
 
 - [x] **T029**: `[MVP-核心]` 场景 handler 实现 + preset + runtime handler 工厂分支（**四件套之①②③**）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`（新）, `src/backend/bisheng/approval/domain/services/approval_registry.py`（存量：`with_default_presets()` 加一条 preset）, `src/backend/bisheng/approval/domain/services/approval_runtime_handler_factory.py`（存量：`build_runtime_handler` 加 `app_publish_request` 分支）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`（新）, `src/backend/doberman_agent/approval/domain/services/approval_registry.py`（存量：`with_default_presets()` 加一条 preset）, `src/backend/doberman_agent/approval/domain/services/approval_runtime_handler_factory.py`（存量：`build_runtime_handler` 加 `app_publish_request` 分支）
   **逻辑**: handler 为**鸭子类型、无 ABC**，完整协议照 `knowledge_space_subscribe_scenario_handler.py:55-157`：`resolve_approvers`（显式转调 `resolve_approvers_from_sources` + AC-17 出口过滤 + `self.last_self_approval` 标志）· `build_title` → 「{应用名} · {首发|迭代} 发布审批」· `build_business_link` → platform 应用详情页发布 tab · `build_detail` → design §4.2 ④ 的**结构化** payload · `on_approved`（T033）/ `on_rejected` / `on_withdrawn` / `on_cancelled`（T035）。
   **preset**: `ApprovalScenarioPreset(scenario_code='app_publish_request', scenario_name='应用发布', handler_key='app_publish_request', approver_source_types=['department_admin','tenant_admin','direct_user'])`。⚠️ **`handler_key` 是无默认值的必填字段**（`approval_center_schema.py:38-43`），漏传会在 `with_default_presets()` 求值时 `ValidationError`、**import 期就崩**。`direct_user` 是为 AC-19「租户管理员可改配审批人」留的。场景名接受**中文单语**（与既有三场景一致，坑 24）。
   **工厂分支**: `approval_runtime_handler_factory.py:17-35` 加分支——**漏加 = 审批通过后应用永远不上线**（`build_runtime_handler` 抛 KeyError → `_record_outbox_task_failure`，K1 ③）。
@@ -315,7 +315,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T029
 
 - [x] **T031**: `[MVP-核心]` `publish_approval_service` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`（新）
   **逻辑**: `_build_publish_approval_gate()`（**每次调用新建 registry + handler + Gate**，绝不缓存复用，D7 自审标志的成立前提）· `assert_no_active_release(app_id)`（16251）· `assert_not_pending_online(app_id)`（16252）· `submit(deployment)`：**先 Gate 后 INSERT**（D6-C）——`request_or_pass(business_key=str(deployment_id), applicant_user_id=app.owner_user_id, applicant_department_id=owner 主部门, business_resource_type='app', business_resource_id=str(app_id))` → `PENDING` 或 `EXCEPTION` 都照落版本记录（调 T017）→ Gate **抛异常** → deployment `failed(stage='approval_created', code=16225)` 且不落版本 → 返回 PENDING 后调 `ApprovalNotificationService.notify_users(..., action_code='approval_task_pending', scenario_code='app_publish_request')`（坑 5）→ 读 `handler.last_self_approval` 写审计 `app.release.self_approval`。**补偿**：Gate 成功而 INSERT 失败 → 立即 `cancel_instance_by_business(...)`（T035）+ deployment failed + 审计 `app.release.rollback`（**显式两阶段补偿，不假装原子**）。
   **测试**: T030 全部通过。
   **覆盖 AC**: AC-03, AC-23, AC-30, AC-64
@@ -331,7 +331,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T029, T017
 
 - [x] **T033**: `[MVP-核心]` `on_approved` 实现（调 F054 状态动作）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`（**增量**加 `on_approved`，不改 T029 已落方法）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`（**增量**加 `on_approved`，不改 T029 已落方法）
   **逻辑**: 编排见 design D9：① 取 `app` 与 `app_version`（**按 `version_id` 起手必须先借道 `app` 行校验归属**，坑 19）；应用已删 → 正常返回。② F054 `AppStateService.stage_version(app_id, version_id)`。③ 分派：应用态 ∈ {草稿, 已上线, 待上线} → `publish(app_id, version_id)`；**已下线 → 只 stage 不 publish**（AC-36）；已删除 → 同①。④ `publish` 三结果：`online` → `mark_terminal_state('online')` + 审计 `app.release.online` + 通知 owner；容量不足 → 应用态「待上线（资源不足）」+ 审批单保持通过 + `terminal_state` 保持 `NULL`（派生显示「待上线」）+ 通知 owner + 租户管理员（Root → 平台超管）；拉起 / 探活非容量失败 → 「待上线（上线失败）」+ 同上、成因文案区分。**后两者正常返回**（K3 / 坑 10）。**应用态一律经 F054，F055 不直写**（决议-8）。
   **测试**: T032 全部通过。
   **覆盖 AC**: AC-31, AC-35, AC-36, AC-64
@@ -345,7 +345,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T029
 
 - [x] **T035**: `[MVP-核心]` 终态回调 + `cancel_instance_by_business` + 组合根（**跨 Feature**）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`（**增量**加 `on_rejected` / `on_withdrawn` / `on_cancelled`）, `src/backend/bisheng/approval/domain/services/approval_center_service.py`（**新增** `cancel_instance_by_business`）, `src/backend/bisheng/app_publish/composition.py`（新，组合根）, **`src/backend/bisheng/main.py`（存量：`lifespan`（`:82`）内调一次 `register()`）**, **`src/backend/bisheng/worker/main.py`（存量：`on_worker_init`（`@celeryd_after_setup`，`:80-87`）内调一次 `register()`）**
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`（**增量**加 `on_rejected` / `on_withdrawn` / `on_cancelled`）, `src/backend/doberman_agent/approval/domain/services/approval_center_service.py`（**新增** `cancel_instance_by_business`）, `src/backend/doberman_agent/app_publish/composition.py`（新，组合根）, **`src/backend/doberman_agent/main.py`（存量：`lifespan`（`:82`）内调一次 `register()`）**, **`src/backend/doberman_agent/worker/main.py`（存量：`on_worker_init`（`@celeryd_after_setup`，`:80-87`）内调一次 `register()`）**
   **逻辑**: `on_rejected` → `mark_terminal_state('rejected')` + deployment `failed(stage='approved', code=None)`（区分于预检失败）+ 审计 `app.release.rejected`（`reason` = 驳回理由全文），**应用态不动**。`on_withdrawn` → `mark_terminal_state('withdrawn')` + deployment failed + 审计。`on_cancelled` → 保持 `terminal_state=NULL`（应用整体已删，不需要第五个取值）+ 审计 `app.release.cancelled`。
   **新增审批模块 API** `cancel_instance_by_business(*, instance_id | (scenario_code, business_key), reason, operator_user_id)`：置 instance=CANCELLED + 全部 PENDING task → CANCELLED + 写 `approval_action_log` + 审计 + **通知审批人**（新 action_code `approval_instance_cancelled`）+ 调 handler `on_cancelled`。**放审批模块**（它操作的是审批实体，放 F055 里就是跨模块直写别人的表）；形状通用，将来任何"业务对象消失需取消在途单"的场景直接复用（§6.1）。
   **组合根** `composition.py`：暴露 `register()` —— 注册 F054 `lifecycle_hooks.register_app_deleted_hook(fn)` + 场景 handler；**函数体自身幂等**（重复调用不重复注册），因为它要在两处被调（D16 ⚠️）。
@@ -365,7 +365,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T033, T035
 
 - [x] **T037**: `[MVP-核心]` `publish_status_service` + 手动上线实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/publish_status_service.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`（新）
   **逻辑**: `get_publish_status(app_id, actor)` —— **AC-38 的唯一实现**（发布面 + F052 MCP 应用状态工具共用）。返回 design §4.2 ② 的结构：`app_state` / `pending_reason` / `current_version` / `pending_version` / `deployment{stage,status,failure}` / `approval{instance_id,status,reject_reason,...}` / `tier` / `capabilities`（本轮恒空数组）/ `schema_change`（本轮恒 `null`）/ `can{withdraw,manual_publish,submit}`。**不写库**。`request_manual_publish(app_id, actor)`：owner-only 前置拦截（16254）→ 调 F054 `POST /api/v1/apps/{app_id}/actions/manual-publish` 对应的 `AppStateService.manual_publish` → 成功 `mark_terminal_state('online')` + 审计；仍失败保持待上线并回成因。能力「已失效」标记**按需计算**（`declared ∖ 当前可解析`），**不落库、不起定时任务**（本轮 `capabilities` 恒空，接口形状先定死，D13）。
   **测试**: T036 全部通过。
   **覆盖 AC**: AC-32, AC-38, AC-62
@@ -379,7 +379,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T021, T023, T031
 
 - [x] **T039**: `[MVP-核心]` `/api/v2/apps` router + 四端点实现
-  **文件**: `src/backend/bisheng/app_publish/api/router.py`（新）, `src/backend/bisheng/app_publish/api/endpoints/deploy.py`（新）, `src/backend/bisheng/api/router.py`（挂接新 router）
+  **文件**: `src/backend/doberman_agent/app_publish/api/router.py`（新）, `src/backend/doberman_agent/app_publish/api/endpoints/deploy.py`（新）, `src/backend/doberman_agent/api/router.py`（挂接新 router）
   **逻辑**: **F055 自建 router `/api/v2/apps` 挂 `router_rpc`，每个端点打 `@open_api_scope("app:manage")` marker，鉴权由 `router_rpc` 的 `verify_open_api_access` 单一管线承担**（2026-09-10 改接 beta2 F053，原 `Depends(open_api_subject(...))` 写法作废；**不自建鉴权**，K8）。
   **⚠️ 工场运行时层未启用闸（`16207`）**：四个端点共用一个前置依赖 `require_app_runtime_enabled()` —— 读 F054 的 `settings.app_runtime.enabled`（未部署工场运行时层的存量环境该值为假）→ 假则直接 `16207`。**位置写死为「`verify_open_api_access` 鉴权之后、归属判定之前」**：先鉴权再报"功能未启用"，避免未认证方探测部署形态；早于归属判定则是因为环境没启用时根本没有 `app` 表数据可判。漏这一闸 = T038 的 `test_app_runtime_disabled_returns_16207` 红测，且存量环境调 `deploy` 会一路走到编排器 RPC 超时。
   四端点（design §4.2 ①）：`GET /deploy-limits` → `{max_package_mb, max_unpacked_mb, max_package_entries}`（F053 打包后上传前自查，取不到时退化为直接上传由 16201 兜底）· `POST /deploy`（multipart：`package` + `app_id?` + `confirm_schema_change`〔**本期只接受不消费**，避免 CLI 侧改两次〕）→ `{deployment_id, app_id, version_id, entry_url?}` · `GET /deployments/{deployment_id}` → 轮询载荷 · `GET /{app_id}/logs` → **转发 F054 `GET /api/v1/apps/{id}/logs` 的同一服务方法**，只加 `app:manage` + 归属人与租户判定。owner 判定读 `OpenApiPrincipal.resource_owner_user_id`（**不是** `subject_user_id`）；**租户判定读 `OpenApiPrincipal.tenant_id`**（不读租户 ContextVar——它会被 `_load` 系列助手改写成资源自身的租户），`deploy` / `logs` / `deployments/{id}` 三处一致。端点一律经 domain service、不直接 import `database/models`（RULE-3）。
@@ -395,7 +395,7 @@ T001–T007（Wave 1，可并行）
   **依赖**: T037
 
 - [x] **T041**: `[MVP-核心]` `/api/v1` 发布状态端点实现
-  **文件**: `src/backend/bisheng/app_publish/api/endpoints/publish_status.py`（新）, `src/backend/bisheng/app_publish/api/router.py`（**增量**注册 v1 子路由，不改 T039 已落的 v2 部分）
+  **文件**: `src/backend/doberman_agent/app_publish/api/endpoints/publish_status.py`（新）, `src/backend/doberman_agent/app_publish/api/router.py`（**增量**注册 v1 子路由，不改 T039 已落的 v2 部分）
   **逻辑**: `GET /api/v1/apps/{app_id}/publish-status`（登录态，`UserPayload` 注入）委托 `PublishStatusService.get_publish_status`；`POST /api/v1/apps/{app_id}/publish/manual-publish` 委托 `request_manual_publish`（**F054 已有 `actions/manual-publish` 端点做状态动作，本端点只做 owner-only 前置 + 版本终态标注的编排**，避免两处都能改应用态）。**无权者返回 200 + 业务码**（K11 ②）。`UnifiedResponseModel` 包装。
   **测试**: T040 全部通过。
   **覆盖 AC**: AC-32, AC-34, AC-38, AC-62
@@ -407,12 +407,12 @@ T001–T007（Wave 1，可并行）
   **文件**: `src/backend/test/app_publish/test_publish_notification.py`（新）
   **逻辑**: 断言 AC-64 六类事件的接收方与 AC-65 的"只通知不承载操作"发送契约。
   **测试**: `test_approval_created_notifies_approvers`（Gate 不发、由我们自发，坑 5）→ AC-64 / `test_approved_and_rejected_notify_owner` → AC-64 / `test_withdrawn_notifies_approvers_who_received_task` → AC-64 / `test_cancelled_by_delete_notifies_approvers_new_action_code`（`approval_instance_cancelled`）→ AC-64 / `test_pending_online_notifies_owner_and_tenant_admin_root_super_admin` → AC-64 / `test_resource_released_and_capability_revoked_send_nothing`（两类**不主动提示**，仅发布面自查）→ AC-64 / `test_non_approval_notifications_use_neutral_message_type`（**发送契约写死**：`message_type` **不得为 `request` / `approve`**——`isApprovalMessageType`（`messageApproval/notificationContent.ts`）在这两个类型下**也为真**，并不只看 action_code 白名单，用错类型会长出一个点了会报错的跳转按钮，AC-65 当场破）→ AC-65 / `test_notifications_carry_no_action_payload` → AC-65
-  **实际偏差记录**（2026-08-19 核实并勾选）: ①用例名与本文预写的清单不逐字一致（实际 14 例，见 `test_publish_notification.py`），但**六类事件与两条发送契约逐条覆盖**：approve / reject 经 `ApprovalCenterService.decide_task_api` **真跑引擎**而不是读 `publish_notification_service` 的 docstring；withdraw 两例（普通场景收件人 = 持有 task 的审批人、自审场景排除操作人本人后一条都不发）；「资源释放后可手动上线」「能力被收回」两类**不主动提示**同时用行为侧（真跑 `manual_publish` 断言零通知）与结构侧（`ast` 遍历整个 `bisheng/app_publish` 断言只有两个发送调用点）双重钉住——只看一次 manual_publish 分不清「我们选择不通知」和「这条分支恰好没走到」。②「删除致取消」一类不在本文件，端到端覆盖在 `test_release_terminal_states.py::test_app_deleted_cancels_active_instance_and_notifies_approvers`，本文件的 `test_app_publish_owns_exactly_two_notification_call_sites` 是它不被悄悄搬走的护栏。③两个 fixture（`approval_notifications` 答「谁被通知」/ `message_sink` 答「消息长什么样」）刻意互斥——同时请求会观察到一条根本没到达消息服务的通知。
+  **实际偏差记录**（2026-08-19 核实并勾选）: ①用例名与本文预写的清单不逐字一致（实际 14 例，见 `test_publish_notification.py`），但**六类事件与两条发送契约逐条覆盖**：approve / reject 经 `ApprovalCenterService.decide_task_api` **真跑引擎**而不是读 `publish_notification_service` 的 docstring；withdraw 两例（普通场景收件人 = 持有 task 的审批人、自审场景排除操作人本人后一条都不发）；「资源释放后可手动上线」「能力被收回」两类**不主动提示**同时用行为侧（真跑 `manual_publish` 断言零通知）与结构侧（`ast` 遍历整个 `doberman-agent/app_publish` 断言只有两个发送调用点）双重钉住——只看一次 manual_publish 分不清「我们选择不通知」和「这条分支恰好没走到」。②「删除致取消」一类不在本文件，端到端覆盖在 `test_release_terminal_states.py::test_app_deleted_cancels_active_instance_and_notifies_approvers`，本文件的 `test_app_publish_owns_exactly_two_notification_call_sites` 是它不被悄悄搬走的护栏。③两个 fixture（`approval_notifications` 答「谁被通知」/ `message_sink` 答「消息长什么样」）刻意互斥——同时请求会观察到一条根本没到达消息服务的通知。
   **覆盖 AC**: AC-64, AC-65
   **依赖**: T033, T035
 
 - [x] **T043**: `[MVP-核心]` `publish_notification_service` 实现
-  **文件**: `src/backend/bisheng/app_publish/domain/services/publish_notification_service.py`（新）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/publish_notification_service.py`（新）
   **逻辑**: 六类触达的收件人解析与发送，**复用** `ApprovalNotificationService` / 既有站内消息服务（不新建通道）。新 action_code（design §4.2 ⑦）：`approval_instance_cancelled`（审批人）· `app_publish_pending_capacity`（owner + 租户管理员，Root → 超管）· `app_publish_deploy_failed`（同上）。后两者是**非审批类**，`message_type` 用中性类型（见 T042 的发送契约）。待上线两类的管理员收件人**直接复用** `_get_admin_recipient_ids` 的无条件 union（多通知一个超管无害；与 T025 的条件回退是两码事，**别混用**）。**消息只通知不承载操作**（AC-65），处理动作一律回发布面或审批中心。
   **测试**: T042 全部通过。
   **实际偏差记录**（2026-08-19 核实并勾选，**实现早于勾选**——服务与两个调用点在 Wave 3.1–3.4 那批就已随 `publish_approval_service` / `publish_online_service` 落地，只是复选框一直没勾）: ①本服务只承担**六类里的三类**（首节点待办 `approval_task_pending` + 待上线两类 `app_publish_pending_capacity` / `app_publish_deploy_failed`），其余三类（通过 / 驳回 / 撤回）由审批引擎自己发——我们再发一份等于让 owner 一个事件收两条站内信。这条不对称是设计本身，模块 docstring 顶部的事件表是其单一出处。②`approval_instance_cancelled` 的发送落在 `approval_center_service.cancel_instance_by_business`（`:600`）而不是本文件——它由 F054 的删除 hook 触发，发送方是审批模块。③真实调用点两处且仅两处：`publish_approval_service.py:254` → `notify_approvers_of_new_task`、`publish_online_service.py:261` → `notify_pending_online`（由 T042 的 `ast` 结构测试钉死）。
@@ -437,12 +437,12 @@ T001–T007（Wave 1，可并行）
   **逻辑**:
   - `VersionListCard`：只读列表（版本号 / 类型 / 提交时间 / 终态标注；待上线版本显示「待上线」），**不提供回滚入口**。⚠️ **绝不复用 `CardSelectVersion`**（`BuildPage/CardSelectVersion.tsx`）——它**切换即写库**（`handleChange :25-31` 调 `changeCurrentVersion`），且 `version_list` 对托管应用**恒空**（坑 29）。数据拉取用 `util/hook.ts:215 useTable`（**要求接口返回 `{data,total}`**，否则 `:238` 直接 console.error）。
   - `DangerZoneCard`：显式删除调 F054 动作，仅 owner；已上线态置灰并提示「请先下线」。
-  - **AC-06**：CLI 导入应用的「提交发布」按钮**不可用并提示以 `bisheng deploy` 提交**（本册 CLI 应用无草稿工作区，决议-2）。
+  - **AC-06**：CLI 导入应用的「提交发布」按钮**不可用并提示以 `doberman-agent deploy` 提交**（本册 CLI 应用无草稿工作区，决议-2）。
   - **填 slot**：把 T044a 的 `ApprovalStatusCard` 与本任务两卡装进 `PublishTab.tsx` 的 slot。**不重做 F054 T067 已交付的**应用态徽标 / 入口链接 / 下线 / 重新上线 / 手动上线三按钮；F055 只把 `can.manual_publish` / `pending_reason` 经 props 下传，让「手动上线」按待上线态出现。**可见范围区是 F056 的槽位**，只留位不写内容。
-  **手动验证**: 同一「发布」tab —— ① 版本列表只读、无任何切换 / 回滚控件；② 手动上线成功后版本列表该行终态由「待上线」变「已上线」且**不多出一行**；③ 「提交发布」置灰并提示走 `bisheng deploy`；④ 已上线态下删除按钮置灰并提示「请先下线」；⑤ F056 的可见范围槽位为空时布局不塌；⑥ 三卡同屏布局正常、无横向滚动。
+  **手动验证**: 同一「发布」tab —— ① 版本列表只读、无任何切换 / 回滚控件；② 手动上线成功后版本列表该行终态由「待上线」变「已上线」且**不多出一行**；③ 「提交发布」置灰并提示走 `doberman-agent deploy`；④ 已上线态下删除按钮置灰并提示「请先下线」；⑤ F056 的可见范围槽位为空时布局不塌；⑥ 三卡同屏布局正常、无横向滚动。
   **覆盖 AC**: AC-06, AC-39, AC-61
   **依赖**: T044a
-  ✅ 2026-09-10 收尾并勾选。DangerZoneCard / 三卡填 slot / AC-06「提交发布」置灰并提示走 `bisheng deploy` 早已落地（`hostedApp/index.tsx:132-156`、`publish/DangerZoneCard.tsx`、`publish/ApprovalStatusCard.tsx:140-148`），本批只补版本列表的分页契约。**实际偏差记录**：①**版本列表契约**——`GET /api/v1/apps/{app_id}/versions` 返回体由裸数组改为 **`{data,total}`**，新增查询参数 `page`（≥1，默认 1）/ `page_size`（1–200，**缺省 = 不分页、整表返回、`total == len(data)`**；越界 422 不静默夹紧；超出末页答空 `data` 不报错），行形状（`version_id / version_no / kind / terminal_state / submitted_at / is_current / is_pending`）不变；服务侧新增 `AppQueryService.list_versions_page`，切片在内存做而非 SQL `LIMIT/OFFSET`——数据以单应用部署次数为界、卡片下拉本就整表读取（要找运行中版本，分页可能不含它），且 `AppVersionDao` 的 INSERT-only 结构断言（`test_app_state_service_registry.py::test_version_insert_only_no_update_method` 钉死方法集）不值得为一个 count 方法开口；后端单测 `test/app_runtime/test_apps_api.py::TestVersions` 2 例（信封 + 跨页 `total` / 末页 / 越界 / 422）。②**前端 API 拆两个方法**：`getHostedAppVersionPageApi(appId, {page, pageSize})` 回 `{data,total}` 供 `useTable`；`getHostedAppVersionsApi(appId)` 保留数组返回（拆信封）供卡片下拉与版本 tab，后两处调用方零改动。③`VersionListCard` 改 `util/hook.ts useTable`（pageSize 10；只有超过一页才渲染 `AutoPagination`，复用 `pagination.totalPrefix / totalSuffixWithPageSize` 既有文案，**本批未新增 i18n key**）；`useTable` 吞掉拒绝（只清 loading），卡内在 `apiFun` 里截获业务码文案后再抛回，非 owner 的 16106 显示为提示而不是「暂无版本记录」；`appId` 变更回第 1 页重拉、`reloadKey` 变更留在当前页重拉。验证：`pytest test/app_runtime` 309 passed / 13 skipped；platform `vitest`（hostedAppApi / hostedAppState / publishVocabulary / visibilityScope 31 例）、`pnpm typecheck`、`pnpm lint`、`check-i18n` 全绿。
+  ✅ 2026-09-10 收尾并勾选。DangerZoneCard / 三卡填 slot / AC-06「提交发布」置灰并提示走 `doberman-agent deploy` 早已落地（`hostedApp/index.tsx:132-156`、`publish/DangerZoneCard.tsx`、`publish/ApprovalStatusCard.tsx:140-148`），本批只补版本列表的分页契约。**实际偏差记录**：①**版本列表契约**——`GET /api/v1/apps/{app_id}/versions` 返回体由裸数组改为 **`{data,total}`**，新增查询参数 `page`（≥1，默认 1）/ `page_size`（1–200，**缺省 = 不分页、整表返回、`total == len(data)`**；越界 422 不静默夹紧；超出末页答空 `data` 不报错），行形状（`version_id / version_no / kind / terminal_state / submitted_at / is_current / is_pending`）不变；服务侧新增 `AppQueryService.list_versions_page`，切片在内存做而非 SQL `LIMIT/OFFSET`——数据以单应用部署次数为界、卡片下拉本就整表读取（要找运行中版本，分页可能不含它），且 `AppVersionDao` 的 INSERT-only 结构断言（`test_app_state_service_registry.py::test_version_insert_only_no_update_method` 钉死方法集）不值得为一个 count 方法开口；后端单测 `test/app_runtime/test_apps_api.py::TestVersions` 2 例（信封 + 跨页 `total` / 末页 / 越界 / 422）。②**前端 API 拆两个方法**：`getHostedAppVersionPageApi(appId, {page, pageSize})` 回 `{data,total}` 供 `useTable`；`getHostedAppVersionsApi(appId)` 保留数组返回（拆信封）供卡片下拉与版本 tab，后两处调用方零改动。③`VersionListCard` 改 `util/hook.ts useTable`（pageSize 10；只有超过一页才渲染 `AutoPagination`，复用 `pagination.totalPrefix / totalSuffixWithPageSize` 既有文案，**本批未新增 i18n key**）；`useTable` 吞掉拒绝（只清 loading），卡内在 `apiFun` 里截获业务码文案后再抛回，非 owner 的 16106 显示为提示而不是「暂无版本记录」；`appId` 变更回第 1 页重拉、`reloadKey` 变更留在当前页重拉。验证：`pytest test/app_runtime` 309 passed / 13 skipped；platform `vitest`（hostedAppApi / hostedAppState / publishVocabulary / visibilityScope 31 例）、`pnpm typecheck`、`pnpm lint`、`check-i18n` 全绿。
 
 - [x] **T045**: `[MVP-核心]` Platform：审计前端 lockstep + 三语 i18n
   **文件**: `src/frontend/platform/src/controllers/API/log.ts`（`actions` / `getModulesApi` 加 `app.release.*`）, `src/frontend/platform/public/locales/{zh-Hans,en,ja}/bs.json`（三语一组：`log.systemIdEnum` / `log.eventTypeEnum` + 发布面新增 key）
@@ -487,7 +487,7 @@ T001–T007（Wave 1，可并行）
 #### 3.8 `withdraw` 终态守卫（§6 字面读法留在 MVP 内）
 
 - [x] **T051**: `[MVP-核心]` `withdraw` 终态守卫（非 PENDING 一律拒；错误码走 **approval 段 181xx**、不占 162）
-  **文件**: `src/backend/bisheng/approval/domain/services/approval_center_service.py`（`withdraw_instance` 约 `:432` 之前加守卫）, `src/backend/bisheng/common/errcode/approval.py`, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（新错误码三语一组）, `src/backend/test/app_publish/test_withdraw_guard.py`（新）
+  **文件**: `src/backend/doberman_agent/approval/domain/services/approval_center_service.py`（`withdraw_instance` 约 `:432` 之前加守卫）, `src/backend/doberman_agent/common/errcode/approval.py`, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（新错误码三语一组）, `src/backend/test/app_publish/test_withdraw_guard.py`（新）
   **逻辑**: `withdraw_instance` 今天只校验 `applicant_user_id`、**不校验 instance 状态**（坑 4）→ 已 APPROVED / REJECTED / CANCELLED 的单子被直接打 API 也能"撤回"，落到 F055 就是**已上线版本的 `terminal_state` 被反复改写成 `withdrawn`**（`on_withdrawn` 照样触发）。守卫加在 `applicant_user_id` 校验之后、状态变更之前：`if instance.status != PENDING: raise ApprovalInstanceNotPendingError`（**新码归 approval 段 181xx**，不占 F055 的 162 段——它修的是审批模块的既有缺陷，不是应用发布的业务错误）。
   **⚠️ 跨 Feature**: 改的是审批模块公共 API 的行为（收紧），对频道订阅 / 知识空间加入两个既有场景同样生效 → 测试须含这两个场景的回归；同 PR 更新 approval-module skill（T050 一并做）。
   **测试**: `test_withdraw_pending_still_succeeds` / `test_withdraw_approved_rejected_181xx`（三个终态各一次）/ `test_withdraw_cancelled_rejected` / `test_online_version_terminal_state_not_overwritten_by_late_withdraw`（AC-22 的真实后果）/ `test_existing_channel_and_knowledge_scenarios_withdraw_unaffected_when_pending`（行为收紧的护栏）
@@ -499,15 +499,15 @@ T001–T007（Wave 1，可并行）
 
 - [ ] **T049**: `[MVP-核心]` 114 部署与手动验证清单（演示剧本步 3–4）
   **文件**: `features/v3.0.0/055-app-publish-pipeline/tasks.md`（本文「实际偏差记录」回填）
-  **前置**: F049 / F054 首波已部署 → `bash /opt/bisheng-ops/deploy.sh` → **先发代码、再往 `config.yaml` 加 `app_runtime` 新键、再全量重启**（K10，顺序反了直接拒启）→ 确认**消费默认队列的 celery worker 在跑**（K12：缺它则管线后段与审批 outbox 双双不执行）。
+  **前置**: F049 / F054 首波已部署 → `bash /opt/doberman-agent-ops/deploy.sh` → **先发代码、再往 `config.yaml` 加 `app_runtime` 新键、再全量重启**（K10，顺序反了直接拒启）→ 确认**消费默认队列的 celery worker 在跑**（K12：缺它则管线后段与审批 outbox 双双不执行）。
   **验证清单**（逐条勾）:
   0. **前置自检**：`curl -s http://127.0.0.1:7860/api/v1/env | jq '.app_runtime_enabled, .open_platform_enabled'` → 均 `true`；`SELECT code,cpu_millicores,memory_mb,enabled FROM resource_tier;` → 三行且 **`light` 为 500 毫核 / 1024 MB**（2026-09-09 起的出厂值；若该环境是更早播种的，配置项与常量都不会改动它，须直接 UPDATE 这一行，见 spec 决议-10）；`SELECT tenant_id,scenario_code,enabled FROM approval_scenario WHERE scenario_code='app_publish_request';` → 有行；`ps -ef | grep 'celery.*worker'` → 有默认队列消费者。
-  1. **步 3**：`bisheng deploy` → CLI 分阶段输出 `manifest → 构建 → 探活 → 扫描 → 审批单已生成`（**spec 字面顺序**）→ AC-01。
+  1. **步 3**：`doberman-agent deploy` → CLI 分阶段输出 `manifest → 构建 → 探活 → 扫描 → 审批单已生成`（**spec 字面顺序**）→ AC-01。
   2. **故意验证扫描**：包里塞一行 `token = "bs-sak-<43位>"` 再 deploy → 被阻断、输出含 `文件:行号`、**输出里 grep 不到那 43 位串** → AC-10。
   3. **故意验证 manifest**：删掉 `runtime` 再 deploy → `16221` 且 `details` 指出缺哪个字段 → AC-11。
   4. **在途闸**：不撤回直接再 deploy → `16251` → AC-03。
   5. **审批人解析**（114 单租户 → **必然走 Root 回退**）：`SELECT approver_user_id FROM approval_task WHERE instance_id=<N>;` → 平台超管（AC-15）；owner 有主部门且该部门设了部门管理员则应同时出现（AC-12）；`SELECT applicant_user_id FROM approval_instance WHERE id=<N>;` → **是 owner 自然人不是服务账号**（AC-16 / 坑 28）。
-  6. **步 4**：用**审批人账号**（非发起人）登录 client → 铃铛有「提交了应用发布申请」（AC-64）→ 审批中心详情是**四分区**（AC-24）→ 不填理由点「驳回」置灰 → 填理由点「通过」→ `docker ps` 出现 `bisheng-app-*`、应用态「已上线」、`app_version.terminal_state='online'`（AC-31）。
+  6. **步 4**：用**审批人账号**（非发起人）登录 client → 铃铛有「提交了应用发布申请」（AC-64）→ 审批中心详情是**四分区**（AC-24）→ 不填理由点「驳回」置灰 → 填理由点「通过」→ `docker ps` 出现 `doberman-agent-app-*`、应用态「已上线」、`app_version.terminal_state='online'`（AC-31）。
   7. **审计**：审计页筛「应用」命名空间能看到 `app.release.submit` / `approval_created` / `approved` / `online` 四条且带应用名（AC-01；看不到 = 四处 lockstep 漏了一处，坑 21）。
   8. **待上线分支**：把 runtime-manager 的 `RTM_RESERVE_MB` 临时调到极大并重启该进程，使容量闸必拒（⚠️ 改 `config.yaml` 的 `app_runtime.reserve_mb` **不生效**，闸在 runtime-manager 进程里、只读自己的环境变量，照那样做这一步会静默走成正常路径并被判为通过） → 再走一遍审批通过 → **审批单仍是"通过"**、应用态「待上线（资源不足）」、owner 与超管各收到一条**无跳转按钮**的站内信（AC-31 / AC-65）；恢复配置后发布面点「手动上线」→ 成功且**不产生新版本记录**（AC-32 / 决议-6）。
   9. **驳回 / 撤回**：驳回一次 → owner 在发布面看到**理由全文**（AC-33）；再提交后 owner 点「撤回」→ 审批人待办消失（AC-34）；**再对同一个已终态的 instance 直接打 `POST /api/v1/approval/instances/{id}/withdraw`** → 被 181xx 拒、`app_version.terminal_state` 不被改写（AC-22 / T051）。
@@ -541,7 +541,7 @@ T001–T007（Wave 1，可并行）
 > 优先级顺序取 design §8（`withdraw` 守卫已上提至 Wave 3.8，见文首「§6 字面读法的两处对齐」）。
 
 - [x] **T052**: 审读视图（左文件树 + 右只读代码 + 4 tab）+ 「查看待上线版本」入口；弹窗 `viewMode:'review'` 放宽至 1200px（K11 ③ / D14 案 A）
-  **文件**: `client/src/components/approval/AppReviewView.tsx`, **`client/src/pages/settings/SettingsPage.tsx` + `client/src/components/approval/ApprovalPane.tsx`**（2026-09-10 改接 beta2 后审批中心由设置页承载、原 `ApprovalCenterDialog.tsx` 已删；「弹窗 `viewMode:'review'` 放宽至 1200px」的前提随之失效，尺寸按页面重估）, `client/src/locales/{zh-Hans,en,ja}/translation.json`, `src/backend/bisheng/app_publish/api/endpoints/snapshot.py`
+  **文件**: `client/src/components/approval/AppReviewView.tsx`, **`client/src/pages/settings/SettingsPage.tsx` + `client/src/components/approval/ApprovalPane.tsx`**（2026-09-10 改接 beta2 后审批中心由设置页承载、原 `ApprovalCenterDialog.tsx` 已删；「弹窗 `viewMode:'review'` 放宽至 1200px」的前提随之失效，尺寸按页面重估）, `client/src/locales/{zh-Hans,en,ja}/translation.json`, `src/backend/doberman_agent/app_publish/api/endpoints/snapshot.py`
   **测试载体**: `src/backend/test/app_publish/test_snapshot_api.py`（快照只读端点：归属 / 审批人放行 / 二进制与超大文件降级）+ 前端手动验证清单（文件树可展开、代码只读不可编辑、4 tab 切换、1200px 下不横向滚动、无「查看待上线版本」死链）
   **覆盖 AC**: AC-24, AC-25
   - [x] **后端半（2026-09-16 完成，切片 publish-diff-review-backend）**：`api/endpoints/snapshot.py`（`GET …/versions/{version_id}/snapshot/tree` + `…/snapshot/file?path=`）+ `domain/services/snapshot_browse_service.py`（`ReviewAccess` 访问规则 + 流式读归档、不落盘）；`test_snapshot_api.py` 20 个用例全绿（归属 / 审批人持任务放行 / **走真实 `publish_approval_service.submit` 产生的审批人放行**（钉住访问规则依赖的 `payload_snapshot.version_id` 与 `business_resource_type="app"`）/ 其它版本审批人与陌生人 16257 / 二进制与超大降级 / 密钥 mask / 非法路径 16258 / 快照缺失或损坏 16256 / 单顶层目录去前缀 / 条目超 `max_package_entries` 置 `truncated` / 无整包下载路由）。契约见 design §4.2 ⑨。审校补交：`packages/locales` 六个生成产物（platform `api_errors.json` ×3、client `api_errors.gen.json` ×3）经 `node scripts/build.mjs` 重建后随码提交（首次提交漏了，`--check` 会挂 CI）。
@@ -552,15 +552,15 @@ T001–T007（Wave 1，可并行）
     **手动验证清单（待 114 实机走一遍）**：文件树可展开折叠 · 代码区只读且无下载入口 · 4 tab 切换 · 首发版本的「文件差异」tab 显示「没有可对比的已发布版本」而非空白 · 二进制 / 超大文件显示原因而不是空正文 · 窄屏（<768px）左右两栏改上下堆叠、不横向滚动 · 非审批人打开同一 URL 看到业务码文案而不是整页 403 · 切 en / ja 无裸键。
 
 - [x] **T053**: 审批期临时预览实例后端（快照拉起 / 临时空库 / 审批人身份注入 + owner 权限放行〔NFR-1.2 审批例外，INV-36〕/ 终态与超时回收 / 不占实例名额）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`, `src/backend/bisheng/app_publish/api/endpoints/preview.py`, `src/backend/bisheng/app_publish/domain/models/app_preview_session.py`（新表）, `src/runtime-manager/runtime_manager/preview.py`（新意图）, `src/backend/test/app_publish/test_preview_instance.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`, `src/backend/doberman_agent/app_publish/api/endpoints/preview.py`, `src/backend/doberman_agent/app_publish/domain/models/app_preview_session.py`（新表）, `src/runtime-manager/runtime_manager/preview.py`（新意图）, `src/backend/test/app_publish/test_preview_instance.py`
   **覆盖 AC**: AC-26, AC-27, AC-28, AC-29, AC-30
   **证据**（分支 `wt/f055-preview-instance`，提交 `22fdb51f5` + `fb818bc30` + 复核修 `HEAD`）：`test/app_publish/test_preview_instance.py` 31 例全绿 · `src/runtime-manager/tests/test_preview_instance.py` 28 例全绿（runtime-manager 全量 265 passed / 5 skipped，基线 237 / 5）· 后端 `test/app_publish test/app_runtime` 合跑 **976 passed / 13 skipped / 0 failed**（主检出同选择基线 928 passed / 2 failed，两条失败即本切片修掉的门禁，见偏差 ④）。
 
   **偏离与必须知道的落点**：
-  ① **预览不是 `deploy`，是三个新意图**：`POST /v1/intents/preview` · `POST /v1/intents/preview/stop` · `GET /v1/previews/{session}/route`。原文写「复用 `probe` 临时形态 + `deploy` 意图」两条都不成立——`probe_image` 在 `finally` 里把容器删掉（预览要留着），而 `deploy` 会写 `app_id` 键的期望态记录，那条记录正是「占实例名额」和「被 reconciler 复活」的原因。新意图**不写期望态**：`store.committed()` 与 `capacity.instances` 都不计它（`test_starting_a_preview_writes_no_desired_state_record`），容器标 `bisheng.managed=preview` 而不是 `=true`，reconciler 的过滤器看不见它。容量仍然照判——内存是真花掉的，只是名额不计。
+  ① **预览不是 `deploy`，是三个新意图**：`POST /v1/intents/preview` · `POST /v1/intents/preview/stop` · `GET /v1/previews/{session}/route`。原文写「复用 `probe` 临时形态 + `deploy` 意图」两条都不成立——`probe_image` 在 `finally` 里把容器删掉（预览要留着），而 `deploy` 会写 `app_id` 键的期望态记录，那条记录正是「占实例名额」和「被 reconciler 复活」的原因。新意图**不写期望态**：`store.committed()` 与 `capacity.instances` 都不计它（`test_starting_a_preview_writes_no_desired_state_record`），容器标 `doberman_agent.managed=preview` 而不是 `=true`，reconciler 的过滤器看不见它。容量仍然照判——内存是真花掉的，只是名额不计。
   ② **「临时空库」= tmpfs，不是「新建一个空的应用卷」**：`/data` 挂 `rw,size=64m,mode=1777`，**没有 `Binds`**（AC-29 的试用数据带不进生产）。`mode=1777` 是必须的，不是装饰：镜像以非 root 的 uid 10001 跑，默认 tmpfs 是 root 0755，应用开不了 `/data/app.db` 就 exit 1，症状是「预览拉不起来」而没人猜得到原因（与 `probe.py` 同一个坑）。
   ③ **预览按审批人分，不按版本分**：两个审批人同一个版本各拿一个实例。AC-27 要求注入审批人本人身份，共用一个就等于让审批人 B 看见审批人 A 敲进去的数据。DAO 的 `aget_running_for` 因此按 `(version_id, approver_user_id)` 取。
-  ④ **超时回收不落平台定时任务**——这是与 F054 既有门禁 `test_switch_off_no_resident_process_or_beat_task`（AC-59「不得往平台镜像里塞常驻 worker」）的正面冲突，先写了 beat 条目再撤掉的。最终两处各管一半：**容器**由 runtime-manager 的 reconcile 每 15s 按容器标签 `bisheng.preview.expires_at` 收（deadline 随容器走，因为管理器才是容器存在的前提进程）；**行**由 `resolve_entry` 当场拒过期会话（对访问者精确）+ 审批人打开面板时 `reclaim_expired()` 对账（一次带索引的范围查询）。没有标签的预览**永不**被扫（缺值不等于「现在就收」）。
+  ④ **超时回收不落平台定时任务**——这是与 F054 既有门禁 `test_switch_off_no_resident_process_or_beat_task`（AC-59「不得往平台镜像里塞常驻 worker」）的正面冲突，先写了 beat 条目再撤掉的。最终两处各管一半：**容器**由 runtime-manager 的 reconcile 每 15s 按容器标签 `doberman_agent.preview.expires_at` 收（deadline 随容器走，因为管理器才是容器存在的前提进程）；**行**由 `resolve_entry` 当场拒过期会话（对访问者精确）+ 审批人打开面板时 `reclaim_expired()` 对账（一次带索引的范围查询）。没有标签的预览**永不**被扫（缺值不等于「现在就收」）。
   ⑤ **访问规则复用 `ReviewAccess`，文案不复用**：门与审读视图同一道（该版本的审批人 / owner / 租户管理员 / 平台超管），但 16257 的文案是「没有查看该版本代码的权限」，放在一个「跑起来试试」的按钮旁边是错句子，所以另给 **16264**。新增 16264–16267 四码 + 三语 `api_errors`；16268/16269 预留未用。
   ⑥ **新增审计 action 两个**：`app.release.preview_started` / `app.release.preview_reclaimed`，四处 lockstep（enum + `_UI_VISIBLE_V2_ACTIONS` + platform `log.ts` + 三语 `bs.json`）已同批完成。回收理由 `manual` / `approval_terminal` / `expired` 记在 metadata，三条腿在容器日志里长得一样，事后问「这次试用为什么结束」只能靠它分辨。
   ⑦ **保留 slug `preview` / `_unavailable`**（`app_provision_service.RESERVED_SLUGS`）：`/apps/preview/{session}` 的路由注册在 `{slug}` 之前，不保留名字的话，一个叫 `preview` 的应用会被永久遮蔽，而对它的负责人来说症状是「我的应用对所有人 404」且任何日志里都没有线索。
@@ -570,7 +570,7 @@ T001–T007（Wave 1，可并行）
 
   ⑪ **AC-27 只做到了一半，另一半本分支做不了，别当它已经交付**（复核补记）。做到的是「注入审批人本人身份」与「临时库可写」；**没做**的是「平台能力按 owner 权限放行」与能力调用计审计——能力总线本身是 T056～T059，不在本分支上，没有可以放行的调用点。为了让那一半**可以**被实现而不是被默默做错，本切片把事实带到了线上：预览入口签发的 OBO 令牌里多一个 `preview_session` 声明（`entry_authz_service._issue_obo_token`），能力总线据此分辨「这次访问是审批试用」。**接 T056～T059 的人必须读这条**：不读它，能力总线会对预览按访问者（审批人）的可见范围过滤，于是一个不在应用知识库范围里的审批人看到的是「这个版本坏了」，而 NFR-1.2 / INV-36 登记的例外形同虚设。正式入口的 OBO **不带**这个声明，`test_obo_token_signed_with_dedicated_secret` 用整字典相等钉住——带上了就等于把审批例外倒过来变成越权。
 
-  ⑫ **预览容器拿的是 §5 的整套环境变量**（复核修）。初版只注入了 `BISHENG_APP_BASE_PATH`，`BISHENG_APP_DB_URL` / `BISHENG_APP_ID` / `BISHENG_APP_SLUG` / `BISHENG_APP_VERSION(_ID)` / `BISHENG_PLATFORM_API_BASE` / `PORT` 一个都没有——应用拿不到数据库地址会在启动时退出，症状是「预览拉不起来」而审批人读成「这个版本是坏的」，`/data` 那块 tmpfs 也就白挂了。现在 `build_preview_payload` 走 `lifecycle.build_env`（与 deploy 同一个函数），意图入参补 `slug` / `version_no` / `platform_api_base` / `base_path`。**唯二的差别**：`base_path` 是 `/apps/preview/{session}`；**附件句柄三名一个都不注入**（`storage_token=None`）——应用自己的 storage bearer 交给临时实例，试用上传就会落进生产附件前缀，与 AC-29 拦数据库是同一条线。用例：runtime-manager `test_a_preview_gets_the_whole_environment_contract` / `test_a_preview_carries_no_attachment_handle`，backend `test_the_preview_is_handed_the_whole_environment_contract`。
+  ⑫ **预览容器拿的是 §5 的整套环境变量**（复核修）。初版只注入了 `DOBERMAN_AGENT_APP_BASE_PATH`，`DOBERMAN_AGENT_APP_DB_URL` / `DOBERMAN_AGENT_APP_ID` / `DOBERMAN_AGENT_APP_SLUG` / `DOBERMAN_AGENT_APP_VERSION(_ID)` / `DOBERMAN_AGENT_PLATFORM_API_BASE` / `PORT` 一个都没有——应用拿不到数据库地址会在启动时退出，症状是「预览拉不起来」而审批人读成「这个版本是坏的」，`/data` 那块 tmpfs 也就白挂了。现在 `build_preview_payload` 走 `lifecycle.build_env`（与 deploy 同一个函数），意图入参补 `slug` / `version_no` / `platform_api_base` / `base_path`。**唯二的差别**：`base_path` 是 `/apps/preview/{session}`；**附件句柄三名一个都不注入**（`storage_token=None`）——应用自己的 storage bearer 交给临时实例，试用上传就会落进生产附件前缀，与 AC-29 拦数据库是同一条线。用例：runtime-manager `test_a_preview_gets_the_whole_environment_contract` / `test_a_preview_carries_no_attachment_handle`，backend `test_the_preview_is_handed_the_whole_environment_contract`。
 
   ⑬ **跨租户超时对账后必须把租户上下文放回去**（复核修）。`reclaim_expired()` 走 bypass 扫全站，而每条回收都要把租户上下文指到那行自己的租户（审计行要写对版本，而版本读是带租户过滤的）。扫完不还原，紧接着 `describe` 里那次**带过滤**的自查就落到别人租户上，面板对一个正在跑的试用答「未拉起」，审批人于是再拉一个容器。现在 `reclaim_expired` 在 `finally` 里还原调用方租户；用例 `test_sweeping_another_tenants_expired_row_does_not_hide_my_own`（并断言外租户那行确实被收了，否则断言是空的）。
 
@@ -596,9 +596,9 @@ T001–T007（Wave 1，可并行）
 ### Wave 5 · 能力总线与应用运行期凭据（release 必做，本轮顺延）
 
 - [x] **T055**: `hosted_app` 主体解析器注册与凭据生命周期（签发 / 重签 / 5 秒失效 / 下线拒绝 / 删除撤销 / 无任何管理入口 / 不进服务账号列表）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/app_credential_service.py`, `src/backend/bisheng/open_api/domain/subject_resolvers.py`（注册 `SUBJECT_RESOLVERS['hosted_app']`）, `src/backend/test/app_publish/test_app_credential.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py`, `src/backend/doberman_agent/open_api/domain/subject_resolvers.py`（注册 `SUBJECT_RESOLVERS['hosted_app']`）, `src/backend/test/app_publish/test_app_credential.py`
   **覆盖 AC**: AC-57, AC-58, AC-59, AC-60
-  **证据**（分支 `wt/f055-hosted-credentials`）：`app_credential_service.py`（`AppRuntimeCredentialService.issue / revoke`、`resolve_hosted_app`、`HOSTED_APP_TOKEN_ENV = "BISHENG_APP_TOKEN"`、`assert_revocation_bound()`）+ 新表模型 `app_publish/domain/models/hosted_app_subject.py` + 底座三处（`api_credential.py` 加 `SUBJECT_KIND_HOSTED_APP` / `HOSTED_APP_TOKEN_PREFIX = "bs-app-"` 与 CHECK 放宽、`credential_service.credential_prefix()` 第三分支、`credential_validator._SUBJECT_KIND_PREFIXES` 前缀钉死）+ `context.py` 两处 Literal 扩容与新增 `OpenApiPrincipal.subject_ref` + `composition.register()` 注册解析器、执行守卫与删除钩子。测试 `test/app_publish/test_app_credential.py` 40 例全绿；`test/app_publish/ test/open_api/ test/app_runtime/` 合跑 1294 passed / 13 skipped / 0 failed（主检出同选择基线 1254 passed，差值 +40 = 本次新增用例数）。
+  **证据**（分支 `wt/f055-hosted-credentials`）：`app_credential_service.py`（`AppRuntimeCredentialService.issue / revoke`、`resolve_hosted_app`、`HOSTED_APP_TOKEN_ENV = "DOBERMAN_AGENT_APP_TOKEN"`、`assert_revocation_bound()`）+ 新表模型 `app_publish/domain/models/hosted_app_subject.py` + 底座三处（`api_credential.py` 加 `SUBJECT_KIND_HOSTED_APP` / `HOSTED_APP_TOKEN_PREFIX = "bs-app-"` 与 CHECK 放宽、`credential_service.credential_prefix()` 第三分支、`credential_validator._SUBJECT_KIND_PREFIXES` 前缀钉死）+ `context.py` 两处 Literal 扩容与新增 `OpenApiPrincipal.subject_ref` + `composition.register()` 注册解析器、执行守卫与删除钩子。测试 `test/app_publish/test_app_credential.py` 40 例全绿；`test/app_publish/ test/open_api/ test/app_runtime/` 合跑 1294 passed / 13 skipped / 0 failed（主检出同选择基线 1254 passed，差值 +40 = 本次新增用例数）。
 
   **偏离与必须知道的落点**：
   ① **`subject_id` 用代理键，不是 `app.id`**。`api_credential.subject_id` 是 BIGINT 而 `app.id` 是 uuid 字符串，新建表 `hosted_app_subject`（`id` BIGINT 自增 / `app_id` 唯一，**无 `tenant_id`**，隔离随 `app` 派生）给每个应用分配一次整型代理键。不复用 `owner_user_id`：那样 `revoke_subject('hosted_app', owner)` 会一次撤销该人名下**所有**应用的凭据（`test_revoking_one_application_leaves_a_sibling_of_the_same_owner_alive` 锁住）。应用的 uuid 经新字段 `OpenApiPrincipal.subject_ref` 透出，F051 T023 的 `ModelCallRecord.app_id` 用它（不要用 `actor_name`，那是应用显示名）。
@@ -641,12 +641,12 @@ T001–T007（Wave 1，可并行）
 
 > **T056–T060 于 2026-09-16 由切片 `f055-capability-injection` 一并落地**（分支 `wt/f055-capability-injection`，提交 `347ff7d52` 后端 + `0ff17021f` 前端）。五项共享同一个新模块 `capability_bus_service.py`，故证据与偏离在 T056 下集中记一次，其余任务只记各自的落点与用例。
 
-- [x] **T056**: 模型能力注入（经 F051 OpenAI 兼容面 + `BISHENG_PLATFORM_API_BASE` / `BISHENG_APP_TOKEN` 注入；未声明不可调用；工作台无任何底层账号 / 端点配置入口）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`, `src/backend/test/app_publish/test_capability_model.py`
+- [x] **T056**: 模型能力注入（经 F051 OpenAI 兼容面 + `DOBERMAN_AGENT_PLATFORM_API_BASE` / `DOBERMAN_AGENT_APP_TOKEN` 注入；未声明不可调用；工作台无任何底层账号 / 端点配置入口）
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`, `src/backend/test/app_publish/test_capability_model.py`
   **覆盖 AC**: AC-49, AC-51, AC-54
   **证据**: `capability_bus_service.py`（`HostedAppDeclarationAdapter` / `derive_scopes` / `undeployable_scopes` / `model_face_base_url` / `runtime_capability_env`）+ `app_runtime/domain/services/runtime_env_ports.py`（新端口）+ `app_state_service._start` 合并能力环境 + `composition.register()` 三处注册。用例 `test_capability_model.py` 18 例 + `test/app_runtime/test_capability_env_injection.py` 5 例，全绿。
   **偏离与必须知道的落点**：
-  ① **注入的名字不是任务标题写的那两个**。按 design D13 与 F054 `contracts-runtime-manager.md` §5，模型面用 `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `BISHENG_MODEL_BASE_URL` 三名 + `BISHENG_APP_TOKEN`；`BISHENG_PLATFORM_API_BASE` 是 **v2 业务面**地址，早已由 runtime-manager 的 `build_env` 注入，本切片不碰。任务标题沿用了 D13 修订前的写法。
+  ① **注入的名字不是任务标题写的那两个**。按 design D13 与 F054 `contracts-runtime-manager.md` §5，模型面用 `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `DOBERMAN_AGENT_MODEL_BASE_URL` 三名 + `DOBERMAN_AGENT_APP_TOKEN`；`DOBERMAN_AGENT_PLATFORM_API_BASE` 是 **v2 业务面**地址，早已由 runtime-manager 的 `build_env` 注入，本切片不碰。任务标题沿用了 D13 修订前的写法。
   ② **注入走端口而不是直连**。`app_runtime` 不得 import `app_publish`（RULE-5），故新增 `runtime_env_ports`（与 `lifecycle_hooks` 同形）：F055 在 composition 里注册 provider，F054 在 `deploy` 前 `await capability_env(...)` 并把结果**最后**合并进 `env`（平台保留名覆盖调用方同名值）。未注册 = 无能力环境（诚实），provider 抛错 = 中止启动（不端上一个没有凭据的容器）。
   ③ **明文凭据不进 `app_version.injections`**。凭据在拉起前现签、注入一次、不落库；`injections` 仍为 `{}`，`version_service` 未改。
   ④ **`model_face_base_url()` 不经 `Request`**。上线发生在 Celery 腿，没有请求可读转发头；取 `open_api.public_base_url`，退 `app_runtime.entry_base_url`，两者皆空则**不注入**该变量并 warn（不猜地址）。路径常量复用 `public_base_url.MODEL_GATEWAY_BASE_PATH`。
@@ -655,7 +655,7 @@ T001–T007（Wave 1，可并行）
   ⑦ **顺带补上 OBO 的第一个 reader**：`entry_authz_service` 此前只签不验，F051 的 `AccessSubjectVerifierPort` 一直没人注册（= 每个访问者令牌都被拒、每次调用都记成「应用自身」）。新增 `verify_obo_token` + `AccessSubjectVerifier`，由 F055 composition 注册（依赖方向仍是 F055 → F054）。**F054 AC-34 里「OBO 尚无消费者、暂不 fail-closed」的前提到此失效**——下一个动 entry 的切片应按当初的约定把「未签发令牌」改成拒绝进入。
 
 - [x] **T057**: 知识库能力注入与 fail-closed（白名单由平台按当前生效声明确定、应用不可自报；运行期可及 = 白名单 ∩ 访问用户可见范围，文件级经 F052 门面；无访问用户身份一律拒绝、绝不回退全量；集合相等断言）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`（增量）, `src/backend/test/app_publish/test_capability_knowledge.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`（增量）, `src/backend/test/app_publish/test_capability_knowledge.py`
   **依赖**: F052 门面已落地（2026-09-16），契约见 [F052 design §4.2 ③](../052-mcp-server-face/design.md)。调用形态：`identity = await RetrievalIdentity.from_user(访问用户 id, tenant_id)`（**async**）→ `await RetrievalFacadeService.retrieve(identity, RetrievalRequest(query=…, whitelist=当前生效声明))`。`identity=None` 门面直接抛 26320，不必自己再判一次；白名单内的库已被删除 → 26322 `KnowledgeCapabilityRevokedError(data.knowledge_id)`，由 T058 转 16273。
   **覆盖 AC**: AC-50, AC-52
   **证据**: `CapabilityBusService.retrieve / accessible_knowledge`；`test_capability_knowledge.py` 11 例，含 AC-50 的集合相等断言（`set(effective_scope) == 白名单 ∩ 用户可见`）与无访问用户即 26320。
@@ -666,21 +666,21 @@ T001–T007（Wave 1，可并行）
   ④ **复核时补上的真漏（26052）**：偏离 ① 只堵住了「拿 principal 造检索身份」这一道门，而 `knowledge:read` 这个 scope 一共罩着 **7 条 v2 路由**——`GET /filelib`、`GET /filelib/file/list`、`detail_qa`、`query_qa`、`GET /citation/{id}` 都走 `get_open_api_operator()`，对本主体解析为**应用归属人（带归属人角色）**；`GET /filelib/download_statistic` 更直接，凭 scope 就能取走 `/app/data` 下任意 `.log`。声明只买了「检索」一条，scope 却开了七条，所以改成**按路由准入、默认拒绝**：`OpenApiScopeMarker` 新增 `hosted_app` 开关（默认 `False`），`dependencies.admit_request` 对该 actor_kind 未开关即抛新码 **26052**（403，`OpenApiHostedAppEndpointRefusedError`，三语已补）；只有 `POST /filelib/retrieve` 与模型面三条路由开了关。第二道防线在 `open_endpoints/domain/utils._principal_user_id`——MCP 面等非 `APIRoute` 入口拿不到 marker，那里同样拒。用例：`test/open_api/test_hosted_app_route_admission.py`（3 例，行为）+ `test_open_api_route_matrix.py::test_only_the_capability_faces_admit_a_hosted_application`（lockstep 清单）+ `test_capability_knowledge.py` 两例（兜底层）。AC-59 的源码扫描测试相应收紧：凭据符号仍然全树禁止，**准入控制**两处文件按名单放行并写明理由。
 
 - [x] **T058**: 能力收回错误态（`16273` 带能力名与「已收回」原因、不回退旧值、应用整体可用）+ 迭代上线后旧能力 5 秒内失效 + 发布面「已失效 + 原因」标记（按需计算、不落库、不起定时任务）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`（增量）, `platform/src/pages/BuildPage/hostedApp/publish/CapabilityListCard.tsx`（**新建方**——T067 只在其上增量补全，两处都标「新」会互相覆盖）, `src/backend/test/app_publish/test_capability_revoked.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`（增量）, `platform/src/pages/BuildPage/hostedApp/publish/CapabilityListCard.tsx`（**新建方**——T067 只在其上增量补全，两处都标「新」会互相覆盖）, `src/backend/test/app_publish/test_capability_revoked.py`
   **覆盖 AC**: AC-37, AC-53, AC-63
   **证据**: `16273` / `16274` 两个错误类补 `capability` / `kind` / `reason` 载荷（原先无参）；`capability_status()` 按需计算、`model_capability_status()` 走 F051 `resolve_model_name` 出活口径；`publish_status_service._capabilities_payload` 接进发布面读模型。前端 `CapabilityListCard.tsx` + 6 例 vitest + 三语各 8 键。用例 `test_capability_revoked.py` 16 例。
   **复核补充**：③ 16231 换了判据（见 T056 偏离 ⑤）却没换文案——`api_errors` 三语仍写着「本环境未启用能力总线，请移除 capabilities 声明」，现在的正确处置是让管理员开 `open_platform`，照旧文案改只会白改一轮。三语已改，产物已用 `packages/locales/scripts/build.mjs` 重新生成。④ `publish_status_service._capabilities_payload` 传 `version.capabilities` 时补 `or {}`：`capability_status()` 把 `None` 当作「改读正在跑的版本」，列为 NULL 的待发布版本会让发布面挂着待发布版本的名字、展示在跑版本的声明。
   **偏离**：① **AC-37 的「5 秒」没有窗口需要断言**——生效声明按 `app.current_version_id` 每次现读、无缓存，指针一动下次调用即新声明；凭据侧的 5 秒上界仍由 T055 的 `assert_revocation_bound()` 守，本文件再断言一次以免它被当成实现细节删掉。② 发布面读模型里能力解析失败**答空列表并 warn**，不让知识模块的一分钟故障把整页拖垮（空读作「没展示声明」，不读作「一切正常」）。
 
 - [x] **T059**: 能力调用审计双归属（actor = 应用 / subject = 当前访问用户；**仅模型调用**允许 subject = 「应用自身」并显式标注，检索无访问用户一律拒；含模型名与 token 数 / 检索目标；subject 列随 F050，落地前以附加字段承载）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/capability_audit.py`, `src/backend/test/app_publish/test_capability_audit.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/capability_audit.py`, `src/backend/test/app_publish/test_capability_audit.py`
   **覆盖 AC**: AC-55
   **证据**: `capability_audit.record_retrieval`（尽力而为、绝不把检索带崩）+ `assert_model_attribution`（钉住 F051 侧那一对，供测试调用）+ 新表 `app_capability_call_record`。用例 `test_capability_audit.py` 13 例。
   **复核补充**：④ 总线自己抛的拒绝（`_assert_targets_declared` 的 16273 / 16274）原先**不落记录**，而同一句话在门面深一层抛（26322）却落——「这个应用一直在够什么」的答案会随哪一层说不而变。现已一并记录（有访问用户时），并把 `credential_id` 从 `filelib` 一路带到记录行（原先该列声明了却永远为 NULL）。用例 `test_capability_audit.py::test_a_refusal_the_bus_itself_raises_is_recorded_like_any_other`。
   **偏离**：① **检索记录落自己的表，不落 `audit_log`**，与 F051 的 `model_call_record` 同一理由（design D9 / K7：托管应用一次问答一次检索，混进审计表会淹掉人类尺度的事件）。**因此不新增 audit action，四处 lockstep 未动**。代价是 F056 审计面目前读不到这张表——如果产品要求它出现在「系统操作」页，那是 F056 侧一次读模型扩展，不是再加一个 action。② 模型侧**一行代码都没重复写**：`model_call_record` 早已有 `app_id` / `subject_kind` / `subject_id` / token 数，本切片只修 `app_id` 取值（见 T056 偏离 ⑥）并把这对属性变成可断言的。③ 无访问用户的检索**不写记录**（没有可归属的 subject，编一个正是 AC-55 禁止的），refusal 本身由 26320 送达调用方。
 
 - [x] **T060**: 预检的能力声明引用校验（所引模型在本租户已启用且按 F051 名称解析规则可唯一解析〔裸名歧义 → 拒绝并提示限定名〕；所引知识库存在且为 F052 门面支持的类型）+ 审批单能力白话摘要接真数据
-  **文件**: ~~`src/backend/bisheng/app_publish/domain/services/precheck_service.py`（增量）~~ → `capability_bus_service.validate_capability_refs`，由 `publish_pipeline_service.accept()` 在同步腿调用, `src/backend/test/app_publish/test_precheck_capability_refs.py`
+  **文件**: ~~`src/backend/doberman_agent/app_publish/domain/services/precheck_service.py`（增量）~~ → `capability_bus_service.validate_capability_refs`，由 `publish_pipeline_service.accept()` 在同步腿调用, `src/backend/test/app_publish/test_precheck_capability_refs.py`
   **依赖**: F052 门面已落地（2026-09-16），契约见 [F052 design §4.2 ③](../052-mcp-server-face/design.md)。知识库引用校验用 `RetrievalFacadeService.is_supported_knowledge_type(t)`（纯函数、非 async）与 `await RetrievalFacadeService.check_reachable(identity, 声明列表, whitelist=声明列表)` → `ReachabilityReport{reachable, unreachable, revoked}`。**预检必须走这两个方法而不是自己查表**——「门面支持的类型」只能有一份口径，否则预检放行的声明运行期会答不可及。
   **覆盖 AC**: AC-07, AC-24
   **证据**: `validate_capability_refs()`（模型走 `resolve_model_name`、知识库走门面两方法）+ `publish_approval_service._capabilities_payload`（审批单白话摘要接真数据）。用例 `test_precheck_capability_refs.py` 16 例。
@@ -691,20 +691,20 @@ T001–T007（Wave 1，可并行）
 ### Wave 6 · 结构演进与版本差异（release 必做，本轮顺延）
 
 - [x] **T061**: `precheck_schema` 阶段 + 改 / 删列显式确认（CLI 交互或 `--confirm-schema-change`；未确认拒 `16229`；已确认进入管线、发布时不再二次确认；审批单与发布面展示结构变更）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/schema_evolution_service.py`, `src/backend/bisheng/app_publish/domain/services/precheck_service.py`（增量）, `src/backend/test/app_publish/test_schema_evolution.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/schema_evolution_service.py`, `src/backend/doberman_agent/app_publish/domain/services/precheck_service.py`（增量）, `src/backend/test/app_publish/test_schema_evolution.py`
   **覆盖 AC**: AC-09
   **证据**（分支 `wt/schema-precheck`）：后端 `bb6a9cf1d`（`schema_evolution_service.py` 纯函数 diff + `accept()` 同步闸 16229 + worker `precheck_schema` 阶段 + publish-status 读模型 `schema_change` + manifest `DatabaseColumn`；`test_schema_evolution.py` 19 例，`test/app_publish/` 383 passed）；CLI `0274b36ac`（TTY 交互确认 / 非 TTY 原样报错 / `--confirm-schema-change` 直通；`tests/test_command_deploy_sync.py` +6，CLI 274 passed）；展示面（platform `SchemaChangeNotice.tsx` + `schemaChange.ts`，vitest +8；client `AppPublishDetailPanel.tsx` 结构变更行，jest +1；三语文案）。
   **偏离**：① 闸不在 `precheck_service.py`，而在 `publish_pipeline_service.accept()` 的同步腿（`16251` / `16252` 之后）——确认必须在 `deploy` 请求返回前发生，CLI 才能把 16229 转成终端提问后**用同一个包重发**；`precheck_service.py` 未改。worker 侧的 `precheck_schema` 阶段（scan 之后、build 之前）只推导摘要写入审批单快照，不二次询问。② 破坏性判据取 `drop_table / drop_column / modify_column`（type / nullable / default 任一变化即 modify），加表 / 加列为非破坏性、不询问；首发（无在线版本）不询问。③ 平台建表 / 迁移快照属 T062，本任务只做检测、确认与展示。
 
 - [x] **T062**: 应用数据表由 manifest 声明、平台建表（DEV-07 ②）：加列自动迁移无需确认；改 / 删列**迁移前自动留生产数据快照**（键 `apps/{app_id}/db-snapshots/{ts}.tar`）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/schema_evolution_service.py`（增量）, `src/backend/test/app_publish/test_schema_migration_snapshot.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/schema_evolution_service.py`（增量）, `src/backend/test/app_publish/test_schema_migration_snapshot.py`
   **覆盖 AC**: AC-42
-  **完成证据（2026-09-16，切片 `wt/f055-app-data-tables`，提交 `f670efe9c`）**：后端 `schema_evolution_service.migration_plan()` / `migrate_for_release()`（同一份 diff → 每表一条计划），在 `PublishOnlineService._settle` 里**拉起之前**调用；DDL 全部在 runtime-manager 的 `appdb.AppDbSchemaService`，经新 intent RPC `POST /v1/intents/db-migrate`（客户端方法 `orchestrator_client.schema_migrate`，fake 编排器 lockstep 集合两处同步为 16 个）。快照走 `Connection.backup` + tar + 私有桶 `bisheng-apps`，键如 AC 所写；破坏性计划由 manager 自判是否要快照。新错误码 `16259` + 三语；新审计动作 `app.release.schema_migration_failed` 四处 lockstep 登记。测试：`test/app_publish/test_schema_migration_snapshot.py` 20 例 + runtime-manager `tests/test_appdb_migrate.py` 23 例（RM 全套 260 passed；backend `test/app_publish` + `test/app_runtime` 949 passed）。
+  **完成证据（2026-09-16，切片 `wt/f055-app-data-tables`，提交 `f670efe9c`）**：后端 `schema_evolution_service.migration_plan()` / `migrate_for_release()`（同一份 diff → 每表一条计划），在 `PublishOnlineService._settle` 里**拉起之前**调用；DDL 全部在 runtime-manager 的 `appdb.AppDbSchemaService`，经新 intent RPC `POST /v1/intents/db-migrate`（客户端方法 `orchestrator_client.schema_migrate`，fake 编排器 lockstep 集合两处同步为 16 个）。快照走 `Connection.backup` + tar + 私有桶 `doberman-agent-apps`，键如 AC 所写；破坏性计划由 manager 自判是否要快照。新错误码 `16259` + 三语；新审计动作 `app.release.schema_migration_failed` 四处 lockstep 登记。测试：`test/app_publish/test_schema_migration_snapshot.py` 20 例 + runtime-manager `tests/test_appdb_migrate.py` 23 例（RM 全套 260 passed；backend `test/app_publish` + `test/app_runtime` 949 passed）。
   **偏离**：① 迁移入口不在数据面 `/v1/apps/{app_id}/db/*` 而在 `/v1/intents/db-migrate`——数据面「没有 POST、因而没有 DDL」这条断言（`test_appdb.py`）正是它安全的理由，加个 POST 就废了；同理客户端方法叫 `schema_migrate` 不叫 `db_migrate`，因为 `db_` 前缀的「唯一调用方」断言是按前缀 grep 的。② 改 / 删列走**整表重建**（建新表 → 拷公共列 → 换名）而不是 `ALTER … DROP COLUMN`：SQLite 改类型根本没有 ALTER，两类分开实现等于让两条代码路径各自把拷贝那步做对一次。③ 新增 NOT NULL 且无默认值的列**拒绝**而不是悄悄放宽为可空——声明是应用自己代码依赖的契约，线上可空、manifest 不可空的错会在很远的地方才炸。④ 迁移被拒记为**失败的管线运行**而非待上线（待上线会以 16252 拒掉携带修复的重新提交），应用在线时按 `iteration_failed` 发站内信、不在线时不发（理由随 T068 写进 §8）。⑤ `primary_key` 从 manifest 的 extra 键读，不加进 `DatabaseColumn` 显式字段——它不参与 T061 的变更判据，加成字段会悄悄扩大「发布可以被什么拒绝」。
   **复审补丁（2026-09-16，同切片）**：⑥ **计划的每一条都带整表目标列，不再带增量**。原实现里 `add_columns` 只带新增的那一列，而执行器遇到「表不存在」会照着计划条目建表——线上库与参照声明不一致时（应用自己建的表、或在线版本是「声明了但平台还没建表」那个 MVP 阶段发的）就会建出一张只有一列的表，且所有既有断言仍然全绿。改为计划陈述目的地、执行器自己对着实际库算增量（只补缺的列）；回归钉在 `tests/test_appdb_migrate.py::test_an_add_columns_plan_builds_a_table_that_is_not_there_yet`。⑦ **`resume` 也要建表**：审批落在已下线应用上时只 stage 不启动（AC-36），F055 的上线腿返回 `staged_only`、迁移不跑——真正把这个版本拉起来的是 `AppStateService.resume`，此前它直接 deploy，声明的表永远不会被建。现在 `_start` 在 `audit_action is RESUME 且有 pending_version_id` 时先迁移再拉起，被拒即 16259 抛给按按钮的人、应用留在 `stopped`；`publish` / `manual_publish` 已在 `_settle` 迁过，不重复付一次 RPC。新测试 `test/app_runtime/test_resume_schema_migration.py` 3 例，并给 `test/app_runtime/conftest.py` 的 `_SESSION_PATCH_TARGETS` 补上 `schema_evolution_service`（否则它用真实 session 读参照声明）。
 
 - [x] **T063**: 版本差异服务端 diff（`GET /api/v1/apps/{app_id}/versions/{a}/diff/{b}` → `{files:[{path,change,additions,deletions}], patches:[…]}`；**服务端算 diff、不下发两份 tar**）
-  **文件**: `src/backend/bisheng/app_publish/domain/services/version_diff_service.py`, `src/backend/bisheng/app_publish/api/endpoints/version_diff.py`, `src/backend/test/app_publish/test_version_diff.py`
+  **文件**: `src/backend/doberman_agent/app_publish/domain/services/version_diff_service.py`, `src/backend/doberman_agent/app_publish/api/endpoints/version_diff.py`, `src/backend/test/app_publish/test_version_diff.py`
   **覆盖 AC**: AC-41
   **完成证据（2026-09-16，切片 publish-diff-review-backend）**：三个文件如上落码，`test_version_diff.py` 15 个用例全绿（形态与三种 change / 响应不含归档 / 二进制与超大不比较 / 相同版本空 diff / 密钥先 mask 后 diff / 单文件行数闸 / 总 patch 字节闸 / 文件数闸 / 审批人持待上线版本任务可比对已发布版本 / 陌生人 16257 / 版本不存在 16253 与快照缺失或损坏 16256 / 路由为登录态无 open_api marker / 租户管理员判定用应用租户）；`test/app_publish` 全套 397 passed（主检出基线 364 passed，+33 全为新增）。精确契约见 design §4.2 ⑨。
   **实际偏差记录**：① 响应在 design 字面 `{files, patches}` 之上加了 `base` / `target` / `role` / `summary`，`files` 项多 `comparable` / `reason`，`patches` 项多 `truncated` / `masked_secrets`——超集，未改字面字段；② `a` = 旧侧 `b` = 新侧由路径顺序决定，"上一已发布版本"由前端从 `publish-status` 的 `current_version` / `pending_version` 取，后端不另提供 `diff/previous` 语法糖；③ 体积闸三道（单文件 2000 行 / 总 2 MiB / 5000 文件）为常量非配置——先有真实超限样本再考虑进 `settings.app_runtime`；④ 差异接口复用 `safe_extract` 落临时目录（与树 / 单文件的流式读不同），因为要对整棵树做逐字节比较，落盘比全量读进内存更可控。
@@ -715,17 +715,17 @@ T001–T007（Wave 1，可并行）
   **覆盖 AC**: AC-41
   **完成证据（2026-09-16，切片 f055-review-frontend，提交 `7dc0e7560`）**：呈现组件 `packages/file-viewers/src/VersionDiffView.tsx`（文件清单 + unified diff 着色 + 二进制 / 超大降级 + 三道截断闸各自有话说 + 已屏蔽密钥计数），三语文案进 `packages/locales` 的 `shared` 域并重新生成两端产物；platform 侧 `publish/VersionDiff.tsx` 默认「运行中版本 → 待生效版本」、两侧可改，接进版本 tab 的 `contentSlot`；client 侧审读视图的「文件差异」tab 直接挂同一组件。测试：`platform/src/test/versionDiffView.test.tsx` 7 例（共享组件本身）+ `publish/VersionDiff.test.tsx` 7 例（选版规则与取数接线），platform vitest 全量 `3 failed | 73 passed (76) · 9 failed | 447 passed (456)`，与主检出基线 `3 failed | 71 passed (74) · 9 failed | 433 passed (442)` 同样的失败集（+14 全为新增）。**审校修正**：选中文件由 effect 对账改为渲染期推导——effect 版本在每次拿到新 diff 时会先画一帧「在左侧选择一个文件」（列表已经在屏幕上、effect 还没跑），`test_compares_the_default_pair_and_renders_the_shared_view` 断言的正是那一帧之后的内容，会间歇性挂。
   **补充提交** `edde38013`：`hostedApp.ts` 加完差异接口后 615 行、越过 600 行硬线，照 `hostedAppData.ts` 的先例把差异读拆到同级的 `controllers/API/hostedAppReview.ts`（业务码与信封辅助仍留在 `hostedApp.ts`，调用方分支的是那些），拆后 553 行。
-  **偏离**：① **呈现组件不在 `platform/.../publish/VersionDiff.tsx`，而在 `@bisheng/file-viewers`**——本任务原写的落点让「同一呈现」只能靠两份拷贝实现（两个 SPA 不共享 `src/`，platform 甚至不依赖 `@bisheng/ui`）。`@bisheng/file-viewers` 是两端都已依赖的源码型共享包，契约正合（props 进、无 HTTP 客户端、文案走 `shared:` 命名空间）。platform 下的 `VersionDiff.tsx` 保留，但只负责选版与取数；② 文案分两处：组件内文案在 `packages/locales` 的 `shared` 域，platform 的卡片标题与选择器标签在 `bs.json`；③ 未新建 workspace 包——新包要 `pnpm install` 才能被解析，而 client 的 jest 一旦 install 就会被未编译的 `canvas` 整体拖垮（`reference_frontend_pnpm_install_breaks_canvas`）。
+  **偏离**：① **呈现组件不在 `platform/.../publish/VersionDiff.tsx`，而在 `@doberman-agent/file-viewers`**——本任务原写的落点让「同一呈现」只能靠两份拷贝实现（两个 SPA 不共享 `src/`，platform 甚至不依赖 `@doberman-agent/ui`）。`@doberman-agent/file-viewers` 是两端都已依赖的源码型共享包，契约正合（props 进、无 HTTP 客户端、文案走 `shared:` 命名空间）。platform 下的 `VersionDiff.tsx` 保留，但只负责选版与取数；② 文案分两处：组件内文案在 `packages/locales` 的 `shared` 域，platform 的卡片标题与选择器标签在 `bs.json`；③ 未新建 workspace 包——新包要 `pnpm install` 才能被解析，而 client 的 jest 一旦 install 就会被未编译的 `canvas` 整体拖垮（`reference_frontend_pnpm_install_breaks_canvas`）。
 
 ---
 
 ### Wave 7 · 档位管理 tab 与发布面补全（release 必做，本轮顺延）
 
 - [x] **T065**: 档位管理 API（列表 / 行内改规格与说明 / 停用；**无删除**；「使用中应用数」= `COUNT(DISTINCT app_id) WHERE tier_id=? AND terminal_state='online'`；仅平台超管）
-  **文件**: `src/backend/bisheng/app_publish/api/endpoints/resource_tier.py`, `src/backend/bisheng/app_publish/domain/services/resource_tier_service.py`（增量）, `src/backend/test/app_publish/test_resource_tier_api.py`
+  **文件**: `src/backend/doberman_agent/app_publish/api/endpoints/resource_tier.py`, `src/backend/doberman_agent/app_publish/domain/services/resource_tier_service.py`（增量）, `src/backend/test/app_publish/test_resource_tier_api.py`
   **覆盖 AC**: AC-45
   **完成记录（2026-09-16，分支 `wt/tier-admin`）**: `GET /api/v1/resource-tiers` + `PATCH /api/v1/resource-tiers/{tier_code}`（`ResourceTierService.list_tiers_for_admin` / `retune_tier`），仅 `is_global_super || is_admin()` 通过、否则 16260；运行时层未启用 16207；无 DELETE / POST 路由（`test_tier_routes_offer_no_delete_and_no_create` 钉死路由表）。错误码 16260–16263 三语文案随提交进 `packages/locales`；审计 `app.tier_update`（`target_type=resource_tier`）四处 lockstep 登记。`test_resource_tier_api.py` 22 例全绿（含 review 补的三例：超出 32 位整型列上限 → 16262；`cpu_millicores` / `memory_mb` 收到 JSON `true` → 422——原先 pydantic 宽松 `int` 会把它转成 `1` 毫核静默落库，规格字段已改 `StrictInt`）；审计 `target_type=resource_tier` 的三语 `objectTypeEnum` 文案纳入 `test_audit_action_registry_lockstep.py`。review 顺手删除了已被 `retune_tier` 取代、无任何调用方的 `ResourceTierService.update_tier`。
-  **偏离**: ① 路径不在 `/api/v1/apps/**` 下——`bisheng/api/router.py` 先挂 F054 路由，`GET /apps/{app_id}` 会把 `/apps/resource-tiers` 当应用 id 吞掉（16101），故落 `/api/v1/resource-tiers`；② 新增 16263「默认档位不能停用」：`light` 是未声明档位的落点（AC-46），停用它等于让所有未声明档位的 `bisheng deploy` 以 16223 失败，属平台级故障、不该被当作单个清单的错误——服务端拒绝、前端隐藏该行的停用按钮。
+  **偏离**: ① 路径不在 `/api/v1/apps/**` 下——`doberman-agent/api/router.py` 先挂 F054 路由，`GET /apps/{app_id}` 会把 `/apps/resource-tiers` 当应用 id 吞掉（16101），故落 `/api/v1/resource-tiers`；② 新增 16263「默认档位不能停用」：`light` 是未声明档位的落点（AC-46），停用它等于让所有未声明档位的 `doberman-agent deploy` 以 16223 失败，属平台级故障、不该被当作单个清单的错误——服务端拒绝、前端隐藏该行的停用按钮。
 
 - [x] **T066**: Platform：系统管理页「资源档位」tab（仅平台超管；与工场运行时层开关联动、未部署不出现；`bs-ui/table` + 手写 `useState` 行内编辑〔平台无表单库〕；保存前 `bsConfirm`；停用提示"存量应用不动、发布面不再可选"）
   **文件**: `platform/src/pages/SystemPage/components/ResourceTierTab.tsx`, `platform/src/pages/SystemPage/index.tsx`（增量：`showResourceTierTab = isSuperAdmin && appConfig.appRuntimeEnabled`）, `platform/src/controllers/API/hostedApp.ts`（增量）, `platform/public/locales/{zh-Hans,en-US,ja}/bs.json`（`hostedApp.tierAdmin.*`）
@@ -735,15 +735,15 @@ T001–T007（Wave 1，可并行）
 
 - [x] **T067**（档位卡半边；能力清单半边仍待 T058 落地后补，见偏离②）: 发布面补全：能力声明完整白话清单（含失效标记）+ 档位选择卡（随 PRD-2 平台内造应用的提交入口启用；本册对 CLI 应用不可用）
   **文件**: `platform/src/pages/BuildPage/hostedApp/publish/{TierSelectCard,SchemaChangeNotice}.tsx`（新）, `platform/src/pages/BuildPage/hostedApp/publish/CapabilityListCard.tsx`（**增量**——该文件由 **T058 创建**，本任务只补「完整白话清单 + 档位联动」，**不得重建**）, `platform/public/locales/{zh-Hans,en,ja}/bs.json`
-  **测试载体**: 前端手动验证清单（能力清单逐条白话 + 失效标记与原因；档位卡对 CLI 导入应用置灰并提示走 `bisheng deploy`；结构变更提示位有内容时不塌）
+  **测试载体**: 前端手动验证清单（能力清单逐条白话 + 失效标记与原因；档位卡对 CLI 导入应用置灰并提示走 `doberman-agent deploy`；结构变更提示位有内容时不塌）
   **覆盖 AC**: AC-61, AC-63
   **完成证据（2026-09-16，切片 `wt/f055-app-data-tables`，提交 `c0702114f`）**：`publish/TierSelectCard.tsx` 新建并接进 `index.tsx` 的 `pipelineSlot`（`tier` 与 `can.submit` 都取自 `publish-status`）；三语文案落 `hostedApp.tier.*`；vitest `TierSelectCard.test.tsx` 7 例（只读态说清档位在哪儿改 / 规格按核呈现 / 未确定档位不塌 / 已停用档位带标记与说明 / 可选态需要 `can.submit` **且**有列表 / 空 `code` 行不得进 Radix SelectItem / `coresOf` 边界）。`SchemaChangeNotice.tsx` 已由 T061 落地并接在 `ApprovalStatusCard` 内，本轮核实其「有内容时不塌、无内容时整块不渲染」仍成立，未改。
-  **偏离**：① 档位卡的只读态**不画禁用下拉框**——CLI 应用改档位的地方是 `bisheng-app.yaml` 的 `tier`，一个点不动的选择器只会被读成「坏了」，改为直接说清当前档位、规格与去哪儿改；可选态（PRD-2）已接线但本册不可达，档位列表走 props 而非自取，因为档位列表接口是平台超管面（16260）、应用负责人读不到。② **能力声明清单半边未做**：`CapabilityListCard.tsx` 按本任务原文由 T058 创建，而 T058 与本切片在同一波次并行，两边都建同一个文件必然互相覆盖（本任务原文亦明写「不得重建」）。该半边随 T058 落地后在其文件上增量补全。③ CPU 按「核」呈现而非系统页档位编辑器的「毫核」：那边在改精确数值，这边是在读。
+  **偏离**：① 档位卡的只读态**不画禁用下拉框**——CLI 应用改档位的地方是 `doberman-agent-app.yaml` 的 `tier`，一个点不动的选择器只会被读成「坏了」，改为直接说清当前档位、规格与去哪儿改；可选态（PRD-2）已接线但本册不可达，档位列表走 props 而非自取，因为档位列表接口是平台超管面（16260）、应用负责人读不到。② **能力声明清单半边未做**：`CapabilityListCard.tsx` 按本任务原文由 T058 创建，而 T058 与本切片在同一波次并行，两边都建同一个文件必然互相覆盖（本任务原文亦明写「不得重建」）。该半边随 T058 落地后在其文件上增量补全。③ CPU 按「核」呈现而非系统页档位编辑器的「毫核」：那边在改精确数值，这边是在读。
 
 - [x] **T068**: AC-64 触达全表复核（含催办 / 超时提醒 / 升级机制**不做**的显式确认）+ AC-08 静态依赖判据复议（本轮由探活兜底）
   **文件**: `src/backend/test/app_publish/test_notification_matrix.py`, `features/v3.0.0/055-app-publish-pipeline/design.md`（§8 结论回填）
   **覆盖 AC**: AC-08, AC-64
-  **完成证据（2026-09-16，切片 `wt/f055-app-data-tables`）**：`test_notification_matrix.py` 23 例。AC-64 全表写成数据：8 条会发（4 条走审批引擎、F055 不得再发一份；4 条是 F055 自己的，逐条断言有具名常量、断言常量集合恰好等于表、断言三语 `com_notifications_action_*` 文案齐备）+ 3 条不主动提示（资源释放后可手动上线 / 能力被收回 / 数据表迁移被拒且应用本来就不在线），每条把理由与行放在一起，加发送方就得先删那行。**催办 / 超时提醒 / 升级机制不做**从三个方向上闸：两个 worker 包没有 `crontab` / `beat_schedule` / periodic；发布与审批 service 层没有 remind / escalat / overdue / deadline / 催办 / 逾期 的标识符或字面量；`ApprovalScenario` 没有可承载截止时间的字段。AC-08 复议维持原判并按落码核实（检出＝探活 16228 / 指引＝`PROBE_HINTS` 点名三类中间件与 `BISHENG_APP_DB_URL` 且两处抛出点都挂着它 / 预检没有长出依赖清单扫描器）。design §8 两条结论 + §4.2 ⑧ 的 16259 行 + D3 的 T062 落码段已回填。
+  **完成证据（2026-09-16，切片 `wt/f055-app-data-tables`）**：`test_notification_matrix.py` 23 例。AC-64 全表写成数据：8 条会发（4 条走审批引擎、F055 不得再发一份；4 条是 F055 自己的，逐条断言有具名常量、断言常量集合恰好等于表、断言三语 `com_notifications_action_*` 文案齐备）+ 3 条不主动提示（资源释放后可手动上线 / 能力被收回 / 数据表迁移被拒且应用本来就不在线），每条把理由与行放在一起，加发送方就得先删那行。**催办 / 超时提醒 / 升级机制不做**从三个方向上闸：两个 worker 包没有 `crontab` / `beat_schedule` / periodic；发布与审批 service 层没有 remind / escalat / overdue / deadline / 催办 / 逾期 的标识符或字面量；`ApprovalScenario` 没有可承载截止时间的字段。AC-08 复议维持原判并按落码核实（检出＝探活 16228 / 指引＝`PROBE_HINTS` 点名三类中间件与 `DOBERMAN_AGENT_APP_DB_URL` 且两处抛出点都挂着它 / 预检没有长出依赖清单扫描器）。design §8 两条结论 + §4.2 ⑧ 的 16259 行 + D3 的 T062 落码段已回填。
   **偏离**：① 「不主动提示」在 spec 原文是两条，本轮**增加第三条**（数据表迁移被拒且应用本来就不在线）——它是 T062 新引入的失败态，与构建失败 / 探活失败同族，那两类也不发站内信；应用在线时仍按 `iteration_failed` 发，因为那条文案说的正是「新版本未能上线、线上版本仍在服务」。② 关键词表里试过 `nag` / `sla` 又删掉：`nag` 在 `manager` 里、`sla` 在大量散文里，一个总在误报的模式会被人删掉而不是读。③ AC-08 的复议结论与 AC-64 的表放在同一个文件里——两者形状相同（都在断言「某样东西是被有意省略的」，而省略没有行为可观察），文件首段写明了这一点。
 
 ---
@@ -828,7 +828,7 @@ T001–T007（Wave 1，可并行）
 > 推翻已 ★ 确认的决策时，**先停下与用户重新确认**（§3 第四个 ★），再记录。
 > **本轮已知的一项待确认偏离不在此表**：密钥扫描提前到构建之前（design D5 / §8），确认前一律按 spec 字面顺序实现。
 
-1. **T006 增建 `src/backend/bisheng/app_publish/domain/constants.py`**（`AppReleaseAuditAction` StrEnum + `RELEASE_AUDIT_TARGET_TYPE`）—— 任务只点名 `audit_log.py`，但那样 16 个 action 字面量会散落进 Wave 2–3 的十来个 service。照 F054 `app_runtime/domain/constants.py AppAuditAction` 的同形先例补上，lockstep 由 `test_wave1_infra.py::test_release_actions_are_registered_in_the_ui_whitelist` 守住。
+1. **T006 增建 `src/backend/doberman_agent/app_publish/domain/constants.py`**（`AppReleaseAuditAction` StrEnum + `RELEASE_AUDIT_TARGET_TYPE`）—— 任务只点名 `audit_log.py`，但那样 16 个 action 字面量会散落进 Wave 2–3 的十来个 service。照 F054 `app_runtime/domain/constants.py AppAuditAction` 的同形先例补上，lockstep 由 `test_wave1_infra.py::test_release_actions_are_registered_in_the_ui_whitelist` 守住。
 2. **T004 顺带补 `16100` / `16200` 两个家族基类码的三语文案** —— `pnpm check-i18n` 把「后端声明了码、前端无文案」判红，而 F054 落码时漏了 `16100`；不补则本批的 i18n 门禁必红（判据不是"顺手清债"，是"本批的验证项过不了"）。
 3. **`ResourceTierDao.aupdate_row` 的行键参数名取 `tier_code` 而非 `code`** —— 叫 `code` 时 `aupdate_row(session, "light", code="tiny")` 是 `TypeError`，"禁止改 code"这条守卫永远走不到；改名后 `code=` 落进 `**values` 被显式拒绝。
 4. **`test/app_publish/conftest.py` 加 `_sqlite_ddl_quirks`** —— `userrole` 是复合主键 + 代理键 autoincrement，SQLite 直接拒绝建表（"does not support autoincrement for composite primary keys"）。只在 `create_all` 期间清 `autoincrement` 再还原，生产 DDL 归 Alembic、不受影响；代价是 fixture 写 `userrole` / `department_admin_grant` / `user_department` 需显式 `id`。
@@ -851,9 +851,9 @@ T001–T007（Wave 1，可并行）
 
 15. **`app_deployment.aadvance_stage` 增加可选 `failure=` 形参，允许 `status='succeeded'` 时也写五元组** —— 「待上线」是成功的管线结果，却仍欠使用者一个原因，而 `pending_reason`（AC-38）需要一个**持久**来源。备选是从 `app.release.pending_online` 审计行反推，但审计是 best-effort、不能当状态读。现在 `status` 答「管线有没有做完它该做的」、`failure` 答「有没有要解释的事」，DAO docstring 已写死这层语义。
 
-16. **`/api/v2` 端点用本地 `app_manage_subject()` 包一层 F049 的 `open_api_subject`，把 import 挪进函数体** —— 模块级 `from bisheng.open_api.api.dependencies import ...` 触发 arch-guard **RULE-5**（跨模块 API 层互导）。包装函数里补了 `is_known_scope(_SCOPE)` 的**导入期**校验，与 `open_api_subject` 构造期做的检查等价——scope 拼错仍然在启动时炸，没有退化成「这个端点不要求任何 scope」。**（2026-09-10 作废：改接 beta2 后 `app_manage_subject` 与 `is_known_scope` 校验一并删除；端点打 `open_api_scope` marker、鉴权在 `router_rpc` 的 `verify_open_api_access`，漏标记 fail-closed，迁移方案 M8。）**
+16. **`/api/v2` 端点用本地 `app_manage_subject()` 包一层 F049 的 `open_api_subject`，把 import 挪进函数体** —— 模块级 `from doberman_agent.open_api.api.dependencies import ...` 触发 arch-guard **RULE-5**（跨模块 API 层互导）。包装函数里补了 `is_known_scope(_SCOPE)` 的**导入期**校验，与 `open_api_subject` 构造期做的检查等价——scope 拼错仍然在启动时炸，没有退化成「这个端点不要求任何 scope」。**（2026-09-10 作废：改接 beta2 后 `app_manage_subject` 与 `is_known_scope` 校验一并删除；端点打 `open_api_scope` marker、鉴权在 `router_rpc` 的 `verify_open_api_access`，漏标记 fail-closed，迁移方案 M8。）**
 
-17. **`/api/v2` router 经 `bisheng/api/router.py` 的 `router_rpc` 挂载（拿 `/api/v2` 前缀），v1 部分挂 `router`** —— D2 选项 C 的实质是「每个端点自带 `Depends`」，这一点严格照做（2026-09-10 起改为「每个端点自带 marker」，鉴权 `Depends` 上提到 `router_rpc`）；挂载点用既有聚合器只是为了拿前缀，不改 main.py。
+17. **`/api/v2` router 经 `doberman-agent/api/router.py` 的 `router_rpc` 挂载（拿 `/api/v2` 前缀），v1 部分挂 `router`** —— D2 选项 C 的实质是「每个端点自带 `Depends`」，这一点严格照做（2026-09-10 起改为「每个端点自带 marker」，鉴权 `Depends` 上提到 `router_rpc`）；挂载点用既有聚合器只是为了拿前缀，不改 main.py。
 
 18. **成功上线不再额外发一条站内信** —— T032 的用例名写「notifies owner」，但 §4.2 ⑦ 只授权**三个**新 action_code，而「通过」这一类触达审批引擎已经用 `approval_instance_approved` 发给申请人、申请人就是 owner（AC-16）。再发一条等于把三个名额之一花在重复通知上。测试改断言「版本终态 + 审计」，并显式断言没有重复通知。
 
@@ -883,8 +883,8 @@ T001–T007（Wave 1，可并行）
 | **F053 T034 ②** | `GET /api/v2/apps/{id}/logs` 的返回补 `app_state` / `pending_reason` —— 空 `lines` 有两个成因而**日志文本永远分不出来**：应用在跑但还没输出，还是根本没有运行实例（草稿 / 待上线 / 已停运）。CLI 此前只能把三种可能都列出来，读起来像「日志查询坏了」，把 owner 支去查错方向 | ✅ **已交付**（commit `95c0ed98e`，2026-08-18） | 服务端点名状态，CLI 据此分别说「还是草稿」「已停运」「正在运行但还没有输出」——三者的下一步动作完全不同。解除 F053 AC-43 的降级（其 T026） |
 | **F053 T034 ③** | `GET /api/v2/apps/deployments/{id}` 的轮询载荷补 `entry_url`（`app_state=已上线` 时非空）—— 它此前**只在 `POST /deploy` 的返回里**，而首发那一刻应用还是草稿，于是这个字段几乎总在最需要它的时候是 `null` | ✅ **已交付**（同 commit `95c0ed98e`） | 每次轮询都带，`deploy --wait` 成功时直接打出真实地址而不是把开发者支到详情页去翻。**地址由 F054 的唯一实现按 slug 推导**，不在 F055 拼、更不在浏览器里拼（F054 AC-25）。CLI 的 `_absorb` 同批把它纳入吸收键。解除 F053 AC-31c / AC-33 / 决议-12 的降级（其 T024） |
 
-| **F057 T043 →（承接 T057）** | **OBO 签发改 fail-closed**。托管期访问者凭据现在**有消费者了**——SDK 的 `retrieve` 把 `X-BiSheng-Access-Token` 作为「为谁检索」的唯一来源，`CapabilityBusService.retrieve` 拿不到访问用户即 `26320`。而签发侧仍是 2026-08-17 那条「本轮无人读，先放行」的裁定：`app_runtime/domain/services/entry_authz_service.py:587-597` 在 `app_runtime.obo_secret` 缺失或等于 `jwt_secret` 时**只 `_warn_once` 一次**、返回 `(None, None)` 照常放人进应用。于是一个配错 secret 的部署上，每个访问者都以「没有身份」进入应用，而现场看到的现象是「SDK 的 retrieve 全被拒」——身份面的静默 fail-open 穿着 SDK 故障的外衣。该文件里的 ⚠️ 注释本身就写着「等 OBO 有了第一个读者就必须翻成 fail-closed」，这条回写只是通知：读者已经到了 | 🔲 **未交付**（2026-09-16 核实，`3.0-vibe` 仍是 warn-only） | 代码落点在 `bisheng/app_runtime/`（F054 的模块），按 design §6.2 的回写登记归本 Feature 受理；F057 侧不做任何兼容分支，`test_journey_03b`（`test/e2e/test_e2e_f057_sdk_journey.py`）在部署上直接断言这把凭据必须存在，并把「去设 `app_runtime.obo_secret`」写进失败信息 |
-| **F057 T043 →（承接 T058）** | `16273` 载荷带 `data.capability` 与 `data.reason`（SDK 的 `CapabilityRevokedError` 要把「哪个能力、为什么没了」原样呈现给应用，而不是一句「失败」） | ✅ **已交付**（2026-09-16 只核对未改） | `common/errcode/app_publish.py:495-527`：`AppCapabilityRevokedError(capability, kind=…, reason="revoked" \| "ambiguous" \| "unresolvable")`，三个键都进信封 `data`；`16274`（未声明）同形带 `capability` / `kind`。F057 `bisheng_sdk/_codes.py` 已按此登记 `16273` / `16274` |
+| **F057 T043 →（承接 T057）** | **OBO 签发改 fail-closed**。托管期访问者凭据现在**有消费者了**——SDK 的 `retrieve` 把 `X-doberman-agent-Access-Token` 作为「为谁检索」的唯一来源，`CapabilityBusService.retrieve` 拿不到访问用户即 `26320`。而签发侧仍是 2026-08-17 那条「本轮无人读，先放行」的裁定：`app_runtime/domain/services/entry_authz_service.py:587-597` 在 `app_runtime.obo_secret` 缺失或等于 `jwt_secret` 时**只 `_warn_once` 一次**、返回 `(None, None)` 照常放人进应用。于是一个配错 secret 的部署上，每个访问者都以「没有身份」进入应用，而现场看到的现象是「SDK 的 retrieve 全被拒」——身份面的静默 fail-open 穿着 SDK 故障的外衣。该文件里的 ⚠️ 注释本身就写着「等 OBO 有了第一个读者就必须翻成 fail-closed」，这条回写只是通知：读者已经到了 | 🔲 **未交付**（2026-09-16 核实，`3.0-vibe` 仍是 warn-only） | 代码落点在 `doberman-agent/app_runtime/`（F054 的模块），按 design §6.2 的回写登记归本 Feature 受理；F057 侧不做任何兼容分支，`test_journey_03b`（`test/e2e/test_e2e_f057_sdk_journey.py`）在部署上直接断言这把凭据必须存在，并把「去设 `app_runtime.obo_secret`」写进失败信息 |
+| **F057 T043 →（承接 T058）** | `16273` 载荷带 `data.capability` 与 `data.reason`（SDK 的 `CapabilityRevokedError` 要把「哪个能力、为什么没了」原样呈现给应用，而不是一句「失败」） | ✅ **已交付**（2026-09-16 只核对未改） | `common/errcode/app_publish.py:495-527`：`AppCapabilityRevokedError(capability, kind=…, reason="revoked" \| "ambiguous" \| "unresolvable")`，三个键都进信封 `data`；`16274`（未声明）同形带 `capability` / `kind`。F057 `doberman_agent_sdk/_codes.py` 已按此登记 `16273` / `16274` |
 
 （2026-08-19 由收口批登记；本表不影响上方任务勾选状态。2026-09-16 由 F057 T043 追加两行。）
 
@@ -911,7 +911,7 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - 发布 tab 新增「应用密钥」区：引用名、掩码、状态（已录入 / 缺少值）、最近修改时间；仅 owner 可录入、修改、删除，租户管理员只见引用名与状态。
 - 值加密存储（沿用平台 Fernet），任何接口不回显明文、不写日志；录入、修改、删除计审计（不记值）。
-- `bisheng-app.yaml` 能力声明恢复 `secrets` 字段；预检由「出现即拒绝」改为「缺值警告、不阻断」，审批单标注「缺少值」。
+- `doberman-agent-app.yaml` 能力声明恢复 `secrets` 字段；预检由「出现即拒绝」改为「缺值警告、不阻断」，审批单标注「缺少值」。
 - 能力总线在应用启动时注入同名环境变量（注入通道已预留引用名位）；修改值不经审批，保存后重启应用实例生效；新增或删除引用名随发布审批。
 
 
@@ -929,14 +929,14 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T071** — 单表模型及发现注册
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/app_publish/domain/models/app_secret_config.py`、`src/backend/bisheng/app_publish/domain/models/__init__.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/models/app_secret_config.py`、`src/backend/doberman_agent/app_publish/domain/models/__init__.py`
   **逻辑/验收**：App主键同型，tenant默认None/NOT NULL/index，通用LargeText，revision与时间；空映射保留行。新独立表由create_all发现，无额外DDL revision；回退旧代码保留加密表，不删数据。
   **覆盖 AC:** AC-67, AC-68, AC-80, AC-83
   **依赖**：无
 
 - [x] **T072** — 新增密钥业务错误
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/common/errcode/app_publish.py`
+  **文件**：`src/backend/doberman_agent/common/errcode/app_publish.py`
   **逻辑/验收**：核对162占用分配配置校验/冲突/加密不可用/重建拒绝错误；安全原因不含值。
   **覆盖 AC:** AC-66, AC-76, AC-78, AC-79, AC-80, AC-89
   **依赖**：无
@@ -964,7 +964,7 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T074** — 加密与输入合同
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/secret_security.py`、`src/backend/bisheng/app_publish/domain/schemas/app_secrets.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/secret_security.py`、`src/backend/doberman_agent/app_publish/domain/schemas/app_secrets.py`
   **逻辑/验收**：按测试实现有界映射、加密envelope、名称策略与安全请求schema；无原始输入回显。
   **覆盖 AC:** AC-68, AC-78, AC-79, AC-90
   **依赖**：T073
@@ -978,14 +978,14 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T076** — 单表Repository
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/repositories/app_secret_repository.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/repositories/app_secret_repository.py`
   **逻辑/验收**：App→配置锁，显式session读写和同事务业务AuditLog；业务不可写后不保存，无serviceSQL/新DAO。
   **覆盖 AC:** AC-67, AC-68, AC-77, AC-80, AC-81, AC-83
   **依赖**：T075
 
 - [x] **T077** — 密钥服务及公开环境协议
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/app_secret_service.py`、`src/backend/bisheng/app_publish/application/runtime_secrets.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py`、`src/backend/doberman_agent/app_publish/application/runtime_secrets.py`
   **逻辑/验收**：owner会话写、分级只读、revision、差异；formal_snapshot/preview_environment/delete_for_app公共协议，保存零operation。
   **覆盖 AC:** AC-66, AC-67, AC-68, AC-70, AC-71, AC-73, AC-74, AC-75, AC-77, AC-80, AC-83, AC-84, AC-85, AC-89, AC-90
   **依赖**：T076
@@ -999,14 +999,14 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T079** — 声明schema与严格解包校验
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/schemas/app_manifest.py`、`src/backend/bisheng/app_publish/domain/services/manifest_validator.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py`、`src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py`
   **逻辑/验收**：只豁免合法capabilities.secrets[*].name，保留其他明文/引用拒绝与源码扫描；兼容旧manifest。
   **覆盖 AC:** AC-56, AC-69, AC-72, AC-78, AC-88
   **依赖**：T078
 
 - [x] **T080** — 声明能力消费与差异
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/capability_bus_service.py`、`src/backend/bisheng/app_publish/domain/services/version_diff_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py`、`src/backend/doberman_agent/app_publish/domain/services/version_diff_service.py`
   **逻辑/验收**：is_empty/derive_scopes保持模型知识语义，diff展示名增删，不携值。
   **覆盖 AC:** AC-54, AC-69, AC-72, AC-84, AC-87
   **依赖**：T079
@@ -1020,14 +1020,14 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T082** — 凭据底座session入口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/open_api/domain/repositories/credential_repository.py`、`src/backend/bisheng/open_api/domain/services/credential_service.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/repositories/credential_repository.py`、`src/backend/doberman_agent/open_api/domain/services/credential_service.py`
   **逻辑/验收**：受信内部session-aware签发；不提前commit/外部回调，不跨session读未提交数据；普通签发入口行为不改。
   **覆盖 AC:** AC-68, AC-70, AC-77, AC-81, AC-82
   **依赖**：T081
 
 - [x] **T083** — 运行期stage事务接线
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/app_credential_service.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_credential_repository.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_credential_repository.py`
   **逻辑/验收**：stage_in_transaction含subject创建及binding；F055 owner协议，回放不重签。历史binding回收S1不在本任务关闭。
   **覆盖 AC:** AC-70, AC-77, AC-81, AC-82
   **依赖**：T082
@@ -1041,28 +1041,28 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T085** — 运行快照公共只读口
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/application/runtime_secrets.py`、`src/backend/bisheng/app_runtime/domain/repositories/runtime_secret_repository.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/application/runtime_secrets.py`、`src/backend/doberman_agent/app_runtime/domain/repositories/runtime_secret_repository.py`
   **逻辑/验收**：正式路由/实例/op一致DTO，缺上下文unknown，拒绝任意历史明文读取。
   **覆盖 AC:** AC-68, AC-80, AC-90
   **依赖**：T084
 
 - [x] **T086** — 重建受理应用服务
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py`
   **逻辑/验收**：App→node/assignment→route→配置，无回锁旧op；旧请求先回放，新请求冻结原批准组合；auto_commit；同UoW候选及seal。
   **覆盖 AC:** AC-70, AC-76, AC-77, AC-86, AC-91, AC-92
   **依赖**：T085
 
 - [x] **T087** — 正式/预览注入与失败恢复接线
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
   **逻辑/验收**：purpose分支绕过同版本快捷返回但不重标版本/DDL；普通环境冻结、failed config_restart不自动再建，指针与配置分离。
   **覆盖 AC:** AC-70, AC-71, AC-75, AC-76, AC-77, AC-86, AC-91, AC-92
   **依赖**：T086
 
 - [x] **T088** — 维护事实与ready提交围栏
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py`
   **逻辑/验收**：own maintenance持久幂等转换，旧事实不改新route；auto_commit重报原ready；归属/停止证明不放宽。
   **覆盖 AC:** AC-76, AC-77, AC-90, AC-91, AC-92
   **依赖**：T087
@@ -1104,14 +1104,14 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T094** — 密钥endpoint与路由
   **类型**：后端 API
-  **文件**：`src/backend/bisheng/app_publish/api/endpoints/secrets.py`、`src/backend/bisheng/app_publish/api/router.py`
+  **文件**：`src/backend/doberman_agent/app_publish/api/endpoints/secrets.py`、`src/backend/doberman_agent/app_publish/api/router.py`
   **逻辑/验收**：GET/PUT/DELETE/rebuild既有envelope，只依赖Service；安全ValidationErrorhandler和route长度限制不含config。
   **覆盖 AC:** AC-66, AC-67, AC-68, AC-73, AC-74, AC-76, AC-89, AC-90, AC-91, AC-92
   **依赖**：T093
 
 - [x] **T095** — 缺值与清理集成
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`、`src/backend/bisheng/app_publish/composition.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`、`src/backend/doberman_agent/app_publish/composition.py`
   **逻辑/验收**：发布/审读名称缺值，删除持久cleanup公共接线，业务事件登记不制造查询事件。
   **覆盖 AC:** AC-67, AC-72, AC-81, AC-83, AC-84
   **依赖**：T094
@@ -1160,7 +1160,7 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T104** — 事件可见登记
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/database/models/audit_log.py`
+  **文件**：`src/backend/doberman_agent/database/models/audit_log.py`
   **逻辑/验收**：仅登记app.secret.set/delete/rebuild事件及可信app关联，F056历史回收审计另待修；共享枚举增量兼容。
   **覆盖 AC:** AC-81
   **依赖**：T095
@@ -1214,19 +1214,19 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T110** — 识别真实待审批版本与安全引用状态
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/repositories/app_secret_repository.py`、`src/backend/bisheng/app_publish/domain/services/app_secret_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/repositories/app_secret_repository.py`、`src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py`
   **依赖**：T109
   **覆盖 AC:** AC-67, AC-72, AC-84
 
 - [x] **T111** — 公共只读协议接入审批快照
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/application/runtime_secrets.py`、`src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/application/runtime_secrets.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`
   **依赖**：T110
   **覆盖 AC:** AC-69, AC-72, AC-84
 
 - [x] **T112** — 发布状态与 CLI 轮询消费引用状态
   **类型**：后端 Domain
-  **文件**：`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`
   **依赖**：T111
   **覆盖 AC:** AC-72, AC-84
 
@@ -1262,13 +1262,13 @@ Spec Discovery N4 原定「密钥引用随 PRD-2」，2026-10-09 PRD-1 评审改
 
 - [x] **T118** — CLI 名称缺值提醒去重用例
   **类型**：测试
-  **文件**：`src/bisheng-cli/tests/test_secret_warnings.py`
+  **文件**：`src/doberman-agent-cli/tests/test_secret_warnings.py`
   **依赖**：T112
   **覆盖 AC:** AC-72
 
 - [x] **T119** — 缺值提醒与随源码重建 wheel
   **类型**：CLI
-  **文件**：`src/bisheng-cli/bisheng_cli/commands/deploy.py`
+  **文件**：`src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py`
   **依赖**：T118
   **覆盖 AC:** AC-72
 

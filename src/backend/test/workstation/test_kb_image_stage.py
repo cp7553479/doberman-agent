@@ -7,14 +7,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.image_view import ImageRegistry
-from bisheng.workstation.domain.services.chat_service import (
+from doberman_agent.common.image_view import ImageRegistry
+from doberman_agent.workstation.domain.services.chat_service import (
     _annotate_retrieved_chunk,
     _attach_kb_image_stage,
 )
-from bisheng.workstation.domain.services.kb_image_stage import KbImageStage
+from doberman_agent.workstation.domain.services.kb_image_stage import KbImageStage
 
-URL = "/bisheng/knowledge/images/1/27/img_1.png"
+URL = "/doberman_agent/knowledge/images/1/27/img_1.png"
 REL = "uploads/kb/1/27/img_1.png"
 
 
@@ -54,7 +54,7 @@ class _FakeClient:
 def _stage(**overrides) -> KbImageStage:
     kwargs = {"max_files": 100, "max_file_bytes": 1024, "max_total_bytes": 4096}
     kwargs.update(overrides)
-    return KbImageStage("bisheng", **kwargs)
+    return KbImageStage("doberman_agent", **kwargs)
 
 
 def test_annotate_keeps_markdown_and_appends_relative_path():
@@ -69,10 +69,10 @@ def test_annotate_keeps_markdown_and_appends_relative_path():
     [
         "https://example.com/a.png",
         "/other-bucket/knowledge/images/1/2/a.png",
-        "/bisheng/knowledge/images/1/2/../a.png",
-        "/bisheng/knowledge/images/x/2/a.png",
-        "/bisheng/knowledge/images/1/2/a/b.png",
-        "/bisheng/other/1/2/a.png",
+        "/doberman_agent/knowledge/images/1/2/../a.png",
+        "/doberman_agent/knowledge/images/x/2/a.png",
+        "/doberman_agent/knowledge/images/1/2/a/b.png",
+        "/doberman_agent/other/1/2/a.png",
     ],
 )
 def test_annotate_ignores_urls_that_are_not_knowledge_images(url):
@@ -111,7 +111,7 @@ def test_materialize_writes_files(tmp_path):
     notice = stage.materialize(str(tmp_path), lambda: client)
     assert notice == ""
     assert (tmp_path / REL).read_bytes() == b"PNG"
-    assert client.calls == [("bisheng", "knowledge/images/1/27/img_1.png")]
+    assert client.calls == [("doberman_agent", "knowledge/images/1/27/img_1.png")]
     assert not list(tmp_path.rglob("*.part"))
 
 
@@ -156,7 +156,7 @@ def test_file_count_limit(tmp_path):
     stage = _stage(max_files=2)
     objects = {}
     for i in range(3):
-        stage.annotate(f"![a](/bisheng/knowledge/images/1/27/i{i}.png)")
+        stage.annotate(f"![a](/doberman_agent/knowledge/images/1/27/i{i}.png)")
         objects[f"knowledge/images/1/27/i{i}.png"] = b"x"
     notice = stage.materialize(str(tmp_path), lambda: _FakeClient(objects))
     assert sorted(os.listdir(tmp_path / "uploads/kb/1/27")) == ["i0.png", "i1.png"]
@@ -178,7 +178,7 @@ def test_total_bytes_limit(tmp_path):
     stage = _stage(max_file_bytes=10, max_total_bytes=15)
     objects = {}
     for i in range(3):
-        stage.annotate(f"![a](/bisheng/knowledge/images/1/27/i{i}.png)")
+        stage.annotate(f"![a](/doberman_agent/knowledge/images/1/27/i{i}.png)")
         objects[f"knowledge/images/1/27/i{i}.png"] = b"x" * 8
     notice = stage.materialize(str(tmp_path), lambda: _FakeClient(objects))
     assert sorted(os.listdir(tmp_path / "uploads/kb/1/27")) == ["i0.png"]
@@ -189,12 +189,12 @@ def test_failure_advisory_only_when_code_mentions_object_path():
     stage = _stage()
     stage.annotate(f"![a]({URL})")
     assert stage.failure_advisory("print(1)") == ""
-    advice = stage.failure_advisory("open('/bisheng/knowledge/images/1/27/img_1.png')")
+    advice = stage.failure_advisory("open('/doberman_agent/knowledge/images/1/27/img_1.png')")
     assert REL in advice
 
 
 def test_from_settings_derives_total_from_max_copy_in(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.sandbox_conf, "max_copy_in_bytes", 1000)
     monkeypatch.setattr(settings.sandbox_conf, "kb_image_stage_max_total_bytes", 0)

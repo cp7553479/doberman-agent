@@ -1,4 +1,4 @@
-import { Input, Textarea } from '@bisheng/ui';
+import { Input, Textarea } from '@doberman-agent/ui';
 import React, { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 

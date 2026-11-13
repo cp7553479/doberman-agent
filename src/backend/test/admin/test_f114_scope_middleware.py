@@ -9,9 +9,9 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def scoped_client(monkeypatch):
-    from bisheng.admin.application import tenant_scope as port
-    from bisheng.common.middleware import admin_scope as middleware
-    from bisheng.core.context.tenant import get_admin_scope_tenant_id, get_visible_tenant_ids, is_management_all_tenants
+    from doberman_agent.admin.application import tenant_scope as port
+    from doberman_agent.common.middleware import admin_scope as middleware
+    from doberman_agent.core.context.tenant import get_admin_scope_tenant_id, get_visible_tenant_ids, is_management_all_tenants
 
     super_check = AsyncMock(return_value=True)
     resolver = AsyncMock(return_value=port.EffectiveManagementScope(3, "selected", None))

@@ -1,4 +1,4 @@
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 

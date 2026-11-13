@@ -1,5 +1,5 @@
-import { toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { checkResourceActionApi } from "@/controllers/API/permission";

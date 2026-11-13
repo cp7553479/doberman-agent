@@ -2,8 +2,8 @@
 
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.rag.pipeline.transformer.simhash import SimHashTransformer
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.rag.pipeline.transformer.simhash import SimHashTransformer
 
 
 def test_simhash_transformer_writes_hex_to_knowledge_file():

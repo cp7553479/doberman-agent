@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger } from "@/components/bs-ui/accordion";
 
-import { Tooltip as SharedTooltip,Tabs } from "@bisheng/ui";
+import { Tooltip as SharedTooltip,Tabs } from "@doberman-agent/ui";
 
 import { getToolsApi } from "@/controllers/API/tools";
 import { getWorkflowNodeTemplate } from "@/controllers/API/workflow";
@@ -25,7 +25,7 @@ const ToolItem = ({ temp, index, dropdown, onDragStart, onClick }) => {
     }, [temp.children]);
 
     return <AccordionItem key={temp.name} value={temp.name + index} className="border-none">
-        <AccordionTrigger className="py-2 bisheng-label">
+        <AccordionTrigger className="py-2 doberman_agent-label">
             <span className="break-all text-left">{temp.is_preset === 1 ? t(`categories.${temp.name}.name`, { defaultValue: temp.name }) : temp.name}</span>
         </AccordionTrigger>
         <AccordionContent className="pb-2">

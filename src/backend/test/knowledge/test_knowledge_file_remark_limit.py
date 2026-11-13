@@ -1,4 +1,4 @@
-from bisheng.knowledge.domain.models import knowledge_file as knowledge_file_model
+from doberman_agent.knowledge.domain.models import knowledge_file as knowledge_file_model
 
 
 class _SyncSession:

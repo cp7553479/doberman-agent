@@ -191,7 +191,7 @@ const AuthContextProvider = ({
       } catch { /* ignore storage errors */ }
     } else if (userQuery.isError) {
       doSetError((userQuery.error as Error).message);
-      // navigate(`/${__APP_ENV__.BISHENG_HOST}`, { replace: true });
+      // navigate(`/${__APP_ENV__.DOBERMAN_AGENT_HOST}`, { replace: true });
     }
     if (error != null && error && isAuthenticated) {
       doSetError(undefined);

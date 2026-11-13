@@ -30,7 +30,7 @@ export const createAssistantsApi = async (
 ): Promise<{ id: string; model_name?: string }> => {
     if (url) {
         // logo保存相对路径
-        url = url.replace('/bisheng', '')
+        url = url.replace('/doberman_agent', '')
     }
     return await axios.post<unknown, { id: string; model_name?: string }>(`/api/v1/assistant`, { name, prompt, logo: url })
 };

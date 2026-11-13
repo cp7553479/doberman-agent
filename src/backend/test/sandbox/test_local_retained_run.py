@@ -15,11 +15,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng_langchain.gpts.tools.code_interpreter import local_executor as local_executor_module
-from bisheng_langchain.gpts.tools.code_interpreter import local_run_registry, workspace_copy
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import TASK_ENDED_MSG, LocalExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_isolation import IsolatedOutcome, RunClosed
-from bisheng_langchain.gpts.tools.code_interpreter.tool import CodeInterpreterTool
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_executor as local_executor_module
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_run_registry, workspace_copy
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import TASK_ENDED_MSG, LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_isolation import IsolatedOutcome, RunClosed
+from doberman_agent_langchain.gpts.tools.code_interpreter.tool import CodeInterpreterTool
 
 LIMIT = 1 << 30
 
@@ -238,7 +238,7 @@ def test_no_entry_without_keep_run_dir(registry, uid_mode, tmp_path) -> None:
 
 
 def test_container_executor_never_gets_an_entry(registry, uid_mode, tmp_path) -> None:
-    from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+    from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
 
     assert ContainerExecutor.supports_retained_run is False
 
@@ -351,7 +351,7 @@ def test_tool_arun_falls_back_to_run_without_executor_arun() -> None:
 
 
 def test_cleanup_releases_first_even_when_later_steps_fail(monkeypatch, tmp_path) -> None:
-    from bisheng.linsight.domain import task_exec
+    from doberman_agent.linsight.domain import task_exec
 
     released = []
     monkeypatch.setattr(task_exec, "release_local_run", released.append)
@@ -366,7 +366,7 @@ def test_cleanup_releases_first_even_when_later_steps_fail(monkeypatch, tmp_path
 
 
 def test_cleanup_skips_release_before_the_workspace_exists(monkeypatch) -> None:
-    from bisheng.linsight.domain import task_exec
+    from doberman_agent.linsight.domain import task_exec
 
     monkeypatch.setattr(task_exec, "release_local_run", lambda w: pytest.fail("must not release"))
 

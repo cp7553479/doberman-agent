@@ -3,30 +3,30 @@ import pytest
 from fastapi import HTTPException
 from unittest.mock import MagicMock, AsyncMock, patch
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
     KnowledgeDocumentRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
-from bisheng.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
+from doberman_agent.knowledge.domain.services.knowledge_version_service import KnowledgeVersionService
 
 
 @pytest.fixture
 def enable_switch(monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = True
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
 
 
 async def _seed_two_version_doc(session):
@@ -63,23 +63,23 @@ def _build_svc(session):
 async def test_delete_history_removes_version_and_file(enable_switch, async_db_session, monkeypatch):
     doc, v1, v2 = await _seed_two_version_doc(async_db_session)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
     # KnowledgeDao.aquery_by_id opens its own DB session; patch it to avoid
     # real connection setup in the unit test environment.
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=MagicMock(id=1)),
     )
     # delete_vector_files and delete_minio_files perform real I/O; stub them out.
     monkeypatch.setattr(
-        "bisheng.api.services.knowledge_imp.delete_vector_files",
+        "doberman_agent.api.services.knowledge_imp.delete_vector_files",
         MagicMock(return_value=True),
     )
     monkeypatch.setattr(
-        "bisheng.api.services.knowledge_imp.delete_minio_files",
+        "doberman_agent.api.services.knowledge_imp.delete_minio_files",
         MagicMock(return_value=None),
     )
 
@@ -101,7 +101,7 @@ async def test_delete_history_removes_version_and_file(enable_switch, async_db_s
 async def test_delete_primary_is_rejected(enable_switch, async_db_session, monkeypatch):
     doc, v1, v2 = await _seed_two_version_doc(async_db_session)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
@@ -121,12 +121,12 @@ async def test_delete_404_when_version_not_found(enable_switch, async_db_session
 
 @pytest.mark.asyncio
 async def test_delete_rejected_when_switch_off(async_db_session, monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = False
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
     svc = _build_svc(async_db_session)
     with pytest.raises(HTTPException) as ctx:
         await svc.delete_version(version_id=1)
@@ -150,12 +150,12 @@ def _build_mock_svc():
 
 def _patch_switch_enabled(monkeypatch):
     """Monkeypatch settings so the feature switch is enabled."""
-    from bisheng.knowledge.domain.services import knowledge_version_service as kvs_mod
+    from doberman_agent.knowledge.domain.services import knowledge_version_service as kvs_mod
     mock_settings = MagicMock()
     conf = MagicMock()
     conf.version_management.enabled = True
     mock_settings.async_get_knowledge = AsyncMock(return_value=conf)
-    monkeypatch.setattr(kvs_mod, "bisheng_settings", mock_settings)
+    monkeypatch.setattr(kvs_mod, "doberman_agent_settings", mock_settings)
 
 
 @pytest.mark.asyncio
@@ -185,20 +185,20 @@ async def test_delete_version_calls_vector_and_minio_cleanup(monkeypatch):
     svc.knowledge_file_repo.delete = AsyncMock(return_value=None)
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
     # Patch KnowledgeDao at its definition so the deferred import picks up the mock.
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=fake_knowledge),
     )
     # Patch at source module; deferred `from ... import` binds the name at call time.
     mock_dvf = MagicMock(return_value=True)
     mock_dmf = MagicMock(return_value=None)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_vector_files", mock_dvf)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_minio_files", mock_dmf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_vector_files", mock_dvf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_minio_files", mock_dmf)
 
     result = await svc.delete_version(version_id=42)
 
@@ -238,18 +238,18 @@ async def test_delete_version_vector_failure_still_succeeds_and_calls_minio(monk
     svc.knowledge_file_repo.delete = AsyncMock(return_value=None)
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=fake_knowledge),
     )
     mock_dvf = MagicMock(side_effect=RuntimeError("Milvus unreachable"))
     mock_dmf = MagicMock(return_value=None)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_vector_files", mock_dvf)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_minio_files", mock_dmf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_vector_files", mock_dvf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_minio_files", mock_dmf)
 
     # Must not raise despite vector cleanup failure
     result = await svc.delete_version(version_id=43)
@@ -284,18 +284,18 @@ async def test_delete_version_minio_failure_still_succeeds(monkeypatch):
     svc.knowledge_file_repo.delete = AsyncMock(return_value=None)
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=fake_knowledge),
     )
     mock_dvf = MagicMock(return_value=True)
     mock_dmf = MagicMock(side_effect=OSError("MinIO connection refused"))
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_vector_files", mock_dvf)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_minio_files", mock_dmf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_vector_files", mock_dvf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_minio_files", mock_dmf)
 
     # Must not raise despite MinIO cleanup failure
     result = await svc.delete_version(version_id=44)
@@ -326,19 +326,19 @@ async def test_delete_version_knowledge_none_skips_vector_but_runs_minio(monkeyp
     svc.knowledge_file_repo.delete = AsyncMock(return_value=None)
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service."
+        "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service."
         "KnowledgeAuditTelemetryService.audit_delete_file_version",
         MagicMock(return_value=None),
     )
     # Knowledge lookup returns None — orphaned file
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id",
         AsyncMock(return_value=None),
     )
     mock_dvf = MagicMock(return_value=True)
     mock_dmf = MagicMock(return_value=None)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_vector_files", mock_dvf)
-    monkeypatch.setattr("bisheng.api.services.knowledge_imp.delete_minio_files", mock_dmf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_vector_files", mock_dvf)
+    monkeypatch.setattr("doberman_agent.api.services.knowledge_imp.delete_minio_files", mock_dmf)
 
     result = await svc.delete_version(version_id=45)
 

@@ -3,7 +3,7 @@
 - 日期：2026-10-12
 - 状态：历史技术方案草案；当前实施设计以 `features/v3.0.0/076-mineru-v4/design.md` 为准。本文保留为讨论背景，其中缓存、队列和任务恢复边界已按后续用户决定更新到 SDD 文档
 - 工作分支：`feat/mineru_4.0`，基线 `origin/feat/3.0.0` 的 `eb86a1017267753de76c5c661bb45d0e3178874a`
-- 范围：毕昇的文档解析接入；MinerU 服务的部署和模型选型由部署环境负责
+- 范围：doberman-agent的文档解析接入；MinerU 服务的部署和模型选型由部署环境负责
 
 ## 1. 结论与边界
 
@@ -15,7 +15,7 @@
 
 ## 2. 现状与升级原因
 
-### 2.1 毕昇现状
+### 2.1 doberman-agent现状
 
 | 环节 | 当前行为 | 代码位置 |
 |---|---|---|
@@ -42,17 +42,17 @@ MinerU 4.0 自部署解析 API 以 `/v1` 为路径前缀，服务根地址不含
 - **不采用**：在旧 `mineru` 中增加 `api_version` 并把两种协议放进同一个 `load()`；不按健康检查或 HTTP 错误自动判断版本。
 - **重新考虑条件**：若未来多个 MinerU 版本共享了经官方承诺的同一解析 API，再提取公共客户端接口，不预先抽象两种不同协议。
 
-### D2：继续调用独立 MinerU 服务，使用毕昇已有 HTTP 依赖
+### D2：继续调用独立 MinerU 服务，使用doberman-agent已有 HTTP 依赖
 
-- **选定**：在毕昇内实现薄 V1 HTTP 客户端，由 `MineruV4Loader` 负责调用；使用项目已有的 `httpx`，不在毕昇 API/Celery 环境安装 MinerU 推理包。
-- **原因**：现有接入就是服务间调用。4.0 Python SDK 的 `MinerUApiParser` 可以完成上传、轮询与下载，但引入 `mineru` 包会把解析运行时依赖和硬件组合带进毕昇后端；独立服务的镜像与模型版本应由 MinerU 部署维护。[Python SDK 文档](https://mineru.atomgit.com/zh/usage/sdk_api.html)
-- **不采用**：直接在毕昇 Worker 内运行 4.0 模型、调用 CLI，或把 VLM 的 OpenAI 兼容地址当作文档解析 API。
-- **重新考虑条件**：若官方提供轻量、独立的 V1 客户端包并满足毕昇依赖与许可要求，可改用官方客户端以减少协议维护。
+- **选定**：在doberman-agent内实现薄 V1 HTTP 客户端，由 `MineruV4Loader` 负责调用；使用项目已有的 `httpx`，不在doberman-agent API/Celery 环境安装 MinerU 推理包。
+- **原因**：现有接入就是服务间调用。4.0 Python SDK 的 `MinerUApiParser` 可以完成上传、轮询与下载，但引入 `mineru` 包会把解析运行时依赖和硬件组合带进doberman-agent后端；独立服务的镜像与模型版本应由 MinerU 部署维护。[Python SDK 文档](https://mineru.atomgit.com/zh/usage/sdk_api.html)
+- **不采用**：直接在doberman-agent Worker 内运行 4.0 模型、调用 CLI，或把 VLM 的 OpenAI 兼容地址当作文档解析 API。
+- **重新考虑条件**：若官方提供轻量、独立的 V1 客户端包并满足doberman-agent依赖与许可要求，可改用官方客户端以减少协议维护。
 
 ### D3：只接受可完整消费的 ZIP 结果
 
 - **选定**：新提供方要求服务支持 `zip`，创建任务时请求 `output_formats=["zip"]`；从 ZIP 读取当前 Middle JSON、Markdown 与实际引用的 `images/` 素材。能力缺失、产物缺失或协议身份不符均报解析失败。
-- **原因**：BiSheng 需要正文、页码、bbox 与图片字节同时成立。仅下载 Markdown 无法可靠建立块到 bbox 的映射；仅下载 Middle JSON 无法保证图片素材可用。[输出协议](https://mineru.atomgit.com/zh/reference/output_files.html)
+- **原因**：doberman-agent 需要正文、页码、bbox 与图片字节同时成立。仅下载 Markdown 无法可靠建立块到 bbox 的映射；仅下载 Middle JSON 无法保证图片素材可用。[输出协议](https://mineru.atomgit.com/zh/reference/output_files.html)
 - **不采用**：把 4.0 JSON 当成旧 `pdf_info`、从文件名猜图片路径、在缺素材时生成正常样式的失效图片链接。
 - **重新考虑条件**：若目标服务提供同等完整且有明确版本约束的非 ZIP 产物，再评估精简下载。
 
@@ -92,7 +92,7 @@ knowledges:
   → POST /v1/parse/jobs：file_id、tier、ocr_mode、output_formats=[zip]
   → GET /v1/parse/jobs/{job_id}：有界轮询至终态
   → GET /v1/files/{output_file_id}/content：下载 ZIP
-  → 校验、转换为 BiSheng Document / bbox_list / local_image_dir
+  → 校验、转换为 doberman-agent Document / bbox_list / local_image_dir
 ```
 
 每个文件只提交一个 parse job。PDF 默认全页，不传默认前 10 页的文档库 CLI 语义；文件规则 `force_ocr=1` 时将单次任务的 `ocr_mode` 设为 `ocr`，否则使用提供方配置的 `ocr_mode`。图片和 OFD→PDF 沿用 `_build_pdf_loader()` 的现有路由，OFD 预览仍由 `OfdLoader` 保留转换后的 PDF。
@@ -103,13 +103,13 @@ knowledges:
 2. 单文件任务只有 `completed` 且对应文件 `completed`、ZIP 完整下载并通过校验才成功。`partial`、`failed`、`canceled`、缺失产物均失败，记录上游结构化错误码；不把 `partial` 的正文写成成功文件。
 3. 分开连接、普通请求、传输与整个任务等待上限。读超时或轮询预算耗尽时记录 job ID 和阶段；不假定远端任务已取消。`POST /v1/parse/jobs` 响应不明时不自动重发，以免产生重复任务。
 4. 服务返回的上传 URL 可能是同源路径，也可能是跨源预签名地址。保留 `upload_headers`；只对同源上传发送 MinerU Bearer Key，跨源上传及下载重定向不转发 Key。日志不打印 Key 或预签名 URL。[HTTP API 安全规则](https://mineru.atomgit.com/zh/usage/http_api.html)
-5. 自部署 V1 服务的上传/文件/任务索引在进程内，服务重启后旧 ID 不保证可恢复。毕昇不把远端 job ID 当作持久状态；失败后由现有文件重解析操作发起新任务，不承诺断点续跑。[部署边界](https://mineru.atomgit.com/zh/usage/http_api.html)
+5. 自部署 V1 服务的上传/文件/任务索引在进程内，服务重启后旧 ID 不保证可恢复。doberman-agent不把远端 job ID 当作持久状态；失败后由现有文件重解析操作发起新任务，不承诺断点续跑。[部署边界](https://mineru.atomgit.com/zh/usage/http_api.html)
 
-## 6. 结果到毕昇的映射
+## 6. 结果到doberman-agent的映射
 
 `MineruV4Loader` 只接受识别出的当前 Middle JSON 协议身份，按源 `pages[].page_idx` 与块顺序转换。不能复用旧 Loader 的 `merge_pdf_info()` 或 `merge_conten_list()`。具体文本、标题、公式、表格和图片块的转换函数须用目标 4.0 ZIP 样本固化；文档中的简化 JSON 示例不足以证明所有块形态。
 
-| 上游数据 | BiSheng 产物 | 约束 |
+| 上游数据 | doberman-agent 产物 | 约束 |
 |---|---|---|
 | 页面及语义块 | 单个 `Document.page_content`，`metadata.pages/types/bboxes/indexes` | 保持上游块顺序与原始零基 `page_idx`；`indexes` 以最终正文计算 |
 | 有效四坐标 bbox | `loader.bbox_list` 的 `TextBbox` | 缺失或不合法 bbox 不伪造；正文仍可保留，记录无定位块数 |
@@ -122,8 +122,8 @@ knowledges:
 
 ## 7. 兼容与前端消费
 
-- **旧部署**：`loader_provider=mineru` 时仍用旧 URL、旧参数及旧解析逻辑；升级毕昇镜像不会自动切换到 V1。MinerU 官方对部分 AMD/国产加速卡仍要求 `<4` 的旧平台适配，保留旧提供方有实际部署价值。[旧平台适配](https://mineru.atomgit.com/zh/usage/compatibility.html)
-- **历史文件**：原 `parse_type=mineru` 和毕昇已保存的正文、图片、bbox 不做迁移。显式重解析时才按当时的当前提供方生成新结果；切回旧提供方也不改写历史文件。
+- **旧部署**：`loader_provider=mineru` 时仍用旧 URL、旧参数及旧解析逻辑；升级doberman-agent镜像不会自动切换到 V1。MinerU 官方对部分 AMD/国产加速卡仍要求 `<4` 的旧平台适配，保留旧提供方有实际部署价值。[旧平台适配](https://mineru.atomgit.com/zh/usage/compatibility.html)
+- **历史文件**：原 `parse_type=mineru` 和doberman-agent已保存的正文、图片、bbox 不做迁移。显式重解析时才按当时的当前提供方生成新结果；切回旧提供方也不改写历史文件。
 - **新文件**：`ParseType` 新增 `MINERU_V4="mineru_v4"`，明确保存来源；文件分享和预览逻辑需将该值视为外部解析提供方，核对 preview URL、bbox 和图片链接。
 - **聊天引用预览**：平台 `src/frontend/platform/src/controllers/API/index.ts` 与客户端 `src/frontend/client/src/api/apps.ts` 当前仅将 `etl4lm/un_etl4lm` 映射到新版预览 URL，`mineru` 本身也未覆盖。新增 `mineru_v4` 时应在同一处把 `mineru` 和 `mineru_v4` 一并纳入“有外部解析预览”的判断，避免解析成功但引用列表的 `fileUrl` 为空；对应文件查看组件也要使用一致的判断。这里只改消费条件，不改变视觉样式；正式 UI 修改前遵循 `src/frontend/packages/ui/docs/` 的设计规范。
 

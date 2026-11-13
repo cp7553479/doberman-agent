@@ -8,8 +8,8 @@ from __future__ import annotations
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.runnables import Runnable
 
-from bisheng.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, annotate
-from bisheng.common.image_view.vision_llm import (
+from doberman_agent.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, annotate
+from doberman_agent.common.image_view.vision_llm import (
     CONFIGURED_RETRIEVE_RULES,
     RETRIEVE_BEFORE_VIEW_RULES,
     VisionToolBindWrapper,
@@ -67,7 +67,7 @@ async def test_vision_wrapper_empty_registry_binds_only_base_tools():
 async def test_vision_wrapper_nonempty_registry_binds_view_image_and_rules():
     llm = _RecordingLLM()
     registry = ImageRegistry()
-    annotate("![chart](/bisheng/knowledge/images/1/2/c.png)", registry)
+    annotate("![chart](/doberman_agent/knowledge/images/1/2/c.png)", registry)
     wrapper = VisionToolBindWrapper(llm, registry, [_NamedTool("web_search")])
     runnable = wrapper({}, None)
     await runnable.ainvoke([SystemMessage(content="base"), HumanMessage(content="trend")])
@@ -79,7 +79,7 @@ async def test_vision_wrapper_nonempty_registry_binds_view_image_and_rules():
 async def test_vision_wrapper_pop_viewed_appends_human_image_blocks():
     llm = _RecordingLLM()
     registry = ImageRegistry()
-    annotate("![chart](/bisheng/knowledge/images/1/2/c.png)", registry)
+    annotate("![chart](/doberman_agent/knowledge/images/1/2/c.png)", registry)
     registry.record_viewed("img#1", _DATA_URI)
     wrapper = VisionToolBindWrapper(llm, registry, [_NamedTool("web_search")])
     runnable = wrapper({}, None)
@@ -89,7 +89,7 @@ async def test_vision_wrapper_pop_viewed_appends_human_image_blocks():
     humans = [m for m in messages if isinstance(m, HumanMessage) and isinstance(m.content, list)]
     assert humans
     texts = [block["text"] for block in humans[-1].content if isinstance(block, dict) and block.get("type") == "text"]
-    assert any("![](/bisheng/knowledge/images/1/2/c.png)" in text for text in texts)
+    assert any("![](/doberman_agent/knowledge/images/1/2/c.png)" in text for text in texts)
     types = [block.get("type") for block in humans[-1].content if isinstance(block, dict)]
     assert types.index("image_url") == types.index("text") + 1 or "image_url" in types[1:]
     blocks = [block for block in humans[-1].content if isinstance(block, dict) and block.get("type") == "image_url"]
@@ -104,13 +104,13 @@ async def test_vision_wrapper_pixel_question_forces_retrieve_before_view_image()
     wrapper = VisionToolBindWrapper(
         llm,
         registry,
-        [_NamedTool("bisheng_code_interpreter"), _NamedTool("search_knowledge_bases")],
+        [_NamedTool("doberman_agent_code_interpreter"), _NamedTool("search_knowledge_bases")],
         retrieve_tool_name="search_knowledge_bases",
     )
     question = HumanMessage(content="开户登记界面说明相关的图片")
     runnable = wrapper({"messages": [question]}, None)
     result = await runnable.ainvoke([question])
-    assert llm.bind_calls == [["bisheng_code_interpreter", "search_knowledge_bases"]]
+    assert llm.bind_calls == [["doberman_agent_code_interpreter", "search_knowledge_bases"]]
     assert llm.bind_kwargs[0]["tool_choice"]["function"]["name"] == "search_knowledge_bases"
     assert result.tool_calls[0]["name"] == "search_knowledge_bases"
     assert result.tool_calls[0]["args"]["query"] == "开户登记界面说明相关的图片"
@@ -161,7 +161,7 @@ async def test_vision_wrapper_does_not_reforce_retrieve_after_search():
 async def test_vision_wrapper_nonempty_registry_still_prefers_view_image():
     llm = _RecordingLLM()
     registry = ImageRegistry()
-    annotate("![chart](/bisheng/knowledge/images/1/2/c.png)", registry)
+    annotate("![chart](/doberman_agent/knowledge/images/1/2/c.png)", registry)
     wrapper = VisionToolBindWrapper(
         llm,
         registry,
@@ -199,13 +199,13 @@ async def test_vision_wrapper_relocates_tool_images_to_human():
 async def test_failed_view_image_still_injects_suggested_ids():
     registry = ImageRegistry()
     annotate(
-        "1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)",
+        "1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)",
         registry,
     )
     messages = [
         HumanMessage(content="把开户登记界面说明相关的图片显示出来"),
         ToolMessage(
-            content="1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
+            content="1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
             tool_call_id="s1",
             name="search_knowledge_bases",
         ),
@@ -232,13 +232,13 @@ async def test_inject_views_registry_when_caption_score_is_empty():
 async def test_inject_skips_retry_when_suggested_ids_already_failed():
     registry = ImageRegistry()
     annotate(
-        "1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)",
+        "1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)",
         registry,
     )
     messages = [
         HumanMessage(content="把开户登记界面说明相关的图片显示出来"),
         ToolMessage(
-            content="1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
+            content="1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
             tool_call_id="s1",
             name="search_knowledge_bases",
         ),
@@ -260,14 +260,14 @@ async def test_vision_wrapper_stops_forcing_view_image_when_candidates_exhausted
     llm = _RecordingLLM()
     registry = ImageRegistry()
     annotate(
-        "1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)",
+        "1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)",
         registry,
     )
     wrapper = VisionToolBindWrapper(llm, registry, [_NamedTool("search_knowledge_bases")])
     messages = [
         HumanMessage(content="把开户登记界面说明相关的图片显示出来"),
         ToolMessage(
-            content="1.1.2.开户登记\n![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
+            content="1.1.2.开户登记\n![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)⟦img#1⟧",
             tool_call_id="s1",
             name="search_knowledge_bases",
         ),

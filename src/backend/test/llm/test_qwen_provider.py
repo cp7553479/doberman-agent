@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from bisheng.core.ai import ChatOpenAICompatible
-from bisheng.llm.domain.llm.llm import _get_qwen_params
+from doberman_agent.core.ai import ChatOpenAICompatible
+from doberman_agent.llm.domain.llm.llm import _get_qwen_params
 
 
 class TestQwenProvider(unittest.TestCase):

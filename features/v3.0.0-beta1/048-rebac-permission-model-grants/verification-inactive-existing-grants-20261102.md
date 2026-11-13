@@ -53,7 +53,7 @@ Client 原 Jest 在测试初始化时报缺少 `canvas.node`；node 环境纯函
 在未修改基线 `368894d9a` 上同样复现。未改业务 Tab 语义或扩大本次修复范围。
 
 架构守卫以仓库相对路径检查全部改动通过。传入绝对工作树路径时，RULE-9 会将路径中的
-`/bisheng/` 仓库名误当应用包前缀，从而对 permission 测试中原有的 OpenFGA import 报警；
+`/doberman-agent/` 仓库名误当应用包前缀，从而对 permission 测试中原有的 OpenFGA import 报警；
 已核对其 import 与基线完全相同，未修改守卫或添加例外。
 
 ## 4. 任务与静态复审

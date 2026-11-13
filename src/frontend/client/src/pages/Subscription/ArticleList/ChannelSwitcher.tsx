@@ -1,6 +1,6 @@
 import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardPortal } from "~/components/ui/HoverCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Channel, SortType, getChannelsApi } from "~/api/channels";
 

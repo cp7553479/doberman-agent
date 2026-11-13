@@ -16,13 +16,13 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-import bisheng.core.cache.redis_manager as redis_manager_mod
-from bisheng.linsight.domain import task_exec as te
-from bisheng.linsight.domain.models.linsight_session_version import (
+import doberman_agent.core.cache.redis_manager as redis_manager_mod
+from doberman_agent.linsight.domain import task_exec as te
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersion,
     SessionVersionStatusEnum,
 )
-from bisheng.linsight.domain.task_exec import (
+from doberman_agent.linsight.domain.task_exec import (
     LINSIGHT_RUN_LOCK_KEY_PREFIX,
     LINSIGHT_RUN_LOCK_TTL_SECONDS,
     LinsightWorkflowTask,

@@ -1,6 +1,6 @@
 """Regression tests for ``/user/update`` and ``/user/list`` permission gates.
 
-Two analogous bugs lived in ``bisheng/user/api/user.py``: both endpoints
+Two analogous bugs lived in ``doberman_agent/user/api/user.py``: both endpoints
 checked super-admin / user-group admin / department-admin but completely
 ignored the ``tenant#admin`` FGA tuple. The Authorization Model does not
 inherit ``tenant#admin`` into ``department#admin``, so a Child Tenant admin
@@ -13,13 +13,13 @@ have rights to view this.``
   fallback、``DepartmentUsersSelect`` 等组件统统依赖它; 子租户管理员触达
   其中任意一个就 500 ("举一反三" 同根坑)。
 
-``bisheng.user.api.user`` is a heavy module the lean test venv cannot import
+``doberman_agent.user.api.user`` is a heavy module the lean test venv cannot import
 (see ``test_logout_scope_clear.py`` for the same workaround). We pin the
 fix at the AST level: the new helpers exist and the endpoints route through
 the new scope helpers. End-to-end behaviour is covered by ops handbook QA.
 
 The tenant#admin check itself has since moved behind
-``bisheng.permission.application.is_tenant_admin`` (4386d9c05, "expose lazy
+``doberman_agent.permission.application.is_tenant_admin`` (4386d9c05, "expose lazy
 application runtime"), so the helpers no longer spell ``object_type='tenant'``
 inline — ``_asserts_tenant_admin_check`` accepts either shape.
 """
@@ -29,7 +29,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-USER_PY = Path(__file__).resolve().parent.parent.parent / "bisheng" / "user" / "api" / "user.py"
+USER_PY = Path(__file__).resolve().parent.parent.parent / "doberman_agent" / "user" / "api" / "user.py"
 
 
 def _function_source(name: str) -> str:

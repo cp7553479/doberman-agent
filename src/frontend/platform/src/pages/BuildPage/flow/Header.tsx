@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, toast, notification } from '@bisheng/ui';
+import { Button, toast, notification } from '@doberman-agent/ui';
 import TipPng from "@/assets/tip.jpg";
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDialog";
@@ -19,8 +19,8 @@ import { AppType } from "@/types/app";
 import { FlowVersionItem } from "@/types/flow";
 import { flowVersionCompatible } from "@/util/flowCompatible";
 import { importFlow } from "@/util/flowUtils";
-import { RadioGroup,Radio as RadioGroupItem,Tabs,Tag } from "@bisheng/ui";
-import { Filled, Outlined } from "bisheng-icons";
+import { RadioGroup,Radio as RadioGroupItem,Tabs,Tag } from "@doberman-agent/ui";
+import { Filled, Outlined } from "@doberman-agent/icons";
 import { cloneDeep } from "lodash-es";
 import { Shield,ShieldCheck } from "lucide-react";
 import { useContext,useEffect,useRef,useState } from "react";
@@ -241,7 +241,7 @@ const Header = ({ flow, nodes, onTabChange, preFlow, onPreFlowChange, onImportFl
         }
     }
     return (
-        <header className="flex justify-between items-center p-4 py-2 bisheng-bg border-b">
+        <header className="flex justify-between items-center p-4 py-2 doberman_agent-bg border-b">
             {
                 loading && <div className=" fixed left-0 top-0 w-full h-screen bg-background/60 z-50 flex items-center justify-center">
                     <Outlined.Loading size={16} className="animate-spin mr-2 text-gray-600" />
@@ -436,7 +436,7 @@ const Header = ({ flow, nodes, onTabChange, preFlow, onPreFlowChange, onImportFl
                 <DialogContent className="sm:max-w-[425px]" close={false}>
                     <DialogHeader>
                         <DialogTitle>{t('prompt')}</DialogTitle>
-                        <p className="bisheng-label pt-2">{isOnlineVersion ? t('onlineVersionMessage') : t('unsavedChangesMessage')}</p>
+                        <p className="doberman_agent-label pt-2">{isOnlineVersion ? t('onlineVersionMessage') : t('unsavedChangesMessage')}</p>
                     </DialogHeader>
                     <DialogFooter>
                         <Button className="leave" onClick={handleUiRequest(handleSaveAndClose)}>

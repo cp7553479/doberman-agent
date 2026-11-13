@@ -7,21 +7,21 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from sqlmodel import select
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-import bisheng.linsight.domain.services.personal_skill_service as service_module
-from bisheng.common.errcode.linsight import (
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+import doberman_agent.linsight.domain.services.personal_skill_service as service_module
+from doberman_agent.common.errcode.linsight import (
     SkillNotFoundError,
     SkillStorageLimitError,
     SkillVersionConflictError,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.database.models.audit_log import AuditLog
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.personal_skill_service import (
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.database.models.audit_log import AuditLog
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.personal_skill_service import (
     PERSONAL_SKILL_BYTES_LIMIT,
     PersonalSkillService,
 )
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
@@ -62,7 +62,7 @@ async def env(tmp_path, monkeypatch):
     monkeypatch.setattr(model_module, "get_async_db_session", _session)
     monkeypatch.setattr(service_module, "get_async_db_session", _session)
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.require_business_action",
+        "doberman_agent.permission.application.business_authorization.require_business_action",
         AsyncMock(),
     )
     set_current_tenant_id(TENANT)
@@ -225,7 +225,7 @@ class TestPersonalSkillOverwrite:
 
     async def test_someone_elses_skill_is_not_found_and_skips_authorization(self, env):
         skill = await _owned(env)
-        with patch("bisheng.permission.application.business_authorization.require_business_action") as gate:
+        with patch("doberman_agent.permission.application.business_authorization.require_business_action") as gate:
             with pytest.raises(SkillNotFoundError) as caught:
                 await env.service.overwrite(
                     user_id=OTHER,

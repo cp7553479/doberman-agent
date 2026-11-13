@@ -32,7 +32,7 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.core.openfga.authorization_model_f048 import (  # noqa: E402
+from doberman_agent.core.openfga.authorization_model_f048 import (  # noqa: E402
     authorization_model_checksum,
     build_authorization_model_f048,
 )

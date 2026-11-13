@@ -1,5 +1,5 @@
 import { type ApprovalInstanceDetail } from "@/controllers/API/approval";
-import { Tag, type TagColor } from "@bisheng/ui";
+import { Tag, type TagColor } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import { formatDateTime } from "./approvalMetadata";
 

@@ -6,8 +6,8 @@ import pytest
 
 from runtime_manager.k8s_templates import POLICY_ANNOTATION, RESOURCE_LABEL
 
-NAMESPACE = "bisheng-runtime-apps"
-MANAGER = "system:serviceaccount:bisheng-system:runtime-manager"
+NAMESPACE = "doberman-agent-runtime-apps"
+MANAGER = "system:serviceaccount:doberman-agent-system:runtime-manager"
 UID = "22222222-2222-4222-8222-222222222222"
 
 
@@ -598,7 +598,7 @@ def test_pod_approved_plan_never_contains_plaintext_environment_credentials(temp
     from runtime_manager.k8s_admission import template_projection
 
     secret = "fake-application-runtime-credential"
-    template["spec"]["containers"][0]["env"].append({"name": "BISHENG_APP_API_KEY", "value": secret})
+    template["spec"]["containers"][0]["env"].append({"name": "DOBERMAN_AGENT_APP_API_KEY", "value": secret})
     projection = template_projection(template)
     assert secret not in str(projection)
     assert projection["spec"]["containers"][0]["env"][-1]["value_sha256"]

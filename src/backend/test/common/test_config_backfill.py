@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import yaml
 
-from bisheng.common.services.config_service import ConfigService
+from doberman_agent.common.services.config_service import ConfigService
 
 FILE_CONFIG = """\
 # 灵思模块相关配置

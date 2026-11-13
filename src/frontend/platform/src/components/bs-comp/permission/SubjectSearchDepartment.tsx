@@ -1,7 +1,7 @@
 import { SubjectBusinessId } from "../selectComponent/SubjectSearchStatus"
 import type { UseLazyDepartmentTreeOptions } from "../department/useLazyDepartmentTree"
 import { LazyDepartmentTree, useLazyDepartmentTree } from "@/components/bs-comp/department"
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import {
   getDepartmentChildrenApi,
   getDepartmentPathTreeApi,

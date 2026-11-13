@@ -19,7 +19,7 @@ import textwrap
 
 import pytest
 
-from bisheng.database.models.flow import FlowType
+from doberman_agent.database.models.flow import FlowType
 
 from .conftest import ROOT_TENANT_ID
 
@@ -40,10 +40,10 @@ def test_env_exposes_app_runtime_enabled_anonymously(monkeypatch):
     """
     from types import SimpleNamespace
 
-    from bisheng.api.v1 import endpoints as endpoints_module
-    from bisheng.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
+    from doberman_agent.api.v1 import endpoints as endpoints_module
+    from doberman_agent.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
 
-    settings = endpoints_module.bisheng_settings
+    settings = endpoints_module.doberman_agent_settings
     # Patch on the class: ``ConfigService`` is a pydantic model with
     # ``validate_assignment``, so assigning a non-field on the instance raises.
     settings_cls = type(settings)
@@ -51,7 +51,7 @@ def test_env_exposes_app_runtime_enabled_anonymously(monkeypatch):
     monkeypatch.setattr(
         settings_cls,
         "get_system_login_method",
-        lambda self: SimpleNamespace(bisheng_pro=False, dashboard_pro=False),
+        lambda self: SimpleNamespace(doberman_agent_pro=False, dashboard_pro=False),
     )
     monkeypatch.setattr(
         settings_cls,
@@ -89,7 +89,7 @@ async def test_switch_off_hides_hosted_apps_from_list(build_list_env, tenant_sco
     app = build_list_env.seed_app(name="hosted")
     flow = build_list_env.seed_flow(name="wf")
 
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     from .test_build_list_third_type import _payload
 
@@ -110,7 +110,7 @@ def test_switch_off_no_new_menu_or_permission_point():
     member would mean every existing role silently loses access to something it
     used to reach, and every customer's role配置面 changes shape on upgrade.
     """
-    from bisheng.database.models.role_access import AccessType, WebMenuResource
+    from doberman_agent.database.models.role_access import AccessType, WebMenuResource
 
     assert {member.value for member in WebMenuResource} == {
         "workstation",
@@ -147,8 +147,8 @@ def test_no_ui_create_entry_in_any_state(enabled, monkeypatch):
     deploy. Management POST routes operate on existing apps or global runtime catalogs;
     any other POST route still breaks the no UI creation rule.
     """
-    from bisheng.app_runtime.api.router import router
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.api.router import router
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", enabled)
 
@@ -181,13 +181,13 @@ def test_switch_off_no_resident_process_or_beat_task():
     feature had smuggled a resident worker into the platform image, "the layer
     is not installed" would stop being true of the backend itself.
     """
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     beat_tasks = {entry.get("task") for entry in (settings.celery_task.beat_schedule or {}).values()}
     assert not any("app_runtime" in (task or "") for task in beat_tasks)
     assert not any("app_publish" in (task or "") for task in beat_tasks)
 
-    import bisheng.app_runtime as app_runtime_pkg
+    import doberman_agent.app_runtime as app_runtime_pkg
 
     assert not hasattr(app_runtime_pkg, "celery"), "app_runtime must not own a celery app"
 
@@ -199,7 +199,7 @@ async def test_platform_regression_unchanged_when_off(build_list_env, tenant_sco
     build_list_env.seed_flow(name="wf")
     build_list_env.seed_assistant(name="as")
 
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     from .test_build_list_third_type import _payload
 
@@ -231,7 +231,7 @@ async def test_hosted_rows_keep_the_legacy_keys_plus_app_state(build_list_env, t
     build_list_env.enable_runtime_layer(True)
     build_list_env.seed_app(name="hosted")
 
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     from .test_build_list_third_type import _payload
 
@@ -271,7 +271,7 @@ def _write_yaml(tmp_path, body: str):
 @pytest.mark.parametrize("open_platform_enabled", [True, False])
 def test_two_switches_orthogonal_four_combinations_boot(tmp_path, app_runtime_enabled, open_platform_enabled):
     """All four combinations load — AC-61. Sibling keys, never merged."""
-    from bisheng.common.services.config_service import ConfigService
+    from doberman_agent.common.services.config_service import ConfigService
 
     path = _write_yaml(
         tmp_path,
@@ -296,7 +296,7 @@ def test_unknown_yaml_key_rejects_boot(tmp_path):
     to a config.yaml in front of the code that declares it and the backend does
     not start at all — an outage, not a degraded feature.
     """
-    from bisheng.common.services.config_service import ConfigService
+    from doberman_agent.common.services.config_service import ConfigService
 
     path = _write_yaml(
         tmp_path,

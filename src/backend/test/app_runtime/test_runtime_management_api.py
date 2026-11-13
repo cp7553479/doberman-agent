@@ -8,12 +8,12 @@ from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from bisheng.app_runtime.api.endpoints import runtime_management as api
-from bisheng.app_runtime.domain.services import runtime_management_service, runtime_profile_service
-from bisheng.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
-from bisheng.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.base import BaseErrorCode
+from doberman_agent.app_runtime.api.endpoints import runtime_management as api
+from doberman_agent.app_runtime.domain.services import runtime_management_service, runtime_profile_service
+from doberman_agent.app_runtime.domain.services.runtime_management_service import RuntimeManagementService
+from doberman_agent.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.base import BaseErrorCode
 from test.app_runtime.test_runtime_artifacts import MemoryObjects
 from test.app_runtime.test_runtime_delivery_repository import runtime_repo as runtime_repo
 from test.app_runtime.test_runtime_profiles import definition
@@ -120,7 +120,7 @@ async def test_owner_snapshot_read_is_allowed_but_global_import_is_refused(manag
 
 
 async def test_owner_reads_current_fence_before_restore(management_api, runtime_repo):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeAssignment
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeAssignment
 
     await runtime_repo.save(
         RuntimeAssignment(

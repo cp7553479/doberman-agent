@@ -6,7 +6,7 @@ import pytest
 from fastapi import HTTPException
 from starlette.requests import Request
 
-from bisheng.sso_sync.domain.services import hmac_auth
+from doberman_agent.sso_sync.domain.services import hmac_auth
 
 SHARED_KEY = "f111-synthetic-shared-key"
 PATH = "/api/v1/internal/dsh/content-safety-events"
@@ -28,7 +28,7 @@ VECTORS = (
 @pytest.mark.parametrize("method", ["POST", "post", "PoSt"])
 @pytest.mark.parametrize("raw,expected", VECTORS)
 def test_shared_primitive_matches_fixed_raw_byte_vectors_and_sso(method, raw, expected):
-    from bisheng.common.utils.hmac_signature import compute_hmac_signature
+    from doberman_agent.common.utils.hmac_signature import compute_hmac_signature
 
     assert compute_hmac_signature(method, PATH, raw, SHARED_KEY) == expected
     assert hmac_auth.compute_signature(method, PATH, raw, SHARED_KEY) == expected
@@ -36,7 +36,7 @@ def test_shared_primitive_matches_fixed_raw_byte_vectors_and_sso(method, raw, ex
 
 @pytest.mark.parametrize("transform", [str.lower, str.upper, lambda value: " \t" + value.upper() + "\n"])
 def test_signature_comparison_accepts_existing_hex_case_and_header_whitespace(transform):
-    from bisheng.common.utils.hmac_signature import compare_hmac_signatures
+    from doberman_agent.common.utils.hmac_signature import compare_hmac_signatures
 
     expected = VECTORS[1][1]
     assert compare_hmac_signatures(expected, transform(expected)) is True
@@ -44,13 +44,13 @@ def test_signature_comparison_accepts_existing_hex_case_and_header_whitespace(tr
 
 @pytest.mark.parametrize("provided", [None, "", " ", "0" * 64, "not-hex", "f" * 63, "f" * 65, "\u00e9" * 64])
 def test_signature_comparison_rejects_invalid_or_absent_without_exposing_input(provided):
-    from bisheng.common.utils.hmac_signature import compare_hmac_signatures
+    from doberman_agent.common.utils.hmac_signature import compare_hmac_signatures
 
     assert compare_hmac_signatures(VECTORS[1][1], provided) is False
 
 
 def test_valid_hex_comparison_uses_constant_time_primitive(monkeypatch):
-    import bisheng.common.utils.hmac_signature as shared
+    import doberman_agent.common.utils.hmac_signature as shared
 
     calls = []
     compare_digest = shared.hmac.compare_digest
@@ -75,7 +75,7 @@ def test_valid_hex_comparison_uses_constant_time_primitive(monkeypatch):
     ],
 )
 def test_each_signed_component_is_bound_to_exact_request(method, path, body, key):
-    from bisheng.common.utils.hmac_signature import compare_hmac_signatures, compute_hmac_signature
+    from doberman_agent.common.utils.hmac_signature import compare_hmac_signatures, compute_hmac_signature
 
     actual = compute_hmac_signature(method, path, body, key)
     assert not compare_hmac_signatures(VECTORS[1][1], actual)

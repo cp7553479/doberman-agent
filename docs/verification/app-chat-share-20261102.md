@@ -10,12 +10,12 @@
 
 在应用会话入口按路由 `cid` 取得会话，使用应用分享权限与 `category === 'question'` 用户消息共同决定分享资格。实时文字、表单和附件提交，以及加载的历史用户消息均使用这一类别。宽屏顶栏通过属性接收结果，紧凑顶栏同步同一结果；已有只读判断继续生效。按路由取值使切换会话期间的判断属于目标会话。
 
-范围为 BISHENG Client 两处逻辑文件。Desktop 原生宿主、依赖和服务端沿用当前版本。
+范围为 doberman-agent Client 两处逻辑文件。Desktop 原生宿主、依赖和服务端沿用当前版本。
 
 ## 基线与验证
 
-- 基线：`upstream/feat/bisheng-work-120-main@23a4b97e5d86e38d8a2f53a5de3fe17ffb8671c4`，通过 GitHub 连接器和 Git fetch 核实。
-- 分支：`codex/app-chat-share-user-input`；工作目录：`.worktrees/bisheng-app-chat-share-20261102`。
+- 基线：`upstream/feat/doberman-agent-work-120-main@23a4b97e5d86e38d8a2f53a5de3fe17ffb8671c4`，通过 GitHub 连接器和 Git fetch 核实。
+- 分支：`codex/app-chat-share-user-input`；工作目录：`.worktrees/doberman-agent-app-chat-share-20261102`。
 - 原代码对照：新增 13 项回归中 9 项失败，4 项通过。
 - 修复后：新增 13 项通过，连同流式停止、工作流状态、应用路由回归共 4 文件 / 46 项通过。
 - 测试执行真实 AppChat、ChatView、HeaderTitle 和 Recoil 状态，消息渲染、网络、输入组件与分享弹窗使用测试替身；紧凑布局验证实际共享顶栏状态。

@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.permission.domain.models import ResourcePermissionMode
-from bisheng.permission.domain.schemas import VisibleSourceProjectionDTO
+from doberman_agent.permission.domain.models import ResourcePermissionMode
+from doberman_agent.permission.domain.schemas import VisibleSourceProjectionDTO
 from scripts import reconcile_f048_visible_projection as cli
 
 

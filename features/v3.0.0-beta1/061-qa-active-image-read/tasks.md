@@ -21,7 +21,7 @@
 ## 开发模式
 
 - 无新增 ORM / Alembic / 错误码 / HTTP API / 前端读图 UI。不改 `linsight/`，不改 `core/prompts/yaml/knowledge_space.yaml`。
-- 共享能力先落地 `bisheng/common/image_view/`（C1：不 import `domain/`），三场景只接线。论证见 design §3 决策 1。
+- 共享能力先落地 `doberman-agent/common/image_view/`（C1：不 import `domain/`），三场景只接线。论证见 design §3 决策 1。
 - 后端 Test-First：每个实现任务前有配对测试。`asyncio_mode=auto`。新测试放 `test/<module>/`，不用 `test/` 根目录。
 - 日常动态 bind 见 design §3 决策 3 / 坑 2：不要改 `_prepare_tools` 固定表。
 - **增量 T016–T026**（[增量 design](./design-增量-知识空间频道ReAct.md)）：知识空间 / 频道预组文不变，循环改 `create_react_agent`；工具只有 `view_image`；SSE 仍 STREAM。不要挂 `search_knowledge_bases` / 联网；不要抽 `common/chat_react/`；`recursion_limit=8`，不用日常的 50。`common/` 不 import 任何 `domain/`。
@@ -42,8 +42,8 @@
   **依赖**: 无
 
 - [x] **T002**: 实现 annotate + ImageRegistry
-  **文件**: `src/backend/bisheng/common/image_view/__init__.py`,
-  `src/backend/bisheng/common/image_view/annotate.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/__init__.py`,
+  `src/backend/doberman_agent/common/image_view/annotate.py`
   **逻辑**: 同一模块内提供 `ImageRegistry`（请求内 `img#N → {url}`，同 URL 去重）和 `annotate(text, registry) -> str`。只扫 markdown 图片，不解析 HTML `<img>`，不碰 citation 私用区。本包不 import 任何 `domain/`。`__init__.py` 再导出这两个名字给后续任务。
   **测试**: T001 全部通过。
   **覆盖 AC**: AC-01, AC-08
@@ -59,7 +59,7 @@
   **依赖**: 无
 
 - [x] **T004**: 实现 fetch_and_encode
-  **文件**: `src/backend/bisheng/common/image_view/fetch.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/fetch.py`
   **逻辑**: 按 design §4.4 分流；PIL 进程内缩放，长边 512；输出 data URI。禁止把中间图落到共享盘（C8）。失败返回给工具层，不 raise。
   **测试**: T003 全部通过。
   **覆盖 AC**: AC-06, AC-15
@@ -73,7 +73,7 @@
   **依赖**: T002
 
 - [x] **T006**: 实现 view_image 工具
-  **文件**: `src/backend/bisheng/common/image_view/tool.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/tool.py`
   **逻辑**: LangChain StructuredTool；只查本轮 `ImageRegistry`；单轮最多 3 张；v1 只接受 `standard`。工具返回短文本 ack，不把 data URI 放进 ToolMessage。
   **测试**: T005 全部通过。
   **覆盖 AC**: AC-05, AC-08, AC-09, AC-14, AC-19, AC-20
@@ -89,8 +89,8 @@
   **依赖**: T002, T006
 
 - [x] **T008**: 实现 loop + relocate + 读图规则文本
-  **文件**: `src/backend/bisheng/common/image_view/loop.py`,
-  `src/backend/bisheng/common/image_view/relocate.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/loop.py`,
+  `src/backend/doberman_agent/common/image_view/relocate.py`
   **逻辑**: `run_vision_tool_loop` 供知识空间 / 频道：有图且 visual 才 bind、缓冲首轮、最多 1 次额外请求、第二轮不绑工具。读图规则四条口径见 design §4.3，**仅在即将暴露工具时**追加，不写进 yaml / DB 默认稿。`relocate_images_to_human` 供日常每次模型调用前使用。图片进 HumanMessage，不进 ToolMessage（design §3 决策 4）。
   **测试**: T007 全部通过。
   **覆盖 AC**: AC-04, AC-06, AC-07, AC-13, AC-16, AC-17
@@ -106,7 +106,7 @@
   **依赖**: T008
 
 - [x] **T010**: 知识空间接入 run_vision_tool_loop
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py`
   **逻辑**: `_prepare_rag_citation_context` 后 annotate；按 `model_id` 读工作台 `WSModel.visual`（与 Linsight `_resolve_model` 同源）；`space_rag` / `_render_rag_response` 换 `run_vision_tool_loop`。不改 `knowledge_space.yaml`，不加联网 / 多工具 Agent。
   **测试**: T009 全部通过；既有 `test_knowledge_space_chat_citations.py` 保持通过。
   **覆盖 AC**: AC-02, AC-03, AC-11, AC-13, AC-14
@@ -120,8 +120,8 @@
   **依赖**: T008
 
 - [x] **T012**: 频道编排迁入 ChannelChatService
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_chat_service.py`,
-  `src/backend/bisheng/channel/api/endpoints/channel_chat.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_chat_service.py`,
+  `src/backend/doberman_agent/channel/api/endpoints/channel_chat.py`
   **逻辑**: 把今天 endpoint 里的截断 + `astream` 迁到 Service：annotate、`visual` 门控、`run_vision_tool_loop`、读图规则仅在暴露工具时追加。Endpoint 只做鉴权 / SSE 包装（C1）。不引入向量检索。不改灵思。
   **测试**: T011 全部通过。
   **覆盖 AC**: AC-02, AC-03, AC-12, AC-14
@@ -136,7 +136,7 @@
   **依赖**: T008
 
 - [x] **T014**: 日常接入 annotate + VisionToolBindWrapper
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`
   **逻辑**: `_agent_stream_chat_completion` 建请求级 `ImageRegistry`。`DailyChatCitationToolWrapper._dump_knowledge_chunks` 在 format 之后 annotate。`_prepare_tools` **不加** `view_image`。新增 `VisionToolBindWrapper(llm, registry, base_tools)`：每次模型调用前 `relocate_images_to_human`，按 `len(registry)` 动态 `bind_tools`，仅此时追加读图规则。把该 wrapper 交给 `create_react_agent`，不要把读图规则写进 `prompt=sys_prompt`。ToolNode 用 `base_tools + [view_image]` 以便执行，但 wrapper 忽略编译期那次 bind（design 坑 2）。只动日常 agent 路径，不改灵思。
   **测试**: T013 全部通过。
   **覆盖 AC**: AC-02, AC-03, AC-10, AC-18
@@ -157,23 +157,23 @@
 
 - [x] **T016**: VisionToolBindWrapper pop_viewed 单元测试
   **文件**: `src/backend/test/common/test_image_view_vision_llm.py`
-  **逻辑**: 从 `bisheng.common.image_view.vision_llm` import `VisionToolBindWrapper`（T017 才落地）。用 Recording LLM（记录 `bind_tools` 名与 `ainvoke` 收到的 messages）。① `len(registry)==0`：bind 只有传入的 `base_tools`，messages 不含读图规则。② registry 非空：bind 为 `base_tools + [view_image]`，messages 含读图规则。③ `registry.record_viewed("img#1", data_uri)` 之后 `_prepare` / `ainvoke` 的 messages 含一条 `HumanMessage`，其 content 列表里有 `type=image_url` 且 url 为该 data URI；不得把该块放在 `ToolMessage` 里。④ wrapper 必须是普通 callable，不是 `Runnable`。不拉 `create_react_agent`。不测知识空间 / 频道。
+  **逻辑**: 从 `doberman_agent.common.image_view.vision_llm` import `VisionToolBindWrapper`（T017 才落地）。用 Recording LLM（记录 `bind_tools` 名与 `ainvoke` 收到的 messages）。① `len(registry)==0`：bind 只有传入的 `base_tools`，messages 不含读图规则。② registry 非空：bind 为 `base_tools + [view_image]`，messages 含读图规则。③ `registry.record_viewed("img#1", data_uri)` 之后 `_prepare` / `ainvoke` 的 messages 含一条 `HumanMessage`，其 content 列表里有 `type=image_url` 且 url 为该 data URI；不得把该块放在 `ToolMessage` 里。④ wrapper 必须是普通 callable，不是 `Runnable`。不拉 `create_react_agent`。不测知识空间 / 频道。
   **覆盖 AC**: AC-03, AC-04, AC-06, AC-07
   **验证**: `cd src/backend && uv run pytest test/common/test_image_view_vision_llm.py`
   **依赖**: 无（T001–T015 已完成）
 
 - [x] **T017**: 实现 common VisionToolBindWrapper
-  **文件**: `src/backend/bisheng/common/image_view/vision_llm.py`,
-  `src/backend/bisheng/common/image_view/__init__.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/vision_llm.py`,
+  `src/backend/doberman_agent/common/image_view/__init__.py`
   **逻辑**: 把 `workstation/.../chat_service.py` 里的 `VisionToolBindWrapper` / `_VisionCallRunnable` / `_messages_from_model_input` **复制**到 `vision_llm.py`（本任务不改 chat_service，避免日常 import 空窗；T018 再删本地类并改 import）。复制时补上 `_prepare` 的 `pop_viewed`：追加 HumanMessage 图片块（与 `loop.py` `_image_human_message` 同形）→ `relocate_images_to_human` → 若本轮将 bind `view_image` 则 `prepare_vision_messages`。`len(registry)>0` 才把 `view_image` 加进 bind 列表。本文件不 import 任何 `domain/`，不 yield `ChatResponse`。`__init__.py` 导出 `VisionToolBindWrapper`。
   **测试**: T016 全部通过。
   **覆盖 AC**: AC-03, AC-04, AC-06, AC-07
   **依赖**: T016
 
 - [x] **T018**: 日常改从 common import wrapper
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`,
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`,
   `src/backend/test/workstation/test_daily_chat_image_view.py`
-  **逻辑**: 删除 chat_service 本地 `VisionToolBindWrapper` / `_VisionCallRunnable` / `_messages_from_model_input`，改为 `from bisheng.common.image_view import VisionToolBindWrapper`（或 `vision_llm`）。`_prepare_tools` **仍不加** `view_image`；`create_react_agent` 仍把 wrapper 当动态工厂；读图规则仍不写进 `prompt=`。日常测试改为从 common import wrapper；原有 empty-registry / bind view_image / relocate 三条保持通过。不改日常 SSE 类别。不改知识空间 / 频道。
+  **逻辑**: 删除 chat_service 本地 `VisionToolBindWrapper` / `_VisionCallRunnable` / `_messages_from_model_input`，改为 `from doberman_agent.common.image_view import VisionToolBindWrapper`（或 `vision_llm`）。`_prepare_tools` **仍不加** `view_image`；`create_react_agent` 仍把 wrapper 当动态工厂；读图规则仍不写进 `prompt=`。日常测试改为从 common import wrapper；原有 empty-registry / bind view_image / relocate 三条保持通过。不改日常 SSE 类别。不改知识空间 / 频道。
   **测试**: T013 文件 + T016 全部通过。
   **覆盖 AC**: AC-02, AC-03, AC-10, AC-18
   **依赖**: T017
@@ -190,8 +190,8 @@
   **依赖**: T017
 
 - [x] **T020**: 实现 run_react_vision_stream
-  **文件**: `src/backend/bisheng/common/image_view/react_loop.py`,
-  `src/backend/bisheng/common/image_view/__init__.py`
+  **文件**: `src/backend/doberman_agent/common/image_view/react_loop.py`,
+  `src/backend/doberman_agent/common/image_view/__init__.py`
   **逻辑**: `run_react_vision_stream(llm, messages, registry, *, visual)`：无图 / 未开视觉 → `llm.astream` 后 return。否则 `ToolNode([view_image])` + `create_react_agent(VisionToolBindWrapper(llm, registry, base_tools=[]), tool_node)`，`prompt` 不要拼读图规则。`RunnableConfig(recursion_limit=8)`，禁止读 `daily_chat.agent_max_iterations`。`astream_events` v2：tool 事件不对外 yield；尚未完成读图的模型轮次先缓冲，确认是 tool_call / 即将注入则丢弃 prose（增量坑 R3 / 决策 R4）。`needs_pixels && view_call_count==0 && suggested` 时才 `tool_choice` / 注入；看完图的下一轮普通 bind。yield 的对象与今天 `run_vision_tool_loop` 相同（模型 chunk / `AIMessage`），禁止 import workstation / knowledge / channel，禁止构造 `ChatResponse`。`__init__.py` 导出 `run_react_vision_stream`。本任务不接线场景、不删 `run_vision_tool_loop`。
   **测试**: T019 全部通过。
   **覆盖 AC**: AC-02, AC-03, AC-04, AC-06, AC-07, AC-13, AC-16, AC-17
@@ -207,7 +207,7 @@
   **依赖**: T020
 
 - [x] **T022**: `_render_rag_response` 接入 run_react_vision_stream
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py`
   **逻辑**: import 与循环从 `run_vision_tool_loop` 换成 `run_react_vision_stream`；`_prepare_rag_citation_context`、prompt、citation 落库、SSE `ChatResponse(STREAM)` 不动。不加 `search_knowledge_bases` / `web_search`。不改 `knowledge_space.yaml`。单文件 / 文件夹 / `space_rag` 已共用此函数，不必各改入口。
   **测试**: T021 全部通过；`test/knowledge/test_knowledge_space_chat_citations.py` 保持通过。
   **覆盖 AC**: AC-02, AC-03, AC-11, AC-13, AC-14
@@ -223,7 +223,7 @@
   **依赖**: T020
 
 - [x] **T024**: `stream_article_reply` 接入 run_react_vision_stream
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_chat_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_chat_service.py`
   **逻辑**: 循环从 `run_vision_tool_loop` 换成 `run_react_vision_stream`。截断、annotate、`visual` 门控不变。不改 `channel_chat.py` endpoint SSE 包装（仍 STREAM）。不引入向量检索 / 联网。不改灵思。
   **测试**: T023 全部通过。
   **覆盖 AC**: AC-02, AC-03, AC-12, AC-14
@@ -232,8 +232,8 @@
 ### Wave 10：删除手写 loop，回写 design
 
 - [x] **T025**: 删除 run_vision_tool_loop
-  **文件**: `src/backend/bisheng/common/image_view/loop.py`,
-  `src/backend/bisheng/common/image_view/__init__.py`,
+  **文件**: `src/backend/doberman_agent/common/image_view/loop.py`,
+  `src/backend/doberman_agent/common/image_view/__init__.py`,
   `src/backend/test/common/test_image_view_loop.py`
   **逻辑**: 删除 `run_vision_tool_loop` 及其仅被该函数使用的编排私有函数；**保留** `suggest_image_ids`、`question_needs_pixels`、`drop_image_catalog_history`、`prepare_vision_messages`、注入 / 覆盖 `image_ids` 等纯函数（react_loop 仍要调用）。`__init__.py` 不再导出 `run_vision_tool_loop`。`test_image_view_loop.py` 去掉对 `run_vision_tool_loop` 的编排用例，保留选图 / catalog / relocate 纯函数用例（relocate 若已在 T007 本文件，继续留）。全仓 grep 确认无残留引用。不改场景 service。
   **测试**: `cd src/backend && uv run pytest test/common/test_image_view_loop.py test/common/test_image_view_react_loop.py test/common/test_image_view_vision_llm.py test/knowledge/test_knowledge_space_chat_image_view.py test/channel/test_channel_chat_image_view.py test/workstation/test_daily_chat_image_view.py`

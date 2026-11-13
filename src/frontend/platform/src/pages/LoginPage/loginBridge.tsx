@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import Separator from "@/components/bs-comp/chatComponent/Separator";
 
 import { useEffect } from "react";

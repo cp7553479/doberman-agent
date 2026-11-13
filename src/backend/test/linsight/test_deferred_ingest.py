@@ -32,19 +32,19 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.common.errcode.linsight import (
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.common.errcode.linsight import (
     LinsightFolderDepthExceededError,
     LinsightFolderFileCountExceededError,
     LinsightFolderTotalSizeExceededError,
 )
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersionDao
-from bisheng.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema, SubmitFileSchema
-from bisheng.linsight.domain.services import workbench_impl
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersionDao
+from doberman_agent.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema, SubmitFileSchema
+from doberman_agent.linsight.domain.services import workbench_impl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
 # The tenant the fake DAO stamps on insert, standing in for the multi-tenant
 # listener: the queue item is the worker's ONLY source of tenant context.
@@ -55,7 +55,7 @@ class FakeMinio:
     """Object store with the surface ingestion uses — and a readable ``store``."""
 
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         self.store: dict[tuple[str, str], bytes] = {}
 
@@ -161,8 +161,8 @@ def submit_env(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(workbench_impl, "promote_chat_attachments", AsyncMock(side_effect=lambda files, _uid: files))
     monkeypatch.setattr(workbench_impl, "get_minio_storage", AsyncMock(return_value=minio))
     monkeypatch.setattr(LinsightWorkbenchImpl, "_get_redis", AsyncMock(return_value=fake_redis))
-    monkeypatch.setattr("bisheng.core.cache.utils.async_file_download", _record_download)
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _RecordingPipeline)
+    monkeypatch.setattr("doberman_agent.core.cache.utils.async_file_download", _record_download)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _RecordingPipeline)
     return env
 
 
@@ -182,25 +182,25 @@ def _assert_storage_untouched(env: dict) -> None:
 @pytest.fixture
 def queue_env(monkeypatch: pytest.MonkeyPatch):
     """Stub the worker queue behind the unified task-mode entry; hand back ``put``."""
-    from bisheng.workstation.domain.services import chat_service
+    from doberman_agent.workstation.domain.services import chat_service
 
     put = AsyncMock()
     # LinsightQueue / encode_queue_item are imported function-locally from
-    # bisheng.linsight.worker; a stub module keeps the heavy worker import chain
+    # doberman_agent.linsight.worker; a stub module keeps the heavy worker import chain
     # out of the test, and it must export BOTH names or the ImportError escapes.
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.LinsightQueue = lambda *a, **k: SimpleNamespace(put=put)
     fake_worker.encode_queue_item = lambda session_version_id, **kwargs: {
         "session_version_id": session_version_id,
         **kwargs,
     }
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
     # Enqueueing lives in linsight_execute_utils, so the Redis stub belongs on
     # THAT module — stubbing only the caller's namespace lets a real client
     # through and the call reaches the DB.
     monkeypatch.setattr(linsight_execute_utils, "get_redis_client", AsyncMock(return_value=SimpleNamespace()))
     monkeypatch.setattr(linsight_execute_utils, "persist_task_turn_message", AsyncMock())
-    monkeypatch.setattr(chat_service.LLMService, "get_bisheng_llm", AsyncMock(return_value=MagicMock()))
+    monkeypatch.setattr(chat_service.LLMService, "get_doberman_agent_llm", AsyncMock(return_value=MagicMock()))
     monkeypatch.setattr(
         chat_service.SensitiveWordPolicyService,
         "evaluate_workbench_user_text",
@@ -508,5 +508,5 @@ async def test_an_expired_temp_key_cannot_hand_its_neighbour_the_wrong_markdown(
     assert by_id["f1"].get("parsing_status") in ("expired", "invalid")
     assert by_id["f2"]["valid"] is True
     assert by_id["f2"]["workspace_path"] == "/uploads/b.md"
-    assert minio.store[("bisheng", "workspace/svid1/uploads/b.md")] == b"# B\nbody of b\n"
+    assert minio.store[("doberman_agent", "workspace/svid1/uploads/b.md")] == b"# B\nbody of b\n"
     assert not [key for (_bucket, key) in minio.store if key.startswith("workspace/svid1/uploads/a")]

@@ -44,7 +44,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/user/domain/services/auth.py` |
+| 修改 | `src/backend/doberman_agent/user/domain/services/auth.py` |
 
 ### 实现要点
 
@@ -107,7 +107,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/permission/domain/services/owner_service.py` |
+| 修改 | `src/backend/doberman_agent/permission/domain/services/owner_service.py` |
 
 ### 实现要点
 
@@ -120,7 +120,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
        Reads all tuples via FGA read_tuples, then batch deletes.
        Does not raise on failure — logs warning and returns.
        """
-       from bisheng.permission.domain.services.permission_service import PermissionService
+       from doberman_agent.permission.domain.services.permission_service import PermissionService
        fga = PermissionService._get_fga()
        if fga is None:
            logger.warning('FGAClient not available for tuple cleanup: %s:%s', object_type, object_id)
@@ -129,7 +129,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
            tuples = await fga.read_tuples(object=f'{object_type}:{object_id}')
            if not tuples:
                return
-           from bisheng.permission.domain.schemas.tuple_operation import TupleOperation
+           from doberman_agent.permission.domain.schemas.tuple_operation import TupleOperation
            operations = [
                TupleOperation(action='delete', user=t['user'], relation=t['relation'], object=t['object'])
                for t in tuples
@@ -159,10 +159,10 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/knowledge/domain/services/knowledge_service.py` |
-| 修改 | `src/backend/bisheng/knowledge/domain/services/knowledge_file_service.py` |
-| 修改 | `src/backend/bisheng/knowledge/domain/services/knowledge_permission_service.py` |
-| 修改 | `src/backend/bisheng/knowledge/api/endpoints/knowledge.py`（如有 GroupResource 导入） |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/services/knowledge_file_service.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/services/knowledge_permission_service.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py`（如有 GroupResource 导入） |
 
 ### 实现要点
 
@@ -215,8 +215,8 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py` |
-| 修改 | `src/backend/bisheng/knowledge/domain/services/subscribe_handler.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/services/subscribe_handler.py` |
 
 ### 实现要点
 
@@ -281,9 +281,9 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/api/services/flow.py` |
-| 修改 | `src/backend/bisheng/api/services/workflow.py` |
-| 修改 | `src/backend/bisheng/api/v1/workflow.py`（access_check 由 T01 自动适配） |
+| 修改 | `src/backend/doberman_agent/api/services/flow.py` |
+| 修改 | `src/backend/doberman_agent/api/services/workflow.py` |
+| 修改 | `src/backend/doberman_agent/api/v1/workflow.py`（access_check 由 T01 自动适配） |
 
 ### 实现要点
 
@@ -324,7 +324,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/api/services/assistant.py` |
+| 修改 | `src/backend/doberman_agent/api/services/assistant.py` |
 
 ### 实现要点
 
@@ -361,7 +361,7 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/tool/domain/services/tool.py` |
+| 修改 | `src/backend/doberman_agent/tool/domain/services/tool.py` |
 
 ### 实现要点
 
@@ -398,8 +398,8 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/channel/domain/services/channel_service.py` |
-| 修改 | `src/backend/bisheng/channel/domain/services/channel_subscribe_approval_handler.py` |
+| 修改 | `src/backend/doberman_agent/channel/domain/services/channel_service.py` |
+| 修改 | `src/backend/doberman_agent/channel/domain/services/channel_subscribe_approval_handler.py` |
 
 ### 实现要点
 
@@ -465,8 +465,8 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/api/services/audit_log.py` |
-| 修改 | `src/backend/bisheng/api/services/tag.py` |
+| 修改 | `src/backend/doberman_agent/api/services/audit_log.py` |
+| 修改 | `src/backend/doberman_agent/api/services/tag.py` |
 | 修改 | 各模块文件（清理废弃导入） |
 
 ### 实现要点
@@ -483,8 +483,8 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 3. **全局导入清理**：
    - 在 T03-T09 各模块文件中，移除不再使用的导入：
-     - `from bisheng.database.models.group_resource import GroupResource, GroupResourceDao, ResourceTypeEnum`
-     - `from bisheng.database.models.role_access import RoleAccessDao`（如不再有直接调用）
+     - `from doberman_agent.database.models.group_resource import GroupResource, GroupResourceDao, ResourceTypeEnum`
+     - `from doberman_agent.database.models.role_access import RoleAccessDao`（如不再有直接调用）
    - 保留 `AccessType` 导入（T01 适配器映射需要）
    - 保留 `role_group_service.py` 中的 GroupResourceDao 使用（不在 F008 范围内）
 
@@ -544,9 +544,9 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 文件 | 方法 | 消费场景 | 状态 |
 |------|------|---------|------|
-| `bisheng/knowledge/domain/models/knowledge.py:373` | `judge_knowledge_permission(user_name, knowledge_ids) -> List[Knowledge]` | 客户端日常模式 `orgKbs` 检索（`workstation_service.queryChunksFromDB`）+ 工作流通用 KB 节点（`user_auth=True` 时） | ✅ 迁移完毕 |
-| `bisheng/knowledge/domain/models/knowledge.py:412` | `ajudge_knowledge_permission(...)` 异步版 | 同上 | ✅ 迁移完毕 |
-| `bisheng/database/models/flow.py:343` | `get_user_access_online_flows(user_id, ...) -> List[Flow]` | `Assistant.get_auto_flow_info` 自动选技能 | ✅ 迁移完毕 |
+| `doberman-agent/knowledge/domain/models/knowledge.py:373` | `judge_knowledge_permission(user_name, knowledge_ids) -> List[Knowledge]` | 客户端日常模式 `orgKbs` 检索（`workstation_service.queryChunksFromDB`）+ 工作流通用 KB 节点（`user_auth=True` 时） | ✅ 迁移完毕 |
+| `doberman-agent/knowledge/domain/models/knowledge.py:412` | `ajudge_knowledge_permission(...)` 异步版 | 同上 | ✅ 迁移完毕 |
+| `doberman-agent/database/models/flow.py:343` | `get_user_access_online_flows(user_id, ...) -> List[Flow]` | `Assistant.get_auto_flow_info` 自动选技能 | ✅ 迁移完毕 |
 
 ### 改造模板
 
@@ -561,8 +561,8 @@ T11(前端group_ids移除) ← T05,T06 完成后
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/knowledge/domain/models/knowledge.py` |
-| 修改 | `src/backend/bisheng/database/models/flow.py` |
+| 修改 | `src/backend/doberman_agent/knowledge/domain/models/knowledge.py` |
+| 修改 | `src/backend/doberman_agent/database/models/flow.py` |
 | 新增 | `src/backend/test/test_knowledge_dao_judge_permission_rebac.py`（10 用例）|
 | 新增 | `src/backend/test/test_flow_dao_user_access_rebac.py`（3 用例）|
 | 修改 | `features/v2.5.1/release-contract.md`（新增 INV-T19 + 变更历史条目）|

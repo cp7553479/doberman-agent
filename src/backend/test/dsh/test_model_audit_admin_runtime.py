@@ -4,14 +4,14 @@ import base64
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.dsh.config import DshSettings
-from bisheng.dsh.infrastructure.model_audit_storage import BishengMinioAuditObjects
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.dsh.config import DshSettings
+from doberman_agent.dsh.infrastructure.model_audit_storage import DobermanAgentMinioAuditObjects
 from test.dsh.test_model_audit_flow import fixture
 
 
 async def test_administration_factory_reuses_scope_authority_and_shared_storage(monkeypatch):
-    import bisheng.dsh.audit_admin_runtime as composition
+    import doberman_agent.dsh.audit_admin_runtime as composition
 
     async with fixture() as (harness, _client, _objects):
         monkeypatch.setattr(composition, "authorize_admin", harness.authorize)
@@ -24,4 +24,4 @@ async def test_administration_factory_reuses_scope_authority_and_shared_storage(
             await admin.modes.change_admin(2, 2, None)
         assert admin.queries.authorize_admin == admin.modes.authorize_admin == harness.authorize
         assert admin.bodies.queries is admin.queries
-        assert isinstance(admin.bodies.storage_factory().objects, BishengMinioAuditObjects)
+        assert isinstance(admin.bodies.storage_factory().objects, DobermanAgentMinioAuditObjects)

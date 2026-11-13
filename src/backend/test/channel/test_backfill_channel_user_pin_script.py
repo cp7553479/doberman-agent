@@ -6,8 +6,8 @@ from __future__ import annotations
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.channel.domain.models.channel_user_pin import ChannelUserPin
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.channel.domain.models.channel_user_pin import ChannelUserPin
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,

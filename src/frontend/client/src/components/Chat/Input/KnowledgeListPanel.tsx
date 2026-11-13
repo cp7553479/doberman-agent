@@ -11,8 +11,8 @@
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { DropdownMenuItem } from "~/components/ui";
-import { Checkbox } from '@bisheng/ui';
-import { SearchInput, StateView } from "@bisheng/ui";
+import { Checkbox } from '@doberman-agent/ui';
+import { SearchInput, StateView } from "@doberman-agent/ui";
 import { useLocalize, useScrollRevealRef } from "~/hooks";
 import { cn } from "~/utils";
 import type { KnowledgeItem } from "./knowledgeTypes";

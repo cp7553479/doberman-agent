@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Permissions } from '~/types/chat';
 import type { TStartupConfig, AgentUpdateParams } from '~/types/chat';
 import { Button, OGDialog, OGDialogTitle, OGDialogClose, OGDialogContent, OGDialogTrigger } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useUpdateAgentMutation, useGetStartupConfig } from '~/hooks/queries/data-provider';
 import { ShareOutlineIcon } from '~/components/icons';
 import { cn, removeFocusOutlines } from '~/utils';

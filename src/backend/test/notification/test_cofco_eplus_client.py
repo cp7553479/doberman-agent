@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from bisheng.notification.external.cofco_eplus_client import CofcoEPlusClient
+from doberman_agent.notification.external.cofco_eplus_client import CofcoEPlusClient
 
 
 @pytest.fixture
 def mock_settings():
-    with patch("bisheng.notification.external.cofco_eplus_client.settings") as m:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.settings") as m:
         m.get_cofco_forwarding_conf.return_value.api_base = "http://10.28.64.30:8070/qwmsg-ui"
-        m.get_cofco_forwarding_conf.return_value.app_id = "bisheng"
+        m.get_cofco_forwarding_conf.return_value.app_id = "doberman_agent"
         m.get_cofco_forwarding_conf.return_value.secret = "secret123"
         m.get_cofco_forwarding_conf.return_value.agentid = 1
         m.get_cofco_forwarding_conf.return_value.timeout_seconds = 5.0
@@ -23,7 +23,7 @@ async def test_send_textcard_success_logs_nothing(mock_settings, caplog):
     mock_response = MagicMock()
     mock_response.json.return_value = {"code": "0", "msg": "操作成功", "data": "[\"jobid1\"]"}
 
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         ACli.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
         await client.send_textcard(
             message_id=1, action_code="request_channel",
@@ -41,7 +41,7 @@ async def test_send_textcard_code_not_zero_logs_warning(mock_settings, caplog):
     mock_response = MagicMock()
     mock_response.json.return_value = {"code": "82001", "msg": "All touser invalid"}
 
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         ACli.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
         await client.send_textcard(
             message_id=2, action_code="approved_channel",
@@ -58,7 +58,7 @@ async def test_send_textcard_code_not_zero_logs_warning(mock_settings, caplog):
 async def test_send_textcard_exception_does_not_raise(mock_settings, caplog):
     """Network exception should be swallowed and WARN logged."""
     client = CofcoEPlusClient()
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         ACli.return_value.__aenter__.return_value.post = AsyncMock(
             side_effect=Exception("network down")
         )
@@ -85,7 +85,7 @@ async def test_send_textcard_request_shape(mock_settings):
         captured["headers"] = headers
         return mock_response
 
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         ACli.return_value.__aenter__.return_value.post = AsyncMock(side_effect=fake_post)
         await client.send_textcard(
             message_id=4, action_code="request_channel",
@@ -95,7 +95,7 @@ async def test_send_textcard_request_shape(mock_settings):
 
     import json
     assert captured["url"] == "http://10.28.64.30:8070/qwmsg-ui/v2/message/send"
-    assert captured["headers"]["appId"] == "bisheng"
+    assert captured["headers"]["appId"] == "doberman_agent"
     assert captured["headers"]["secret"] == "secret123"
     assert captured["headers"].get("Content-Type") == "application/json"
     assert captured["headers"].get("Accept") == "application/json"
@@ -112,7 +112,7 @@ async def test_send_textcard_request_shape(mock_settings):
 @pytest.mark.asyncio
 async def test_send_textcard_empty_touser_skipped(mock_settings, caplog):
     client = CofcoEPlusClient()
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         post = AsyncMock()
         ACli.return_value.__aenter__.return_value.post = post
         await client.send_textcard(message_id=5, action_code="approved_channel", touser=[], textcard={"title": "t"})
@@ -128,7 +128,7 @@ async def test_send_textcard_success_emits_attempt_and_result(mock_settings, cap
     mock_response = MagicMock()
     mock_response.json.return_value = {"code": "0", "msg": "ok"}
 
-    with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
         ACli.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
         await client.send_textcard(
             message_id=42, action_code="request_channel",

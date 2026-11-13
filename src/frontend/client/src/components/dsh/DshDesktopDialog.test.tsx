@@ -7,7 +7,7 @@ import type { DshUsageTimeSummary } from '~/api/dsh';
 jest.mock('~/api/dsh', () => ({ getDshUsageSummary: jest.fn() }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key, useAuthContext: () => ({ user: { id: '20' } }) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string, values?: Record<string, unknown>) => values ? `${key} ${JSON.stringify(values)}` : key, i18n: { language: 'en' } }) }));
-jest.mock('@bisheng/ui', () => ({ Button: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => <button onClick={onClick}>{children}</button> }));
+jest.mock('@doberman-agent/ui', () => ({ Button: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => <button onClick={onClick}>{children}</button> }));
 jest.mock('~/components/ui/Dialog', () => ({
   Dialog: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogContent: ({ children }: { children: React.ReactNode }) => <div role="dialog">{children}</div>,

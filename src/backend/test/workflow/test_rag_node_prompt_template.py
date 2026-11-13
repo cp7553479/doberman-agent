@@ -3,8 +3,8 @@ from __future__ import annotations
 from langchain_core.documents import Document
 from langchain_core.messages import SystemMessage
 
-from bisheng.workflow.nodes.prompt_template import PromptTemplateParser
-from bisheng.workflow.nodes.rag.rag import RagNode
+from doberman_agent.workflow.nodes.prompt_template import PromptTemplateParser
+from doberman_agent.workflow.nodes.rag.rag import RagNode
 
 
 def test_rag_prompt_treats_system_prompt_braces_as_literal_text():

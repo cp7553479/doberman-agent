@@ -10,12 +10,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceLimitError
-from bisheng.common.errcode.llm import WorkbenchEmbeddingError
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.common.errcode.knowledge_space import SpaceLimitError
+from doberman_agent.common.errcode.llm import WorkbenchEmbeddingError
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-_SVC = "bisheng.knowledge.domain.services.knowledge_space_service"
-_QUOTA = "bisheng.role.domain.services.quota_service"
+_SVC = "doberman_agent.knowledge.domain.services.knowledge_space_service"
+_QUOTA = "doberman_agent.role.domain.services.quota_service"
 
 
 def _make_role(role_id, quota_config=None):
@@ -51,7 +51,7 @@ def _service(user=None) -> KnowledgeSpaceService:
 
 
 async def _effective(quota_config, resource="knowledge_space", **kw):
-    from bisheng.role.domain.services.quota_service import QuotaService
+    from doberman_agent.role.domain.services.quota_service import QuotaService
 
     roles = kw.get("roles") or [_make_role(3, quota_config)]
     user_roles = [_make_user_role(r.id) for r in roles]
@@ -73,7 +73,7 @@ async def _effective(quota_config, resource="knowledge_space", **kw):
 
 class TestEffectiveQuota:
     def test_default_is_50(self):
-        from bisheng.role.domain.services.quota_service import (
+        from doberman_agent.role.domain.services.quota_service import (
             DEFAULT_ROLE_QUOTA,
             QuotaResourceType,
         )
@@ -99,7 +99,7 @@ class TestEffectiveQuota:
         assert await _effective(None, roles=roles) == 80
 
     async def test_admin_is_unlimited(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         result = await QuotaService.get_effective_quota(
             user_id=1,
@@ -191,7 +191,7 @@ class TestCreationGate:
         """
         import inspect
 
-        from bisheng.knowledge.api.endpoints import knowledge_space as ep
+        from doberman_agent.knowledge.api.endpoints import knowledge_space as ep
 
         # Match decorator lines only — the comment above the handler explains
         # why it is absent and mentions the name.

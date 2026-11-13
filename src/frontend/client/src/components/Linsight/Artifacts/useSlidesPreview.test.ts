@@ -42,9 +42,9 @@ describe('F111 pollSlidesPreview', () => {
     });
 
     it('posts to file_preview with the share token and returns the prefixed PDF url', async () => {
-        mockedRequest.post.mockResolvedValue({ data: { status: 'ready', file_path: '/bisheng/p.pdf?s=1' } } as never);
+        mockedRequest.post.mockResolvedValue({ data: { status: 'ready', file_path: '/doberman_agent/p.pdf?s=1' } } as never);
         const url = await pollSlidesPreview('linsight/final_result/v/a.pptx', 'v', () => false, 'tok-1');
-        expect(url).toBe('/workspace/bisheng/p.pdf?s=1');
+        expect(url).toBe('/workspace/doberman_agent/p.pdf?s=1');
         const [path, body, config] = mockedRequest.post.mock.calls[0] as [
             string,
             unknown,

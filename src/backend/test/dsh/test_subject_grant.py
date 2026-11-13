@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session, select
 
-from bisheng.database.models.department import UserDepartment
-from bisheng.dsh.domain.models.subject_grant import DshSubjectGrant
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicy
-from bisheng.dsh.domain.repositories.subject_grant import DshSubjectGrantRepository
-from bisheng.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
+from doberman_agent.database.models.department import UserDepartment
+from doberman_agent.dsh.domain.models.subject_grant import DshSubjectGrant
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicy
+from doberman_agent.dsh.domain.repositories.subject_grant import DshSubjectGrantRepository
+from doberman_agent.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
 from test.dsh.test_subject_policy import subject_store  # noqa: F401
 
 
@@ -47,8 +47,8 @@ def test_retry_commits_once_and_new_members_inherit_without_seats(subject_store)
 async def test_subject_save_recovers_local_failure_without_remote_calls(subject_store, monkeypatch):  # noqa: F811
     import httpx
 
-    import bisheng.core.database as database
-    from bisheng.dsh import admin_runtime
+    import doberman_agent.core.database as database
+    from doberman_agent.dsh import admin_runtime
 
     DshSubjectGrant.__table__.create(subject_store)
 

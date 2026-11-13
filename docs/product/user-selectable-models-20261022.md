@@ -17,7 +17,7 @@
 
 验收覆盖名称更新与回退、同名跨服务商、目录刷新后的名称变化及稳定 ID、隐藏描述和默认项保存、可见范围按钮与既有授权交互。真实环境检查目标为 3006；其他部署保持。
 
-基线：后台 b3fbbd166（feat/bisheng-work-120-main），桌面 e4a27e0（V1.2.0），已安装 Harness 0.2.0-rc.2。独立工作目录均为 codex/user-selectable-models。
+基线：后台 b3fbbd166（feat/doberman-agent-work-120-main），桌面 e4a27e0（V1.2.0），已安装 Harness 0.2.0-rc.2。独立工作目录均为 codex/user-selectable-models。
 
 
 ## 3006 发布结果
@@ -28,4 +28,4 @@
 
 后台 58 项通过、2 项环境用例跳过；管理端相关 28 项通过，类型检查、定向 ESLint、构建、架构检查通过。桌面相关 65 项通过，合入最新 f97e158 后重跑的名称及服务回归 53 项通过，类型检查通过。
 
-代码审查：[BISHENG #2515](https://github.com/dataelement/bisheng/pull/2515)、[桌面 #72](https://github.com/dataelement/bisheng-work/pull/72)。后续按用户确认直接合入后台 `feat/bisheng-work-120-main` 与桌面 `V1.2.0`；以上 PR 保留为改动历史入口。
+代码审查：doberman-agent #2515、桌面 #72。后续按用户确认直接合入后台 `feat/doberman-agent-work-120-main` 与桌面 `V1.2.0`；以上 PR 保留为改动历史入口。

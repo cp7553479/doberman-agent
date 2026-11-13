@@ -95,13 +95,13 @@
 <!-- site-hide -->
 ## 落地（给实现窗口）
 
-**2026-08-25 已落地**：`@bisheng/ui` 导出 `Checkbox` / `CheckboxGroup` / `CheckboxCard`（`src/components/Checkbox/`，与 Radio 共享 `src/components/Selection/shared.ts`），demo 页 `docs/components/checkbox.mdx`，侧栏已注册。client 现状（`ui/Checkbox.tsx` 及原生手拼）迁移仍待迁移窗口。下面是当时给实现窗口的口径，已按此实现：
+**2026-08-25 已落地**：`@doberman-agent/ui` 导出 `Checkbox` / `CheckboxGroup` / `CheckboxCard`（`src/components/Checkbox/`，与 Radio 共享 `src/components/Selection/shared.ts`），demo 页 `docs/components/checkbox.mdx`，侧栏已注册。client 现状（`ui/Checkbox.tsx` 及原生手拼）迁移仍待迁移窗口。下面是当时给实现窗口的口径，已按此实现：
 
 1. cva `variants: { size }`（方块 14 / 16 / 18，文字 14 / 14 / 16），`Checkbox` / `CheckboxGroup` / 卡片式同一基座；`indeterminate` 只是样式属性，DOM 上置 `aria-checked="mixed"`。
 2. 颜色全走 token，禁裸 hex：未选描边 `border-border-base`、hover `border-border-deep`；选中底用品牌色类（`bg-blue-500`，已重定向 `--brand-*`）；对勾 / 横线用白；disabled 复用按钮三 token；聚焦环复用 `shadow-focus`（环色变量 `--shadow-focus-ring`，默认 gray-2），出现时机用 `:focus-visible` 判定键盘。
 3. 卡片式参考实现：`client/src/components/permission/UnifiedPermissionControls.tsx` 的 `AccessModeSelector`（radix RadioGroup + label 卡壳，两列 grid `gap-2`、≤560px 单列，说明用 TruncatedTooltip）。选中浅底即统一选中底 `bg-blue-500/[0.07]`、选中描边 `border-blue-100`（2026-08-25 拍板，替换现状的灰描边）、hover `bg-fill-1`；归并差异：disabled 现为 `opacity-60`，改按 §5 三信号（控件禁用画法 + 文字禁用色 + 禁止光标）。
 4. 触屏热区参考 `.btn-touch-hit` / `.input-touch-hit` 的写法：整行 label 撑高到 44px，独立方块用伪元素扩。
-5. 现状参考（2026-08-24 设计师点名，knowledge 列表视图）：底座 `client/src/components/ui/Checkbox.tsx`（radix，16px、圆角 `rounded-md`=6px、未选描边 border-primary、disabled 仅 `opacity-50`、`focus-visible:outline-none` 无聚焦环、图标 lucide Check / Minus），knowledge 处经 `pages/knowledge/SpaceDetail/selectionCheckboxStyles.ts` 覆写为未选 border-deep、选中 / 半选 border-primary（工具栏全选 / 列表行 / 卡片三处共用）。与本规范的归并差异：圆角 6→4；disabled 的 `opacity-50` 改按钮三 token + 文字禁用色（本次补强的动因）；补 `:focus-visible` 灰环；图标换 bisheng-icons（勾 / 横线缺位则照 Input eye 图标先例由调用方传入，待核）。选中行浅底 `--brand-500/0.07` 已与统一选中浅底一致，无需动。全量扫描（其余原生 `<input type="checkbox">` 手拼）仍待迁移窗口。
+5. 现状参考（2026-08-24 设计师点名，knowledge 列表视图）：底座 `client/src/components/ui/Checkbox.tsx`（radix，16px、圆角 `rounded-md`=6px、未选描边 border-primary、disabled 仅 `opacity-50`、`focus-visible:outline-none` 无聚焦环、图标 lucide Check / Minus），knowledge 处经 `pages/knowledge/SpaceDetail/selectionCheckboxStyles.ts` 覆写为未选 border-deep、选中 / 半选 border-primary（工具栏全选 / 列表行 / 卡片三处共用）。与本规范的归并差异：圆角 6→4；disabled 的 `opacity-50` 改按钮三 token + 文字禁用色（本次补强的动因）；补 `:focus-visible` 灰环；图标换 @doberman-agent/icons（勾 / 横线缺位则照 Input eye 图标先例由调用方传入，待核）。选中行浅底 `--brand-500/0.07` 已与统一选中浅底一致，无需动。全量扫描（其余原生 `<input type="checkbox">` 手拼）仍待迁移窗口。
 
 ## 待决策清单
 
@@ -117,5 +117,5 @@
 | 2026-08-24 | §1 判定表补一行（设计师批注）：不是立即生效的设置项不用开关——摊得开按前两行选，摊不开用 Select。其余规则未增未减未改 | 待 committer 窗口提交 |
 | 2026-08-24 | **禁用态补强**（设计师反馈「禁用与常态区分不明显」，源头是 knowledge 列表现状的纯 `opacity-50`）：§5 禁用行明确「浅灰填充底 + 行文字转禁用字色 + 禁止光标」三信号，新增规则句与 ✅/❌ 一行「不用纯降不透明度」；落地区第 5 条回填 knowledge 现状参考（`ui/Checkbox.tsx` + `selectionCheckboxStyles.ts`）与归并差异清单。禁用取值仍全引按钮三 token，未新增 token | 待 committer 窗口提交 |
 | 2026-08-25 | **卡片式选中描边改淡品牌色**（设计师看知识空间创建页实物：灰描边配品牌浅底不搭）：§2 选中态改「浅底 + 品牌 100 档描边」，推翻初稿「描边保持灰」案；300 → 200 → 100 三轮试淡后拍板 100，并定为下限（50 档与选中浅底融掉）。卡壳共用，CheckboxCard / RadioCard 同变 | 本次窗口 |
-| 2026-08-25 | **组件落地**：`@bisheng/ui` 新增 `Checkbox` / `CheckboxGroup` / `CheckboxCard`（radix checkbox 基座，半选 `aria-checked="mixed"`），demo 页 `components/checkbox.mdx` + 侧栏注册。全按本文实现，展示层规则未增未减未改；组校验错误提示照 Input 先例由调用方渲染 | 本次窗口 |
+| 2026-08-25 | **组件落地**：`@doberman-agent/ui` 新增 `Checkbox` / `CheckboxGroup` / `CheckboxCard`（radix checkbox 基座，半选 `aria-checked="mixed"`），demo 页 `components/checkbox.mdx` + 侧栏注册。全按本文实现，展示层规则未增未减未改；组校验错误提示照 Input 先例由调用方渲染 | 本次窗口 |
 | 2026-08-24 | **卡片式定稿**（设计师点名 knowledge/create 页 `AccessModeSelector` 作规范参考）：§2 改写为「保留方块 / 圆点 + 选中浅底不变描边 + 圆角 12 / 最小高 48 / 内边距 12 / 卡间距 8」，替换初稿「无方块 + 品牌描边 + 圆角 8」路线；待决策清单「带方块变体」结案；落地区第 3 条回填参考实现与归并差异（disabled opacity-60 → 三信号） | 待 committer 窗口提交 |

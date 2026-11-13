@@ -60,58 +60,58 @@
 ### 基础设施
 
 - [x] **T001：登记 F048 权限错误码**
-  - **文件**：`src/backend/bisheng/common/errcode/permission.py`
+  - **文件**：`src/backend/doberman_agent/common/errcode/permission.py`
   - **逻辑**：新增 25001～25013，分别表达非法动作、版本冲突、标准模型不可变、模型状态、
     越级授权、protected 变更、非法模式、发布未就绪、投影失败、迁移阻断、model 不匹配、
     impact 过期和 mutation 过大；保留 19000/19002 通用语义。
   - **依赖**：无
 
 - [x] **T002：定义 F048 领域与 HTTP schema**
-  - **文件**：`src/backend/bisheng/permission/domain/schemas/f048.py`,
-    `src/backend/bisheng/permission/domain/schemas/__init__.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/schemas/f048.py`,
+    `src/backend/doberman_agent/permission/domain/schemas/__init__.py`
   - **逻辑**：定义 `VerifiedPermissionTarget`、Action/Model/Catalog DTO、Grant/assignee、
     mode draft、cursor、mutation 和 check response；客户端 payload 不接受 tenant、protected、
     source、等级或业务状态。
   - **依赖**：无
 
 - [x] **T003：建立 Catalog/Action/Model ORM**
-  - **文件**：`src/backend/bisheng/permission/domain/models/catalog.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/catalog.py`
   - **逻辑**：实现 `permission_catalog_release`、`permission_action`、
     `permission_action_resource_scope`、`permission_model`、`permission_model_action` 和
     `permission_catalog_projection_tuple`；动作和资源范围均规范化，不使用大 JSON。
   - **依赖**：无
 
 - [x] **T004：建立 Grant/assignee/mode ORM**
-  - **文件**：`src/backend/bisheng/permission/domain/models/grant.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/grant.py`
   - **逻辑**：实现 `permission_grant`、`permission_grant_assignee`、
     `resource_permission_mode`；使用真实 `tenant_id`、稳定 `model_key`、source/protected/version
     字段及双库可移植唯一键。
   - **依赖**：无
 
 - [x] **T005：建立 durable projection ORM**
-  - **文件**：`src/backend/bisheng/permission/domain/models/projection.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/projection.py`
   - **逻辑**：实现 `permission_projection_operation` 和 `permission_projection_tuple`，
     包含 PREPARED/STAGING/COMMIT_UNKNOWN/COMMITTED/FINALIZED/FAILED_CLOSED 状态、幂等 checksum
     与 inverse tuple，不保存超大 JSON。
   - **依赖**：无
 
 - [x] **T006：建立 model release 与数据迁移审计 ORM**
-  - **文件**：`src/backend/bisheng/permission/domain/models/migration.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/migration.py`
   - **逻辑**：实现 `authorization_model_release`、`permission_migration_run`、
     `permission_migration_item`，记录同 Store source/target model、checkpoint、lease、
     source/target checksum、人工项与逐项状态；这些是 scripts 数据，不是 Alembic 状态。
   - **依赖**：无
 
 - [x] **T007：注册 ORM 与 tenant 自动过滤**
-  - **文件**：`src/backend/bisheng/permission/domain/models/__init__.py`,
-    `src/backend/bisheng/core/database/tenant_filter.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/__init__.py`,
+    `src/backend/doberman_agent/core/database/tenant_filter.py`
   - **逻辑**：导出 T003～T006 模型，将 tenant 级 Grant/mode/operation/assignee 注册到
     `_TENANT_AWARE_MODEL_MODULES`；PLATFORM Catalog 和 migration run/item 只能由专用 Repository
     窄范围 bypass，不伪造 `tenant_id=0`。
   - **依赖**：T003, T004, T005, T006
 
 - [x] **T008：创建 F048 DDL-only Alembic revision**
-  - **文件**：`src/backend/bisheng/core/database/alembic/versions/f048_permission_model_grants.py`
+  - **文件**：`src/backend/doberman_agent/core/database/alembic/versions/f048_permission_model_grants.py`
   - **逻辑**：设置 `revision='f048_permission_grants'`、`down_revision='f044_llm_status_time'`，
     仅创建/删除 T003～T006 的表、索引、
     FK 和约束；`upgrade()/downgrade()` 不 SELECT、seed、backfill、dedup、cleanup，不 import
@@ -119,14 +119,14 @@
   - **依赖**：T003, T004, T005, T006, T007
 
 - [x] **T009：定义权限 Repository ports**
-  - **文件**：`src/backend/bisheng/permission/domain/repositories/interfaces.py`,
-    `src/backend/bisheng/permission/domain/repositories/__init__.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/repositories/interfaces.py`,
+    `src/backend/doberman_agent/permission/domain/repositories/__init__.py`
   - **逻辑**：声明 Catalog、Grant、mode、projection、migration run/item 的事务、cursor、
     version CAS 和 checksum 接口；不暴露业务资源 Repository。
   - **依赖**：T002, T003, T004, T005, T006
 
 - [x] **T010：收敛 OpenFGA 连接配置与生产启动门禁**
-  - **文件**：`src/backend/bisheng/core/config/openfga.py`
+  - **文件**：`src/backend/doberman_agent/core/config/openfga.py`
   - **逻辑**：配置只保留连接信息、稳定 Store name 和 recent-consistency window；
     Store/model/Catalog ID 与 checksum 不写配置；生产模式拒绝自动建 Store/写 model、
     legacy model 和 dual model。
@@ -153,16 +153,16 @@
   - **依赖**：T004, T005, T006, T007, T009
 
 - [x] **T013：实现 Catalog 与 Grant Repository**
-  - **文件**：`src/backend/bisheng/permission/domain/repositories/catalog_repository.py`,
-    `src/backend/bisheng/permission/domain/repositories/grant_repository.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/repositories/catalog_repository.py`,
+    `src/backend/doberman_agent/permission/domain/repositories/grant_repository.py`
   - **逻辑**：实现 current release `FOR UPDATE`、完整 draft、影响 cursor、Grant/assignee
     唯一来源、版本 CAS 和 cursor；只操作权限表。
   - **验收**：T012 对 Catalog/Grant 的断言通过
   - **依赖**：T012
 
 - [x] **T014：实现 projection 与 migration Repository**
-  - **文件**：`src/backend/bisheng/permission/domain/repositories/projection_repository.py`,
-    `src/backend/bisheng/permission/domain/repositories/migration_repository.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/repositories/projection_repository.py`,
+    `src/backend/doberman_agent/permission/domain/repositories/migration_repository.py`
   - **逻辑**：实现 operation/tuple ledger、commit 状态、environment lease、run/item checkpoint、
     checksum 和人工项；migration Repository 的 bypass 只包裹明确的跨 tenant cursor。
   - **验收**：T012 全部通过
@@ -177,7 +177,7 @@
   - **依赖**：T002
 
 - [x] **T016：实现 F048 Authorization Model builder**
-  - **文件**：`src/backend/bisheng/core/openfga/authorization_model_f048.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/authorization_model_f048.py`
   - **逻辑**：构建 CatalogRelease→ModelRelease→Grant 三层交集、具体 `can_<action>`、
     visible、grant-level、mode gate、protected、department subtree、canonical parent、
     system/shared/dashboard 关系和稳定 checksum；不自动发布。
@@ -192,7 +192,7 @@
   - **依赖**：T010, T016
 
 - [x] **T018：升级 OpenFGA client**
-  - **文件**：`src/backend/bisheng/core/openfga/client.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/client.py`
   - **逻辑**：提供显式 model-scoped Check/BatchCheck/List/Write 与 consistency 参数；
     Read/Delete 仅按 Store tuple key；删除 dual/shadow write，编译 delta 超过 90 由上层拒绝。
   - **验收**：T017 全部通过
@@ -207,8 +207,8 @@
   - **依赖**：T010, T016, T018
 
 - [x] **T020：实现 FGAManager 单 model runtime**
-  - **文件**：`src/backend/bisheng/core/openfga/discovery.py`,
-    `src/backend/bisheng/core/openfga/manager.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/discovery.py`,
+    `src/backend/doberman_agent/core/openfga/manager.py`
   - **逻辑**：生产按稳定 Store name 发现唯一 Store/latest model，禁止创建/写入，校验
     F048 checksum 和 SQL CURRENT Catalog 引用的 ACTIVE release，只构造一个显式 model
     client，并提供 API/Worker/Linsight 可复用 readiness/heartbeat。
@@ -223,7 +223,7 @@
   - **依赖**：T002, T003
 
 - [x] **T022：实现动作 Catalog 纯规则**
-  - **文件**：`src/backend/bisheng/permission/domain/services/catalog_policy.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/catalog_policy.py`
   - **逻辑**：提供 action normalization、level/scope validation、完整 release 派生与 impact
     checksum 纯函数；不访问 ORM/FGA。
   - **验收**：T021 全部通过
@@ -237,7 +237,7 @@
   - **依赖**：T002, T003, T022
 
 - [x] **T024：实现标准/自定义模型纯规则**
-  - **文件**：`src/backend/bisheng/permission/domain/services/model_policy.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/model_policy.py`
   - **逻辑**：实现标准模型累计、custom 显式动作、派生 level、active、allow_same_level、
     deletion/reference 和 preset 校验；绝不按 custom level 自动补动作。
   - **验收**：T023 全部通过
@@ -251,7 +251,7 @@
   - **依赖**：T013, T016, T018, T022, T024
 
 - [x] **T026：实现 CatalogService**
-  - **文件**：`src/backend/bisheng/permission/domain/services/catalog_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/catalog_service.py`
   - **逻辑**：编排完整 draft、跨 tenant 影响聚合、publish fence、model release staging、
     OpenFGA tests、active commit、finalize、审计、`permission_catalog_publish` metric-log 和
     crash reconcile；不直接 ORM 或 HTTP。
@@ -266,7 +266,7 @@
   - **依赖**：T014, T018
 
 - [x] **T028：实现 ProjectionService**
-  - **文件**：`src/backend/bisheng/permission/domain/services/projection_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/projection_service.py`
   - **逻辑**：实现 durable operation/tuple 协议、原子 commit、higher-consistency 验证、
     recent marker、reconcile、审计和 `permission_projection` metric-log；任何不确定状态
     fail closed。
@@ -281,7 +281,7 @@
   - **依赖**：T013, T024, T028
 
 - [x] **T030：实现 Grant source service**
-  - **文件**：`src/backend/bisheng/permission/domain/services/grant_source_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/grant_source_service.py`
   - **逻辑**：维护 Grant/assignee 稳定来源、projected subject 引用计数、精确 ADD/MOVE/REMOVE、
     include_children 与 protected collision；不按用户有效结果压平来源。
   - **验收**：T029 全部通过
@@ -295,7 +295,7 @@
   - **依赖**：T024, T030
 
 - [x] **T032：实现 GrantService**
-  - **文件**：`src/backend/bisheng/permission/domain/services/grant_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/grant_service.py`
   - **逻辑**：编排可授模型、版本校验、protected/ordinary、mutation delta、projection 和审计；
     不读取 Config、业务资源或展示名称。
   - **验收**：T031 全部通过
@@ -309,7 +309,7 @@
   - **依赖**：T028, T030, T032
 
 - [x] **T034：实现 ModeService**
-  - **文件**：`src/backend/bisheng/permission/domain/services/mode_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/mode_service.py`
   - **逻辑**：只消费 verified parent/mode/snapshot，创建影响 draft，原子切换 mode gate，
     投影 move/copy/delete；始终保留 canonical parent，不查询或移动业务资源。
   - **验收**：T033 全部通过
@@ -323,7 +323,7 @@
   - **依赖**：T018, T020, T026, T028, T032, T034
 
 - [x] **T036：实现 PermissionService F048 facade**
-  - **文件**：`src/backend/bisheng/permission/domain/services/permission_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/permission_service.py`
   - **逻辑**：增加 check_action/batch_check_actions/受限 list、authorize、lifecycle projection
     和 `permission_decision` metric-log；只接收 verified target，具体 action 的 OpenFGA 结果
     为最终结论，无 creator/Config/SQL fallback。
@@ -338,7 +338,7 @@
   - **依赖**：T030, T032, T034, T036
 
 - [x] **T038：实现 PermissionExplainService**
-  - **文件**：`src/backend/bisheng/permission/domain/services/permission_explain_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/permission_explain_service.py`
   - **逻辑**：输出 opaque subject/source/model ID、scope、protected、editable 和
     `permission_roster_explain` metric-log；不产生 ALLOW，不查询用户、部门、用户组或资源名称。
   - **验收**：T037 全部通过
@@ -352,8 +352,8 @@
   - **依赖**：T002, T036, T038
 
 - [x] **T040：实现 verified target application coordinator**
-  - **文件**：`src/backend/bisheng/permission/application/resource_permission_coordinator.py`,
-    `src/backend/bisheng/permission/application/__init__.py`
+  - **文件**：`src/backend/doberman_agent/permission/application/resource_permission_coordinator.py`,
+    `src/backend/doberman_agent/permission/application/__init__.py`
   - **逻辑**：只接受各业务 Service 生成的 `VerifiedPermissionTarget`，编排 facade 与批量 display
     ports；HTTP payload 不可直接构造 target，名称补充失败不改变权限字段。
   - **验收**：T039 全部通过
@@ -373,7 +373,7 @@
   - **依赖**：T001, T002, T026
 
 - [x] **T042：实现 Catalog endpoints**
-  - **文件**：`src/backend/bisheng/permission/api/endpoints/catalog.py`
+  - **文件**：`src/backend/doberman_agent/permission/api/endpoints/catalog.py`
   - **逻辑**：实现 Design §6.1 的四个 Catalog endpoint；只做认证、schema、Service 委托和响应翻译，
     不直接 ORM/FGA。
   - **验收**：T041 全部通过
@@ -387,7 +387,7 @@
   - **依赖**：T001, T002, T032, T034, T038, T040
 
 - [x] **T044：实现 Grant/context/mode endpoints**
-  - **文件**：`src/backend/bisheng/permission/api/endpoints/grant.py`
+  - **文件**：`src/backend/doberman_agent/permission/api/endpoints/grant.py`
   - **逻辑**：实现 Design §6.1 的资源上下文、roster、my-permissions、mutation 和 mode endpoints；
     资源加载委托 application coordinator/业务 port，cursor 绑定 tenant/resource/release/version。
   - **验收**：T043 全部通过
@@ -401,7 +401,7 @@
   - **依赖**：T001, T002, T036, T040
 
 - [x] **T046：实现 decision endpoint**
-  - **文件**：`src/backend/bisheng/permission/api/endpoints/decision.py`
+  - **文件**：`src/backend/doberman_agent/permission/api/endpoints/decision.py`
   - **逻辑**：实现具体 action check，委托业务 ResourceAuthorizationPort 生成 verified target；
     正常 DENY 返回 `allowed=false`，不可用返回明确错误。
   - **验收**：T045 全部通过
@@ -415,8 +415,8 @@
   - **依赖**：T042, T044, T046
 
 - [x] **T048：注册 F048 Router**
-  - **文件**：`src/backend/bisheng/permission/api/router.py`,
-    `src/backend/bisheng/permission/api/endpoints/__init__.py`
+  - **文件**：`src/backend/doberman_agent/permission/api/router.py`,
+    `src/backend/doberman_agent/permission/api/endpoints/__init__.py`
   - **逻辑**：注册 catalog/grant/decision endpoints；不新增兼容 alias，不把旧 endpoint 留在新模式。
   - **验收**：T047 全部通过
   - **依赖**：T047
@@ -429,8 +429,8 @@
   - **依赖**：T044, T048
 
 - [x] **T050：退役 F018 owner transfer API**
-  - **文件**：`src/backend/bisheng/tenant/api/endpoints/resource_owner_transfer.py`,
-    `src/backend/bisheng/tenant/domain/services/resource_ownership_service.py`
+  - **文件**：`src/backend/doberman_agent/tenant/api/endpoints/resource_owner_transfer.py`,
+    `src/backend/doberman_agent/tenant/domain/services/resource_ownership_service.py`
   - **逻辑**：从 F048 启服构建删除 transfer/list-pending 路由与 Service；不提供 protected owner
     transfer 替代，ordinary owner 由 Grant API 管理。
   - **验收**：T049 全部通过
@@ -446,8 +446,8 @@
   - **依赖**：T036, T040
 
 - [x] **T052：适配 knowledge_space/library Service**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`,
-    `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`,
+    `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`
   - **逻辑**：加载并验证资源后生成 verified target，使用具体 action 和 lifecycle projection；
     space/library 固定 CUSTOM，移除旧 relation/creator fallback。
   - **验收**：T051 全部通过
@@ -461,8 +461,8 @@
   - **依赖**：T034, T036, T040
 
 - [x] **T054：适配 folder/file Service**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/knowledge_file_service.py`,
-    `src/backend/bisheng/knowledge/domain/services/knowledge_permission_service.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/knowledge_file_service.py`,
+    `src/backend/doberman_agent/knowledge/domain/services/knowledge_permission_service.py`
   - **逻辑**：业务侧验证存在性/tenant/status/parent/path 后调用具体 action、mode 和 lifecycle
     projection；删除 SQL/creator/旧 relation ALLOW。
   - **验收**：T053 全部通过
@@ -476,8 +476,8 @@
   - **依赖**：T036, T040
 
 - [x] **T056：适配 workflow/assistant Service**
-  - **文件**：`src/backend/bisheng/api/services/workflow.py`,
-    `src/backend/bisheng/api/services/assistant.py`
+  - **文件**：`src/backend/doberman_agent/api/services/workflow.py`,
+    `src/backend/doberman_agent/api/services/assistant.py`
   - **逻辑**：业务 Service 加载资源并生成 verified target，替换 ApplicationPermissionService/
     permission template 调用；创建走 protected owner projection，builtin 使用显式 system predicate。
   - **验收**：T055 全部通过
@@ -491,8 +491,8 @@
   - **依赖**：T036, T040
 
 - [x] **T058：适配 tool Service**
-  - **文件**：`src/backend/bisheng/tool/domain/services/tool.py`,
-    `src/backend/bisheng/permission/domain/services/tool_permission_service.py`
+  - **文件**：`src/backend/doberman_agent/tool/domain/services/tool.py`,
+    `src/backend/doberman_agent/permission/domain/services/tool_permission_service.py`
   - **逻辑**：tool 业务加载后直接调用 F048 facade，并删除旧 ToolPermissionService 运行实现；
     preset predicate 由业务侧验证，不保留 fallback adapter。
   - **验收**：T057 全部通过
@@ -506,8 +506,8 @@
   - **依赖**：T032, T036, T040
 
 - [x] **T060：适配 channel Service**
-  - **文件**：`src/backend/bisheng/channel/domain/services/channel_authorization_service.py`,
-    `src/backend/bisheng/channel/domain/services/channel_service.py`
+  - **文件**：`src/backend/doberman_agent/channel/domain/services/channel_authorization_service.py`,
+    `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   - **逻辑**：channel 业务侧验证资源/tenant/status/CREATOR 后生成 target，使用具体 action 与
     Grant source；删除旧 template/binding fallback。
   - **验收**：T059 全部通过
@@ -521,8 +521,8 @@
   - **依赖**：T036, T040
 
 - [x] **T062：适配 DashboardService 与 endpoint**
-  - **文件**：`src/backend/bisheng/telemetry_search/domain/services/dashboard.py`,
-    `src/backend/bisheng/telemetry_search/api/endpoints/dashboard.py`
+  - **文件**：`src/backend/doberman_agent/telemetry_search/domain/services/dashboard.py`,
+    `src/backend/doberman_agent/telemetry_search/api/endpoints/dashboard.py`
   - **逻辑**：业务层验证 dashboard tenant/type/status，按 T061 映射具体 action，创建投影 owner；
     删除不再复用 can_edit，分享链接不能绕过 visible。
   - **验收**：T061 全部通过
@@ -536,8 +536,8 @@
   - **依赖**：T036, T040
 
 - [x] **T064：适配 ResourceShareService 与 Repository**
-  - **文件**：`src/backend/bisheng/tenant/domain/services/resource_share_service.py`,
-    `src/backend/bisheng/tenant/domain/repositories/resource_share_repository.py`
+  - **文件**：`src/backend/doberman_agent/tenant/domain/services/resource_share_service.py`,
+    `src/backend/doberman_agent/tenant/domain/repositories/resource_share_repository.py`
   - **逻辑**：保留 F017 精确 ID 跨 tenant 业务加载和状态校验；只把 verified shared target 交给
     PermissionService，不创建跨 tenant 普通 Grant。
   - **验收**：T063 全部通过
@@ -551,8 +551,8 @@
   - **依赖**：T016, T028, T030
 
 - [x] **T066：实现部门 projection handler**
-  - **文件**：`src/backend/bisheng/department/domain/services/department_service.py`,
-    `src/backend/bisheng/permission/domain/services/department_change_handler.py`
+  - **文件**：`src/backend/doberman_agent/department/domain/services/department_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/department_change_handler.py`
   - **逻辑**：DepartmentService 先验证业务树和 tenant，再传 verified old/new parent/member delta；
     handler 通过 ledger 原子投影 parent+child，不展开资源 Grant。
   - **验收**：T065 全部通过
@@ -566,8 +566,8 @@
   - **依赖**：T028, T032, T034, T036
 
 - [x] **T068：实现 owner projection 与通知适配**
-  - **文件**：`src/backend/bisheng/permission/domain/services/owner_service.py`,
-    `src/backend/bisheng/permission/domain/services/resource_permission_notification_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/owner_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/resource_permission_notification_service.py`
   - **逻辑**：创建/复制只通过 PermissionService+ledger 建 protected owner，ordinary owner 独立；
     通知从 assignee/source/model 生成，不解析旧 relation/binding。
   - **验收**：T067 全部通过
@@ -581,8 +581,8 @@
   - **依赖**：T036, T052, T054
 
 - [x] **T070：适配知识文件预览/下载 endpoints**
-  - **文件**：`src/backend/bisheng/knowledge/api/endpoints/knowledge.py`,
-    `src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py`,
+    `src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py`
   - **逻辑**：保持 preview 无 action；原件/打包下载在业务 Service 验证资源后调用 download，
     RAG/use 与原始文件 URL 分离。
   - **验收**：T069 全部通过
@@ -603,8 +603,8 @@
   - **依赖**：T020, T036
 
 - [x] **T072：升级 Celery 权限 runtime**
-  - **文件**：`src/backend/bisheng/worker/main.py`,
-    `src/backend/bisheng/worker/tenant_context.py`
+  - **文件**：`src/backend/doberman_agent/worker/main.py`,
+    `src/backend/doberman_agent/worker/tenant_context.py`
   - **逻辑**：Worker 使用 FGAManager 同一 readiness/heartbeat；权限任务严格依赖
     `before_task_publish tenant_id header → task_prerun current_tenant_id ContextVar`，不默认猜 tenant；
     不 import/触发 F048 数据迁移脚本。
@@ -619,8 +619,8 @@
   - **依赖**：T020, T036, T068
 
 - [x] **T074：适配 Linsight runtime**
-  - **文件**：`src/backend/bisheng/linsight/domain/task_exec.py`,
-    `src/backend/bisheng/linsight/domain/services/skill_service.py`
+  - **文件**：`src/backend/doberman_agent/linsight/domain/task_exec.py`,
+    `src/backend/doberman_agent/linsight/domain/services/skill_service.py`
   - **逻辑**：task_exec 明确设置/重置 tenant ContextVar；skill 创建授权使用 F048 durable
     authorize，不保留 best-effort legacy tuple 语义，并报告统一 runtime heartbeat。
   - **验收**：T073 全部通过
@@ -895,7 +895,7 @@
   - **依赖**：T011, T014, T020, T052, T054, T056, T058, T060, T062, T064, T066, T068
 
 - [x] **T110：实现迁移 source inventory**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_source_inventory.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_source_inventory.py`
   - **逻辑**：消费各业务 `PermissionMigrationSourcePort` DTO 和旧 Config/Store facts，生成规范化
     source item/checksum/blocker；已删除资源的遗留 tuple 审计后进入删除计划；failed_tuple
     通过 Store/模型/资源证据以及业务域提供的 tenant/department canonical member state 对账，
@@ -912,7 +912,7 @@
   - **依赖**：T022, T024, T110
 
 - [x] **T112：实现旧模型与动作 mapper**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_model_mapper.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_model_mapper.py`
   - **逻辑**：按 T111 输出 Catalog/Action/Model/ModelAction 目标 DTO 与 difference item；
     不使用等级给 custom 补动作，不猜测不连续 manage 范围。
   - **验收**：T111 全部通过
@@ -926,7 +926,7 @@
   - **依赖**：T030, T110, T112
 
 - [x] **T114：实现旧 tuple/binding mapper**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_tuple_mapper.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_tuple_mapper.py`
   - **逻辑**：只转换持久化 direct facts，保留 userset/source/protected；生成 Grant/assignee/
     tuple key 与 source checksum，不展开 computed/parent 用户集。
   - **验收**：T113 全部通过
@@ -940,7 +940,7 @@
   - **依赖**：T110, T114
 
 - [x] **T116：实现旧 mode/parent mapper**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_mode_mapper.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_mode_mapper.py`
   - **逻辑**：输出 ResourcePermissionMode 和 ordinary snapshot DTO；canonical parent 始终保留，
     不创建 `permission_parent`。
   - **验收**：T115 全部通过
@@ -954,23 +954,23 @@
   - **依赖**：T039, T052, T054, T056, T058, T060, T062
 
 - [x] **T118：实现 Knowledge/Channel migration source ports**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/permission_migration_source.py`,
-    `src/backend/bisheng/channel/domain/services/permission_migration_source.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/permission_migration_source.py`,
+    `src/backend/doberman_agent/channel/domain/services/permission_migration_source.py`
   - **逻辑**：用各自 Repository cursor 输出 space/library/file/folder/channel verified DTO，
     包含 CREATOR/user_id 差异和 canonical parent；不写权限目标表。
   - **验收**：T117 对 Knowledge/Channel 的断言通过
   - **依赖**：T117
 
 - [x] **T119：实现 Application/Tool migration source ports**
-  - **文件**：`src/backend/bisheng/api/services/permission_migration_source.py`,
-    `src/backend/bisheng/tool/domain/services/permission_migration_source.py`
+  - **文件**：`src/backend/doberman_agent/api/services/permission_migration_source.py`,
+    `src/backend/doberman_agent/tool/domain/services/permission_migration_source.py`
   - **逻辑**：输出 workflow/assistant/tool verified DTO，验证 preset/system predicate 与 current owner；
     不调用旧权限 Service。
   - **验收**：T117 对 Application/Tool 的断言通过
   - **依赖**：T117
 
 - [x] **T120：实现 Dashboard migration source port**
-  - **文件**：`src/backend/bisheng/telemetry_search/domain/services/permission_migration_source.py`
+  - **文件**：`src/backend/doberman_agent/telemetry_search/domain/services/permission_migration_source.py`
   - **逻辑**：输出 dashboard tenant/type/current owner/status DTO；CUSTOM dashboard 建 protected
     owner，preset 只标 system-owned。
   - **验收**：T117 全部通过
@@ -985,7 +985,7 @@
   - **依赖**：T014, T016, T018, T020, T110, T112, T114, T116, T118, T119, T120
 
 - [x] **T122：实现正式数据迁移 coordinator**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_coordinator.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_coordinator.py`
   - **逻辑**：从 D2 创建/续跑真实 run，在现有 Store 发布新 model，按 500 DB/90 FGA batch
     写控制面和 tuple、持久化 source/target checksum、发出 `permission_migration` metric-log，
     核对后退役 legacy tuple，保留 Config 原始行供排障但禁止运行时引用；失败时保持应用
@@ -1002,7 +1002,7 @@
   - **依赖**：T122
 
 - [x] **T124：实现 D4 verifier**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_verifier.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_verifier.py`
   - **逻辑**：只验证已存在正式 run，使用 higher consistency 和 approved difference list，
     通过后置 `READY_TO_START`；不运行旧/新 shadow，不提供 rollback。
   - **验收**：T123 全部通过
@@ -1040,46 +1040,46 @@
   - **依赖**：T050, T052, T054, T056, T058, T060, T062, T070, T074, T126
 
 - [x] **T129：退役细粒度第二 PDP 与 roster cache**
-  - **文件**：`src/backend/bisheng/permission/domain/services/fine_grained_permission_service.py`,
-    `src/backend/bisheng/permission/domain/services/application_permission_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/fine_grained_permission_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/application_permission_service.py`
   - **逻辑**：删除已迁移资源的第二 PDP、Config fallback 与旧 application facade；llm allowlist
     隔离在明确 legacy internal adapter，不暴露给 F048。
   - **验收**：T128 对第二 PDP/application service 的断言通过
   - **依赖**：T128
 
 - [x] **T130：退役 knowledge 权限 templates**
-  - **文件**：`src/backend/bisheng/permission/domain/knowledge_space_permission_template.py`,
-    `src/backend/bisheng/permission/domain/knowledge_library_permission_template.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/knowledge_space_permission_template.py`,
+    `src/backend/doberman_agent/permission/domain/knowledge_library_permission_template.py`
   - **逻辑**：删除运行时模板和 Config permission ID 解释，调用方已由 T052/T054 接管。
   - **验收**：T128 对 knowledge templates 的断言通过
   - **依赖**：T128
 
 - [x] **T131：退役旧 roster cache 与 check endpoint**
-  - **文件**：`src/backend/bisheng/permission/domain/services/relation_roster_cache.py`,
-    `src/backend/bisheng/permission/api/endpoints/permission_check.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/relation_roster_cache.py`,
+    `src/backend/doberman_agent/permission/api/endpoints/permission_check.py`
   - **逻辑**：删除 relation roster 缓存和旧 relation check HTTP 入口；新 roster/check 只由
     F048 explain/decision endpoints 提供。
   - **验收**：T128 对 cache/check endpoint 的断言通过
   - **依赖**：T128
 
 - [x] **T132：退役旧 resource_permission 与 backfill runtime**
-  - **文件**：`src/backend/bisheng/permission/api/endpoints/resource_permission.py`,
-    `src/backend/bisheng/permission/domain/relation_model_backfill.py`
+  - **文件**：`src/backend/doberman_agent/permission/api/endpoints/resource_permission.py`,
+    `src/backend/doberman_agent/permission/domain/relation_model_backfill.py`
   - **逻辑**：删除旧 Config model/binding CRUD、relation/permission_id 成员入口和运行期 backfill；
     历史数据只由 T126 scripts CLI 迁移。
   - **验收**：T128 全部通过
   - **依赖**：T128, T129, T130, T131
 
 - [x] **T133：退役 application/tool 权限 templates**
-  - **文件**：`src/backend/bisheng/permission/domain/application_permission_template.py`,
-    `src/backend/bisheng/permission/domain/tool_permission_template.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/application_permission_template.py`,
+    `src/backend/doberman_agent/permission/domain/tool_permission_template.py`
   - **逻辑**：删除旧动作数组/relation 模板；workflow/assistant/tool 只走具体 action。
   - **验收**：T128 对 application/tool templates 的断言通过
   - **依赖**：T128
 
 - [x] **T134：退役 channel/workflow 旧权限模板**
-  - **文件**：`src/backend/bisheng/permission/domain/channel_permission_template.py`,
-    `src/backend/bisheng/permission/domain/workflow_app_permission.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/channel_permission_template.py`,
+    `src/backend/doberman_agent/permission/domain/workflow_app_permission.py`
   - **逻辑**：删除旧四档/permission_id 映射，保留业务 Service 的 F048 action adapter。
   - **验收**：T128 全部通过
   - **依赖**：T128, T129, T130, T131, T132, T133
@@ -1135,11 +1135,11 @@
   - **依赖**：T093, T108, T127, T134, T136, T137, T138, T139
 
 - [x] **T141：修复大 Config 冻结载荷并保留排障原始行**
-  - **文件**：`src/backend/bisheng/permission/domain/models/migration.py`,
-    `src/backend/bisheng/core/database/alembic/versions/v3_0_0_f048_migration_item_message_longtext.py`,
-    `src/backend/bisheng/permission/migration/f048_coordinator.py`,
-    `src/backend/bisheng/permission/migration/f048_runtime_storage.py`,
-    `src/backend/bisheng/permission/migration/f048_verifier.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/migration.py`,
+    `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f048_migration_item_message_longtext.py`,
+    `src/backend/doberman_agent/permission/migration/f048_coordinator.py`,
+    `src/backend/doberman_agent/permission/migration/f048_runtime_storage.py`,
+    `src/backend/doberman_agent/permission/migration/f048_verifier.py`
   - **逻辑**：将 migration item 冻结载荷改为 MySQL LONGTEXT/DM8 CLOB；只删除已验证的
     legacy tuple，不删除两份 Config 原始行；Config 保留数量只进 verify 审计证据，不作为
     开放门禁。
@@ -1175,16 +1175,16 @@
 ### 基础设施
 
 - [x] **T144：补齐可见枚举错误码与领域 schema**
-  - **文件**：`src/backend/bisheng/common/errcode/permission.py`,
-    `src/backend/bisheng/permission/domain/schemas/f048.py`
+  - **文件**：`src/backend/doberman_agent/common/errcode/permission.py`,
+    `src/backend/doberman_agent/permission/domain/schemas/f048.py`
   - **逻辑**：登记 `25014 PermissionEnumerationIncomplete`；定义内部完整枚举请求/结果、
     `max_results`、正常结束状态和 source projection DTO。不得把部分结果包装成成功响应，
     不新增公开 ListObjects HTTP API。
   - **依赖**：T001, T002
 
 - [x] **T145：建立单槽 visible source projection 表与 DDL**
-  - **文件**：`src/backend/bisheng/permission/domain/models/projection.py`,
-    `src/backend/bisheng/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/projection.py`,
+    `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py`
   - **逻辑**：新增 `permission_visible_source_projection`，字段和唯一键严格按 Design §4.5.2，
     不含 `visibility_slot`；索引支持 resource/subject 聚合、model 引用清理和 migration item
     对账。revision 只做 MySQL/DM8 可移植 DDL；正式数据迁移开始后不提供应用级 downgrade，
@@ -1202,7 +1202,7 @@
   - **依赖**：T145
 
 - [x] **T147：实现 source projection Repository**
-  - **文件**：`src/backend/bisheng/permission/domain/repositories/projection_repository.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/repositories/projection_repository.py`
   - **逻辑**：提供 contribution upsert/retire、resource-subject active count、model 引用/残留
     cursor、operation checksum 和 migration batch API；只读写 permission 控制面表，不产生 ALLOW。
   - **验收**：T146 全部通过
@@ -1217,7 +1217,7 @@
   - **依赖**：T144
 
 - [x] **T149：实现单槽 Authorization Model builder**
-  - **文件**：`src/backend/bisheng/core/openfga/authorization_model_f048.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/authorization_model_f048.py`
   - **逻辑**：删除 model active 对既有 Grant 的运行时交集和深层 visible 反向枚举；保留 Catalog
     published/action 图，新增 ordinary/protected 浅层 visible relation，system/parent/mode 语义
     不变；不得引入 `permission_visibility_switch` 或 `visible_a/visible_b`。
@@ -1234,8 +1234,8 @@
   - **依赖**：T147, T149
 
 - [x] **T151：实现模型可分配状态与删除协议**
-  - **文件**：`src/backend/bisheng/permission/domain/services/model_policy.py`,
-    `src/backend/bisheng/permission/domain/services/catalog_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/model_policy.py`,
+    `src/backend/doberman_agent/permission/domain/services/catalog_service.py`
   - **逻辑**：把 `active` 收窄为 Grant command 的 target 可分配校验；impact 仍覆盖 inactive
     模型定义变化对既有 Grant 的 action 影响。`DELETE_MODEL` 在跨 tenant 引用和残留 checksum
     为零后，通过新 Catalog 不再包含 model_key 生效，不物理改写历史 release。
@@ -1251,8 +1251,8 @@
   - **依赖**：T147, T149
 
 - [x] **T153：实现 VisibilityProjectionCompiler**
-  - **文件**：`src/backend/bisheng/permission/domain/services/visibility_projection_service.py`,
-    `src/backend/bisheng/permission/domain/services/projection_plan.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/visibility_projection_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/projection_plan.py`
   - **逻辑**：从 canonical Grant assignee 编译单槽 contribution、引用计数与 aggregate tuple delta；
     contribution fingerprint 包含 source owner/model，聚合 key 不含 model/slot。编译器为纯授权投影，
     不查询业务表、不展开部门/用户组成员、不参与读取 fallback。
@@ -1269,8 +1269,8 @@
   - **依赖**：T151, T153
 
 - [x] **T155：接入 Grant mutation 单槽投影**
-  - **文件**：`src/backend/bisheng/permission/domain/services/grant_service.py`,
-    `src/backend/bisheng/permission/domain/services/projection_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/grant_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/projection_service.py`
   - **逻辑**：在同一 SQL prepare 冻结 assignee 与 contribution after-state，预置 recent marker，
     一个 OpenFGA Write 提交 action 和单槽 visible delta，higher-consistency 校验后 finalize；
     编译后超过 90 整体拒绝，不跨批报告部分成功。
@@ -1287,8 +1287,8 @@
   - **依赖**：T149, T155
 
 - [x] **T157：实现 StreamedListObjects 与 list_visible_objects**
-  - **文件**：`src/backend/bisheng/core/openfga/client.py`,
-    `src/backend/bisheng/permission/domain/services/permission_action_service.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/client.py`,
+    `src/backend/doberman_agent/permission/domain/services/permission_action_service.py`
   - **逻辑**：client 完整消费 stream 并显式 model pin/consistency；permission facade 只在正常
     结束且未超过调用方 `max_results` 时一次性交付不可变去重 ID 集。visible 路径只做 tenant
     fence，不执行 super_admin/tenant_admin shortcut，不返回部分前缀。
@@ -1303,7 +1303,7 @@
   - **依赖**：T153, T155
 
 - [x] **T159：实现 visible source reconcile**
-  - **文件**：`src/backend/bisheng/permission/domain/services/visibility_projection_service.py`,
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/visibility_projection_service.py`,
     `src/backend/scripts/reconcile_f048_projection_operations.py`
   - **逻辑**：从 canonical contribution 重算 aggregate checksum，默认 dry-run；`--apply` 只通过
     领域 reconcile operation 补差异。Store/model/scope fence、ledger 或来源不完整时保持
@@ -1353,8 +1353,8 @@
   - **依赖**：T140
 
 - [x] **T164：实现 mine 轻量列表响应**
-  - **文件**：`src/backend/bisheng/knowledge/domain/schemas/knowledge_space_schema.py`,
-    `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/schemas/knowledge_space_schema.py`,
+    `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
   - **逻辑**：`KnowledgeSpaceListItemResp` 只保留基础空间与 pin/follow/subscription/role；
     `_format_member_spaces` 不调用根文件计数和部门元数据装饰。已提交 `e14d64f73`。
   - **验收**：T163 全部通过
@@ -1369,7 +1369,7 @@
   - **依赖**：T140
 
 - [x] **T166：实现 department 后端轻量列表**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/department_knowledge_space_service.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/department_knowledge_space_service.py`
   - **逻辑**：binding candidates→单次 bounded visible BatchCheck→`_format_basic_spaces`；只返回
     业务基础字段与 pin 状态。已提交 `e14d64f73`。
   - **验收**：T165 全部通过
@@ -1403,7 +1403,7 @@
   - **依赖**：T162
 
 - [x] **T170：实现 joined 可见 ID 优先链路**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
   - **逻辑**：`list_visible_objects("knowledge_space", max_results=5000)`→DB 500-ID 分块详情查询→
     canonical creator 排除与稳定 `order_by` 归并；删除 `_scan_space_action_ids("visible")`、
     membership/role candidate 和 `_format_accessible_spaces` 的重复 visible。主动订阅只有已投影
@@ -1420,8 +1420,8 @@
   - **依赖**：T162
 
 - [x] **T172：实现文件/文件夹候选优先续取**
-  - **文件**：`src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`,
-    `src/backend/bisheng/knowledge/domain/models/knowledge_file.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`,
+    `src/backend/doberman_agent/knowledge/domain/models/knowledge_file.py`
   - **逻辑**：业务 Repository 以稳定 `(sort_key,id)` cursor 有界取候选，Service 对每批构造
     verified target 并 `batch_check_visible`；不足 page_size 继续扫描，next cursor 基于最后扫描
     候选而非最后可见项。不得先枚举全部可见子资源或把继承概率当 ALLOW。
@@ -1444,8 +1444,8 @@
   - **依赖**：T153, T162
 
 - [x] **T174：实现迁移 target 单槽编译**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_tuple_mapper.py`,
-    `src/backend/bisheng/permission/migration/f048_coordinator.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_tuple_mapper.py`,
+    `src/backend/doberman_agent/permission/migration/f048_coordinator.py`
   - **逻辑**：在原唯一 PermissionMigrationRun 中复用 VisibilityProjectionCompiler，从旧 Config/
     tuple/Owner facts 直接生成最终 Grant/assignee/source/aggregate tuple；每批≤90、持久化 source
     与 target checksum 后才退休 legacy，不发布中间深层-visible model。
@@ -1462,8 +1462,8 @@
   - **依赖**：T174
 
 - [x] **T176：实现 D4 单槽 verifier**
-  - **文件**：`src/backend/bisheng/permission/migration/f048_verifier.py`,
-    `src/backend/bisheng/permission/migration/f048_runtime_verification.py`
+  - **文件**：`src/backend/doberman_agent/permission/migration/f048_verifier.py`,
+    `src/backend/doberman_agent/permission/migration/f048_runtime_verification.py`
   - **逻辑**：移除 A/B/switch gate，新增单槽 contribution/aggregate/live checksum、模型引用残留、
     streamed visible 完整性和 canonical oracle；source item 继续按 `(source_kind,source_locator)`
     在应用层排序，preserved tuple 继续排除计划退休项。
@@ -1566,8 +1566,8 @@
   - **依赖**：T159, T170, T172
 
 - [x] **T188：实现 visible 投影与列表可观测**
-  - **文件**：`src/backend/bisheng/permission/domain/services/visibility_projection_service.py`,
-    `src/backend/bisheng/permission/domain/services/permission_action_service.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/visibility_projection_service.py`,
+    `src/backend/doberman_agent/permission/domain/services/permission_action_service.py`
   - **逻辑**：按 Design §7.3 写结构化 metric-log 与审计 ID/checksum；无来源 tuple、删除残留、
     stream incomplete、joined 容量 80% 和 candidate scan amplification 超阈值告警，不记录 PII。
   - **验收**：T187 全部通过
@@ -1606,7 +1606,7 @@
   - **依赖**：T148, T160, T171
 
 - [x] **T192：实现 F048 v2 visible 模型边界**
-  - **文件**：`src/backend/bisheng/core/openfga/authorization_model_f048.py`
+  - **文件**：`src/backend/doberman_agent/core/openfga/authorization_model_f048.py`
   - **逻辑**：Authorization Model 版本升为 `f048-v2`；只为需要完整枚举的顶层资源展平 Grant
     visible，folder/file 继续通过 canonical parent 继承，system/public/shared 不受 mode gate。
   - **验收**：T191 与 model checksum 稳定性测试通过
@@ -1620,7 +1620,7 @@
 
 - [x] **T194：实现旧迁移环境前向对账与 immutable model/Catalog 切换**
   - **文件**：`src/backend/scripts/reconcile_f048_visible_projection.py`,
-    `src/backend/bisheng/permission/application/catalog_api.py`, `src/backend/scripts/README.md`
+    `src/backend/doberman_agent/permission/application/catalog_api.py`, `src/backend/scripts/README.md`
   - **逻辑**：以 SQL Grant/assignee 重建 source projection；默认 dry-run，apply 要求停流、Store
     /operator 确认、无在途 operation，旧 model 切换需显式确认；同 Store 发布/复用最终 model，
     以 duplicate-ignore 确保全部 Grant visible tuple 并 higher-consistency 验证，成功后再激活来源表，
@@ -1644,11 +1644,11 @@
   - **覆盖 AC**：AC-178, AC-179, AC-180, AC-181
 
 - [x] **T196：解耦资源投影写锁与 OpenFGA 决策路径**
-  - **文件**：`src/backend/bisheng/permission/domain/models/grant.py`,
-    `src/backend/bisheng/permission/application/control_state.py`,
-    `src/backend/bisheng/permission/application/sql_runtime.py`,
-    `src/backend/bisheng/permission/domain/services/permission_action_service.py`,
-    `src/backend/bisheng/permission/application/resource_api.py`
+  - **文件**：`src/backend/doberman_agent/permission/domain/models/grant.py`,
+    `src/backend/doberman_agent/permission/application/control_state.py`,
+    `src/backend/doberman_agent/permission/application/sql_runtime.py`,
+    `src/backend/doberman_agent/permission/domain/services/permission_action_service.py`,
+    `src/backend/doberman_agent/permission/application/resource_api.py`
   - **逻辑**：允许现有资源在 `PROJECTING/FAILED_CLOSED` 镜像状态下生成 verified target 并执行
     OpenFGA action/visible；非 CURRENT 或版本切换强制 higher consistency；Grant/mode/lifecycle
     新 operation 仍只从 CURRENT claim；degraded `my-permissions` 返回实际 action 与投影状态，
@@ -1672,8 +1672,8 @@
   - **依赖**：T159, T196
 
 - [x] **T198：实现通用 resource FAILED_CLOSED 恢复脚本**
-  - **文件**：`src/backend/bisheng/permission/domain/services/projection_service.py`,
-    `src/backend/bisheng/permission/application/sql_runtime.py`,
+  - **文件**：`src/backend/doberman_agent/permission/domain/services/projection_service.py`,
+    `src/backend/doberman_agent/permission/application/sql_runtime.py`,
     `src/backend/scripts/recover_f048_failed_closed_projection.py`,
     `src/backend/scripts/README.md`
   - **逻辑**：只接受仍持有 expected version/operation fence 的 resource operation；以 durable

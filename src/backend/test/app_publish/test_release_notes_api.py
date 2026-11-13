@@ -21,7 +21,7 @@ async def test_form_passes_optional_text_without_changing_response(
     service_account_principal,
     monkeypatch,
 ):
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     accept = AsyncMock(return_value=SimpleNamespace(deployment_id="d", app_id="a", version_id="v"))
     monkeypatch.setattr(PublishPipelineService, "accept", accept)
@@ -67,11 +67,11 @@ async def test_api_worker_approval_and_version_roundtrip(
     monkeypatch,
 ):
     """AC-08, AC-09, AC-12, AC-13: isolated API journey; external storage/runtime are doubles."""
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
-    from bisheng.app_runtime.api.endpoints.apps import router as app_router
-    from bisheng.app_runtime.domain.services import app_query_service
-    from bisheng.approval.api.endpoints.approval_user import router as approval_router
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.app_runtime.api.endpoints.apps import router as app_router
+    from doberman_agent.app_runtime.domain.services import app_query_service
+    from doberman_agent.approval.api.endpoints.approval_user import router as approval_router
     from test.e2e.helpers.api import assert_resp_200
 
     app, _ = await app_factory(slug="e2e-f112-api", name="e2e-f112-api")
@@ -103,7 +103,7 @@ async def test_api_worker_approval_and_version_roundtrip(
         assert versions["data"][0]["release_notes"] == expected
         assert versions["data"][1]["release_notes"] is None
 
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.common.dependencies.user_deps import UserPayload
         from test.e2e.helpers.api import assert_resp_error
 
         monkeypatch.setattr(app_query_service, "check_tenant_admin", AsyncMock(return_value=False))
@@ -152,8 +152,8 @@ async def test_platform_serves_the_actual_release_notes_cli_wheel(api_app):
     import json
     import zipfile
 
-    from bisheng.dev_toolkit.api.router import router as distribution_router
-    from bisheng.dev_toolkit.domain.services.artifact_service import ARTIFACTS_DIR
+    from doberman_agent.dev_toolkit.api.router import router as distribution_router
+    from doberman_agent.dev_toolkit.domain.services.artifact_service import ARTIFACTS_DIR
     from test.e2e.helpers.api import assert_resp_200
 
     async with api_app() as client:
@@ -169,4 +169,4 @@ async def test_platform_serves_the_actual_release_notes_cli_wheel(api_app):
         assert hashlib.sha256(response.content).hexdigest() == versions["cli"]["sha256"]
         assert versions["cli"]["filename"] in response.headers["content-disposition"]
         with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
-            assert b"--release-notes-file" in archive.read("bisheng_cli/cli.py")
+            assert b"--release-notes-file" in archive.read("doberman_agent_cli/cli.py")

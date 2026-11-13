@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 import { showApiError } from "~/api/request";
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { useState, useCallback } from "react";
 import { QrCode, RotateCw, Trash2 } from "lucide-react";
 import type { TSharedLinkGetResponse } from "~/types/chat";

@@ -10,19 +10,19 @@
 **所属版本**: v3.0.0-beta2
 **状态**: 官方链路商业控制边界已于 2026-09-09 确认；已补充客户端接口契约，其余待决项见 design.md §8
 **版本契约**: [release-contract.md](../release-contract.md)
-**依赖**: BiSheng 用户登录、模型管理与模型调用能力；Gateway 项目内的 DSH 商业授权模块
+**依赖**: doberman-agent 用户登录、模型管理与模型调用能力；Gateway 项目内的 DSH 商业授权模块
 
 ## 范围边界
 
 ### 本次纳入
 
-- DSH Desktop 仅配置 BiSheng Nginx 公开地址，通过浏览器完成 BiSheng 用户登录与授权；支持客户端发起、固定网页入口唤起及当前授权事务内的票据粘贴兜底。
+- DSH Desktop 仅配置 doberman-agent Nginx 公开地址，通过浏览器完成 doberman-agent 用户登录与授权；支持客户端发起、固定网页入口唤起及当前授权事务内的票据粘贴兜底。
 - 按自然人分配固定 License 席位，并限制已分配人数不超过授权上限。
 - 为已分配席位的用户提供 DSH 专用登录凭证。
-- DSH Desktop 使用 BiSheng 已配置且被管理员允许的模型驱动 Agent。
+- DSH Desktop 使用 doberman-agent 已配置且被管理员允许的模型驱动 Agent。
 - 对 DSH 模型调用执行月 token 上限控制并保留调用记录。
 - 管理员按北京时间查看指定用户在给定时间范围内的 Token 用量、消息数、完成问答数、失败数和小时/日趋势。
-- 管理员在 BiSheng 统一管理席位、模型范围、用量、撤销与重新分配。
+- 管理员在 doberman-agent 统一管理席位、模型范围、用量、撤销与重新分配。
 
 ### 本次明确排除
 
@@ -30,8 +30,8 @@
 - 不改变 PAT 的既有用途，PAT 与 DSH 席位、模型调用无关联。
 - 不因用户登出、客户端离线、异常退出或凭证过期自动释放席位。
 - 不按设备计数或收费，一个自然人始终只占一个席位。
-- 不迁移或复制 BiSheng 现有模型配置，不新增“DSH 模型”类型。
-- 不要求 BiSheng 常规业务部署 Gateway；启用 DSH 能力时须部署 Gateway 并启用其 DSH 授权模块。
+- 不迁移或复制 doberman-agent 现有模型配置，不新增“DSH 模型”类型。
+- 不要求 doberman-agent 常规业务部署 Gateway；启用 DSH 能力时须部署 Gateway 并启用其 DSH 授权模块。
 - 不包含 RPM/TPM、金额预算、部门共享池、跨租户聚合看板和用量导出。
 
 ---
@@ -40,13 +40,13 @@
 
 ### US-A DSH 用户
 
-作为 **已拥有 BiSheng 账号的 DSH Desktop 用户**，
-我希望 **通过浏览器登录并在 DSH Agent 中使用管理员开放的 BiSheng 模型**，
+作为 **已拥有 doberman-agent 账号的 DSH Desktop 用户**，
+我希望 **通过浏览器登录并在 DSH Agent 中使用管理员开放的 doberman-agent 模型**，
 以便 **无需单独配置模型密钥即可使用企业模型能力**。
 
 ### US-B 系统管理员
 
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **在同一管理入口的不同视图管理 DSH 席位与登录、可用模型和月用量上限**，
 以便 **统一管理员工的 DSH 使用资格与模型成本**。
 
@@ -56,7 +56,7 @@
 我希望 **实际获得 DSH 使用资格的自然人数不超过授权席位数**，
 以便 **未修改的官方 DSH 接入链路按商业授权限制使用资格**。
 
-2026-09-09 用户已确认：不承诺客户拥有服务器控制权并修改开源模型执行链后仍无法绕过，模型执行保留在 BiSheng。
+2026-09-09 用户已确认：不承诺客户拥有服务器控制权并修改开源模型执行链后仍无法绕过，模型执行保留在 doberman-agent。
 
 ### US-D 审计人员
 
@@ -70,7 +70,7 @@
 
 ### 2.1 登录与身份确认
 
-- **AC-01** — WHEN DSH Desktop 发起登录, THE SYSTEM SHALL 在浏览器中使用 BiSheng 既有用户登录能力完成身份认证。
+- **AC-01** — WHEN DSH Desktop 发起登录, THE SYSTEM SHALL 在浏览器中使用 doberman-agent 既有用户登录能力完成身份认证。
 - **AC-02** — WHEN 用户完成登录并确认授权 DSH, THE SYSTEM SHALL 向本次 DSH 登录返回一次性身份凭据。
 - **AC-03** — IF 一次性身份凭据无效、过期或已被使用, THEN THE SYSTEM SHALL 拒绝本次 DSH 登录且不分配席位。
 - **AC-04** — IF 用户已被停用、删除或不属于当前租户, THEN THE SYSTEM SHALL 拒绝本次 DSH 登录。
@@ -91,13 +91,13 @@
 - **AC-13** — WHEN 用户身份有效且席位已分配, THE SYSTEM SHALL 向 DSH Desktop 签发仅用于 DSH 能力的访问凭证。
 - **AC-14** — IF 用户没有已分配席位, THEN THE SYSTEM SHALL 拒绝签发或刷新 DSH 访问凭证。
 - **AC-15** — IF DSH 访问凭证无效、过期、租户不匹配或对应席位已撤销, THEN THE SYSTEM SHALL 拒绝 DSH 模型调用。
-- **AC-16** — THE SYSTEM SHALL 拒绝使用普通 BiSheng 登录凭证、PAT 或 SAK 代替 DSH 访问凭证调用 DSH 能力。
-- **AC-17** — WHEN 管理员撤销席位, THE SYSTEM SHALL 使该用户后续的凭证刷新和新的 DSH 模型调用失效，同时不影响其正常登录 BiSheng 或使用既有开放 API 凭证。
+- **AC-16** — THE SYSTEM SHALL 拒绝使用普通 doberman-agent 登录凭证、PAT 或 SAK 代替 DSH 访问凭证调用 DSH 能力。
+- **AC-17** — WHEN 管理员撤销席位, THE SYSTEM SHALL 使该用户后续的凭证刷新和新的 DSH 模型调用失效，同时不影响其正常登录 doberman-agent 或使用既有开放 API 凭证。
 
 ### 2.4 模型使用与用量治理
 
 - **AC-18** — WHEN 已授权的 DSH 用户查询可用模型, THE SYSTEM SHALL 仅返回既有模型业务确认当前租户合法可访问、可用且被管理员开放给 DSH 的模型，包括符合既有共享规则的 Root 模型。
-- **AC-19** — WHEN 已授权的 DSH 用户选择可用模型发起请求, THE SYSTEM SHALL 使用对应的 BiSheng 模型能力返回 Agent 所需的模型结果。
+- **AC-19** — WHEN 已授权的 DSH 用户选择可用模型发起请求, THE SYSTEM SHALL 使用对应的 doberman-agent 模型能力返回 Agent 所需的模型结果。
 - **AC-20** — WHERE DSH 请求选择流式响应, THE SYSTEM SHALL 持续返回模型输出，直至正常完成、用户取消或调用失败。
 - **AC-21** — IF 请求的模型未开放、已停用、已删除或既有模型业务不允许当前租户访问（包括未经授权的跨租户模型）, THEN THE SYSTEM SHALL 拒绝该模型调用。
 - **AC-22** — IF 当前用户在所选模型上本月已累计实际 token 用量达到或超过该用户与该模型配置的月上限, THEN THE SYSTEM SHALL 拒绝该模型的新调用；其他模型独立判断，不能借用或共用额度。
@@ -115,14 +115,14 @@
 ### 2.6 隔离与可选组件
 
 - **AC-30** — WHERE 多租户开启, THE SYSTEM SHALL 将登录、席位、用量和管理查询限定在当前租户；模型访问遵循既有租户权限及合法 Root 共享规则，不泄露其他租户用户、用量或模型供应商配置。
-- **AC-31** — IF 系统无法确认用户的 DSH 授权与席位状态, THEN THE SYSTEM SHALL 拒绝新的 DSH 登录和模型调用，同时保持 BiSheng 常规业务及开放 API 可用。
-- **AC-32** — WHERE 已部署 Gateway 且 DSH 授权模块有效启用, THE SYSTEM SHALL 支持本期 DSH 能力；未部署或未启用时应明确提示 DSH 不可用，且不影响 BiSheng 常规业务。
+- **AC-31** — IF 系统无法确认用户的 DSH 授权与席位状态, THEN THE SYSTEM SHALL 拒绝新的 DSH 登录和模型调用，同时保持 doberman-agent 常规业务及开放 API 可用。
+- **AC-32** — WHERE 已部署 Gateway 且 DSH 授权模块有效启用, THE SYSTEM SHALL 支持本期 DSH 能力；未部署或未启用时应明确提示 DSH 不可用，且不影响 doberman-agent 常规业务。
 
 ---
 
 ### 2.7 规模与高频调用
 
-- **AC-33** — WHERE 授权席位达到万级, THE SYSTEM SHALL 支持有界分页、账号/名称检索、席位状态及登录状态筛选；不要求席位页面一次加载全部用户；席位页面不提供部门筛选、不向 Gateway 同步部门数据。模型授权页面从 BiSheng 当前租户组织数据读取完整有效部门树和角色列表。
+- **AC-33** — WHERE 授权席位达到万级, THE SYSTEM SHALL 支持有界分页、账号/名称检索、席位状态及登录状态筛选；不要求席位页面一次加载全部用户；席位页面不提供部门筛选、不向 Gateway 同步部门数据。模型授权页面从 doberman-agent 当前租户组织数据读取完整有效部门树和角色列表。
 - **AC-34** — WHILE 模型调用频繁, THE SYSTEM SHALL 按已累计实际用量实时判断是否允许新调用，不预占在途请求用量；达到或超过所选模型的月上限后拒绝该模型的新请求，其他模型额度独立；已准入的并发请求允许完成并产生超额，实际用量完整记录；不得因持久化展示延迟继续放行，额度状态无法确认时拒绝新调用并明确提示不可用。
 - **AC-35** — WHEN 管理员选择今天、最近 7 天、最近 30 天或自定义时间范围, THE SYSTEM SHALL 按北京时间返回指定用户的实际 Token 总量及输入/输出 Token、消息数和成功问答数；一个 `request_id` 计一条消息，成功完成的请求计一次问答，失败请求保留在消息数并单独统计。短范围按小时、长范围按天聚合；用量缺失的请求单独计数且不按零处理。
 - **AC-36** — WHEN 用户同时命中部门、角色或兼容保留的直接用户授权, THE SYSTEM SHALL 允许任意一条有效授权提供模型使用资格，并采用其中最高的每人月度 Token 额度且不叠加；上级部门包含全部下级部门，当前及未来成员按最新组织关系继承。额度仍按“租户 + 用户 + 模型 + 月份”独立累计，授权本身不提前占用席位。
@@ -164,7 +164,7 @@
 - 一个用户可配置多个模型，每个“用户＋模型”组合仅有一份配置，分别设置月 token 上限；不再执行跨模型共用的用户总上限。0 只禁止该模型新准入。
 - 一期不实现 RPM、TPM 或并发限流，也不预埋无效限流字段。实际用量结算和在途可超额规则不变。
 - 主配置 `Settings.dsh` 及模型额度均使用明确类型对象，字段提供含义、单位和取值边界。
-- 毕昇新增业务不手写 SQL，由 ORM 生成查询与更新；Gateway 保留既有 Mapper 风格并核对兼容性。DM8 真库本轮按用户授权暂缓，以可移植性审查作为本轮条件，不宣称 DM8 实测通过。
+- doberman-agent新增业务不手写 SQL，由 ORM 生成查询与更新；Gateway 保留既有 Mapper 风格并核对兼容性。DM8 真库本轮按用户授权暂缓，以可移植性审查作为本轮条件，不宣称 DM8 实测通过。
 
 
 2026-09-10 用户确认的存储细化：每个租户、用户、模型组合在额度配置表内独占一条记录；各自保存额度及版本，按模型检索可使用索引。不另建主从明细表；此功能未发版，不新增 Alembic，109 独立联调实例单独调整表结构。此项不改变一期功能范围和 DSH 客户端公共协议。

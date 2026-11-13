@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.dsh.domain.services.role_migration import migrate_role_policies, role_migration_plan
+from doberman_agent.dsh.domain.services.role_migration import migrate_role_policies, role_migration_plan
 
 
 def member(direct=6000, role=100000, configured=True):

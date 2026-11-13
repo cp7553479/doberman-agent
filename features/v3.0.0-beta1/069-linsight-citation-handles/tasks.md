@@ -30,7 +30,7 @@
 
 **自包含**：每个任务内联文件、逻辑、AC；设计论证指向 design §X 不复制。行号以 design 记录的 `3b8b83965` 为准，实施时以函数名为锚重新定位。
 
-**验证命令**（worktree 里先软链主检出的 `src/backend/.venv`、`src/backend/bisheng/config.yaml`、`src/frontend/**/node_modules`）：
+**验证命令**（worktree 里先软链主检出的 `src/backend/.venv`、`src/backend/doberman_agent/config.yaml`、`src/frontend/**/node_modules`）：
 
 ```bash
 cd src/backend && unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
@@ -50,12 +50,12 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
 
 - [x] **T001**: `LinsightCitationScope` 单元测试
   **文件**: `src/backend/test/citation/test_linsight_citation_scope.py`
-  **逻辑**: 用 `AsyncMock` 替身 Redis（monkeypatch `bisheng.citation.domain.services.linsight_citation_scope.get_redis_client`）。断言：`record_seen(items)` 对键 `linsight:cite_seen:<svid>` 调 `ahset(mapping={item_key: type})` 并 `aexpire_key(..., 30*24*3600)`；`seen_keys` 去重且进程内累积；`load()` 用 `ahgetall` 回填 `seen_keys`；Redis 抛异常时 `record_seen` / `load` 只记 warning、不抛、`seen_keys` 仍按进程内累积；`items` 为空不写 Redis。
+  **逻辑**: 用 `AsyncMock` 替身 Redis（monkeypatch `doberman_agent.citation.domain.services.linsight_citation_scope.get_redis_client`）。断言：`record_seen(items)` 对键 `linsight:cite_seen:<svid>` 调 `ahset(mapping={item_key: type})` 并 `aexpire_key(..., 30*24*3600)`；`seen_keys` 去重且进程内累积；`load()` 用 `ahgetall` 回填 `seen_keys`；Redis 抛异常时 `record_seen` / `load` 只记 warning、不抛、`seen_keys` 仍按进程内累积；`items` 为空不写 Redis。
   **覆盖 AC**: AC-02, AC-25
   **依赖**: 无
 
 - [x] **T002**: `LinsightCitationScope` 实现
-  **文件**: `src/backend/bisheng/citation/domain/services/linsight_citation_scope.py`（新）
+  **文件**: `src/backend/doberman_agent/citation/domain/services/linsight_citation_scope.py`（新）
   **逻辑**: `class LinsightCitationScope(svid: str, session_id: str, enabled: bool = True)`；属性 `seen_keys: set[str]`；`async record_seen(items: list[CitationRegistryItemSchema])`：取 `build_item_key`（`citation_registry_service.py`）得 key，`ahset(name, mapping=)` + `aexpire_key`（`core/cache/redis_conn.py` `ahset`/`aexpire_key`，样板 `knowledge/domain/services/knowledge_utils.py` L174-207）；`async load()`：`ahgetall` 回填；两者包 try/except 记 warning（design §2「绝不 raise」）。Redis 键 `linsight:cite_seen:<svid>`，无花括号（design §2）。
   **测试**: T001 全绿
   **依赖**: T001
@@ -67,13 +67,13 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T002
 
 - [x] **T004**: 检索工具与联网包装器接 scope
-  **文件**: `src/backend/bisheng/tool/domain/langchain/linsight_knowledge.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/langchain/linsight_knowledge.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: `SearchKnowledgeBase` 新增 pydantic 字段 `citation_scope: Any | None = None`（样板同文件 `allowed_knowledge_ids`）；`base_search` 在 `await cache_citation_registry_items(items)` 之后、既有 try 内 `if self.citation_scope: await self.citation_scope.record_seen(items)`。`agent_factory.py`：把 `_annotate_web_search_output(output)` 拆成 `_annotate_web_search_items(output) -> tuple[str, list]`（原函数保留为薄封装，既有测试不改）；`_LinsightWebCitationWrapper` 新增字段 `scope: Any = None`，`wrap(inner, scope=None)`，`_arun` 用新函数并 `record_seen`；`_wrap_linsight_web_citation_tools(tools, scope=None)` 透传。
   **测试**: T003 (a)(b)(c) 全绿；`test_linsight_citation_agent.py`、`test_linsight_knowledge_citations.py` 不破
   **依赖**: T003
 
 - [x] **T005**: 执行器构造 scope 并绑定到工具
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`、`src/backend/bisheng/linsight/domain/task_exec.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`、`src/backend/doberman_agent/linsight/domain/task_exec.py`
   **逻辑**: `create_linsight_agent(..., citation_scope=None)`：原 `tools = _wrap_linsight_web_citation_tools(list(tools or []))` 处改为 `_bind_linsight_citation_scope(tools, citation_scope)`（KB 工具设 `citation_scope` 字段、web 工具包装带 scope），`_subagent_tools` 取同一批实例。`task_exec._create_agent`：构造 `LinsightCitationScope(svid=session_model.id, session_id=session_model.session_id)`，`await scope.load()`（resume / continue 回读），存 `self._citation_scope`，传 `citation_scope=scope`。
   **测试**: T003 (d) 用例全绿
   **依赖**: T004
@@ -87,7 +87,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T002
 
 - [x] **T007**: `_audit_report_citations` 实现与三条路径接线
-  **文件**: `src/backend/bisheng/linsight/domain/task_exec.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/task_exec.py`
   **逻辑**: 新方法 `_audit_report_citations(self, session_model, answer, final_files) -> dict`（放 `_persist_report_citations` 之前）：`sources_seen = len(self._citation_scope.seen_keys)`（无 scope 则 0）；扫描 `final_files` 中本地存在的 `.md`（同 `_persist_report_citations` 的读法）+ `answer`；`cited = len(set(extract_citation_ids_from_text(text)))`（`citation_prompt_helper.py`）；`footnotes_without_defs = max(0, count(r"\[\^\d+\](?!:)") - count(r"^\[\^\d+\]:", M))`；`bracket_numbers = count(r"(?<!\[)\[\d{1,3}\](?!\()")`；`html_only = 无 .md 但有 .html`；`status`：seen==0→`no_sources`，cited>0→`cited`，否则→`uncited`；`scanned_files` ≤20；`unknown_handles=[]`（P1 填）；日志一行 `[linsight-citation-audit] session={svid} model={getattr(session_model,'model',None)} status= sources_seen= cited= unknown_handles= footnotes_without_defs= bracket_numbers= html_only=`，`uncited` 用 `logger.warning` 否则 `logger.info`；整体 try/except 返回 `{}`。三条路径在 `build_fallback_report_file` 之后、`session_model.output_result = {...}` 之前调用，字典加 `"citation_audit": audit`（design 决策 7；`_handle_direct_answer_completion`、`_handle_task_partial`、`_handle_task_success`）。`_persist_report_citations` 末尾把 `len(payloads)` 写进 `output_result["citation_audit"]["persisted"]`（沿用其 copy+reassign）。不改 answer。
   **测试**: T006 全绿；`test_task_exec_report_citations.py` 不破（fixture 需补 `_citation_scope = None`）
   **依赖**: T006
@@ -101,7 +101,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: 无
 
 - [x] **T009**: 3a 占位符、`has_web_search` 入参、`_CitationTailMiddleware`
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: 3a 行「其它格式由它派生）。」后插 `__CITATION_DELIVERABLE_LINE__`；`_build_linsight_system_prompt(has_knowledge_base, skills_present=False, has_code_interpreter=False, has_web_search=False)`，replace 链解析占位符为「正文中凡依据检索资料写出的事实、数字、引文，在该句或该段末尾按 Citation Rules 逐字复制来源标识并用引用标记包裹。」（仅 `has_knowledge_base or has_web_search`），否则空串；新增常量 `_LINSIGHT_CITATION_TAIL_ZH`，正文：
   「# 来源标注（与上文 Citation Rules 同一要求，不改变其它任何要求）
 
@@ -136,7 +136,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
 
 - [x] **T013**: 116 P0 基线取数
   **文件**: 无（结果记入 design §7）
-  **逻辑**: 按 PRD §7：两题 × deepseek-v4-flash / -pro / qwen3.5 × 3 次；每次记 `docker logs bisheng-test-backend-worker | grep '\[linsight-citation-audit\]'` 一行与 MySQL `linsight_session_version.output_result.citation_audit`；统计 uncited 率作为 P1 对照基线；确认历史回看与分享页提示一致。
+  **逻辑**: 按 PRD §7：两题 × deepseek-v4-flash / -pro / qwen3.5 × 3 次；每次记 `docker logs doberman-agent-test-backend-worker | grep '\[linsight-citation-audit\]'` 一行与 MySQL `linsight_session_version.output_result.citation_audit`；统计 uncited 率作为 P1 对照基线；确认历史回看与分享页提示一致。
   **覆盖 AC**: AC-03, AC-04
   **依赖**: T007, T011（分支部署到 116 test，部署方式与用户确认）
 
@@ -145,13 +145,13 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
 #### 基础设施（无测试配对）
 
 - [x] **T014**: Redis 客户端补 `ahincrby` / `ahsetnx`
-  **文件**: `src/backend/bisheng/core/cache/redis_conn.py`
+  **文件**: `src/backend/doberman_agent/core/cache/redis_conn.py`
   **逻辑**: 仿 `ahset` / `ahget`：`async ahincrby(name, key, amount=1) -> int`、`async ahsetnx(name, key, value) -> bool`（先 `await self.acluster_nodes(name)`）；design 决策 4 的原子分配依赖。
   **依赖**: 无
 
 - [x] **T015**: `LinsightConf.citation_handles_enabled` 开关
-  **文件**: `src/backend/bisheng/core/config/settings.py`、`docker/bisheng/config/config.yaml`
-  **逻辑**: `LinsightConf` 新增 `citation_handles_enabled: bool = Field(default=True, description=...)`；shipped `config.yaml` 没有 `linsight:` 段，只加连父键的注释示例（`# linsight:` / `#   citation_handles_enabled: true`）。运行期读法：`await settings.aget_linsight_conf()`（`bisheng.common.services.config_service.settings`，同步版 `settings.get_linsight_conf()` 在 agent_factory 已用）。
+  **文件**: `src/backend/doberman_agent/core/config/settings.py`、`docker/doberman-agent/config/config.yaml`
+  **逻辑**: `LinsightConf` 新增 `citation_handles_enabled: bool = Field(default=True, description=...)`；shipped `config.yaml` 没有 `linsight:` 段，只加连父键的注释示例（`# linsight:` / `#   citation_handles_enabled: true`）。运行期读法：`await settings.aget_linsight_conf()`（`doberman_agent.common.services.config_service.settings`，同步版 `settings.get_linsight_conf()` 在 agent_factory 已用）。
   **依赖**: 无
 
 #### 句柄表服务（Test-First 配对）
@@ -163,7 +163,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T002, T014
 
 - [x] **T017**: `citation_handle_service` 实现与 scope 扩展
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_handle_service.py`（新）、`src/backend/bisheng/citation/domain/services/linsight_citation_scope.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_handle_service.py`（新）、`src/backend/doberman_agent/citation/domain/services/linsight_citation_scope.py`
   **逻辑**: 键 `linsight:cite_handles:<session_id>`；`_HANDLE = r"S\d{1,4}"`、`_GROUP`、`_RUN_RE`（design §4.2）；`async assign(scope, items) -> dict[key, handle]` 用 T014 的原子命令，表首次创建（`next` 不存在）时同时 `HSETNX meta:enabled <scope.enabled>`；`convert_handles_to_markers(text, handles) -> ConvertResult(text, converted, unknown, skipped_definitions)`；`strip_citation_handles(text)`。scope 新增属性 `handles: dict[str, str]`（handle→key）、`entries: list[dict]`、`unknown_handles: dict[str, int]`、`converted_count: int`；`load()` 从 `linsight:cite_handles:<session_id>` 水化并读 `meta:enabled`。
   **测试**: T016 全绿
   **依赖**: T016
@@ -177,7 +177,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T017
 
 - [x] **T019**: 工具输出句柄化实现
-  **文件**: `src/backend/bisheng/tool/domain/langchain/linsight_knowledge.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/langchain/linsight_knowledge.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: `base_search` 在 `record_seen` 之后调 `handles = await citation_handle_service.assign(scope, items)`（刷新 `scope.handles` / `scope.entries` 镜像），再在 `format_retrieved_chunk` 之后按 `handles` 做 `<chunk_id>` → `<ref>` 替换（不改 `format_retrieved_chunk`）；web wrapper `_arun` 同样先 `assign` 再按 `handles` 加 `ref`、删 `citation_key` / `itemId`；`assign` 返回空映射（Redis 故障或 scope 关闭）时保留旧形态。
   **测试**: T018 全绿
   **依赖**: T018
@@ -191,7 +191,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T009
 
 - [x] **T021**: 短规则与编号措辞实现
-  **文件**: `src/backend/bisheng/core/prompts/yaml/citation_handles.yaml`（新）、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/core/prompts/yaml/citation_handles.yaml`（新）、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: yaml key `linsight_handle_rules`，正文：
   「# 来源编号
 
@@ -213,7 +213,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T017
 
 - [x] **T023**: `LinsightCitationSourceMiddleware` 实现与挂载
-  **文件**: `src/backend/bisheng/linsight/domain/services/citation_source_middleware.py`（新）、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/citation_source_middleware.py`（新）、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: 样板 `resilience_middleware.py` `_with_wrap_up_nudge`、`tool_loop_middleware.py` `_repeat_nudge`；只实现 `awrap_model_call`，绝不实现 `wrap_tool_call`（design 决策 5）；提醒去重与 `[linsight-citation-nudge]` 日志在本文件；主栈在 tool-loop breaker 之后挂载（`has_kb or has_web` 且 `scope.enabled`），researcher 栈 `is_subagent=True`。
   **测试**: T022 全绿
   **依赖**: T022
@@ -227,7 +227,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T005, T017
 
 - [x] **T025**: 写边界转换实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/workspace_backend.py`、`src/backend/bisheng/linsight/domain/task_exec.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/workspace_backend.py`、`src/backend/doberman_agent/linsight/domain/task_exec.py`
   **逻辑**: `WorkspaceBackend.__init__(..., citation_scope=None)`；`_normalize_markdown_citation_bytes` 改为实例方法 `_canonicalize_citation_bytes(rel, data)`：unescape → `convert_handles_to_markers`；`write` / `edit`（含 `old_string`）/ `awrite` 调用，每次把 `ConvertResult.converted` 累加到 `scope.converted_count`、`unknown` 累加到 `scope.unknown_handles`；`_create_agent` 传 scope；新方法 `_canonicalize_answer_citations(answer)` 在三条路径接线（同样累加）。
   **测试**: T024 全绿；`test_workspace_backend.py` 不破
   **依赖**: T024
@@ -241,7 +241,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T017
 
 - [x] **T027**: 后端导出剥未知编号实现
-  **文件**: `src/backend/bisheng/tool/domain/langchain/linsight_export.py`、`src/backend/bisheng/linsight/api/endpoints/linsight.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/langchain/linsight_export.py`、`src/backend/doberman_agent/linsight/api/endpoints/linsight.py`
   **逻辑**: 各调用点在 `strip_citation_markers` 之后调 `strip_citation_handles`。
   **测试**: T026 全绿
   **依赖**: T026
@@ -262,7 +262,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T025
 
 - [x] **T030**: 审计扩展实现
-  **文件**: `src/backend/bisheng/linsight/domain/task_exec.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/task_exec.py`
   **逻辑**: `_audit_report_citations` 读 `scope.unknown_handles` / `scope.converted_count`；日志行加 `converted=`。
   **测试**: T029 全绿
   **依赖**: T029
@@ -274,7 +274,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T015, T017, T019, T021, T023, T025
 
 - [x] **T032**: 开关与在途会话契约实现
-  **文件**: `src/backend/bisheng/linsight/domain/task_exec.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/task_exec.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: `_create_agent` 先 `await scope.load()` 读 `meta:enabled`，无则 `(await settings.aget_linsight_conf()).citation_handles_enabled`，写 `scope.enabled`（首次落 `meta:enabled` 由 T017 的 `assign` 在建表时完成，design 决策 6）；`create_linsight_agent` 按 `scope.enabled` 选择工具输出 / 规则文本（T021 两套）/ 是否挂 source middleware；写盘边界看 `scope.enabled`。
   **测试**: T031 全绿
   **依赖**: T031
@@ -294,7 +294,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T017
 
 - [x] **T035**: `render_citations_for_export` 实现
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_handle_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_handle_service.py`
   **逻辑**: 纯函数，不查权限（design 决策 8）。
   **测试**: T034 全绿
   **依赖**: T034
@@ -306,7 +306,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T035
 
 - [x] **T037**: 后端导出调用点改烘焙
-  **文件**: `src/backend/bisheng/tool/domain/langchain/linsight_export.py`、`src/backend/bisheng/linsight/api/endpoints/linsight.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/langchain/linsight_export.py`、`src/backend/doberman_agent/linsight/api/endpoints/linsight.py`
   **逻辑**: 导出前以导出者身份 `resolve_citations_with_reasons`（既有 `citation_resolve_service`，INV-7 执行点）取来源，调 `render_citations_for_export`；未解析退回剥离并记日志 `citations_baked=false`。替换 T027 引入位置上的 `strip_citation_markers` 调用；`strip_citation_handles`（剥未识别编号）保留（AC-19）。
   **测试**: T036 全绿
   **依赖**: T036
@@ -318,7 +318,7 @@ cd client && ../node_modules/.bin/tsc-strict && node_modules/.bin/jest <测试�
   **依赖**: T025
 
 - [x] **T039**: html 交付物上标与附录实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/workspace_backend.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/workspace_backend.py`
   **逻辑**: 写 `.html` 分支（design 决策 8）。
   **测试**: T038 全绿
   **依赖**: T038

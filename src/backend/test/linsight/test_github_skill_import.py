@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from bisheng.common.errcode.linsight import (
+from doberman_agent.common.errcode.linsight import (
     SkillBundleTooLargeError,
     SkillGitHubFetchError,
     SkillGitHubRateLimitError,
@@ -17,15 +17,15 @@ from bisheng.common.errcode.linsight import (
     SkillNameDuplicateError,
     SkillValidationError,
 )
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill
-from bisheng.linsight.domain.services import github_skill_fetcher as fetcher_module
-from bisheng.linsight.domain.services import skill_service as service_module
-from bisheng.linsight.domain.services.github_skill_fetcher import (
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill
+from doberman_agent.linsight.domain.services import github_skill_fetcher as fetcher_module
+from doberman_agent.linsight.domain.services import skill_service as service_module
+from doberman_agent.linsight.domain.services.github_skill_fetcher import (
     GithubTarget,
     fetch_skill_files,
     parse_github_url,
 )
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 1

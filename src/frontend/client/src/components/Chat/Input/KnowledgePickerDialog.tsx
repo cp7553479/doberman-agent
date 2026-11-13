@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import { Button, Checkbox, Modal, SearchInput } from '@bisheng/ui';
+import { Button, Checkbox, Modal, SearchInput } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { useKnowledgeSpaceAccess } from '~/hooks/useKnowledgeSpaceAccess';
 import type { KnowledgeItem, KnowledgeType } from './knowledgeTypes';

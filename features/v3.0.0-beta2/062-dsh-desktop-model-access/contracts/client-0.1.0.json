@@ -1,6 +1,6 @@
 {
   "contract_version": "0.1.0",
-  "base": "https://bisheng.example.com",
+  "base": "https://platform.example.com.com",
   "source": "client-api.md",
   "endpoints": [
     {
@@ -31,7 +31,7 @@
         "http_status": 200,
         "body": {
           "auth_id": "auth_01_example",
-          "authorize_url": "https://bisheng.example.com/desktop-login?auth_id=auth_01_example",
+          "authorize_url": "https://platform.example.com.com/desktop-login?auth_id=auth_01_example",
           "expires_in": 300
         }
       }
@@ -88,10 +88,10 @@
           "object": "list",
           "data": [
             {
-              "id": "bisheng:42",
+              "id": "doberman-agent:42",
               "object": "model",
               "created": 1788919200,
-              "owned_by": "bisheng",
+              "owned_by": "doberman-agent",
               "display_name": "Enterprise Chat",
               "capabilities": {
                 "streaming": true,
@@ -107,7 +107,7 @@
       "method": "POST",
       "path": "/api/v1/dsh/chat/completions",
       "request": {
-        "model": "bisheng:42",
+        "model": "doberman-agent:42",
         "messages": [
           {
             "role": "user",
@@ -144,7 +144,7 @@
           "id": "chatcmpl-example",
           "object": "chat.completion",
           "created": 1788919200,
-          "model": "bisheng:42",
+          "model": "doberman-agent:42",
           "choices": [
             {
               "index": 0,
@@ -244,7 +244,7 @@
     }
   },
   "tool_followup": {
-    "model": "bisheng:42",
+    "model": "doberman-agent:42",
     "messages": [
       {
         "role": "user",
@@ -308,10 +308,10 @@
     }
   ],
   "sse_frames": [
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":null}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hello\"},\"finish_reason\":null}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[],\"usage\":{\"prompt_tokens\":10,\"completion_tokens\":1,\"total_tokens\":11}}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":null}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hello\"},\"finish_reason\":null}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[],\"usage\":{\"prompt_tokens\":10,\"completion_tokens\":1,\"total_tokens\":11}}",
     "[DONE]",
     "{\"error\":{\"message\":\"Upstream connection interrupted\",\"type\":\"upstream_error\",\"code\":\"upstream_error\"},\"request_id\":\"req_example\"}"
   ],

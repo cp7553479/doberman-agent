@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Outlined } from 'bisheng-icons';
-import { SearchInput } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { SearchInput } from '@doberman-agent/ui';
 import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '~/components/ui';
 import { useLocalize } from '~/hooks';
 import type { TaskModeSkill } from '~/store/linsight';

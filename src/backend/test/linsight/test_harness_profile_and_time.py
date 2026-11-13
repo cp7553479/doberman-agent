@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from langchain_core.messages import SystemMessage
 
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services.agent_factory import (
     _LINSIGHT_LANGUAGE_DIRECTIVE_ZH,
     _LanguageTailMiddleware,
 )
@@ -97,7 +97,7 @@ class _FakeSession:
 
 
 def test_current_time_block_format():
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     block = LinsightWorkflowTask._current_time_block()
     assert block.startswith("# 当前时间")
@@ -105,7 +105,7 @@ def test_current_time_block_format():
 
 
 def test_build_agent_input_includes_time_and_question():
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     out = LinsightWorkflowTask._build_agent_input(_FakeSession(), file_list=None)
     content = out["messages"][0]["content"]

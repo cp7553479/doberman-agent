@@ -16,7 +16,7 @@ Four things this file exists to prevent:
   short-circuited to ALLOW before ReBAC is consulted, so verifying "visible
   scope works" with one proves nothing (design pit 26 / repo memory).
 * **Latin-1 header blindness.** ``chinese_name_user`` has a Chinese display
-  name. HTTP headers are latin-1; the injected ``X-BiSheng-User-Name`` /
+  name. HTTP headers are latin-1; the injected ``X-Doberman-Agent-User-Name`` /
   ``Dept-Name`` / ``Dept-Path`` must be percent-encoded, and with the usual
   English test account that bug is invisible (design pit 9).
 * **A half-stubbed orchestrator.** ``fake_orchestrator`` replaces **all eighteen**
@@ -28,7 +28,7 @@ Four things this file exists to prevent:
   httpx client fail on the missing ``socksio`` extra and turns the whole
   package into ERRORs. The autouse fixture strips the six variables.
 
-Import discipline: nothing from ``bisheng.app_runtime.domain.services`` is
+Import discipline: nothing from ``doberman_agent.app_runtime.domain.services`` is
 imported at module level. Fixtures import lazily inside their body and
 ``pytest.skip`` while the service does not exist yet, so this package still
 collects during the Test-First phase.
@@ -66,38 +66,38 @@ SEED_PASSWORD_PLACEHOLDER = "x"
 # ones (not implemented yet) are skipped silently — the tuple is the union of
 # what exists today and what waves 2-3 will add.
 _SESSION_PATCH_TARGETS = (
-    "bisheng.core.database",
-    "bisheng.core.database.manager",
-    "bisheng.database.models.app",
-    "bisheng.database.models.app_version",
-    "bisheng.database.models.app_instance",
-    "bisheng.database.models.app_access_log",
-    "bisheng.database.models.audit_log",
-    "bisheng.database.models.department",
-    "bisheng.database.models.tenant",
-    "bisheng.user.domain.models.user",
-    "bisheng.app_runtime.domain.services.app_access_log_service",
-    "bisheng.app_runtime.domain.services.app_provision_service",
-    "bisheng.app_runtime.domain.services.app_state_service",
-    "bisheng.app_runtime.domain.services.app_meta_service",
-    "bisheng.app_runtime.domain.services.app_query_service",
-    "bisheng.app_publish.domain.repositories.version_review_repository",
-    "bisheng.approval.domain.repositories.approval_instance_repository",
-    "bisheng.app_runtime.domain.services.app_data_service",
-    "bisheng.app_runtime.domain.services.entry_authz_service",
-    "bisheng.app_runtime.domain.services.f048_app_permission",
-    "bisheng.app_runtime.domain.services.visibility_audit",
-    "bisheng.app_runtime.api.endpoints.internal_app_proxy",
-    "bisheng.app_runtime.api.endpoints.apps",
+    "doberman_agent.core.database",
+    "doberman_agent.core.database.manager",
+    "doberman_agent.database.models.app",
+    "doberman_agent.database.models.app_version",
+    "doberman_agent.database.models.app_instance",
+    "doberman_agent.database.models.app_access_log",
+    "doberman_agent.database.models.audit_log",
+    "doberman_agent.database.models.department",
+    "doberman_agent.database.models.tenant",
+    "doberman_agent.user.domain.models.user",
+    "doberman_agent.app_runtime.domain.services.app_access_log_service",
+    "doberman_agent.app_runtime.domain.services.app_provision_service",
+    "doberman_agent.app_runtime.domain.services.app_state_service",
+    "doberman_agent.app_runtime.domain.services.app_meta_service",
+    "doberman_agent.app_runtime.domain.services.app_query_service",
+    "doberman_agent.app_publish.domain.repositories.version_review_repository",
+    "doberman_agent.approval.domain.repositories.approval_instance_repository",
+    "doberman_agent.app_runtime.domain.services.app_data_service",
+    "doberman_agent.app_runtime.domain.services.entry_authz_service",
+    "doberman_agent.app_runtime.domain.services.f048_app_permission",
+    "doberman_agent.app_runtime.domain.services.visibility_audit",
+    "doberman_agent.app_runtime.api.endpoints.internal_app_proxy",
+    "doberman_agent.app_runtime.api.endpoints.apps",
     # F055 owns the preview session row; F054's entry path only reads it
     # (through ``PreviewInstanceService.resolve_entry``), and both have to be
     # pointed at the same in-memory engine or the lookup silently finds nothing.
-    "bisheng.app_publish.domain.models.app_preview_session",
-    "bisheng.app_publish.domain.services.preview_instance_service",
+    "doberman_agent.app_publish.domain.models.app_preview_session",
+    "doberman_agent.app_publish.domain.services.preview_instance_service",
     # F055 T062: ``resume`` builds the staged version's declared tables before it
     # starts anything (AC-36 with AC-42), and that service reads the reference
     # declaration from its own session. Unpatched it reaches the real database.
-    "bisheng.app_publish.domain.services.schema_evolution_service",
+    "doberman_agent.app_publish.domain.services.schema_evolution_service",
 )
 
 _TABLES = (
@@ -177,12 +177,12 @@ def _no_super_admin_probe(monkeypatch):
     ``is_global_super=True`` on its payload instead; nothing here is verified
     through this probe.
     """
-    from bisheng.utils.http_middleware import _check_is_global_super  # noqa: F401 - import-time guard
+    from doberman_agent.utils.http_middleware import _check_is_global_super  # noqa: F401 - import-time guard
 
     async def _never_super(*args: Any, **kwargs: Any) -> bool:
         return False
 
-    for target in ("bisheng.utils.http_middleware", "bisheng.app_runtime.domain.services.entry_authz_service"):
+    for target in ("doberman_agent.utils.http_middleware", "doberman_agent.app_runtime.domain.services.entry_authz_service"):
         module = _optional_module(target)
         if module is not None and hasattr(module, "_check_is_global_super"):
             monkeypatch.setattr(module, "_check_is_global_super", _never_super)
@@ -201,18 +201,18 @@ async def app_engine():
     from sqlmodel import SQLModel
 
     for module in (
-        "bisheng.database.models.tenant",
-        "bisheng.database.models.audit_log",
-        "bisheng.database.models.department",
-        "bisheng.user.domain.models.user",
-        "bisheng.database.models.app",
-        "bisheng.database.models.app_version",
-        "bisheng.app_publish.domain.models.app_deployment",
-        "bisheng.approval.domain.models.approval_instance",
-        "bisheng.database.models.app_instance",
-        "bisheng.database.models.app_access_log",
-        "bisheng.database.models.resource_tier",
-        "bisheng.app_publish.domain.models.app_preview_session",
+        "doberman_agent.database.models.tenant",
+        "doberman_agent.database.models.audit_log",
+        "doberman_agent.database.models.department",
+        "doberman_agent.user.domain.models.user",
+        "doberman_agent.database.models.app",
+        "doberman_agent.database.models.app_version",
+        "doberman_agent.app_publish.domain.models.app_deployment",
+        "doberman_agent.approval.domain.models.approval_instance",
+        "doberman_agent.database.models.app_instance",
+        "doberman_agent.database.models.app_access_log",
+        "doberman_agent.database.models.resource_tier",
+        "doberman_agent.app_publish.domain.models.app_preview_session",
     ):
         importlib.import_module(module)
 
@@ -254,7 +254,7 @@ async def app_db(app_engine, monkeypatch):
 
 
 def _payload(user_id: int, user_name: str, tenant_id: int):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     # ``user_role=[]`` skips the UserRoleDao lookup in LoginUser.__init__;
     # ``is_global_super=False`` keeps the admin short-circuit out of the way.
@@ -262,8 +262,8 @@ def _payload(user_id: int, user_name: str, tenant_id: int):
 
 
 async def _seed_user(app_db, user_id: int, user_name: str, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.user.domain.models.user import User
 
     async with app_db() as session:
         user = User(
@@ -315,7 +315,7 @@ async def chinese_name_user(app_db):
     on all three non-ASCII header values (``User-Name`` / ``Dept-Name`` /
     ``Dept-Path``) without re-seeding.
     """
-    from bisheng.database.models.department import Department, UserDepartment
+    from doberman_agent.database.models.department import Department, UserDepartment
 
     user = await _seed_user(app_db, CHINESE_NAME_USER_ID, CHINESE_USER_NAME)
     async with app_db() as session:
@@ -347,8 +347,8 @@ async def chinese_name_user(app_db):
 @pytest.fixture()
 async def sub_tenant(app_db):
     """A child tenant (id 2, parent Root) plus its non-super admin payload."""
-    from bisheng.database.models.tenant import Tenant, UserTenant
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.database.models.tenant import Tenant, UserTenant
+    from doberman_agent.user.domain.models.user import User
 
     async with app_db() as session:
         session.add(
@@ -391,9 +391,9 @@ async def app_factory(app_db, app_owner):
     about how it got there, and ``AppStateService`` (wave 3) cannot manufacture
     an ``online`` app without a live orchestrator.
     """
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.database.models.app import App, AppDao
-    from bisheng.database.models.app_version import VERSION_KIND_INITIAL, AppVersion, AppVersionDao
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.database.models.app import App, AppDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_INITIAL, AppVersion, AppVersionDao
 
     counter = {"n": 0}
 
@@ -462,7 +462,7 @@ def fake_orchestrator(monkeypatch):
     newly added facade method fails here rather than silently escaping to real
     HTTP against 127.0.0.1:8091.
     """
-    module = _optional_module("bisheng.app_runtime.domain.services.orchestrator_client")
+    module = _optional_module("doberman_agent.app_runtime.domain.services.orchestrator_client")
     if module is None:
         pytest.skip("orchestrator_client (T047) not implemented yet")
 
@@ -487,7 +487,7 @@ def fake_orchestrator(monkeypatch):
             "stage": "docker_build",
             "message": "",
             "tail": "",
-            "image_ref": "bisheng-app/f054-app-1:1-abcdef12",
+            "image_ref": "doberman-agent-app/f054-app-1:1-abcdef12",
         },
         "deploy": {"instance_id": "inst-1", "phase": "starting"},
         "stop": {"phase": "stopped"},
@@ -569,8 +569,8 @@ def fga_down(monkeypatch):
     ``check_business_action`` by name. Every F054 path must translate this into
     a **deny** (16146) — never into a pass-through.
     """
-    from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-    from bisheng.permission.application import access
+    from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+    from doberman_agent.permission.application import access
 
     async def _unavailable(*args: Any, **kwargs: Any):
         raise PermissionServiceUnavailableError()
@@ -586,7 +586,7 @@ def audit_sink(monkeypatch):
     Returns the list of keyword dicts, in call order — assert on
     ``[call["action"] for call in audit_sink]`` for AC-65.
     """
-    from bisheng.database.models.audit_log import AuditLogDao
+    from doberman_agent.database.models.audit_log import AuditLogDao
 
     captured: list[dict[str, Any]] = []
 
@@ -607,17 +607,17 @@ def audit_sink(monkeypatch):
 #: and is missing here fails loudly against a real (absent) registry instead of
 #: quietly using the stub.
 _PERMISSION_ADAPTER_TARGETS = (
-    "bisheng.app_runtime.domain.services.app_provision_service",
-    "bisheng.app_runtime.domain.services.app_state_service",
-    "bisheng.app_runtime.domain.services.entry_authz_service",
+    "doberman_agent.app_runtime.domain.services.app_provision_service",
+    "doberman_agent.app_runtime.domain.services.app_state_service",
+    "doberman_agent.app_runtime.domain.services.entry_authz_service",
 )
 
 _TENANT_ADMIN_TARGETS = (
-    "bisheng.app_runtime.domain.services.app_state_service",
-    "bisheng.app_runtime.domain.services.app_meta_service",
-    "bisheng.app_runtime.domain.services.app_query_service",
-    "bisheng.app_publish.domain.repositories.version_review_repository",
-    "bisheng.approval.domain.repositories.approval_instance_repository",
+    "doberman_agent.app_runtime.domain.services.app_state_service",
+    "doberman_agent.app_runtime.domain.services.app_meta_service",
+    "doberman_agent.app_runtime.domain.services.app_query_service",
+    "doberman_agent.app_publish.domain.repositories.version_review_repository",
+    "doberman_agent.approval.domain.repositories.approval_instance_repository",
 )
 
 
@@ -694,7 +694,7 @@ def api_app():
       these tests set live on the test's loop — the first DB call would fail with
       "attached to a different loop". Driving the ASGI app in-process keeps one
       loop end to end.
-    * **The router alone, not ``bisheng.main.create_app``.** The full app brings
+    * **The router alone, not ``doberman_agent.main.create_app``.** The full app brings
       its middleware chain, which re-resolves tenants against a database these
       tests replaced. A failure here should point at F054, not at an unrelated
       module's import.
@@ -703,18 +703,18 @@ def api_app():
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
 
-    from bisheng.app_runtime.api.exception_handlers import register_app_runtime_exception_handlers
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.base import BaseErrorCode
+    from doberman_agent.app_runtime.api.exception_handlers import register_app_runtime_exception_handlers
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.base import BaseErrorCode
 
     def _handle(_request, exc: BaseErrorCode) -> JSONResponse:
-        # Mirrors bisheng.main.handle_http_exception: business errors ride in a
+        # Mirrors doberman_agent.main.handle_http_exception: business errors ride in a
         # 200 envelope, because the platform SPA turns a real 403/404 on a GET
         # into a full-page redirect (design pit 25).
         return JSONResponse(status_code=200, content=exc.to_dict())
 
     def _build(payload=None):
-        from bisheng.app_runtime.api.router import router as app_runtime_router
+        from doberman_agent.app_runtime.api.router import router as app_runtime_router
 
         app = FastAPI(exception_handlers={BaseErrorCode: _handle})
         register_app_runtime_exception_handlers(app)
@@ -737,16 +737,16 @@ def api_app():
 #: the *same* database, which is why this harness uses a file rather than
 #: ``sqlite://`` in memory: two engines cannot share an in-memory database.
 _LIST_SESSION_MODULES = (
-    "bisheng.database.models.flow",
-    "bisheng.database.models.flow_version",
-    "bisheng.database.models.assistant",
-    "bisheng.database.models.tag",
-    "bisheng.database.models.session",
-    "bisheng.user.domain.models.user",
+    "doberman_agent.database.models.flow",
+    "doberman_agent.database.models.flow_version",
+    "doberman_agent.database.models.assistant",
+    "doberman_agent.database.models.tag",
+    "doberman_agent.database.models.session",
+    "doberman_agent.user.domain.models.user",
     # F056: the square's per-page ``slug`` lookup opens its own session from
     # ``WorkFlowService`` rather than from a DAO module, so the service itself
     # has to be pointed at this database too.
-    "bisheng.api.services.workflow",
+    "doberman_agent.api.services.workflow",
 )
 
 
@@ -773,15 +773,15 @@ async def build_list_env(tmp_path, monkeypatch):
     from sqlmodel import Session, SQLModel
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.api.services.workflow import WorkFlowService
-    from bisheng.common.services.config_service import settings
-    from bisheng.database.models.app import App
-    from bisheng.database.models.assistant import Assistant
-    from bisheng.database.models.flow import Flow
-    from bisheng.database.models.flow_version import FlowVersion
-    from bisheng.database.models.session import MessageSession
-    from bisheng.database.models.tag import Tag, TagLink
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.api.services.workflow import WorkFlowService
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.database.models.app import App
+    from doberman_agent.database.models.assistant import Assistant
+    from doberman_agent.database.models.flow import Flow
+    from doberman_agent.database.models.flow_version import FlowVersion
+    from doberman_agent.database.models.session import MessageSession
+    from doberman_agent.database.models.tag import Tag, TagLink
+    from doberman_agent.user.domain.models.user import User
 
     db_path = tmp_path / "build_list.db"
     sync_engine = create_engine(f"sqlite:///{db_path}", connect_args={"check_same_thread": False})
@@ -833,7 +833,7 @@ async def build_list_env(tmp_path, monkeypatch):
                 result[str(resource_id)] = frozenset(allowed)
         return result
 
-    monkeypatch.setattr("bisheng.api.services.workflow.batch_check_business_actions", _batch_check)
+    monkeypatch.setattr("doberman_agent.api.services.workflow.batch_check_business_actions", _batch_check)
 
     # F048 visible-ids-first (beta1) asks OpenFGA which ids the caller can see
     # BEFORE the DB scan, and an empty answer short-circuits the whole list. The
@@ -867,13 +867,13 @@ async def build_list_env(tmp_path, monkeypatch):
     )
 
     async def _actor(login_user):
-        from bisheng.permission.domain.services.permission_action_service import PermissionActor
+        from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
         # An ordinary member on purpose: the admin branch bypasses both stubs
         # above, which would make every assertion about buckets vacuous.
         return PermissionActor(user_id=login_user.user_id, current_tenant_id=int(login_user.tenant_id))
 
-    monkeypatch.setattr("bisheng.api.services.workflow.resolve_permission_actor", _actor)
+    monkeypatch.setattr("doberman_agent.api.services.workflow.resolve_permission_actor", _actor)
 
     counter = {"n": 0}
 
@@ -1003,7 +1003,7 @@ def tenant_scope():
     """
     from contextlib import suppress
 
-    from bisheng.core.context.tenant import (
+    from doberman_agent.core.context.tenant import (
         current_tenant_id,
         set_current_tenant_id,
         set_visible_tenant_ids,

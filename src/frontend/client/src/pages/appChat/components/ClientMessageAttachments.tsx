@@ -1,5 +1,5 @@
-import { ConversationAttachments } from '@bisheng/chat';
-import type { ChatAttachment, ChatMessage } from '@bisheng/chat/core';
+import { ConversationAttachments } from '@doberman-agent/chat';
+import type { ChatAttachment, ChatMessage } from '@doberman-agent/chat/core';
 import { useCallback } from 'react';
 import { getAttachmentUrl } from '~/api/chatApi';
 import { MediaAttachmentChip } from '~/components/Chat/attachments/MediaAttachmentChip';

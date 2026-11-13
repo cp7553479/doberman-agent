@@ -18,17 +18,17 @@ from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
 from sqlmodel import SQLModel
 
-from bisheng.common.models.base import SQLModelSerializable
-from bisheng.core.database import tenant_filter
-from bisheng.core.database.alembic.versions import f048_permission_model_grants as revision
-from bisheng.core.database.alembic.versions import (
+from doberman_agent.common.models.base import SQLModelSerializable
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.core.database.alembic.versions import f048_permission_model_grants as revision
+from doberman_agent.core.database.alembic.versions import (
     v3_0_0_f048_migration_item_message_longtext as message_revision,
 )
-from bisheng.core.database.alembic.versions import (
+from doberman_agent.core.database.alembic.versions import (
     v3_0_0_f048_visible_source_projection as visible_revision,
 )
-from bisheng.core.database.dialect_helpers import LargeText
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.database.dialect_helpers import LargeText
+from doberman_agent.core.openfga.authorization_model_f048 import (
     DEFAULT_ACTION_CODES,
     FLAT_VISIBLE_RESOURCE_TYPES,
     MIGRATED_RESOURCE_TYPES,
@@ -38,15 +38,15 @@ from bisheng.core.openfga.authorization_model_f048 import (
     SYSTEM_SHARED_ACTION_TYPES,
     build_authorization_model_f048,
 )
-from bisheng.permission.domain import models as permission_models
-from bisheng.permission.domain.services import catalog_policy
+from doberman_agent.permission.domain import models as permission_models
+from doberman_agent.permission.domain.services import catalog_policy
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
-REVISION_PATH = BACKEND_ROOT / "bisheng/core/database/alembic/versions/f048_permission_model_grants.py"
+REVISION_PATH = BACKEND_ROOT / "doberman_agent/core/database/alembic/versions/f048_permission_model_grants.py"
 MESSAGE_REVISION_PATH = (
-    BACKEND_ROOT / "bisheng/core/database/alembic/versions/v3_0_0_f048_migration_item_message_longtext.py"
+    BACKEND_ROOT / "doberman_agent/core/database/alembic/versions/v3_0_0_f048_migration_item_message_longtext.py"
 )
-VISIBLE_REVISION_PATH = BACKEND_ROOT / "bisheng/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py"
+VISIBLE_REVISION_PATH = BACKEND_ROOT / "doberman_agent/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py"
 
 F048_TABLES = {
     "authorization_model_release",
@@ -164,7 +164,7 @@ def test_f048_revision_is_on_the_single_alembic_head_chain() -> None:
     config = Config(str(BACKEND_ROOT / "alembic.ini"))
     config.set_main_option(
         "script_location",
-        str(BACKEND_ROOT / "bisheng/core/database/alembic"),
+        str(BACKEND_ROOT / "doberman_agent/core/database/alembic"),
     )
     script = ScriptDirectory.from_config(config)
     heads = script.get_heads()
@@ -229,7 +229,7 @@ def test_f048_revision_is_static_ddl_only() -> None:
         "collections.abc",
         "sqlalchemy",
         "alembic",
-        "bisheng.core.database.alembic_helpers.online",
+        "doberman_agent.core.database.alembic_helpers.online",
     }
 
     forbidden_calls = {

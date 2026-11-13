@@ -1,9 +1,9 @@
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Alert, Button, Select } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Alert, Button, Select } from '@doberman-agent/ui';
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import type {

@@ -7,7 +7,7 @@ Covers both semantics:
 
 from __future__ import annotations
 
-from bisheng.common.utils.think_tags import strip_reasoning_tags, strip_think_block
+from doberman_agent.common.utils.think_tags import strip_reasoning_tags, strip_think_block
 
 
 class TestStripThinkBlock:

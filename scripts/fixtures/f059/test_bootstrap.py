@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[3]
 SPEC = importlib.util.spec_from_file_location("f059_bootstrap", ROOT / "scripts/bootstrap_f059_acceptance.py")
 bootstrap = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(bootstrap)
-sys.path[:0] = [str(ROOT / "src/backend"), str(ROOT / "src/bisheng-sdk")]
+sys.path[:0] = [str(ROOT / "src/backend"), str(ROOT / "src/doberman-agent-sdk")]
 
 
 def inventory():
@@ -184,8 +184,8 @@ def test_marker_and_admin_mismatch_refuse_reuse(tmp_path):
 def test_custom_amd64_profiles_and_five_package_modes_match_real_schemas(tmp_path, monkeypatch, profile_revision):
     from test.e2e.helpers.vibe_runtime import Scenario
 
-    from bisheng.app_publish.domain.schemas.app_manifest import AppManifest
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
+    from doberman_agent.app_publish.domain.schemas.app_manifest import AppManifest
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
 
     suite, _output, values = environment(tmp_path)
     profiles, scenarios = bootstrap.build_packages(
@@ -210,7 +210,7 @@ def test_custom_amd64_profiles_and_five_package_modes_match_real_schemas(tmp_pat
             if path is None:
                 continue
             with tarfile.open(path) as package:
-                manifest = AppManifest.model_validate(yaml.safe_load(package.extractfile("bisheng-app.yaml")))
+                manifest = AppManifest.model_validate(yaml.safe_load(package.extractfile("doberman-agent-app.yaml")))
                 assert manifest.slug == scenario.slug
                 if scenario.mode == "bundle":
                     assert manifest.delivery.profile.endswith("@" + str(profile_revision))
@@ -431,10 +431,10 @@ def test_python_demo_real_sqlite_sdk_local_attachment_and_websocket(tmp_path, mo
     application.write_text((ROOT / "scripts/fixtures/f059/python_demo.py").read_text())
     (tmp_path / "fixture-version.txt").write_text("1")
     (tmp_path / "capabilities.json").write_text("{}")
-    monkeypatch.setenv("BISHENG_APP_DB_PATH", str(tmp_path / "data/app.db"))
-    monkeypatch.setenv("BISHENG_APP_STORAGE_DIR", str(tmp_path / "attachments"))
-    monkeypatch.delenv("BISHENG_APP_STORAGE_ENDPOINT", raising=False)
-    monkeypatch.setenv("BISHENG_APP_ID", "e2e-f059-app")
+    monkeypatch.setenv("DOBERMAN_AGENT_APP_DB_PATH", str(tmp_path / "data/app.db"))
+    monkeypatch.setenv("DOBERMAN_AGENT_APP_STORAGE_DIR", str(tmp_path / "attachments"))
+    monkeypatch.delenv("DOBERMAN_AGENT_APP_STORAGE_ENDPOINT", raising=False)
+    monkeypatch.setenv("DOBERMAN_AGENT_APP_ID", "e2e-f059-app")
     spec = importlib.util.spec_from_file_location("f059_demo", application)
     demo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(demo)
@@ -444,10 +444,10 @@ def test_python_demo_real_sqlite_sdk_local_attachment_and_websocket(tmp_path, mo
     thread.start()
     port = server.server_port
     headers = {
-        "X-BiSheng-User-Id": "2",
-        "X-BiSheng-Subject-Kind": "human",
-        "X-BiSheng-App-Id": "e2e-f059-app",
-        "X-BiSheng-Access-Token": "test-visitor-handle",
+        "X-Doberman-Agent-User-Id": "2",
+        "X-Doberman-Agent-Subject-Kind": "human",
+        "X-Doberman-Agent-App-Id": "e2e-f059-app",
+        "X-Doberman-Agent-Access-Token": "test-visitor-handle",
     }
     try:
         with httpx.Client(base_url=f"http://127.0.0.1:{port}", trust_env=False, timeout=5) as client:
@@ -524,7 +524,7 @@ def test_revision_defaults_to_one_and_cli_generates_revision_two_without_implici
     assert bootstrap.main(arguments) == 0
     assert json.loads((suite / "profiles.json").read_text()) == definitions
     with tarfile.open(suite / "e2e-f059-python-bundle-v1.tar.gz") as archive:
-        assert yaml.safe_load(archive.extractfile("bisheng-app.yaml"))["delivery"]["profile"] == "e2e-f059-python311@2"
+        assert yaml.safe_load(archive.extractfile("doberman-agent-app.yaml"))["delivery"]["profile"] == "e2e-f059-python311@2"
     assert capsys.readouterr().err == ""
 
 
@@ -592,7 +592,7 @@ def test_application_suffix_builds_unique_valid_packages_without_changing_profil
     """AC-01, AC-28: Repeated suites use distinct immutable application slugs."""
     from test.e2e.helpers.vibe_runtime import Scenario
 
-    from bisheng.app_publish.domain.schemas.app_manifest import AppManifest
+    from doberman_agent.app_publish.domain.schemas.app_manifest import AppManifest
 
     suite, _output, values = bootstrap.prepare_environment(
         tmp_path / "e2e-f059-batch",
@@ -616,7 +616,7 @@ def test_application_suffix_builds_unique_valid_packages_without_changing_profil
                 continue
             assert path.name.startswith(scenario.slug + "-v")
             with tarfile.open(path) as package:
-                manifest = AppManifest.model_validate(yaml.safe_load(package.extractfile("bisheng-app.yaml")))
+                manifest = AppManifest.model_validate(yaml.safe_load(package.extractfile("doberman-agent-app.yaml")))
                 assert manifest.slug == manifest.name == scenario.slug
                 if scenario.runtime == "node20":
                     assert json.load(package.extractfile("package.json"))["name"] == scenario.slug
@@ -760,7 +760,7 @@ def test_bootstrap_rejects_env_marker_batch_disagreement_before_api(tmp_path, mo
 
 # T191 — 覆盖 AC: AC-04、AC-24、AC-36、AC-46、AC-55
 VENDOR_VERSIONS = {
-    "bisheng-sdk": "0.1.1",
+    "doberman-agent-sdk": "0.1.1",
     "httpx": "0.28.1",
     "httpcore": "1.0.9",
     "h11": "0.16.0",
@@ -782,8 +782,8 @@ def vendor_wheelhouse(tmp_path):
         normalized = name.replace("-", "_")
         filename = normalized + "-" + version + "-py3-none-any.whl"
         path = directory / "wheels" / filename
-        if name == "bisheng-sdk":
-            path.write_bytes((ROOT / "src/backend/bisheng/dev_toolkit/artifacts" / filename).read_bytes())
+        if name == "doberman-agent-sdk":
+            path.write_bytes((ROOT / "src/backend/doberman_agent/dev_toolkit/artifacts" / filename).read_bytes())
         else:
             metadata = normalized + "-" + version + ".dist-info/"
             with zipfile.ZipFile(path, "w") as wheel:
@@ -827,13 +827,13 @@ def test_source_image_explicit_vendor_preserves_sdk_checks_licenses_and_other_mo
         with tarfile.open(source[key]) as package:
             main = package.extractfile("main.py").read().decode()
             compile(main, "main.py", "exec")
-            assert main.index("sys.path[:0]") < main.index("from bisheng_sdk import")
+            assert main.index("sys.path[:0]") < main.index("from doberman_agent_sdk import")
             assert package.extractfile("requirements.txt").read() == b""
-            assert package.extractfile("_vendor/licenses/bisheng-sdk/LICENSE").read() == (ROOT / "LICENSE").read_bytes()
+            assert package.extractfile("_vendor/licenses/doberman-agent-sdk/LICENSE").read() == (ROOT / "LICENSE").read_bytes()
             manifests.append(package.extractfile("f059-source-vendor.json").read())
             assert (
-                package.extractfile("_vendor/wheels/bisheng_sdk-0.1.1-py3-none-any.whl").read()
-                == (ROOT / "src/backend/bisheng/dev_toolkit/artifacts/bisheng_sdk-0.1.1-py3-none-any.whl").read_bytes()
+                package.extractfile("_vendor/wheels/doberman_agent_sdk-0.1.1-py3-none-any.whl").read()
+                == (ROOT / "src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_sdk-0.1.1-py3-none-any.whl").read_bytes()
             )
     assert manifests[0] == manifests[1]
     for scenario in scenarios:
@@ -868,12 +868,12 @@ def test_source_vendor_rejects_incomplete_tampered_or_unsupported_materials(tmp_
     elif mutation == "manifest-path":
         manifest["wheels"]["../outside.whl"] = "sha256:" + "0" * 64
     else:
-        original = "bisheng_sdk-0.1.1-py3-none-any.whl" if mutation == "sdk" else "httpx-0.28.1-py3-none-any.whl"
+        original = "doberman_agent_sdk-0.1.1-py3-none-any.whl" if mutation == "sdk" else "httpx-0.28.1-py3-none-any.whl"
         target = materials / "wheels" / original
         with zipfile.ZipFile(target) as wheel:
             content = {item.filename: wheel.read(item) for item in wheel.infolist()}
         if mutation == "sdk":
-            content["bisheng_sdk/auth.py"] += b"\n# modified SDK\n"
+            content["doberman_agent_sdk/auth.py"] += b"\n# modified SDK\n"
         if mutation == "license":
             del content["httpx-0.28.1.dist-info/licenses/LICENSE"]
         if mutation == "native":
@@ -959,7 +959,7 @@ def test_source_wheelhouse_cli_is_explicit_local_only(tmp_path, capsys):
 
 def test_source_vendor_original_wheels_report_scanner_boundary_and_real_source_key_refusal(tmp_path):
     """T191: Preserve dependency binary skips; real source remains subject to the normal gate."""
-    from bisheng.app_publish.domain.services.secret_scanner import scan_package
+    from doberman_agent.app_publish.domain.services.secret_scanner import scan_package
 
     materials = vendor_wheelhouse(tmp_path)
     suite, _output, values = environment(tmp_path)

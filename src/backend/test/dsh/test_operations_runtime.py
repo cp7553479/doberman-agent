@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context import tenant as context
-from bisheng.dsh.operations_runtime import OperationsAuthentication
+from doberman_agent.core.context import tenant as context
+from doberman_agent.dsh.operations_runtime import OperationsAuthentication
 
 
 async def test_authentication_validates_fresh_version_global_admin_and_scope():
@@ -76,21 +76,21 @@ def test_real_celery_registration_and_existing_jwt_decoder(tmp_path):
         # subprocess has none, so pin one here.
         "jwt_secret: dsh-operations-runtime-test-secret\n"
         "dsh:\n  enabled: true\n"
-        "  platform_public_url: https://bisheng.example\n"
+        "  platform_public_url: https://doberman-agent.example\n"
         "logger_conf:\n  log_level: ERROR\n"
     )
     script = """
-import bisheng.worker
-from bisheng.worker.main import bisheng_celery
-from bisheng.worker.config import beat_schedule
-from bisheng.user.domain.services.auth import AuthJwt
-from bisheng.dsh.operations_runtime import _decode_admin_token
+import doberman_agent.worker
+from doberman_agent.worker.main import doberman_agent_celery
+from doberman_agent.worker.config import beat_schedule
+from doberman_agent.user.domain.services.auth import AuthJwt
+from doberman_agent.dsh.operations_runtime import _decode_admin_token
 required = {'dsh.project_usage', 'dsh.scan_usage',
             'dsh.inspect_usage', 'dsh.scan_operations', 'dsh.resume_operation',
             'dsh.inspect_model_audit', 'dsh.scan_model_audit',
             'dsh.prepare_audit_tree', 'dsh.scan_audit_trees'}
-assert required <= set(bisheng_celery.tasks)
-assert "dsh.scan_profiles" not in bisheng_celery.tasks
+assert required <= set(doberman_agent_celery.tasks)
+assert "dsh.scan_profiles" not in doberman_agent_celery.tasks
 assert {beat_schedule[k]['task'] for k in beat_schedule if k.startswith('dsh-')} == {
     'dsh.scan_usage', 'dsh.scan_operations',
     'dsh.scan_model_audit', 'dsh.scan_audit_trees'}
@@ -120,7 +120,7 @@ print('DSH registration and existing JWT signature verification passed')
 async def test_worker_shutdown_has_no_retired_http_dependency():
     from unittest.mock import AsyncMock, Mock
 
-    from bisheng.dsh.operations_runtime import OperationsRuntime
+    from doberman_agent.dsh.operations_runtime import OperationsRuntime
 
     runtime = object.__new__(OperationsRuntime)
     runtime.quota = SimpleNamespace(topology=SimpleNamespace(close=Mock()), redis=SimpleNamespace(aclose=AsyncMock()))

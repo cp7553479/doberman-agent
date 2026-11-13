@@ -11,11 +11,11 @@ import httpx
 import pytest
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-from bisheng.common.errcode.permission import AuthorizationModelMismatchError
-from bisheng.core.config.openfga import OpenFGAConf
-from bisheng.core.openfga.authorization_model_f048 import build_authorization_model_f048
-from bisheng.core.openfga.discovery import OpenFGARuntimePin, discover_openfga_runtime
-from bisheng.core.openfga.manager import FGAManager
+from doberman_agent.common.errcode.permission import AuthorizationModelMismatchError
+from doberman_agent.core.config.openfga import OpenFGAConf
+from doberman_agent.core.openfga.authorization_model_f048 import build_authorization_model_f048
+from doberman_agent.core.openfga.discovery import OpenFGARuntimePin, discover_openfga_runtime
+from doberman_agent.core.openfga.manager import FGAManager
 
 
 @pytest.fixture
@@ -29,13 +29,13 @@ def redis_locks(monkeypatch):
         return SimpleNamespace(acquire=mutex.acquire, release=AsyncMock(side_effect=mutex.release))
 
     getter = AsyncMock(return_value=SimpleNamespace(async_connection=SimpleNamespace(lock=make_lock)))
-    monkeypatch.setattr("bisheng.core.openfga.manager.get_redis_client", getter)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.get_redis_client", getter)
     return SimpleNamespace(locks=locks, options=options, getter=getter)
 
 
 class _OpenFGA:
     def __init__(self, starters: int, *, existing_store: bool = False):
-        self.stores = [{"id": "store-one", "name": "bisheng"}] if existing_store else []
+        self.stores = [{"id": "store-one", "name": "doberman_agent"}] if existing_store else []
         self.models = []
         self.model = build_authorization_model_f048()
         self.writes = Counter()
@@ -50,7 +50,7 @@ class _OpenFGA:
             self.writes[path] += 1
             await asyncio.sleep(0)
             if path == "/stores":
-                row = {"id": "store-one", "name": "bisheng"}
+                row = {"id": "store-one", "name": "doberman_agent"}
                 self.stores.append(row)
                 return httpx.Response(201, json=row)
             row = {"id": "model-one"}
@@ -85,7 +85,7 @@ async def test_concurrent_starters_reuse_one_store_and_model(monkeypatch, redis_
         async def discover(*args, **kwargs):
             return await discover_openfga_runtime(*args, **kwargs, http_client=client)
 
-        monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+        monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
         managers = [_manager() for _ in range(5)]
         await asyncio.wait_for(asyncio.gather(*(m._async_initialize() for m in managers)), timeout=3)
 
@@ -93,7 +93,7 @@ async def test_concurrent_starters_reuse_one_store_and_model(monkeypatch, redis_
     assert server.writes["/stores"] == (0 if existing_store else 1)
     assert server.writes["/stores/store-one/authorization-models"] == 1
     assert {(m.readiness()["store_id"], m.readiness()["model_id"]) for m in managers} == {("store-one", "model-one")}
-    assert {key for key, _ in redis_locks.options} == {"openfga:bootstrap:bisheng"}
+    assert {key for key, _ in redis_locks.options} == {"openfga:bootstrap:doberman_agent"}
     assert all(o["timeout"] == 60 and o["blocking_timeout"] == 30 for _, o in redis_locks.options)
 
 
@@ -107,7 +107,7 @@ async def test_existing_runtime_does_not_acquire_bootstrap_lock(monkeypatch, red
         async def discover(*args, **kwargs):
             return await discover_openfga_runtime(*args, **kwargs, http_client=client)
 
-        monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+        monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
         await _manager()._async_initialize()
     redis_locks.getter.assert_not_awaited()
     assert not server.writes
@@ -116,9 +116,9 @@ async def test_existing_runtime_does_not_acquire_bootstrap_lock(monkeypatch, red
 async def test_waiting_for_another_starter_has_a_deadline(monkeypatch, redis_locks):
     lock = asyncio.Lock()
     await lock.acquire()
-    redis_locks.locks["openfga:bootstrap:bisheng"] = lock
+    redis_locks.locks["openfga:bootstrap:doberman_agent"] = lock
     discover = AsyncMock(side_effect=AuthorizationModelMismatchError(msg="Store does not exist"))
-    monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
     manager = _manager()
     manager.timeout = 0.02
     try:
@@ -135,18 +135,18 @@ async def test_timed_out_writer_releases_lock(monkeypatch, redis_locks):
         await asyncio.Event().wait()
 
     discover = AsyncMock(side_effect=slow_discover)
-    monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
     manager = _manager()
     manager.timeout = 0.02
     with pytest.raises(TimeoutError, match="bootstrap timed out"):
         await asyncio.wait_for(manager._bootstrap_runtime(build_authorization_model_f048()), timeout=0.5)
-    assert not redis_locks.locks["openfga:bootstrap:bisheng"].locked()
+    assert not redis_locks.locks["openfga:bootstrap:doberman_agent"].locked()
 
 
 async def test_redis_failure_never_falls_back_to_unlocked_writes(monkeypatch, redis_locks):
     redis_locks.getter.side_effect = RedisConnectionError("Redis unavailable")
     discover = AsyncMock()
-    monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
     with pytest.raises(RedisConnectionError):
         await _manager()._bootstrap_runtime(build_authorization_model_f048())
     discover.assert_not_awaited()
@@ -154,10 +154,10 @@ async def test_redis_failure_never_falls_back_to_unlocked_writes(monkeypatch, re
 
 async def test_failed_writer_releases_lock_for_next_starter(monkeypatch, redis_locks):
     discover = AsyncMock(side_effect=AuthorizationModelMismatchError(msg="OpenFGA unavailable"))
-    monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
     with pytest.raises(AuthorizationModelMismatchError):
         await _manager()._bootstrap_runtime(build_authorization_model_f048())
-    assert not redis_locks.locks["openfga:bootstrap:bisheng"].locked()
+    assert not redis_locks.locks["openfga:bootstrap:doberman_agent"].locked()
     pin = OpenFGARuntimePin("store-one", "model-one", "checksum")
     discover.side_effect = None
     discover.return_value = pin
@@ -168,7 +168,7 @@ async def test_lock_acquisition_deadline_is_reported_as_bootstrap_timeout(monkey
     lock = SimpleNamespace(acquire=AsyncMock(return_value=False), release=AsyncMock())
     redis_locks.getter.return_value.async_connection.lock = lambda *args, **kwargs: lock
     discover = AsyncMock()
-    monkeypatch.setattr("bisheng.core.openfga.manager.discover_openfga_runtime", discover)
+    monkeypatch.setattr("doberman_agent.core.openfga.manager.discover_openfga_runtime", discover)
     with pytest.raises(TimeoutError, match="bootstrap timed out after 30s"):
         await _manager()._bootstrap_runtime(build_authorization_model_f048())
     lock.release.assert_not_awaited()

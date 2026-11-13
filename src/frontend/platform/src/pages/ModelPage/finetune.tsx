@@ -1,4 +1,4 @@
-import { Pagination } from "@bisheng/ui";
+import { Pagination } from "@doberman-agent/ui";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -90,7 +90,7 @@ export const Finetune = () => {
                                 </TableBody>
                             </Table>
                         </div>
-                        <div className="bisheng-table-footer bg-background-login">
+                        <div className="doberman_agent-table-footer bg-background-login">
                             <p className="desc"></p>
                             <Pagination locale={paginationLocale}
                                 current={page}

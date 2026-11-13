@@ -5,13 +5,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.permission.application.identity import PermissionActor
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.permission.application.identity import PermissionActor
 
 
 @pytest.fixture
 def secret_policy(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_authorization_service as mod
+    from doberman_agent.app_runtime.domain.services import app_authorization_service as mod
 
     app = SimpleNamespace(id="target", tenant_id=2, owner_user_id=81, state="online")
     actor = SimpleNamespace(user_id=42, tenant_id=2, is_global_super=False)
@@ -27,7 +27,7 @@ def secret_policy(monkeypatch):
 
 
 async def test_non_owner_editor_can_manage_values(secret_policy):
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     app, actor, allowed = secret_policy
     allowed.add("edit")
@@ -40,7 +40,7 @@ async def test_non_owner_editor_can_manage_values(secret_policy):
 
 @pytest.mark.parametrize("permissions", [{"edit"}, {"publish"}, {"edit", "publish"}])
 async def test_confirmed_rebuild_is_combined(secret_policy, permissions):
-    from bisheng.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
+    from doberman_agent.app_runtime.domain.services.secret_rebuild_service import AppSecretRebuildService
 
     app, actor, allowed = secret_policy
     allowed.update(permissions)

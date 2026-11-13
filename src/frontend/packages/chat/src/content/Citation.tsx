@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { Badge } from '@bisheng/ui';
+import { Badge } from '@doberman-agent/ui';
 import { asRecord } from '../core/normalizeHistory';
 import { useCitationPresentation, useCitationUtilities } from './MarkdownServices';
 import { CitationPreviewCard } from './CitationPreviewCard';

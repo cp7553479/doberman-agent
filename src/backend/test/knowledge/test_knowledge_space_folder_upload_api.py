@@ -9,9 +9,9 @@ import ast
 import inspect
 from pathlib import Path
 
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import FolderUploadItem, FolderUploadReq
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import FolderUploadItem, FolderUploadReq
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _find_func(source: str, name: str):
@@ -47,7 +47,7 @@ def test_folder_upload_endpoint_registered_and_delegates():
 
 def test_service_upload_folder_items_signature():
     """KnowledgeSpaceService.upload_folder_items must accept the upload contract args."""
-    from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+    from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
     sig = inspect.signature(KnowledgeSpaceService.upload_folder_items)
     params = set(sig.parameters)

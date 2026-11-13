@@ -1,5 +1,5 @@
 import { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardPortal } from '~/components/ui/HoverCard';
-import { Badge } from "@bisheng/ui";
+import { Badge } from "@doberman-agent/ui";
 import { useState } from "react";
 import type { MessageItem } from "~/api/message";
 import { Avatar, AvatarImage, AvatarName } from "~/components/ui/Avatar";

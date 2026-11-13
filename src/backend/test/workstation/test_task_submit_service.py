@@ -11,20 +11,20 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.common.errcode.open_api import OpenApiTaskQueueUnavailableError
-from bisheng.database.models.message import ChatMessageDao
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import (
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.common.errcode.open_api import OpenApiTaskQueueUnavailableError
+from doberman_agent.database.models.message import ChatMessageDao
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersionDao,
     SessionVersionStatusEnum,
 )
-from bisheng.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
-from bisheng.linsight.domain.services import workbench_impl
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
-from bisheng.workstation.domain.schemas.chat import APIChatCompletion
-from bisheng.workstation.domain.services import task_submit_service
+from doberman_agent.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
+from doberman_agent.linsight.domain.services import workbench_impl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.workstation.domain.schemas.chat import APIChatCompletion
+from doberman_agent.workstation.domain.services import task_submit_service
 
 
 @pytest.fixture

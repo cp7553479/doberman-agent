@@ -24,7 +24,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.linsight.worker import (
+from doberman_agent.linsight.worker import (
     LinsightQueue,
     ScheduleCenterProcess,
     encode_queue_item,
@@ -196,18 +196,18 @@ def _make_worker(queue, fake_redis):
 
 def _patch_session_status(status):
     """Patch LinsightSessionVersionDao.get_by_id to return a session of given status."""
-    from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
     session = MagicMock()
     session.status = status
     return patch(
-        "bisheng.linsight.worker.LinsightSessionVersionDao.get_by_id",
+        "doberman_agent.linsight.worker.LinsightSessionVersionDao.get_by_id",
         new=AsyncMock(return_value=session),
     ), SessionVersionStatusEnum
 
 
 async def test_async_run_new_task_routes_to_async_run(queue, fake_redis):
-    from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
     worker = _make_worker(queue, fake_redis)
     await queue.put(encode_queue_item("svid-new"))
@@ -223,8 +223,8 @@ async def test_async_run_new_task_routes_to_async_run(queue, fake_redis):
     sess_patch, _ = _patch_session_status(SessionVersionStatusEnum.NOT_STARTED)
     with (
         sess_patch,
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
     ):
         spawned = await worker.process_one_item()
         # Let the spawned task coroutine run to completion.
@@ -236,7 +236,7 @@ async def test_async_run_new_task_routes_to_async_run(queue, fake_redis):
 
 
 async def test_async_run_resume_task_routes_to_async_resume(queue, fake_redis):
-    from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
     worker = _make_worker(queue, fake_redis)
     await queue.put_head(encode_queue_item("svid-r", resume=True, user_input="user answer"))
@@ -252,8 +252,8 @@ async def test_async_run_resume_task_routes_to_async_resume(queue, fake_redis):
     sess_patch, _ = _patch_session_status(SessionVersionStatusEnum.IN_PROGRESS)
     with (
         sess_patch,
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
     ):
         spawned = await worker.process_one_item()
         # Let the spawned resume coroutine run to completion.
@@ -266,7 +266,7 @@ async def test_async_run_resume_task_routes_to_async_resume(queue, fake_redis):
 
 async def test_async_run_terminal_session_discards_item(queue, fake_redis):
     """Park-period termination: stale resume item picked up while TERMINATED -> discarded."""
-    from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
     worker = _make_worker(queue, fake_redis)
     await queue.put_head(encode_queue_item("svid-dead", resume=True, user_input="late answer"))
@@ -282,8 +282,8 @@ async def test_async_run_terminal_session_discards_item(queue, fake_redis):
     sess_patch, _ = _patch_session_status(SessionVersionStatusEnum.TERMINATED)
     with (
         sess_patch,
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_resume", new=fake_resume, create=True),
     ):
         handled = await worker.process_one_item()
 
@@ -306,10 +306,10 @@ async def test_async_run_missing_session_discards_item(queue, fake_redis):
 
     with (
         patch(
-            "bisheng.linsight.worker.LinsightSessionVersionDao.get_by_id",
+            "doberman_agent.linsight.worker.LinsightSessionVersionDao.get_by_id",
             new=AsyncMock(return_value=None),
         ),
-        patch("bisheng.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
+        patch("doberman_agent.linsight.worker.LinsightWorkflowTask.async_run", new=fake_async_run),
     ):
         handled = await worker.process_one_item()
 
@@ -325,7 +325,7 @@ async def test_async_resume_uses_checkpointer_and_command_resume():
     (design §4.4), reusing the Track-A astream + StreamEventMapper pipeline."""
     from langgraph.types import Command
 
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     exec_task = LinsightWorkflowTask()
     exec_task.session_version_id = "svid-resume"
@@ -352,7 +352,7 @@ async def test_async_resume_uses_checkpointer_and_command_resume():
     # reads the test-mocked redis cache and yaml.safe_load(<MagicMock>) treats the
     # mock as an infinite input stream — an unbounded loop that balloons memory.
     # (settings is a pydantic model, so patch the module-level reference, not the attr.)
-    with patch("bisheng.linsight.domain.task_exec.settings") as mock_settings:
+    with patch("doberman_agent.linsight.domain.task_exec.settings") as mock_settings:
         mock_settings.get_linsight_conf.return_value = MagicMock(max_steps=200)
         # Drive the resume helper directly to assert the contract (thread_id reuse +
         # Command(resume)).
@@ -385,8 +385,8 @@ def _build_task(status):
 async def _call_user_input(real_queue, existing_task_status):
     """Drive the user_input endpoint with collaborators mocked, sharing the
     given real LinsightQueue so we can inspect what was enqueued."""
-    from bisheng.linsight.api.endpoints import linsight as ep
-    from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+    from doberman_agent.linsight.api.endpoints import linsight as ep
+    from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
 
     login_user = MagicMock()
     login_user.user_id = 1
@@ -406,7 +406,7 @@ async def _call_user_input(real_queue, existing_task_status):
         patch.object(ep, "LinsightStateMessageManager", return_value=sm),
         patch.object(ep.LinsightWorkbenchImpl, "human_participate_add_file", new=AsyncMock(return_value=None)),
         patch.object(ep, "get_redis_client", new=AsyncMock(return_value=None)),
-        patch("bisheng.linsight.worker.LinsightQueue", return_value=real_queue),
+        patch("doberman_agent.linsight.worker.LinsightQueue", return_value=real_queue),
     ):
         # ExecuteTaskStatusEnum imported in endpoint module must match.
         assert ep.ExecuteTaskStatusEnum is ExecuteTaskStatusEnum
@@ -421,7 +421,7 @@ async def _call_user_input(real_queue, existing_task_status):
 
 
 async def test_user_input_enqueues_resume_at_head(queue):
-    from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
 
     # Pre-existing new task ahead in queue.
     await queue.put(encode_queue_item("other"))
@@ -439,8 +439,8 @@ async def test_user_input_enqueues_resume_at_head(queue):
 async def test_user_input_pushes_user_input_completed(queue):
     """The endpoint pushes a user_input_completed message so the live UI collapses
     the ClarifyCard and refreshes status (design §3.3 row 5 / §4.5)."""
-    from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
-    from bisheng.linsight.domain.services.state_message_manager import MessageEventType
+    from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+    from doberman_agent.linsight.domain.services.state_message_manager import MessageEventType
 
     _resp, sm = await _call_user_input(queue, existing_task_status=ExecuteTaskStatusEnum.WAITING_FOR_USER_INPUT)
 
@@ -450,7 +450,7 @@ async def test_user_input_pushes_user_input_completed(queue):
 
 
 async def test_user_input_idempotent_no_double_enqueue(queue):
-    from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+    from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
 
     # Task already USER_INPUT_COMPLETED -> a resume payload was already enqueued
     # by the first submit; a second submit must NOT enqueue again.

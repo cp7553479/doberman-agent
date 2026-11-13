@@ -16,7 +16,7 @@ def identity():
     from runtime_manager.k8s_lifecycle import StopIdentity
 
     return StopIdentity(
-        namespace="bisheng-runtime-apps",
+        namespace="doberman-agent-runtime-apps",
         name="app-a",
         uid=UID,
         policy_revision="v1",
@@ -31,7 +31,7 @@ def pod():
 
     return {
         "metadata": {
-            "namespace": "bisheng-runtime-apps",
+            "namespace": "doberman-agent-runtime-apps",
             "name": "app-a",
             "uid": UID,
             "resourceVersion": "17",

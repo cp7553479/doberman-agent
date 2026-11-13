@@ -22,8 +22,8 @@ import pytest
 
 
 def test_envelope_dumps_typed_config():
-    from bisheng.llm.api.router import _envelope
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.llm.api.router import _envelope
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
     cfg = KnowledgeLLMConfig(embedding_model_id=42)
     env = _envelope(cfg, inherited=False, blocked=False)
@@ -33,8 +33,8 @@ def test_envelope_dumps_typed_config():
 
 
 def test_envelope_propagates_inherited_and_blocked_flags():
-    from bisheng.llm.api.router import _envelope
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.llm.api.router import _envelope
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
     env = _envelope(KnowledgeLLMConfig(), inherited=True, blocked=False)
     assert env["inherited_from_root"] is True
@@ -46,12 +46,12 @@ def test_envelope_propagates_inherited_and_blocked_flags():
 
 
 def test_resolve_write_target_uses_context_var_then_root():
-    from bisheng.llm.api.router import ROOT_TENANT_ID, _resolve_write_target
+    from doberman_agent.llm.api.router import ROOT_TENANT_ID, _resolve_write_target
 
     user = MagicMock(user_id=1)
-    with patch("bisheng.llm.api.router.get_current_tenant_id", return_value=5):
+    with patch("doberman_agent.llm.api.router.get_current_tenant_id", return_value=5):
         assert _resolve_write_target(user) == 5
-    with patch("bisheng.llm.api.router.get_current_tenant_id", return_value=None):
+    with patch("doberman_agent.llm.api.router.get_current_tenant_id", return_value=None):
         assert _resolve_write_target(user) == ROOT_TENANT_ID
 
 
@@ -60,13 +60,13 @@ def test_resolve_write_target_uses_context_var_then_root():
 
 @pytest.mark.asyncio
 async def test_super_admin_passes_assertion_for_any_target():
-    from bisheng.llm.api.router import _assert_can_write_system_config
+    from doberman_agent.llm.api.router import _assert_can_write_system_config
 
     user = MagicMock(user_id=1)
     admin_check = AsyncMock(return_value=False)
     with (
-        patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=True)),
-        patch("bisheng.permission.application.is_tenant_admin", admin_check),
+        patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=True)),
+        patch("doberman_agent.permission.application.is_tenant_admin", admin_check),
     ):
         # any target is fine for super
         await _assert_can_write_system_config(user, 1)
@@ -77,11 +77,11 @@ async def test_super_admin_passes_assertion_for_any_target():
 @pytest.mark.asyncio
 async def test_child_admin_targeting_root_raises_19803():
     """AC-10 (defense): non-super caller cannot write Root."""
-    from bisheng.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
-    from bisheng.llm.api.router import _assert_can_write_system_config
+    from doberman_agent.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
+    from doberman_agent.llm.api.router import _assert_can_write_system_config
 
     user = MagicMock(user_id=42)
-    with patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)):
+    with patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)):
         with pytest.raises(LLMSystemConfigForbiddenError) as exc_info:
             await _assert_can_write_system_config(user, 1)
     assert exc_info.value.Code == LLMSystemConfigForbiddenError.Code
@@ -90,13 +90,13 @@ async def test_child_admin_targeting_root_raises_19803():
 @pytest.mark.asyncio
 async def test_child_admin_targeting_own_tenant_passes():
     """AC-11 natural path: the permission application confirms the admin relation."""
-    from bisheng.llm.api.router import _assert_can_write_system_config
+    from doberman_agent.llm.api.router import _assert_can_write_system_config
 
     user = MagicMock(user_id=42)
     admin_check = AsyncMock(return_value=True)
     with (
-        patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
-        patch("bisheng.permission.application.is_tenant_admin", admin_check),
+        patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
+        patch("doberman_agent.permission.application.is_tenant_admin", admin_check),
     ):
         await _assert_can_write_system_config(user, 5)
     admin_check.assert_awaited_once_with(42, 5)
@@ -104,13 +104,13 @@ async def test_child_admin_targeting_own_tenant_passes():
 
 @pytest.mark.asyncio
 async def test_caller_without_admin_grant_raises_19803():
-    from bisheng.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
-    from bisheng.llm.api.router import _assert_can_write_system_config
+    from doberman_agent.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
+    from doberman_agent.llm.api.router import _assert_can_write_system_config
 
     user = MagicMock(user_id=42)
     with (
-        patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
-        patch("bisheng.permission.application.is_tenant_admin", AsyncMock(return_value=False)),
+        patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
+        patch("doberman_agent.permission.application.is_tenant_admin", AsyncMock(return_value=False)),
     ):
         with pytest.raises(LLMSystemConfigForbiddenError) as exc_info:
             await _assert_can_write_system_config(user, 5)
@@ -126,7 +126,7 @@ def test_redact_uses_jsonfieldmasker_for_known_sensitive_fields():
     Custom field names not in the rule set pass through unchanged — adding
     new sensitive shapes is a JsonFieldMasker concern, not a per-feature
     redactor."""
-    from bisheng.llm.api.router import _redact_payload
+    from doberman_agent.llm.api.router import _redact_payload
 
     payload = {
         "embedding_model_id": 1,
@@ -147,7 +147,7 @@ def test_redact_uses_jsonfieldmasker_for_known_sensitive_fields():
 
 
 def test_redact_handles_empty_payload():
-    from bisheng.llm.api.router import _redact_payload
+    from doberman_agent.llm.api.router import _redact_payload
 
     assert _redact_payload(None) == {}
     assert _redact_payload({}) == {}
@@ -159,13 +159,13 @@ def test_redact_handles_empty_payload():
 @pytest.mark.asyncio
 async def test_audit_writes_to_audit_log_dao():
     """AC-29: action / metadata fields land in audit_log."""
-    from bisheng.llm.api.router import _audit_system_config_update
+    from doberman_agent.llm.api.router import _audit_system_config_update
 
     user = MagicMock(user_id=42)
     insert_mock = AsyncMock()
     with (
-        patch("bisheng.llm.api.router.AuditLogDao.ainsert_v2", insert_mock),
-        patch("bisheng.llm.api.router.get_current_tenant_id", return_value=5),
+        patch("doberman_agent.llm.api.router.AuditLogDao.ainsert_v2", insert_mock),
+        patch("doberman_agent.llm.api.router.get_current_tenant_id", return_value=5),
     ):
         await _audit_system_config_update(
             user,
@@ -193,11 +193,11 @@ async def test_audit_writes_to_audit_log_dao():
 async def test_audit_swallows_dao_failures():
     """audit_log must never block user action — AD-06 in F020 audit
     helper, same contract for F022."""
-    from bisheng.llm.api.router import _audit_system_config_update
+    from doberman_agent.llm.api.router import _audit_system_config_update
 
     user = MagicMock(user_id=42)
     boom = AsyncMock(side_effect=RuntimeError("db down"))
-    with patch("bisheng.llm.api.router.AuditLogDao.ainsert_v2", boom):
+    with patch("doberman_agent.llm.api.router.AuditLogDao.ainsert_v2", boom):
         # Must not raise.
         await _audit_system_config_update(
             user,
@@ -214,13 +214,13 @@ async def test_audit_swallows_dao_failures():
 @pytest.mark.asyncio
 async def test_get_knowledge_endpoint_returns_envelope():
     """AC-03 surface: the GET response body is the envelope shape."""
-    from bisheng.llm.api.router import get_knowledge_llm
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.llm.api.router import get_knowledge_llm
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
     fake_user = MagicMock()
     cfg = KnowledgeLLMConfig(embedding_model_id=11)
     with patch(
-        "bisheng.llm.domain.services.llm.LLMService.aget_knowledge_llm_with_meta",
+        "doberman_agent.llm.domain.services.llm.LLMService.aget_knowledge_llm_with_meta",
         new=AsyncMock(return_value=(cfg, True, False)),
     ):
         resp = await get_knowledge_llm(request=MagicMock(), login_user=fake_user)
@@ -233,8 +233,8 @@ async def test_get_knowledge_endpoint_returns_envelope():
 @pytest.mark.asyncio
 async def test_post_knowledge_endpoint_routes_target_and_audits():
     """AC-04 / AC-29 surface: POST writes to target tenant + audits."""
-    from bisheng.llm.api.router import update_knowledge_llm
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.llm.api.router import update_knowledge_llm
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
     fake_user = MagicMock(user_id=99)
     payload = KnowledgeLLMConfig(embedding_model_id=33)
@@ -244,12 +244,12 @@ async def test_post_knowledge_endpoint_routes_target_and_audits():
     aget_mock = AsyncMock(return_value=None)  # before snapshot empty
 
     with (
-        patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
-        patch("bisheng.permission.application.is_tenant_admin", new=AsyncMock(return_value=True)),
-        patch("bisheng.llm.api.router.get_current_tenant_id", return_value=5),
-        patch("bisheng.llm.api.router.TenantSystemModelConfigDao.aget", aget_mock),
-        patch("bisheng.llm.domain.services.llm.LLMService.update_knowledge_llm", update_mock),
-        patch("bisheng.llm.api.router._audit_system_config_update", audit_mock),
+        patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
+        patch("doberman_agent.permission.application.is_tenant_admin", new=AsyncMock(return_value=True)),
+        patch("doberman_agent.llm.api.router.get_current_tenant_id", return_value=5),
+        patch("doberman_agent.llm.api.router.TenantSystemModelConfigDao.aget", aget_mock),
+        patch("doberman_agent.llm.domain.services.llm.LLMService.update_knowledge_llm", update_mock),
+        patch("doberman_agent.llm.api.router._audit_system_config_update", audit_mock),
     ):
         resp = await update_knowledge_llm(
             request=MagicMock(),
@@ -274,14 +274,14 @@ async def test_post_knowledge_endpoint_routes_target_and_audits():
 async def test_post_knowledge_blocks_child_admin_targeting_root():
     """AC-10 surface end-to-end: a forged ContextVar=Root from a Child
     Admin context returns 403 + 19803."""
-    from bisheng.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
-    from bisheng.llm.api.router import update_knowledge_llm
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.common.errcode.llm_tenant import LLMSystemConfigForbiddenError
+    from doberman_agent.llm.api.router import update_knowledge_llm
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
     fake_user = MagicMock(user_id=42)
     with (
-        patch("bisheng.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
-        patch("bisheng.llm.api.router.get_current_tenant_id", return_value=1),
+        patch("doberman_agent.llm.api.router._check_is_global_super", new=AsyncMock(return_value=False)),
+        patch("doberman_agent.llm.api.router.get_current_tenant_id", return_value=1),
     ):
         with pytest.raises(LLMSystemConfigForbiddenError) as exc:
             await update_knowledge_llm(

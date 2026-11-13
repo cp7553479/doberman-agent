@@ -3,7 +3,7 @@
 **关联规格**: [spec.md](./spec.md)
 **版本**: v2.5.1
 **分支**: `feat/v2.5.1/017-tenant-shared-storage`（base=`2.5.0-PM`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/017-tenant-shared-storage`
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/017-tenant-shared-storage`
 
 ---
 
@@ -114,7 +114,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T01**: 错误码注册（195xx）+ `TenantContextMissingError` 异常
 
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/tenant_sharing.py` — 4 个错误码类
+  - `src/backend/doberman_agent/common/errcode/tenant_sharing.py` — 4 个错误码类
 
   **文件（修改）**: 无（CLAUDE.md 错误码模块表 "195=tenant_sharing F017" 已声明）
 
@@ -142,14 +142,14 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 
   **依赖**: —
 
-  **验收**: `python -c "from bisheng.common.errcode.tenant_sharing import TenantContextMissingError as E; print(E().return_resp_instance().model_dump())"` 返回 `{status_code: 19504, ...}`
+  **验收**: `python -c "from doberman_agent.common.errcode.tenant_sharing import TenantContextMissingError as E; print(E().return_resp_instance().model_dump())"` 返回 `{status_code: 19504, ...}`
 
 ---
 
 - [x] **T02**: audit_log action 枚举扩展
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/tenant/domain/constants.py` — `TenantAuditAction` 新增 2 个枚举值
+  - `src/backend/doberman_agent/tenant/domain/constants.py` — `TenantAuditAction` 新增 2 个枚举值
   - `CLAUDE.md` — §5.4.2 action 清单条目登记（F011 action 清单核心权威，此处同步）
 
   **逻辑**:
@@ -162,14 +162,14 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 
   **依赖**: —
 
-  **验收**: `rg "resource.share_enable" src/backend/bisheng/tenant/domain/constants.py CLAUDE.md` 命中 2 行
+  **验收**: `rg "resource.share_enable" src/backend/doberman_agent/tenant/domain/constants.py CLAUDE.md` 命中 2 行
 
 ---
 
 - [x] **T03**: `ResourceShareService` + 单测
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/tenant/domain/services/resource_share_service.py`
+  - `src/backend/doberman_agent/tenant/domain/services/resource_share_service.py`
   - `src/backend/test/test_f017_resource_share_service.py`
 
   **逻辑**（核心接口）:
@@ -211,7 +211,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T04**: Alembic 迁移加 `is_shared` 列 × 5 表
 
   **文件（新建，1 文件）**:
-  - `src/backend/bisheng/alembic/versions/v2_5_1_f017_is_shared.py`
+  - `src/backend/doberman_agent/alembic/versions/v2_5_1_f017_is_shared.py`
 
   **逻辑**:
   ```python
@@ -239,8 +239,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T05a**: Knowledge + Flow ORM 加 `is_shared` 字段
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/knowledge/domain/models/knowledge.py` — `KnowledgeBase` 加字段
-  - `src/backend/bisheng/database/models/flow.py` — `FlowBase` 加字段
+  - `src/backend/doberman_agent/knowledge/domain/models/knowledge.py` — `KnowledgeBase` 加字段
+  - `src/backend/doberman_agent/database/models/flow.py` — `FlowBase` 加字段
 
   **逻辑**（两处同构）:
   ```python
@@ -253,15 +253,15 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 
   **依赖**: T04
 
-  **验收**: `from bisheng.knowledge.domain.models.knowledge import Knowledge; 'is_shared' in Knowledge.__fields__` = True；同样 Flow
+  **验收**: `from doberman_agent.knowledge.domain.models.knowledge import Knowledge; 'is_shared' in Knowledge.__fields__` = True；同样 Flow
 
 ---
 
 - [x] **T05b**: Assistant + Channel ORM 加 `is_shared` 字段
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/database/models/assistant.py`
-  - `src/backend/bisheng/database/models/channel.py`
+  - `src/backend/doberman_agent/database/models/assistant.py`
+  - `src/backend/doberman_agent/database/models/channel.py`
 
   **逻辑**: 同 T05a
 
@@ -274,7 +274,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T05c**: Tool ORM 加 `is_shared` 字段
 
   **文件（修改，1 文件）**:
-  - `src/backend/bisheng/tool/domain/models/gpts_tools.py` — 字段加到 `GptsToolsTypeBase`（`t_gpts_tools_type` 表，对齐 FGA owner_tuple `tool:{gpts_tool_type.id}` 语义）
+  - `src/backend/doberman_agent/tool/domain/models/gpts_tools.py` — 字段加到 `GptsToolsTypeBase`（`t_gpts_tools_type` 表，对齐 FGA owner_tuple `tool:{gpts_tool_type.id}` 语义）
 
   **逻辑**: 同 T05a
 
@@ -287,8 +287,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T06a**: `KnowledgeSpaceService.create_knowledge_space` 扩展 `share_to_children`
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
-  - `src/backend/bisheng/knowledge/api/schemas/knowledge_space_schema.py`（或等价 Req schema 位置）
+  - `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
+  - `src/backend/doberman_agent/knowledge/api/schemas/knowledge_space_schema.py`（或等价 Req schema 位置）
 
   **逻辑**:
   ```python
@@ -325,7 +325,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T06b**: `Flow Service.create_flow` 扩展 `share_to_children`
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/api/services/flow.py` (或 `workflow/domain/services/...`)
+  - `src/backend/doberman_agent/api/services/flow.py` (或 `workflow/domain/services/...`)
   - Flow Req schema
 
   **逻辑**: 与 T06a 同构（替换资源类型 `workflow`）
@@ -339,7 +339,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T06c**: `AssistantService.create_assistant` 扩展 `share_to_children`
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/api/services/assistant.py`
+  - `src/backend/doberman_agent/api/services/assistant.py`
   - Assistant Req schema
 
   **逻辑**: 同 T06a（资源类型 `assistant`）
@@ -353,7 +353,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T06d**: `ChannelService.create_channel` 扩展 `share_to_children`
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/channel/domain/services/channel_service.py`
+  - `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   - Channel Req schema
 
   **逻辑**: 同 T06a（资源类型 `channel`）
@@ -367,7 +367,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T06e**: `ToolService.create_tool` 扩展 `share_to_children`
 
   **文件（修改，2 文件）**:
-  - `src/backend/bisheng/tool/...`（tool create Service）
+  - `src/backend/doberman_agent/tool/...`（tool create Service）
   - Tool Req schema
 
   **逻辑**: 同 T06a（资源类型 `tool`）
@@ -381,8 +381,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T07**: 统一 `PATCH /api/v1/resources/{type}/{id}/share` API
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/tenant/api/endpoints/resource_share.py` — 端点 + schema
-  - `src/backend/bisheng/tenant/api/router.py`（修改）— 注册新端点
+  - `src/backend/doberman_agent/tenant/api/endpoints/resource_share.py` — 端点 + schema
+  - `src/backend/doberman_agent/tenant/api/router.py`（修改）— 注册新端点
 
   **逻辑**:
   ```python
@@ -426,7 +426,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T08**: `TenantMountService.mount_child` 挂钩 `_on_child_mounted`（跨 F011 Owner）
 
   **文件（修改，1 文件）**:
-  - `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`
 
   **跨 Feature 影响**: 扩展 F011 Owner 对象 `TenantMountService.mount_child` 签名（新增 `auto_distribute: bool = True` 参数）；保持向后兼容（默认 True = 原行为）。PRD §5.2.1 + spec AC-13 已明确本接口扩展。
 
@@ -463,7 +463,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T09**: `TenantMountService.unmount_child` 挂钩 `_on_child_unmounted`（跨 F011 Owner）
 
   **文件（修改，1 文件）**:
-  - `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`
 
   **跨 Feature 影响**: 同 T08，在 F011 `unmount_child` 内部增加 FGA 清理钩子；签名不变。
 
@@ -498,8 +498,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
   **实施说明**: 探索发现 v2.5.0/F001 已给 `chatmessage` 表加 `tenant_id INT NOT NULL DEFAULT 1` + `idx_chatmessage_tenant_id` 索引（backfill 统一为 1）。本任务仅在 ORM `MessageBase` 显式声明字段，让 Service 显式写入可见；不新增 Alembic 迁移。
 
   **文件（新建 1，修改 1）**:
-  - `src/backend/bisheng/alembic/versions/v2_5_1_f017_chat_message_tenant_id.py` — 新建
-  - `src/backend/bisheng/database/models/message.py` — `ChatMessageBase` 加字段
+  - `src/backend/doberman_agent/alembic/versions/v2_5_1_f017_chat_message_tenant_id.py` — 新建
+  - `src/backend/doberman_agent/database/models/message.py` — `ChatMessageBase` 加字段
 
   **逻辑**:
   ```python
@@ -538,8 +538,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
   **实施说明**: 同 T10（F001 已给 `message_session` 加列 + 索引）。ORM `MessageSessionBase` 声明字段以便 Service 显式写入。
 
   **文件（新建 1，修改 1）**:
-  - `src/backend/bisheng/alembic/versions/v2_5_1_f017_message_session_tenant_id.py`
-  - `src/backend/bisheng/database/models/session.py`
+  - `src/backend/doberman_agent/alembic/versions/v2_5_1_f017_message_session_tenant_id.py`
+  - `src/backend/doberman_agent/database/models/session.py`
 
   **逻辑**: 同 T10（表名 `message_session`）
 
@@ -554,7 +554,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T12**: `ChatMessageService` 衍生归属改造 + 单测
 
   **文件（修改 1，新建 1）**:
-  - `src/backend/bisheng/chat_session/domain/services/chat_message_service.py`
+  - `src/backend/doberman_agent/chat_session/domain/services/chat_message_service.py`
   - `src/backend/test/test_f017_chat_message_service.py`
 
   **Worker / Celery 上下文说明**: `get_current_tenant_id()` 在 HTTP 请求由 F012 `CustomMiddleware` 注入；在 Celery 任务由 `before_task_publish` 信号注入 header + Worker `task_prerun` 恢复 ContextVar（F012 `worker/tenant_context.py`）。本任务验证两种 context 下行为一致。
@@ -590,7 +590,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
   **实施说明**: 项目无独立 `MessageSessionService`，session 创建入口在 `ChatSessionService.get_or_create_session`（`chat_session/domain/chat.py`）。本任务改造该方法：调用 T12 复用的 `_resolve_leaf_tenant_id(login_user)` 获取叶子 Tenant，填充 `MessageSession.tenant_id`；context 缺失时抛 `TenantContextMissingError(19504)`。单测位于 `test_f017_message_session_service.py`（3 用例：context 命中、session 已存在短路、AC-11 拒绝）。
 
   **文件（修改 1，新建 1）**:
-  - `src/backend/bisheng/chat_session/domain/services/session_service.py`（或等价）
+  - `src/backend/doberman_agent/chat_session/domain/services/session_service.py`（或等价）
   - `src/backend/test/test_f017_message_session_service.py`
 
   **Worker / Celery 上下文说明**: 同 T12。
@@ -610,8 +610,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T14**: `llm_token_log` 表 + Model/DAO
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/database/models/llm_token_log.py` — `LLMTokenLog` + `LLMTokenLogDao`
-  - `src/backend/bisheng/alembic/versions/v2_5_1_f017_llm_token_log.py` — 迁移
+  - `src/backend/doberman_agent/database/models/llm_token_log.py` — `LLMTokenLog` + `LLMTokenLogDao`
+  - `src/backend/doberman_agent/alembic/versions/v2_5_1_f017_llm_token_log.py` — 迁移
 
   **逻辑**:
   ```python
@@ -646,8 +646,8 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T15**: `llm_call_log` 表 + Model/DAO
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/database/models/llm_call_log.py`
-  - `src/backend/bisheng/alembic/versions/v2_5_1_f017_llm_call_log.py`
+  - `src/backend/doberman_agent/database/models/llm_call_log.py`
+  - `src/backend/doberman_agent/alembic/versions/v2_5_1_f017_llm_call_log.py`
 
   **逻辑**:
   ```python
@@ -679,7 +679,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T16**: `LLMTokenTracker` Service + 单测
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/llm/domain/services/token_tracker.py`
+  - `src/backend/doberman_agent/llm/domain/services/token_tracker.py`
   - `src/backend/test/test_f017_llm_token_tracker.py`
 
   **Worker / Celery 上下文说明**: LangChain Callback 在 Celery Worker 中触发；`get_current_tenant_id()` 由 F012 `task_prerun` 恢复。本 Service 不主动设置 context，只读取。
@@ -712,7 +712,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 - [x] **T17**: `ModelCallLogger` Service + 单测
 
   **文件（新建，2 文件）**:
-  - `src/backend/bisheng/llm/domain/services/call_logger.py`
+  - `src/backend/doberman_agent/llm/domain/services/call_logger.py`
   - `src/backend/test/test_f017_model_call_logger.py`
 
   **Worker / Celery 上下文说明**: 同 T16。
@@ -740,11 +740,11 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 
 - [x] **T18**: `LLMUsageCallbackHandler` + 接入 LLM 调用
 
-  **接入点**: `src/backend/bisheng/workflow/nodes/llm/llm.py` — `_run_once` 内 `RunnableConfig(callbacks=[llm_callback, usage_callback])`；Linsight / Knowledge RAG 其他 LLM 调用链可在 F020 扩展
+  **接入点**: `src/backend/doberman_agent/workflow/nodes/llm/llm.py` — `_run_once` 内 `RunnableConfig(callbacks=[llm_callback, usage_callback])`；Linsight / Knowledge RAG 其他 LLM 调用链可在 F020 扩展
 
   **文件（新建 1，修改 1）**:
-  - `src/backend/bisheng/workflow/callback/llm_usage_callback.py` — 新建
-  - `src/backend/bisheng/workflow/nodes/llm/llm.py` 或核心 LLM 调用链 — 注入 callback（单一接入点；Linsight / Knowledge RAG 后续扩展由 F020 继承）
+  - `src/backend/doberman_agent/workflow/callback/llm_usage_callback.py` — 新建
+  - `src/backend/doberman_agent/workflow/nodes/llm/llm.py` 或核心 LLM 调用链 — 注入 callback（单一接入点；Linsight / Knowledge RAG 后续扩展由 F020 继承）
 
   **Worker / Celery 上下文说明**: Callback 在 Worker 执行 LangChain 时触发；tenant_id 由 F012 `task_prerun` 恢复。
 
@@ -783,7 +783,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
   **实施说明**: 在 `core/storage/minio/minio_storage.py` 新增 `_TENANT_PREFIX_RE` / `_is_no_such_key_error` / `_translate_to_root_prefix` / `_should_fallback_to_root` 辅助函数；`get_object_sync` / `download_object_sync` / `object_exists_sync` 各接入 fallback：若 leaf 前缀命中 NoSuchKey + multi_tenant 启用 + 叶子 ≠ Root，则剥离 `tenant_{code}/` 前缀重试 Root 路径；失败抛 `StorageSharingFallbackError(19503)`；`object_exists_sync` 仅 True/False 无异常。11 个单测覆盖 happy path + fallback path + 单租户模式 + 无前缀短路 + 19503 抛异常。
 
   **文件（修改 1，新建 1）**:
-  - `src/backend/bisheng/core/storage/minio/minio_storage.py`
+  - `src/backend/doberman_agent/core/storage/minio/minio_storage.py`
   - `src/backend/test/test_f017_minio_fallback.py`
 
   **逻辑**:
@@ -824,7 +824,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
   **实施说明**: Milvus 的 fallback 不是 collection 名字翻译（与 MinIO 路径前缀不同），而是 **knowledge_id 扩展**：Child 用户检索时，把本 Tenant 可见的 knowledge_ids 与 Root 共享的 knowledge_ids 合并，再由现有 `get_multi_knowledge_vectorstore_sync` 按 knowledge_id 逐个加载 collection 合并检索。新增 `KnowledgeRag.aexpand_with_root_shared(knowledge_ids, leaf_tenant_id=None)` helper：Root 用户 / 单租户模式不扩展；Child leaf 查询 `knowledge.is_shared=1 AND tenant_id=1` 的 Root 共享条目并补入 ids 列表（保持原顺序、去重）。6 个单测覆盖 Root 短路、单租户短路、空共享、去重、ContextVar 读取。
 
   **文件（修改 1，新建 1）**:
-  - `src/backend/bisheng/knowledge/rag/knowledge_rag.py`
+  - `src/backend/doberman_agent/knowledge/rag/knowledge_rag.py`
   - `src/backend/test/test_f017_milvus_fallback.py`
 
   **逻辑**:
@@ -1160,7 +1160,7 @@ T36 (/e2e-test + ac-verification.md)  ← T35
 
 - [x] **T36**: `/e2e-test` + `ac-verification.md` 手工 QA
 
-  **实施说明**: `ac-verification.md` 已创建，含 13 AC 状态汇总 + 真实环境 QA 步骤 + 6 项 Known post-release issues。`/e2e-test` 实际 E2E 测试依赖 BiShengVENV + FGA docker + 114 环境，由 QA 在真实环境执行时走 ac-verification.md 清单，此处仅提供清单和自测单测（pytest 47+ 用例，mock 级覆盖）。
+  **实施说明**: `ac-verification.md` 已创建，含 13 AC 状态汇总 + 真实环境 QA 步骤 + 6 项 Known post-release issues。`/e2e-test` 实际 E2E 测试依赖 DobermanAgentVENV + FGA docker + 114 环境，由 QA 在真实环境执行时走 ac-verification.md 清单，此处仅提供清单和自测单测（pytest 47+ 用例，mock 级覆盖）。
 
   **文件（新建，1 文件）**:
   - `features/v2.5.1/017-tenant-shared-storage/ac-verification.md` — 13 AC 手工 QA 清单

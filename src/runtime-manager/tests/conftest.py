@@ -74,7 +74,7 @@ def rtm_config(tmp_data_root: Path) -> Config:
     config = Config(
         hmac_secret=TEST_SECRET,
         data_root=tmp_data_root,
-        network="bisheng-apps",
+        network="doberman-agent-apps",
         reserve_mb=2048,
         overcommit_ratio=0.8,
         build_reserve_mb=2048,

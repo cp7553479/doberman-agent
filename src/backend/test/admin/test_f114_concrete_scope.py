@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.admin_scope import (
+from doberman_agent.common.errcode.admin_scope import (
     AdminScopeTenantNotFoundError,
     AdminScopeTenantRequiredError,
     AdminScopeUnavailableError,
@@ -14,7 +14,7 @@ from bisheng.common.errcode.admin_scope import (
 
 @pytest.fixture
 def scope_policy(monkeypatch):
-    from bisheng.admin.domain.services import tenant_scope as mod
+    from doberman_agent.admin.domain.services import tenant_scope as mod
 
     redis = SimpleNamespace(
         aget=AsyncMock(return_value=None),
@@ -27,7 +27,7 @@ def scope_policy(monkeypatch):
     monkeypatch.setattr(
         mod, "settings", SimpleNamespace(multi_tenant=SimpleNamespace(enabled=True, admin_scope_ttl_seconds=14400))
     )
-    from bisheng.admin.domain.repositories.tenant_scope_repository import TenantScopeRepository
+    from doberman_agent.admin.domain.repositories.tenant_scope_repository import TenantScopeRepository
 
     monkeypatch.setattr(TenantScopeRepository, "own_tenant_ids", AsyncMock(return_value=(2,)), raising=False)
     monkeypatch.setattr(TenantScopeRepository, "status", AsyncMock(return_value="active"))

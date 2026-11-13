@@ -14,8 +14,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantCycleDetectedError
-from bisheng.tenant.domain.services.tenant_resolver import (
+from doberman_agent.common.errcode.tenant_resolver import TenantCycleDetectedError
+from doberman_agent.tenant.domain.services.tenant_resolver import (
     TenantResolver,
     _parent_dept_id_from_path,
 )
@@ -77,7 +77,7 @@ def patch_daos(monkeypatch):
 
     Returns the three mocks so tests can configure return values.
     """
-    from bisheng.tenant.domain.services import tenant_resolver as tr
+    from doberman_agent.tenant.domain.services import tenant_resolver as tr
 
     primary_mock = AsyncMock(name='aget_user_primary_department')
     mount_mock = AsyncMock(name='aget_ancestors_with_mount')

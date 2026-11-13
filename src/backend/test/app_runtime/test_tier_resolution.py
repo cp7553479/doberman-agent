@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import DEFAULT_TIER_ID, AppState, default_tier
+from doberman_agent.app_runtime.domain.constants import DEFAULT_TIER_ID, AppState, default_tier
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator", "fake_permission_projection")
 
@@ -36,7 +36,7 @@ def _constant_spec(code: str) -> dict:
 
 async def _upsert_tier(app_db, code: str, *, cpu_millicores: int, memory_mb: int, enabled: bool = True) -> None:
     """Insert or retune the ``resource_tier`` row for ``code`` — what the admin tab (F055 T065) does."""
-    from bisheng.database.models.resource_tier import ResourceTier, ResourceTierDao
+    from doberman_agent.database.models.resource_tier import ResourceTier, ResourceTierDao
 
     async with app_db() as session:
         existing = await ResourceTierDao.aget_by_code(session, code)
@@ -55,8 +55,8 @@ def _deploy_tiers(fake_orchestrator) -> list[dict]:
 
 
 async def _stage_iteration(app_db, app_id: str, *, tier_id: str) -> str:
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     async with app_db() as session:
         row = AppVersion(
@@ -79,7 +79,7 @@ async def _stage_iteration(app_db, app_id: str, *, tier_id: str) -> str:
 
 async def test_tier_resolved_from_table_when_present_else_default_tiers(app_db):
     """AC-64 — the ``resource_tier`` row wins; without one, ``DEFAULT_TIERS`` answers (and unknown → default tier)."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     # Empty table (conftest): the constant, in runtime-manager's {cpu vCPU, mem MiB} shape.
     assert await AppStateService._resolve_tier("standard") == _constant_spec("standard")
@@ -99,9 +99,9 @@ async def test_tier_resolved_from_table_when_present_else_default_tiers(app_db):
 
 async def test_tier_change_does_not_touch_running_instance(app_db, app_factory, app_owner, fake_orchestrator):
     """AC-64 — retuning the tier of a running app issues nothing: no deploy, no update, no restart."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app import AppDao
-    from bisheng.database.models.app_instance import AppInstanceDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app import AppDao
+    from doberman_agent.database.models.app_instance import AppInstanceDao
 
     await _upsert_tier(app_db, "standard", cpu_millicores=2000, memory_mb=4096)
     app, version = await app_factory(state=AppState.DRAFT.value, tier_id="standard")
@@ -128,7 +128,7 @@ async def test_tier_change_does_not_touch_running_instance(app_db, app_factory, 
 
 async def test_tier_change_takes_effect_on_next_publish(app_db, app_factory, app_owner, fake_orchestrator):
     """AC-64 — the next publish (a new container) is created with the retuned spec."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     await _upsert_tier(app_db, "standard", cpu_millicores=2000, memory_mb=4096)
     app, _first = await app_factory(state=AppState.DRAFT.value, tier_id="standard")
@@ -146,7 +146,7 @@ async def test_tier_change_takes_effect_on_next_publish(app_db, app_factory, app
 
 async def test_tier_change_takes_effect_on_resume(app_db, app_factory, app_owner, fake_orchestrator):
     """AC-64 — stop, retune, resume: the same version comes back with the new limits."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     await _upsert_tier(app_db, "standard", cpu_millicores=2000, memory_mb=4096)
     app, version = await app_factory(state=AppState.DRAFT.value, tier_id="standard")
@@ -169,8 +169,8 @@ async def test_ac63_baseline_is_snapshot_tier_not_current_table(app_db, app_fact
     ``docker inspect`` against is the one that went into its ``deploy`` intent
     — re-resolving ``version.tier_id`` now would report a false mismatch.
     """
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     await _upsert_tier(app_db, "standard", cpu_millicores=2000, memory_mb=4096)
     app, version = await app_factory(state=AppState.DRAFT.value, tier_id="standard")

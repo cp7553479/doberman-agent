@@ -1,4 +1,4 @@
-// bisheng iframe.js 内嵌脚本
+// doberman_agent iframe.js 内嵌脚本
 (function () {
     const iframeId = "chatbot-iframe";
     const buttonId = "chatbot-button";

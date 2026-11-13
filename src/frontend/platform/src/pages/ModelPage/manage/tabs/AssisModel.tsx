@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input, Select, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Select, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 
@@ -10,7 +10,7 @@ import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels
 
 import { ModelFieldHint } from "../ModelFieldHint";
 import { generateUUID } from "@/components/bs-ui/utils";
-import { RadioGroup, Radio as RadioGroupItem } from "@bisheng/ui";
+import { RadioGroup, Radio as RadioGroupItem } from "@doberman-agent/ui";
 import { getAssistantModelEnvelope, updateAssistantModelConfig } from "@/controllers/API/finetune";
 import { FallbackBlockedBanner, InheritedBadge } from "../SystemConfigBanners";
 import { useSystemConfigEnvelope } from "../useSystemConfigEnvelope";
@@ -210,21 +210,21 @@ export default function AssisModel({ llmOptions, onBack }) {
                 </span>
                 <div className="mt-2 border p-4 rounded-md bg-muted">
                     <div className="grid mb-4 items-center" style={{ gridTemplateColumns: "repeat(2, 1fr) 80px 110px 68px 90px 40px" }}>
-                        <Label className="bisheng-label">{t('model.model')}<span className="text-red-500 text-xs">*</span></Label>
-                        <Label className="bisheng-label inline-flex items-center">
+                        <Label className="doberman_agent-label">{t('model.model')}<span className="text-red-500 text-xs">*</span></Label>
+                        <Label className="doberman_agent-label inline-flex items-center">
                             <span>{t('model.assistantExecutionMode')}</span>
                             <ModelFieldHint className="ml-1" content={t('model.assistantExecutionModeTooltip')} />
                         </Label>
-                        <Label className="bisheng-label">{t('model.streamingOutput')}</Label>
-                        <Label className="bisheng-label inline-flex items-center">
+                        <Label className="doberman_agent-label">{t('model.streamingOutput')}</Label>
+                        <Label className="doberman_agent-label inline-flex items-center">
                             <span>{t('model.assistantKnowledgeBaseMaxCharacters')}</span>
                             <ModelFieldHint className="ml-1" content={t('model.assistantKnowledgeBaseMaxCharactersTooltip')} />
                         </Label>
-                        <Label className="bisheng-label inline-flex items-center">
+                        <Label className="doberman_agent-label inline-flex items-center">
                             <span>{t('model.reorderAfterRetrieval')}</span>
                             <ModelFieldHint className="ml-1" content={t('model.reorderAfterRetrievalTooltip')} />
                         </Label>
-                        <Label className="bisheng-label text-center">{t('model.setAsDefault')}</Label>
+                        <Label className="doberman_agent-label text-center">{t('model.setAsDefault')}</Label>
                         <div></div>
                     </div>
                     {form.llm_list.map((item, index) => (
@@ -246,8 +246,8 @@ export default function AssisModel({ llmOptions, onBack }) {
                 <span className="pl-1">{t('model.assistantAutoOptimizationModel')}</span>
                 <div className="mt-2 border p-4 rounded-md bg-muted">
                     <div className="grid grid-cols-4 gap-2">
-                        <Label className="bisheng-label">{t('model.model')}<span className="text-red-500 text-xs">*</span></Label>
-                        <Label className="bisheng-label">{t('model.streamingOutput')}</Label>
+                        <Label className="doberman_agent-label">{t('model.model')}<span className="text-red-500 text-xs">*</span></Label>
+                        <Label className="doberman_agent-label">{t('model.streamingOutput')}</Label>
                     </div>
                     <div className="grid grid-cols-4 gap-2 mt-4">
                         <ModelSelect

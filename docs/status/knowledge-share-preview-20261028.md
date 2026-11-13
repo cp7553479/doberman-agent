@@ -3,10 +3,10 @@
 ## 范围与基线
 
 - 问题：分享空间关闭“发布到广场”后，接收者通过分享链接无法打开空间介绍与加入入口。
-- 当前远端基线经 GitHub 读取确认：`dataelement/bisheng:feat/bisheng-work-120-main@fd6c95ca1b7986c60ea72d16d896a3de0ed4e9c2`。
-- 推送前同步基线：`1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`；目标分支 `dataelement/bisheng:feat/bisheng-work-120-main`。
-- 工作目录：`.worktrees/bisheng-knowledge-share-preview`；分支：`codex/knowledge-share-preview`。
-- 本次为毕昇后端修复，使用现有网页分享抽屉与申请接口；Desktop 与 Harness 沿用现有运行版本。
+- 当前远端基线经 GitHub 读取确认：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@fd6c95ca1b7986c60ea72d16d896a3de0ed4e9c2`。
+- 推送前同步基线：`1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`；目标分支 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main`。
+- 工作目录：`.worktrees/doberman-agent-knowledge-share-preview`；分支：`codex/knowledge-share-preview`。
+- 本次为doberman-agent后端修复，使用现有网页分享抽屉与申请接口；Desktop 与 Harness 沿用现有运行版本。
 
 ## 根因与实现
 

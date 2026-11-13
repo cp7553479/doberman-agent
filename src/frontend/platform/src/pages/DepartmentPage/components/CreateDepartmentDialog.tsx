@@ -1,4 +1,4 @@
-import { Button, Input, notification } from '@bisheng/ui';
+import { Button, Input, notification } from '@doberman-agent/ui';
 
 import {
   Dialog,

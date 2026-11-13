@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
 from pathlib import Path
 
-from bisheng.role.domain.schemas.role_schema import RoleListResponse, EffectiveQuotaItem
+from doberman_agent.role.domain.schemas.role_schema import RoleListResponse, EffectiveQuotaItem
 
 
 @pytest.fixture
@@ -47,9 +47,9 @@ class TestRoleEndpoints:
     @pytest.mark.asyncio
     async def test_create_role(self, mock_admin_login):
         """AC-01: POST /api/v1/roles creates a role."""
-        from bisheng.role.api.endpoints.role import create_role
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.api.endpoints.role import create_role
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         mock_role = MagicMock()
         mock_role.id = 15
@@ -64,8 +64,8 @@ class TestRoleEndpoints:
 
         with patch.object(RoleService, 'create_role',
                           new_callable=AsyncMock, return_value=mock_role), \
-             patch('bisheng.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
-             patch('bisheng.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
+             patch('doberman_agent.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
+             patch('doberman_agent.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
             result = await create_role(
                 request=request,
                 req=RoleCreateRequest(role_name='New Role', quota_config={'channel': 10}),
@@ -79,7 +79,7 @@ class TestRoleEndpoints:
     @pytest.mark.asyncio
     async def test_list_roles(self, mock_admin_login):
         """AC-04: GET /api/v1/roles returns visible roles."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         response = {
             'data': [
@@ -102,7 +102,7 @@ class TestRoleEndpoints:
         """Legacy user-role editor endpoint must include v2.5 roles with group_id=NULL."""
         source = (
             Path(__file__).resolve().parents[2]
-            / 'bisheng'
+            / 'doberman_agent'
             / 'api'
             / 'v1'
             / 'usergroup.py'
@@ -119,7 +119,7 @@ class TestRoleEndpoints:
         """Saving user-role edits must accept v2.5 roles with group_id=NULL."""
         source = (
             Path(__file__).resolve().parents[2]
-            / 'bisheng'
+            / 'doberman_agent'
             / 'user'
             / 'api'
             / 'user.py'
@@ -135,8 +135,8 @@ class TestRoleEndpoints:
     @pytest.mark.asyncio
     async def test_delete_builtin_raises(self, mock_admin_login):
         """AC-07: DELETE /api/v1/roles/1 → RoleBuiltinProtectedError."""
-        from bisheng.role.domain.services.role_service import RoleService
-        from bisheng.common.errcode.role import RoleBuiltinProtectedError
+        from doberman_agent.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RoleBuiltinProtectedError
 
         with pytest.raises(RoleBuiltinProtectedError):
             await RoleService.delete_role(role_id=1, login_user=mock_admin_login)
@@ -144,7 +144,7 @@ class TestRoleEndpoints:
     @pytest.mark.asyncio
     async def test_get_role_detail(self, mock_admin_login, mock_role_response):
         """AC-10: GET /api/v1/roles/{role_id} returns detail."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         with patch.object(RoleService, 'get_role',
                           new_callable=AsyncMock, return_value=mock_role_response):
@@ -154,9 +154,9 @@ class TestRoleEndpoints:
 
     @pytest.mark.asyncio
     async def test_update_role_writes_audit_log(self, mock_admin_login):
-        from bisheng.role.api.endpoints.role import update_role
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.api.endpoints.role import update_role
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         mock_role = MagicMock()
         mock_role.id = 15
@@ -170,8 +170,8 @@ class TestRoleEndpoints:
 
         with patch.object(RoleService, 'update_role',
                           new_callable=AsyncMock, return_value=mock_role), \
-             patch('bisheng.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
-             patch('bisheng.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
+             patch('doberman_agent.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
+             patch('doberman_agent.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
             result = await update_role(
                 request=request,
                 role_id=15,
@@ -186,8 +186,8 @@ class TestRoleEndpoints:
 
     @pytest.mark.asyncio
     async def test_delete_role_writes_audit_log(self, mock_admin_login):
-        from bisheng.role.api.endpoints.role import delete_role
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.api.endpoints.role import delete_role
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         mock_role = MagicMock()
         mock_role.id = 15
@@ -196,8 +196,8 @@ class TestRoleEndpoints:
 
         with patch.object(RoleService, 'delete_role',
                           new_callable=AsyncMock, return_value=mock_role), \
-             patch('bisheng.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
-             patch('bisheng.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
+             patch('doberman_agent.role.api.endpoints.role._audit_log_service') as mock_audit_service, \
+             patch('doberman_agent.role.api.endpoints.role.get_request_ip', return_value='127.0.0.1'):
             result = await delete_role(
                 request=request,
                 role_id=15,
@@ -216,7 +216,7 @@ class TestMenuEndpoints:
     @pytest.mark.asyncio
     async def test_update_menu(self, mock_admin_login):
         """AC-11: POST /api/v1/roles/{role_id}/menu updates menu permissions."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         with patch.object(RoleService, 'update_menu', new_callable=AsyncMock):
             await RoleService.update_menu(
@@ -228,7 +228,7 @@ class TestMenuEndpoints:
     @pytest.mark.asyncio
     async def test_get_menu(self, mock_admin_login):
         """AC-12: GET /api/v1/roles/{role_id}/menu returns menu list."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         with patch.object(RoleService, 'get_menu',
                           new_callable=AsyncMock,
@@ -243,7 +243,7 @@ class TestQuotaEndpoints:
     @pytest.mark.asyncio
     async def test_effective_quota(self, mock_admin_login):
         """AC-15/AC-19: GET /api/v1/quota/effective returns quotas."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         items = [
             EffectiveQuotaItem(

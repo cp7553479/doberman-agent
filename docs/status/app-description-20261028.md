@@ -1,7 +1,7 @@
 # 应用对话简介显示修复
 
 - 日期：2026-10-28。
-- 目标：`dataelement/bisheng:feat/bisheng-work-120-main`，基线 `8dc820f0afcd75ff8942deb553c072d97a691b15`。
+- 目标：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main`，基线 `8dc820f0afcd75ff8942deb553c072d97a691b15`。
 - 分支：`codex/app-chat-description`。
 - 范围：Client 助手详情数据读取层；应用对话入口和页面布局沿用现状。
 
@@ -26,6 +26,6 @@
 
 ## 合并同步
 
-- PR：[#2542](https://github.com/dataelement/bisheng/pull/2542)。
+- PR：#2542。
 - 初始提交的 GitHub Frontend Quality 全部通过；同步目标 `174394b32`，状态文档保留双方交付记录。
 - 同步后覆盖应用对话、知识空间聊天交接及主布局的 7 组 / 43 项回归全部通过。

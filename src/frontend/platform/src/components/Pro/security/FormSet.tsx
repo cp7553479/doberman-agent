@@ -1,13 +1,13 @@
 // @ts-strict-ignore
-import { Button, Textarea } from '@bisheng/ui';
+import { Button, Textarea } from '@doberman-agent/ui';
 
 
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 
 import { Label } from "@/components/bs-ui/label";
-import { RadioGroup, Radio as RadioGroupItem } from "@bisheng/ui";
+import { RadioGroup, Radio as RadioGroupItem } from "@doberman-agent/ui";
 import { t } from "i18next";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { showApiError } from "@/controllers/request";
 
@@ -59,7 +59,7 @@ export default function FormSet({ data, onChange, onSave, onCancel }) {
         <div className="px-4 mt-6">
             {showReviewType && (
                 <>
-                    <span className="bisheng-label">{t('build.reviewType')}</span>
+                    <span className="doberman_agent-label">{t('build.reviewType')}</span>
                     <RadioGroup value="1"
                         className="flex space-x-2 h-[20px] mt-4 mb-6">
                         <div>
@@ -76,7 +76,7 @@ export default function FormSet({ data, onChange, onSave, onCancel }) {
                 </>
             )}
             <div className="mb-6">
-                <span className="bisheng-label">{t('build.wordListType')}</span>
+                <span className="doberman_agent-label">{t('build.wordListType')}</span>
                 <div className="mt-4 mb-6 space-y-3">
                     <div className="space-x-2 flex items-center">
                         <Checkbox
@@ -107,7 +107,7 @@ export default function FormSet({ data, onChange, onSave, onCancel }) {
                     </div>
                 </div>
             </div>
-            <span className="bisheng-label">{t('build.autoReplyContent')}</span>
+            <span className="doberman_agent-label">{t('build.autoReplyContent')}</span>
             <div className="flex justify-center mt-4">
                 <Textarea value={form.autoReply} onChange={(e) => setForm({ ...form, autoReply: e.target.value })} maxLength={500} placeholder={t('build.defaultAutoReply')} textareaClassName={"h-[100px] resize-none"} showCount></Textarea>
             </div>

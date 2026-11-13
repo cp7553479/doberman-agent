@@ -18,6 +18,6 @@ USER root
 RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
     && apt-get update && apt-get install -y --no-install-recommends python3 python3-venv make g++ \
     && ln -s /usr/bin/python3 /usr/local/bin/python && rm -rf /var/lib/apt/lists/*
-COPY src/app-runtime/common/prepare.py /opt/bisheng/prepare.py
+COPY src/app-runtime/common/prepare.py /opt/doberman-agent/prepare.py
 ENV NODE_ENV=development
 USER 10001:10001

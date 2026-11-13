@@ -1,11 +1,11 @@
-import { DocxViewer } from '@bisheng/file-viewers/docx';
-import { TextViewer } from '@bisheng/file-viewers/text';
-import { MarkdownViewer } from '@bisheng/file-viewers/markdown';
-import { HtmlViewer } from '@bisheng/file-viewers/html-viewer';
-import { ImageViewer } from '@bisheng/file-viewers/image';
-import { MediaViewer } from '@bisheng/file-viewers/media';
-import { MediaPlayer, type MediaPlayerProps } from '@bisheng/file-viewers/media-player';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { DocxViewer } from '@doberman-agent/file-viewers/docx';
+import { TextViewer } from '@doberman-agent/file-viewers/text';
+import { MarkdownViewer } from '@doberman-agent/file-viewers/markdown';
+import { HtmlViewer } from '@doberman-agent/file-viewers/html-viewer';
+import { ImageViewer } from '@doberman-agent/file-viewers/image';
+import { MediaViewer } from '@doberman-agent/file-viewers/media';
+import { MediaPlayer, type MediaPlayerProps } from '@doberman-agent/file-viewers/media-player';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 interface FilePreviewProps { filePath: string }
 interface TextPreviewProps extends FilePreviewProps { html?: boolean; markdown?: boolean }
 function resource(filePath: string) {

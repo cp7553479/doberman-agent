@@ -1,7 +1,7 @@
 import { readAuditBody } from "@/controllers/API/dshModelAudit";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pagination } from "@bisheng/ui";
+import { Pagination } from "@doberman-agent/ui";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { AuditMessageAssembler } from "./auditMessages";
 import { ModelAuditMessage } from "./ModelAuditMessage";

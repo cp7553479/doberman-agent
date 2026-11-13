@@ -114,7 +114,7 @@ def test_missing_registry_layer_stops_before_prepare_download(runtime, monkeypat
     profile = operation["payload"].pop("resolved_delivery")["profile"]
     operation["payload"].update(profile=profile, delivery={"mode": "bundle"}, source_artifact_id="source")
     monkeypatch.setattr(
-        executor.client, "logs", lambda *args, **kwargs: 'BISHENG_RUNTIME_RESULT {"reason":"image_check_unavailable"}'
+        executor.client, "logs", lambda *args, **kwargs: 'DOBERMAN_AGENT_RUNTIME_RESULT {"reason":"image_check_unavailable"}'
     )
     monkeypatch.setattr(executor, "_phase", lambda *args, **kwargs: pytest.fail("no materials before image check"))
     with pytest.raises(ExecutorError, match="image_check_unavailable"):

@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 /**
  * F074: the cited source file shown beside the report in the task-mode
  * workspace. It replaces the floating CitationDocumentPreviewDrawer there, which
@@ -8,7 +8,7 @@ import { Tooltip as SharedTooltip } from '@bisheng/ui';
  * the quoted text when neither lands) lives in CitationDocumentPreviewContent,
  * shared with the daily-chat and knowledge-space previews.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useCallback, useEffect, useState } from 'react';
 import { CitationDocumentPreviewContent, type CitationDocumentPreviewState } from '~/components/Chat/Messages/Content/CitationDocumentPreviewDrawer';
 import {

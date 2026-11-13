@@ -14,12 +14,12 @@ import httpx
 import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk
 
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
-from bisheng.dsh.domain.services.model_audit_states import derive_audit_states
-from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-from bisheng.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
+from doberman_agent.dsh.domain.services.model_audit_states import derive_audit_states
+from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+from doberman_agent.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
 from test.dsh.model_audit_fixtures import NOW, FaultAuditObjects, audit_database, audit_session
 from test.dsh.model_audit_harness import AuditHarness
 from test.e2e.helpers.api import assert_resp_200
@@ -55,7 +55,7 @@ async def call(client, **fields):
     return await client.post(
         "/api/v1/dsh/chat/completions",
         headers=USER,
-        json={"model": "bisheng:42", "messages": [{"role": "user", "content": "e2e-dsh-audit-question"}], **fields},
+        json={"model": "doberman_agent:42", "messages": [{"role": "user", "content": "e2e-dsh-audit-question"}], **fields},
     )
 
 
@@ -128,7 +128,7 @@ async def test_deferred_body_storage_cannot_gate_sse_or_settlement(storage_failu
             with audit_session(harness.engine) as session:
                 from sqlmodel import select
 
-                from bisheng.dsh.domain.models.model_audit_content import DshModelAuditOccurrence
+                from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditOccurrence
 
                 assert session.exec(select(DshModelAuditOccurrence)).all() == []
             finish_model.set()
@@ -240,7 +240,7 @@ async def test_keyset_same_timestamp_and_filter_binding():
 
         from sqlmodel import SQLModel
 
-        from bisheng.user.domain.models.user import User
+        from doberman_agent.user.domain.models.user import User
 
         SQLModel.metadata.create_all(harness.engine, tables=[User.__table__])
         with audit_session(harness.engine) as session, session.begin():
@@ -401,7 +401,7 @@ async def test_body_access_logging_failure_never_sends_original(monkeypatch):
 async def test_closing_at_unsent_end_frame_keeps_access_interrupted():
     from sqlmodel import select
 
-    from bisheng.dsh.domain.models.model_audit_content import DshModelAuditBodyAccess
+    from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditBodyAccess
 
     async with fixture() as (harness, client, _objects):
         response = await call(client)
@@ -420,12 +420,12 @@ async def test_closing_at_unsent_end_frame_keeps_access_interrupted():
 
 
 async def test_cancel_after_first_delta_and_before_start_have_distinct_audit_boundary():
-    from bisheng.dsh.domain.schemas.chat import DshChatRequest
-    from bisheng.dsh.domain.services.access import DshPrincipal
+    from doberman_agent.dsh.domain.schemas.chat import DshChatRequest
+    from doberman_agent.dsh.domain.services.access import DshPrincipal
 
     async with fixture() as (harness, _client, _objects):
         principal = DshPrincipal(tenant_id="2", user_id="20", seat_id="seat", session_id="session", grant_version=1)
-        request = DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "cancel"}], stream=True)
+        request = DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "cancel"}], stream=True)
         stream = await harness.service.complete(principal, request, request_id="before")
         await stream.aclose()
         await harness.drain()
@@ -445,15 +445,15 @@ async def test_cancel_after_first_delta_and_before_start_have_distinct_audit_bou
 async def test_transport_send_failure_keeps_model_and_original_success():
     from fastapi.responses import JSONResponse
 
-    from bisheng.dsh.api.responses import AuditObservedResponse
-    from bisheng.dsh.domain.schemas.chat import DshChatRequest
-    from bisheng.dsh.domain.services.access import DshPrincipal
+    from doberman_agent.dsh.api.responses import AuditObservedResponse
+    from doberman_agent.dsh.domain.schemas.chat import DshChatRequest
+    from doberman_agent.dsh.domain.services.access import DshPrincipal
 
     async with fixture() as (harness, client, _objects):
         captures = []
         result = await harness.service.complete(
             DshPrincipal(tenant_id="2", user_id="20", seat_id="seat", session_id="session", grant_version=1),
-            DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "send fault"}]),
+            DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "send fault"}]),
             request_id="send-fault",
             audit_callback=captures.append,
         )

@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.models.channel import Channel
-from bisheng.channel.domain.schemas.channel_manager_schema import CreateChannelRequest
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ChannelCreationRequestConflictError
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.channel.domain.models.channel import Channel
+from doberman_agent.channel.domain.schemas.channel_manager_schema import CreateChannelRequest
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ChannelCreationRequestConflictError
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 
-_CS = "bisheng.channel.domain.services.channel_service"
+_CS = "doberman_agent.channel.domain.services.channel_service"
 
 
 class _LoginUser:
@@ -142,11 +142,11 @@ def _runtime_stubs():
         # owner is exempt regardless of the configured limit), so the role lookup has to
         # be stubbed too or these tests hit the database for a quota they do not exercise.
         patch(
-            "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
+            "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
             new=AsyncMock(return_value=[]),
         ),
         patch(f"{_CS}.QuotaService.get_effective_quota", new=AsyncMock(return_value=-1)),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=information)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=information)),
         patch(f"{_CS}.resolve_permission_actor", new=AsyncMock(return_value=SimpleNamespace(user_id=7))),
     ):
         yield information

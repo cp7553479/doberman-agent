@@ -86,7 +86,7 @@ def test_chart_retains_namespaces_volumes_and_public_keys_and_has_no_application
     values["storage"]["volumes"] = [
         {
             "name": "preflight-data",
-            "path": "/var/lib/bisheng-runtime/preflight",
+            "path": "/var/lib/doberman-agent-runtime/preflight",
             "role": "preflight",
             "node": "worker-a",
             "sizeMi": 1024,
@@ -128,7 +128,7 @@ def test_chart_refuses_unsafe_or_ambiguous_configuration(values, tmp_path, chang
         values["storage"]["volumes"] = [
             {
                 "name": "bad",
-                "path": "/var/lib/bisheng-runtime/../other",
+                "path": "/var/lib/doberman-agent-runtime/../other",
                 "role": "production",
                 "node": "worker-a",
                 "sizeMi": 1024,
@@ -383,7 +383,7 @@ def test_local_pool_rejects_two_claims_for_the_same_physical_directory(values, t
     values["storage"]["volumes"] = [
         {
             "name": name,
-            "path": "/var/lib/bisheng-runtime/shared",
+            "path": "/var/lib/doberman-agent-runtime/shared",
             "role": "production",
             "node": "worker-a",
             "sizeMi": 1024,
@@ -569,7 +569,7 @@ def test_create_has_only_create_authority_until_observed_uid_is_persisted(monkey
         "metadata": {
             "name": "preflight-volume",
             "namespace": "runtime-apps",
-            "labels": {"runtime.bisheng.io/resource": reference},
+            "labels": {"runtime.doberman-agent.io/resource": reference},
         },
         "spec": {"accessModes": ["ReadWriteOnce"]},
     }
@@ -896,8 +896,8 @@ class PlanRefreshApi:
             if row["path"] == "/metadata/annotations":
                 pod["metadata"]["annotations"] = row["value"]
             else:
-                assert row["path"] == "/metadata/annotations/runtime.bisheng.io~1canary-plans-revision"
-                pod["metadata"].setdefault("annotations", {})["runtime.bisheng.io/canary-plans-revision"] = row["value"]
+                assert row["path"] == "/metadata/annotations/runtime.doberman-agent.io~1canary-plans-revision"
+                pod["metadata"].setdefault("annotations", {})["runtime.doberman-agent.io/canary-plans-revision"] = row["value"]
         pod["metadata"]["resourceVersion"] = str(int(pod["metadata"]["resourceVersion"]) + 1)
         result = copy.deepcopy(pod)
         if self.failure == "replaced-after":
@@ -921,11 +921,11 @@ def test_plans_refresh_only_admission_pod_annotations_after_each_cm_revision():
     reference = str(uuid4())
     plan = {"expires_at": 123, "uid": None, "allow_create": True}
     verifier._plans(reference, plan)
-    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.bisheng.io/canary-plans-revision"])
+    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.doberman-agent.io/canary-plans-revision"])
     verifier._plans(reference, {**plan, "uid": str(uuid4()), "allow_create": False})
-    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.bisheng.io/canary-plans-revision"])
+    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.doberman-agent.io/canary-plans-revision"])
     verifier._plans(reference, remove=True)
-    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.bisheng.io/canary-plans-revision"])
+    revisions.append(verifier.api.pods[0]["metadata"]["annotations"]["runtime.doberman-agent.io/canary-plans-revision"])
     assert len(set(revisions)) == 3
     assert [row["spec"] for row in verifier.api.pods] == original_specs
     assert verifier.api.pods[0]["metadata"]["annotations"]["existing.annotation"] == "retained"
@@ -1252,7 +1252,7 @@ def upgrade_lookup_objects(values, *, legacy=False):
             "metadata": {
                 "name": "preflight-retained",
                 "namespace": execution["namespace"],
-                "labels": {"runtime.bisheng.io/resource": reference},
+                "labels": {"runtime.doberman-agent.io/resource": reference},
             },
             "spec": {},
         },
@@ -1284,7 +1284,7 @@ def upgrade_lookup_objects(values, *, legacy=False):
     }
     plan_cm = cm("runtime-canary-plans", {"plans.json": json.dumps(plans, indent=2)})
     if not legacy:
-        plan_cm["metadata"]["labels"]["runtime.bisheng.io/installation"] = execution["installationId"]
+        plan_cm["metadata"]["labels"]["runtime.doberman-agent.io/installation"] = execution["installationId"]
     descriptor_cm = cm("runtime-deployment-descriptor", {"descriptor.json": json.dumps(descriptor)})
     prefix = "/api/v1/namespaces/" + namespace + "/configmaps/"
     return {prefix + row["metadata"]["name"]: row for row in (plan_cm, descriptor_cm)}
@@ -1344,7 +1344,7 @@ def test_chart_upgrade_preserves_live_canary_plans_and_profiles_with_identity_fe
     assert retained["data"] == original["data"]
     assert retained["metadata"]["uid"] == original["metadata"]["uid"]
     assert retained["metadata"]["resourceVersion"] == original["metadata"]["resourceVersion"]
-    assert retained["metadata"]["labels"]["runtime.bisheng.io/installation"] == values["execution"]["installationId"]
+    assert retained["metadata"]["labels"]["runtime.doberman-agent.io/installation"] == values["execution"]["installationId"]
 
 
 @pytest.mark.parametrize(
@@ -1388,7 +1388,7 @@ def test_chart_upgrade_refuses_missing_foreign_or_invalid_canary_evidence(values
     elif change == "rv":
         cm["metadata"].pop("resourceVersion")
     elif change == "installation":
-        cm["metadata"]["labels"]["runtime.bisheng.io/installation"] = "foreign"
+        cm["metadata"]["labels"]["runtime.doberman-agent.io/installation"] = "foreign"
     elif change == "descriptor-missing":
         objects.pop(prefix + "runtime-deployment-descriptor")
     elif change == "descriptor-release":
@@ -1887,9 +1887,9 @@ def test_registry_control_canary_uses_real_proxy_policy_without_becoming_service
     assert pod is not None, "external registry success is insufficient without the network canary"
     assert pod["metadata"]["labels"] == {
         "app": "egress-proxy",
-        "runtime.bisheng.io/preflight-installation": "test-runtime",
+        "runtime.doberman-agent.io/preflight-installation": "test-runtime",
     }
-    assert pod["spec"]["readinessGates"] == [{"conditionType": "runtime.bisheng.io/preflight-not-serving"}]
+    assert pod["spec"]["readinessGates"] == [{"conditionType": "runtime.doberman-agent.io/preflight-not-serving"}]
     assert not pod["spec"]["automountServiceAccountToken"]
     assert all("secret" not in volume and "projected" not in volume for volume in pod["spec"]["volumes"])
     app = pod["spec"]["containers"][0]

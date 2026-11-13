@@ -24,8 +24,8 @@
 运行本文的 HTTP 请求示例前，先设置：
 
 ```bash
-export BISHENG_API_BASE='http://localhost:7860'
-export BISHENG_API_KEY='<API_KEY>'
+export DOBERMAN_AGENT_API_BASE='http://localhost:7860'
+export DOBERMAN_AGENT_API_KEY='<API_KEY>'
 ```
 
 将示例中的知识库 ID、文件 ID、助手 ID、工作流 ID、模型 ID 和文件路径替换成实际值。
@@ -130,8 +130,8 @@ S 表示“自身身份”，D 表示“代表他人”。每个接口的基本�
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/filelib/" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -246,8 +246,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"name":"产品知识库","type":0,"description":"产品资料","model":"embedding-model-id"}'
 ```
@@ -343,8 +343,8 @@ HTTP 状态：`201`。
 #### 请求示例
 
 ```bash
-curl -X PUT "$BISHENG_API_BASE/api/v2/filelib/" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X PUT "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"name":"新名称","description":"新说明"}'
 ```
@@ -421,8 +421,8 @@ HTTP 状态：`201`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/filelib/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -476,8 +476,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/filelib/clear/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/clear/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -538,8 +538,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/filelib/file/list?knowledge_id=123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/file/list?knowledge_id=123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -666,8 +666,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/file/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/file/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -F 'file=@/path/to/合同.pdf' \
   -F 'split_mode=auto' \
   -F 'hierarchy_level=3' \
@@ -773,8 +773,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/chunks" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/chunks" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -F 'knowledge_id=123' \
   -F 'metadata={}' \
   -F 'split_mode=auto' \
@@ -873,8 +873,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/chunks_string" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/chunks_string" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"documents":[{"page_content":"要写入的文本","metadata":{"source":"example.txt"}}]}'
 ```
@@ -943,8 +943,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/filelib/file/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/file/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1014,8 +1014,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/delete_file" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/delete_file" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '[789,790]'
 ```
@@ -1112,8 +1112,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/retrieve" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/retrieve" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"query":"合同有效期多久？","knowledge_base_ids":[123],"filters":{"knowledge_base_filters":[{"knowledge_base_id":123,"tags":["合同"],"tag_match_mode":"ANY"}]},"top_k":10,"max_content":15000}'
 ```
@@ -1191,8 +1191,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/citation/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/citation/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1261,8 +1261,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/filelib/download_statistic?file_path=%2Fapp%2Fdata%2Fstatistic.log" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/download_statistic?file_path=%2Fapp%2Fdata%2Fstatistic.log" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1326,8 +1326,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/query_qa" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/query_qa" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"timeRange":["2026-09-01 00:00:00","2026-09-04 23:59:59"]}'
 ```
@@ -1364,7 +1364,7 @@ HTTP 状态：`200`。
       "id": 456,
       "knowledge_id": 123,
       "questions": [
-        "什么是毕昇？"
+        "什么是doberman-agent？"
       ],
       "answers": [
         "企业级大模型应用平台"
@@ -1401,8 +1401,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/filelib/detail_qa?id=123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/detail_qa?id=123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1436,7 +1436,7 @@ HTTP 状态：`200`。
     "id": 456,
     "knowledge_id": 123,
     "questions": [
-      "什么是毕昇？"
+      "什么是doberman-agent？"
     ],
     "answers": [
       "企业级大模型应用平台"
@@ -1487,7 +1487,7 @@ HTTP 状态：`200`。
   "knowledge_id": 123,
   "data": [
     {
-      "question": "什么是毕昇？",
+      "question": "什么是doberman-agent？",
       "answer": [
         "企业级大模型应用平台"
       ],
@@ -1500,10 +1500,10 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/add_qa" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/add_qa" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
-  --data '{"knowledge_id":123,"data":[{"question":"什么是毕昇？","answer":["企业级大模型应用平台"],"extra":{}}]}'
+  --data '{"knowledge_id":123,"data":[{"question":"什么是doberman-agent？","answer":["企业级大模型应用平台"],"extra":{}}]}'
 ```
 
 #### 成功响应
@@ -1538,7 +1538,7 @@ HTTP 状态：`200`。
       "id": 456,
       "knowledge_id": 123,
       "questions": [
-        "什么是毕昇？"
+        "什么是doberman-agent？"
       ],
       "answers": [
         "企业级大模型应用平台"
@@ -1592,7 +1592,7 @@ HTTP 状态：`200`。
   "data": {
     "id": "456",
     "relative_questions": [
-      "毕昇是什么？"
+      "doberman-agent是什么？"
     ]
   }
 }
@@ -1601,10 +1601,10 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/add_relative_qa" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/add_relative_qa" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
-  --data '{"knowledge_id":123,"data":{"id":"456","relative_questions":["毕昇是什么？"]}}'
+  --data '{"knowledge_id":123,"data":{"id":"456","relative_questions":["doberman-agent是什么？"]}}'
 ```
 
 #### 成功响应
@@ -1638,7 +1638,7 @@ HTTP 状态：`200`。
     "id": 456,
     "knowledge_id": 123,
     "questions": [
-      "什么是毕昇？"
+      "什么是doberman-agent？"
     ],
     "answers": [
       "企业级大模型应用平台"
@@ -1686,7 +1686,7 @@ HTTP 状态：`200`。
 ```json
 {
   "id": 456,
-  "question": "什么是毕昇平台？",
+  "question": "什么是doberman-agent平台？",
   "answer": [
     "企业级大模型应用平台"
   ]
@@ -1696,10 +1696,10 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/filelib/update_qa" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/update_qa" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
-  --data '{"id":456,"question":"什么是毕昇平台？","answer":["企业级大模型应用平台"]}'
+  --data '{"id":456,"question":"什么是doberman-agent平台？","answer":["企业级大模型应用平台"]}'
 ```
 
 #### 成功响应
@@ -1754,8 +1754,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/filelib/qa/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/filelib/qa/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1809,8 +1809,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/knowledge/get_metadata_fields/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/get_metadata_fields/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -1900,8 +1900,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/knowledge/add_metadata_fields" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/add_metadata_fields" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"metadata_fields":[{"field_name":"contract_no","field_type":"string"}]}'
 ```
@@ -1983,8 +1983,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X PUT "$BISHENG_API_BASE/api/v2/knowledge/modify_metadata_fields" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X PUT "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/modify_metadata_fields" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"metadata_fields":[{"old_field_name":"contract_no","new_field_name":"contract_code"}]}'
 ```
@@ -2059,8 +2059,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/knowledge/delete_metadata_fields" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/delete_metadata_fields" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"field_names":["contract_code"]}'
 ```
@@ -2137,8 +2137,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/knowledge/file/list_user_metadata" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/file/list_user_metadata" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"knowledge_file_ids":[789]}'
 ```
@@ -2235,8 +2235,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/knowledge/file/add_user_metadata" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/file/add_user_metadata" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"add_metadata_list":[{"knowledge_file_id":789,"user_metadata_list":[{"field_name":"contract_no","field_value":"HT-001"}]}]}'
 ```
@@ -2326,8 +2326,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X PUT "$BISHENG_API_BASE/api/v2/knowledge/file/modify_user_metadata" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X PUT "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/file/modify_user_metadata" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"modify_metadata_list":[{"knowledge_file_id":789,"user_metadata_list":[{"field_name":"contract_no","field_value":"HT-002"}]}]}'
 ```
@@ -2411,8 +2411,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X DELETE "$BISHENG_API_BASE/api/v2/knowledge/file/delete_user_metadata" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X DELETE "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/file/delete_user_metadata" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"knowledge_id":123,"delete_user_metadatas":[{"knowledge_file_id":789,"field_names":["contract_no"]}]}'
 ```
@@ -2483,8 +2483,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/workstation/config" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/workstation/config" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -2598,8 +2598,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/knowledge/upload" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/knowledge/upload" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -F 'file=@/path/to/example.pdf'
 ```
 
@@ -2632,7 +2632,7 @@ HTTP 状态：`200`。
   "status_message": "SUCCESS",
   "data": {
     "flowId": null,
-    "file_path": "bisheng/tmp/example.pdf",
+    "file_path": "doberman-agent/tmp/example.pdf",
     "relative_path": null,
     "file_name": "example.pdf",
     "repeat": false,
@@ -2712,8 +2712,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/workstation/chat/completions" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/workstation/chat/completions" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"clientTimestamp":"2026-09-04T00:00:00Z","conversationId":null,"model":"model-id","text":"请总结这个问题","tools":[],"files":[]}'
 ```
@@ -2780,8 +2780,8 @@ data: {"final":true,"conversation":{"conversationId":"chat-001"}}
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/chat/list" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/chat/list" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -2867,8 +2867,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/chat/info?chat_id=chat-001" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/chat/info?chat_id=chat-001" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -2953,8 +2953,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/flows/22222222-2222-2222-2222-222222222222" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/flows/22222222-2222-2222-2222-222222222222" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -3051,8 +3051,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/workflow/invoke" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/workflow/invoke" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"workflow_id":"22222222-2222-2222-2222-222222222222","override":null,"stream":false,"input":null,"message_id":null,"session_id":null}'
 ```
@@ -3174,8 +3174,8 @@ data: {"session_id":"chat001_async_task_id","data":{"event":"output_msg","status
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/workflow/stop" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/workflow/stop" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"workflow_id":"22222222-2222-2222-2222-222222222222","session_id":"chat001_async_task_id"}'
 ```
@@ -3320,8 +3320,8 @@ websocat -H='Authorization: Bearer <API_KEY>' \
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/assistant/list" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/assistant/list" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -3394,8 +3394,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X GET "$BISHENG_API_BASE/api/v2/assistant/info/123" \
-  -H "Authorization: Bearer $BISHENG_API_KEY"
+curl -X GET "$DOBERMAN_AGENT_API_BASE/api/v2/assistant/info/123" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY"
 ```
 
 #### 成功响应
@@ -3496,8 +3496,8 @@ model 字段填写知识助手 ID。stream=false 返回 JSON，stream=true 返�
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/assistant/chat/completions" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/assistant/chat/completions" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"model":"11111111-1111-1111-1111-111111111111","messages":[{"role":"user","content":"请介绍一下报销制度"}],"stream":false,"temperature":0}'
 ```
@@ -3699,8 +3699,8 @@ websocat -H='Authorization: Bearer <API_KEY>' \
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/llm/workbench/asr" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/llm/workbench/asr" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -F 'file=@/path/to/audio.wav'
 ```
 
@@ -3770,8 +3770,8 @@ HTTP 状态：`200`。
 #### 请求示例
 
 ```bash
-curl -X POST "$BISHENG_API_BASE/api/v2/llm/workbench/tts" \
-  -H "Authorization: Bearer $BISHENG_API_KEY" \
+curl -X POST "$DOBERMAN_AGENT_API_BASE/api/v2/llm/workbench/tts" \
+  -H "Authorization: Bearer $DOBERMAN_AGENT_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"text":"需要合成的文字"}'
 ```

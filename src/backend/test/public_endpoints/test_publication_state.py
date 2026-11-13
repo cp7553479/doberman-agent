@@ -10,13 +10,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.public_endpoints import (
+from doberman_agent.common.errcode.public_endpoints import (
     PublicApplicationOfflineError,
     PublicLinkInvalidError,
 )
-from bisheng.database.models.assistant import AssistantStatus
-from bisheng.database.models.flow import FlowStatus, FlowType
-from bisheng.public_endpoints.domain.services import guest_policy
+from doberman_agent.database.models.assistant import AssistantStatus
+from doberman_agent.database.models.flow import FlowStatus, FlowType
+from doberman_agent.public_endpoints.domain.services import guest_policy
 
 ONLINE_FLOW = SimpleNamespace(
     tenant_id=3, flow_type=FlowType.WORKFLOW.value, status=FlowStatus.ONLINE.value
@@ -136,7 +136,7 @@ async def test_probe_falls_through_to_a_published_assistant(lookups, monkeypatch
 
     monkeypatch.setattr(guest_policy, "_load_default_operator", load_operator)
     monkeypatch.setattr(
-        "bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin
+        "doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin
     )
 
     async with guest_policy.public_application_execution("id-1") as execution:
@@ -157,7 +157,7 @@ async def test_caller_errors_are_not_swallowed_into_a_second_probe(lookups, monk
 
     monkeypatch.setattr(guest_policy, "_load_default_operator", load_operator)
     monkeypatch.setattr(
-        "bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin
+        "doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin
     )
 
     with pytest.raises(PublicLinkInvalidError):

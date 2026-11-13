@@ -9,9 +9,9 @@ import pytest
 from openpyxl.drawing.image import Image as OpenpyxlImage
 from PIL import Image as PILImage
 
-from bisheng.knowledge.rag.pipeline.loader.base import BaseBishengLoader
-from bisheng.knowledge.rag.pipeline.loader.excel import ExcelLoader
-from bisheng.knowledge.rag.pipeline.loader.utils.excel_images import extract_excel_images
+from doberman_agent.knowledge.rag.pipeline.loader.base import BaseDobermanAgentLoader
+from doberman_agent.knowledge.rag.pipeline.loader.excel import ExcelLoader
+from doberman_agent.knowledge.rag.pipeline.loader.utils.excel_images import extract_excel_images
 
 PNG_BYTES = (
     b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06"
@@ -109,7 +109,7 @@ def test_non_package_files_are_skipped_quietly(tmp_path):
 
 
 def test_loader_stages_pictures_and_emits_a_chunk_per_sheet(tmp_path, monkeypatch):
-    monkeypatch.setattr(BaseBishengLoader, "_minio_bucket", property(lambda self: "bisheng"))
+    monkeypatch.setattr(BaseDobermanAgentLoader, "_minio_bucket", property(lambda self: "doberman_agent"))
 
     xlsx = str(tmp_path / "report.xlsx")
     _write_real_workbook(xlsx, str(tmp_path / "pic.png"))
@@ -125,7 +125,7 @@ def test_loader_stages_pictures_and_emits_a_chunk_per_sheet(tmp_path, monkeypatc
 
     image_docs = [doc for doc in documents if doc.page_content.startswith("## Portlet")]
     assert len(image_docs) == 1, "the picture-only sheet must still produce a chunk"
-    assert "![image1.png](/bisheng/knowledge/images/90030/90286/image1.png)" in image_docs[0].page_content
+    assert "![image1.png](/doberman_agent/knowledge/images/90030/90286/image1.png)" in image_docs[0].page_content
 
     # Bytes are staged locally; ImageUploadTransformer performs the upload.
     assert os.listdir(loader.local_image_dir) == ["image1.png"]
@@ -137,7 +137,7 @@ def test_loader_stages_pictures_and_emits_a_chunk_per_sheet(tmp_path, monkeypatc
 
 def test_picture_only_first_sheet_comes_before_the_data_sheet(tmp_path, monkeypatch):
     """A report whose cover sheet is one screenshot must segment as [picture, table]."""
-    monkeypatch.setattr(BaseBishengLoader, "_minio_bucket", property(lambda self: "bisheng"))
+    monkeypatch.setattr(BaseDobermanAgentLoader, "_minio_bucket", property(lambda self: "doberman_agent"))
 
     xlsx = str(tmp_path / "report.xlsx")
     _write_real_workbook(xlsx, str(tmp_path / "pic.png"))
@@ -160,7 +160,7 @@ def test_picture_only_first_sheet_comes_before_the_data_sheet(tmp_path, monkeypa
 def test_picture_on_a_data_sheet_follows_that_sheets_table(tmp_path, monkeypatch):
     """Sheet order wins over file numbering: 'Notes' is empty, so its picture
     must land between the two data sheets' tables, not after all of them."""
-    monkeypatch.setattr(BaseBishengLoader, "_minio_bucket", property(lambda self: "bisheng"))
+    monkeypatch.setattr(BaseDobermanAgentLoader, "_minio_bucket", property(lambda self: "doberman_agent"))
     png_path = str(tmp_path / "pic.png")
     PILImage.new("RGB", (4, 4), "white").save(png_path)
 
@@ -194,7 +194,7 @@ def test_picture_on_a_data_sheet_follows_that_sheets_table(tmp_path, monkeypatch
 
 
 def test_loader_leaves_pictureless_workbooks_untouched(tmp_path, monkeypatch):
-    monkeypatch.setattr(BaseBishengLoader, "_minio_bucket", property(lambda self: "bisheng"))
+    monkeypatch.setattr(BaseDobermanAgentLoader, "_minio_bucket", property(lambda self: "doberman_agent"))
 
     xlsx = str(tmp_path / "plain.xlsx")
     workbook = openpyxl.Workbook()
@@ -222,7 +222,7 @@ def test_image_extraction_is_limited_to_xlsx(tmp_path, extension, monkeypatch):
     """csv/xls never carry an OPC drawing part; the loader must not even look."""
     calls = []
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.loader.excel.extract_excel_images",
+        "doberman_agent.knowledge.rag.pipeline.loader.excel.extract_excel_images",
         lambda path: calls.append(path) or [],
     )
 

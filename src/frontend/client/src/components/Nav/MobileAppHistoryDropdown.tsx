@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';

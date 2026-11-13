@@ -1,7 +1,7 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input, Select, Textarea } from '@bisheng/ui';
-import { Switch, Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Select, Textarea } from '@doberman-agent/ui';
+import { Switch, Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { asrHintKey, speechModelTypes, ttsProviders } from "./speechConfig";
 import { rerankProviders } from "./modelProviderFields";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
@@ -45,7 +45,7 @@ interface ModelItemProps {
 }
 
 // Providers whose backend params handler consumes `enable_web_search`
-// (see bisheng/llm/domain/llm/llm.py). Each provider runs the search in a
+// (see doberman_agent/llm/domain/llm/llm.py). Each provider runs the search in a
 // different way, so each one gets its own tooltip copy.
 const WEB_SEARCH_TIP_KEYS: Record<string, string> = {
     qwen: 'model.webSearchTipQwen',
@@ -186,7 +186,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
 
             <div className="mt-3 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
                 <div className="space-y-2">
-                    <Label className="bisheng-label flex h-8 items-center">
+                    <Label className="doberman_agent-label flex h-8 items-center">
                         <span>{t('model.modelName')}</span>
                         <ModelFieldHint className="ml-1" content={t('model.modelNameTooltip')} />
                     </Label>
@@ -195,7 +195,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
                     {hintKey && <p className="text-xs text-muted-foreground">{t(hintKey)}</p>}
                 </div>
                 <div className="space-y-2">
-                    <Label className="bisheng-label flex h-8 items-center">{t('model.modelType')}</Label>
+                    <Label className="doberman_agent-label flex h-8 items-center">{t('model.modelType')}</Label>
                     <Select
                         {...selectLabels}
                         aria-label={t('model.modelType')}
@@ -216,7 +216,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
 
             {modelType === 'tts' && (
                 <div className="mt-4 space-y-2">
-                    <Label className="bisheng-label inline-flex items-center">
+                    <Label className="doberman_agent-label inline-flex items-center">
                         <span>{t('model.voiceType')}</span>
                         <span className="text-red-500">*</span>
                         <ModelFieldHint className="ml-1" content={t('model.voiceTypeTooltip')} />
@@ -227,7 +227,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
 
             {modelType === 'llm' && (
                 <div className="mt-4 space-y-2">
-                    <Label className="bisheng-label inline-flex items-center">
+                    <Label className="doberman_agent-label inline-flex items-center">
                         <span>{paramName === 'num_ctx' ? t('model.contextLength') : t('model.maxOutputTokens')}</span>
                         <ModelFieldHint
                             className="ml-1"
@@ -240,7 +240,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
 
             {webSearchTipKey && (
                 <div className="mt-4 flex items-center justify-between gap-4 border-t pt-4">
-                    <Label className="bisheng-label inline-flex items-center">
+                    <Label className="doberman_agent-label inline-flex items-center">
                         <span>{t('model.webSearch')}</span>
                         <ModelFieldHint className="ml-1" content={t(webSearchTipKey)} />
                     </Label>
@@ -255,7 +255,7 @@ export function ModelItem({ data, type, onDelete, onInput, onConfig }: ModelItem
             {hasAdvancedParams && (
                 <div className="mt-4 flex items-center justify-between gap-4 border-t pt-4">
                     <div className="flex min-w-0 items-center gap-2">
-                        <Label className="bisheng-label">{t('model.advancedParams')}</Label>
+                        <Label className="doberman_agent-label">{t('model.advancedParams')}</Label>
                         <span className="truncate text-xs text-muted-foreground">
                             {savedParamCount > 0
                                 ? t('model.advancedParamsCount', { count: savedParamCount })

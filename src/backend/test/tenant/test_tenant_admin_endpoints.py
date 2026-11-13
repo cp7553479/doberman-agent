@@ -11,8 +11,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.tenant.api.endpoints.tenant_admin import router as admin_router
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.tenant.api.endpoints.tenant_admin import router as admin_router
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def client():
     app.include_router(admin_router, prefix="/tenants")
 
     async def _fake_admin_user():
-        with patch("bisheng.user.domain.services.auth.UserRoleDao") as urd:
+        with patch("doberman_agent.user.domain.services.auth.UserRoleDao") as urd:
             urd.get_user_roles.return_value = []
             return UserPayload(user_id=1, user_name="admin", user_role=[], tenant_id=1)
 
@@ -54,9 +54,9 @@ def test_grant_on_child_tenant_returns_200(client):
     fake_tenant = SimpleNamespace(id=5, parent_tenant_id=1)
     permissions = MagicMock(grant=AsyncMock())
     with (
-        patch("bisheng.tenant.domain.services.tenant_admin_service.TenantDao") as dao,
+        patch("doberman_agent.tenant.domain.services.tenant_admin_service.TenantDao") as dao,
         patch(
-            "bisheng.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
             AsyncMock(return_value=permissions),
         ),
     ):
@@ -71,9 +71,9 @@ def test_revoke_on_child_tenant_returns_200(client):
     fake_tenant = SimpleNamespace(id=5, parent_tenant_id=1)
     permissions = MagicMock(revoke=AsyncMock())
     with (
-        patch("bisheng.tenant.domain.services.tenant_admin_service.TenantDao") as dao,
+        patch("doberman_agent.tenant.domain.services.tenant_admin_service.TenantDao") as dao,
         patch(
-            "bisheng.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
             AsyncMock(return_value=permissions),
         ),
     ):
@@ -86,7 +86,7 @@ def test_revoke_on_child_tenant_returns_200(client):
 def test_list_admins_returns_user_ids(client):
     permissions = MagicMock(list_subject_ids=AsyncMock(return_value=("7", "9")))
     with patch(
-        "bisheng.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
+        "doberman_agent.tenant.domain.services.tenant_admin_service.get_permission_relation_api",
         AsyncMock(return_value=permissions),
     ):
         response = client.get("/tenants/5/admins")
@@ -108,7 +108,7 @@ def test_list_admins_root_returns_empty(client):
 
 
 def test_grant_on_missing_tenant_returns_tenant_not_found(client):
-    with patch("bisheng.tenant.domain.services.tenant_admin_service.TenantDao") as dao:
+    with patch("doberman_agent.tenant.domain.services.tenant_admin_service.TenantDao") as dao:
         dao.aget_by_id = AsyncMock(return_value=None)
         response = client.post("/tenants/99/admins", json={"user_id": 10})
 

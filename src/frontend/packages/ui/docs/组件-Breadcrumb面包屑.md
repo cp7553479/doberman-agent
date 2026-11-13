@@ -38,7 +38,7 @@
 | 字号 / 行高 | 12/24（`text-caption` 字号，行高 24px） |
 | 字重 | 400，父级与当前页一致 |
 | 项与分隔符的间距 | 左右各 2px |
-| 分隔符 | bisheng-icons 右向箭头，**16px**，色 `#c9cdd4`（`text-disabled`），不参与 hover、不可点 |
+| 分隔符 | @doberman-agent/icons 右向箭头，**16px**，色 `#c9cdd4`（`text-disabled`），不参与 hover、不可点 |
 
 **分隔符用图标，不用文本 `>`。** `>` 是数学符号：它按西文基线对齐，跟中文字排一起会偏低、大小也压不住，换个字体形状粗细就变了。图标的线宽和圆头圆角跟全站一套（见 [基础-图标规范.mdx](基础-图标规范.mdx)），尺寸和颜色走 token，读屏器也天然读不到它。
 
@@ -132,7 +132,7 @@
 2. `…` 菜单复用现有 Dropdown 基座（Dropdown 组件期定基准前先直接用 popup 档样式），**不新写一个浮层**。
    落地实况：组件库尚无 Dropdown 组件，菜单直接建在 Radix Dropdown Menu 上、取 popup 档样式；Tooltip 走组件库的 `<Tooltip>`（2026-08-24 同期落地），`disabled={!截断}`；箭头照带——tooltip 只有一种长相。
 3. 截断走 CSS：`max-width: 96px` + `overflow: hidden` + `text-overflow: ellipsis` + `white-space: nowrap`，**不在 JS 里数字符**——数字符必然要为中英文各写一套换算，而且拿不到真实字宽。Tooltip 只在实际发生截断时挂（比对 `scrollWidth > clientWidth`）。
-4. 分隔符用 bisheng-icons 的右向箭头，16px；小尺寸档的 `strokeWidth` 补偿由图标组件统一处理（图标规范 §2.2.1），业务页不自调。
+4. 分隔符用 @doberman-agent/icons 的右向箭头，16px；小尺寸档的 `strokeWidth` 补偿由图标组件统一处理（图标规范 §2.2.1），业务页不自调。
 5. 窄屏阈值切换用 `useMediaQuery`(576px)，与适配原则同一套断点，不自造。
 6. 颜色全走 token，不留裸 hex：灰系复用 Button 已建的 `--btn-*` 系，品牌色走 `--primary`。
 
@@ -189,7 +189,7 @@
 | 日期 | 改了什么 | 影响文件 | 提交 |
 |---|---|---|---|
 | 2026-08-04 | 建档 v1 草案：调研 7 家体系（附录 A）→ 沿用设计师《面包屑交互说明》四条既有规则（名称过长省略 / 5 级折叠 / 当前页不可点 / 单级不显示），新增折叠展开形态（§5.2 单列纵向菜单）、尺寸状态（§3）、移动端（§6）、无障碍（§7）。5 项待设计师拍板见待决策清单 | 本文件 | 待 committer 窗口提交 |
-| 2026-08-04 | 设计师批注两条拍板：① 分隔符改用 **bisheng-icons 右向箭头 12px**，不用文本 `>`（§2、§3、§7 同步）；② 父级名称上限从「8 个中文字符」改为**宽度 112px**，中英文不再分两套口径，截断改走 CSS `text-overflow`（§4、§5、§8） | 本文件 | 待 committer 窗口提交 |
+| 2026-08-04 | 设计师批注两条拍板：① 分隔符改用 **@doberman-agent/icons 右向箭头 12px**，不用文本 `>`（§2、§3、§7 同步）；② 父级名称上限从「8 个中文字符」改为**宽度 112px**，中英文不再分两套口径，截断改走 CSS `text-overflow`（§4、§5、§8） | 本文件 | 待 committer 窗口提交 |
 | 2026-08-05 | 与设计师讨论 `…` 交互两轮：① 点击 vs 悬停——专项调研三派交互（附录 A.2），定**点击→纵向菜单**（主流做法，hover 只有 Semi 一家可选档）；② 针对「看不出能点」，新增 §5.2 触发器规则：`…` 常态带 24×24 浅灰底容器 + Tooltip「展开省略的 N 层」，原 §5.2 菜单顺延为 §5.3 | 本文件 | 待 committer 窗口提交 |
 | 2026-08-05 | 设计师看过实现后拍板：`…` 常驻底色去掉（不好看），§5.2 改为常态裸 `…`、hover 才出容器（同 Carbon / Fluent 做法）；Tooltip 与 `cursor: pointer` 升为首次发现的主要线索，标为不可省；Tooltip 文案定稿**「点击展开省略的 N 层」** | 本文件 | 待 committer 窗口提交 |
 | 2026-08-05 | **待决策清单五项全部拍板，清单删除，v1 定稿**：当前页深色 `#1d2129` ✓、父级 hover 转品牌色 ✓、窄屏 3 级折叠阈值 ✓（三项规范原文即暂定值，零改动）；菜单行不带图标（§5.3 补一句）、不设「首页」项（§2 补一句） | 本文件 | 待 committer 窗口提交 |
@@ -198,4 +198,4 @@
 | 2026-08-05 | **折叠阈值 5 级 → 超过 4 级即折叠**（5 级路径此前全展开，现折叠为 `根级 · … · 上一级 · 当前页`）：§5.1、§8.1（`maxItems` 默认 4）、附录 A 差异点同步 | 本文件 | 待 committer 窗口提交 |
 | 2026-08-05 | `…` 触发器菜单打开态底色 `#e5e6eb` → **与 hover 同色 `#f2f3f5`**（加深一档视觉过重，§5.2 同步） | 本文件 | 待 committer 窗口提交 |
 | 2026-08-05 | 菜单对齐方式：左边缘对齐 `…` → **与 `…` 水平居中对齐**（§5.3 及推荐表同步） | 本文件 | 待 committer 窗口提交 |
-| 2026-08-24 | **组件抽出落库**：cofco 知识空间的 `KnowledgeBreadcrumb` 抽成通用 `@bisheng/ui` 的 `Breadcrumb`（`packages/ui/src/components/Breadcrumb/`），i18n 文案改由 `expandLabel` 传入、单级 `return null` 收进组件、窄屏阈值内建 `useMediaQuery(576px)`；新增 demo 页 `docs/components/breadcrumb.mdx` + 侧栏「导航 Navigation」分组；§8 回写落地实况（Radix Dropdown Menu 基座 + 内部临时 Tooltip） | 本文件、`packages/ui/src/components/Breadcrumb/*`、`packages/ui/src/index.ts`、`docs/components/{breadcrumb.mdx,index.md}`、`client/rspress.config.ts` | 待 committer 窗口提交 |
+| 2026-08-24 | **组件抽出落库**：cofco 知识空间的 `KnowledgeBreadcrumb` 抽成通用 `@doberman-agent/ui` 的 `Breadcrumb`（`packages/ui/src/components/Breadcrumb/`），i18n 文案改由 `expandLabel` 传入、单级 `return null` 收进组件、窄屏阈值内建 `useMediaQuery(576px)`；新增 demo 页 `docs/components/breadcrumb.mdx` + 侧栏「导航 Navigation」分组；§8 回写落地实况（Radix Dropdown Menu 基座 + 内部临时 Tooltip） | 本文件、`packages/ui/src/components/Breadcrumb/*`、`packages/ui/src/index.ts`、`docs/components/{breadcrumb.mdx,index.md}`、`client/rspress.config.ts` | 待 committer 窗口提交 |

@@ -1,6 +1,6 @@
 # 列表 Cursor 翻页与无限滚动 (F027)
 
-BiSheng 高频列表(知识库 / 应用 / 知识空间文件)统一从 `page_num + COUNT(*)` 偏移翻页改造为 **cursor (keyset) 翻页 + 前端无限滚动**。改造的核心驱动力不是 UI 体验,而是**根治翻深页时 OpenFGA 细权限请求量随页号线性增长**:OFFSET 模式下,翻第 50 页要为前 49 页全部资源跑一次 ReBAC 过滤;cursor 模式下,每次只对当前 keyset 窗口跑一次。本文档描述这套模式的协议、后端实现套路、前端模式、以及 DM8 兼容上的关键坑。
+doberman-agent 高频列表(知识库 / 应用 / 知识空间文件)统一从 `page_num + COUNT(*)` 偏移翻页改造为 **cursor (keyset) 翻页 + 前端无限滚动**。改造的核心驱动力不是 UI 体验,而是**根治翻深页时 OpenFGA 细权限请求量随页号线性增长**:OFFSET 模式下,翻第 50 页要为前 49 页全部资源跑一次 ReBAC 过滤;cursor 模式下,每次只对当前 keyset 窗口跑一次。本文档描述这套模式的协议、后端实现套路、前端模式、以及 DM8 兼容上的关键坑。
 
 ---
 
@@ -226,7 +226,7 @@ useEffect(() => {
 
 **两个最坑的陷阱**:
 
-1. **IntersectionObserver `root: null` 默认走 viewport**。BiSheng 大部分列表是「列表区在固定高度容器里 overflow:scroll」,容器内滚动不改变 sentinel 跟 viewport 的关系 → observer 只在 mount 时触发一次,之后永远不再触发。必须用 `findScrollableAncestor()` 走 DOM 找最近 `overflow-y: auto / scroll / overlay` 祖先作 root。
+1. **IntersectionObserver `root: null` 默认走 viewport**。doberman-agent 大部分列表是「列表区在固定高度容器里 overflow:scroll」,容器内滚动不改变 sentinel 跟 viewport 的关系 → observer 只在 mount 时触发一次,之后永远不再触发。必须用 `findScrollableAncestor()` 走 DOM 找最近 `overflow-y: auto / scroll / overlay` 祖先作 root。
 2. **`onLoad` 闭包冻结 stale `nextCursor`**。observer 是 mount 时创建的(`[]` deps),callback 里用的 `onLoad` 是首次渲染时的版本。必须用 `useRef` 同步:`onLoadRef.current = onLoad` 每次 render 都更新,observer callback 调 `onLoadRef.current?.()` 拿最新版本。
 
 不解决这两个,代码看起来对、第一页加载也对,然后下拉就再也不触发,且没报错。
@@ -260,7 +260,7 @@ useEffect(() => {
 | 5s 轮询把无限滚动列表「截短」回首页 | 轮询调 `loadFiles(currentPage)` 替换了累积数据 | 改成 `refreshLoadedStatuses()`,只 merge status,不动 cursor 链 |
 | `int(last['id'])` 抛 ValueError | workflow/list UNION:flow id 是 int,assistant id 是 UUID 字符串 | `encode_cursor` 不强转类型,JSON 保留原类型 |
 | `datetime is not JSON serializable` | `update_time` 是 datetime,cursor 编码崩 | `encode_cursor` 加 datetime → ISO 字符串 fallback |
-| 部署 backend 镜像时拉不到 `dataelement/bisheng-backend:base.v8` | base image 在 docker.io 上 403,cr.dataelem.com 上没有 | 写 `Dockerfile.beta3`:`FROM cr.dataelem.com/dataelement/bisheng-backend:feat_2.6.0-beta2` + `COPY ./ ./` 增量构建 |
+| 部署 backend 镜像时拉不到 `cp7553479/doberman-agent-backend:base.v8` | base image 在 docker.io 上 403,cr.dataelem.com 上没有 | 写 `Dockerfile.beta3`:`FROM cr.dataelem.com/cp7553479/doberman-agent-backend:feat_2.6.0-beta2` + `COPY ./ ./` 增量构建 |
 
 ---
 
@@ -271,22 +271,22 @@ docs (本文档)        → docs/architecture/13-cursor-pagination.md
 spec / tasks (本地)   → features/v2.6.0/027-rebac-list-perf-optim/{spec,tasks}.md  (features/ 在 gitignore)
 release-contract     → features/v2.6.0/release-contract.md  (F027 entry + INV-6)
 
-cursor 编解码         → src/backend/bisheng/common/cursor.py
-keyset WHERE         → src/backend/bisheng/database/utils/keyset.py  (_USE_EXPANDED_FALLBACK = True)
-envelope             → src/backend/bisheng/common/schemas/api.py     (PageInfiniteCursorData)
-errcodes             → src/backend/bisheng/common/errcode/{knowledge,flow,knowledge_space}.py
+cursor 编解码         → src/backend/doberman_agent/common/cursor.py
+keyset WHERE         → src/backend/doberman_agent/database/utils/keyset.py  (_USE_EXPANDED_FALLBACK = True)
+envelope             → src/backend/doberman_agent/common/schemas/api.py     (PageInfiniteCursorData)
+errcodes             → src/backend/doberman_agent/common/errcode/{knowledge,flow,knowledge_space}.py
                         10550 / 10991 / 18070
 
 后端 cursor 实现
-  - knowledge          → bisheng/knowledge/domain/services/knowledge_service.py
-  - workflow           → bisheng/api/services/workflow.py
+  - knowledge          → doberman-agent/knowledge/domain/services/knowledge_service.py
+  - workflow           → doberman-agent/api/services/workflow.py
                           _scan_visible_flows_cursor  (fetch-until-enough)
                           get_all_flows_envelope
-  - space_children     → bisheng/knowledge/domain/services/knowledge_space_service.py
+  - space_children     → doberman-agent/knowledge/domain/services/knowledge_space_service.py
                           _scan_visible_child_items   (fetch-until-enough)
                           list_space_children
                           _compute_ext_rank_python    (SQL CASE 的 Python 等价)
-  - departments tree   → bisheng/department/domain/services/department_service.py
+  - departments tree   → doberman-agent/department/domain/services/department_service.py
                           (member_count 已移除)
 
 前端 platform

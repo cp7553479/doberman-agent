@@ -17,7 +17,7 @@ declare const __APP_ENV__: {
   /** Sub-path this app is served under. */
   BASE_URL: string;
   /** Sub-path of the admin/platform app, for cross-app links. */
-  BISHENG_HOST: string;
+  DOBERMAN_AGENT_HOST: string;
 };
 
 declare const __VCONSOLE_ENABLED__: boolean;
@@ -49,7 +49,7 @@ interface Window {
     };
   };
   __BRAND_CONFIG_READY__?: Promise<any>;
-  /** Runtime app config injected by public/assets/bisheng/config.js. */
+  /** Runtime app config injected by public/assets/doberman-agent/config.js. */
   APP_CONFIG?: {
     /** Hide Japanese from the language switcher and locale auto-detection. */
     disableJa?: boolean;

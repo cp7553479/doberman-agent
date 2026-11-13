@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.cursor import decode_cursor
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.cursor import decode_cursor
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
-_SERVICE = "bisheng.knowledge.domain.services.knowledge_space_service"
+_SERVICE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 class _User:

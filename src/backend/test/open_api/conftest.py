@@ -27,14 +27,14 @@ class FakeRedis:
 
 @pytest.fixture
 def open_platform_enabled(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.open_platform, "enabled", True)
 
 
 @pytest.fixture
 def open_platform_disabled(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.open_platform, "enabled", False)
 
@@ -45,16 +45,16 @@ async def open_api_db(monkeypatch):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-    from bisheng.database.models.department import Department
-    from bisheng.database.models.tenant import Tenant, UserTenant
-    from bisheng.open_api.domain.models import (
+    from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+    from doberman_agent.database.models.department import Department
+    from doberman_agent.database.models.tenant import Tenant, UserTenant
+    from doberman_agent.open_api.domain.models import (
         ApiCredential,
         ApiCredentialDelegateScope,
         OpenApiTenantSetting,
         ServiceAccount,
     )
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.user.domain.models.user import User
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",
@@ -81,12 +81,12 @@ async def open_api_db(monkeypatch):
             await session.close()
 
     for module_name in (
-        "bisheng.database.models.tenant",
-        "bisheng.open_api.domain.repositories.credential_repository",
-        "bisheng.open_api.domain.repositories.delegate_scope_repository",
-        "bisheng.open_api.domain.repositories.owner_repository",
-        "bisheng.open_api.domain.repositories.service_account_repository",
-        "bisheng.open_api.domain.repositories.tenant_setting_repository",
+        "doberman_agent.database.models.tenant",
+        "doberman_agent.open_api.domain.repositories.credential_repository",
+        "doberman_agent.open_api.domain.repositories.delegate_scope_repository",
+        "doberman_agent.open_api.domain.repositories.owner_repository",
+        "doberman_agent.open_api.domain.repositories.service_account_repository",
+        "doberman_agent.open_api.domain.repositories.tenant_setting_repository",
     ):
         module = importlib.import_module(module_name)
         monkeypatch.setattr(module, "get_async_db_session", session_factory)
@@ -103,9 +103,9 @@ def fake_redis(monkeypatch):
         return redis
 
     for module_name in (
-        "bisheng.open_api.domain.services.credential_service",
-        "bisheng.open_api.domain.services.credential_validator",
-        "bisheng.open_api.domain.services.tenant_setting_service",
+        "doberman_agent.open_api.domain.services.credential_service",
+        "doberman_agent.open_api.domain.services.credential_validator",
+        "doberman_agent.open_api.domain.services.tenant_setting_service",
     ):
         module = importlib.import_module(module_name)
         monkeypatch.setattr(module, "get_redis_client", get_fake_redis)
@@ -116,7 +116,7 @@ def fake_redis(monkeypatch):
 async def _mcp_app():
     """A FastAPI app carrying only the MCP path (F067 ``open_mcp``), with its session manager running.
 
-    Not ``bisheng.main.app``, so a test does not pull in the whole router. Each
+    Not ``doberman_agent.main.app``, so a test does not pull in the whole router. Each
     caller gets its own runtime because ``StreamableHTTPSessionManager.run()``
     may be entered once per instance.
 
@@ -130,8 +130,8 @@ async def _mcp_app():
 
     from fastapi import FastAPI
 
-    from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-    from bisheng.open_mcp.server import OpenMcpDispatchMiddleware, create_open_mcp_runtime
+    from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+    from doberman_agent.open_mcp.server import OpenMcpDispatchMiddleware, create_open_mcp_runtime
 
     runtime = create_open_mcp_runtime()
     app = FastAPI()
@@ -206,7 +206,7 @@ def audit_events(monkeypatch):
         events.append(kwargs)
         return kwargs
 
-    service_module = importlib.import_module("bisheng.open_api.domain.services.service_account_service")
+    service_module = importlib.import_module("doberman_agent.open_api.domain.services.service_account_service")
     monkeypatch.setattr(service_module.AuditLogDao, "ainsert_v2", record)
     return events
 

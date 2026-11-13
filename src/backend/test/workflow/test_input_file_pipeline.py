@@ -10,15 +10,15 @@ import pytest
 from langchain_core.documents import Document
 from PIL import Image
 
-from bisheng.common.errcode.knowledge import KnowledgeFileChunkMaxError
-from bisheng.knowledge.rag.pipeline.loader.base import BaseBishengLoader
-from bisheng.knowledge.rag.pipeline.loader.x_create import XinChuangFormatterLoader
-from bisheng.knowledge.rag.pipeline.types import ImageStorageContext
-from bisheng.knowledge.rag.temp_file_pipeline import TempFilePipeline
-from bisheng.workflow.nodes.input.input import InputNode
+from doberman_agent.common.errcode.knowledge import KnowledgeFileChunkMaxError
+from doberman_agent.knowledge.rag.pipeline.loader.base import BaseDobermanAgentLoader
+from doberman_agent.knowledge.rag.pipeline.loader.x_create import XinChuangFormatterLoader
+from doberman_agent.knowledge.rag.pipeline.types import ImageStorageContext
+from doberman_agent.knowledge.rag.temp_file_pipeline import TempFilePipeline
+from doberman_agent.workflow.nodes.input.input import InputNode
 
 
-class _ImageLoader(BaseBishengLoader):
+class _ImageLoader(BaseDobermanAgentLoader):
     def load(self):
         image = Path(self.ensure_local_image_dir()) / "figure.png"
         image.write_bytes(b"image-bytes")
@@ -54,7 +54,7 @@ def test_image_upload_precedes_staging_cleanup_and_preserves_offsets(tmp_path, m
         {kw["object_name"]: Path(kw["file"]).read_bytes()}
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
     )
     image_context = ImageStorageContext(
         "chat/1/images",
@@ -83,7 +83,7 @@ def test_failed_manifest_finalize_removes_uploaded_bytes(tmp_path, monkeypatch):
     """AC-08: a deleted conversation cannot leave an upload completed after deletion."""
     storage = MagicMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
     )
 
     def fail():
@@ -111,7 +111,7 @@ def test_partial_upload_never_marks_manifest_ready_and_cleans_completed_objects(
     storage = MagicMock()
     storage.put_object_sync.side_effect = [None, OSError("upload interrupted")]
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
     )
     ready = MagicMock()
     context = ImageStorageContext(
@@ -130,7 +130,7 @@ def test_unrecorded_manifest_does_not_upload_bytes(tmp_path, monkeypatch):
     """AC-08: a DB registration failure cannot create untracked permanent objects."""
     storage = MagicMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
     )
 
     def fail(_names):
@@ -210,7 +210,7 @@ def test_input_node_selects_purpose_before_parsing_and_keeps_output_limit(monkey
     node.init_vector_clients = MagicMock()
     node.get_upload_file_path_content = MagicMock(return_value=(["x" * 20000], [{}]))
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.input.input.KnowledgeService.get_upload_file_original_name", lambda name: name
+        "doberman_agent.workflow.nodes.input.input.KnowledgeService.get_upload_file_original_name", lambda name: name
     )
     result = node.parse_upload_file(
         "k",
@@ -254,7 +254,7 @@ def test_real_document_images_reach_object_storage_before_cleanup(tmp_path, monk
         slide = presentation.slides.add_slide(presentation.slide_layouts[6])
         slide.shapes.add_picture(str(image_path), Inches(1), Inches(1))
         presentation.save(pipeline.local_file_path)
-        monkeypatch.setattr("bisheng.knowledge.rag.pipeline.loader.ppt.convert_ppt_to_pdf", lambda *args: None)
+        monkeypatch.setattr("doberman_agent.knowledge.rag.pipeline.loader.ppt.convert_ppt_to_pdf", lambda *args: None)
     elif extension == "xlsx":
         from openpyxl.drawing.image import Image as ExcelImage
 
@@ -271,7 +271,7 @@ def test_real_document_images_reach_object_storage_before_cleanup(tmp_path, monk
             page.insert_image(fitz.Rect(50, 50, 200, 200), filename=str(image_path))
             document.save(pipeline.local_file_path)
         # Pin the local PDF loader; provider HTTP clients are outside this test.
-        from bisheng.knowledge.rag.pipeline.loader.pdf import LocalPdfLoader
+        from doberman_agent.knowledge.rag.pipeline.loader.pdf import LocalPdfLoader
 
         monkeypatch.setattr(
             pipeline,
@@ -288,7 +288,7 @@ def test_real_document_images_reach_object_storage_before_cleanup(tmp_path, monk
         {kw["object_name"]: Path(kw["file"]).read_bytes()}
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: storage
     )
     pipeline.image_storage = ImageStorageContext("chat/images", "main", lambda name: f"/stable-images/{name}")
     result = pipeline.run()

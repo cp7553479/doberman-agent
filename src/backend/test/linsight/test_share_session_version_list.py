@@ -21,9 +21,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.linsight.api.endpoints import linsight as linsight_ep
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.share_link.domain.models.share_link import ResourceTypeEnum, ShareLink, ShareMode
+from doberman_agent.linsight.api.endpoints import linsight as linsight_ep
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.share_link.domain.models.share_link import ResourceTypeEnum, ShareLink, ShareMode
 
 OWNER_ID = 100
 VIEWER_ID = 999

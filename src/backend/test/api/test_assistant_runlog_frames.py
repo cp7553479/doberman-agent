@@ -16,8 +16,8 @@ import pathlib
 
 from langchain_core.documents import Document
 
-from bisheng.api.v1.callback import AsyncGptsDebugCallbackHandler, _dump_run_log
-from bisheng.tool.domain.langchain.knowledge import KnowledgeRagTool
+from doberman_agent.api.v1.callback import AsyncGptsDebugCallbackHandler, _dump_run_log
+from doberman_agent.tool.domain.langchain.knowledge import KnowledgeRagTool
 
 BACKEND_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -73,10 +73,10 @@ def test_no_citation_wrapper_reopens_a_run_for_the_retriever() -> None:
     """
 
     roots = [
-        "bisheng/api/services/assistant_agent.py",
-        "bisheng/workflow/nodes/agent/agent.py",
-        "bisheng/workstation/domain/services/chat_service.py",
-        "bisheng/workflow/common/knowledge.py",
+        "doberman_agent/api/services/assistant_agent.py",
+        "doberman_agent/workflow/nodes/agent/agent.py",
+        "doberman_agent/workstation/domain/services/chat_service.py",
+        "doberman_agent/workflow/common/knowledge.py",
     ]
     for relative in roots:
         source = (BACKEND_ROOT / relative).read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 import { permissionModelLabel } from "./permissionModelLabel";
-import { Outlined } from "bisheng-icons";
-// `LockKeyhole` stays on lucide: bisheng-icons has no lock glyph.
+import { Outlined } from "@doberman-agent/icons";
+// `LockKeyhole` stays on lucide: @doberman-agent/icons has no lock glyph.
 import { LockKeyhole } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {

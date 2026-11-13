@@ -9,13 +9,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.approval.domain.models.approval_instance import ApprovalActionLog, ApprovalInstance, ApprovalTask
-from bisheng.common.errcode.approval import ApprovalInstanceNotPendingError, ApprovalRequestPermissionDeniedError
+from doberman_agent.approval.domain.models.approval_instance import ApprovalActionLog, ApprovalInstance, ApprovalTask
+from doberman_agent.common.errcode.approval import ApprovalInstanceNotPendingError, ApprovalRequestPermissionDeniedError
 
 
 @pytest.fixture
 async def withdrawal():
-    from bisheng.approval.domain.repositories.app_publish_withdrawal_repository import AppPublishWithdrawalRepository
+    from doberman_agent.approval.domain.repositories.app_publish_withdrawal_repository import AppPublishWithdrawalRepository
 
     engine = create_async_engine("sqlite+aiosqlite://")
     async with engine.begin() as connection:
@@ -115,8 +115,8 @@ async def test_wrong_frozen_version_has_no_partial_effect(withdrawal):
 
 
 async def test_other_scenarios_still_require_applicant(monkeypatch):
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-    from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
 
     monkeypatch.setattr(
         ApprovalInstanceRepository,

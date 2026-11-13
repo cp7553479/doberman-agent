@@ -20,8 +20,8 @@
  * Local development forwards `/apps/` to the installed app entry via Vite.
  */
 import { appActionState } from "../appActions"
-import { Button } from "@bisheng/ui"
-import { notification } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
+import { notification } from "@doberman-agent/ui"
 import type {
   HostedAppDetail,
   HostedAppInstance,

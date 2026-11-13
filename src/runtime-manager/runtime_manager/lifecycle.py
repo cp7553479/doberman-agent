@@ -81,7 +81,7 @@ NANO = 1_000_000_000
 #: Environment variable names the platform owns. An app cannot redefine these by
 #: shipping them in its own env: the database URL and the base path are how the
 #: cage is wired, not preferences.
-RESERVED_ENV_PREFIXES = ("BISHENG_APP_", "BISHENG_PLATFORM_", "PORT")
+RESERVED_ENV_PREFIXES = ("DOBERMAN_AGENT_APP_", "DOBERMAN_AGENT_PLATFORM_", "PORT")
 
 
 class Prober(Protocol):
@@ -154,9 +154,9 @@ def build_env(
     egress_principal: str = "",
     extra: dict[str, str] | None = None,
 ) -> dict[str, str]:
-    """Environment contract of §4.2 ⑤ — same names ``bisheng dev`` injects.
+    """Environment contract of §4.2 ⑤ — same names ``doberman-agent dev`` injects.
 
-    ``PORT`` and ``BISHENG_APP_PORT`` are both set to the manifest port and must
+    ``PORT`` and ``DOBERMAN_AGENT_APP_PORT`` are both set to the manifest port and must
     stay equal; frameworks read one or the other and a disagreement produces an
     app listening where nothing dials.
 
@@ -195,7 +195,7 @@ def build_env(
         base_path=base_path,
         extra=env,
     )
-    env["BISHENG_PLATFORM_API_BASE"] = platform_api_base
+    env["DOBERMAN_AGENT_PLATFORM_API_BASE"] = platform_api_base
     return env
 
 
@@ -249,7 +249,7 @@ def build_container_payload(
             LABEL_EGRESS_DOMAINS: ",".join(egress_domains or ()),
         },
         "Healthcheck": {
-            "Test": ["CMD", "/usr/local/bin/bisheng-healthcheck"],
+            "Test": ["CMD", "/usr/local/bin/doberman-agent-healthcheck"],
             "Interval": health_interval * NANO,
             "Timeout": health_timeout * NANO,
             "Retries": health_retries,

@@ -1,9 +1,9 @@
-import { Alert, Button, SearchInput } from '@bisheng/ui';
+import { Alert, Button, SearchInput } from '@doberman-agent/ui';
 import { showApiError } from '@/controllers/request';
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 
-import { Checkbox } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 // src/pages/BuildPage/bench/OrgKbConfig.tsx
 //
 
@@ -11,7 +11,7 @@ import { BookIcon } from "@/components/bs-icons/knowledge";
 
 
 import { readFileLibDatabase } from "@/controllers/API";
-import { Tooltip, TooltipProvider } from "@bisheng/ui";
+import { Tooltip, TooltipProvider } from "@doberman-agent/ui";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";

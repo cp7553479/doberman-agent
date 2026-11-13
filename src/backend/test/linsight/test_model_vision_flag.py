@@ -11,9 +11,9 @@ True hands a text-only endpoint a payload it answers with a 400.
 
 from unittest.mock import AsyncMock, patch
 
-from bisheng.api.v1.schemas import WSModel
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.llm.domain.schemas import WorkbenchModelConfig
+from doberman_agent.api.v1.schemas import WSModel
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.llm.domain.schemas import WorkbenchModelConfig
 
 
 def session(tenant_id=1, user_id=1):
@@ -31,7 +31,7 @@ async def resolve(conf, model_id):
     """Run ``_resolve_model`` with only the two external services faked out."""
     with (
         patch.object(agent_factory.LLMService, "get_workbench_llm", AsyncMock(return_value=conf)),
-        patch.object(agent_factory.LLMService, "get_bisheng_linsight_llm", AsyncMock(return_value="LLM")),
+        patch.object(agent_factory.LLMService, "get_doberman_agent_linsight_llm", AsyncMock(return_value="LLM")),
         # settings is a pydantic model -> patch the CLASS method, not the instance
         # attribute (pydantic rejects the assignment).
         patch.object(

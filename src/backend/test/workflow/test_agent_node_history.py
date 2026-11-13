@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from bisheng.workflow.nodes.agent.agent import AgentNode
+from doberman_agent.workflow.nodes.agent.agent import AgentNode
 
 
 def test_agent_node_keeps_internal_history_with_tool_messages():

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import StepProgress from "@/components/bs-ui/step";

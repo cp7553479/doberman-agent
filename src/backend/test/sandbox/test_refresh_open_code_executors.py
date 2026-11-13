@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import inspect
 
-from bisheng.api.services.assistant_agent import AssistantAgent
-from bisheng.core.config.settings import SandboxConf
-from bisheng.workstation.domain.services.chat_service import _prepare_tools
-from bisheng_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.factory import refresh_open_code_executors
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent.api.services.assistant_agent import AssistantAgent
+from doberman_agent.core.config.settings import SandboxConf
+from doberman_agent.workstation.domain.services.chat_service import _prepare_tools
+from doberman_agent_langchain.gpts.tools.code_interpreter.container_executor import ContainerExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.factory import refresh_open_code_executors
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 
 class _Tool:
@@ -24,7 +24,7 @@ def _container(**kwargs) -> ContainerExecutor:
 
 def _patch(monkeypatch, conf: SandboxConf) -> None:
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         lambda: conf,
     )
 
@@ -42,7 +42,7 @@ def test_open_lease_is_released_then_updated_in_place(monkeypatch):
         executor._forget_lease()
 
     executor._release = release
-    tool = _Tool("bisheng_code_interpreter", executor)
+    tool = _Tool("doberman_agent_code_interpreter", executor)
     identity = id(executor)
     refresh_open_code_executors([tool])
     assert order == [["http://old:8080"]]
@@ -64,7 +64,7 @@ def test_keep_session_is_left_alone(monkeypatch):
         raise AssertionError("sticky session must not be released")
 
     executor._release = release
-    refresh_open_code_executors([_Tool("bisheng_code_interpreter", executor)])
+    refresh_open_code_executors([_Tool("doberman_agent_code_interpreter", executor)])
     assert executor.endpoints == ["http://old:8080"]
     assert executor.token == "old"
     assert executor._session_id == "sid"
@@ -73,8 +73,8 @@ def test_keep_session_is_left_alone(monkeypatch):
 def test_shared_executor_updates_both_copies(monkeypatch):
     _patch(monkeypatch, SandboxConf(endpoints=["http://new:8080"], token="new-token"))
     executor = _container()
-    first = _Tool("bisheng_code_interpreter", executor)
-    second = _Tool("bisheng_code_interpreter", executor)
+    first = _Tool("doberman_agent_code_interpreter", executor)
+    second = _Tool("doberman_agent_code_interpreter", executor)
     refresh_open_code_executors([first, second])
     assert first.executor is second.executor
     assert first.executor.endpoints == ["http://new:8080"]
@@ -88,7 +88,7 @@ def test_local_and_other_names_are_skipped(monkeypatch):
     other = _container()
     refresh_open_code_executors(
         [
-            _Tool("bisheng_code_interpreter", local),
+            _Tool("doberman_agent_code_interpreter", local),
             _Tool("other_tool", other),
         ]
     )

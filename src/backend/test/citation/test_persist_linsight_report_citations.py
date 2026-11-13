@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services import citation_prompt_helper as helper
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services import citation_prompt_helper as helper
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_SEPARATOR_MARKER,
     CITATION_START_MARKER,

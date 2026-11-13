@@ -22,7 +22,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Route
 
-from bisheng.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime, work_transport_security
+from doberman_agent.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime, work_transport_security
 
 
 def available_port():
@@ -38,7 +38,7 @@ async def test_real_nginx_preserves_public_origin(template, tls, tmp_path, monke
     if not binary:
         pytest.skip("Set NGINX_BIN to exercise the real proxy")
     root = Path(__file__).resolve().parents[4]
-    template_root = Path(os.environ.get("BISHENG_NGINX_TEMPLATE_ROOT", root / "docker/nginx/conf.d"))
+    template_root = Path(os.environ.get("DOBERMAN_AGENT_NGINX_TEMPLATE_ROOT", root / "docker/nginx/conf.d"))
     source = (template_root / template).read_text()
     maps = "\n".join(re.findall(r"map\s+[^{}]+\{[^{}]+\}", source))
     directives = "\n".join(re.findall(r"proxy_set_header\s+[^;]+;", source))
@@ -50,14 +50,14 @@ async def test_real_nginx_preserves_public_origin(template, tls, tmp_path, monke
         list_tools=AsyncMock(
             return_value=[
                 {
-                    "name": "bisheng_tool_7",
+                    "name": "doberman_agent_tool_7",
                     "description": "Read test data",
                     "inputSchema": {"type": "object", "properties": {}},
                 }
             ]
         )
     )
-    monkeypatch.setattr("bisheng.dsh.work_mcp.WorkCapabilitiesService", lambda user: service)
+    monkeypatch.setattr("doberman_agent.dsh.work_mcp.WorkCapabilitiesService", lambda user: service)
     manager = create_work_mcp_runtime(work_transport_security(public_origin))
     observed = []
 
@@ -177,7 +177,7 @@ async def test_real_nginx_preserves_public_origin(template, tls, tmp_path, monke
                     },
                 )
                 assert response.status_code == 200, response.text
-                assert response.json()["result"]["tools"][0]["name"] == "bisheng_tool_7"
+                assert response.json()["result"]["tools"][0]["name"] == "doberman_agent_tool_7"
                 for extra, status in [
                     ({"host": "other.example", "x-forwarded-host": authority}, 421),
                     ({"origin": "https://other.example"}, 403),

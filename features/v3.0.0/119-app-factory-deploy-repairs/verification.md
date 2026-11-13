@@ -76,8 +76,8 @@
 
 ### CLI实际制品
 
-- `bisheng_cli-3.0.0.post2-py3-none-any.whl`，SHA256 `86c75828bc21436fcb273975acedde3e49438755344a774dca8f23aca8b48871`。
-- `scripts/pack_cli_wheel.sh`通过build/内容/空venv安装/import/console/help/manifest与可纳管检查；另在空venv离线安装最终wheel后，fresh login shell输出 **bisheng 3.0.0.post2**，临时环境已清理。
+- `doberman_agent_cli-3.0.0.post2-py3-none-any.whl`，SHA256 `86c75828bc21436fcb273975acedde3e49438755344a774dca8f23aca8b48871`。
+- `scripts/pack_cli_wheel.sh`通过build/内容/空venv安装/import/console/help/manifest与可纳管检查；另在空venv离线安装最终wheel后，fresh login shell输出 **doberman-agent 3.0.0.post2**，临时环境已清理。
 - SDK仍为0.1.1，SHA256 `1c1e6cc3ca5a037dc91cfc8052ce63565a31f630f0981dd0fa2b8e06b2085950`，SDK清单条目与HEAD完全相同。
 
 ### 原生镜像与真实E2E限制

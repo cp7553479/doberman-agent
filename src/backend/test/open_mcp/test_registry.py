@@ -1,5 +1,5 @@
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_mcp.registry import SOURCE_ALLOWLIST, TOOL_DEFINITIONS, TOOL_REGISTRY, list_tools_for
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_mcp.registry import SOURCE_ALLOWLIST, TOOL_DEFINITIONS, TOOL_REGISTRY, list_tools_for
 
 EXPECTED_SOURCES = {
     ("GET", "/api/v2/filelib/"),
@@ -34,15 +34,15 @@ def _principal(*, actor_kind="service_account", scopes=frozenset({"knowledge:rea
 #: App-factory tools folded in from F052. They have no ``/api/v2`` source route,
 #: so they stay out of ``SOURCE_ALLOWLIST`` and the API freeze contract.
 APP_FACTORY_TOOLS = {
-    "bisheng_identity_get_user",
-    "bisheng_org_tree",
-    "bisheng_dept_members",
-    "bisheng_app_status",
-    "bisheng_app_logs",
-    "bisheng_app_db_tables",
-    "bisheng_app_db_schema",
-    "bisheng_app_db_rows",
-    "bisheng_app_db_row_update",
+    "doberman_agent_identity_get_user",
+    "doberman_agent_org_tree",
+    "doberman_agent_dept_members",
+    "doberman_agent_app_status",
+    "doberman_agent_app_logs",
+    "doberman_agent_app_db_tables",
+    "doberman_agent_app_db_schema",
+    "doberman_agent_app_db_rows",
+    "doberman_agent_app_db_row_update",
 }
 
 
@@ -63,9 +63,9 @@ def test_app_factory_tools_are_service_account_only_and_never_delegated():
 def test_pat_only_discovers_the_three_read_tools():
     tools = list_tools_for(_principal(actor_kind="natural_person", scopes=frozenset({"knowledge:read"})))
     assert {tool.name for tool in tools} == {
-        "bisheng_knowledge_list",
-        "bisheng_knowledge_retrieve",
-        "bisheng_knowledge_file_list",
+        "doberman_agent_knowledge_list",
+        "doberman_agent_knowledge_retrieve",
+        "doberman_agent_knowledge_file_list",
     }
 
 

@@ -27,14 +27,14 @@
 ### Wave 1 — 常量与 DAO
 
 - [x] **T001**: 异常状态常量 + 批量 EXISTS + 列表 EXISTS 筛选 + 复合索引声明
-  **文件**: `src/backend/bisheng/knowledge/domain/models/knowledge_file.py`,
-           `src/backend/bisheng/knowledge/domain/models/knowledge.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/models/knowledge_file.py`,
+           `src/backend/doberman_agent/knowledge/domain/models/knowledge.py`
   **逻辑**: `ABNORMAL_FILE_STATUSES={3,6,7}`；`async_exists_abnormal_files_batch`；`generate_all_knowledge_filter(has_abnormal=True)` 追加 EXISTS；`KnowledgeFile` 声明 `ix_knowledgefile_kb_status_type`
   **覆盖 AC**: AC-03, AC-04, AC-06
   **依赖**: 无
 
 - [x] **T002**: Alembic 复合索引
-  **文件**: `src/backend/bisheng/core/database/alembic/versions/v3_0_0_beta1_f064_kb_file_abnormal_index.py`
+  **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_beta1_f064_kb_file_abnormal_index.py`
   **逻辑**: `down_revision` 接当前单头；DDL-only；`index_exists` 幂等；MySQL/DM8 可建 `(knowledge_id, status, file_type)`
   **依赖**: T001
 
@@ -47,9 +47,9 @@
   **依赖**: T001
 
 - [x] **T004**: Service + GET `/api/v1/knowledge` 接线
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`,
-           `src/backend/bisheng/knowledge/api/endpoints/knowledge.py`,
-           `src/backend/bisheng/knowledge/domain/models/knowledge.py`（`KnowledgeRead`）
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`,
+           `src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py`,
+           `src/backend/doberman_agent/knowledge/domain/models/knowledge.py`（`KnowledgeRead`）
   **逻辑**: 可选 `has_abnormal`；QA+true 空页；`aconvert_knowledge_read` 只对 `type=0` 批量填 `has_abnormal_files`；不改 v2 入参
   **覆盖 AC**: AC-01, AC-02, AC-04, AC-07, AC-08
   **依赖**: T001, T003

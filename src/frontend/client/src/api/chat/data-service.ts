@@ -173,7 +173,7 @@ export function getUser(): Promise<t.TUser> {
       "username": user_name,
       "email": user_name,
       "emailVerified": true,
-      // Backend avatar is usually a path like "/bisheng/avatar/..jpg?...".
+      // Backend avatar is usually a path like "/doberman_agent/avatar/..jpg?...".
       // Convert it to a front-end accessible URL using BASE_URL.
       "avatar": avatar
         ? String(avatar).startsWith("/")
@@ -263,7 +263,7 @@ export const updateUserPlugins = (payload: t.TUpdateUserPlugins) => {
 export const getStartupConfig = (): Promise<config.TStartupConfig> => {
   // return request.get(endpoints.config());
   return Promise.resolve({
-    "appTitle": "BISHENG",
+    "appTitle": "doberman-agent",
     "socialLogins": [
       "github",
       "google",
@@ -312,7 +312,7 @@ export const getStartupConfig = (): Promise<config.TStartupConfig> => {
   })
 };
 
-export const getBishengConfig = (): Promise<config.BsConfig> => {
+export const getDobermanAgentConfig = (): Promise<config.BsConfig> => {
   return request.get(endpoints.bsConfig()).then(res => res.data);
 };
 

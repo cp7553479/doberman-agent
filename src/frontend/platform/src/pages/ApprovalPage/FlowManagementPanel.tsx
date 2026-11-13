@@ -2,13 +2,13 @@ import { useContext } from "react";
 import { locationContext } from "@/contexts/locationContext";
 import { approverSourceLabel } from "./approverSources";
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
-import { Alert, Button, Select } from '@bisheng/ui';
+import { Alert, Button, Select } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { listApprovalNodesApi } from "@/controllers/API/approval";
 import { handleUiRequest, showApiError } from '@/controllers/request';
-import { Switch, Tag, Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Switch, Tag, Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import type { ApproverSource } from "./approvalMetadata";
 import { conditionLabel } from "./approvalMetadata";
 import { ActionBtn, SectionHeader, StatusBadge } from "./ApprovalPrimitives";

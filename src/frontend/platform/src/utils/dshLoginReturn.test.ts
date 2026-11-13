@@ -39,7 +39,7 @@ describe('desktop SSO handoff', () => {
 it('does not overwrite workspace return targets on ordinary login pages', () => {
     localStorage.setItem('LOGIN_PATHNAME', '/workspace/chat/session')
     localStorage.setItem('LOGIN_PATHNAME_AT', String(Date.now()))
-    vi.stubGlobal('location', { origin: 'http://bisheng.example', pathname: '/', href: 'http://bisheng.example/' })
+    vi.stubGlobal('location', { origin: 'http://doberman-agent.example', pathname: '/', href: 'http://doberman-agent.example/' })
     rememberDesktopLoginReturnTo()
-    expect(consumeLoginReturnTo()).toBe('http://bisheng.example/workspace/chat/session')
+    expect(consumeLoginReturnTo()).toBe('http://doberman-agent.example/workspace/chat/session')
 })

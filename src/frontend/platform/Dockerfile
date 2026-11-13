@@ -5,7 +5,7 @@ COPY . /app
 # pnpm workspace build (registry comes from .npmrc; packageManager pins the version).
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 RUN cd /app && pnpm install --frozen-lockfile
-RUN cd /app && pnpm --filter bishengchat build && pnpm --filter bisheng build
+RUN cd /app && pnpm --filter doberman-agent-client build && pnpm --filter doberman-agent-platform build
 
 FROM nginx
 COPY --from=frontend_build /app/client/build/ /usr/share/nginx/html/client

@@ -10,13 +10,13 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     ACTION_RESOURCE_SCOPES,
     REGISTERED_ACTION_CODES,
     CatalogAction,
     derive_action_release,
 )
-from bisheng.permission.domain.services.model_policy import (
+from doberman_agent.permission.domain.services.model_policy import (
     CustomModelSelection,
     ModelPreset,
     ModelReferenceSummary,

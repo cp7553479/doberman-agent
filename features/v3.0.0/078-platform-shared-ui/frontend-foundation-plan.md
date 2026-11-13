@@ -24,14 +24,14 @@ Approved scope: consolidate platform/client foundation configuration on feat/3.0
 
 - Clean start at 8de501334 on feat/3.0.0.
 - Installed: Vite platform 5.4.21/client 6.4.1; both TS 5.9.3, Tailwind 3.4.19, React 18.3.1, PostCSS 8.5.22.
-- Platform typecheck passes; client baseline captured in /tmp/config-baseline-bishengchat-types.log.
-- Registry audit: /tmp/bisheng-dependency-audit.json. Official guidance: https://vite.dev/releases ; https://www.npmjs.com/package/tailwind-merge .
+- Platform typecheck passes; client baseline captured in /tmp/config-baseline-doberman-agentchat-types.log.
+- Registry audit: /tmp/doberman-agent-dependency-audit.json. Official guidance: https://vite.dev/releases ; https://www.npmjs.com/package/tailwind-merge .
 
 ## Implementation and review
 
 - Common configuration lives in `src/frontend/config/`. Vite helpers mirror merged public-prefix env values to browser code as well as proxy configuration; unprefixed values are never injected. Old API/MinIO names remain supported.
 - Single platform Tailwind entry now imports App.css plus legacy business styles. Removed global important and all global scrollbar overrides, the redundant font overrides and unused font-face. Shared preset owns the system font and explicit no-scrollbar utility. Legacy feature colors/HSL aliases remain per app to avoid changing existing business semantics.
-- Class merging uses one shared v2.6 implementation through @bisheng/ui/cn. The headlessui anchor type now derives from its public ListboxOptions props, required by bundler resolution.
+- Class merging uses one shared v2.6 implementation through @doberman-agent/ui/cn. The headlessui anchor type now derives from its public ListboxOptions props, required by bundler resolution.
 - Catalog aligns React 18.3.1, TS 5.9.3, Tailwind 3.4.19, Vite 6.4.5, plugin-react 4.7.0, tailwind-merge 2.6.1, PostCSS 8.5.31, Autoprefixer 10.6.1, Axios 1.20.0, DOMPurify 3.4.17 and compatible Radix versions. Rollup 4.64.12 replaces the old downgrade. Rspress stays on 1.47.2; platform has its required testing-library/dom 10.4.2.
 - Independent reviewer caught the remaining App.css Tailwind/scrollbar rules. Both corrected; regression observed red (2 failed / 9 passed), then green (11 passed). Reviewer rechecked fixes and public env filtering; no actionable issue remains.
 - Initial verification: platform 46 suites / 237 tests and both builds pass. Client Jest initially exposed the documented unbuilt optional canvas package after skip-scripts install: removed only the local broken jsdom peer link so the supported canvas-free fallback can run. No source workaround.

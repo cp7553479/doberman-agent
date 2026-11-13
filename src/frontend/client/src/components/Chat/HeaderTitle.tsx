@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocation } from 'react-router-dom';
 import { useLocalize, useMediaQuery, usePrefersMobileLayout } from '~/hooks';
 import { cn } from '~/utils';

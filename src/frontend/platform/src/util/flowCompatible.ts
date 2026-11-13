@@ -328,7 +328,7 @@ const comptibleInput = (node) => {
                     {
                         "key": "recommended_llm",
                         "label": "true",
-                        "type": "bisheng_model",
+                        "type": "doberman_agent_model",
                         "tab": "dialog_input",
                         // Env-specific model id; leave empty until the user enables it.
                         "value": "",
@@ -369,7 +369,7 @@ const comptibleInput = (node) => {
 
 const comptibleAgent = (node) => {
     if (!node.v) {
-        if (node.group_params[1].params[0].type === 'bisheng_model') {
+        if (node.group_params[1].params[0].type === 'doberman_agent_model') {
             node.group_params[1].params[0].type = 'agent_model'
         }
         node.v = 1

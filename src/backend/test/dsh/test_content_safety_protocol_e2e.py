@@ -267,7 +267,7 @@ class ProtocolRun:
     def payload(self, protocol, stream, scenario, conversation, *, matched=False):
         prompt = f"F111_SCENARIO:{scenario}" + (" " + self.word if matched else "")
         result = {
-            "model": f"bisheng:{self.model(protocol)}",
+            "model": f"doberman_agent:{self.model(protocol)}",
             "stream": stream,
             "audit_context": {"conversation_id": conversation, "request_kind": "chat", "session_origin": "main"},
         }
@@ -555,7 +555,7 @@ async def live_protocol(record_property, request):
                 await http.native.get(settings.api_base + "/dsh/models", headers=run.headers), unified=False
             )
             for protocol in ("chat", "responses"):
-                model = next((row for row in catalog["data"] if row["id"] == f"bisheng:{run.model(protocol)}"), None)
+                model = next((row for row in catalog["data"] if row["id"] == f"doberman_agent:{run.model(protocol)}"), None)
                 _require(
                     model is not None and model.get("display_name", "").startswith(settings.prefix),
                     "Selected model was not verified as test-owned",

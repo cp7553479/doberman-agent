@@ -37,12 +37,12 @@ def _record(app_id: str, mem_mb: int, cpu: float, phase: str) -> InstanceRecord:
         slug=app_id,
         version_id=f"{app_id}-v1",
         version_no=1,
-        image_ref=f"bisheng-app/{app_id}:1-abcdef12",
+        image_ref=f"doberman-agent-app/{app_id}:1-abcdef12",
         tier_cpu=cpu,
         tier_mem_mb=mem_mb,
         port=8080,
         health_path="/healthz",
-        container_name=f"bisheng-app-{app_id}-abcdef12",
+        container_name=f"doberman-agent-app-{app_id}-abcdef12",
         phase=phase,
     )
 

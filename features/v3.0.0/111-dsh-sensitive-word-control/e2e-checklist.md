@@ -113,7 +113,7 @@ spec.md为AC原文唯一依据；下表只给执行观察点。每条应附真�
 
 ## 109实际执行记录
 
-BiSheng工作120修复3cc9de9298ad2c6346f17d180105d46d2d3e3324经Drone5624 SUCCESS，Backend digest8c001dcc8c921ebf32c8e5c468d5368216c56b698a3511e2421f860713ee4392，frontend digest与5623相同；Gateway64f602be经404 SUCCESS，当前digest63d7d9ed已部署。运行用户9、模型8/9仅该用户私有，server5为本轮独立合成Provider。既有默认模型和其他credit规则读回不变。
+doberman-agent工作120修复3cc9de9298ad2c6346f17d180105d46d2d3e3324经Drone5624 SUCCESS，Backend digest8c001dcc8c921ebf32c8e5c468d5368216c56b698a3511e2421f860713ee4392，frontend digest与5623相同；Gateway64f602be经404 SUCCESS，当前digest63d7d9ed已部署。运行用户9、模型8/9仅该用户私有，server5为本轮独立合成Provider。既有默认模型和其他credit规则读回不变。
 
 四协议请求：6fa33453-5e38-4b7a-9e01-ce0d6e4efd04（Chat非流）、ded3d432-70cf-4d70-9cdd-af1464fd4770（Chat流）、29e07447-9dc9-48b0-8d67-1aec5b9265d9（Responses非流）、ef086b78-4643-42ea-9aa1-4d20f28a46c6（Responses流）。均HTTP200/Provider delta1/原生MODEL SUCCEEDED/SETTLED/raw80，安全DISABLED；详情各AVAILABLE/一个FINAL，未把列表保守PENDING误判丢事件。
 

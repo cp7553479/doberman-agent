@@ -8,7 +8,7 @@ import importlib.util
 import sys
 from unittest.mock import MagicMock
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     DEFAULT_TENANT_ID,
     current_tenant_id,
     get_current_tenant_id,
@@ -20,10 +20,10 @@ def _load_tenant_context():
     """Load worker/tenant_context.py directly, bypassing worker/__init__.py."""
     import os
     module_path = os.path.join(
-        os.path.dirname(__file__), '..', '..', 'bisheng', 'worker', 'tenant_context.py',
+        os.path.dirname(__file__), '..', '..', 'doberman_agent', 'worker', 'tenant_context.py',
     )
     module_path = os.path.abspath(module_path)
-    spec = importlib.util.spec_from_file_location('bisheng.worker.tenant_context', module_path)
+    spec = importlib.util.spec_from_file_location('doberman_agent.worker.tenant_context', module_path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

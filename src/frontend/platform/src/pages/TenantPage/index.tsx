@@ -1,5 +1,5 @@
-import { Pagination, Button, Input, SearchInput, notification } from '@bisheng/ui';
-import { Tag, type TagColor } from "@bisheng/ui";
+import { Pagination, Button, Input, SearchInput, notification } from '@doberman-agent/ui';
+import { Tag, type TagColor } from "@doberman-agent/ui";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 
@@ -235,7 +235,7 @@ function TenantPageInner() {
         </Table>
       </div>
 
-      <div className="bisheng-table-footer bg-background-login justify-end px-6">
+      <div className="doberman_agent-table-footer bg-background-login justify-end px-6">
         <Pagination locale={paginationLocale}
           current={page}
           pageSize={pageSize}

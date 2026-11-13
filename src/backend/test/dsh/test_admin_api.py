@@ -7,11 +7,11 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.dsh.domain.schemas.model_policy import DshModelQuotaConfig
+from doberman_agent.dsh.domain.schemas.model_policy import DshModelQuotaConfig
 
 
 async def test_management_routes_use_verified_actor_and_reject_body_spoofing():
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/v1")
@@ -83,12 +83,12 @@ async def test_management_routes_use_verified_actor_and_reject_body_spoofing():
 async def test_production_authorizer_honors_scope(monkeypatch, scope, requested, allowed, instance):
     from fastapi import HTTPException
 
-    from bisheng.core.context import tenant
-    from bisheng.database.models.tenant import UserTenantDao
-    from bisheng.dsh.admin_runtime import authorize_admin
-    from bisheng.permission import application
-    from bisheng.user.domain.models.user import UserDao
-    from bisheng.user.domain.models.user_role import UserRoleDao
+    from doberman_agent.core.context import tenant
+    from doberman_agent.database.models.tenant import UserTenantDao
+    from doberman_agent.dsh.admin_runtime import authorize_admin
+    from doberman_agent.permission import application
+    from doberman_agent.user.domain.models.user import UserDao
+    from doberman_agent.user.domain.models.user_role import UserRoleDao
 
     permissions = SimpleNamespace(check=AsyncMock(return_value=instance))
     monkeypatch.setattr(application, "get_permission_relation_api", AsyncMock(return_value=permissions))
@@ -113,8 +113,8 @@ async def test_production_authorizer_honors_scope(monkeypatch, scope, requested,
 
 
 async def test_policy_view_survives_unavailable_quota_with_persisted_source(monkeypatch):
-    from bisheng.core.context.tenant import current_tenant_id
-    from bisheng.dsh.admin_runtime import build_policy_view
+    from doberman_agent.core.context.tenant import current_tenant_id
+    from doberman_agent.dsh.admin_runtime import build_policy_view
 
     policy = SimpleNamespace(
         version=1,
@@ -158,7 +158,7 @@ async def test_policy_view_survives_unavailable_quota_with_persisted_source(monk
 
 
 async def test_unknown_count_remains_visible_without_a_reliable_summary():
-    from bisheng.dsh.admin_runtime import build_policy_view
+    from doberman_agent.dsh.admin_runtime import build_policy_view
 
     policy = SimpleNamespace(
         version=1,

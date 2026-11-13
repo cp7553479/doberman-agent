@@ -1,11 +1,11 @@
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 import { SubjectBusinessId, SubjectSearchStatus } from "@/components/bs-comp/selectComponent/SubjectSearchStatus";
 import { useSubjectSearch } from "@/components/bs-comp/selectComponent/useSubjectSearch";
 
 
 import { getUsersApi } from "@/controllers/API/user";
 import type { User } from "@/types/api/user";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 

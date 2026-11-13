@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, Menu, X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useNavigate } from 'react-router-dom';
 import { QueryKeys, Constants } from '~/types/chat';
 import type { TMessage } from '~/types/chat';

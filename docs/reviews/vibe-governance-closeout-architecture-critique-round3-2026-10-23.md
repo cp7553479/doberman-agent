@@ -28,10 +28,10 @@
 - **维度：** Boundary quality；requirements and quality attributes。
 - **设计锚点：** `056-app-square-governance/design.md:95–99`、`:142` 指定由凭据 Owner 在签发/撤销时补可信应用关联，具体落点为 `CredentialService._audit`。
 - **已核实代码锚点：**
-  - `src/backend/bisheng/app_publish/domain/services/app_credential_service.py:186–213`：新 operation 经 `stage()` 签发候选凭据。
-  - `src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py:50–55`：正式切换直接将旧 `RuntimeCredentialBinding` 标记为 `revoked`。
+  - `src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py:186–213`：新 operation 经 `stage()` 签发候选凭据。
+  - `src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py:50–55`：正式切换直接将旧 `RuntimeCredentialBinding` 标记为 `revoked`。
   - 同文件 `:64–68`：失败/停止候选的终结路径也直接撤销 binding。
-  - `src/backend/bisheng/open_api/domain/services/credential_service.py:305–333`：上述 binding 撤销不经过 `_audit`。
+  - `src/backend/doberman_agent/open_api/domain/services/credential_service.py:305–333`：上述 binding 撤销不经过 `_audit`。
 - **可复现失败序列：** 正式 v1 运行 → 发布 v2，或执行新增同版本配置刷新 → stage 签发新凭据 → 切路由时旧 binding 被撤销、旧凭据失去运行资格 → 按应用查询操作审计。即使 `_audit` 已补 `target_app_id`，仍只有新凭据签发事件，没有这次旧凭据回收事件。
 - **为什么重要：** F056 AC-59 和 F055 AC-81 承诺按应用追溯运行期凭据签发/回收；真实回收写方没有对应事件生产合同，查询侧无法补出缺失事实。
 - **最小修正方向：** 将 projection 的 binding 撤销纳入凭据 Owner 的公开应用协议，在真实状态变化处持久记录带可信 app 关联的回收事件，并按 credential/operation/action 去重；同时覆盖切换撤旧和失败候选清理。无需新增并列凭据管理服务。

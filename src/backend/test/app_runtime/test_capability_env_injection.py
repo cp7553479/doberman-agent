@@ -18,8 +18,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
-from bisheng.app_runtime.domain.services import runtime_env_ports
+from doberman_agent.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.services import runtime_env_ports
 
 pytestmark = pytest.mark.asyncio
 
@@ -36,7 +36,7 @@ def _deploy_kwargs(fake_orchestrator) -> dict:
 
 
 async def test_without_a_provider_the_start_path_is_unchanged(app_db, app_factory, app_owner, fake_orchestrator):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, _version = await app_factory(state=AppState.PENDING_CAPACITY.value)
 
@@ -48,13 +48,13 @@ async def test_without_a_provider_the_start_path_is_unchanged(app_db, app_factor
 
 
 async def test_the_provider_sees_the_version_about_to_run(app_db, app_factory, app_owner, fake_orchestrator):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     seen: list[dict] = []
 
     async def _provider(*, app_id, capabilities):
         seen.append({"app_id": app_id, "capabilities": capabilities})
-        return {"BISHENG_APP_TOKEN": "bs-app-plaintext"}
+        return {"DOBERMAN_AGENT_APP_TOKEN": "bs-app-plaintext"}
 
     runtime_env_ports.register_capability_env_provider(_provider)
     app, version = await app_factory(state=AppState.PENDING_CAPACITY.value)
@@ -62,31 +62,31 @@ async def test_the_provider_sees_the_version_about_to_run(app_db, app_factory, a
     await AppStateService.manual_publish(app.id, actor=app_owner.payload)
 
     assert seen == [{"app_id": app.id, "capabilities": version.capabilities}]
-    assert _deploy_kwargs(fake_orchestrator)["env"]["BISHENG_APP_TOKEN"] == "bs-app-plaintext"
+    assert _deploy_kwargs(fake_orchestrator)["env"]["DOBERMAN_AGENT_APP_TOKEN"] == "bs-app-plaintext"
 
 
 async def test_platform_reserved_names_win_over_the_versions_own_injections(
     app_db, app_factory, app_owner, fake_orchestrator
 ):
     """F054 contract §5: 平台保留 env 名覆盖调用方同名值."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async def _provider(*, app_id, capabilities):
-        return {"BISHENG_APP_TOKEN": "minted-now"}
+        return {"DOBERMAN_AGENT_APP_TOKEN": "minted-now"}
 
     runtime_env_ports.register_capability_env_provider(_provider)
     app, version = await app_factory(state=AppState.PENDING_CAPACITY.value)
     async with app_db() as session:
         row = await AppVersionDao.aget(session, app.id, version.id)
-        row.injections = {"env": {"BISHENG_APP_TOKEN": "stale", "APP_OWN_FLAG": "1"}}
+        row.injections = {"env": {"DOBERMAN_AGENT_APP_TOKEN": "stale", "APP_OWN_FLAG": "1"}}
         session.add(row)
         await session.commit()
 
     await AppStateService.manual_publish(app.id, actor=app_owner.payload)
 
     env = _deploy_kwargs(fake_orchestrator)["env"]
-    assert env["BISHENG_APP_TOKEN"] == "minted-now"
+    assert env["DOBERMAN_AGENT_APP_TOKEN"] == "minted-now"
     # The application's own variables are untouched; only the reserved name is.
     assert env["APP_OWN_FLAG"] == "1"
 
@@ -94,7 +94,7 @@ async def test_platform_reserved_names_win_over_the_versions_own_injections(
 async def test_a_failing_provider_stops_the_start_rather_than_serving_a_broken_app(
     app_db, app_factory, app_owner, fake_orchestrator
 ):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     async def _provider(*, app_id, capabilities):
         raise RuntimeError("credential subject unavailable")

@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import React from 'react';
 import { format } from 'date-fns';
 import { Layers3, Crown, Zap } from 'lucide-react';
 import type { TPrompt, TPromptGroup } from '~/types/chat';
 import { Label } from '~/components/ui';
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

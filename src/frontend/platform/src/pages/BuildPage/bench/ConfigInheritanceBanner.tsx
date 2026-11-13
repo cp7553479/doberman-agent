@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Alert } from "@bisheng/ui";
+import { Alert } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import { locationContext } from "@/contexts/locationContext";
 

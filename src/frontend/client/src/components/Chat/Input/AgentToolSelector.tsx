@@ -6,10 +6,10 @@
  * flattened into leaf-level entries at request time (see useAiChat).
  */
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef } from "react";
 import { useRecoilState } from "recoil";
-import { Button, Select, Switch } from "@bisheng/ui";
+import { Button, Select, Switch } from "@doberman-agent/ui";
 import useSelectCopy from "~/hooks/useSelectCopy";
 import ApiAppIcon from "~/components/ui/icon/ApiApp";
 import { useAuthContext, useLocalize } from "~/hooks";

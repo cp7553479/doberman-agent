@@ -6,13 +6,13 @@ import requests
 
 
 def _test_python_code():
-    from bisheng import load_flow_from_json
+    from doberman_agent import load_flow_from_json
 
     TWEAKS = {
         'PyPDFLoader-RJlDA': {},
         'InputFileNode-hikjJ': {
             'file_path':
-            'https://bisheng.dataelem.com/bisheng/1673?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T093224Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=b124b651adcfb0aa3c86d821072fa81d3f8e7b42a39ec517f1d146353ef6867b'  # noqa
+            'https://doberman-agent.dataelem.com/doberman_agent/1673?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T093224Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=b124b651adcfb0aa3c86d821072fa81d3f8e7b42a39ec517f1d146353ef6867b'  # noqa
         },
         'InputNode-keWk3': {},
         'Milvus-VzZtx': {},
@@ -57,7 +57,7 @@ def _test_uns():
 
 # API URL for the flow
 # 定义流程的 API URL
-BASE_API_URL = 'https://bisheng.dataelem.com/api/v1/process'
+BASE_API_URL = 'https://doberman-agent.dataelem.com/api/v1/process'
 
 
 def batch_api(FLOW_ID='30231781-2f58-4cea-bcfc-c20ec65c58b8'):

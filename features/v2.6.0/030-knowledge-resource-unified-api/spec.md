@@ -23,7 +23,7 @@
 ## 1. 概述与用户故事
 
 **故事 A（外部系统 · 统一列表）**：
-作为 **通过 RPC 集成 BiSheng 的外部系统**，
+作为 **通过 RPC 集成 doberman-agent 的外部系统**，
 我希望 **用一个列表接口按 `type` 查询某一类知识资源（文档库 / QA 库 / 知识空间），并可选地传 `user_id` 让结果按"某终端用户的可见范围"过滤**，
 以便 **不必关心三类资源在内部是不同子系统，也能拿到统一形状的列表与权限点**。
 
@@ -297,12 +297,12 @@ POST /api/v2/filelib/retrieve
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py` | 6 个端点改为 facade 分派：列表(cursor 对齐 v1 + user_id)、创建(type 判别式)、更新(name/desc)、检索(filters 不变 + user_id)、上传(按 row.type 分派到各自文件新增方法，`parent_id` 仅传给空间 `add_file`)、文件列表(cursor + parent_id + user_id) |
-| `src/backend/bisheng/open_endpoints/domain/schemas/filelib.py` | `RetrieveReq` 仅增 `user_id`；`filters` 保持不变（无破坏性） |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_service.py` | `aget_knowledge_files` 增 `user_id` 过滤 + cursor 适配出口；`get_knowledge`（已 cursor）直接复用。**上传不改 `KnowledgeFileProcess`** |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py` | 暴露/复用：按 user_id 过滤的空间列表口径；空间文件列表(+user_id)；**上传直接复用现有 `add_file(knowledge_id, file_path, parent_id)`**（已校验目录、构造 file_level_path） |
-| `src/backend/bisheng/common/errcode/knowledge.py` | 新增 `KnowledgeTypeNotSupportedError`(10962) |
-| `src/backend/bisheng/knowledge/domain/services/`（新建薄分派或复用） | 可选 `KnowledgeFacadeService`：按 type / row.type 路由（仅路由，不含业务） |
+| `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py` | 6 个端点改为 facade 分派：列表(cursor 对齐 v1 + user_id)、创建(type 判别式)、更新(name/desc)、检索(filters 不变 + user_id)、上传(按 row.type 分派到各自文件新增方法，`parent_id` 仅传给空间 `add_file`)、文件列表(cursor + parent_id + user_id) |
+| `src/backend/doberman_agent/open_endpoints/domain/schemas/filelib.py` | `RetrieveReq` 仅增 `user_id`；`filters` 保持不变（无破坏性） |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py` | `aget_knowledge_files` 增 `user_id` 过滤 + cursor 适配出口；`get_knowledge`（已 cursor）直接复用。**上传不改 `KnowledgeFileProcess`** |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py` | 暴露/复用：按 user_id 过滤的空间列表口径；空间文件列表(+user_id)；**上传直接复用现有 `add_file(knowledge_id, file_path, parent_id)`**（已校验目录、构造 file_level_path） |
+| `src/backend/doberman_agent/common/errcode/knowledge.py` | 新增 `KnowledgeTypeNotSupportedError`(10962) |
+| `src/backend/doberman_agent/knowledge/domain/services/`（新建薄分派或复用） | 可选 `KnowledgeFacadeService`：按 type / row.type 路由（仅路由，不含业务） |
 
 ### 新建（测试）
 

@@ -32,7 +32,7 @@
 ### Wave 1 — 核心工具与配置（基础设施）
 
 - [x] **T001**: `MetricLogConf` 配置项
-  **文件**: `src/backend/bisheng/core/config/settings.py`
+  **文件**: `src/backend/doberman_agent/core/config/settings.py`
   **逻辑**: 参照 `DatabasePoolConf`(:612) 新增 `class MetricLogConf`，字段：`enabled`(总开关，默认 True) + 各 domain 开关(`db`/`obj_storage`/`model_invoke`/`eplus`，默认 True) + `db_slow_query_ms`(慢查询阈值，默认 200) + `db_agg_window_s`(汇总/池采样窗口，默认 10)。挂到全局 `Settings`（`metric_log: MetricLogConf`）。
   **覆盖**: design §3 决策 3、§6.1 配置约束
   **依赖**: 无
@@ -44,7 +44,7 @@
   **依赖**: T001
 
 - [x] **T003**: `metric_log.py` 实现
-  **文件**: `src/backend/bisheng/common/services/metric_log.py`
+  **文件**: `src/backend/doberman_agent/common/services/metric_log.py`
   **逻辑**: `emit_metric(domain, **fields)`（格式化 + 转义 + loguru 打一行，**整体 try/except 兜底，埋点绝不影响业务主流程**——design §5 坑 4 零阻塞）；模块级 `_DbQueryHistogram`（原子计数 `record_query` + 周期 `maybe_flush(now)` 产 `db_query_agg`）；`maybe_emit_pool_gauge(now, pools)`（读 `checkedout/checkedin/size`，容量 = size + `settings.database_pool.max_overflow`，异步池走 `sync_engine.pool`——design §5 坑 9/10）。
   **测试**: T002 全通过
   **覆盖**: design §3 决策 2/3、§4.3
@@ -59,7 +59,7 @@
   **依赖**: T003
 
 - [x] **T005**: DB 埋点接入
-  **文件**: `src/backend/bisheng/core/database/connection.py`（engine 创建 :133/:148），`src/backend/bisheng/core/database/manager.py`（session 上下文 :163/:179）
+  **文件**: `src/backend/doberman_agent/core/database/connection.py`（engine 创建 :133/:148），`src/backend/doberman_agent/core/database/manager.py`（session 上下文 :163/:179）
   **逻辑**: 在 sync+async engine 上 `event.listen(before_cursor_execute)` 记 start、`after_cursor_execute` 算 elapsed → 慢查询打 `db_query` + `histogram.record_query` + `maybe_flush` + `maybe_emit_pool_gauge`（同一时间窗驱动，design §4.1）；在 `get_sync/async_db_session` 包 `except TimeoutError` 打 `db_pool result=wait_timeout` 再重抛。**受 `MetricLogConf.db` 开关控制**；**共享文件 additive + 异常隔离，不改原有 session/查询控制流（见 开发模式）**。
   **测试**: T004 全通过
   **覆盖**: design §3 决策 5/6、§5 坑 4/7/9/10
@@ -72,7 +72,7 @@
   **依赖**: T003
 
 - [x] **T007**: 对象存储埋点接入
-  **文件**: `src/backend/bisheng/core/storage/minio/minio_storage.py`（`put_object*`/`get_object*`/`download_object_sync` 方法层）
+  **文件**: `src/backend/doberman_agent/core/storage/minio/minio_storage.py`（`put_object*`/`get_object*`/`download_object_sync` 方法层）
   **逻辑**: 统一切面（装饰器或内部 helper）包裹上传/下载：计时 + 分类 result（`http_status` 取 `S3Error.response.status`、`err_code` 取 `S3Error.code`；401/403→excluded；NoSuchKey 归 ok 语义业务侧，不算 error）→ `emit_metric(obj_storage, op=put/get, ...)`。**在存储层边界内读 S3Error 字段（design §5 坑 6，避免逃逸后 frozen 崩）**。受 `MetricLogConf.obj_storage` 开关控制。
   **测试**: T006 全通过
   **覆盖**: design §3 决策 4/5、§5 坑 6
@@ -85,7 +85,7 @@
   **依赖**: T003
 
 - [x] **T009**: 模型调用埋点接入
-  **文件**: `src/backend/bisheng/llm/domain/utils.py`（4 个 wrapper 的 finally + `TelemetryCallback`）
+  **文件**: `src/backend/doberman_agent/llm/domain/utils.py`（4 个 wrapper 的 finally + `TelemetryCallback`）
   **逻辑**: 在现有 `upload_telemetry_log`（:182）同一 finally 处**并行补一行** `emit_metric(model_invoke, ...)`，复用已采集的 `first_token_cost_time`/`status`/`is_stream`（design §5 坑 5，不重复造轮子、不动 ES 链路）。受 `MetricLogConf.model_invoke` 开关控制。
   **测试**: T008 全通过
   **覆盖**: design §3 决策 5、§5 坑 5
@@ -98,7 +98,7 @@
   **依赖**: T003
 
 - [x] **T011**: E+ 站内信埋点接入
-  **文件**: `src/backend/bisheng/notification/external/cofco_eplus_client.py`（`send_textcard`），`src/backend/bisheng/notification/forwarder.py`（`maybe_forward_external` skipped 分支）
+  **文件**: `src/backend/doberman_agent/notification/external/cofco_eplus_client.py`（`send_textcard`），`src/backend/doberman_agent/notification/forwarder.py`（`maybe_forward_external` skipped 分支）
   **逻辑**: 把现有 `forward.result` 结构化日志规整为 `emit_metric(eplus_notify, ...)` 契约（ok/error + biz_code/http_status/elapsed_ms/action）；skipped 分支补 `result=skipped`。保持 fire-and-forget、不改吞异常语义。受 `MetricLogConf.eplus` 开关控制。
   **测试**: T010 全通过
   **覆盖**: design §3 决策 5、§4.2

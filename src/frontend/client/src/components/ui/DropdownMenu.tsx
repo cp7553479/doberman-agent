@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { Check, Circle } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { cn } from '~/utils';
 
 const DropdownMenu = DropdownMenuPrimitive.Root;

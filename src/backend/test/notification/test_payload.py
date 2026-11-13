@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.notification.external._payload import (
+from doberman_agent.notification.external._payload import (
     FORWARDABLE_ACTION_CODES,
     build_textcard,
     build_textcard_url,
@@ -41,23 +41,23 @@ def test_forwardable_set_has_supported_station_message_codes():
     }
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_url_basic(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com/"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com/"
     url = build_textcard_url(message_id=12345)
-    assert url == "https://bisheng.cofco.com/?open-notifications=1&message-id=12345"
+    assert url == "https://doberman-agent.cofco.com/?open-notifications=1&message-id=12345"
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_url_strips_trailing_slash(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     url = build_textcard_url(message_id=999)
-    assert url == "https://bisheng.cofco.com/?open-notifications=1&message-id=999"
+    assert url == "https://doberman-agent.cofco.com/?open-notifications=1&message-id=999"
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_request_channel(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     card = build_textcard(
         message_id=1,
         action_code="request_channel",
@@ -73,9 +73,9 @@ def test_build_textcard_request_channel(mock_settings):
     assert "open-notifications=1" in card["url"]
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_approved_knowledge_space(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     card = build_textcard(
         message_id=2, action_code="approved_knowledge_space",
         applicant_name="李四", resource_name="研发知识空间", triggered_at="2026-05-13 11:00",
@@ -84,9 +84,9 @@ def test_build_textcard_approved_knowledge_space(mock_settings):
     assert "李四通过了你对「研发知识空间」的审批申请" in card["description"]
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_withdrawn_includes_reason_and_no_extra_no_action_needed(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     card = build_textcard(
         message_id=5,
         action_code="approval_instance_withdrawn",
@@ -99,9 +99,9 @@ def test_build_textcard_withdrawn_includes_reason_and_no_extra_no_action_needed(
     assert "无需处理" not in card["description"]
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_pending_uses_scenario_specific_prd_copy(mock_settings):
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     card = build_textcard(
         message_id=6,
         action_code="approval_task_pending",
@@ -122,10 +122,10 @@ def test_build_textcard_unknown_action_code_raises():
         )
 
 
-@patch("bisheng.notification.external._payload.settings")
+@patch("doberman_agent.notification.external._payload.settings")
 def test_build_textcard_truncates_long_title(mock_settings):
     """E+ API requires title ≤128 bytes and description ≤512 bytes."""
-    mock_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
     long_name = "X" * 1000
     card = build_textcard(
         message_id=4, action_code="request_channel",

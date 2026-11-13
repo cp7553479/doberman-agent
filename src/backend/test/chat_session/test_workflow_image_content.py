@@ -7,14 +7,14 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
-from bisheng.chat_session.api.endpoints.workflow_files import router
-from bisheng.chat_session.domain.chat import ChatSessionService
-from bisheng.common.dependencies.user_deps import UserPayload
+from doberman_agent.chat_session.api.endpoints.workflow_files import router
+from doberman_agent.chat_session.domain.chat import ChatSessionService
+from doberman_agent.common.dependencies.user_deps import UserPayload
 
 
 def test_content_endpoint_is_registered_on_session_router():
     """AC-01: the stable URL is wired into the application's session API router."""
-    from bisheng.chat_session.api.router import router as session_router
+    from doberman_agent.chat_session.api.router import router as session_router
 
     assert any(route.path == "/chat/{chat_id}/files/{file_id}/content" for route in session_router.routes)
 

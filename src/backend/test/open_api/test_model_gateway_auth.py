@@ -12,14 +12,14 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiCredentialInvalidError,
     OpenApiCredentialMissingError,
     OpenApiDelegateLocalDevRefusedError,
     OpenApiScopeMissingError,
 )
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     install_fake_llm,
@@ -36,7 +36,7 @@ def _admit(monkeypatch, principal_or_error):
         mock = AsyncMock(side_effect=principal_or_error)
     else:
         mock = AsyncMock(return_value=principal_or_error)
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", mock)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", mock)
 
 
 async def _call(app, method: str, path: str, **kwargs):
@@ -60,7 +60,7 @@ async def test_credential_failures_are_openai_shaped_401s(monkeypatch, error, co
     body = response.json()["error"]
     assert body["type"] == "authentication_error"
     assert body["code"] == "invalid_api_key"
-    assert body["bisheng_code"] == code
+    assert body["doberman_agent_code"] == code
 
 
 @pytest.mark.parametrize("path,method", [(CHAT_PATH, "POST"), (MODELS_PATH, "GET")])
@@ -71,7 +71,7 @@ async def test_a_key_without_model_invoke_is_refused_on_both_promised_endpoints(
 
     assert response.status_code == 403
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26003
+    assert body["doberman_agent_code"] == 26003
     assert body["code"] == "insufficient_scope"
     # The agent has to learn *which* scope to ask an administrator for.
     assert "model:invoke" in body["message"]
@@ -81,7 +81,7 @@ async def test_model_invoke_does_not_open_the_daily_chat_data_plane(monkeypatch)
     # The two scopes do not imply each other in either direction. The forward
     # half is asserted above; this is the reverse, and it is the half that would
     # quietly turn a bare-passthrough key into a session-creating one.
-    from bisheng.main import app
+    from doberman_agent.main import app
 
     _admit(monkeypatch, service_account_principal(scopes=frozenset({"model:invoke"})))
 
@@ -100,14 +100,14 @@ async def test_model_invoke_does_not_open_the_daily_chat_data_plane(monkeypatch)
 async def test_scope_edits_take_effect_on_the_next_call_without_reissuing(monkeypatch):
     app = build_model_face_app()
     records = capture_records(monkeypatch)
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     _admit(monkeypatch, service_account_principal(scopes=frozenset({"chat:invoke"})))
     refused = await _call(app, "GET", MODELS_PATH)
 
     _admit(monkeypatch, service_account_principal(scopes=frozenset({"chat:invoke", "model:invoke"})))
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.model_gateway_service.list_callable_chat_models",
+        "doberman_agent.open_api.domain.services.model_gateway_service.list_callable_chat_models",
         AsyncMock(return_value=[]),
     )
     allowed = await _call(app, "GET", MODELS_PATH)
@@ -125,7 +125,7 @@ async def test_delegation_only_key_is_refused_by_scope_not_by_a_parameter_error(
         response = await _call(build_model_face_app(), method, path, json=BODY if method == "POST" else None)
         assert response.status_code == 403
         body = response.json()["error"]
-        assert body["bisheng_code"] == 26051
+        assert body["doberman_agent_code"] == 26051
         assert body["code"] == "delegate_only_credential"
 
 
@@ -135,7 +135,7 @@ async def test_an_unregistered_scope_error_still_renders_openai_shaped(monkeypat
     response = await _call(build_model_face_app(), "GET", MODELS_PATH)
 
     assert response.status_code == 403
-    assert response.json()["error"]["bisheng_code"] == 26003
+    assert response.json()["error"]["doberman_agent_code"] == 26003
 
 
 @pytest.mark.parametrize(
@@ -150,12 +150,12 @@ async def test_an_unregistered_scope_error_still_renders_openai_shaped(monkeypat
 async def test_identity_headers_are_refused_and_never_reach_the_model(monkeypatch, headers, code):
     _admit(monkeypatch, service_account_principal())
     records = capture_records(monkeypatch)
-    fake = install_fake_llm(monkeypatch, FakeBishengLLM())
+    fake = install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     response = await _call(build_model_face_app(), "POST", CHAT_PATH, json=BODY, headers=headers)
 
     assert response.status_code in (400, 403)
-    assert response.json()["error"]["bisheng_code"] == code
+    assert response.json()["error"]["doberman_agent_code"] == code
     assert fake.seen_messages == []
     assert records == []
 
@@ -165,23 +165,23 @@ async def test_a_user_id_in_the_body_is_refused(monkeypatch):
 
     response = await _call(build_model_face_app(), "POST", CHAT_PATH, json={**BODY, "user_id": 9})
 
-    assert response.json()["error"]["bisheng_code"] == 26019
+    assert response.json()["error"]["doberman_agent_code"] == 26019
 
 
 async def test_an_access_token_on_a_service_account_key_is_refused(monkeypatch):
     _admit(monkeypatch, service_account_principal())
     records = capture_records(monkeypatch)
-    fake = install_fake_llm(monkeypatch, FakeBishengLLM())
+    fake = install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     response = await _call(
         build_model_face_app(),
         "POST",
         CHAT_PATH,
         json=BODY,
-        headers={"X-BiSheng-Access-Token": "whatever"},
+        headers={"X-Doberman-Agent-Access-Token": "whatever"},
     )
 
     assert response.status_code == 403
-    assert response.json()["error"]["bisheng_code"] == 26504
+    assert response.json()["error"]["doberman_agent_code"] == 26504
     assert fake.seen_messages == []
     assert records == []

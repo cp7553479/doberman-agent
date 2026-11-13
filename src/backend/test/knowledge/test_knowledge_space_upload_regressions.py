@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from sqlalchemy.dialects import sqlite
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
 
 
 def _compile_sql(statement) -> str:
@@ -76,7 +76,7 @@ class _AsyncSessionCtx:
 def test_get_file_by_condition_matches_name_or_md5_regardless_of_status(monkeypatch):
     session = _SyncSession()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.get_sync_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_sync_db_session",
         lambda: _SyncSessionCtx(session),
     )
 
@@ -91,7 +91,7 @@ def test_get_file_by_condition_matches_name_or_md5_regardless_of_status(monkeypa
 def test_get_file_by_condition_returns_all_target_files_for_copy(monkeypatch):
     session = _SyncSession()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.get_sync_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_sync_db_session",
         lambda: _SyncSessionCtx(session),
     )
 
@@ -112,13 +112,13 @@ def test_process_one_file_uses_one_query_and_preserves_md5_precedence(monkeypatc
     minio_client = MagicMock()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service.file_download",
+        "doberman_agent.knowledge.domain.services.knowledge_service.file_download",
         lambda _file_path: (str(uploaded_file), "stored.pdf"),
     )
     monkeypatch.setattr(KnowledgeService, "get_upload_file_original_name", MagicMock(return_value="report.pdf"))
     monkeypatch.setattr(KnowledgeFileDao, "get_file_by_condition", get_duplicates)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_service.get_minio_storage_sync",
+        "doberman_agent.knowledge.domain.services.knowledge_service.get_minio_storage_sync",
         lambda: minio_client,
     )
     monkeypatch.setattr(KnowledgeService, "remove_unused_file", MagicMock())
@@ -143,7 +143,7 @@ def test_process_one_file_uses_one_query_and_preserves_md5_precedence(monkeypatc
 async def test_get_repeat_file_matches_name_or_md5_regardless_of_status(monkeypatch):
     session = _AsyncSession()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         lambda: _AsyncSessionCtx(session),
     )
 

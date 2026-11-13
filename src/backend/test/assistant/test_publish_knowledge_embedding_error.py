@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.api.services import assistant as assistant_module
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.knowledge.domain import knowledge_rag as rag_module
+from doberman_agent.api.services import assistant as assistant_module
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.knowledge.domain import knowledge_rag as rag_module
 
 
 @pytest.mark.parametrize("failure", [AttributeError("missing model"), RuntimeError("provider unavailable")])
@@ -23,7 +23,7 @@ async def test_publish_reports_the_knowledge_base_with_unavailable_embedding(fai
         patch.object(assistant_module, "require_business_action", new=AsyncMock()),
         patch.object(assistant_module, "AssistantAgent", return_value=agent),
         patch.object(rag_module.KnowledgeRag, "_get_knowledge", new=AsyncMock(return_value=knowledge)),
-        patch.object(rag_module.LLMService, "get_bisheng_knowledge_embedding", new=AsyncMock(side_effect=failure)),
+        patch.object(rag_module.LLMService, "get_doberman_agent_knowledge_embedding", new=AsyncMock(side_effect=failure)),
     ):
         with pytest.raises(BaseErrorCode) as caught:
             await assistant_module.AssistantService.update_status(
@@ -44,7 +44,7 @@ async def test_vector_store_failure_is_not_reported_as_embedding_unavailable():
     failure = RuntimeError("Milvus unavailable")
     with (
         patch.object(rag_module.KnowledgeRag, "_get_knowledge", new=AsyncMock(return_value=knowledge)),
-        patch.object(rag_module.LLMService, "get_bisheng_knowledge_embedding", new=AsyncMock(return_value=MagicMock())),
+        patch.object(rag_module.LLMService, "get_doberman_agent_knowledge_embedding", new=AsyncMock(return_value=MagicMock())),
         patch.object(rag_module.KnowledgeRag, "init_milvus_vectorstore", side_effect=failure),
     ):
         with pytest.raises(RuntimeError) as caught:
@@ -58,7 +58,7 @@ async def test_caller_supplied_embedding_does_not_require_model_resolution():
     vector_store = MagicMock()
     with (
         patch.object(rag_module.KnowledgeRag, "_get_knowledge", new=AsyncMock(return_value=knowledge)),
-        patch.object(rag_module.LLMService, "get_bisheng_knowledge_embedding", new=AsyncMock()) as resolve,
+        patch.object(rag_module.LLMService, "get_doberman_agent_knowledge_embedding", new=AsyncMock()) as resolve,
         patch.object(rag_module.KnowledgeRag, "init_milvus_vectorstore", return_value=vector_store),
     ):
         result = await rag_module.KnowledgeRag.init_knowledge_milvus_vectorstore(7, knowledge, embeddings=embeddings)

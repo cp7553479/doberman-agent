@@ -18,7 +18,7 @@
  * - Local state remains owned by this section; API failures are handled at
  *   its effect and dialog-event boundaries through the shared request layer.
  */
-import { Button } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
 import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDialog"
 import {
   getResourcePermissionContextApi,

@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.channel.domain.services import article_es_service as article_es_service_module
-from bisheng.channel.domain.services.article_es_service import ArticleEsService
+from doberman_agent.channel.domain.services import article_es_service as article_es_service_module
+from doberman_agent.channel.domain.services.article_es_service import ArticleEsService
 
 
 def _single_rule(rule_type: str = "exclude", keywords: list[str] | None = None) -> dict:

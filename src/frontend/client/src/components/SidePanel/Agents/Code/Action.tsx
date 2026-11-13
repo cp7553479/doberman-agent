@@ -3,7 +3,7 @@ import { AuthType, AgentCapabilities } from '~/types/chat';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import type { AgentForm } from '~/common';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useLocalize, useCodeApiKeyForm } from '~/hooks';
 import { CircleHelpIcon } from '~/components/svg';
 import ApiKeyDialog from './ApiKeyDialog';

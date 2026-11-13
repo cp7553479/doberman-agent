@@ -19,11 +19,11 @@ import {
   getFileDownloadApi,
   importWebLinkApi,
 } from "~/api/knowledge";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { NotificationSeverity } from "~/common";
 import { buildClientShareUrl } from "~/components/CopyShareLinkButton";
 import { useConfirm, useToastContext } from "~/Providers";
-import { Dropdown, DropdownGroup, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownGroup, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +39,7 @@ import { useKnowledgeMoveDrag } from "../hooks/useKnowledgeMoveDrag";
 import { dispatchKnowledgeSpaceFilesRefresh } from "../hooks/useFileManager";
 import { getAllowedExtensions, getFileInputAccept, getMaxFileSizeBytesForFile, getMaxFileSizeMBForFile, isKnowledgeItemRetryable, isKnowledgeItemUploading, resolveUploadSizeLimits, triggerUrlDownload, type UploadSizeLimits } from "../knowledgeUtils";
 import { resolveLocalizedKnowledgeImportError } from "../webLinkI18n";
-import { bishengConfState } from "~/pages/appChat/store/atoms";
+import { dobermanAgentConfState } from "~/pages/appChat/store/atoms";
 import { CompoundSearchInput, SearchParams } from "./CompoundSearchInput";
 import { EditTagsModal } from "./EditTagsModal";
 import { FileCard } from "./FileCard";
@@ -477,10 +477,10 @@ export function KnowledgeSpaceContent({
   }, []);
 
   // Read max file size from env config (MB), fallback to default 200MB
-  const bishengConfig = useRecoilValue(bishengConfState);
-  const uploadSizeLimits = resolveUploadSizeLimits(bishengConfig);
+  const dobermanAgentConfig = useRecoilValue(dobermanAgentConfState);
+  const uploadSizeLimits = resolveUploadSizeLimits(dobermanAgentConfig);
   const maxFileSizeMB = uploadSizeLimits.defaultMaxMB;
-  const enableEtl4lm = bishengConfig?.enable_etl4lm ?? false;
+  const enableEtl4lm = dobermanAgentConfig?.enable_etl4lm ?? false;
   const allowedExtensions = getAllowedExtensions(enableEtl4lm);
   const fileInputAccept = getFileInputAccept(enableEtl4lm);
 

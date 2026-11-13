@@ -15,15 +15,15 @@ import pytest
 from fastapi import APIRouter, Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 
-import bisheng.permission.domain.services.data_scope as data_scope_module
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.schemas.personal_token import PersonalTokenSettingUpdate
-from bisheng.open_api.domain.scopes import OPEN_API_SCOPES, open_api_scope
-from bisheng.open_api.domain.services.tenant_setting_service import TenantSettingService
-from bisheng.permission.application.identity import get_current_permission_actor
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+import doberman_agent.permission.domain.services.data_scope as data_scope_module
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.schemas.personal_token import PersonalTokenSettingUpdate
+from doberman_agent.open_api.domain.scopes import OPEN_API_SCOPES, open_api_scope
+from doberman_agent.open_api.domain.services.tenant_setting_service import TenantSettingService
+from doberman_agent.permission.application.identity import get_current_permission_actor
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 from test.permission.test_data_scope_enforcement import (
     FakeResolver,
     StubFGA,
@@ -122,10 +122,10 @@ def gate(monkeypatch, open_api_db, fake_redis):
     async def not_tenant_admin(_user_id, _tenant_id):
         return False
 
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", validate)
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.settings.open_api.pat_enabled", True)
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", not_super)
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", not_tenant_admin)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", validate)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.settings.open_api.pat_enabled", True)
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", not_super)
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", not_tenant_admin)
     monkeypatch.setattr(
         data_scope_module,
         "_resolver",
@@ -176,7 +176,7 @@ async def test_admin_holder_is_narrowed_exactly_the_same(gate, monkeypatch):
     async def is_super(_user_id):
         return True
 
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", is_super)
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", is_super)
     await TenantSettingService.update(
         1,
         PersonalTokenSettingUpdate(pat_enabled=True, pat_ttl_days=30, data_scope="personal_only"),
@@ -203,10 +203,10 @@ async def test_narrowed_token_retrieve_is_unreachable_not_26044(gate, monkeypatc
 
     from unittest.mock import MagicMock
 
-    from bisheng.common.errcode.mcp_face import KnowledgeUnreachableError
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity, RetrievalRequest
-    from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
-    from bisheng.open_api.api.exception_handlers import open_api_http_status
+    from doberman_agent.common.errcode.mcp_face import KnowledgeUnreachableError
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity, RetrievalRequest
+    from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+    from doberman_agent.open_api.api.exception_handlers import open_api_http_status
 
     identity = RetrievalIdentity.from_open_api_principal(_pat_principal())
 
@@ -223,11 +223,11 @@ async def test_narrowed_token_retrieve_is_unreachable_not_26044(gate, monkeypatc
         return [row] if 999 in ids else []
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_facade_service.batch_check_business_actions",
+        "doberman_agent.knowledge.domain.services.retrieval_facade_service.batch_check_business_actions",
         batch_check,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.retrieval_facade_service.KnowledgeDao.aget_list_by_ids", rows
+        "doberman_agent.knowledge.domain.services.retrieval_facade_service.KnowledgeDao.aget_list_by_ids", rows
     )
 
     with pytest.raises(KnowledgeUnreachableError) as narrowed:

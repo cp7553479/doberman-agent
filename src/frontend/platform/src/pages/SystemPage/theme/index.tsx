@@ -1,16 +1,16 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { saveThemeApi } from "@/controllers/API";
-import { RadioGroup, Radio as RadioGroupItem } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { RadioGroup, Radio as RadioGroupItem } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useState } from "react";
 import Example from "./Example";
 import HSLitem from "./HSLitem";
 
 import { Label } from "@/components/bs-ui/label";
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import BrandCustomization from "./BrandCustomization";
 import WorkbenchThemeSettings from "./WorkbenchThemeSettings";
@@ -129,7 +129,7 @@ function ThemeColorSettings() {
           <div>
             <Label className="flex justify-center">
               <RadioGroupItem className="mr-2" value="logo" />
-              {t("theme.bishengLogo")}
+              {t("theme.dobermanAgentLogo")}
             </Label>
           </div>
           <div>

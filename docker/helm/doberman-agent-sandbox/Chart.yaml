@@ -1,0 +1,10 @@
+apiVersion: v2
+name: doberman-agent-sandbox
+description: Isolation-environment runners for DobermanAgent (StatefulSet + headless Service).
+type: application
+version: 0.1.0
+appVersion: v3.0.0
+keywords:
+  - doberman-agent
+  - sandbox
+  - code-runner

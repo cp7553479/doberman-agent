@@ -24,8 +24,8 @@ test/app_runtime/test_runtime_delivery_database.py:163: in test_live_competing_c
 E   assert 0 == 1
 E    +  where 0 = len([])
 =============================== warnings summary ===============================
-bisheng/core/ai/__init__.py:2
-  /work/bisheng/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
+doberman-agent/core/ai/__init__.py:2
+  /work/doberman-agent/core/ai/__init__.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
     from langchain_community.chat_models import ChatTongyi, ChatZhipuAI, MoonshotChat
 
 ../app/.venv/lib/python3.11/site-packages/simhash/__init__.py:50

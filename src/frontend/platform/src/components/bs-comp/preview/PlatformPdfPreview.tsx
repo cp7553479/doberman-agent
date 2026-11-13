@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import { VariableSizeList, type ListChildComponentProps, type ListOnScrollProps } from 'react-window';
 import { useTranslation } from 'react-i18next';
-import { PdfPage, usePdfDocument, pageLayout, type PageLayout, type PageSize, type PdfPageMetrics } from '@bisheng/file-viewers/pdf';
+import { PdfPage, usePdfDocument, pageLayout, type PageLayout, type PageSize, type PdfPageMetrics } from '@doberman-agent/file-viewers/pdf';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { LoadingIcon } from '../../bs-icons/loading';
 import { checkSassUrl } from './previewUrl';

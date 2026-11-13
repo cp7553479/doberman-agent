@@ -13,7 +13,7 @@
  * unchanged and only runs when there ARE parseable questions.
  */
 import { useMemo, useState } from 'react';
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import type { ExecStepEventData } from './stepUtils';
 import { CLARIFY_SKIP_SIGNAL, parseClarifyRequest } from './stepUtils';

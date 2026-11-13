@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="毕昇客户端模型调用审计一期需求与技术评审：只做审计，不包含安全围栏。">
+<meta name="description" content="doberman-agent客户端模型调用审计一期需求与技术评审：只做审计，不包含安全围栏。">
 <title>客户端模型调用审计 · 一期需求与技术评审</title>
 <style>
 :root{color-scheme:light;--bg:#f6f7f9;--surface:#fff;--soft:#f0f3f6;--ink:#17202a;--muted:#596675;--line:#d7dde4;--blue:#2563a7;--blue-soft:#e7f0fa;--amber:#87550a;--amber-soft:#fff3d9;--green:#247357;--green-soft:#e8f5ef}
@@ -17,7 +17,7 @@
 </head>
 <body><div class="shell">
 <header>
-<div class="eyebrow">BISHENG · 客户端模型调用审计</div>
+<div class="eyebrow">doberman-agent · 客户端模型调用审计</div>
 <h1>一期需求与技术评审</h1>
 <p class="lead">记录谁在什么对话中调用了哪个模型、实际提交了什么、模型返回了什么，并对压缩、分支、用量和留存完整性进行可追溯展示。</p>
 <div class="meta"><span class="badge">评审草案 · 未批准实施</span><span class="badge scope">一期仅审计</span><span>v0.6 · 2026-10-12</span><span>目标版本待定</span></div>
@@ -35,9 +35,9 @@
 <div class="cols"><div><h3>必须回答的问题</h3><ul><li>谁在何时通过哪个登录会话调用了哪个模型？</li><li>这次请求属于哪个对话、任务和分支？</li><li>实际发送了哪些有序上下文，实际收到了哪些输出？</li><li>正文是否待写入、完整、部分、未采集或已过期？</li><li>真实用量已记录还是未知？</li></ul></div><div><h3>事实边界</h3><ul><li>客户端声明对话和压缩关系，服务端不把声明当作事实证明。</li><li>审计列表显示最近成功写入进度与已知缺口；进度不证明覆盖完整，无审计行不等于无模型调用。</li><li>业务调用明细不能单独证明供应商已经收到请求。</li><li>摘要不能替代原文；原文缺失时必须明确显示。</li><li>用户放入模型输入的疑似凭证按原文留存，仅正文授权者可见。</li></ul></div></div>
 </section>
 <section id="architecture"><h2><span class="num">03</span>架构分工</h2>
-<div class="architecture" aria-label="客户端通过 BiSheng Backend 调用模型并由审计模块写入 SQL">
+<div class="architecture" aria-label="客户端通过 doberman-agent Backend 调用模型并由审计模块写入 SQL">
 <div class="node"><strong>客户端</strong><p>能力协商后提交对话、任务、消息和压缩关联。</p><span class="caption">旧客户端仍可请求级审计</span></div><div class="arrow" aria-hidden="true">→</div>
-<div class="node"><strong>BiSheng Backend</strong><p>现有 DSH 模型 Service 继续负责授权、额度、调用、流式响应和用量。</p><p>Audit Service 旁路采集事实，经 Repository 写入 SQL。</p><span class="caption">不新建第二条模型代理链路</span></div><div class="arrow" aria-hidden="true">⇄</div>
+<div class="node"><strong>doberman-agent Backend</strong><p>现有 DSH 模型 Service 继续负责授权、额度、调用、流式响应和用量。</p><p>Audit Service 旁路采集事实，经 Repository 写入 SQL。</p><span class="caption">不新建第二条模型代理链路</span></div><div class="arrow" aria-hidden="true">⇄</div>
 <div class="node"><strong>共享审计存储</strong><p>SQL 保存索引、引用、上下文边和访问日志；完整加密载荷的位置待容量验证。</p><span class="caption">MySQL / DM8；不依赖本地磁盘</span></div>
 </div>
 <div class="callout"><strong>Gateway 本期不新增审计业务职责。</strong>采集点应位于模型调用接口边界，在请求转换后记录实际输入、在响应规范化前记录输出。受控供应商测试必须核对交换内容；本地发起调用不能被说成供应商已接收。</div>
@@ -62,7 +62,7 @@
   messages: MessageRef[]
   compaction: CompactionRef?</code></pre>
 <div class="table-wrap"><table><thead><tr><th>组合</th><th>预期行为</th></tr></thead><tbody><tr><td>旧客户端 → 新服务端</td><td>保留请求级审计，显示“未关联对话”，不拒绝合法调用。</td></tr><tr><td>新客户端 → 新服务端</td><td>能力协商后上报对话、任务、消息修订和压缩关系。</td></tr><tr><td>新客户端 → 旧服务端</td><td>能力字段缺失则不发送新增字段，不用失败后自动重试模型请求来探测。</td></tr></tbody></table></div>
-<p class="muted"><code>audit_context</code> 是 BiSheng 扩展，不是 OpenAI 标准字段。它不能携带 tenant_id、user_id、session_id 或权限身份。</p>
+<p class="muted"><code>audit_context</code> 是 doberman-agent 扩展，不是 OpenAI 标准字段。它不能携带 tenant_id、user_id、session_id 或权限身份。</p>
 </section>
 <section id="reliability"><h2><span class="num">06</span>可靠性、权限与失败语义</h2>
 <div class="callout warn"><strong>D-05 已确认，模型主流程优先：</strong>模型请求和流式响应不等待审计存储写入；审计故障不使调用失败。代价是极端情况下可能完全无记录，须尽力告警和事后对账，不能宣称逐条缺口都实时可见。</div>
@@ -104,7 +104,7 @@
 </section>
 <section id="decisions"><h2><span class="num">08</span>已确认与待确认决策</h2>
 <div class="table-wrap"><table class="decision-table"><thead><tr><th>编号</th><th>产品选择</th><th>建议口径</th><th>影响</th></tr></thead><tbody>
-<tr><td>D-01</td><td>一期审计哪些入口</td><td>仅客户端经毕昇转发的 Chat Completions。</td><td>接入与回归范围。</td></tr>
+<tr><td>D-01</td><td>一期审计哪些入口</td><td>仅客户端经doberman-agent转发的 Chat Completions。</td><td>接入与回归范围。</td></tr>
 <tr><td>D-02</td><td>开启方式与初始状态</td><td>默认关闭；支持 OFF、METADATA、CONTENT。</td><td>升级后是否自动留存正文。</td></tr>
 <tr><td>D-03（已确认）</td><td>保存哪些内容</td><td>完整保存模型接口实际接收的输入及返回的输出；工具内容仅在进入模型调用时纳入。</td><td>采集边界已确认；不另行截断或解析。</td></tr>
 <tr><td>D-04</td><td>保存多长时间</td><td>正文 30 天，元数据与查看日志 180 天，均为待确认默认值。</td><td>存储、备份和合规成本。</td></tr>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # F028 — Conversation export dependency smoke test.
-# Run inside the bisheng-backend container:
-#   docker exec -it bisheng-backend bash scripts/check_export_dependencies.sh
+# Run inside the doberman-agent-backend container:
+#   docker exec -it doberman-agent-backend bash scripts/check_export_dependencies.sh
 #
 # Validates pandoc / LibreOffice (soffice) / Chinese fonts and runs an
 # end-to-end md -> docx -> pdf round-trip to make sure the rendering toolchain

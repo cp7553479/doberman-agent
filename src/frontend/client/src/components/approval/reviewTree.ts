@@ -83,6 +83,6 @@ export function ancestorPaths(path: string): string[] {
  */
 export function pickInitialFile(entries: SnapshotEntry[]): string | null {
   const files = entries.filter((entry) => entry.type === "file" && entry.previewable !== false);
-  const manifest = files.find((entry) => entry.path === "bisheng-app.yaml");
+  const manifest = files.find((entry) => entry.path === "doberman_agent-app.yaml");
   return manifest?.path ?? files[0]?.path ?? null;
 }

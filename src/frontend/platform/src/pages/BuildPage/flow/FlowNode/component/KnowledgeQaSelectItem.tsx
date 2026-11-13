@@ -2,7 +2,7 @@
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { getKnowledgeDetailApi,readFileLibDatabase } from "@/controllers/API";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import useFlowStore from "../../flowStore";
@@ -117,7 +117,7 @@ export default function KnowledgeQaSelectItem({ nodeId, data, onChange, onValida
     }, [data, value]);
 
     return <div className='node-item mb-4'>
-        <Label className="flex items-center bisheng-label mb-2">
+        <Label className="flex items-center doberman_agent-label mb-2">
             {data.required && <span className="text-red-500">*</span>}
             {t(`${i18nPrefix}label`)}
         </Label>

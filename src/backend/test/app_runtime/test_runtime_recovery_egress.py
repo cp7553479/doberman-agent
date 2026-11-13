@@ -3,8 +3,8 @@
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
 
-from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-from bisheng.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
+from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+from doberman_agent.app_runtime.domain.services.runtime_delivery_coordinator import RuntimeDeliveryCoordinator
 
 
 class _Repo:

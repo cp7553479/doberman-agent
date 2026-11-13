@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useRef, useState } from "react"
 
-import { Outlined } from "bisheng-icons"
+import { Outlined } from "@doberman-agent/icons"
 import {
     AlertDialog,
     AlertDialogAction,

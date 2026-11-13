@@ -11,14 +11,14 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.tool.domain.langchain import linsight_export
+from doberman_agent.tool.domain.langchain import linsight_export
 
 
 @pytest.fixture(autouse=True)
 def _no_persisted_sources(monkeypatch):
     """F069 P2: exports resolve sources through the DB; these tests have none
     persisted, so baking degrades to the plain strip the assertions expect."""
-    from bisheng.citation.domain.services import citation_export_service
+    from doberman_agent.citation.domain.services import citation_export_service
 
     monkeypatch.setattr(citation_export_service, "resolve_items_for_export", AsyncMock(return_value=[]))
 
@@ -48,7 +48,7 @@ def test_init_returns_every_deliverable_tool_for_writable_backend():
 
 
 async def test_export_docx_reads_converts_writes(monkeypatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     class _FakeMarkDocx:
         def __call__(self, md):
@@ -73,7 +73,7 @@ async def test_export_docx_handles_memoryview(monkeypatch):
     """MarkDocx returns a memoryview (BytesIO.getbuffer()); the tool must write
     real bytes, never the stringified ``<memory at 0x...>`` (the Word-won't-open
     bug). Regression guard for the memoryview path."""
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     class _FakeMarkDocx:
         def __call__(self, md):
@@ -136,7 +136,7 @@ async def test_export_docx_non_writable_backend_soft_returns():
 
 
 async def test_export_docx_converter_error_soft_returns(monkeypatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     class _BoomMarkDocx:
         def __call__(self, md):
@@ -172,7 +172,7 @@ def _assert_clean(md: str) -> None:
 
 async def test_export_docx_strips_citation_markers_before_convert(monkeypatch):
     """Word must never carry the PUA wrappers nor the bare source ids."""
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     seen = {}
 
@@ -227,7 +227,7 @@ def _assert_clean_handles(md: str) -> None:
 
 
 async def test_export_docx_strips_unknown_handles(monkeypatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     seen = {}
 
@@ -265,7 +265,7 @@ async def test_export_pdf_strips_unknown_handles(monkeypatch):
 # F069 P2: the tools bake resolvable citations under the exporter's identity
 # ---------------------------------------------------------------------------
 def _resolved_rag():
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         CitationRegistryItemSchema,
         CitationType,
         RagCitationItemSchema,
@@ -283,8 +283,8 @@ def _resolved_rag():
 
 
 async def test_export_docx_bakes_numbers_for_the_task_owner(monkeypatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
-    from bisheng.citation.domain.services import citation_export_service
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    from doberman_agent.citation.domain.services import citation_export_service
 
     seen = {}
 
@@ -346,7 +346,7 @@ def _download_backend(md_content: str, files: dict[str, bytes]):
 
 
 def _capture_docx_md(monkeypatch) -> list[str]:
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     seen: list[str] = []
 

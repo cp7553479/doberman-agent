@@ -19,23 +19,23 @@ import os
 import secrets
 import sys
 
-# 保证以脚本路径运行时能 import bisheng
+# 保证以脚本路径运行时能 import doberman_agent
 _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
 from sqlmodel import select
 
-from bisheng.common.services.config_service import settings
-from bisheng.database.constants import DefaultRole
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.tenant import UserTenantDao
-from bisheng.department.domain.services.department_change_handler import (
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.database.constants import DefaultRole
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.tenant import UserTenantDao
+from doberman_agent.department.domain.services.department_change_handler import (
     DepartmentChangeHandler,
 )
-from bisheng.permission.domain.services.permission_service import PermissionService
-from bisheng.user.domain.models.user import User, UserDao
-from bisheng.utils import md5_hash
+from doberman_agent.permission.domain.services.permission_service import PermissionService
+from doberman_agent.user.domain.models.user import User, UserDao
+from doberman_agent.utils import md5_hash
 
 # 固定密码（8+ 位，含大小写数字符号）
 DEFAULT_PLAIN_PASSWORD = "Test@1234ab"
@@ -73,7 +73,7 @@ async def _flush_fga(ops: list) -> None:
 
 def repair_fga_all_department_members() -> None:
     """将库中所有部门成员关系补写到 OpenFGA（主/附均写 member，幂等）。"""
-    from bisheng.core.database import get_sync_db_session
+    from doberman_agent.core.database import get_sync_db_session
 
     ops: list = []
     with get_sync_db_session() as session:
@@ -92,7 +92,7 @@ def repair_fga_all_department_members() -> None:
 
 
 def main() -> None:
-    from bisheng.core.database import get_sync_db_session
+    from doberman_agent.core.database import get_sync_db_session
 
     pwd_hash = md5_hash(DEFAULT_PLAIN_PASSWORD)
     multi_on = bool(

@@ -7,7 +7,7 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RuntimeAssignment,
     RuntimeCapacityReservation,
     RuntimeExecutionFact,
@@ -15,8 +15,8 @@ from bisheng.app_runtime.domain.models.runtime_delivery import (
     RuntimeOperation,
     RuntimeRoute,
 )
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError, AppDataNotReadyError
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError, AppDataNotReadyError
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 
 IMAGE = "example.invalid/helper@sha256:" + "a" * 64
@@ -25,7 +25,7 @@ UID = "22222222-2222-4222-8222-222222222222"
 
 @pytest.fixture
 async def session(repo):
-    from bisheng.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
+    from doberman_agent.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
 
     node = await repo.get(RuntimeNode, "node-a")
     node.heartbeat_at = datetime.utcnow()
@@ -287,8 +287,8 @@ async def test_docker_detection_preserves_legacy_dispatch(session):
 
 
 async def test_existing_owner_api_dispatches_kubernetes_through_the_data_session(session, monkeypatch):
-    import bisheng.app_runtime.domain.services.runtime_data_session_service as sessions
-    from bisheng.app_runtime.domain.services import app_data_service as module
+    import doberman_agent.app_runtime.domain.services.runtime_data_session_service as sessions
+    from doberman_agent.app_runtime.domain.services import app_data_service as module
 
     c = session
 
@@ -313,7 +313,7 @@ async def test_existing_owner_api_dispatches_kubernetes_through_the_data_session
 
 
 async def test_lost_wakeup_response_uses_committed_state_without_replaying_data(session, monkeypatch):
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
 
     c = session
     wake = c.svc.control.wakeup

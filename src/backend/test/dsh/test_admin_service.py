@@ -8,7 +8,7 @@ from test.dsh.test_policy_repository import NOW, sql_store  # noqa: F401
 
 
 def build(scope, gateway):
-    from bisheng.dsh.domain.services.admin import DshManagementService
+    from doberman_agent.dsh.domain.services.admin import DshManagementService
 
     async def authorize(actor_id, tenant_id, user_id=None):
         if actor_id != 90 or tenant_id not in (None, 2):
@@ -96,7 +96,7 @@ async def test_subject_policy_management_stays_in_authorized_tenant(operation_sc
 
 
 async def test_root_operation_lookup_is_instance_authorized(operation_scope):  # noqa: F811
-    from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
+    from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
 
     operation_id = "00000000-0000-4000-8000-000000000002"
     service, _, _ = build(operation_scope, None)

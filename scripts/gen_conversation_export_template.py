@@ -11,7 +11,7 @@ Re-run after editing this script to refresh the template:
     uv run python ../../scripts/gen_conversation_export_template.py
 
 The generated file is checked into the repository at
-``src/backend/bisheng/workstation/assets/conversation_export_template.docx``.
+``src/backend/doberman_agent/workstation/assets/conversation_export_template.docx``.
 UX may hand-edit that docx directly in Word/LibreOffice and commit the
 result; pandoc will pick up the manual styling. The script remains the
 canonical "first-version" producer in case the binary file is ever lost.
@@ -34,21 +34,21 @@ DEFAULT_OUTPUT = (
     Path(__file__).resolve().parent.parent
     / "src"
     / "backend"
-    / "bisheng"
+    / "doberman_agent"
     / "workstation"
     / "assets"
     / "conversation_export_template.docx"
 )
 
 # Font stack rationale:
-# - LibreOffice (which renders the PDF inside the bisheng-backend Docker
+# - LibreOffice (which renders the PDF inside the doberman-agent-backend Docker
 #   image) does NOT replicate Word's automatic "fall back to a CJK face when
 #   the declared font has no glyph" behaviour. If the docx declares Microsoft
 #   YaHei / Calibri / Consolas — fonts that ship with Windows but not with
 #   the Linux image — CJK glyphs render as tofu boxes, line spacing breaks
 #   and tables collapse. So we declare fonts that the image actually has.
 # - ``WenQuanYi Zen Hei`` is provided by the ``fonts-wqy-zenhei`` Debian
-#   package baked into the bisheng-backend image; it has full CJK coverage.
+#   package baked into the doberman-agent-backend image; it has full CJK coverage.
 # - ``Liberation Sans`` / ``Liberation Mono`` ship with LibreOffice itself,
 #   so they are guaranteed available wherever PDF rendering runs and look
 #   nearly identical to Calibri / Consolas.

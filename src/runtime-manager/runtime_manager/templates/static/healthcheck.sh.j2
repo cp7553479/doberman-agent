@@ -7,8 +7,8 @@
 # there is exactly one place they are defined. busybox wget exits non-zero on
 # any HTTP error, so "index.html is missing" reads as unhealthy — which is the
 # honest verdict for a file server.
-port="${BISHENG_APP_PORT:-${PORT:-{{ port }}}}"
-path="${BISHENG_APP_HEALTH_PATH:-{{ health_path }}}"
+port="${DOBERMAN_AGENT_APP_PORT:-${PORT:-{{ port }}}}"
+path="${DOBERMAN_AGENT_APP_HEALTH_PATH:-{{ health_path }}}"
 case "$path" in
     /*) ;;
     *) path="/$path" ;;

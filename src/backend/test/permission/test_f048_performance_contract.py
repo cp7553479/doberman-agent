@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import build_authorization_model_f048
+from doberman_agent.core.openfga.authorization_model_f048 import build_authorization_model_f048
 from scripts.benchmark_f048_permission_paths import (
     CONTRACT_VERSION,
     DEFAULT_FIXTURE,

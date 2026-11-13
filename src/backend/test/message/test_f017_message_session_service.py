@@ -7,37 +7,37 @@ context (AC-11).
 
 from __future__ import annotations
 
-# F017: pre-mock the ``bisheng.api`` chain (same rationale as
+# F017: pre-mock the ``doberman_agent.api`` chain (same rationale as
 # test_f017_chat_message_service.py — see docstring there).
 import sys as _sys  # noqa: E402
 from unittest.mock import MagicMock as _MagicMock  # noqa: E402
 
-# conftest.py premocks ``bisheng.common.services`` as MagicMock which
-# breaks later ``from bisheng.common.services.base import ...`` lookups.
+# conftest.py premocks ``doberman_agent.common.services`` as MagicMock which
+# breaks later ``from doberman_agent.common.services.base import ...`` lookups.
 # Drop that mock before our real imports so the package loads normally;
 # conftest's other premocks (errcodes, database models) remain untouched.
 for _common_services_mod in (
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services.telemetry.telemetry_service',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services.telemetry.telemetry_service',
 ):
     _sys.modules.pop(_common_services_mod, None)
 
 for _m in (
-    'bisheng.api',
-    'bisheng.api.services',
-    'bisheng.api.services.chat_imp',
-    'bisheng.api.services.workflow',
-    'bisheng.api.services.audit_log',
-    'bisheng.api.v1',
-    'bisheng.api.v1.schemas',
-    'bisheng.api.v1.schema',
-    'bisheng.api.v1.schema.base_schema',
-    'bisheng.api.v1.schema.chat_schema',
-    'bisheng.api.v1.schema.workflow',
-    'bisheng.common.chat',
-    'bisheng.common.chat.client',
+    'doberman_agent.api',
+    'doberman_agent.api.services',
+    'doberman_agent.api.services.chat_imp',
+    'doberman_agent.api.services.workflow',
+    'doberman_agent.api.services.audit_log',
+    'doberman_agent.api.v1',
+    'doberman_agent.api.v1.schemas',
+    'doberman_agent.api.v1.schema',
+    'doberman_agent.api.v1.schema.base_schema',
+    'doberman_agent.api.v1.schema.chat_schema',
+    'doberman_agent.api.v1.schema.workflow',
+    'doberman_agent.common.chat',
+    'doberman_agent.common.chat.client',
 ):
     _sys.modules.setdefault(_m, _MagicMock())
 
@@ -45,9 +45,9 @@ from unittest.mock import MagicMock, patch  # noqa: E402
 
 import pytest  # noqa: E402
 
-from bisheng.chat_session.domain.chat import ChatSessionService  # noqa: E402
-from bisheng.common.errcode.tenant_sharing import TenantContextMissingError  # noqa: E402
-from bisheng.core.context.tenant import current_tenant_id  # noqa: E402
+from doberman_agent.chat_session.domain.chat import ChatSessionService  # noqa: E402
+from doberman_agent.common.errcode.tenant_sharing import TenantContextMissingError  # noqa: E402
+from doberman_agent.core.context.tenant import current_tenant_id  # noqa: E402
 
 
 def _login_user(user_id: int = 100, tenant_id: int | None = 5):
@@ -75,18 +75,18 @@ def test_get_or_create_session_stamps_leaf_tenant_from_context():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.chat_session.domain.chat.MessageSessionDao.get_one',
+            'doberman_agent.chat_session.domain.chat.MessageSessionDao.get_one',
             return_value=None,
         ), patch(
-            'bisheng.chat_session.domain.chat.MessageSessionDao.insert_one',
+            'doberman_agent.chat_session.domain.chat.MessageSessionDao.insert_one',
             side_effect=_fake_insert,
         ), patch(
-            'bisheng.chat_session.domain.chat.FlowDao.get_flow_by_id',
+            'doberman_agent.chat_session.domain.chat.FlowDao.get_flow_by_id',
             return_value=_flow_info(flow_type=5),  # ASSISTANT
         ), patch(
-            'bisheng.chat_session.domain.chat.AuditLogService.create_chat_workflow',
+            'doberman_agent.chat_session.domain.chat.AuditLogService.create_chat_workflow',
         ), patch(
-            'bisheng.chat_session.domain.chat.telemetry_service.log_event_sync',
+            'doberman_agent.chat_session.domain.chat.telemetry_service.log_event_sync',
         ):
             ChatSessionService.get_or_create_session(
                 chat_id='c1', flow_id='f1',
@@ -103,7 +103,7 @@ def test_get_or_create_session_skips_when_existing():
     """Existing session → short-circuit, no tenant resolution at all."""
     existing = MagicMock()
     with patch(
-        'bisheng.chat_session.domain.chat.MessageSessionDao.get_one',
+        'doberman_agent.chat_session.domain.chat.MessageSessionDao.get_one',
         return_value=existing,
     ):
         # No context, no login_user.tenant_id — must not raise because we
@@ -119,10 +119,10 @@ def test_get_or_create_session_skips_when_existing():
 def test_get_or_create_session_raises_when_context_missing():
     """Create path with neither ContextVar nor login_user.tenant_id → 19504."""
     with patch(
-        'bisheng.chat_session.domain.chat.MessageSessionDao.get_one',
+        'doberman_agent.chat_session.domain.chat.MessageSessionDao.get_one',
         return_value=None,
     ), patch(
-        'bisheng.chat_session.domain.chat.FlowDao.get_flow_by_id',
+        'doberman_agent.chat_session.domain.chat.FlowDao.get_flow_by_id',
         return_value=_flow_info(),
     ):
         with pytest.raises(TenantContextMissingError):

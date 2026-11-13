@@ -6,8 +6,8 @@ vi.mock('@/components/bs-icons/loading', () => ({ LoadingIcon: () => null, LoadI
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: mocks.t }) }))
 vi.mock('@/hooks/useDshBrowserConfig', () => ({ useDshBrowserConfig: () => ({ config: { enabled: true } }) }))
 vi.mock('@/components/bs-ui/toast/use-toast', () => ({ useToast: () => ({ message: mocks.message }) }))
-vi.mock('@bisheng/ui', async (importOriginal) => ({
-    ...await importOriginal<typeof import('@bisheng/ui')>(),
+vi.mock('@doberman-agent/ui', async (importOriginal) => ({
+    ...await importOriginal<typeof import('@doberman-agent/ui')>(),
     toast: { show: mocks.message },
 }))
 vi.mock('@/controllers/API/finetune', () => ({ getLinsightModelEnvelope: mocks.get, updateLinsightModelConfig: mocks.save }))

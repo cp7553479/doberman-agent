@@ -21,14 +21,14 @@ building the compiled graph (model resolution needs LLMService/DB).
 
 from __future__ import annotations
 
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services.agent_factory import (
     _KNOWN_HITL_TOOL_NAMES,
     _SUBAGENT_TOOL_DENY,
     _build_researcher_subagent,
     _subagent_tools,
 )
-from bisheng.linsight.domain.services.stream_event_mapper import StreamEventMapper
-from bisheng_langchain.linsight.event import (
+from doberman_agent.linsight.domain.services.stream_event_mapper import StreamEventMapper
+from doberman_agent_langchain.linsight.event import (
     ExecStep,
     GenerateSubTask,
     TaskEnd,
@@ -128,7 +128,7 @@ def test_system_prompt_drops_kb_tool_when_unavailable():
     must NOT advertise it then — otherwise the model calls a tool that isn't
     bound and trips ``knowledge_id: Field required``.
     """
-    from bisheng.linsight.domain.services.agent_factory import (
+    from doberman_agent.linsight.domain.services.agent_factory import (
         _build_linsight_system_prompt,
         _build_researcher_prompt,
     )
@@ -156,7 +156,7 @@ def test_delegation_restates_kb_ids_only_when_kb_present():
     ``knowledge_id`` for a tool that isn't bound (the same prompt/tool mismatch
     the rest of this file guards).
     """
-    from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+    from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
 
     with_kb = _build_linsight_system_prompt(True)
     without_kb = _build_linsight_system_prompt(False)
@@ -179,7 +179,7 @@ def test_prompts_constrain_thinking_language():
     in English while delivering in Chinese (and the large English system prompt
     deepagents appends pulls it that way).
     """
-    from bisheng.linsight.domain.services.agent_factory import (
+    from doberman_agent.linsight.domain.services.agent_factory import (
         _build_linsight_system_prompt,
         _build_researcher_prompt,
     )
@@ -209,7 +209,7 @@ def test_main_prompt_guides_per_source_delegation():
     distinct scratch/ notes dir named in each description. The rule must reach
     every prompt variant, and the unattended variant must still never mention
     ask_user (it is not bound there)."""
-    from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+    from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
 
     variants = {
         "kb": _build_linsight_system_prompt(True),

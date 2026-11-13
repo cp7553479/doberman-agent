@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.workstation.domain.services import chat_service
 
 
 def _data(task_mode: bool) -> APIChatCompletion:
@@ -63,7 +63,7 @@ def test_to_linsight_submit_maps_question_session_and_knowledge():
     tools; different upload buckets). Task-mode tools/files come from linsight-
     native selection (frontend TJ-6), not from these daily fields.
     """
-    from bisheng.api.v1.schema.chat_schema import UseKnowledgeBaseParam
+    from doberman_agent.api.v1.schema.chat_schema import UseKnowledgeBaseParam
 
     data = APIChatCompletion(
         clientTimestamp="t",

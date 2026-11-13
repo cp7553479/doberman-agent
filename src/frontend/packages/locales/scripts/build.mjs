@@ -88,7 +88,7 @@ function readSource(domain, lang) {
 function languagesOf(domain) {
   return fs
     .readdirSync(path.join(SRC_DIR, domain))
-    .filter((f) => f.endsWith('.json'))
+    .filter((f) => !f.startsWith('._') && f.endsWith('.json'))
     .map((f) => f.replace(/\.json$/, ''));
 }
 
@@ -114,7 +114,7 @@ function compile({ checkOnly }) {
   if (checkOnly && stale.length > 0) {
     console.error(
       `[locales] ${stale.length} artifact(s) out of sync with packages/locales/src ` +
-        `(edit the source, never the artifact, then run \`pnpm --filter @bisheng/locales build\`):`,
+        `(edit the source, never the artifact, then run \`pnpm --filter @doberman-agent/locales build\`):`,
     );
     for (const f of stale) console.error(`  - ${f}`);
     process.exit(1);

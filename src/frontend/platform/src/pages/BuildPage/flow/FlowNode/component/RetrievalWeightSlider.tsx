@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip,Slider,Switch,type SliderValue } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip,Slider,Switch,type SliderValue } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useModel } from '@/pages/ModelPage/manage';
 import { ModelSelect } from '@/pages/ModelPage/manage/tabs/WorkbenchModel';

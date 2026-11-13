@@ -6,7 +6,7 @@
  * toolbar buttons.
  */
 import { X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import { useLocalize, useMediaQuery } from '~/hooks';
 import { cn } from '~/utils';

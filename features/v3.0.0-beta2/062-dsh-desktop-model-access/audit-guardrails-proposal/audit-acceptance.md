@@ -16,7 +16,7 @@
 
 大写会话 ID 探针：`dea924db-4dc5-4dca-963f-d89fde1e6182`；尾部空格 ID 探针：`f8e12437-cd4e-481f-8720-1c971dd8ea68`。各仅查出自己一条，不混入上述四卡。核心五次无重放，另两个探针总计七次；调用期间 config_reads=0。全部 CONTENT COMPLETE，NDJSON 连续 seq/end COMPLETED，模型原文没有 audit_context 或传输 token。
 
-这是实际客户端代码链路到真实 MySQL/Redis/MinIO，不是静态示例，但身份/上游合成，不是实际 Electron 窗口。[客户端证据](/Users/zhangguoqing/works/bisheng-work/.worktrees/feat-3.0.0-dsh-audit/docs/dsh-model-audit-validation.md)记录候选代码、类型/构建/测试与未执行场景。合成 token 不写入本文。
+这是实际客户端代码链路到真实 MySQL/Redis/MinIO，不是静态示例，但身份/上游合成，不是实际 Electron 窗口。[客户端证据](/Users/zhangguoqing/works/doberman-agent-work/.worktrees/feat-3.0.0-dsh-audit/docs/dsh-model-audit-validation.md)记录候选代码、类型/构建/测试与未执行场景。合成 token 不写入本文。
 
 ## 2 AC 对应证据
 

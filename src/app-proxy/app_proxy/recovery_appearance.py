@@ -1,4 +1,4 @@
-"""Standalone recovery appearance, matching the existing BiSheng state page.
+"""Standalone recovery appearance, matching the existing DobermanAgent state page.
 
 The inline SVG is a snapshot of the shared SystemErrorIllustration artwork at
 src/frontend/packages/ui/src/components/Illustration/SystemErrorIllustration.tsx.

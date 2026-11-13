@@ -18,16 +18,16 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.permission.application import catalog_bootstrap
-from bisheng.permission.application import control_state as control_state_module
-from bisheng.permission.application import sql_runtime as sql_runtime_module
-from bisheng.permission.application.catalog_bootstrap import (
+from doberman_agent.permission.application import catalog_bootstrap
+from doberman_agent.permission.application import control_state as control_state_module
+from doberman_agent.permission.application import sql_runtime as sql_runtime_module
+from doberman_agent.permission.application.catalog_bootstrap import (
     ensure_linsight_skill_action_scopes,
     normalize_environment,
     seed_initial_permission_catalog,
 )
-from bisheng.permission.application.sql_runtime import SqlCatalogDecisionState
-from bisheng.permission.domain.models import (
+from doberman_agent.permission.application.sql_runtime import SqlCatalogDecisionState
+from doberman_agent.permission.domain.models import (
     AuthorizationModelRelease,
     PermissionAction,
     PermissionActionResourceScope,
@@ -35,7 +35,7 @@ from bisheng.permission.domain.models import (
     PermissionModel,
     PermissionModelAction,
 )
-from bisheng.permission.migration.f048_coordinator import (
+from doberman_agent.permission.migration.f048_coordinator import (
     INITIAL_CATALOG_RELEASE_KEY,
 )
 

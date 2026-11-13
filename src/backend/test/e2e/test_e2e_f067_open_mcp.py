@@ -36,16 +36,16 @@ pytestmark = [
 ]
 
 EXPECTED_TOOLS = {
-    "bisheng_knowledge_list",
-    "bisheng_knowledge_create",
-    "bisheng_knowledge_update",
-    "bisheng_knowledge_delete",
-    "bisheng_knowledge_clear",
-    "bisheng_knowledge_retrieve",
-    "bisheng_knowledge_file_upload",
-    "bisheng_knowledge_file_list",
-    "bisheng_knowledge_file_delete",
-    "bisheng_knowledge_files_delete",
+    "doberman_agent_knowledge_list",
+    "doberman_agent_knowledge_create",
+    "doberman_agent_knowledge_update",
+    "doberman_agent_knowledge_delete",
+    "doberman_agent_knowledge_clear",
+    "doberman_agent_knowledge_retrieve",
+    "doberman_agent_knowledge_file_upload",
+    "doberman_agent_knowledge_file_list",
+    "doberman_agent_knowledge_file_delete",
+    "doberman_agent_knowledge_files_delete",
 }
 
 
@@ -73,22 +73,22 @@ async def test_s_mode_calls_all_ten_tools_over_streamable_http(mcp_url: str):
     async with open_mcp_session(mcp_url, credential) as session:
         listed = await session.list_tools()
         assert {tool.name for tool in listed.tools} == EXPECTED_TOOLS
-        await call_success(session, "bisheng_knowledge_list", {"type": 0, "page_size": 1})
+        await call_success(session, "doberman_agent_knowledge_list", {"type": 0, "page_size": 1})
         try:
             created = await call_success(
                 session,
-                "bisheng_knowledge_create",
+                "doberman_agent_knowledge_create",
                 {"name": name, "type": 0, "model": model},
             )
             knowledge_id = int(created["id"])
             await call_success(
                 session,
-                "bisheng_knowledge_update",
+                "doberman_agent_knowledge_update",
                 {"knowledge_id": knowledge_id, "description": "F067 E2E"},
             )
             await call_success(
                 session,
-                "bisheng_knowledge_retrieve",
+                "doberman_agent_knowledge_retrieve",
                 {"query": "empty", "knowledge_base_ids": [knowledge_id], "top_k": 1},
             )
 
@@ -97,7 +97,7 @@ async def test_s_mode_calls_all_ten_tools_over_streamable_http(mcp_url: str):
                 payload = base64.b64encode(f"F067 E2E {uuid4().hex} {index}".encode()).decode()
                 uploaded = await call_success(
                     session,
-                    "bisheng_knowledge_file_upload",
+                    "doberman_agent_knowledge_file_upload",
                     {
                         "knowledge_id": knowledge_id,
                         "file_name": f"{name}-{index}.txt",
@@ -107,37 +107,37 @@ async def test_s_mode_calls_all_ten_tools_over_streamable_http(mcp_url: str):
                 uploaded_ids.append(int(uploaded["id"]))
             uploaded = await call_success(
                 session,
-                "bisheng_knowledge_file_upload",
+                "doberman_agent_knowledge_file_upload",
                 {"knowledge_id": knowledge_id, "file_url": file_url},
             )
             uploaded_ids.append(int(uploaded["id"]))
 
             files = await call_success(
                 session,
-                "bisheng_knowledge_file_list",
+                "doberman_agent_knowledge_file_list",
                 {"knowledge_id": knowledge_id, "page_size": 20},
             )
             assert {item["id"] for item in files["data"]} >= set(uploaded_ids)
             await call_success(
                 session,
-                "bisheng_knowledge_file_delete",
+                "doberman_agent_knowledge_file_delete",
                 {"file_id": uploaded_ids[0]},
             )
             await call_success(
                 session,
-                "bisheng_knowledge_files_delete",
+                "doberman_agent_knowledge_files_delete",
                 {"file_ids": uploaded_ids[1:]},
             )
             await call_success(
                 session,
-                "bisheng_knowledge_clear",
+                "doberman_agent_knowledge_clear",
                 {"knowledge_id": knowledge_id},
             )
         finally:
             if knowledge_id is not None:
                 await call_success(
                     session,
-                    "bisheng_knowledge_delete",
+                    "doberman_agent_knowledge_delete",
                     {"knowledge_id": knowledge_id},
                 )
 
@@ -149,14 +149,14 @@ async def test_pat_discovers_only_three_read_tools_when_configured():
     async with open_mcp_session(_urls()[0], pat) as session:
         listed = await session.list_tools()
         assert {tool.name for tool in listed.tools} == {
-            "bisheng_knowledge_list",
-            "bisheng_knowledge_retrieve",
-            "bisheng_knowledge_file_list",
+            "doberman_agent_knowledge_list",
+            "doberman_agent_knowledge_retrieve",
+            "doberman_agent_knowledge_file_list",
         }
-        await call_success(session, "bisheng_knowledge_list", {"type": 0, "page_size": 1})
+        await call_success(session, "doberman_agent_knowledge_list", {"type": 0, "page_size": 1})
         await call_error(
             session,
-            "bisheng_knowledge_create",
+            "doberman_agent_knowledge_create",
             {"name": "must-not-create", "type": 0, "model": "unused"},
             expected_code="PERMISSION_DENIED",
         )
@@ -170,7 +170,7 @@ async def test_delegated_mode_forwards_subject_and_executes_read():
     async with open_mcp_session(_urls()[0], credential, on_behalf_of=delegated_user) as session:
         listed = await session.list_tools()
         assert {tool.name for tool in listed.tools} == EXPECTED_TOOLS
-        await call_success(session, "bisheng_knowledge_list", {"type": 0, "page_size": 1})
+        await call_success(session, "doberman_agent_knowledge_list", {"type": 0, "page_size": 1})
 
 
 @pytest.mark.asyncio

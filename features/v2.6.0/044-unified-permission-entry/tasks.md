@@ -40,7 +40,7 @@
   **依赖**: 无
 
 - [x] **T002**: 候选查询 Repository + Service
-  **文件**: `src/backend/bisheng/permission/domain/repositories/grant_subject_query_repository.py`, `src/backend/bisheng/permission/domain/services/grant_subject_query_service.py`
+  **文件**: `src/backend/doberman_agent/permission/domain/repositories/grant_subject_query_repository.py`, `src/backend/doberman_agent/permission/domain/services/grant_subject_query_service.py`
   **逻辑**: 将 endpoint 内 `_list_knowledge_space_grant_users`、`_grant_departments_*`、`_list_knowledge_space_grant_user_groups` 的取数下沉；Service 暴露资源/创建阶段查询与 `validate_creation_grants`，负责能力/tenant/scope/非用户 owner 编排，Repository 承担 ORM 和按 subject IDs 批量存在性查询；保持 F038 lazy shape 和 F033 可选 bound-department scope。
   **测试**: T001 全部通过
   **覆盖 AC**: AC-06, AC-09, AC-22, AC-25
@@ -54,7 +54,7 @@
   **依赖**: T002
 
 - [x] **T004**: Permission API 改调 Service + 创建候选端点
-  **文件**: `src/backend/bisheng/permission/api/endpoints/resource_permission.py`
+  **文件**: `src/backend/doberman_agent/permission/api/endpoints/resource_permission.py`
   **逻辑**: 删除 endpoint 内候选 ORM/helper 实现，现有 resource-id 候选端点改调 T002；新增 `GET /permissions/creation-grant-subjects`；扩展现有 `relation-models/grantable` 支持 `creation=true`、省略 object_id 并按 prospective owner permission IDs 过滤，默认编辑模式不变；authorize 路径本任务不改。
   **测试**: T003 全部通过
   **覆盖 AC**: AC-06, AC-09, AC-22, AC-25
@@ -68,7 +68,7 @@
   **依赖**: T002
 
 - [x] **T006**: `ChannelAuthorizationService` 改调候选 Service
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_authorization_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_authorization_service.py`
   **逻辑**: 移除对 `permission.api.endpoints.resource_permission` 的五处反向 import；`list_grant_*` 统一委托 T002，保留 `_require_manage_access`、channel tenant 解析与返回形状。
   **测试**: T005 全部通过
   **覆盖 AC**: AC-06, AC-09, AC-22, AC-25
@@ -82,7 +82,7 @@
   **依赖**: 无
 
 - [x] **T008**: `ResourceAuthorizationService` 下沉 + endpoint 委托
-  **文件**: `src/backend/bisheng/permission/domain/services/resource_authorization_service.py`, `src/backend/bisheng/permission/api/endpoints/resource_permission.py`
+  **文件**: `src/backend/doberman_agent/permission/domain/services/resource_authorization_service.py`, `src/backend/doberman_agent/permission/api/endpoints/resource_permission.py`
   **逻辑**: 将现有 `authorize_resource` 的模型/能力/scope 校验、PermissionService tuple 写、binding 保存、通知编排下沉为 `authorize(...)`；成功返回 `None`，业务失败抛现有 `BaseErrorCode`，tuple 写失败归一为 `PermissionTupleWriteError`；endpoint 只做 DTO/response 转换。保留 relation-model/binding store 的兼容 wrapper，channel 继续拒绝并走 F026。
   **测试**: T007 与 T003 全部通过
   **覆盖 AC**: AC-09, AC-10, AC-12, AC-13, AC-16, AC-22, AC-25
@@ -98,7 +98,7 @@
   **依赖**: T002, T008
 
 - [x] **T010**: 知识空间初始授权 Schema + Application Service
-  **文件**: `src/backend/bisheng/knowledge/domain/schemas/knowledge_space_schema.py`, `src/backend/bisheng/knowledge/domain/services/knowledge_space_creation_application_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/schemas/knowledge_space_schema.py`, `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_creation_application_service.py`
   **逻辑**: `KnowledgeSpaceCreateReq` 增加可选 `initial_permissions.grants`，复用 `AuthorizeGrantItem` 且无 revokes；application service 先调 T002 批量校验，再只调一次原 create，最后调 T008；原 create 继续独占 owner best-effort、成员、审计等副作用。输出原资源字段 + 可选 `initial_permission_result(status,error_code)`，不得直接调底层 `PermissionService.authorize()`。
   **测试**: T009 全部通过
   **覆盖 AC**: AC-11, AC-12, AC-13, AC-22, AC-23, AC-25
@@ -112,7 +112,7 @@
   **依赖**: T010
 
 - [x] **T012**: 知识空间创建 Endpoint 接入编排 Service
-  **文件**: `src/backend/bisheng/knowledge/api/dependencies.py`, `src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py`
+  **文件**: `src/backend/doberman_agent/knowledge/api/dependencies.py`, `src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py`
   **逻辑**: 注入 T010 application service；`POST /knowledge/space` 从直接调用原 service 改为委托编排服务，保持 quota decorator、认证、响应 envelope 和旧字段兼容。
   **测试**: T011 全部通过
   **覆盖 AC**: AC-01, AC-09, AC-12, AC-13, AC-22, AC-23
@@ -126,7 +126,7 @@
   **依赖**: T002, T006
 
 - [x] **T014**: 频道初始授权 Schema + Application Service
-  **文件**: `src/backend/bisheng/channel/domain/schemas/channel_manager_schema.py`, `src/backend/bisheng/channel/domain/services/channel_creation_application_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/schemas/channel_manager_schema.py`, `src/backend/doberman_agent/channel/domain/services/channel_creation_application_service.py`
   **逻辑**: `CreateChannelRequest` 增加可选 `initial_permissions.grants`，grant item 复用 F026 schema 且无 revokes；application service 先调 T002 批量校验、再只调一次原 create，最后调 `ChannelAuthorizationService.authorize_channel`；原 create 独占 owner/成员/订阅/知识同步副作用，授权失败不重放。
   **测试**: T013 全部通过
   **覆盖 AC**: AC-11, AC-12, AC-13, AC-22, AC-24, AC-25
@@ -140,7 +140,7 @@
   **依赖**: T014
 
 - [x] **T016**: 频道创建 Endpoint 接入编排 Service
-  **文件**: `src/backend/bisheng/channel/api/dependencies.py`, `src/backend/bisheng/channel/api/endpoints/channel_manager.py`
+  **文件**: `src/backend/doberman_agent/channel/api/dependencies.py`, `src/backend/doberman_agent/channel/api/endpoints/channel_manager.py`
   **逻辑**: 注入 T014 application service；现有 create endpoint 改为委托编排，保持认证、响应 envelope、审计与原 `ChannelService.create_channel` 副作用顺序。
   **测试**: T015 全部通过
   **覆盖 AC**: AC-02, AC-09, AC-12, AC-13, AC-22, AC-24

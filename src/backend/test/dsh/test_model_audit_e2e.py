@@ -50,7 +50,7 @@ class TestModelAuditLocalE2E:
                     "/api/v1/dsh/chat/completions",
                     headers=headers["user"],
                     json={
-                        "model": "bisheng:42",
+                        "model": "doberman_agent:42",
                         "messages": [{"role": "user", "content": conversation}],
                         "stream": stream,
                         "audit_context": {"conversation_id": conversation, "request_kind": "chat"},

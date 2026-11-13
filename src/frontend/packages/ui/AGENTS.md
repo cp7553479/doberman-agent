@@ -1,4 +1,4 @@
-# Component Library Rules — @bisheng/ui
+# Component Library Rules — @doberman-agent/ui
 
 Auto-loaded when editing files in `src/frontend/packages/ui/`.
 Full design specs live in `docs/` (site: `pnpm dev:ui`); this file is the enforcement layer — hard rules only.
@@ -8,12 +8,12 @@ Full design specs live in `docs/` (site: `pnpm dev:ui`); this file is the enforc
 - **Presentation-only.** Never import: state managers (Recoil/Zustand/jotai), HTTP/SSE/WS clients, react-router, or i18n (`useTranslation`/`useLocalize`). Data in via props, events out via callbacks, ALL text via props.
 - **Source-shipped**: `exports` points at TS source; consumers compile it. No build step, no npm publish; apps consume via `workspace:*`.
 - **Strict TS** (`strict: true` here, unlike the apps). No `any`; run `pnpm typecheck` before handing off.
-- Icons from the `bisheng-icons` package only — never add icon components here.
+- Icons from the `@doberman-agent/icons` package only — never add icon components here.
 
 ## Design Tokens (SSOT discipline)
 
 - `design-token.cjs` is the single source of truth for token NAMES + documented values (client re-exports it). `src/styles/tokens.css` + `tailwind-preset.cjs` are its runtime carriers.
-- **`tailwind-preset.cjs` is the shared Tailwind theme** — client and platform consume it via `presets: [require('@bisheng/ui/tailwind-preset')]`. Client no longer duplicates its theme keys; platform retains legacy app-specific keys while its components migrate. A cross-app theme key belongs HERE, not in an app config; adding it to one app re-forks what this preset exists to unify.
+- **`tailwind-preset.cjs` is the shared Tailwind theme** — client and platform consume it via `presets: [require('@doberman-agent/ui/tailwind-preset')]`. Client no longer duplicates its theme keys; platform retains legacy app-specific keys while its components migrate. A cross-app theme key belongs HERE, not in an app config; adding it to one app re-forks what this preset exists to unify.
 - **`src/styles/tokens.css` is the single definition of the runtime CSS custom properties.** client loads it from `main.jsx` (its `style.css` keeps only client-only vars) and the docs site from `rspress.config.ts` `preEntry`; there is no second copy to keep in sync. Override order is fixed INSIDE the file — `:root` first, then `.dark` / the ≤768px remap / `.theme-green` / `.illus-grey`, which tie with `:root` on specificity and win only by coming later. Do not reorder those blocks.
 - Components consume the **semantic layer only** (`text-text-1…4`, `bg-fill-1…4`, `border-border-base`, `blue-*` = brand, `btn-*`, `success/warning/danger`). Primitives (`--arco-gray-N`) are intentionally not wired — never hardcode hex or reach around the semantic names.
 
@@ -26,7 +26,7 @@ Full design specs live in `docs/` (site: `pnpm dev:ui`); this file is the enforc
 ## Definition of Done for a new/migrated component
 
 1. Component under `src/components/<Name>/` + export in `src/index.ts`.
-2. Docs page `docs/components/<name>.mdx` — demos import from `'@bisheng/ui'` (never `~/…` app paths); scenario-per-demo, simplest first. Two lines make it show up correctly, and both are checked by the site itself:
+2. Docs page `docs/components/<name>.mdx` — demos import from `'@doberman-agent/ui'` (never `~/…` app paths); scenario-per-demo, simplest first. Two lines make it show up correctly, and both are checked by the site itself:
    - front matter `status: done | draft | todo` (+ optional `statusNote:`) — the only hand-written cell in the 组件总览 table (everything else is derived from the page; never edit that table by hand);
    - a sidebar entry in `client/rspress.config.ts` → `themeConfig.sidebar['/components/']`. Miss it and 组件总览 renders a red 「没挂进侧边栏」 row for the page.
 3. Consuming app keeps a re-export shim at its old path (e.g. client `~/components/ui/Button.tsx`) so call sites stay unchanged.

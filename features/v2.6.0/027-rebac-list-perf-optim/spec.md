@@ -78,7 +78,7 @@
 | ID | 角色 | 操作 | 预期结果 |
 |----|------|------|---------|
 | AC-10 | 维护者 | 改造完成后对 `knowledge_space_service.py` 静态扫描 | `_scan_visible_child_items` 中 batch 拉取不再使用 `page=scan_page, page_size=BATCH_SIZE` 形式的 OFFSET 分页；改为 `WHERE (排序键) > cursor LIMIT BATCH_SIZE`；循环退出条件包含 `len(visible_page_items) > page_size`「凑够即停」语义并跟随 `break` |
-| AC-11 | 维护者 | 改造完成后全仓 grep | `src/backend/bisheng/` 业务路径下 `acount_user_knowledge(` 调用方为 0；`FlowDao.aget_all_apps` 内部不再出现 `count_statement` 或 `func.count(sub_query.c.id)`；`SpaceFileDao.async_list_children` 调用方不再传 `page=N, page_size=BATCH_SIZE` 翻页参数 |
+| AC-11 | 维护者 | 改造完成后全仓 grep | `src/backend/doberman_agent/` 业务路径下 `acount_user_knowledge(` 调用方为 0；`FlowDao.aget_all_apps` 内部不再出现 `count_statement` 或 `func.count(sub_query.c.id)`；`SpaceFileDao.async_list_children` 调用方不再传 `page=N, page_size=BATCH_SIZE` 翻页参数 |
 
 ### 2.4 工具列表（前端）
 
@@ -152,7 +152,7 @@
 新增 `PageInfiniteCursorData[T]`，沿用现有 envelope 风格但语义为 cursor-based：
 
 ```python
-# src/backend/bisheng/common/schemas/api.py
+# src/backend/doberman_agent/common/schemas/api.py
 from typing import Generic, List, Optional, TypeVar
 from pydantic import BaseModel
 
@@ -178,7 +178,7 @@ class PageInfiniteCursorData(BaseModel, Generic[T]):
 新增 `common/cursor.py`：
 
 ```python
-# src/backend/bisheng/common/cursor.py
+# src/backend/doberman_agent/common/cursor.py
 import base64
 import json
 from typing import Optional, Sequence
@@ -243,7 +243,7 @@ def decode_cursor(
 ### 5.3 部门 Schema 变更
 
 ```python
-# src/backend/bisheng/department/domain/schemas/department_schema.py
+# src/backend/doberman_agent/department/domain/schemas/department_schema.py
 class DepartmentTreeNode(BaseModel):  # 现有类型
     id: int
     dept_id: str
@@ -349,20 +349,20 @@ GET /api/v1/knowledge?cursor=garbage
 ## 7. Service 层逻辑
 
 ### 7.1 `KnowledgeService.get_knowledge`
-**位置**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py:211-270`
+**位置**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py:211-270`
 
 | 方法 | 输入 | 输出 | 职责 |
 |------|------|------|------|
 | `get_knowledge` | `user, cursor, page_size, name, type, sort_by, permission_id, preferred_ids` | `PageInfiniteCursorData[KnowledgeRead]` | 1) `context = f"knowledge\|sort_by={sort_by or 'update_time'}"`（T003 实测：endpoint Literal 校验保证 sort_by ∈ {update_time, create_time, name}，默认 update_time）；2) **按 sort_by 分流**（AD-15）：<br>　**(a) sort_by ∈ (update_time, create_time)** —— 真 keyset cursor：`decode_cursor(cursor, expected_key_len=2, expected_context=context)` 拿 `[sort_value, id]` 或 None；DAO 用 `WHERE (sort_field, id) > cursor LIMIT page_size+1`；`next_cursor = encode_cursor((last.sort_value, last.id), context=context)`；<br>　**(b) sort_by = name** —— 伪 cursor（内部 offset）：`decode_cursor(cursor, expected_key_len=1, expected_context=context)` 拿 `[page_num]` 或 None（None→1）；DAO 用 `OFFSET (page_num-1)*page_size LIMIT page_size+1`，排序沿用现有 `name_sort_clauses`；`next_cursor = encode_cursor((page_num+1,), context=context)`；<br>3) 两路都按「多取 1 条」探测：`has_more = len(raw) > page_size`，截断到 `page_size`；4) **删除** `acount_user_knowledge` 调用（两路都不再算 total）；5) ReBAC 过滤链路不变 |
 
 ### 7.2 `WorkFlowService.get_all_flows`
-**位置**: `src/backend/bisheng/api/services/workflow.py:153-232`
+**位置**: `src/backend/doberman_agent/api/services/workflow.py:153-232`
 
 | 方法 | 输入 | 输出 | 职责 |
 |------|------|------|------|
 | `get_all_flows` | `user, cursor, page_size, name, tag_id, flow_type, status, managed, permission_id` | `PageInfiniteCursorData[FlowRead]` | 1) `decode_cursor(cursor, expected_key_len=2, expected_context="flow\|sort=update_time")` → `[update_time, id]` or None；2) ReBAC 拿可见 app id；3) `FlowDao.aget_all_apps` 改为 cursor-driven，返 `(data, has_more)`；4) **删除** `count_statement` 执行 |
 
-`FlowDao.aget_all_apps`（`src/backend/bisheng/database/models/flow.py:526-605`）签名变化：
+`FlowDao.aget_all_apps`（`src/backend/doberman_agent/database/models/flow.py:526-605`）签名变化：
 ```python
 # 改造前
 async def aget_all_apps(..., page: int, page_size: int, ...) -> Tuple[List[Flow], int]:  # (data, total)
@@ -373,7 +373,7 @@ async def aget_all_apps(..., cursor: Optional[List], page_size: int, ...) -> Tup
 实现要点：`limit(page_size + 1)` + `WHERE (update_time, id) < cursor` 实现 keyset；本批 `len > page_size` → 截断 + `has_more=True`。
 
 ### 7.3 `KnowledgeSpaceService.list_space_children`（**ReBAC 优化关键**）
-**位置**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py:2293-2339`
+**位置**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py:2293-2339`
 
 | 方法 | 输入 | 输出 | 职责 |
 |------|------|------|------|
@@ -400,7 +400,7 @@ async def aget_all_apps(..., cursor: Optional[List], page_size: int, ...) -> Tup
   7. `next_cursor` = `encode_cursor((_compute_ext_rank_python(last.file_name), last.file_name, last.id), context=context)` for last visible item in 截断后的列表。
 
 ### 7.4 `DepartmentService.aget_tree`
-**位置**: `src/backend/bisheng/department/domain/services/department_service.py:415-503`
+**位置**: `src/backend/doberman_agent/department/domain/services/department_service.py:415-503`
 
 | 改动 | 详情 |
 |------|------|
@@ -488,10 +488,10 @@ async def aget_all_apps(..., cursor: Optional[List], page_size: int, ...) -> Tup
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/common/cursor.py` | `encode_cursor(sort_key, *, context)` / `decode_cursor(cursor, *, expected_key_len, expected_context)` / `CursorDecodeError`；schema `{v, s, k}` 三段，v=1（AD-02, AD-12） |
-| `src/backend/bisheng/database/utils/keyset.py`（或同 DAO 文件） | `_build_keyset_where(sort_cols, cursor_values)` helper：SQLAlchemy `tuple_()` 表达式 + DM8 fallback 切换点（AD-13） |
-| `src/backend/bisheng/core/database/alembic/versions/v2_6_0_f027_keyset_indexes.py`（**条件性新建**） | 若 §10 索引盘点发现缺索引，创建 alembic migration 补齐 `knowledge` / `flow` / `knowledge_file` 表的 keyset 排序索引 |
-| `src/backend/bisheng/common/schemas/api.py`（新增 `PageInfiniteCursorData` 类） | cursor-based 列表响应 envelope（与 `PageData[T]` 并存） |
+| `src/backend/doberman_agent/common/cursor.py` | `encode_cursor(sort_key, *, context)` / `decode_cursor(cursor, *, expected_key_len, expected_context)` / `CursorDecodeError`；schema `{v, s, k}` 三段，v=1（AD-02, AD-12） |
+| `src/backend/doberman_agent/database/utils/keyset.py`（或同 DAO 文件） | `_build_keyset_where(sort_cols, cursor_values)` helper：SQLAlchemy `tuple_()` 表达式 + DM8 fallback 切换点（AD-13） |
+| `src/backend/doberman_agent/core/database/alembic/versions/v2_6_0_f027_keyset_indexes.py`（**条件性新建**） | 若 §10 索引盘点发现缺索引，创建 alembic migration 补齐 `knowledge` / `flow` / `knowledge_file` 表的 keyset 排序索引 |
+| `src/backend/doberman_agent/common/schemas/api.py`（新增 `PageInfiniteCursorData` 类） | cursor-based 列表响应 envelope（与 `PageData[T]` 并存） |
 | `features/v2.6.0/027-rebac-list-perf-optim/spec.md` | 本文件 |
 | `features/v2.6.0/027-rebac-list-perf-optim/tasks.md` | 任务清单（下一步） |
 
@@ -499,19 +499,19 @@ async def aget_all_apps(..., cursor: Optional[List], page_size: int, ...) -> Tup
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/common/errcode/knowledge.py` | 新增 `KnowledgeInvalidCursorError(10991)` |
-| `src/backend/bisheng/common/errcode/flow.py` | 新增 `AppInvalidCursorError(10550)` |
-| `src/backend/bisheng/common/errcode/knowledge_space.py` | 新增 `KnowledgeSpaceInvalidCursorError(18070)` |
-| `src/backend/bisheng/knowledge/api/endpoints/knowledge.py:333-375` | 请求参数 `page_num`→`cursor`；响应类型改 `PageInfiniteCursorData[KnowledgeRead]`；捕获 `CursorDecodeError`→`KnowledgeInvalidCursorError` |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_service.py:211-270` | 删除 `acount_user_knowledge` 调用；用 cursor 拉取；多取 1 条试探 |
-| `src/backend/bisheng/api/v1/workflow.py:331-350` | 同上风格（响应+错误码） |
-| `src/backend/bisheng/api/services/workflow.py:153-232` | 适配 `FlowDao.aget_all_apps` 新签名（cursor + has_more） |
-| `src/backend/bisheng/database/models/flow.py:526-605` | `aget_all_apps`：参数 `page/page_size`→`cursor/page_size`；改 `(data, has_more)`；删除 `count_statement` |
-| `src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py:263-289` | 请求参数 `page`→`cursor`；响应类型改 `PageInfiniteCursorData`；捕获错误 |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py:2239-2339` | 重构 `_scan_visible_child_items` 为「cursor + 凑够即停」；删除 `total` 累计 |
-| `src/backend/bisheng/knowledge/domain/repositories/...`（`SpaceFileDao.async_list_children`） | 新增 `cursor` 参数，用 keyset (`WHERE (file_type, file_name, id) > cursor`) |
-| `src/backend/bisheng/department/domain/services/department_service.py:415-503` | 删除 lines 461-469 的 COUNT 子句和 `count_map`；节点字典不再写 `member_count` |
-| `src/backend/bisheng/department/domain/schemas/department_schema.py:95` | 删除 `DepartmentTreeNode.member_count` |
+| `src/backend/doberman_agent/common/errcode/knowledge.py` | 新增 `KnowledgeInvalidCursorError(10991)` |
+| `src/backend/doberman_agent/common/errcode/flow.py` | 新增 `AppInvalidCursorError(10550)` |
+| `src/backend/doberman_agent/common/errcode/knowledge_space.py` | 新增 `KnowledgeSpaceInvalidCursorError(18070)` |
+| `src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py:333-375` | 请求参数 `page_num`→`cursor`；响应类型改 `PageInfiniteCursorData[KnowledgeRead]`；捕获 `CursorDecodeError`→`KnowledgeInvalidCursorError` |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py:211-270` | 删除 `acount_user_knowledge` 调用；用 cursor 拉取；多取 1 条试探 |
+| `src/backend/doberman_agent/api/v1/workflow.py:331-350` | 同上风格（响应+错误码） |
+| `src/backend/doberman_agent/api/services/workflow.py:153-232` | 适配 `FlowDao.aget_all_apps` 新签名（cursor + has_more） |
+| `src/backend/doberman_agent/database/models/flow.py:526-605` | `aget_all_apps`：参数 `page/page_size`→`cursor/page_size`；改 `(data, has_more)`；删除 `count_statement` |
+| `src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py:263-289` | 请求参数 `page`→`cursor`；响应类型改 `PageInfiniteCursorData`；捕获错误 |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py:2239-2339` | 重构 `_scan_visible_child_items` 为「cursor + 凑够即停」；删除 `total` 累计 |
+| `src/backend/doberman_agent/knowledge/domain/repositories/...`（`SpaceFileDao.async_list_children`） | 新增 `cursor` 参数，用 keyset (`WHERE (file_type, file_name, id) > cursor`) |
+| `src/backend/doberman_agent/department/domain/services/department_service.py:415-503` | 删除 lines 461-469 的 COUNT 子句和 `count_map`；节点字典不再写 `member_count` |
+| `src/backend/doberman_agent/department/domain/schemas/department_schema.py:95` | 删除 `DepartmentTreeNode.member_count` |
 | `src/frontend/platform/src/controllers/API/index.ts:241-250` | `getKnowledgeListApi` 参数/返回类型适配 |
 | `src/frontend/platform/src/controllers/API/flow.ts:180` | `read_flows` 参数/返回类型适配 |
 | `src/frontend/platform/src/pages/KnowledgePage/`（确切文件 tasks 阶段定位） | `useInfiniteQuery` + 触底加载；cursor 错误处理；移除分页器与「共 X」文案 |

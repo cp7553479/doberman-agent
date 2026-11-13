@@ -190,7 +190,7 @@ flowchart LR
 - 生产 Pod 名称由应用 ID 单向构造并截断到 63 字符，保留足够散列避免碰撞；namespace、名称、Pod UID、generation、owner_epoch 和模板摘要存入资源账本。正式服务、维护和停用数据会话共用这个固定名称。
 - 只有此位置允许挂该应用生产 PVC；准入拒绝从另一个 Pod、Job 模板或预览资源挂载它。业务容器和数据 sidecar 是同一正式位置内的进程，不是两个正式实例。
 - 创建前在 SQL 预记并提交资源意图，随后才调用 K8s API；不得持数据库事务锁等待会回读 backend 的准入 webhook，避免循环等待。创建后按 UID 确认；创建响应丢失，读取同名资源核对标签、模板摘要和账本，不能仅按名字领养。所有删除和替换带 UID precondition，更新带 resourceVersion。
-- 所有需要停止确认的受管执行 Pod（生产、data、准备、预检、维护及预览）均带 `runtime.bisheng.io/stop-confirmed` finalizer；临时 Pod 也不能在 manager 断连时丢失唯一终止证据。停止请求先记账，再发有宽限期的 DELETE；finalizer 保留可查对象，便于 manager 观察并持久化该 UID 的终止证据。
+- 所有需要停止确认的受管执行 Pod（生产、data、准备、预检、维护及预览）均带 `runtime.doberman_agent.io/stop-confirmed` finalizer；临时 Pod 也不能在 manager 断连时丢失唯一终止证据。停止请求先记账，再发有宽限期的 DELETE；finalizer 保留可查对象，便于 manager 观察并持久化该 UID 的终止证据。
 - **停止证明**按下表分类，检查从 API server 新鲜读取的同一 UID、删除事实、准入基线版本和容器诊断；不把“从未启动”强行转换成“必须有 container ID”。Watch 缓存仅用于唤醒，不能作为释放依据。
 - 证据成立后先上报 stopped，由 backend 解除写入归属/预占，再移除 finalizer。若无法证明，保持 `cleanup_pending/writer_stop_unconfirmed`，保留卷和预占；没有强删超时后自动接管路径。
 - finalizer移除不保证grace仍为正的Pod立即从API消失。仅已进入删除的同UID可信终态允许绑定kubelet收尾DELETE0；无STOP分支逐次读取后端精确资源计划，stop_state=confirmed、stop_confirmed=true及allow_delete=true同时成立才允许。原带STOP路径仍不依赖backend，manager强删限制不变；不确定继续拒绝。
@@ -305,7 +305,7 @@ manager 只提交 helper ready 的 UID/内部目标事实；backend 重新检查
 
 恢复先保护当前数据库并确认其快照，再下载目标快照、校验、离线替换，fsync 后提交事实。启动失败保留 data_may_have_changed 和维护状态；不自动用旧备份覆盖新数据。预检和预览只初始化独立空库。
 
-数据helper本地实现补充：data-v1签名输入为固定域`BISHENG-RUNTIME-DATA-V1\n`加canonical JSON（key_id和claims），claims精确绑定version/operation_id/request_id/app_id/exec_ref/pod_uid/actor_ref/action/parameters_sha256/nonce/issued_at/not_after/deadline；受理窗口最长5秒，总deadline不超过签发后60秒且仍受原数据操作期限限制。独立受信helper只加载公钥。卷内跨进程flock串行，started先fsync再创建有界SQLite子进程，子进程完成但done落盘失败仍保留未知；新只读请求查询原ID，不重放写操作。导出在platform目录生成文件、校验摘要后流式返回，不把CSV塞入journal或一次性读入内存。helper本地/HTTP、backend签发与会话、Pod模板与运输已通过本地合同；R11 已真实验证在线与停用 owner 数据请求、编辑、CSV 及恢复一致性；完整异常矩阵仍待验。
+数据helper本地实现补充：data-v1签名输入为固定域`doberman-agent-RUNTIME-DATA-V1\n`加canonical JSON（key_id和claims），claims精确绑定version/operation_id/request_id/app_id/exec_ref/pod_uid/actor_ref/action/parameters_sha256/nonce/issued_at/not_after/deadline；受理窗口最长5秒，总deadline不超过签发后60秒且仍受原数据操作期限限制。独立受信helper只加载公钥。卷内跨进程flock串行，started先fsync再创建有界SQLite子进程，子进程完成但done落盘失败仍保留未知；新只读请求查询原ID，不重放写操作。导出在platform目录生成文件、校验摘要后流式返回，不把CSV塞入journal或一次性读入内存。helper本地/HTTP、backend签发与会话、Pod模板与运输已通过本地合同；R11 已真实验证在线与停用 owner 数据请求、编辑、CSV 及恢复一致性；完整异常矩阵仍待验。
 
 数据会话底层互斥已接线：Repository按node→assignment顺序，对节点内跨租户会话只做聚合计数并发上限2，在同一事务建立data_operation_id和离线helper 128MiB/100m预占（启动成本实测修正；在线sidecar保持25m）；不改serving active_operation_id/generation/owner_epoch。生命周期提交和claim双向检查该归属，期限过期或结果未知不释放。仅terminal且cleanup_complete的同一data操作才能释放互斥。K8s正式serve Pod的128MiB/25m sidecar加入应用预占，Docker预算保持原值。上述Service、存储传输、owner签发与Pod运输均已接线；R11 的在线/停用数据业务与 M2 显式快照恢复已有真实证据，未覆盖的故障分支保持待验。
 
@@ -317,15 +317,15 @@ manager 只提交 helper ready 的 UID/内部目标事实；backend 重新检查
 
 维护实现补充：受信maintenance Pod只持该阶段材料私钥，使用k8s_appdb适配既有PlatformAppDb到business/app.db与platform私有备份。卷内maintenance记录按操作/动作及参数摘要持久缓存结果，SQLite迁移journal保持DDL幂等。manager先将maintenance_progress提交平台，再按同UID停止、清理Pod与临时Secret，正式PVC保留；重启从确认结果续办。备份平台内容和SQL关联未确认则不进入DDL；恢复先保护当前库，不自动回滚。当前通过真实本地SQLite与模拟集群交互验证，未宣称189实测。
 
-签发与结果查询接线：backend从BISHENG_RUNTIME_DATA_SIGNING_KEY_FILE读取独立keyring（active_key_id/private_keys），仅其本地业务Service持私钥；manager内部GET data-public-keys只返回验证公钥，没有签发API。签发前重查当前自然人owner、data mutex、generation/epoch、Pod UID/执行域及投射key_id；先提交5秒受理截止，再发票据。轮转先投射验证公钥并确认helper可见，再切backend active_key_id，旧公钥至少覆盖已发票据受理窗口。
+签发与结果查询接线：backend从doberman-agent_RUNTIME_DATA_SIGNING_KEY_FILE读取独立keyring（active_key_id/private_keys），仅其本地业务Service持私钥；manager内部GET data-public-keys只返回验证公钥，没有签发API。签发前重查当前自然人owner、data mutex、generation/epoch、Pod UID/执行域及投射key_id；先提交5秒受理截止，再发票据。轮转先投射验证公钥并确认helper可见，再切backend active_key_id，旧公钥至少覆盖已发票据受理窗口。
 
 未知结果通过登录owner业务GET `/api/v1/apps/{app_id}/data/operations/{operation_id}/result`查询。原data操作未确认清理时拒绝新会话；其后创建独立result只读操作、新request_id与当前UID授权，引用原request_id/参数摘要，绝不重复原update。导出由helper→manager→backend分块校验长度/摘要并落私有短缓存，FileResponse结束回收；backend过期缓存下次导出清理，进程崩溃不会清业务PVC。原Docker bytes与原审计入口保持。
 
-启动接线：PORT、BISHENG_APP_PORT、SQLite路径、base path等由平台覆盖，业务令牌与runtime egress变量只进应用Secret；helper使用自己的材料身份。预检/预览schema-init仅接独立空库。启动失败先抓有界脱敏日志再清理，同UID应用重启日志可读previous+current；实际启动验收仍未执行。
+启动接线：PORT、DOBERMAN_AGENT_APP_PORT、SQLite路径、base path等由平台覆盖，业务令牌与runtime egress变量只进应用Secret；helper使用自己的材料身份。预检/预览schema-init仅接独立空库。启动失败先抓有界脱敏日志再清理，同UID应用重启日志可读previous+current；实际启动验收仍未执行。
 
 实施补充：owner显式删除时，先确认全部旧writer停止并清理；K8s调用者持久化既有合法maintenance阶段并重新检查取消、期限与归属围栏，不能把内部admitted作为执行事实。随后在同一固定生产位置启动purpose=purge的无应用/材料凭据helper，独占擦除business和platform备份；SQL先持久化purge结果，再停止helper并以UID/RV删除原PVC。只为128MiB/25m helper原子预占，不借用应用档位或在结果未知时释放。重启从维护进度续办；Retain PV由安装者在确认写入停止后处理。
 
-准备/启动参数继续从operation冻结：source_limits逐phase深拷贝；v2环境同时保留兼容变量与SDK0.1.1实际读取的BISHENG_PLATFORM_API_BASE。Node/static bundle保留固定launcher语义，完整image仍用其入口。已有Pod intent的RuntimeClass（含缺省）和deadline从同操作/应用/执行域资源记录恢复，不随可选sandbox探测刷新改变；其余模板仍严格比对。
+准备/启动参数继续从operation冻结：source_limits逐phase深拷贝；v2环境同时保留兼容变量与SDK0.1.1实际读取的doberman-agent_PLATFORM_API_BASE。Node/static bundle保留固定launcher语义，完整image仍用其入口。已有Pod intent的RuntimeClass（含缺省）和deadline从同操作/应用/执行域资源记录恢复，不随可选sandbox探测刷新改变；其余模板仍严格比对。
 
 **数据取消的新动作闸（T230/T231）**：owner取消已提交payload.cancel_requested时，签发事务读取锁定当前操作并拒绝新数据票据；等待ready也立即拒绝。manager active校验同时识别公开兼容顶层与payload标志，在Pod/UID观察完成后、实际转发前再次fresh检查，减少观察I/O期间的竞态。已在途动作不声称回滚；原unknown、5秒票据受理窗口、helper idle和会话互斥/同UID停止证明保留。active=False停止与清理不被新动作闸阻断。无新endpoint、字段、授权Owner或helper协议。
 
@@ -420,7 +420,7 @@ Docker诊断通过既有 `PlatformClient.node_snapshot()` 读取权威capacity�
 | --- | --- | --- |
 | manager 重启时旧 holder 租约未到期，正常 409 不属于业务失败 | 错误进入业务失败清理并在自然交接后杀掉原在途安装 | `operations.py` 在 claim/执行及业务失败处理前取得 controller；T272/T273 与 R32 同 UID/CID 续办实证 |
 | CI 并发锁若按 ref 分组，而发布标签只按版本产生 | 不同入口同时发布同一版本，存在性检查不能阻止检查后覆盖竞争 | `.github/workflows/runtime-images.yml` 按 `inputs.version || github.ref_name` 分组；仅约束此仓库工作流，仓库外写入仍需权限/不可变策略 |
-| v2预检容量拒绝为16125而legacy为16226 | CLI若只登记legacy码将容量不足显示为未知错误并exit19 | `bisheng_cli/errors.py`两码映射既有EXIT_CAPACITY；实际分发wheel及manifest已同步，T264/T265已实现 |
+| v2预检容量拒绝为16125而legacy为16226 | CLI若只登记legacy码将容量不足显示为未知错误并exit19 | `doberman_agent_cli/errors.py`两码映射既有EXIT_CAPACITY；实际分发wheel及manifest已同步，T264/T265已实现 |
 | 原 Protocol 是 Docker API 形状，目录逻辑散落在多个模块 | 加 K8s 文件后仍然访问 manager 本机路径或 Docker | 新 `executors/`；原 operations/preparer/data API 统一依赖能力接口 |
 | RWO 是单节点挂载，不是单 Pod 或进程写锁 | 同节点新旧应用或维护并发写生产库 | `executors/kubernetes.py`、资源账本、停止确认及固定生产位置准入 |
 | ClusterIP 不能默认由集群外平台主机访问 | 平台与 Pod 均健康，发布唤醒/应用访问却超时 | 安装 values 的共享 entry/control 私网接入及端到端连通性探测 |
@@ -517,7 +517,7 @@ manager可GET资源脱敏读模型及按操作列举资源，重启不依赖本�
   "exec_ref": "<resource-uuid>",
   "target": {"host": "10.96.12.34", "port": 8080},
   "ready": true,
-  "resource": {"namespace": "bisheng-runtime-apps", "name": "app-<id>", "uid": "<pod-uid>"},
+  "resource": {"namespace": "doberman-agent-runtime-apps", "name": "app-<id>", "uid": "<pod-uid>"},
   "generation": 3,
   "writers_stopped": true
 }
@@ -549,7 +549,7 @@ Service UID、Pod UID 及其映射同时入账；ready 前确认 selector 对应
 **签名输入**：按以下顺序组成 **11 行**，用单字节 LF 分隔、无 BOM、无末尾换行。`path` 是完整固定路由，不含 query；路径 UUID 必须规范化，拒绝转义路径、重复斜杠及尾斜杠。query 只允许下表指定的 offset/length；按键名排序后 `key=value` 以 `&` 连接，禁止重复/未知键。空 query 保留空行。最后一行是 ticket 的 UTF-8 SHA-256，exchange 对空字节取摘要。
 
 ```text
-BISHENG-RUNTIME-MATERIAL-V1
+doberman-agent-RUNTIME-MATERIAL-V1
 <delegation_id>
 <key_id>
 <pod_uid>
@@ -587,7 +587,7 @@ backend 先做格式/大小和公钥定位，再验签并核对实际 body 摘�
 **固定编码向量（T020/T021两端编码与互验及材料授权/传输已接入；189准备阶段已实测，完整续期、撤销及正式初始化另验）**：对下列假数据，ticket 的实际测试值为 `example-ticket`，请求体为空；canonical message 末尾没有换行。helper/backend 的契约测试必须对相同输入产生这些字节，再用测试专用 Ed25519 key 做互验。这里只发布假 token 和摘要，不发布生产密钥。
 
 ```text
-BISHENG-RUNTIME-MATERIAL-V1
+doberman-agent-RUNTIME-MATERIAL-V1
 11111111-1111-4111-8111-111111111111
 material-v1-01
 22222222-2222-4222-8222-222222222222
@@ -620,7 +620,7 @@ ce8ed3a5d85ad3633d8ee0394e7d91600f0adc33de14d0a33622c67aceed383a
 | `RTM_*` 服务身份、超时、egress 地址、profile 镜像 | 既有或分组扩展 | manager/egress 分别读取自己的身份；K8s 不读取 Docker socket 配置作为回退 |
 | `services.entry/control.exposure` 及私网地址/来源 ACL | 新增 Chart 配置 | 安装者；平台在集群外时的共享 nginx→app-proxy、backend→manager 接入，禁止按应用开放节点端口 |
 | `APP_PROXY_PROTOCOL_VERSION=2`、backend/entry 身份 | 现有 | app-proxy 查询 backend 投影；不持 K8s 凭据，不依赖 manager 短路由 |
-| 应用 PORT、BISHENG_APP_DB_URL、base path、业务应用/OBO 变量 | 既有 | 仅业务容器；`sqlite:////data/app.db` 不改变 |
+| 应用 PORT、DOBERMAN_AGENT_APP_DB_URL、base path、业务应用/OBO 变量 | 既有 | 仅业务容器；`sqlite:////data/app.db` 不改变 |
 
 Chart values 分 `platform`、`services`、`execution`、`storage`、`network`、`admission`、`images`、`offline`，有 schema 校验；K8s 配置不新加到 backend 未登记的 YAML 顶层。镜像 profile 仍通过既有超管接口导入版本化目录，不能用改 manager 镜像或 values 默认值替换已批准版本。
 

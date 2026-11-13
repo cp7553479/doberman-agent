@@ -12,7 +12,7 @@ import unittest
 import cv2
 import numpy as np
 
-from bisheng.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
+from doberman_agent.knowledge.rag.pipeline.loader.etl4lm import Etl4lmLoader
 
 
 class CropImageTest(unittest.TestCase):

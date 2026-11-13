@@ -1,6 +1,6 @@
 import { Label } from "@/components/bs-ui/label";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
-import { RadioGroup,Radio as RadioGroupItem,Tag } from "@bisheng/ui";
+import { RadioGroup,Radio as RadioGroupItem,Tag } from "@doberman-agent/ui";
 import { useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next"; // 引入国际化
 import { CustomHandle } from "..";
@@ -45,7 +45,7 @@ const OutputItem = ({ nodeId, node, data, onChange, onValidate, onVarEvent, i18n
                 return (
                     <div className="node-item mb-2" data-key={data.key}>
                         <div className="flex justify-between items-center">
-                            <Label className="bisheng-label">
+                            <Label className="doberman_agent-label">
                                 {t("userInputLabel")} {/* 用户输入框展示内容 */}
                             </Label>
                             <Tag size="small" color="brand" className="">
@@ -102,7 +102,7 @@ const OutputItem = ({ nodeId, node, data, onChange, onValidate, onVarEvent, i18n
 
     return (
         <div className="node-item mb-4" data-key={data.key}>
-            <Label className="bisheng-label">{t(`${i18nPrefix}label`)}</Label>
+            <Label className="doberman_agent-label">{t(`${i18nPrefix}label`)}</Label>
             {/* 交互类型选择器 */}
             <RadioGroup
                 value={interactionType}

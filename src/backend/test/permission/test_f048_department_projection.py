@@ -7,20 +7,20 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionInvalidResourceError
-from bisheng.department.domain.services import (
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError
+from doberman_agent.department.domain.services import (
     department_projection_scope,
     department_service,
 )
-from bisheng.department.domain.services.department_service import (
+from doberman_agent.department.domain.services.department_service import (
     DepartmentProjectionAuthorizationPort,
     DepartmentProjectionRecord,
 )
-from bisheng.permission.domain.services.department_change_handler import (
+from doberman_agent.permission.domain.services.department_change_handler import (
     DepartmentProjectionContext,
     F048DepartmentChangeHandler,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantSourceService,
 )
 

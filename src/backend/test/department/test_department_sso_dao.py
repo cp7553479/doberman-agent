@@ -25,7 +25,7 @@ from sqlalchemy import create_engine, text, update
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.department import Department
+from doberman_agent.database.models.department import Department
 
 
 # -------------------------------------------------------------------------

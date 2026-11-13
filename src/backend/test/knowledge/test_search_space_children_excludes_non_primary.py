@@ -58,7 +58,7 @@ def _compile_sql(statement) -> str:
 @pytest.mark.asyncio
 async def test_aget_file_by_filters_exclude_file_ids_adds_notin_clause():
     """exclude_file_ids must produce a NOT IN clause in the generated SQL."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
 
     session = _FakeAsyncSession()
 
@@ -67,7 +67,7 @@ async def test_aget_file_by_filters_exclude_file_ids_adds_notin_clause():
         yield session
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         new=_session_ctx,
     ):
         await KnowledgeFileDao.aget_file_by_filters(
@@ -83,7 +83,7 @@ async def test_aget_file_by_filters_exclude_file_ids_adds_notin_clause():
 @pytest.mark.asyncio
 async def test_aget_file_by_filters_no_exclude_no_notin_clause():
     """When exclude_file_ids is None (default) no NOT IN clause should appear."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
 
     session = _FakeAsyncSession()
 
@@ -92,7 +92,7 @@ async def test_aget_file_by_filters_no_exclude_no_notin_clause():
         yield session
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         new=_session_ctx,
     ):
         await KnowledgeFileDao.aget_file_by_filters(knowledge_id=1)
@@ -104,7 +104,7 @@ async def test_aget_file_by_filters_no_exclude_no_notin_clause():
 @pytest.mark.asyncio
 async def test_aget_file_by_filters_empty_exclude_no_notin_clause():
     """When exclude_file_ids is an empty list no NOT IN clause should appear."""
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
 
     session = _FakeAsyncSession()
 
@@ -113,7 +113,7 @@ async def test_aget_file_by_filters_empty_exclude_no_notin_clause():
         yield session
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         new=_session_ctx,
     ):
         await KnowledgeFileDao.aget_file_by_filters(
@@ -132,9 +132,9 @@ async def test_aget_file_by_filters_empty_exclude_no_notin_clause():
 @pytest.mark.asyncio
 async def test_repo_find_non_primary_returns_excluded_ids(async_db_session):
     """The data we'd pass into exclude_file_ids comes from the version repo."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
         KnowledgeDocumentVersionRepositoryImpl,
     )
 

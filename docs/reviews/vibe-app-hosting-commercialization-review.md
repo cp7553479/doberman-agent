@@ -28,10 +28,10 @@
 
 | 对象 | 核查基线 | 使用方式 |
 | --- | --- | --- |
-| BiSheng 托管实现 | `feat/3.0.0-vibe`，完整提交 `736ef593f3fc6e1634008c842d2604304d6f70a6` | 已用只读远端查询确认分支提交；文中代码链接固定到该提交 |
-| 当前工作目录 | `/Users/zhangguoqing/works/bisheng`，工作分支为 `feat/3.0.0-beta3` | 通过 `git show` 读取 vibe 提交，未把 beta3 本地改动当成托管实现 |
+| doberman-agent 托管实现 | `feat/3.0.0-vibe`，完整提交 `736ef593f3fc6e1634008c842d2604304d6f70a6` | 已用只读远端查询确认分支提交；文中代码链接固定到该提交 |
+| 当前工作目录 | `/Users/zhangguoqing/works/doberman-agent`，工作分支为 `feat/3.0.0-beta3` | 通过 `git show` 读取 vibe 提交，未把 beta3 本地改动当成托管实现 |
 | Gateway 授权参考 | 本地 `feat/dsh-access`，提交 `faed249a96ea43a4c65b90765dd4054bf6e55722` | 仅说明所检查源码中的许可证与 DSH 席位机制，不代表远端最新 Gateway |
-| 市场与技术资料 | Posit Connect、Modal、Cloud Foundry、Fission、Coolify，以及 Kubernetes、SQLite 官方文档 | 用于解释技术路线与边界，不作为毕昇已经实现这些能力的证据 |
+| 市场与技术资料 | Posit Connect、Modal、Cloud Foundry、Fission、Coolify，以及 Kubernetes、SQLite 官方文档 | 用于解释技术路线与边界，不作为doberman-agent已经实现这些能力的证据 |
 
 本次完成的是静态源码、部署配置及外部官方资料核查。没有实际运行客户 Docker/K8s 集群、构建离线应用、测试许可证或执行数据恢复。仓库中的部分注释保留早期设计表述，判断以当前调用、参数和部署配置为准。
 
@@ -64,8 +64,8 @@
 
 ```text
 leave-helper/
-├── bisheng-app.yaml       # 应用元数据、runtime、port、资源档位与能力声明
-├── requirements.txt       # Python 依赖，可声明 bisheng-sdk
+├── doberman-agent-app.yaml       # 应用元数据、runtime、port、资源档位与能力声明
+├── requirements.txt       # Python 依赖，可声明 doberman-agent-sdk
 ├── Procfile               # 可选；显式的 web 启动命令
 ├── main.py                # 应用代码
 ├── templates/             # 页面模板
@@ -97,7 +97,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 
 Node 项目依赖 `package.json` 及实际提供的锁文件；模板安装依赖，存在 build script 时执行 `npm run build`。静态项目提交可直接提供服务的文件，构建时从包根或约定的 `dist/build/public` 中识别包含 `index.html` 的目录。[C09] [C45]
 
-CLI 默认硬排除 `.git`、`node_modules`、虚拟环境和缓存目录；数据库、附件、`dist/build` 默认软排除，可通过 `.bishengignore` 取回需要交付的文件。因此静态项目必须确认构建产物确实进入包；生产 SQLite 数据不应作为源码包交付。打包会规范顺序和元数据，生成可核对的 SHA-256。[C02] [C47]
+CLI 默认硬排除 `.git`、`node_modules`、虚拟环境和缓存目录；数据库、附件、`dist/build` 默认软排除，可通过 `.doberman-agentignore` 取回需要交付的文件。因此静态项目必须确认构建产物确实进入包；生产 SQLite 数据不应作为源码包交付。打包会规范顺序和元数据，生成可核对的 SHA-256。[C02] [C47]
 
 ### 2.2 包大小与安全解包
 
@@ -110,7 +110,7 @@ CLI 默认硬排除 `.git`、`node_modules`、虚拟环境和缓存目录；数�
 | 源码归档 | `code.tar.gz` | CLI 打包、后端存储 | 不能；它是构建输入与审批查看依据 |
 | 基础运行镜像 | `python:3.11-slim` | 安装交付准备 | 不能；只有语言运行环境，不含具体应用代码 |
 | manager 服务镜像 | 包含 `runtime_manager` 的 Python 镜像 | 平台交付 | 运行编排服务，和应用基础镜像不是同一交付物 |
-| 完整应用镜像 | `bisheng-app/leave-helper:1-<version前8位>` | manager 通过 Engine 构建 | 要先创建运行容器，再经入口代理访问 |
+| 完整应用镜像 | `doberman-agent-app/leave-helper:1-<version前8位>` | manager 通过 Engine 构建 | 要先创建运行容器，再经入口代理访问 |
 | 应用容器 | 某个 app/version/generation 的实例 | Docker Engine | 仅内部网络可达，无宿主端口映射 |
 | 业务运行数据 | `/data/app.db`、应用附件 | 应用与平台数据服务 | 经应用或受控接口访问，独立于代码版本 |
 
@@ -123,19 +123,19 @@ CLI 默认硬排除 `.git`、`node_modules`、虚拟环境和缓存目录；数�
 | 数据 | 当前位置或路径 | 主要读写进程 | 生命周期与说明 |
 | --- | --- | --- | --- |
 | 应用、版本、发布尝试、实例、审批元数据 | 平台 MySQL/DM8 对应业务表 | backend、Celery | 保存所有权、权限关联、状态、清单、镜像引用和发布结果；manager 不直接查询这些表 |
-| 源码快照 | MinIO 私有桶 `bisheng-apps`：`apps/{app_id}/versions/{version_id}/code.tar.gz` | 后端写入；worker 读取；manager 使用预签名 URL 下载 | 按版本存放；不是浏览器静态站点目录 [C04] |
+| 源码快照 | MinIO 私有桶 `doberman-agent-apps`：`apps/{app_id}/versions/{version_id}/code.tar.gz` | 后端写入；worker 读取；manager 使用预签名 URL 下载 | 按版本存放；不是浏览器静态站点目录 [C04] |
 | 构建工作目录 | `{RTM_DATA_ROOT}/builds/{build_id}` | manager；Engine 消费构建上下文 | 构建结束清理，不是业务数据目录 [C09] [C17] |
 | 应用镜像 | manager 连接的 Docker daemon 镜像库 | Docker Engine；manager 发起构建、检查和清理 | 当前单机路径未把应用镜像推入 MinIO 或镜像仓库 [C10] |
 | 编排期望状态 | `{RTM_DATA_ROOT}/state/desired-state.json` | manager | JSON 文件，原子替换；包含实例、环境和退休容器信息，不能当普通公开配置分发 [C18] |
 | 出站策略 | `{RTM_DATA_ROOT}/egress/` 下策略文件 | manager 写；egress-proxy 读 | 通过文件共享，不通过后端业务表实时查询 [C27] [C28] |
 | SQLite 运行库 | 宿主 `{RTM_HOST_DATA_ROOT}/apps/{app_id}/db/` → 容器 `/data` | 应用；manager 的数据库接口与迁移服务 | 数据库为 `/data/app.db`；同时需要目录内 WAL/SHM 等伴随文件可写 [C16] [C17] |
-| 数据库迁移快照 | `bisheng-apps`：`apps/{app_id}/db-snapshots/{ts}.tar` | manager | 使用 SQLite backup API 生成一致副本，再打 tar 存储；不是直接复制正在写入的 db 文件 [C21] |
-| 应用附件 | `bisheng-apps`：`apps/{app_id}/attachments/{relative_key}` | manager 的附件服务；应用经 SDK 调用 | 应用只持有该 app 的句柄令牌，不拿 MinIO 主凭据 [C22] [C33] |
+| 数据库迁移快照 | `doberman-agent-apps`：`apps/{app_id}/db-snapshots/{ts}.tar` | manager | 使用 SQLite backup API 生成一致副本，再打 tar 存储；不是直接复制正在写入的 db 文件 [C21] |
+| 应用附件 | `doberman-agent-apps`：`apps/{app_id}/attachments/{relative_key}` | manager 的附件服务；应用经 SDK 调用 | 应用只持有该 app 的句柄令牌，不拿 MinIO 主凭据 [C22] [C33] |
 | 审批预览和预检数据 | 临时容器 `/data` tmpfs | 临时应用进程 | 空的临时数据库，不挂正式库；实例结束即丢弃 [C20] [C44] |
 
-`bisheng-apps` 是所有应用共享、按 app/version/附件前缀隔离的私有桶，不是每个应用一个桶。单独建桶是因为现有平台公共桶存在匿名策略和 nginx 公开转发路径；代码与私有附件不能沿用该暴露面。建桶和访问授权不应依赖“对象路径难猜”。[C04] [C22]
+`doberman-agent-apps` 是所有应用共享、按 app/version/附件前缀隔离的私有桶，不是每个应用一个桶。单独建桶是因为现有平台公共桶存在匿名策略和 nginx 公开转发路径；代码与私有附件不能沿用该暴露面。建桶和访问授权不应依赖“对象路径难猜”。[C04] [C22]
 
-**已确认目标映射，待实现：** 继续复用平台 MinIO 和 `bisheng-apps` 私有桶；bucket 与对象前缀成为 backend 内部实现，不再下发给 manager。当前对象路径可以继续使用；是否调整快照命名和元数据索引在接口设计中确定。
+**已确认目标映射，待实现：** 继续复用平台 MinIO 和 `doberman-agent-apps` 私有桶；bucket 与对象前缀成为 backend 内部实现，不再下发给 manager。当前对象路径可以继续使用；是否调整快照命名和元数据索引在接口设计中确定。
 
 | 数据 | 目标读写链路 | 职责与生命周期 |
 | --- | --- | --- |
@@ -162,7 +162,7 @@ CLI 默认硬排除 `.git`、`node_modules`、虚拟环境和缓存目录；数�
 
 ### 2.6 SQLite 在 Docker 与 K8s 中的约束
 
-当前 Docker 形式通过宿主机 bind mount 持久化，不把数据库写入镜像可写层。默认宿主数据根为 `/opt/bisheng/app-data`；manager 容器内一般看到 `/app-data`。`RTM_DATA_ROOT` 是 manager 自身读写视角，`RTM_HOST_DATA_ROOT` 是 Engine 解释 bind mount 的宿主视角，两者必须指向同一份实际数据。[C17] [C29]
+当前 Docker 形式通过宿主机 bind mount 持久化，不把数据库写入镜像可写层。默认宿主数据根为 `/opt/doberman-agent/app-data`；manager 容器内一般看到 `/app-data`。`RTM_DATA_ROOT` 是 manager 自身读写视角，`RTM_HOST_DATA_ROOT` 是 Engine 解释 bind mount 的宿主视角，两者必须指向同一份实际数据。[C17] [C29]
 
 **K8s 规格**要求一个应用一个独占数据卷，应用 Pod 重建后复用 PVC。StorageClass 只提供节点本地盘时应标注节点绑定；节点损坏后不能承诺自动无损跨节点恢复。采用可重新挂载的 CSI 块存储、在单节点格式化挂载为文件系统，与把 SQLite 放到 NFS/SMB 共享目录是两回事。SQLite WAL 官方明确不支持网络文件系统上的跨主机协同。[C34] [R07]
 
@@ -299,18 +299,18 @@ sequenceDiagram
 
 所有应用可监听容器内 `8080`，实际连接目标是各容器内部地址与端口。当前 `PortBindings={}` 且 `PublishAllPorts=false`，不需要每个应用对外分配一个宿主端口；对外仍复用 `/apps/{slug}`。K8s 对应目标是经受控 Service/Pod 网络转发，具体实现尚未落地。[C16] [C34]
 
-### 3.5 应用访问毕昇能力
+### 3.5 应用访问doberman-agent能力
 
 | 能力 | 应用侧调用与身份 | 平台侧处理方 |
 | --- | --- | --- |
-| 当前访问者 | `bisheng_sdk.auth.current_user()` 从当前请求上下文读取平台注入头 | app-proxy 注入；后端先完成身份和入口权限判定 |
-| 知识检索 | SDK 调 `POST /api/v2/filelib/retrieve`；应用运行凭据＋`X-BiSheng-Access-Token` | 后端根据应用声明和访问者权限共同判定；无访问者不能退化成应用所有者 |
+| 当前访问者 | `doberman_agent_sdk.auth.current_user()` 从当前请求上下文读取平台注入头 | app-proxy 注入；后端先完成身份和入口权限判定 |
+| 知识检索 | SDK 调 `POST /api/v2/filelib/retrieve`；应用运行凭据＋`X-doberman-agent-Access-Token` | 后端根据应用声明和访问者权限共同判定；无访问者不能退化成应用所有者 |
 | 模型 | OpenAI 兼容客户端读取 `OPENAI_BASE_URL/OPENAI_API_KEY`；请求按平台能力接线携带访问者信息 | 后端开放模型面及能力策略；模型调用不由 SDK 包装 |
-| 附件 | SDK 读取 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN`，调用 manager 的每应用存储 API | manager 校验应用令牌和路径，将请求映射到 MinIO 私有前缀 |
-| SQLite | 标准 sqlite 库读取 `BISHENG_APP_DB_PATH/URL` | 应用直接操作挂载的数据文件；不是每次通过后端 HTTP 执行 SQL |
+| 附件 | SDK 读取 `DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN`，调用 manager 的每应用存储 API | manager 校验应用令牌和路径，将请求映射到 MinIO 私有前缀 |
+| SQLite | 标准 sqlite 库读取 `DOBERMAN_AGENT_APP_DB_PATH/URL` | 应用直接操作挂载的数据文件；不是每次通过后端 HTTP 执行 SQL |
 | 出站 HTTP/HTTPS | 使用注入的 HTTP/HTTPS 代理及出站令牌 | egress-proxy 根据 manager 写入的策略校验目标并转发 |
 
-SDK 安装在声明该依赖的应用镜像/环境里；manager 不 import `bisheng-sdk` 执行业务。SDK wheel 从后端 `/api/v1/dev-toolkit/simple/` 分发。manager 只负责构建时接通索引、运行时注入句柄；Java 重写 manager 不意味着必须把应用 Python SDK 也改写为 Java。[C31] [C32] [C33] [C36] [C42]
+SDK 安装在声明该依赖的应用镜像/环境里；manager 不 import `doberman-agent-sdk` 执行业务。SDK wheel 从后端 `/api/v1/dev-toolkit/simple/` 分发。manager 只负责构建时接通索引、运行时注入句柄；Java 重写 manager 不意味着必须把应用 Python SDK 也改写为 Java。[C31] [C32] [C33] [C36] [C42]
 
 <a id="target-storage"></a>
 
@@ -370,7 +370,7 @@ sequenceDiagram
 | egress-proxy | 应用与构建网络的 HTTP/CONNECT 目标控制 | 共享策略文件、DNS、允许的目标网络 | 独立入口进程；不提供 manager intent API，不分发业务权限 |
 | docker-socket-proxy | 对 Docker API 端点做转发限制 | 宿主 `/var/run/docker.sock` | 当前 Compose 唯一直接持 socket 的组件；不是配额服务，也不理解 app_id |
 | 应用容器 | 执行业务代码、提供页面/API、使用 SQLite 和平台能力 | 自身 `/data`；平台 API；附件句柄；受控外部接口 | 不持 MinIO 主凭据、Docker socket 或集群 API 凭据 |
-| BiSheng SDK | 应用侧身份上下文、检索及附件 API 封装 | 应用请求头、环境变量、后端检索 API、manager 附件 API | 是应用内库，不是额外常驻服务 |
+| doberman-agent SDK | 应用侧身份上下文、检索及附件 API 封装 | 应用请求头、环境变量、后端检索 API、manager 附件 API | 是应用内库，不是额外常驻服务 |
 
 依据：[C23] [C24] [C27] [C28] [C29] [C31] [C38]。
 
@@ -436,7 +436,7 @@ app-proxy 的入口授权/路由查询、egress-proxy 的出站控制与 socket 
   "version_no": 1,
   "port": 8080,
   "code_object_key": "apps/app-example/versions/a1b2c3d4e5f647809abcdef0123456789/code.tar.gz",
-  "code_url": "https://minio.example.internal/bisheng-apps/...<presigned>",
+  "code_url": "https://minio.example.internal/doberman-agent-apps/...<presigned>",
   "build_args": {}
 }
 ```
@@ -447,12 +447,12 @@ app-proxy 的入口授权/路由查询、egress-proxy 的出站控制与 socket 
   "slug": "leave-helper",
   "version_id": "a1b2c3d4e5f647809abcdef0123456789",
   "version_no": 1,
-  "image_ref": "bisheng-app/leave-helper:1-a1b2c3d4",
+  "image_ref": "doberman-agent-app/leave-helper:1-a1b2c3d4",
   "tier": {"cpu": 0.5, "mem": 1024},
   "port": 8080,
-  "env": {"BISHENG_APP_TOKEN": "<redacted>"},
+  "env": {"DOBERMAN_AGENT_APP_TOKEN": "<redacted>"},
   "health": {"path": "/", "interval": 10, "timeout": 3, "retries": 3},
-  "platform_api_base": "https://bisheng.example.internal",
+  "platform_api_base": "https://platform.example.com.internal",
   "base_path": "/apps/leave-helper",
   "egress_domains": []
 }
@@ -476,13 +476,13 @@ app-proxy 的入口授权/路由查询、egress-proxy 的出站控制与 socket 
   "app_id": "app-example",
   "source": {
     "artifact_id": "artifact-example",
-    "download_url": "https://bisheng.example.internal/api/v1/internal/app-runtime/artifacts/artifact-example/content",
+    "download_url": "https://platform.example.com.internal/api/v1/internal/app-runtime/artifacts/artifact-example/content",
     "sha256": "<expected-sha256>",
     "size_bytes": 1048576
   },
   "snapshot_upload": {
     "snapshot_id": "snapshot-example",
-    "upload_url": "https://bisheng.example.internal/api/v1/internal/app-runtime/snapshots/snapshot-example/content",
+    "upload_url": "https://platform.example.com.internal/api/v1/internal/app-runtime/snapshots/snapshot-example/content",
     "idempotency_key": "dep-example:before-migrate"
   }
 }
@@ -490,7 +490,7 @@ app-proxy 的入口授权/路由查询、egress-proxy 的出站控制与 socket 
 
 认证应同时考虑服务身份与任务授权：manager 调平台文件接口使用受控服务身份，下载/上传权限绑定 app、版本、任务、操作、有效期和幂等键；准备/初始化执行体仅获得最小任务授权。签发方和 backend 校验方属于平台，manager 只消费授权。当前 HMAC 的字段与防重放限制见 §6.5，不能默认原接口已经具备这里的任务约束。
 
-SDK 的 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但服务端归属迁到 backend；当前 SDK 解析 manager 错误信封、附件令牌又在 manager 期望状态中校验，因此迁移需提供兼容 API 适配或同步升级 SDK，不能只替换 URL。应用令牌轮换、停用/删除后的拒绝策略和预览隔离由 backend 统一定义并验证。[C22] [C33]
+SDK 的 `DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但服务端归属迁到 backend；当前 SDK 解析 manager 错误信封、附件令牌又在 manager 期望状态中校验，因此迁移需提供兼容 API 适配或同步升级 SDK，不能只替换 URL。应用令牌轮换、停用/删除后的拒绝策略和预览隔离由 backend 统一定义并验证。[C22] [C33]
 
 ### 4.4 配置归属与应用注入变量
 
@@ -508,7 +508,7 @@ SDK 的 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但�
 
 容量、构建源及 manager 数据根不从后端 YAML 自动继承。后端 AppRuntimeConf 对历史遗留同名配置会告警并指出对应 RTM 环境变量。manager 获取源码只需要短期 URL，但附件读写和 SQLite 快照上传由它直接访问 MinIO，因此还要向 manager 进程注入 `RTM_MINIO_ENDPOINT/ACCESS_KEY/SECRET_KEY` 和 `RTM_STORAGE_BUCKET`；这些配置不会从后端配置自动读取。[C05] [C07] [C17] [C21] [C22] [C29]
 
-这里的“单独配置”指进程需要收到连接参数，不要求另建 MinIO 实例，也不要求另建 manager 专用桶。当前 Compose 指向平台已有的 `minio:9000`，使用共享私有桶 `bisheng-apps`；源码、附件和 SQLite 快照按对象前缀区分。它们共用这一私有桶，区别于平台已有的 `bisheng` 公共用途桶。生产环境可为 manager 分配权限受限的独立访问凭据，但“独立凭据”不等于“独立实例或独立桶”，也不是当前代码强制的条件。[C04] [C17] [C21] [C22] [C29]
+这里的“单独配置”指进程需要收到连接参数，不要求另建 MinIO 实例，也不要求另建 manager 专用桶。当前 Compose 指向平台已有的 `minio:9000`，使用共享私有桶 `doberman-agent-apps`；源码、附件和 SQLite 快照按对象前缀区分。它们共用这一私有桶，区别于平台已有的 `doberman-agent` 公共用途桶。生产环境可为 manager 分配权限受限的独立访问凭据，但“独立凭据”不等于“独立实例或独立桶”，也不是当前代码强制的条件。[C04] [C17] [C21] [C22] [C29]
 
 **已确认目标配置：** 下列变更应随接口迁移落地，不应仅删除环境变量而保留当前直连代码。
 
@@ -517,7 +517,7 @@ SDK 的 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但�
 | MinIO endpoint、TLS、访问密钥、bucket、对象路径与保留策略 | backend / 平台存储模块 | 无；删除 manager 的 `RTM_MINIO_*`、`RTM_STORAGE_BUCKET` 配置和 MinIO SDK 依赖 |
 | 平台产物/快照传输入口 | backend 提供，部署配置指定 manager 可达地址 | 平台内部服务基址、TLS 信任、请求超时和受控服务身份；具体新增配置名待设计 |
 | 下载与快照上传任务授权 | backend 签发和校验 | 限定任务的短期授权、产物/快照引用、摘要和幂等标识；与应用附件凭据分离 |
-| 应用附件 endpoint/token/max file | backend 附件服务与应用凭据模块 | 随受控 deploy intent 传入的应用句柄，manager 注入 `BISHENG_APP_STORAGE_*`；backend 为令牌校验权威 |
+| 应用附件 endpoint/token/max file | backend 附件服务与应用凭据模块 | 随受控 deploy intent 传入的应用句柄，manager 注入 `DOBERMAN_AGENT_APP_STORAGE_*`；backend 为令牌校验权威 |
 | 本地 SQLite 与构建/编排参数 | manager | 数据根、宿主卷路径、备份临时目录、迁移独占控制，以及已有 Engine/容量/探活/构建源配置 |
 
 `RTM_APP_FACING_BASE_URL` 当前用于应用访问 manager 附件接口；附件迁出后需删除这一用途并检查是否仍有其他调用方，再决定移除该变量。内部服务调用的 HMAC/服务身份、应用主体凭据、文件传输任务授权和访问者 OBO 各有作用域，不应复用一把高权限密钥。
@@ -526,17 +526,17 @@ SDK 的 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但�
 
 | 应用可见变量/请求头 | 来源 | 用途与边界 |
 | --- | --- | --- |
-| `PORT/BISHENG_APP_PORT` | 清单 port 经 manager 注入 | 应用需监听正确端口与 `0.0.0.0` |
-| `BISHENG_APP_ID/SLUG/VERSION/VERSION_ID/BASE_PATH` | 后端版本意图＋manager | 识别应用与访问路径；保留变量由平台覆盖 |
-| `BISHENG_APP_DB_PATH/URL` | manager | 固定指向 `/data/app.db` 与 SQLite URL |
-| `BISHENG_PLATFORM_API_BASE` | 部署意图经 manager 注入 | SDK 平台 API 地址；不能填写构建容器不可达的 localhost |
-| `BISHENG_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB` | 当前 manager 生成；目标由 backend 提供、manager 注入 | 当前指向 manager，目标指向 backend 本 app 附件 API；不暴露 MinIO 主凭据；当前令牌校验不能直接沿用为平台权威 |
-| `BISHENG_APP_TOKEN` | 后端能力凭据服务 | 应用主体凭据；更新时可能重签，不应等同于访客登录态 |
+| `PORT/DOBERMAN_AGENT_APP_PORT` | 清单 port 经 manager 注入 | 应用需监听正确端口与 `0.0.0.0` |
+| `DOBERMAN_AGENT_APP_ID/SLUG/VERSION/VERSION_ID/BASE_PATH` | 后端版本意图＋manager | 识别应用与访问路径；保留变量由平台覆盖 |
+| `DOBERMAN_AGENT_APP_DB_PATH/URL` | manager | 固定指向 `/data/app.db` 与 SQLite URL |
+| `DOBERMAN_AGENT_PLATFORM_API_BASE` | 部署意图经 manager 注入 | SDK 平台 API 地址；不能填写构建容器不可达的 localhost |
+| `DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB` | 当前 manager 生成；目标由 backend 提供、manager 注入 | 当前指向 manager，目标指向 backend 本 app 附件 API；不暴露 MinIO 主凭据；当前令牌校验不能直接沿用为平台权威 |
+| `DOBERMAN_AGENT_APP_TOKEN` | 后端能力凭据服务 | 应用主体凭据；更新时可能重签，不应等同于访客登录态 |
 | `OPENAI_BASE_URL/OPENAI_API_KEY` | 后端能力注入 | 声明模型能力时设置；地址缺失可能导致容器能启动但模型调用失败 |
 | `HTTP_PROXY/HTTPS_PROXY` 等 | manager | 出站路径与主体；依赖客户端应实际使用代理 |
-| `X-BiSheng-*`、`X-BiSheng-Access-Token` | app-proxy 按请求注入 | 访问者身份、app_id、请求关联与 OBO；应用不能据自身凭据猜测访客身份 |
+| `X-doberman-agent-*`、`X-doberman-agent-Access-Token` | app-proxy 按请求注入 | 访问者身份、app_id、请求关联与 OBO；应用不能据自身凭据猜测访客身份 |
 
-当前 Python entrypoint 支持参数、`BISHENG_APP_START`、`Procfile web:`、`main.py/app.py` 的解析优先级，但托管发布没有让开发者设置 `BISHENG_APP_START` 的通路；实际应提交 Procfile 或约定入口。Node 还支持 `package.json` 的 start/main 和默认 JS 文件。静态 runtime 直接运行平台 nginx。入口约定本身也是托管契约，不能只描述“传一个 command”。[C12] [C13] [C31]
+当前 Python entrypoint 支持参数、`DOBERMAN_AGENT_APP_START`、`Procfile web:`、`main.py/app.py` 的解析优先级，但托管发布没有让开发者设置 `DOBERMAN_AGENT_APP_START` 的通路；实际应提交 Procfile 或约定入口。Node 还支持 `package.json` 的 start/main 和默认 JS 文件。静态 runtime 直接运行平台 nginx。入口约定本身也是托管契约，不能只描述“传一个 command”。[C12] [C13] [C31]
 
 ### 4.5 Docker 和 K8s 的前置条件比较
 
@@ -548,7 +548,7 @@ SDK 的 `BISHENG_APP_STORAGE_ENDPOINT/TOKEN` 使用方式应保持兼容，但�
 | 镜像分发 | 构建和启动使用同一 daemon 的镜像库；无需单机应用仓库 | 所有工作节点可拉应用镜像；客户仓库或附带最小 Registry | 少量固定运行/初始化镜像可预装节点或从内网仓库获取；每次应用包发布不必入镜像仓库 |
 | 依赖与编译 | Python/npm 源、原生库/编译工具必须满足模板构建 | 构建 Pod 可达的包源、基础镜像、凭据与网络策略 | 依赖准备仍需源或离线包，产物应匹配运行时/ABI/架构 |
 | 权限 | manager 控制 Engine API、数据目录；proxy 持 socket | 专用 namespace、ServiceAccount、RBAC；不把集群凭据给应用 | 同左；准备 Job 也不自动挂业务无关集群凭据 |
-| 网络 | 默认网、`bisheng-apps` 应用网、`bisheng-build` 构建网、出口代理及实际生效的底层限制 | CNI/NetworkPolicy 可用并验证；构建/应用目标分开控制 | 初始化下载访问 backend 产物接口，任务凭据不扩散给业务代码；manager/准备任务不直连 MinIO |
+| 网络 | 默认网、`doberman-agent-apps` 应用网、`doberman-agent-build` 构建网、出口代理及实际生效的底层限制 | CNI/NetworkPolicy 可用并验证；构建/应用目标分开控制 | 初始化下载访问 backend 产物接口，任务凭据不扩散给业务代码；manager/准备任务不直连 MinIO |
 | SQLite | 宿主按 app bind mount；manager 需文件读写及所有权操作 | 专用 PVC、合适 StorageClass、单实例及迁移隔离 | 数据 PVC 与临时代码/依赖卷分开；Pod 重建重新取固定版本包 |
 | 运行层安装 | Compose `app-runtime` profile 和后端开关配套 | Helm/manifests、构建器、仓库接入、网络/存储前置探测 | Helm/manifests 增加包初始化及依赖产物管理，仍需现场验证 |
 
@@ -589,10 +589,10 @@ manager 的 `/v1/runtime/status` 会检查编排后端、应用网络、数据�
 | 产品 | 官方描述的交付方式 | 可借鉴内容与适用边界 |
 | --- | --- | --- |
 | Posit Connect | K8s 使用预制执行环境镜像，挂载代码、已安装依赖等；Python 环境按依赖列表与 Python 版本复用 | 与 Streamlit/Dash/FastAPI 托管接近；其共享存储方案不能直接当作 SQLite 数据卷设计 [R01] [R02] |
-| Modal | 环境镜像安装系统/语言依赖；`add_local_dir(copy=False)` 可在容器启动时加载代码，代码修改不必重建环境镜像 | 借鉴环境和代码分离，不据此推断 Modal 可按毕昇方式离线私有化 [R03] |
+| Modal | 环境镜像安装系统/语言依赖；`add_local_dir(copy=False)` 可在容器启动时加载代码，代码修改不必重建环境镜像 | 借鉴环境和代码分离，不据此推断 Modal 可按doberman-agent方式离线私有化 [R03] |
 | Cloud Foundry | staging 生成 droplet 归档，上传 Blobstore；运行容器取包；构建缓存单独保存 | 成熟的“运行包”路线，但整套平台较重，适合借鉴产物模型 [R04] |
 | Fission | environment 镜像＋source/deployment archive；无包 Registry 时仍可走存储服务归档路径 | 借鉴 K8s 上代码包与环境分离；函数 specialize 契约不直接等于任意常驻 Web 服务 [R05] |
-| Coolify | 源码构建镜像；用户提供镜像时跳过构建，再管理容器和入口 | 当前毕昇路线有成熟参照；通用应用可重复部署和环境封装较直接 [R06] |
+| Coolify | 源码构建镜像；用户提供镜像时跳过构建，再管理容器和入口 | 当前doberman-agent路线有成熟参照；通用应用可重复部署和环境封装较直接 [R06] |
 
 以上比较的是可验证的交付机制。是否开源、能否离线、协议限制和商业许可需要按具体产品版本另评估，不能因为技术路线相似就直接引入整套产品。
 
@@ -601,7 +601,7 @@ manager 的 `/v1/runtime/status` 会检查编排后端、应用网络、数据�
 | 维度 | A 当前：源码→应用镜像 | B 建议：运行镜像＋应用包＋依赖环境 | C 目标：用户提供完整镜像 |
 | --- | --- | --- | --- |
 | 发布产物 | 每个版本的完整应用镜像 | 固定运行镜像＋不可变代码/前端产物包＋依赖产物 | 已构建的应用镜像摘要 |
-| 代码小改 | 发起构建；依赖层缓存命中时只更新后续层 | 更新代码包，复用兼容依赖环境 | 由用户 CI 重新产出镜像，毕昇跳过构建 |
+| 代码小改 | 发起构建；依赖层缓存命中时只更新后续层 | 更新代码包，复用兼容依赖环境 | 由用户 CI 重新产出镜像，doberman-agent跳过构建 |
 | 依赖变化 | 镜像构建重新准备相关依赖层 | 准备新的依赖包/环境，仍需校验和编译 | 由镜像提供方负责 |
 | 离线条件 | 基础镜像、构建器/Engine、包源；K8s 还需镜像分发 | 运行镜像、backend 产物接口、平台存储、依赖包或包源；一般源码发版不需推 OCI 镜像 | 镜像必须进入客户可达仓库或预装节点 |
 | 对新增 OS 软件的适应 | 可通过平台模板扩展；当前未开放任意 Dockerfile | 超出固定运行环境时需新环境镜像或转 C | 容器内系统库和程序由用户完整封装 |
@@ -819,21 +819,21 @@ sequenceDiagram
 
 | 编号 | 固定提交中的代码入口 | 核查内容 |
 | --- | --- | --- |
-| [C01] | `src/bisheng-cli/bisheng_cli/commands/deploy.py:54` | CLI 上传与轮询 |
-| [C02] | `src/bisheng-cli/bisheng_cli/packaging.py:110` | 可重复打包与 SHA-256 |
-| [C03] | `src/backend/bisheng/app_publish/domain/schemas/app_manifest.py:147` | 应用清单字段 |
-| [C04] | `src/backend/bisheng/app_publish/domain/services/package_service.py:61` | 私有桶、解包与代码快照 |
-| [C05] | `src/backend/bisheng/core/config/app_runtime.py:45` | 后端配置及包限制 |
-| [C06] | `src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py:92` | 异步发布阶段与接收入口 |
-| [C07] | `src/backend/bisheng/app_publish/domain/services/precheck_service.py:156` | 构建、预签名下载与临时探活 |
+| [C01] | `src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py:54` | CLI 上传与轮询 |
+| [C02] | `src/doberman-agent-cli/doberman_agent_cli/packaging.py:110` | 可重复打包与 SHA-256 |
+| [C03] | `src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py:147` | 应用清单字段 |
+| [C04] | `src/backend/doberman_agent/app_publish/domain/services/package_service.py:61` | 私有桶、解包与代码快照 |
+| [C05] | `src/backend/doberman_agent/core/config/app_runtime.py:45` | 后端配置及包限制 |
+| [C06] | `src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py:92` | 异步发布阶段与接收入口 |
+| [C07] | `src/backend/doberman_agent/app_publish/domain/services/precheck_service.py:156` | 构建、预签名下载与临时探活 |
 | [C08] | `src/runtime-manager/runtime_manager/api/schemas.py:37` | 编排 API 参数模型 |
 | [C09] | `src/runtime-manager/runtime_manager/builder.py:76` | 模板、基础镜像和构建流程 |
 | [C10] | `src/runtime-manager/runtime_manager/docker_backend.py:124` | Docker API 协议与真实实现 |
 | [C11] | `src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2:42` | 依赖层与源码层 |
 | [C12] | `src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2:27` | Python 启动入口 |
 | [C13] | `src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2:44` | Node 启动入口 |
-| [C14] | `src/backend/bisheng/app_publish/domain/services/publish_online_service.py:110` | 审批通过、停用分支与迁移顺序 |
-| [C15] | `src/backend/bisheng/app_runtime/domain/services/app_state_service.py:283` | 应用状态与上线意图 |
+| [C14] | `src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py:110` | 审批通过、停用分支与迁移顺序 |
+| [C15] | `src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py:283` | 应用状态与上线意图 |
 | [C16] | `src/runtime-manager/runtime_manager/lifecycle.py:209` | 容器参数、部署、路由切换与删除 |
 | [C17] | `src/runtime-manager/runtime_manager/config.py:57` | RTM 配置、路径和超时默认值 |
 | [C18] | `src/runtime-manager/runtime_manager/desired_state.py:229` | 本地期望状态持久化 |
@@ -843,30 +843,30 @@ sequenceDiagram
 | [C22] | `src/runtime-manager/runtime_manager/storage.py:147` | MinIO 附件句柄和应用隔离 |
 | [C23] | `src/runtime-manager/runtime_manager/main.py:79` | manager 入口与路由注册 |
 | [C24] | `src/app-proxy/app_proxy/clients.py:177` | 入口鉴权和路由的双 RPC |
-| [C25] | `src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py:88` | 入口权限及 OBO |
+| [C25] | `src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py:88` | 入口权限及 OBO |
 | [C26] | `src/app-proxy/app_proxy/headers.py:29` | 身份头清理与注入 |
 | [C27] | `src/runtime-manager/runtime_manager/egress.py:444` | 出站策略持久化和运行配置 |
 | [C28] | `src/runtime-manager/runtime_manager/egress_proxy.py:171` | 独立出站转发进程 |
 | [C29] | `docker/docker-compose.yml:277` | 四进程部署、网络、挂载和配置 |
 | [C30] | `docker/nginx/conf.d/default.conf:80` | 浏览器入口反向代理 |
-| [C31] | `src/bisheng-sdk/README.md:1` | SDK 的运行位置与三类功能 |
-| [C32] | `src/bisheng-sdk/bisheng_sdk/retrieve.py:40` | 检索 API 与双重身份 |
-| [C33] | `src/bisheng-sdk/bisheng_sdk/_storage_remote.py:3` | SDK 附件服务地址 |
+| [C31] | `src/doberman-agent-sdk/README.md:1` | SDK 的运行位置与三类功能 |
+| [C32] | `src/doberman-agent-sdk/doberman_agent_sdk/retrieve.py:40` | 检索 API 与双重身份 |
+| [C33] | `src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py:3` | SDK 附件服务地址 |
 | [C34] | `features/v3.0.0/059-k8s-runtime-backend/spec.md:108` | K8s 构建、仓库和 PVC 规格 |
 | [C35] | `src/runtime-manager/runtime_manager/auth.py:42` | 内部 HMAC 的当前实现 |
-| [C36] | `src/backend/bisheng/app_publish/domain/services/capability_bus_service.py:384` | 应用凭据和模型地址注入 |
-| [C37] | `src/backend/bisheng/app_publish/domain/services/version_service.py:138` | 冻结版本与镜像引用 |
-| [C38] | `src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py:134` | 后端编排 RPC 客户端 |
+| [C36] | `src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py:384` | 应用凭据和模型地址注入 |
+| [C37] | `src/backend/doberman_agent/app_publish/domain/services/version_service.py:138` | 冻结版本与镜像引用 |
+| [C38] | `src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py:134` | 后端编排 RPC 客户端 |
 | [C39] | `src/runtime-manager/runtime_manager/admission.py:137` | 资源容量准入 |
 | [C40] | `src/runtime-manager/runtime_manager/api/readonly.py:245` | 运行环境自检 |
-| [C41] | `src/backend/bisheng/app_publish/api/endpoints/deploy.py:128` | 发布 HTTP 接口及鉴权依赖 |
-| [C42] | `src/backend/bisheng/dev_toolkit/api/endpoints/distribution.py:271` | SDK 的平台内分发 |
-| [C43] | `src/backend/bisheng/app_publish/domain/services/preview_instance_service.py:440` | 预览参数与回收 |
+| [C41] | `src/backend/doberman_agent/app_publish/api/endpoints/deploy.py:128` | 发布 HTTP 接口及鉴权依赖 |
+| [C42] | `src/backend/doberman_agent/dev_toolkit/api/endpoints/distribution.py:271` | SDK 的平台内分发 |
+| [C43] | `src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py:440` | 预览参数与回收 |
 | [C44] | `src/runtime-manager/runtime_manager/probe.py:126` | 临时镜像探活与回收 |
 | [C45] | `src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2:46` | Node 依赖和前端编译 |
 | [C46] | `src/runtime-manager/runtime_manager/api/appdb.py:27` | SQLite 数据管理接口 |
-| [C47] | `src/bisheng-cli/bisheng_cli/ignore.py:42` | CLI 默认排除规则 |
-| [C48] | `src/backend/bisheng/app_publish/domain/services/app_credential_service.py:134` | 应用凭据重签与撤销顺序 |
+| [C47] | `src/doberman-agent-cli/doberman_agent_cli/ignore.py:42` | CLI 默认排除规则 |
+| [C48] | `src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py:134` | 应用凭据重签与撤销顺序 |
 | [G01] | `src/main/java/com/dataelem/gateway/dsh/service/DshEntitlementService.java:39` | DSH 签名校验 |
 | [G02] | `src/main/java/com/dataelem/gateway/dsh/service/DshLicenseState.java:13` | DSH 免费席位基线 |
 | [G03] | `src/main/java/com/dataelem/gateway/config/LicenseStatusHolder.java:19` | Gateway 许可证状态 |
@@ -892,57 +892,57 @@ sequenceDiagram
 
 外部产品资料用于技术路线对照，本文未进行这些产品的安装和性能测试。浏览器打开官方链接需要网络；本 HTML 的正文、表格和流程图均可离线阅读。
 
-[C01]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/commands/deploy.py#L54
-[C02]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/packaging.py#L110
-[C03]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/schemas/app_manifest.py#L147
-[C04]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61
-[C05]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/core/config/app_runtime.py#L45
-[C06]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L92
-[C07]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/precheck_service.py#L156
-[C08]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37
-[C09]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76
-[C10]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/docker_backend.py#L124
-[C11]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42
-[C12]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27
-[C13]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44
-[C14]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110
-[C15]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283
-[C16]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209
-[C17]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57
-[C18]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/desired_state.py#L229
-[C19]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/reconciler.py#L192
-[C20]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/preview.py#L18
-[C21]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509
-[C22]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147
-[C23]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/main.py#L79
-[C24]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/clients.py#L177
-[C25]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py#L88
-[C26]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/headers.py#L29
-[C27]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress.py#L444
-[C28]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress_proxy.py#L171
-[C29]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277
-[C30]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/nginx/conf.d/default.conf#L80
-[C31]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/README.md#L1
-[C32]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/retrieve.py#L40
-[C33]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/_storage_remote.py#L3
-[C34]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108
-[C35]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/auth.py#L42
-[C36]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/capability_bus_service.py#L384
-[C37]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/version_service.py#L138
-[C38]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py#L134
-[C39]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/admission.py#L137
-[C40]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/readonly.py#L245
-[C41]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L128
-[C42]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/dev_toolkit/api/endpoints/distribution.py#L271
-[C43]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/preview_instance_service.py#L440
-[C44]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/probe.py#L126
-[C45]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46
-[C46]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/appdb.py#L27
-[C47]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/ignore.py#L42
-[C48]: https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/app_credential_service.py#L134
-[G01]: https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshEntitlementService.java#L39
-[G02]: https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshLicenseState.java#L13
-[G03]: https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/config/LicenseStatusHolder.java#L19
+[C01]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py#L54
+[C02]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/packaging.py#L110
+[C03]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py#L147
+[C04]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61
+[C05]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/core/config/app_runtime.py#L45
+[C06]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L92
+[C07]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/precheck_service.py#L156
+[C08]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37
+[C09]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76
+[C10]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/docker_backend.py#L124
+[C11]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42
+[C12]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27
+[C13]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44
+[C14]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110
+[C15]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283
+[C16]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209
+[C17]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57
+[C18]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/desired_state.py#L229
+[C19]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/reconciler.py#L192
+[C20]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/preview.py#L18
+[C21]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509
+[C22]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147
+[C23]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/main.py#L79
+[C24]: https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/clients.py#L177
+[C25]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py#L88
+[C26]: https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/headers.py#L29
+[C27]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress.py#L444
+[C28]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress_proxy.py#L171
+[C29]: https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277
+[C30]: https://github.com/cp7553479/doberman-agent/blob/main/docker/nginx/conf.d/default.conf#L80
+[C31]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/README.md#L1
+[C32]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/retrieve.py#L40
+[C33]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py#L3
+[C34]: https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108
+[C35]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/auth.py#L42
+[C36]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py#L384
+[C37]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/version_service.py#L138
+[C38]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py#L134
+[C39]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/admission.py#L137
+[C40]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/readonly.py#L245
+[C41]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L128
+[C42]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/dev_toolkit/api/endpoints/distribution.py#L271
+[C43]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py#L440
+[C44]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/probe.py#L126
+[C45]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46
+[C46]: https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/appdb.py#L27
+[C47]: https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/ignore.py#L42
+[C48]: https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py#L134
+[G01] #external-component
+[G02] #external-component
+[G03] #external-component
 [R01]: https://docs.posit.co/connect/admin/appendix/off-host/arch-overview/
 [R02]: https://docs.posit.co/connect/admin/python/package-management/index.html
 [R03]: https://modal.com/docs/sdk/py/latest/Image#add_local_dir

@@ -13,7 +13,7 @@ def source(kind, ident, relation=None, children=False):
 
 
 async def test_current_directory_filters_inactive_and_keeps_usersets(monkeypatch):
-    from bisheng.tenant.domain.services import f048_permission_subject as module
+    from doberman_agent.tenant.domain.services import f048_permission_subject as module
 
     directory = module.TenantPermissionSubjectDirectory()
     directory._summary_queries = SimpleNamespace(
@@ -49,8 +49,8 @@ async def test_current_directory_filters_inactive_and_keeps_usersets(monkeypatch
 
 
 async def test_ambiguous_person_does_not_mean_empty_authorization(monkeypatch):
-    from bisheng.common.errcode.permission import PermissionSubjectUnavailableError
-    from bisheng.tenant.domain.services import f048_permission_subject as module
+    from doberman_agent.common.errcode.permission import PermissionSubjectUnavailableError
+    from doberman_agent.tenant.domain.services import f048_permission_subject as module
 
     directory = module.TenantPermissionSubjectDirectory()
     directory._summary_queries = SimpleNamespace(load=AsyncMock(return_value={}))
@@ -60,8 +60,8 @@ async def test_ambiguous_person_does_not_mean_empty_authorization(monkeypatch):
 
 
 async def test_unknown_tenant_source_cannot_be_ignored():
-    from bisheng.common.errcode.permission import PermissionSubjectUnavailableError
-    from bisheng.tenant.domain.services import f048_permission_subject as module
+    from doberman_agent.common.errcode.permission import PermissionSubjectUnavailableError
+    from doberman_agent.tenant.domain.services import f048_permission_subject as module
 
     directory = module.TenantPermissionSubjectDirectory()
     directory._summary_queries = SimpleNamespace(load=AsyncMock(return_value={}))

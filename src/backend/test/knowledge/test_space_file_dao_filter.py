@@ -10,7 +10,7 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.dialects import sqlite
 
-from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
 
 
 class _FakeListResult:
@@ -54,7 +54,7 @@ async def test_async_list_children_file_type_zero_adds_filter():
     """file_type=0 should produce a WHERE clause containing file_type = 0."""
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -76,7 +76,7 @@ async def test_async_list_children_file_type_one_adds_filter():
     """file_type=1 should produce a WHERE clause containing file_type = 1."""
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -97,7 +97,7 @@ async def test_async_list_children_file_type_none_does_not_add_extra_filter():
     """file_type=None (default) should NOT add a file_type equality filter."""
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(

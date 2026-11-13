@@ -34,17 +34,17 @@
 | --- | --- | --- |
 | Gateway 总开关 | `dsh.content-safety.enabled` | 默认 `false`；开启是部署配置变更，不假定现有代码支持热刷新 |
 | 稳定身份 | `dsh.content-safety.backend-namespace` / `source-id` | 默认空；开启时必须显式、格式合法且稳定；不能让用户请求覆盖 |
-| Backend origin | Gateway `bisheng.bisheng-api-url` | 既有配置；仅 HTTP(S) origin，可无 path 或 `/`，不能带凭据/query/fragment；profile、模型代理、回传共同固定到它 |
-| 共享 HMAC | Gateway `bisheng.gateway-hmac-secret`；Backend `sso_sync.gateway_hmac_secret` | 必须同一已存在的共享值，安全配置注入，不打印或保存明文，不引入 DSH 新密钥/key_id |
-| 既有环境变量 | Gateway 示例 YAML 引用 `BISHENG_GATEWAY_HMAC_SECRET`；Backend YAML以既有`!env BS_SSO_SYNC__GATEWAY_HMAC_SECRET`显式引用env_file（无自动env覆盖） | 只登记变量名；不能为了排查而 `env`/`printenv` 输出值 |
-| 签名头 | Gateway `bisheng.signature-header`；Backend `sso_sync.signature_header` | 默认双方 `X-Signature`；定制时双方一致，走同一个已批准的变更 |
+| Backend origin | Gateway `doberman_agent.doberman-agent-api-url` | 既有配置；仅 HTTP(S) origin，可无 path 或 `/`，不能带凭据/query/fragment；profile、模型代理、回传共同固定到它 |
+| 共享 HMAC | Gateway `doberman_agent.gateway-hmac-secret`；Backend `sso_sync.gateway_hmac_secret` | 必须同一已存在的共享值，安全配置注入，不打印或保存明文，不引入 DSH 新密钥/key_id |
+| 既有环境变量 | Gateway 示例 YAML 引用 `DOBERMAN_AGENT_GATEWAY_HMAC_SECRET`；Backend YAML以既有`!env BS_SSO_SYNC__GATEWAY_HMAC_SECRET`显式引用env_file（无自动env覆盖） | 只登记变量名；不能为了排查而 `env`/`printenv` 输出值 |
+| 签名头 | Gateway `doberman_agent.signature-header`；Backend `sso_sync.signature_header` | 默认双方 `X-Signature`；定制时双方一致，走同一个已批准的变更 |
 | Gateway HTTP 期限 | `spring.cloud.gateway.httpclient.response-timeout` | 启用前必须为正；Docker 挂载示例为 `3600s`，不是推荐 SLO。源码 resources YAML 未给这个值，不能假定所有部署都已有 |
 | 内置词库 | 既有 `custom.sensitive-words-path` / 既有词库加载路径 | 各副本内容/摘要一致；缺词库、摘要不一致或读取失败不能视为租户关闭而放行 |
-| 管理站点 | Gateway `bisheng.home-url` | 管理 PUT 要求合法同源 Origin；不以 DSH Token 取代实时管理员授权 |
+| 管理站点 | Gateway `doberman_agent.home-url` | 管理 PUT 要求合法同源 Origin；不以 DSH Token 取代实时管理员授权 |
 | Backend DSH/Beat | `dsh.enabled` / `dsh.audit_state_scan_interval_seconds` | DSH 默认关闭；既有使用 DSH 的环境保留其正常业务开关。Beat 安全扫描在 `dsh.enabled=true` 时注册，默认间隔 60 秒，支持 10..3600 秒 |
 | 租户范围 | Backend `multi_tenant.enabled` | 关闭时只接受现有默认租户 1；开启时共享 HMAC 代表本 Backend Gateway 服务，但每条事件仍严格单租户。source-id 不是权限白名单，也不检查当前用户/租户 active 来拒绝历史事实 |
 
-SSO 登录本身不需要开启，`bisheng.enable-sync` 也不是 DSH 回传前置。共享 key 未配置只使回传接收不可用；Backend 模型鉴权/额度/计量不新增 Gateway/HMAC 运行时依赖。不要读取或改动应用 License 密钥；商用 Gateway 的既有能力准入只能验证其结果，不能在此流程绕过。
+SSO 登录本身不需要开启，`doberman_agent.enable-sync` 也不是 DSH 回传前置。共享 key 未配置只使回传接收不可用；Backend 模型鉴权/额度/计量不新增 Gateway/HMAC 运行时依赖。不要读取或改动应用 License 密钥；商用 Gateway 的既有能力准入只能验证其结果，不能在此流程绕过。
 
 ## 4. 精确启用顺序（以下执行均 NOT_RUN）
 
@@ -67,8 +67,8 @@ uv run alembic current
 沿既有部署编排启动/更新，不在本草案创建新部署。仓库实际使用的入口为：
 
 ```bash
-uv run celery -A bisheng.worker.main worker -l info -P threads -Q celery -n celery@%h
-uv run celery -A bisheng.worker.main beat -l info
+uv run celery -A doberman_agent.worker.main worker -l info -P threads -Q celery -n celery@%h
+uv run celery -A doberman_agent.worker.main beat -l info
 ```
 
 生产并发数沿现有审核配置，不把上述省略项当容量建议。已有 `task_routers` 可覆盖队列；必须检查最终路由和实际消费队列，而不只启动 knowledge/workflow worker。Beat 应只有规划中的活动调度实例，避免复制部署误建多个调度器。
@@ -97,7 +97,7 @@ Gateway DDL 用所选方言的实际脚本：
 
 先确认目标现有 Gateway schema，再按 DBA 工具加载，不在命令行携带密码。已有表须完整核列/约束/索引，不能靠脚本跳过表示一致。两个表为 `gt_dsh_sensitive_policy`、`gt_dsh_safety_outbox`，均不存 Token/原始命中正文。
 
-确认实际生效配置包含两条 order=-10、`Method=POST`、Path `matchTrailingSlash:false` 的专用路由，目标为 `${bisheng.bisheng-api-url}`，没有 `CacheRequestBody`。文件来源分别为 `src/main/resources/application.yml` 和 `docker/gateway/config/application.yml`；`src/main/resources/application-dm.yml` 是方言覆盖，不能当作单独完整路由配置。
+确认实际生效配置包含两条 order=-10、`Method=POST`、Path `matchTrailingSlash:false` 的专用路由，目标为 `${doberman_agent.doberman-agent-api-url}`，没有 `CacheRequestBody`。文件来源分别为 `src/main/resources/application.yml` 和 `docker/gateway/config/application.yml`；`src/main/resources/application-dm.yml` 是方言覆盖，不能当作单独完整路由配置。
 
 总开关 false 时预期原 DSH 模型透传；配置完整时 management/Outbox 仍创建且补报运行，检查 Bean 不创建。配置不全时 capabilities 要如实不可用，不能显示虚假的关闭可用状态。
 
@@ -193,9 +193,9 @@ python scripts/dsh_content_safety_maintenance.py purge-audit --tenant-id "$TENAN
 
 ## 10. 当前读取的代码锚点（仓库相对路径）
 
-Backend：`bisheng/dsh/content_safety_runtime.py`、`dsh/api/endpoints/content_safety_events.py`、`dsh/api/endpoints/model_audit_admin.py`、`dsh/domain/services/model_audit_queries.py`、`dsh/domain/repositories/model_audit_write.py`/`content_safety.py`、`bisheng/worker/config.py`/`dsh/content_safety.py`/`dsh/registry.py`、`core/config/sso_sync.py`/`dsh.py`、F111 revision、`scripts/dsh_content_safety_maintenance.py`及README。
+Backend：`doberman-agent/dsh/content_safety_runtime.py`、`dsh/api/endpoints/content_safety_events.py`、`dsh/api/endpoints/model_audit_admin.py`、`dsh/domain/services/model_audit_queries.py`、`dsh/domain/repositories/model_audit_write.py`/`content_safety.py`、`doberman-agent/worker/config.py`/`dsh/content_safety.py`/`dsh/registry.py`、`core/config/sso_sync.py`/`dsh.py`、F111 revision、`scripts/dsh_content_safety_maintenance.py`及README。
 
-Gateway：`DshSafetyProperties`、`DshSafetyBeansConfiguration`、`BishengConfig`（只读字段定义，未读取License值）、`DshSensitivePolicyController`、`DshContentSafetyFilter`、`DshProfileClient`、`DshModelProxyClient`、`ContentSafetyEventClient`、`DshSafetyOutboxDispatcher`、`DshSafetyTelemetry`、两份application.yml路由/DSH配置及四份F111双库DDL/rollback SQL。
+Gateway：`DshSafetyProperties`、`DshSafetyBeansConfiguration`、`DobermanAgentConfig`（只读字段定义，未读取License值）、`DshSensitivePolicyController`、`DshContentSafetyFilter`、`DshProfileClient`、`DshModelProxyClient`、`ContentSafetyEventClient`、`DshSafetyOutboxDispatcher`、`DshSafetyTelemetry`、两份application.yml路由/DSH配置及四份F111双库DDL/rollback SQL。
 
 
 ## 11. 109已验证的启动就绪与连接切换

@@ -64,7 +64,7 @@ def _deploy_request(**overrides) -> DeployRequest:
         "slug": "sales-report",
         "version_id": "ver-0123456789abcdef",
         "version_no": 3,
-        "image_ref": "bisheng-app/sales-report:3-ver-0123",
+        "image_ref": "doberman-agent-app/sales-report:3-ver-0123",
         "tier": TierIn(cpu=0.5, mem=512),
         "port": 8080,
         "health": HealthIn(path="/healthz"),

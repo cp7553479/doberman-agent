@@ -5,8 +5,8 @@ import time
 
 import pytest
 
-from bisheng.permission.domain.services.owner_service import _run_async_safe
-from bisheng.utils.async_utils import run_async_safe, run_on_bridge_loop, set_preferred_bridge_loop
+from doberman_agent.permission.domain.services.owner_service import _run_async_safe
+from doberman_agent.utils.async_utils import run_async_safe, run_on_bridge_loop, set_preferred_bridge_loop
 
 
 async def _sleep_then_return(delay: float, value: str = "ok") -> str:

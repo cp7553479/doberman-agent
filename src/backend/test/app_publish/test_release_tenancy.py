@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_publish.application.release_tenancy import qualify_approved_release, require_release_eligible
-from bisheng.app_publish.domain.services import release_tenancy_service as service
-from bisheng.common.errcode.app_publish import AppVersionNotFoundError
-from bisheng.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
+from doberman_agent.app_publish.application.release_tenancy import qualify_approved_release, require_release_eligible
+from doberman_agent.app_publish.domain.services import release_tenancy_service as service
+from doberman_agent.common.errcode.app_publish import AppVersionNotFoundError
+from doberman_agent.common.errcode.open_api import ServiceAccountOwnerTenantMismatchError
 
 
 def records():
@@ -110,7 +110,7 @@ async def test_missing_or_ambiguous_deployment_is_not_fabricated_from_audit(sour
 async def test_repository_reads_real_version_and_refuses_duplicate_sources(
     publish_db, app_factory, deployment_factory, monkeypatch
 ):
-    from bisheng.app_publish.domain.repositories import release_tenancy_repository as repository
+    from doberman_agent.app_publish.domain.repositories import release_tenancy_repository as repository
 
     monkeypatch.setattr(repository, "get_async_db_session", publish_db)
     app, version = await app_factory()
@@ -123,7 +123,7 @@ async def test_repository_reads_real_version_and_refuses_duplicate_sources(
 
 
 async def test_accept_qualification_precedes_package_and_draft_writes(monkeypatch, tmp_path):
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
 
     monkeypatch.setattr(pipeline.settings.app_runtime, "enabled", True)
     monkeypatch.setattr(
@@ -146,7 +146,7 @@ async def test_accept_qualification_precedes_package_and_draft_writes(monkeypatc
 
 @pytest.mark.parametrize("stage", ["_update_meta", "_record_version"])
 async def test_preapproval_qualification_precedes_metadata_and_version_side_effects(monkeypatch, stage):
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
 
     monkeypatch.setattr(
         pipeline, "require_release_eligible", AsyncMock(side_effect=ServiceAccountOwnerTenantMismatchError())
@@ -164,7 +164,7 @@ async def test_preapproval_qualification_precedes_metadata_and_version_side_effe
 async def test_worker_qualification_precedes_materialization_and_records_failure(
     publish_db, deployment_factory, monkeypatch
 ):
-    from bisheng.app_publish.domain.services import publish_pipeline_service as pipeline
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as pipeline
 
     deployment = await deployment_factory(app_id="app", version_id="v1")
     monkeypatch.setattr(pipeline.AppManifest, "model_validate", lambda _manifest: SimpleNamespace())
@@ -180,8 +180,8 @@ async def test_worker_qualification_precedes_materialization_and_records_failure
 
 
 async def test_preview_qualification_only_blocks_new_execution(monkeypatch):
-    from bisheng.app_publish.application import release_tenancy
-    from bisheng.app_publish.domain.services.preview_instance_service import PreviewInstanceService
+    from doberman_agent.app_publish.application import release_tenancy
+    from doberman_agent.app_publish.domain.services.preview_instance_service import PreviewInstanceService
 
     row = SimpleNamespace(id="app", tenant_id=1)
     monkeypatch.setattr(PreviewInstanceService, "_require_access", AsyncMock(return_value=(row, "approver")))
@@ -204,8 +204,8 @@ async def test_preview_qualification_only_blocks_new_execution(monkeypatch):
 async def test_human_metadata_keeps_existing_persistence_and_has_no_none_actor_bypass(
     publish_db, app_factory, monkeypatch
 ):
-    from bisheng.app_runtime.domain.services import app_meta_service as metadata
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.app_runtime.domain.services import app_meta_service as metadata
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     monkeypatch.setattr(metadata, "get_async_db_session", publish_db)
     monkeypatch.setattr(metadata.AuditLogDao, "ainsert_v2", AsyncMock())

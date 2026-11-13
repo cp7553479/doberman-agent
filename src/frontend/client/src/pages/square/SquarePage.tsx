@@ -1,4 +1,4 @@
-import { Segmented } from '@bisheng/ui';
+import { Segmented } from '@doberman-agent/ui';
 import { lazy, Suspense } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { MODULE_HOME_COLUMN, MODULE_HOME_PILL } from '~/components/ModuleHome';

@@ -9,7 +9,7 @@ import openai
 import pytest
 from langchain_core.messages import AIMessage
 
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _DEGRADE_MESSAGE,
     LinsightModelResilienceMiddleware,
 )

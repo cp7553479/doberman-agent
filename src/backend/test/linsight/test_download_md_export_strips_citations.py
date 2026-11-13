@@ -15,15 +15,15 @@ from unittest.mock import AsyncMock
 import pytest
 from starlette.responses import StreamingResponse
 
-from bisheng.linsight.api.endpoints import linsight as endpoint
-from bisheng.linsight.domain.schemas.linsight_schema import DownloadFilesSchema
+from doberman_agent.linsight.api.endpoints import linsight as endpoint
+from doberman_agent.linsight.domain.schemas.linsight_schema import DownloadFilesSchema
 
 
 @pytest.fixture(autouse=True)
 def _no_persisted_sources(monkeypatch):
     """F069 P2: exports resolve sources through the DB; these tests have none
     persisted, so baking degrades to the plain strip the assertions expect."""
-    from bisheng.citation.domain.services import citation_export_service
+    from doberman_agent.citation.domain.services import citation_export_service
 
     monkeypatch.setattr(citation_export_service, "resolve_items_for_export", AsyncMock(return_value=[]))
 
@@ -52,7 +52,7 @@ def stored_report(monkeypatch: pytest.MonkeyPatch):
 
 
 async def test_convert_to_docx_strips_markers(stored_report, monkeypatch: pytest.MonkeyPatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     seen = {}
 
@@ -76,7 +76,7 @@ async def test_convert_to_docx_strips_markers(stored_report, monkeypatch: pytest
 
 
 async def test_convert_to_pdf_strips_markers(stored_report, monkeypatch: pytest.MonkeyPatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_pdf as md_to_pdf_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_pdf as md_to_pdf_mod
 
     seen = {}
 
@@ -169,7 +169,7 @@ def stored_handle_report(monkeypatch: pytest.MonkeyPatch):
 
 
 async def test_convert_to_docx_strips_unknown_handles(stored_handle_report, monkeypatch: pytest.MonkeyPatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
 
     seen = {}
 
@@ -193,7 +193,7 @@ async def test_convert_to_docx_strips_unknown_handles(stored_handle_report, monk
 
 
 async def test_convert_to_pdf_strips_unknown_handles(stored_handle_report, monkeypatch: pytest.MonkeyPatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_pdf as md_to_pdf_mod
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_pdf as md_to_pdf_mod
 
     seen = {}
 
@@ -229,7 +229,7 @@ def test_zip_rewrite_strips_unknown_handles_in_markdown():
 # F069 P2: the endpoints bake resolvable citations for the logged-in exporter
 # ---------------------------------------------------------------------------
 def _resolved_rag():
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         CitationRegistryItemSchema,
         CitationType,
         RagCitationItemSchema,
@@ -247,8 +247,8 @@ def _resolved_rag():
 
 
 async def test_convert_to_docx_bakes_for_the_exporter(stored_report, monkeypatch: pytest.MonkeyPatch):
-    import bisheng.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
-    from bisheng.citation.domain.services import citation_export_service
+    import doberman_agent.common.utils.markdown_cmpnt.md_to_docx.markdocx as markdocx_mod
+    from doberman_agent.citation.domain.services import citation_export_service
 
     seen = {}
 
@@ -277,7 +277,7 @@ async def test_convert_to_docx_bakes_for_the_exporter(stored_report, monkeypatch
 
 
 async def test_batch_download_bakes_md_entries(monkeypatch: pytest.MonkeyPatch):
-    from bisheng.citation.domain.services import citation_export_service
+    from doberman_agent.citation.domain.services import citation_export_service
 
     monkeypatch.setattr(citation_export_service, "resolve_items_for_export", AsyncMock(return_value=[_resolved_rag()]))
     original = _zip({"report.md": _CITED_MD.encode("utf-8"), "data.csv": b"a,b\n"})

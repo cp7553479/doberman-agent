@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeHint,KnowledgeTooltip } from "./KnowledgeTooltip";
 
 

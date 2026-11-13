@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import Nav from './Nav';
 const mockRetry = jest.fn(async () => ({}));
 const mockQuery = { data: undefined, error: undefined, isError: false, isSuccess: false, refetch: mockRetry, fetchNextPage: mockRetry };

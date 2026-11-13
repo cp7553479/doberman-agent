@@ -3,10 +3,10 @@
 import pytest
 from sqlmodel import Session, select
 
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.schemas.model_policy import DshModelQuotaConfig
-from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.schemas.model_policy import DshModelQuotaConfig
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal

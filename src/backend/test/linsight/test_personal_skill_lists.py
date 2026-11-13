@@ -6,11 +6,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.personal_skill_service import PersonalSkillService
-from bisheng.linsight.domain.services.skill_store import SkillStore
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.personal_skill_service import PersonalSkillService
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
@@ -49,7 +49,7 @@ async def env(monkeypatch, tmp_path):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",
@@ -88,7 +88,7 @@ async def env(monkeypatch, tmp_path):
 
     monkeypatch.setattr(PersonalSkillService, "_audit", AsyncMock())
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.require_business_action",
+        "doberman_agent.permission.application.business_authorization.require_business_action",
         AsyncMock(),
     )
     store = SkillStore(root=tmp_path, minio=FakeMinioStorage())
@@ -110,7 +110,7 @@ def _names(rows) -> set[str]:
 
 class TestPersonalSkillLists:
     async def test_center_keeps_disabled_personal_skills_and_enabled_tenant_skills(self, env):
-        with patch("bisheng.permission.application.business_authorization.require_business_action") as gate:
+        with patch("doberman_agent.permission.application.business_authorization.require_business_action") as gate:
             center = await env.service.list_center(USER)
             candidates = await env.service.list_candidates(USER)
             gate.assert_not_called()

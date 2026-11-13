@@ -5,7 +5,7 @@ approval engine, and almost everything it does exists because the gate's
 behaviour is *not* what a caller would assume:
 
 * A duplicate submission gets the **existing** instance back, quietly. Relying
-  on the gate for AC-03 means a second ``bisheng deploy`` prints "提交成功"
+  on the gate for AC-03 means a second ``doberman-agent deploy`` prints "提交成功"
   having submitted nothing — so the two gates are asked before the gate is even
   constructed.
 * No approver resolvable is a **returned** ``EXCEPTION`` decision, not a raised
@@ -34,13 +34,13 @@ SCENARIO_CODE = "app_publish_request"
 
 
 def _service():
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     return publish_approval_service
 
 
 async def _seed_scenarios(publish_db, tenant_id: int = ROOT_TENANT_ID) -> None:
-    from bisheng.approval.domain.services.approval_seed_service import seed_approval_scenarios_in_session
+    from doberman_agent.approval.domain.services.approval_seed_service import seed_approval_scenarios_in_session
 
     async with publish_db() as session:
         await seed_approval_scenarios_in_session(session, tenant_id)
@@ -49,7 +49,7 @@ async def _seed_scenarios(publish_db, tenant_id: int = ROOT_TENANT_ID) -> None:
 
 async def _publishable(app_factory, deployment_factory, *, tenant_id: int = ROOT_TENANT_ID, **app_kwargs):
     """An app plus a deployment sitting where ``record_version`` would call ``submit``."""
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
 
     app, _ = await app_factory(tenant_id=tenant_id, with_version=False, **app_kwargs)
     deployment = await deployment_factory(
@@ -76,7 +76,7 @@ async def test_gate_assembled_per_request_with_fresh_registry_and_handler():
     the engine has no other channel for it. Caching either object makes two
     concurrent releases share one answer.
     """
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
 
     service = _service()
     first_gate, first_handler = service._build_publish_approval_gate()
@@ -100,7 +100,7 @@ async def test_active_release_checked_before_gate_raises_16251(publish_db, app_f
     Delegating this to the approval gate is the trap: it answers a duplicate by
     handing back the existing instance, so the CLI would report success.
     """
-    from bisheng.common.errcode.app_publish import AppApprovalInFlightError
+    from doberman_agent.common.errcode.app_publish import AppApprovalInFlightError
 
     app, _ = await _publishable(app_factory, deployment_factory)
 
@@ -115,13 +115,13 @@ async def test_active_approval_instance_alone_also_raises_16251(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """The request is open even though no deployment row is in flight any more."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_SUCCEEDED
-    from bisheng.common.errcode.app_publish import AppApprovalInFlightError
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_SUCCEEDED
+    from doberman_agent.common.errcode.app_publish import AppApprovalInFlightError
 
     app, deployment = await _publishable(app_factory, deployment_factory)
     await _service().submit(deployment)
     async with publish_db() as session:
-        from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+        from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
         await AppDeploymentDao.aadvance_stage(session, deployment.id, stage="approval_created", status=STATUS_SUCCEEDED)
         await session.commit()
@@ -134,7 +134,7 @@ async def test_active_approval_instance_alone_also_raises_16251(
 
 async def test_pending_online_checked_before_gate_raises_16252(publish_db, app_factory):
     """A parked application does not accept a new version until it is resolved."""
-    from bisheng.common.errcode.app_publish import AppPendingOnlineError
+    from doberman_agent.common.errcode.app_publish import AppPendingOnlineError
 
     app, _ = await app_factory(state="pending_capacity", with_version=False)
 
@@ -164,7 +164,7 @@ async def test_submit_returns_pending_with_non_empty_approvers_after_seed(
     ``resolve_approvers_from_sources`` produces ``EXCEPTION`` here, and the
     symptom is indistinguishable from an unconfigured flow.
     """
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
 
     _, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -178,7 +178,7 @@ async def test_business_key_is_deployment_id(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """One attempt, one request. Keying on ``app_id`` would make every retry a duplicate."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -194,7 +194,7 @@ async def test_applicant_is_owner_not_the_service_account(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """INV-29: a service account never appears in anything a human reads."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     _, deployment = await _publishable(app_factory, deployment_factory)
     # A service-account submission records 0, not a user id (see conftest).
@@ -209,7 +209,7 @@ async def test_applicant_is_owner_not_the_service_account(
 async def test_applicant_department_is_the_owners_primary_one(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, dept_admin_user
 ):
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     _, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -224,7 +224,7 @@ async def test_owner_without_department_gets_approver_note(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """AC-16 — the card explains why it went straight to the tenant administrators."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     _, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -239,7 +239,7 @@ async def test_detail_snapshot_reaches_the_instance(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """``build_detail``'s output is what lands in the row the client reads."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -257,10 +257,10 @@ async def test_iteration_release_kind_and_version_number(
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """A second release on the same app is an iteration, numbered from the existing maximum."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, _ = await app_factory(with_version=True, state="online")
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
 
     deployment = await deployment_factory(
         app_id=app.id,
@@ -290,7 +290,7 @@ async def test_scenario_disabled_raises_16225_not_16226(publish_db, app_factory,
     administrator enable the scenario" vs "wait, or publish manually"), so one
     code cannot serve both without one of the two messages being wrong.
     """
-    from bisheng.common.errcode.app_publish import AppApprovalScenarioDisabledError
+    from doberman_agent.common.errcode.app_publish import AppApprovalScenarioDisabledError
 
     _, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -306,8 +306,8 @@ async def test_scenario_disabled_leaves_no_approval_instance(publish_db, app_fac
     """The gate raised before writing anything — which is why the gate runs before the INSERT."""
     from sqlmodel import select
 
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstance
-    from bisheng.common.errcode.app_publish import AppApprovalScenarioDisabledError
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance
+    from doberman_agent.common.errcode.app_publish import AppApprovalScenarioDisabledError
 
     _, deployment = await _publishable(app_factory, deployment_factory)
 
@@ -327,7 +327,7 @@ async def test_both_sources_empty_returns_exception_not_raise(
     come back empty. The release must not pass and must not hang: an
     ``EXCEPTION`` instance is what an administrator later fixes.
     """
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
 
     _, deployment = await _publishable(app_factory, deployment_factory, tenant_id=SUB_TENANT_ID)
 
@@ -379,7 +379,7 @@ async def test_notifications_use_a_neutral_message_type(publish_db):
     """
     import inspect
 
-    from bisheng.message.domain.services.message_service import MessageService
+    from doberman_agent.message.domain.services.message_service import MessageService
 
     source = inspect.getsource(MessageService.send_generic_notify)
 
@@ -398,7 +398,7 @@ async def test_self_approval_is_audited(
 ):
     """The owner is the only resolvable approver → allowed, and recorded."""
     app, _ = await app_factory(owner_user_id=SUPER_ADMIN_USER_ID, with_version=False)
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
 
     deployment = await deployment_factory(
         app_id=app.id,
@@ -461,7 +461,7 @@ async def test_module_satisfies_the_approval_port():
 
 async def test_cancel_routes_through_the_approval_module(monkeypatch):
     """Compensation goes through the approval module's own API, not our SQL."""
-    from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
+    from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
 
     seen: list[dict] = []
 
@@ -484,10 +484,10 @@ async def test_a_resubmission_before_the_first_time_live_is_still_initial(
     Its next request is still the first time it goes live, so the approver sees
     "首发" (decided 2026-10-10); only the version number keeps counting.
     """
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-    from bisheng.core.database import get_async_db_session
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.database.models.app import AppDao
 
     app, _ = await app_factory(with_version=True, state="draft", terminal_state="rejected")
     async with get_async_db_session() as session:

@@ -1,4 +1,4 @@
-# BiSheng hosted-app image — runtime: node20
+# DobermanAgent hosted-app image — runtime: node20
 #
 # Platform-owned (D3 / PRD-1 DEV-04): the developer never writes a Dockerfile,
 # which is exactly why the security baseline below cannot be opted out of.
@@ -28,7 +28,7 @@ ENV NODE_ENV=production \
 # Deliberately not named NPM_CONFIG_REGISTRY: npm reads that name straight from
 # the environment, and an empty build arg would then be "registry is empty"
 # rather than "use the default".
-ARG BISHENG_NPM_REGISTRY=""
+ARG DOBERMAN_AGENT_NPM_REGISTRY=""
 
 RUN set -eux; \
     groupadd --system --gid {{ app_gid }} {{ app_user }}; \
@@ -47,7 +47,7 @@ COPY package.json{% for lockfile in node.lockfiles %} {{ lockfile }}{% endfor %}
 {% if node.install != "none" %}
 RUN set -eux; \
     npm {{ "ci" if node.install == "ci" else "install" }} {{ "--include=dev" if node.build else "--omit=dev" }} --no-audit --no-fund \
-        ${BISHENG_NPM_REGISTRY:+--registry "$BISHENG_NPM_REGISTRY"}; \
+        ${DOBERMAN_AGENT_NPM_REGISTRY:+--registry "$DOBERMAN_AGENT_NPM_REGISTRY"}; \
     rm -rf /tmp/.npm
 {% endif %}
 
@@ -63,20 +63,20 @@ RUN set -eux; \
     rm -rf /tmp/.npm
 {% endif %}
 
-COPY entrypoint.sh /usr/local/bin/bisheng-app-entrypoint
-COPY healthcheck.js /usr/local/bin/bisheng-healthcheck
-RUN chmod 0755 /usr/local/bin/bisheng-app-entrypoint /usr/local/bin/bisheng-healthcheck
+COPY entrypoint.sh /usr/local/bin/doberman-agent-app-entrypoint
+COPY healthcheck.js /usr/local/bin/doberman-agent-healthcheck
+RUN chmod 0755 /usr/local/bin/doberman-agent-app-entrypoint /usr/local/bin/doberman-agent-healthcheck
 
-ENV BISHENG_APP_PORT={{ port }} \
+ENV DOBERMAN_AGENT_APP_PORT={{ port }} \
     PORT={{ port }} \
-    BISHENG_APP_DB_PATH=/data/app.db \
-    BISHENG_APP_DB_URL=sqlite:////data/app.db
+    DOBERMAN_AGENT_APP_DB_PATH=/data/app.db \
+    DOBERMAN_AGENT_APP_DB_URL=sqlite:////data/app.db
 
 EXPOSE {{ port }}
 USER {{ app_user }}
 
 # Durations are overridden at create time from the tier (D4); the command lives
 # in the image so every runtime template owns the probe that suits it.
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["/usr/local/bin/bisheng-healthcheck"]
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["/usr/local/bin/doberman-agent-healthcheck"]
 
-ENTRYPOINT ["/usr/local/bin/bisheng-app-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/doberman-agent-app-entrypoint"]

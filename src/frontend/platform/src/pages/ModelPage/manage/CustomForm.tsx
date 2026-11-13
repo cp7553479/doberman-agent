@@ -1,4 +1,4 @@
-import { Input, Select } from '@bisheng/ui';
+import { Input, Select } from '@doberman-agent/ui';
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
 import { Label } from '@/components/bs-ui/label';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
@@ -30,7 +30,7 @@ function FormField({ field, value, providerName, apiKeySite, onChange }: FormFie
     const { t } = useTranslation();
     const selectLabels = useSelectLabels();
     return <div className="space-y-2">
-        <Label className="bisheng-label" htmlFor={field.key}>
+        <Label className="doberman_agent-label" htmlFor={field.key}>
             {field.label}{field.required && ' *'}
             {apiKeySite && field.label.includes('API Key') && <a href={apiKeySite} target="_blank" rel="noreferrer" className="ml-1 text-primary">
                 ({t('model.getApiKey', { provider: providerName })})
@@ -68,7 +68,7 @@ export const CustomForm = forwardRef<CustomFormHandle, CustomFormProps>(function
         {commonFields.map(field => <FormField key={field.key} field={field} value={values[field.key] || ''}
             providerName={providerName} apiKeySite={apiKeySite} onChange={handleChange} />)}
         {hasSpeech && <div className="my-3 rounded border p-3">
-            <Label className="bisheng-label">{t('model.speechCredentials')}</Label>
+            <Label className="doberman_agent-label">{t('model.speechCredentials')}</Label>
             <p className="mb-2 text-xs text-muted-foreground">{t('model.speechCredentialsHint')}</p>
             {speechFields.map(field => <FormField key={field.key} field={field} value={values[field.key] || ''} onChange={handleChange} />)}
             <a href={speechDocs[provider]} target="_blank" rel="noreferrer" className="text-xs text-primary">{t('model.speechDocs')}</a>

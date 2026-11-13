@@ -1,8 +1,8 @@
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { Button, StateView } from '@bisheng/ui';
+import { Button, StateView } from '@doberman-agent/ui';
 import { translateApiErrorMessage } from '~/api/request';
 import { NotificationSeverity } from '~/common';
 

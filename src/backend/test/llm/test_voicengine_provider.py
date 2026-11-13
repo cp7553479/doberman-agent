@@ -4,7 +4,7 @@ import unittest
 
 from langchain_core.messages import HumanMessage, AIMessage
 
-from bisheng.core.ai import ChatVoiceEngine
+from doberman_agent.core.ai import ChatVoiceEngine
 
 logging.basicConfig(level=logging.DEBUG)
 

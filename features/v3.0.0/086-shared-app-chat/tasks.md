@@ -5,7 +5,7 @@
 
 **Goal:** Both applications consume one client-based workflow/assistant chat
 implementation, with platform QA/annotation actions and readonly history.
-**Architecture:** Source-shipped `@bisheng/chat` with pure core and controlled
+**Architecture:** Source-shipped `@doberman-agent/chat` with pure core and controlled
 React components; host adapters retain auth/HTTP/connections/stores/business writes.
 **Tech stack:** TypeScript, React 18, existing workspace UI/Markdown tooling;
 existing app state libraries retained at host boundaries only.
@@ -136,7 +136,7 @@ scope drift, no claims of checks that did not run.
 
 - [x] Add failing scope/code-bar/media-default fixtures, then bring to GREEN.
 - [x] Own scoped client prose/highlight CSS and centralized rendering defaults
-  in `@bisheng/chat`; remove divergent host media configuration.
+  in `@doberman-agent/chat`; remove divergent host media configuration.
 - [x] Restore client code block/copy-label/inline selection behavior.
 - [x] Verify real browser computed styles against both host stylesheets, late
   CSS loading, formulas, dark/narrow and untouched legacy sibling styling.

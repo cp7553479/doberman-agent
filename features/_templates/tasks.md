@@ -37,13 +37,13 @@
 ### 基础设施（无测试配对）
 
 - [ ] **T001**: 数据库 ORM 模型 + DAO
-  **文件**: `src/backend/bisheng/{module}/domain/models/{entity}.py`
+  **文件**: `src/backend/doberman_agent/{module}/domain/models/{entity}.py`
   **逻辑**: 定义 SQLModel 表（继承 SQLModelSerializable，含 tenant_id/create_time/update_time），
   编写 DAO classmethod（get_xxx/aget_xxx/create_xxx/update_xxx/delete_xxx）
   **依赖**: 无
 
 - [ ] **T002**: 错误码定义
-  **文件**: `src/backend/bisheng/common/errcode/{module}.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/{module}.py`
   **逻辑**: 定义 MMMEE 错误码类，继承 BaseErrorCode，在 release-contract.md 注册模块编码
   **依赖**: 无
 
@@ -58,7 +58,7 @@
   **依赖**: T001
 
 - [ ] **T004**: {Module}Service 实现
-  **文件**: `src/backend/bisheng/{module}/domain/services/{service}.py`
+  **文件**: `src/backend/doberman_agent/{module}/domain/services/{service}.py`
   **逻辑**: 业务逻辑，调用 DAO + PermissionService
   **测试**: T003 全部通过
   **覆盖 AC**: AC-01, AC-02
@@ -73,8 +73,8 @@
   **依赖**: T004
 
 - [ ] **T006**: API 端点 + Router 注册
-  **文件**: `src/backend/bisheng/{module}/api/endpoints/{endpoint}.py`,
-           `src/backend/bisheng/{module}/api/router.py`
+  **文件**: `src/backend/doberman_agent/{module}/api/endpoints/{endpoint}.py`,
+           `src/backend/doberman_agent/{module}/api/router.py`
   **逻辑**: FastAPI endpoint 定义，UserPayload 认证注入，委托 Service 处理，
   UnifiedResponseModel 响应包装。在 api/router.py 注册（如新模块）
   **测试**: T005 全部通过
@@ -109,7 +109,7 @@
 ### Worker 异步任务（如适用）
 
 - [ ] **T009**: Celery 任务定义
-  **文件**: `src/backend/bisheng/worker/{module}/tasks.py`
+  **文件**: `src/backend/doberman_agent/worker/{module}/tasks.py`
   **逻辑**: 异步任务实现，调用 Domain Service
   **约束**: 任务参数中包含 tenant_id，Worker 执行前恢复 current_tenant_id ContextVar
   **覆盖 AC**: AC-04

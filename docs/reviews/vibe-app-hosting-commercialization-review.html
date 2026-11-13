@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="source-sha256" content="528d3e7c1f1898711a3cdb34bc14b9ca4786306a8e98074d9d387b09f6326066"><meta name="description" content="BiSheng Vibe 应用托管、发布、离线部署与商业化技术评审。固定提交 736ef59，区分现状、规格、已确认目标和建议。"><title>Vibe 应用托管、发布与商业化技术评审</title><style>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="source-sha256" content="528d3e7c1f1898711a3cdb34bc14b9ca4786306a8e98074d9d387b09f6326066"><meta name="description" content="doberman-agent Vibe 应用托管、发布、离线部署与商业化技术评审。固定提交 736ef59，区分现状、规格、已确认目标和建议。"><title>Vibe 应用托管、发布与商业化技术评审</title><style>
 :root{color-scheme:light;--ink:#202d40;--muted:#5c6b80;--line:#dbe2ec;--accent:#304e87;--paper:#fff;--bg:#f2f5f9}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.85 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}a{color:#2d5291;text-decoration:none}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible{outline:3px solid #759bd6;outline-offset:3px}header{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid var(--line);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;gap:16px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.status{color:#785f16;background:#fff4cd;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:600}header .actions{display:flex;align-items:center;gap:18px;font-size:13px}button{border:1px solid #ccd6e5;border-radius:6px;padding:7px 13px;color:#31496e;background:white;font:inherit;cursor:pointer}.layout{max-width:1540px;margin:auto;display:grid;grid-template-columns:236px minmax(0,1fr);gap:28px;padding:28px}aside{align-self:start;position:sticky;top:85px;max-height:calc(100vh - 115px);overflow:auto;font-size:13px;padding:18px 0}aside .nav-title{font-size:12px;letter-spacing:.1em;font-weight:700;color:var(--muted);margin:0 0 12px 12px}aside ul{list-style:none;margin:0;padding:0}aside li{margin:0 0 5px}aside a{display:block;padding:8px 12px;border-radius:5px;color:#52627a;line-height:1.6}aside a.active{background:#e6edf8;color:#234477;font-weight:650}aside .note{margin:20px 12px 0;padding-top:16px;border-top:1px solid var(--line);color:#69778b;line-height:1.8;font-size:12px}article{min-width:0;max-width:1160px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:40px 48px 55px;box-shadow:0 3px 14px #24395805}h1{font-size:36px;line-height:1.4;letter-spacing:-.025em;margin:0 0 18px;color:#1c3459}h1+p{font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:24px}h2{font-size:25px;line-height:1.5;margin:46px 0 20px;border-top:2px solid #e5ebf4;padding-top:24px;color:#203e69}h3{font-size:18px;line-height:1.6;margin:28px 0 12px;color:#2c4569}p{margin:12px 0 17px}li{margin:6px 0}strong{font-weight:650}blockquote{margin:22px 0;padding:14px 19px;background:#f0f4fb;border-left:4px solid #6683b2;border-radius:0 7px 7px 0;color:#354965}blockquote p{margin:0}code{font: .88em/1.6 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;background:#eef2f7;border-radius:3px;padding:2px 5px;overflow-wrap:anywhere}pre{background:#17253a;color:#e4edf9;border-radius:8px;overflow:auto;padding:18px 20px;font-size:13px;line-height:1.75;margin:18px 0 24px}pre code{background:none;padding:0;color:inherit;font-size:inherit;white-space:pre;overflow-wrap:normal}.table-scroll{max-width:100%;overflow-x:auto;margin:18px 0 26px;border:1px solid #d9e1ec;border-radius:7px}table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.85;table-layout:fixed}th{text-align:left;vertical-align:top;background:#edf2f9;color:#294266;font-weight:650;padding:12px 13px;border-bottom:1px solid #cfd9e7}td{vertical-align:top;padding:11px 13px;border-bottom:1px solid #e2e7ef;overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tr:nth-child(even) td{background:#fafbfd}td code{font-size:12px;padding:1px 3px}table[data-columns="3"] th:first-child{width:21%}table[data-columns="4"] th:first-child{width:16%}table[data-columns="5"] th:first-child{width:14%}.sequence{margin:22px 0 26px;border:1px solid #d8e2f0;border-radius:9px;padding:12px 10px 8px;background:#fbfcff}.diagram-scroll{overflow-x:auto;max-width:100%}.sequence svg{display:block;width:100%;height:auto;min-width:780px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}.diagram-panel+.diagram-panel{margin-top:16px;padding-top:16px;border-top:1px dashed #cfdaeb}.sequence figcaption{font-size:12px;color:#64748b;padding:7px 8px 0;line-height:1.7}.doc-footer{border-top:1px solid var(--line);margin-top:38px;padding-top:18px;color:#67778c;font-size:12px}.doc-footer code{font-size:11px}.reading{font-size:12px;color:#60738f}.mobile-nav{display:none}article>ul:first-of-type{columns:2;column-gap:28px;padding-left:22px}article>ul:first-of-type li{break-inside:avoid}article>a[id]{display:block;scroll-margin-top:80px}.print-note{font-size:11px}
 @media(min-width:1750px){.layout{max-width:1660px;grid-template-columns:250px minmax(0,1fr)}article{max-width:1260px;padding:48px 58px}}
@@ -7,7 +7,7 @@
 @media(max-width:760px){header{height:auto;min-height:58px;padding:10px 14px;flex-wrap:wrap}.brand{font-size:12px}header .actions{gap:11px;font-size:12px}.reading{display:none}.layout{display:block;padding:12px}aside{position:static;max-height:none;padding:8px 6px 16px}aside ul{display:flex;gap:6px;overflow:auto}aside li{flex:0 0 190px}aside a{background:#eaf0f8;min-height:65px}aside .note,aside .nav-title{display:none}article{padding:25px 19px;border-radius:7px;font-size:15px;line-height:1.85}h1{font-size:27px}h2{font-size:22px;margin-top:34px}h3{font-size:17px}article>ul:first-of-type{columns:1}table{min-width:760px;font-size:13px}pre{font-size:12px;padding:14px}.sequence{padding:8px 5px}.sequence svg{min-width:880px}}
 @page{size:A4 landscape;margin:12mm 13mm}
 @media print{html{scroll-behavior:auto;scroll-padding-top:0}body{background:white;font-size:10.5pt;line-height:1.65;color:#17253a}header,aside{display:none!important}.layout{display:block;padding:0;max-width:none}article{padding:0;max-width:none;border:0;border-radius:0;box-shadow:none}h1{font-size:25pt}h1+p{font-size:9pt;padding-bottom:10px}h2{font-size:18pt;break-before:page;border-top:0;padding-top:0;margin:0 0 13px}article>h2:first-of-type{break-before:auto;margin-top:24px}h3{font-size:12pt;break-after:avoid;margin-top:17px}p{margin:7px 0 10px;orphans:3;widows:3}li{margin:3px 0}blockquote{padding:10px 13px;margin:10px 0;background:#f3f6fa}.table-scroll{overflow:visible;border-radius:0;margin:12px 0 17px;break-inside:auto}table{font-size:9pt;line-height:1.6;min-width:0!important}th,td{padding:7px 9px}thead{display:table-header-group}tr{break-inside:avoid}td code{font-size:8pt}pre{white-space:pre-wrap;overflow:visible;background:#eef2f6;color:#152840;font-size:9pt;break-inside:avoid;padding:12px}pre code{white-space:pre-wrap;overflow-wrap:anywhere}.sequence{padding:0;margin:14px 0;border:0;background:none;break-inside:auto}.diagram-panel{padding:8px;border:1px solid #d8e2f0;border-radius:5px;break-inside:avoid}.diagram-panel+.diagram-panel{margin-top:12px;padding-top:8px;border-top:1px solid #d8e2f0}.diagram-scroll{overflow:visible}.sequence svg{min-width:0;width:100%;max-height:155mm}.sequence figcaption{font-size:8pt}article>a[id]{scroll-margin:0}a{color:#23416f;text-decoration:none}.doc-footer{font-size:8pt}article>ul:first-of-type{columns:2}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body><header><div class="brand">BISHENG · 技术评审 <span class="status">历史参考 · 已替代</span></div><div class="actions"><span class="reading">736ef59 · 2026-10-16</span><a href="vibe-app-hosting-commercialization-review.md">Markdown 源文</a><button type="button" onclick="window.print()">打印 / 保存 PDF</button></div></header><div class="layout"><aside aria-label="章节目录"><p class="nav-title">REVIEW CONTENTS</p><ul><li><a href="#section-1">1. 代码基线、结论与决策状态</a></li><li><a href="#section-2">2. 应用内容、存储与持久化</a></li><li><a href="#section-3">3. 发布上线与访问的实际时序</a></li><li><a href="#section-4">4. 进程职责、接口、参数与环境依赖</a></li><li><a href="#section-5">5. 发布路线与同类产品评审</a></li><li><a href="#section-6">6. 商业化边界与保护方案</a></li><li><a href="#section-7">7. 评审事项、验证场景与实施影响</a></li><li><a href="#appendix-a">附录 A. 代码证据索引</a></li><li><a href="#appendix-b">附录 B. 官方技术资料</a></li></ul><p class="note">本方案已被全开源技术方案替代，正文保留历史讨论。<br>正文及 6 幅流程图离线可读。<br><span class="print-note">打印布局：A4 横向</span></p></aside><article><h1>Vibe 应用托管、发布与商业化技术评审</h1>
+</style></head><body><header><div class="brand">doberman-agent · 技术评审 <span class="status">历史参考 · 已替代</span></div><div class="actions"><span class="reading">736ef59 · 2026-10-16</span><a href="vibe-app-hosting-commercialization-review.md">Markdown 源文</a><button type="button" onclick="window.print()">打印 / 保存 PDF</button></div></header><div class="layout"><aside aria-label="章节目录"><p class="nav-title">REVIEW CONTENTS</p><ul><li><a href="#section-1">1. 代码基线、结论与决策状态</a></li><li><a href="#section-2">2. 应用内容、存储与持久化</a></li><li><a href="#section-3">3. 发布上线与访问的实际时序</a></li><li><a href="#section-4">4. 进程职责、接口、参数与环境依赖</a></li><li><a href="#section-5">5. 发布路线与同类产品评审</a></li><li><a href="#section-6">6. 商业化边界与保护方案</a></li><li><a href="#section-7">7. 评审事项、验证场景与实施影响</a></li><li><a href="#appendix-a">附录 A. 代码证据索引</a></li><li><a href="#appendix-b">附录 B. 官方技术资料</a></li></ul><p class="note">本方案已被全开源技术方案替代，正文保留历史讨论。<br>正文及 6 幅流程图离线可读。<br><span class="print-note">打印布局：A4 横向</span></p></aside><article><h1>Vibe 应用托管、发布与商业化技术评审</h1>
 <p>文档日期：2026-10-15　｜　更新日期：2026-10-16　｜　状态：技术评审稿　｜　读者：架构、研发、交付与商业产品负责人</p>
 <blockquote>
 <p><strong>历史参考，已被替代（2026-10-19）：</strong> Vibe 已确定全部按开源实现。本文中的商业授权、“免费同时在线 10 个应用”和闭源 runtime 建议不再作为实施要求；当前有效方案见 <a href="vibe-app-open-source-technical-design.html">Vibe 应用托管全开源技术方案</a>。下文保留当时的代码核查和讨论记录。</p>
@@ -40,13 +40,13 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>BiSheng 托管实现</td>
+<td>doberman-agent 托管实现</td>
 <td><code>feat/3.0.0-vibe</code>，完整提交 <code>736ef593f3fc6e1634008c842d2604304d6f70a6</code></td>
 <td>已用只读远端查询确认分支提交；文中代码链接固定到该提交</td>
 </tr>
 <tr>
 <td>当前工作目录</td>
-<td><code>/Users/zhangguoqing/works/bisheng</code>，工作分支为 <code>feat/3.0.0-beta3</code></td>
+<td><code>/Users/zhangguoqing/works/doberman-agent</code>，工作分支为 <code>feat/3.0.0-beta3</code></td>
 <td>通过 <code>git show</code> 读取 vibe 提交，未把 beta3 本地改动当成托管实现</td>
 </tr>
 <tr>
@@ -57,7 +57,7 @@
 <tr>
 <td>市场与技术资料</td>
 <td>Posit Connect、Modal、Cloud Foundry、Fission、Coolify，以及 Kubernetes、SQLite 官方文档</td>
-<td>用于解释技术路线与边界，不作为毕昇已经实现这些能力的证据</td>
+<td>用于解释技术路线与边界，不作为doberman-agent已经实现这些能力的证据</td>
 </tr>
 </tbody></table></div>
 <p>本次完成的是静态源码、部署配置及外部官方资料核查。没有实际运行客户 Docker/K8s 集群、构建离线应用、测试许可证或执行数据恢复。仓库中的部分注释保留早期设计表述，判断以当前调用、参数和部署配置为准。</p>
@@ -73,27 +73,27 @@
 <tbody><tr>
 <td>已实现</td>
 <td>CLI 上传源码 <code>tar.gz</code>；后端保存 MinIO 快照；Celery 调 manager 构建与探活；审批后发布</td>
-<td>当前并非“用户给一个镜像就能上线”的接口 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a></td>
+<td>当前并非“用户给一个镜像就能上线”的接口 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a></td>
 </tr>
 <tr>
 <td>已实现</td>
 <td>manager、app-proxy、egress-proxy、docker-socket-proxy 是四个 Compose 服务</td>
-<td>逻辑职责、进程和镜像三个概念需区分；egress-proxy 与 manager 使用同一代码镜像的不同入口 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></td>
+<td>逻辑职责、进程和镜像三个概念需区分；egress-proxy 与 manager 使用同一代码镜像的不同入口 <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></td>
 </tr>
 <tr>
 <td>已实现</td>
 <td>manager 经 socket proxy 访问 Docker Engine API；应用不发布宿主机端口</td>
-<td>manager 镜像不需要 Docker CLI；容器内相同监听端口可以共存 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></td>
+<td>manager 镜像不需要 Docker CLI；容器内相同监听端口可以共存 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></td>
 </tr>
 <tr>
 <td>已实现</td>
 <td>SQLite 位于按应用隔离的宿主机挂载目录；附件和迁移快照可进入 MinIO</td>
-<td>运行数据独立于源码包和应用镜像 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></td>
+<td>运行数据独立于源码包和应用镜像 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></td>
 </tr>
 <tr>
 <td>规格约定</td>
 <td>K8s 构建执行体、镜像仓库、RBAC、网络策略、PVC 与离线交付</td>
-<td>本次未在 runtime 实现中发现对应 K8s 后端；不能直接宣称支持 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></td>
+<td>本次未在 runtime 实现中发现对应 K8s 后端；不能直接宣称支持 <a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></td>
 </tr>
 <tr>
 <td>会话已确认</td>
@@ -117,10 +117,10 @@
 <p><a id="section-2"></a></p>
 <h2>2. 应用内容、存储与持久化</h2>
 <h3>2.1 当前应用压缩包具体包含什么</h3>
-<p>应用是可执行的 Web 项目。当前 CLI 把文件制成 <code>package.tar.gz</code>，以 multipart 字段 <code>package</code> 上传到 <code>/api/v2/apps/deploy</code>。包内应包含清单、源码、依赖声明和可解析的启动入口。Python 示例：<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/packaging.py#L110">C02</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/schemas/app_manifest.py#L147">C03</a></p>
+<p>应用是可执行的 Web 项目。当前 CLI 把文件制成 <code>package.tar.gz</code>，以 multipart 字段 <code>package</code> 上传到 <code>/api/v2/apps/deploy</code>。包内应包含清单、源码、依赖声明和可解析的启动入口。Python 示例：<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/packaging.py#L110">C02</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py#L147">C03</a></p>
 <pre><code class="language-text">leave-helper/
-├── bisheng-app.yaml       # 应用元数据、runtime、port、资源档位与能力声明
-├── requirements.txt       # Python 依赖，可声明 bisheng-sdk
+├── doberman-agent-app.yaml       # 应用元数据、runtime、port、资源档位与能力声明
+├── requirements.txt       # Python 依赖，可声明 doberman-agent-sdk
 ├── Procfile               # 可选；显式的 web 启动命令
 ├── main.py                # 应用代码
 ├── templates/             # 页面模板
@@ -143,11 +143,11 @@ egress:
 <pre><code class="language-text"># Procfile 内容示例；uvicorn 必须在 requirements.txt 中声明
 web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </code></pre>
-<p>当前清单支持 <code>manifest_version/name/description/icon/slug/runtime/port/tier/capabilities/database/egress</code>，未知顶层字段被拒绝；没有用户可直接填写的 <code>image</code>、<code>command</code>、任意 Dockerfile 或通用环境变量字段。后端接收端支持 <code>python3.11/node20/static</code>，异步构建时还会向 manager 复核其模板集合。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/schemas/app_manifest.py#L147">C03</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/precheck_service.py#L156">C07</a></p>
-<p>Node 项目依赖 <code>package.json</code> 及实际提供的锁文件；模板安装依赖，存在 build script 时执行 <code>npm run build</code>。静态项目提交可直接提供服务的文件，构建时从包根或约定的 <code>dist/build/public</code> 中识别包含 <code>index.html</code> 的目录。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46">C45</a></p>
-<p>CLI 默认硬排除 <code>.git</code>、<code>node_modules</code>、虚拟环境和缓存目录；数据库、附件、<code>dist/build</code> 默认软排除，可通过 <code>.bishengignore</code> 取回需要交付的文件。因此静态项目必须确认构建产物确实进入包；生产 SQLite 数据不应作为源码包交付。打包会规范顺序和元数据，生成可核对的 SHA-256。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/packaging.py#L110">C02</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/ignore.py#L42">C47</a></p>
+<p>当前清单支持 <code>manifest_version/name/description/icon/slug/runtime/port/tier/capabilities/database/egress</code>，未知顶层字段被拒绝；没有用户可直接填写的 <code>image</code>、<code>command</code>、任意 Dockerfile 或通用环境变量字段。后端接收端支持 <code>python3.11/node20/static</code>，异步构建时还会向 manager 复核其模板集合。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py#L147">C03</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/precheck_service.py#L156">C07</a></p>
+<p>Node 项目依赖 <code>package.json</code> 及实际提供的锁文件；模板安装依赖，存在 build script 时执行 <code>npm run build</code>。静态项目提交可直接提供服务的文件，构建时从包根或约定的 <code>dist/build/public</code> 中识别包含 <code>index.html</code> 的目录。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46">C45</a></p>
+<p>CLI 默认硬排除 <code>.git</code>、<code>node_modules</code>、虚拟环境和缓存目录；数据库、附件、<code>dist/build</code> 默认软排除，可通过 <code>.doberman-agentignore</code> 取回需要交付的文件。因此静态项目必须确认构建产物确实进入包；生产 SQLite 数据不应作为源码包交付。打包会规范顺序和元数据，生成可核对的 SHA-256。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/packaging.py#L110">C02</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/ignore.py#L42">C47</a></p>
 <h3>2.2 包大小与安全解包</h3>
-<p>后端默认限制压缩包 50 MiB、解压后 200 MiB、最多 20,000 个条目；实际值来自部署配置，CLI 通过 <code>/api/v2/apps/deploy-limits</code> 获取，不能把默认值当成不可修改的产品限制。后端按流接收和解包，拒绝路径逃逸、链接、设备节点、FIFO 等危险条目。规范包以清单位于根目录为准；后端也兼容仅一层顶级目录的包。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/core/config/app_runtime.py#L45">C05</a></p>
+<p>后端默认限制压缩包 50 MiB、解压后 200 MiB、最多 20,000 个条目；实际值来自部署配置，CLI 通过 <code>/api/v2/apps/deploy-limits</code> 获取，不能把默认值当成不可修改的产品限制。后端按流接收和解包，拒绝路径逃逸、链接、设备节点、FIFO 等危险条目。规范包以清单位于根目录为准；后端也兼容仅一层顶级目录的包。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/core/config/app_runtime.py#L45">C05</a></p>
 <h3>2.3 六种不同的交付物和运行对象</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -178,7 +178,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 <tr>
 <td>完整应用镜像</td>
-<td><code>bisheng-app/leave-helper:1-&lt;version前8位&gt;</code></td>
+<td><code>doberman-agent-app/leave-helper:1-&lt;version前8位&gt;</code></td>
 <td>manager 通过 Engine 构建</td>
 <td>要先创建运行容器，再经入口代理访问</td>
 </tr>
@@ -195,7 +195,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>经应用或受控接口访问，独立于代码版本</td>
 </tr>
 </tbody></table></div>
-<p>当前基础镜像映射为 <code>python:3.11-slim</code>、<code>node:20-slim</code>、<code>nginx:1.27-alpine</code>。manager 自身也使用 Python 基础镜像，但不会把自己的编排程序作为用户应用的运行镜像。当前应用镜像标签由 app slug、版本号和版本 ID 派生。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></p>
+<p>当前基础镜像映射为 <code>python:3.11-slim</code>、<code>node:20-slim</code>、<code>nginx:1.27-alpine</code>。manager 自身也使用 Python 基础镜像，但不会把自己的编排程序作为用户应用的运行镜像。当前应用镜像标签由 app slug、版本号和版本 ID 派生。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></p>
 <h3>2.4 存储位置、访问方与生命周期</h3>
 <p><strong>当前基线映射：</strong> 下表描述 <code>736ef59</code> 的实际实现；其中 manager 直连对象存储的路径将按后续目标表替换。</p>
 <div class="table-scroll"><table>
@@ -215,61 +215,61 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 <tr>
 <td>源码快照</td>
-<td>MinIO 私有桶 <code>bisheng-apps</code>：<code>apps/{app_id}/versions/{version_id}/code.tar.gz</code></td>
+<td>MinIO 私有桶 <code>doberman-agent-apps</code>：<code>apps/{app_id}/versions/{version_id}/code.tar.gz</code></td>
 <td>后端写入；worker 读取；manager 使用预签名 URL 下载</td>
-<td>按版本存放；不是浏览器静态站点目录 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a></td>
+<td>按版本存放；不是浏览器静态站点目录 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a></td>
 </tr>
 <tr>
 <td>构建工作目录</td>
 <td><code>{RTM_DATA_ROOT}/builds/{build_id}</code></td>
 <td>manager；Engine 消费构建上下文</td>
-<td>构建结束清理，不是业务数据目录 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
+<td>构建结束清理，不是业务数据目录 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
 </tr>
 <tr>
 <td>应用镜像</td>
 <td>manager 连接的 Docker daemon 镜像库</td>
 <td>Docker Engine；manager 发起构建、检查和清理</td>
-<td>当前单机路径未把应用镜像推入 MinIO 或镜像仓库 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a></td>
+<td>当前单机路径未把应用镜像推入 MinIO 或镜像仓库 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a></td>
 </tr>
 <tr>
 <td>编排期望状态</td>
 <td><code>{RTM_DATA_ROOT}/state/desired-state.json</code></td>
 <td>manager</td>
-<td>JSON 文件，原子替换；包含实例、环境和退休容器信息，不能当普通公开配置分发 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a></td>
+<td>JSON 文件，原子替换；包含实例、环境和退休容器信息，不能当普通公开配置分发 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a></td>
 </tr>
 <tr>
 <td>出站策略</td>
 <td><code>{RTM_DATA_ROOT}/egress/</code> 下策略文件</td>
 <td>manager 写；egress-proxy 读</td>
-<td>通过文件共享，不通过后端业务表实时查询 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress.py#L444">C27</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a></td>
+<td>通过文件共享，不通过后端业务表实时查询 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress.py#L444">C27</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a></td>
 </tr>
 <tr>
 <td>SQLite 运行库</td>
 <td>宿主 <code>{RTM_HOST_DATA_ROOT}/apps/{app_id}/db/</code> → 容器 <code>/data</code></td>
 <td>应用；manager 的数据库接口与迁移服务</td>
-<td>数据库为 <code>/data/app.db</code>；同时需要目录内 WAL/SHM 等伴随文件可写 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
+<td>数据库为 <code>/data/app.db</code>；同时需要目录内 WAL/SHM 等伴随文件可写 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
 </tr>
 <tr>
 <td>数据库迁移快照</td>
-<td><code>bisheng-apps</code>：<code>apps/{app_id}/db-snapshots/{ts}.tar</code></td>
+<td><code>doberman-agent-apps</code>：<code>apps/{app_id}/db-snapshots/{ts}.tar</code></td>
 <td>manager</td>
-<td>使用 SQLite backup API 生成一致副本，再打 tar 存储；不是直接复制正在写入的 db 文件 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></td>
+<td>使用 SQLite backup API 生成一致副本，再打 tar 存储；不是直接复制正在写入的 db 文件 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></td>
 </tr>
 <tr>
 <td>应用附件</td>
-<td><code>bisheng-apps</code>：<code>apps/{app_id}/attachments/{relative_key}</code></td>
+<td><code>doberman-agent-apps</code>：<code>apps/{app_id}/attachments/{relative_key}</code></td>
 <td>manager 的附件服务；应用经 SDK 调用</td>
-<td>应用只持有该 app 的句柄令牌，不拿 MinIO 主凭据 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/_storage_remote.py#L3">C33</a></td>
+<td>应用只持有该 app 的句柄令牌，不拿 MinIO 主凭据 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py#L3">C33</a></td>
 </tr>
 <tr>
 <td>审批预览和预检数据</td>
 <td>临时容器 <code>/data</code> tmpfs</td>
 <td>临时应用进程</td>
-<td>空的临时数据库，不挂正式库；实例结束即丢弃 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/probe.py#L126">C44</a></td>
+<td>空的临时数据库，不挂正式库；实例结束即丢弃 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/probe.py#L126">C44</a></td>
 </tr>
 </tbody></table></div>
-<p><code>bisheng-apps</code> 是所有应用共享、按 app/version/附件前缀隔离的私有桶，不是每个应用一个桶。单独建桶是因为现有平台公共桶存在匿名策略和 nginx 公开转发路径；代码与私有附件不能沿用该暴露面。建桶和访问授权不应依赖“对象路径难猜”。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></p>
-<p><strong>已确认目标映射，待实现：</strong> 继续复用平台 MinIO 和 <code>bisheng-apps</code> 私有桶；bucket 与对象前缀成为 backend 内部实现，不再下发给 manager。当前对象路径可以继续使用；是否调整快照命名和元数据索引在接口设计中确定。</p>
+<p><code>doberman-agent-apps</code> 是所有应用共享、按 app/version/附件前缀隔离的私有桶，不是每个应用一个桶。单独建桶是因为现有平台公共桶存在匿名策略和 nginx 公开转发路径；代码与私有附件不能沿用该暴露面。建桶和访问授权不应依赖“对象路径难猜”。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></p>
+<p><strong>已确认目标映射，待实现：</strong> 继续复用平台 MinIO 和 <code>doberman-agent-apps</code> 私有桶；bucket 与对象前缀成为 backend 内部实现，不再下发给 manager。当前对象路径可以继续使用；是否调整快照命名和元数据索引在接口设计中确定。</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -347,12 +347,12 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>快照本身不是实例</td>
 </tr>
 </tbody></table></div>
-<p>删除涉及 backend、发布删除钩子及 manager 的多个动作，不能推断为覆盖数据库、对象存储、磁盘的单一原子事务。失败源码快照另有孤儿清理；镜像保留/清理也有独立规则。恢复程序、保留期限与现场备份策略仍需明确。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></p>
+<p>删除涉及 backend、发布删除钩子及 manager 的多个动作，不能推断为覆盖数据库、对象存储、磁盘的单一原子事务。失败源码快照另有孤儿清理；镜像保留/清理也有独立规则。恢复程序、保留期限与现场备份策略仍需明确。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></p>
 <p>上表描述当前行为。按已确认目标，附件和远端快照的保留/删除改由 backend 执行，本地库的备份、迁移、恢复及显式卷清理由 manager 执行；停用释放商业名额不删除任何上述业务数据。</p>
 <h3>2.6 SQLite 在 Docker 与 K8s 中的约束</h3>
-<p>当前 Docker 形式通过宿主机 bind mount 持久化，不把数据库写入镜像可写层。默认宿主数据根为 <code>/opt/bisheng/app-data</code>；manager 容器内一般看到 <code>/app-data</code>。<code>RTM_DATA_ROOT</code> 是 manager 自身读写视角，<code>RTM_HOST_DATA_ROOT</code> 是 Engine 解释 bind mount 的宿主视角，两者必须指向同一份实际数据。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></p>
-<p><strong>K8s 规格</strong>要求一个应用一个独占数据卷，应用 Pod 重建后复用 PVC。StorageClass 只提供节点本地盘时应标注节点绑定；节点损坏后不能承诺自动无损跨节点恢复。采用可重新挂载的 CSI 块存储、在单节点格式化挂载为文件系统，与把 SQLite 放到 NFS/SMB 共享目录是两回事。SQLite WAL 官方明确不支持网络文件系统上的跨主机协同。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a> <a href="https://www.sqlite.org/wal.html">R07</a></p>
-<p><strong>建议</strong>在 CSI 支持时使用 <code>ReadWriteOncePod</code>；普通 <code>ReadWriteOnce</code> 仅限制节点，同节点仍可能有多个 Pod 同时挂载。SQLite 应用采用受控单活动实例发布，结构迁移时停止或隔离正式写入。审批预览使用临时库或明确生成的副本，不能直接挂正式 PVC。当前 Docker 升级存在新旧容器重叠，不能把建议中的单活动 Pod 当成当前既有保证。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-access-mode-readwriteoncepod/">R08</a></p>
+<p>当前 Docker 形式通过宿主机 bind mount 持久化，不把数据库写入镜像可写层。默认宿主数据根为 <code>/opt/doberman-agent/app-data</code>；manager 容器内一般看到 <code>/app-data</code>。<code>RTM_DATA_ROOT</code> 是 manager 自身读写视角，<code>RTM_HOST_DATA_ROOT</code> 是 Engine 解释 bind mount 的宿主视角，两者必须指向同一份实际数据。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></p>
+<p><strong>K8s 规格</strong>要求一个应用一个独占数据卷，应用 Pod 重建后复用 PVC。StorageClass 只提供节点本地盘时应标注节点绑定；节点损坏后不能承诺自动无损跨节点恢复。采用可重新挂载的 CSI 块存储、在单节点格式化挂载为文件系统，与把 SQLite 放到 NFS/SMB 共享目录是两回事。SQLite WAL 官方明确不支持网络文件系统上的跨主机协同。<a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a> <a href="https://www.sqlite.org/wal.html">R07</a></p>
+<p><strong>建议</strong>在 CSI 支持时使用 <code>ReadWriteOncePod</code>；普通 <code>ReadWriteOnce</code> 仅限制节点，同节点仍可能有多个 Pod 同时挂载。SQLite 应用采用受控单活动实例发布，结构迁移时停止或隔离正式写入。审批预览使用临时库或明确生成的副本，不能直接挂正式 PVC。当前 Docker 升级存在新旧容器重叠，不能把建议中的单活动 Pod 当成当前既有保证。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-access-mode-readwriteoncepod/">R08</a></p>
 <p>代码回滚不会自动逆转数据库 DDL 或恢复已写入的业务行。发布记录需要分别描述代码版本、数据库 schema 版本及快照；恢复生产数据是独立动作，应明确停写、恢复点、数据丢失窗口和操作者。</p>
 <p>当前版本记录和镜像保留为诊断、重新上线提供依据，但本次没有据此认定存在完整的任意历史版本一键回滚产品流程。</p>
 <p><a id="section-3"></a></p>
@@ -430,16 +430,16 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>临时实例使用 tmpfs，无正式卷；失败时保存日志摘要并清理容器</td>
 </tr>
 </tbody></table></div>
-<p>依据：<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/packaging.py#L110">C02</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/precheck_service.py#L156">C07</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L128">C41</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/probe.py#L126">C44</a>。</p>
+<p>依据：<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py#L54">C01</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/packaging.py#L110">C02</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/precheck_service.py#L156">C07</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L128">C41</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/probe.py#L126">C44</a>。</p>
 <h3>3.2 审批、版本入库与上线</h3>
 <blockquote>
-<p><strong>实际顺序修正：</strong> 构建和探活通过后，版本服务先提交审批准入，再插入版本记录；若版本插入失败，会尝试取消刚建立的审批。业务上可合称“记录版本并进入审批”，但实现不是“版本先入库、再发审批”的简单顺序。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/version_service.py#L138">C37</a></p>
+<p><strong>实际顺序修正：</strong> 构建和探活通过后，版本服务先提交审批准入，再插入版本记录；若版本插入失败，会尝试取消刚建立的审批。业务上可合称“记录版本并进入审批”，但实现不是“版本先入库、再发审批”的简单顺序。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/version_service.py#L138">C37</a></p>
 </blockquote>
-<figure class="sequence" data-diagram="2"><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 595" role="img" aria-labelledby="sequence-2-1-title sequence-2-1-desc" data-events="7"><title id="sequence-2-1-title">时序图 2 第 1 部分</title><desc id="sequence-2-1-desc">Worker 到 Approval：1 审批准入；随后写入版本，失败补偿取消；Approval 到 Worker：2 审批通过的业务回调；Worker 到 Worker：3 暂存待上线版本；回收审批预览；Worker 到 Manager：4 迁移声明表；必要时先做数据库快照；Worker 到 Manager：5 查询运行资源准入；Worker 到 Worker：6 签发应用凭据并组装能力环境；Worker 到 Manager：7 deploy intent：image_ref、tier、port、env 等</desc><defs><marker id="sequence-2-1-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="595" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">审批引擎 / Outbox</text><line x1="279" y1="76" x2="279" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Celery worker</text><line x1="470" y1="76" x2="470" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="661" y1="76" x2="661" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Docker Engine</text><line x1="852" y1="76" x2="852" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">正式应用实例</text><rect x="92" y="92" width="183" height="46" rx="5" fill="#fbfcff"/><text x="183.5" y="106" text-anchor="middle" font-size="13" fill="#28364c">1 审批准入；随后写入版本</text><text x="183.5" y="125" text-anchor="middle" font-size="13" fill="#28364c">，失败补偿取消</text><line x1="279" y1="146" x2="88" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="146" r="2.7" fill="#465a7d"/><rect x="92" y="164" width="183" height="27" rx="5" fill="#fbfcff"/><text x="183.5" y="178" text-anchor="middle" font-size="13" fill="#28364c">2 审批通过的业务回调</text><line x1="88" y1="199" x2="279" y2="199" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-2-1-arrow)"/><circle cx="88" cy="199" r="2.7" fill="#465a7d"/><rect x="170" y="217" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="231" text-anchor="middle" font-size="13" fill="#28364c">3 暂存待上线版本；回收审批预览</text><path d="M 279 252 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="252" r="2.7" fill="#465a7d"/><rect x="283" y="280" width="183" height="46" rx="5" fill="#fbfcff"/><text x="374.5" y="294" text-anchor="middle" font-size="13" fill="#28364c">4 迁移声明表；必要时先做</text><text x="374.5" y="313" text-anchor="middle" font-size="13" fill="#28364c">数据库快照</text><line x1="279" y1="334" x2="470" y2="334" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="334" r="2.7" fill="#465a7d"/><rect x="283" y="352" width="183" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="366" text-anchor="middle" font-size="13" fill="#28364c">5 查询运行资源准入</text><line x1="279" y1="387" x2="470" y2="387" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="387" r="2.7" fill="#465a7d"/><rect x="170" y="405" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="419" text-anchor="middle" font-size="13" fill="#28364c">6 签发应用凭据并组装能力环境</text><path d="M 279 440 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="440" r="2.7" fill="#465a7d"/><rect x="283" y="468" width="183" height="65" rx="5" fill="#fbfcff"/><text x="374.5" y="482" text-anchor="middle" font-size="13" fill="#28364c">7 deploy intent：</text><text x="374.5" y="501" text-anchor="middle" font-size="13" fill="#28364c">image_ref、tier、port、</text><text x="374.5" y="520" text-anchor="middle" font-size="13" fill="#28364c">env 等</text><line x1="279" y1="541" x2="470" y2="541" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="541" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 2 · 第 1/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 538" role="img" aria-labelledby="sequence-2-2-title sequence-2-2-desc" data-events="7"><title id="sequence-2-2-title">时序图 2 第 2 部分</title><desc id="sequence-2-2-desc">Manager 到 Engine：8 再次准入、挂卷、限额、创建并启动新容器；Engine 到 App：9 执行镜像 entrypoint；Manager 到 App：10 等待 HTTP 就绪；Manager 到 Manager：11 写期望状态，路由改指新实例；Manager 到 Worker：12 返回正式实例运行结果；Worker 到 Worker：13 更新应用/版本/实例和审计记录；Manager 到 Engine：14 宽限期结束后回收旧实例</desc><defs><marker id="sequence-2-2-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="538" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">审批引擎 / Outbox</text><line x1="279" y1="76" x2="279" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Celery worker</text><line x1="470" y1="76" x2="470" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="661" y1="76" x2="661" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Docker Engine</text><line x1="852" y1="76" x2="852" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">正式应用实例</text><rect x="474" y="92" width="183" height="46" rx="5" fill="#fbfcff"/><text x="565.5" y="106" text-anchor="middle" font-size="13" fill="#28364c">8 再次准入、挂卷、限额、</text><text x="565.5" y="125" text-anchor="middle" font-size="13" fill="#28364c">创建并启动新容器</text><line x1="470" y1="146" x2="661" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="146" r="2.7" fill="#465a7d"/><rect x="665" y="164" width="183" height="27" rx="5" fill="#fbfcff"/><text x="756.5" y="178" text-anchor="middle" font-size="13" fill="#28364c">9 执行镜像 entrypoint</text><line x1="661" y1="199" x2="852" y2="199" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="661" cy="199" r="2.7" fill="#465a7d"/><rect x="474" y="217" width="374" height="27" rx="5" fill="#fbfcff"/><text x="661" y="231" text-anchor="middle" font-size="13" fill="#28364c">10 等待 HTTP 就绪</text><line x1="470" y1="252" x2="852" y2="252" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="252" r="2.7" fill="#465a7d"/><rect x="361" y="270" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="518" y="284" text-anchor="middle" font-size="13" fill="#28364c">11 写期望状态，路由改指新实例</text><path d="M 470 305 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="305" r="2.7" fill="#465a7d"/><rect x="283" y="333" width="183" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="347" text-anchor="middle" font-size="13" fill="#28364c">12 返回正式实例运行结果</text><line x1="470" y1="368" x2="279" y2="368" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="368" r="2.7" fill="#465a7d"/><rect x="170" y="386" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="400" text-anchor="middle" font-size="13" fill="#28364c">13 更新应用/版本/实例和审计记录</text><path d="M 279 421 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-2-arrow)"/><circle cx="279" cy="421" r="2.7" fill="#465a7d"/><rect x="474" y="449" width="183" height="27" rx="5" fill="#fbfcff"/><text x="565.5" y="463" text-anchor="middle" font-size="13" fill="#28364c">14 宽限期结束后回收旧实例</text><line x1="470" y1="484" x2="661" y2="484" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="484" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 2 · 第 2/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div></figure><p>审批及业务状态逻辑主要在平台后端执行，图中“审批引擎 / Outbox”是逻辑角色，不表示额外交付了一个独立审批容器。上线与预检可在 Celery worker 内执行同一套后端领域服务。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283">C15</a></p>
-<p>审批通过首先把版本标记为待上线并回收审批预览。如果应用已经被主动停用，回调只暂存版本，不擅自恢复；以后恢复应用时采用待上线版本并补做迁移。其余上线路径先调用表结构迁移，再做资源准入和启动。资源 tier 来自平台表，传到 manager 后表示为 vCPU 与 MiB。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></p>
-<p>manager 再次进行容量校验，准备 <code>/data</code>、文件所有权、附件令牌和出站策略；随后调用容器 create/start。容器由镜像内 entrypoint 选择业务命令，manager 的 deploy 请求没有单独的 <code>command</code> 字段。应用通过就绪检查后，manager 写入新实例期望状态，代理后续路由查询得到新地址；默认 30 秒宽限后退休旧实例。后端收到成功结果后才更新平台应用和版本状态。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a></p>
-<p><strong>需要评审的事务边界：</strong> 数据库迁移早于资源准入和实例启动；迁移已成功但后续容量或启动失败时，数据库可能已经变化。manager 路由切换与后端数据库状态更新也不是同一事务。当前代码没有据此自动承诺数据库回滚、发布全局原子性或零停机，需要设计兼容性迁移与对账。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a></p>
-<p>应用能力凭据也存在切换边界：后端在调用 deploy 前重签应用令牌，凭据服务先撤销旧令牌再签发新令牌。如果候选容器随后启动失败，旧容器保留并不意味着它持有的旧令牌仍能调用平台能力。此处需要验证失败补偿或凭据双阶段切换，不能把“旧实例未删除”写成“旧版本完全不受影响”。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/capability_bus_service.py#L384">C36</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/app_credential_service.py#L134">C48</a></p>
+<figure class="sequence" data-diagram="2"><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 595" role="img" aria-labelledby="sequence-2-1-title sequence-2-1-desc" data-events="7"><title id="sequence-2-1-title">时序图 2 第 1 部分</title><desc id="sequence-2-1-desc">Worker 到 Approval：1 审批准入；随后写入版本，失败补偿取消；Approval 到 Worker：2 审批通过的业务回调；Worker 到 Worker：3 暂存待上线版本；回收审批预览；Worker 到 Manager：4 迁移声明表；必要时先做数据库快照；Worker 到 Manager：5 查询运行资源准入；Worker 到 Worker：6 签发应用凭据并组装能力环境；Worker 到 Manager：7 deploy intent：image_ref、tier、port、env 等</desc><defs><marker id="sequence-2-1-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="595" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">审批引擎 / Outbox</text><line x1="279" y1="76" x2="279" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Celery worker</text><line x1="470" y1="76" x2="470" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="661" y1="76" x2="661" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Docker Engine</text><line x1="852" y1="76" x2="852" y2="583" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">正式应用实例</text><rect x="92" y="92" width="183" height="46" rx="5" fill="#fbfcff"/><text x="183.5" y="106" text-anchor="middle" font-size="13" fill="#28364c">1 审批准入；随后写入版本</text><text x="183.5" y="125" text-anchor="middle" font-size="13" fill="#28364c">，失败补偿取消</text><line x1="279" y1="146" x2="88" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="146" r="2.7" fill="#465a7d"/><rect x="92" y="164" width="183" height="27" rx="5" fill="#fbfcff"/><text x="183.5" y="178" text-anchor="middle" font-size="13" fill="#28364c">2 审批通过的业务回调</text><line x1="88" y1="199" x2="279" y2="199" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-2-1-arrow)"/><circle cx="88" cy="199" r="2.7" fill="#465a7d"/><rect x="170" y="217" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="231" text-anchor="middle" font-size="13" fill="#28364c">3 暂存待上线版本；回收审批预览</text><path d="M 279 252 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="252" r="2.7" fill="#465a7d"/><rect x="283" y="280" width="183" height="46" rx="5" fill="#fbfcff"/><text x="374.5" y="294" text-anchor="middle" font-size="13" fill="#28364c">4 迁移声明表；必要时先做</text><text x="374.5" y="313" text-anchor="middle" font-size="13" fill="#28364c">数据库快照</text><line x1="279" y1="334" x2="470" y2="334" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="334" r="2.7" fill="#465a7d"/><rect x="283" y="352" width="183" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="366" text-anchor="middle" font-size="13" fill="#28364c">5 查询运行资源准入</text><line x1="279" y1="387" x2="470" y2="387" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="387" r="2.7" fill="#465a7d"/><rect x="170" y="405" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="419" text-anchor="middle" font-size="13" fill="#28364c">6 签发应用凭据并组装能力环境</text><path d="M 279 440 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="440" r="2.7" fill="#465a7d"/><rect x="283" y="468" width="183" height="65" rx="5" fill="#fbfcff"/><text x="374.5" y="482" text-anchor="middle" font-size="13" fill="#28364c">7 deploy intent：</text><text x="374.5" y="501" text-anchor="middle" font-size="13" fill="#28364c">image_ref、tier、port、</text><text x="374.5" y="520" text-anchor="middle" font-size="13" fill="#28364c">env 等</text><line x1="279" y1="541" x2="470" y2="541" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-1-arrow)"/><circle cx="279" cy="541" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 2 · 第 1/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 538" role="img" aria-labelledby="sequence-2-2-title sequence-2-2-desc" data-events="7"><title id="sequence-2-2-title">时序图 2 第 2 部分</title><desc id="sequence-2-2-desc">Manager 到 Engine：8 再次准入、挂卷、限额、创建并启动新容器；Engine 到 App：9 执行镜像 entrypoint；Manager 到 App：10 等待 HTTP 就绪；Manager 到 Manager：11 写期望状态，路由改指新实例；Manager 到 Worker：12 返回正式实例运行结果；Worker 到 Worker：13 更新应用/版本/实例和审计记录；Manager 到 Engine：14 宽限期结束后回收旧实例</desc><defs><marker id="sequence-2-2-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="538" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">审批引擎 / Outbox</text><line x1="279" y1="76" x2="279" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Celery worker</text><line x1="470" y1="76" x2="470" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="661" y1="76" x2="661" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Docker Engine</text><line x1="852" y1="76" x2="852" y2="526" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">正式应用实例</text><rect x="474" y="92" width="183" height="46" rx="5" fill="#fbfcff"/><text x="565.5" y="106" text-anchor="middle" font-size="13" fill="#28364c">8 再次准入、挂卷、限额、</text><text x="565.5" y="125" text-anchor="middle" font-size="13" fill="#28364c">创建并启动新容器</text><line x1="470" y1="146" x2="661" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="146" r="2.7" fill="#465a7d"/><rect x="665" y="164" width="183" height="27" rx="5" fill="#fbfcff"/><text x="756.5" y="178" text-anchor="middle" font-size="13" fill="#28364c">9 执行镜像 entrypoint</text><line x1="661" y1="199" x2="852" y2="199" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="661" cy="199" r="2.7" fill="#465a7d"/><rect x="474" y="217" width="374" height="27" rx="5" fill="#fbfcff"/><text x="661" y="231" text-anchor="middle" font-size="13" fill="#28364c">10 等待 HTTP 就绪</text><line x1="470" y1="252" x2="852" y2="252" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="252" r="2.7" fill="#465a7d"/><rect x="361" y="270" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="518" y="284" text-anchor="middle" font-size="13" fill="#28364c">11 写期望状态，路由改指新实例</text><path d="M 470 305 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="305" r="2.7" fill="#465a7d"/><rect x="283" y="333" width="183" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="347" text-anchor="middle" font-size="13" fill="#28364c">12 返回正式实例运行结果</text><line x1="470" y1="368" x2="279" y2="368" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="368" r="2.7" fill="#465a7d"/><rect x="170" y="386" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="400" text-anchor="middle" font-size="13" fill="#28364c">13 更新应用/版本/实例和审计记录</text><path d="M 279 421 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-2-2-arrow)"/><circle cx="279" cy="421" r="2.7" fill="#465a7d"/><rect x="474" y="449" width="183" height="27" rx="5" fill="#fbfcff"/><text x="565.5" y="463" text-anchor="middle" font-size="13" fill="#28364c">14 宽限期结束后回收旧实例</text><line x1="470" y1="484" x2="661" y2="484" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-2-2-arrow)"/><circle cx="470" cy="484" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 2 · 第 2/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div></figure><p>审批及业务状态逻辑主要在平台后端执行，图中“审批引擎 / Outbox”是逻辑角色，不表示额外交付了一个独立审批容器。上线与预检可在 Celery worker 内执行同一套后端领域服务。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283">C15</a></p>
+<p>审批通过首先把版本标记为待上线并回收审批预览。如果应用已经被主动停用，回调只暂存版本，不擅自恢复；以后恢复应用时采用待上线版本并补做迁移。其余上线路径先调用表结构迁移，再做资源准入和启动。资源 tier 来自平台表，传到 manager 后表示为 vCPU 与 MiB。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></p>
+<p>manager 再次进行容量校验，准备 <code>/data</code>、文件所有权、附件令牌和出站策略；随后调用容器 create/start。容器由镜像内 entrypoint 选择业务命令，manager 的 deploy 请求没有单独的 <code>command</code> 字段。应用通过就绪检查后，manager 写入新实例期望状态，代理后续路由查询得到新地址；默认 30 秒宽限后退休旧实例。后端收到成功结果后才更新平台应用和版本状态。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a></p>
+<p><strong>需要评审的事务边界：</strong> 数据库迁移早于资源准入和实例启动；迁移已成功但后续容量或启动失败时，数据库可能已经变化。manager 路由切换与后端数据库状态更新也不是同一事务。当前代码没有据此自动承诺数据库回滚、发布全局原子性或零停机，需要设计兼容性迁移与对账。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a></p>
+<p>应用能力凭据也存在切换边界：后端在调用 deploy 前重签应用令牌，凭据服务先撤销旧令牌再签发新令牌。如果候选容器随后启动失败，旧容器保留并不意味着它持有的旧令牌仍能调用平台能力。此处需要验证失败补偿或凭据双阶段切换，不能把“旧实例未删除”写成“旧版本完全不受影响”。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py#L384">C36</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py#L134">C48</a></p>
 <h3>3.3 不同场景的结果</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -489,11 +489,11 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>读取本地期望状态，结合管理标签接管受管实例；持续对账，避免误清理同机其他容器</td>
 </tr>
 </tbody></table></div>
-<p>“商业额度释放”是目标方案，应在确认执行状态与入口失效后完成，不能直接等同于现有后端 <code>state=stopped</code> 写入。当前 stop 先写应用状态，再调用 manager，编排 RPC 失败仍可能需要补偿/对账。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/preview_instance_service.py#L440">C43</a></p>
+<p>“商业额度释放”是目标方案，应在确认执行状态与入口失效后完成，不能直接等同于现有后端 <code>state=stopped</code> 写入。当前 stop 先写应用状态，再调用 manager，编排 RPC 失败仍可能需要补偿/对账。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110">C14</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283">C15</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py#L440">C43</a></p>
 <h3>3.4 浏览器访问与身份注入</h3>
-<figure class="sequence" data-diagram="3"><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1098 575" role="img" aria-labelledby="sequence-3-1-title sequence-3-1-desc" data-events="7"><title id="sequence-3-1-title">时序图 3 第 1 部分</title><desc id="sequence-3-1-desc">Browser 到 Nginx：1 请求 /apps/{slug}/...；Nginx 到 Proxy：2 原 URI 与 WebSocket 升级信息；Proxy 到 Backend：3 authorize：会话、slug、请求信息；Backend 到 Proxy：4 用户/应用授权结果与 OBO 身份材料；Proxy 到 Manager：5 查询 app_id 的当前运行地址；Manager 到 Proxy：6 内部地址与监听端口；Proxy 到 App：7 清理伪造身份头后注入可信身份并反代</desc><defs><marker id="sequence-3-1-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="1098" height="575" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">浏览器</text><line x1="272.4" y1="76" x2="272.4" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="195.39999999999998" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="272.4" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">nginx</text><line x1="456.8" y1="76" x2="456.8" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="379.8" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="456.8" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">app-proxy</text><line x1="641.2" y1="76" x2="641.2" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="564.2" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="641.2" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend</text><line x1="825.6" y1="76" x2="825.6" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="748.6" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="825.6" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="1010" y1="76" x2="1010" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="933" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="1010" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用实例</text><rect x="92" y="92" width="176.39999999999998" height="46" rx="5" fill="#fbfcff"/><text x="180.2" y="106" text-anchor="middle" font-size="13" fill="#28364c">1 请求 /apps/{slug}</text><text x="180.2" y="125" text-anchor="middle" font-size="13" fill="#28364c">/...</text><line x1="88" y1="146" x2="272.4" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="88" cy="146" r="2.7" fill="#465a7d"/><rect x="276.4" y="164" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="364.6" y="178" text-anchor="middle" font-size="13" fill="#28364c">2 原 URI 与 WebSocket</text><text x="364.6" y="197" text-anchor="middle" font-size="13" fill="#28364c">升级信息</text><line x1="272.4" y1="218" x2="456.8" y2="218" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="272.4" cy="218" r="2.7" fill="#465a7d"/><rect x="460.79999999999995" y="236" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="549" y="250" text-anchor="middle" font-size="13" fill="#28364c">3 authorize：会话、</text><text x="549" y="269" text-anchor="middle" font-size="13" fill="#28364c">slug、请求信息</text><line x1="456.8" y1="290" x2="641.2" y2="290" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="290" r="2.7" fill="#465a7d"/><rect x="460.79999999999995" y="308" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="549" y="322" text-anchor="middle" font-size="13" fill="#28364c">4 用户/应用授权结果与</text><text x="549" y="341" text-anchor="middle" font-size="13" fill="#28364c">OBO 身份材料</text><line x1="641.2" y1="362" x2="456.8" y2="362" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-1-arrow)"/><circle cx="641.2" cy="362" r="2.7" fill="#465a7d"/><rect x="460.80000000000007" y="380" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="641.2" y="394" text-anchor="middle" font-size="13" fill="#28364c">5 查询 app_id 的当前运行地址</text><line x1="456.8" y1="415" x2="825.6" y2="415" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="415" r="2.7" fill="#465a7d"/><rect x="460.80000000000007" y="433" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="641.2" y="447" text-anchor="middle" font-size="13" fill="#28364c">6 内部地址与监听端口</text><line x1="825.6" y1="468" x2="456.8" y2="468" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-1-arrow)"/><circle cx="825.6" cy="468" r="2.7" fill="#465a7d"/><rect x="491.4" y="486" width="484" height="27" rx="5" fill="#fbfcff"/><text x="733.4" y="500" text-anchor="middle" font-size="13" fill="#28364c">7 清理伪造身份头后注入可信身份并反代</text><line x1="456.8" y1="521" x2="1010" y2="521" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="521" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 3 · 第 1/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1098 234" role="img" aria-labelledby="sequence-3-2-title sequence-3-2-desc" data-events="2"><title id="sequence-3-2-title">时序图 3 第 2 部分</title><desc id="sequence-3-2-desc">App 到 Proxy：8 HTTP 内容或 WebSocket 数据；Proxy 到 Browser：9 经 nginx 返回</desc><defs><marker id="sequence-3-2-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="1098" height="234" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">浏览器</text><line x1="272.4" y1="76" x2="272.4" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="195.39999999999998" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="272.4" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">nginx</text><line x1="456.8" y1="76" x2="456.8" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="379.8" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="456.8" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">app-proxy</text><line x1="641.2" y1="76" x2="641.2" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="564.2" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="641.2" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend</text><line x1="825.6" y1="76" x2="825.6" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="748.6" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="825.6" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="1010" y1="76" x2="1010" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="933" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="1010" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用实例</text><rect x="491.4" y="92" width="484" height="27" rx="5" fill="#fbfcff"/><text x="733.4" y="106" text-anchor="middle" font-size="13" fill="#28364c">8 HTTP 内容或 WebSocket 数据</text><line x1="1010" y1="127" x2="456.8" y2="127" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-2-arrow)"/><circle cx="1010" cy="127" r="2.7" fill="#465a7d"/><rect x="91.99999999999997" y="145" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="272.4" y="159" text-anchor="middle" font-size="13" fill="#28364c">9 经 nginx 返回</text><line x1="456.8" y1="180" x2="88" y2="180" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-2-arrow)"/><circle cx="456.8" cy="180" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 3 · 第 2/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div></figure><p>后端判定运行层是否启用、会话、用户/租户状态、应用状态以及 OpenFGA <code>app:use</code> 权限；它不把容器地址作为授权结果返回。app-proxy 独立向 manager 取得路由，分别缓存授权与路由（默认短缓存约 3 秒），并处理入口前缀、可信身份头及 HTTP/WebSocket 转发。WebSocket 不是只握手一次就永久放行，还存在重校验与最大存活时间约束。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py#L88">C25</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/headers.py#L29">C26</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/nginx/conf.d/default.conf#L80">C30</a></p>
-<p>所有应用可监听容器内 <code>8080</code>，实际连接目标是各容器内部地址与端口。当前 <code>PortBindings={}</code> 且 <code>PublishAllPorts=false</code>，不需要每个应用对外分配一个宿主端口；对外仍复用 <code>/apps/{slug}</code>。K8s 对应目标是经受控 Service/Pod 网络转发，具体实现尚未落地。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></p>
-<h3>3.5 应用访问毕昇能力</h3>
+<figure class="sequence" data-diagram="3"><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1098 575" role="img" aria-labelledby="sequence-3-1-title sequence-3-1-desc" data-events="7"><title id="sequence-3-1-title">时序图 3 第 1 部分</title><desc id="sequence-3-1-desc">Browser 到 Nginx：1 请求 /apps/{slug}/...；Nginx 到 Proxy：2 原 URI 与 WebSocket 升级信息；Proxy 到 Backend：3 authorize：会话、slug、请求信息；Backend 到 Proxy：4 用户/应用授权结果与 OBO 身份材料；Proxy 到 Manager：5 查询 app_id 的当前运行地址；Manager 到 Proxy：6 内部地址与监听端口；Proxy 到 App：7 清理伪造身份头后注入可信身份并反代</desc><defs><marker id="sequence-3-1-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="1098" height="575" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">浏览器</text><line x1="272.4" y1="76" x2="272.4" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="195.39999999999998" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="272.4" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">nginx</text><line x1="456.8" y1="76" x2="456.8" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="379.8" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="456.8" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">app-proxy</text><line x1="641.2" y1="76" x2="641.2" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="564.2" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="641.2" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend</text><line x1="825.6" y1="76" x2="825.6" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="748.6" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="825.6" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="1010" y1="76" x2="1010" y2="563" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="933" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="1010" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用实例</text><rect x="92" y="92" width="176.39999999999998" height="46" rx="5" fill="#fbfcff"/><text x="180.2" y="106" text-anchor="middle" font-size="13" fill="#28364c">1 请求 /apps/{slug}</text><text x="180.2" y="125" text-anchor="middle" font-size="13" fill="#28364c">/...</text><line x1="88" y1="146" x2="272.4" y2="146" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="88" cy="146" r="2.7" fill="#465a7d"/><rect x="276.4" y="164" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="364.6" y="178" text-anchor="middle" font-size="13" fill="#28364c">2 原 URI 与 WebSocket</text><text x="364.6" y="197" text-anchor="middle" font-size="13" fill="#28364c">升级信息</text><line x1="272.4" y1="218" x2="456.8" y2="218" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="272.4" cy="218" r="2.7" fill="#465a7d"/><rect x="460.79999999999995" y="236" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="549" y="250" text-anchor="middle" font-size="13" fill="#28364c">3 authorize：会话、</text><text x="549" y="269" text-anchor="middle" font-size="13" fill="#28364c">slug、请求信息</text><line x1="456.8" y1="290" x2="641.2" y2="290" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="290" r="2.7" fill="#465a7d"/><rect x="460.79999999999995" y="308" width="176.40000000000003" height="46" rx="5" fill="#fbfcff"/><text x="549" y="322" text-anchor="middle" font-size="13" fill="#28364c">4 用户/应用授权结果与</text><text x="549" y="341" text-anchor="middle" font-size="13" fill="#28364c">OBO 身份材料</text><line x1="641.2" y1="362" x2="456.8" y2="362" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-1-arrow)"/><circle cx="641.2" cy="362" r="2.7" fill="#465a7d"/><rect x="460.80000000000007" y="380" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="641.2" y="394" text-anchor="middle" font-size="13" fill="#28364c">5 查询 app_id 的当前运行地址</text><line x1="456.8" y1="415" x2="825.6" y2="415" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="415" r="2.7" fill="#465a7d"/><rect x="460.80000000000007" y="433" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="641.2" y="447" text-anchor="middle" font-size="13" fill="#28364c">6 内部地址与监听端口</text><line x1="825.6" y1="468" x2="456.8" y2="468" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-1-arrow)"/><circle cx="825.6" cy="468" r="2.7" fill="#465a7d"/><rect x="491.4" y="486" width="484" height="27" rx="5" fill="#fbfcff"/><text x="733.4" y="500" text-anchor="middle" font-size="13" fill="#28364c">7 清理伪造身份头后注入可信身份并反代</text><line x1="456.8" y1="521" x2="1010" y2="521" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-3-1-arrow)"/><circle cx="456.8" cy="521" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 3 · 第 1/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1098 234" role="img" aria-labelledby="sequence-3-2-title sequence-3-2-desc" data-events="2"><title id="sequence-3-2-title">时序图 3 第 2 部分</title><desc id="sequence-3-2-desc">App 到 Proxy：8 HTTP 内容或 WebSocket 数据；Proxy 到 Browser：9 经 nginx 返回</desc><defs><marker id="sequence-3-2-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="1098" height="234" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">浏览器</text><line x1="272.4" y1="76" x2="272.4" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="195.39999999999998" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="272.4" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">nginx</text><line x1="456.8" y1="76" x2="456.8" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="379.8" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="456.8" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">app-proxy</text><line x1="641.2" y1="76" x2="641.2" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="564.2" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="641.2" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend</text><line x1="825.6" y1="76" x2="825.6" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="748.6" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="825.6" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">runtime-manager</text><line x1="1010" y1="76" x2="1010" y2="222" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="933" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="1010" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用实例</text><rect x="491.4" y="92" width="484" height="27" rx="5" fill="#fbfcff"/><text x="733.4" y="106" text-anchor="middle" font-size="13" fill="#28364c">8 HTTP 内容或 WebSocket 数据</text><line x1="1010" y1="127" x2="456.8" y2="127" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-2-arrow)"/><circle cx="1010" cy="127" r="2.7" fill="#465a7d"/><rect x="91.99999999999997" y="145" width="360.8" height="27" rx="5" fill="#fbfcff"/><text x="272.4" y="159" text-anchor="middle" font-size="13" fill="#28364c">9 经 nginx 返回</text><line x1="456.8" y1="180" x2="88" y2="180" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-3-2-arrow)"/><circle cx="456.8" cy="180" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 3 · 第 2/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div></figure><p>后端判定运行层是否启用、会话、用户/租户状态、应用状态以及 OpenFGA <code>app:use</code> 权限；它不把容器地址作为授权结果返回。app-proxy 独立向 manager 取得路由，分别缓存授权与路由（默认短缓存约 3 秒），并处理入口前缀、可信身份头及 HTTP/WebSocket 转发。WebSocket 不是只握手一次就永久放行，还存在重校验与最大存活时间约束。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py#L88">C25</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/headers.py#L29">C26</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/nginx/conf.d/default.conf#L80">C30</a></p>
+<p>所有应用可监听容器内 <code>8080</code>，实际连接目标是各容器内部地址与端口。当前 <code>PortBindings={}</code> 且 <code>PublishAllPorts=false</code>，不需要每个应用对外分配一个宿主端口；对外仍复用 <code>/apps/{slug}</code>。K8s 对应目标是经受控 Service/Pod 网络转发，具体实现尚未落地。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></p>
+<h3>3.5 应用访问doberman-agent能力</h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -504,12 +504,12 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </thead>
 <tbody><tr>
 <td>当前访问者</td>
-<td><code>bisheng_sdk.auth.current_user()</code> 从当前请求上下文读取平台注入头</td>
+<td><code>doberman_agent_sdk.auth.current_user()</code> 从当前请求上下文读取平台注入头</td>
 <td>app-proxy 注入；后端先完成身份和入口权限判定</td>
 </tr>
 <tr>
 <td>知识检索</td>
-<td>SDK 调 <code>POST /api/v2/filelib/retrieve</code>；应用运行凭据＋<code>X-BiSheng-Access-Token</code></td>
+<td>SDK 调 <code>POST /api/v2/filelib/retrieve</code>；应用运行凭据＋<code>X-doberman-agent-Access-Token</code></td>
 <td>后端根据应用声明和访问者权限共同判定；无访问者不能退化成应用所有者</td>
 </tr>
 <tr>
@@ -519,12 +519,12 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 <tr>
 <td>附件</td>
-<td>SDK 读取 <code>BISHENG_APP_STORAGE_ENDPOINT/TOKEN</code>，调用 manager 的每应用存储 API</td>
+<td>SDK 读取 <code>DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN</code>，调用 manager 的每应用存储 API</td>
 <td>manager 校验应用令牌和路径，将请求映射到 MinIO 私有前缀</td>
 </tr>
 <tr>
 <td>SQLite</td>
-<td>标准 sqlite 库读取 <code>BISHENG_APP_DB_PATH/URL</code></td>
+<td>标准 sqlite 库读取 <code>DOBERMAN_AGENT_APP_DB_PATH/URL</code></td>
 <td>应用直接操作挂载的数据文件；不是每次通过后端 HTTP 执行 SQL</td>
 </tr>
 <tr>
@@ -533,7 +533,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>egress-proxy 根据 manager 写入的策略校验目标并转发</td>
 </tr>
 </tbody></table></div>
-<p>SDK 安装在声明该依赖的应用镜像/环境里；manager 不 import <code>bisheng-sdk</code> 执行业务。SDK wheel 从后端 <code>/api/v1/dev-toolkit/simple/</code> 分发。manager 只负责构建时接通索引、运行时注入句柄；Java 重写 manager 不意味着必须把应用 Python SDK 也改写为 Java。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/README.md#L1">C31</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/retrieve.py#L40">C32</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/_storage_remote.py#L3">C33</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/capability_bus_service.py#L384">C36</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/dev_toolkit/api/endpoints/distribution.py#L271">C42</a></p>
+<p>SDK 安装在声明该依赖的应用镜像/环境里；manager 不 import <code>doberman-agent-sdk</code> 执行业务。SDK wheel 从后端 <code>/api/v1/dev-toolkit/simple/</code> 分发。manager 只负责构建时接通索引、运行时注入句柄；Java 重写 manager 不意味着必须把应用 Python SDK 也改写为 Java。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/README.md#L1">C31</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/retrieve.py#L40">C32</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py#L3">C33</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py#L384">C36</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/dev_toolkit/api/endpoints/distribution.py#L271">C42</a></p>
 <p><a id="target-storage"></a></p>
 <h3>3.6 已确认目标：通过 backend 传输源码、附件和快照</h3>
 <p><strong>状态：2026-10-16 会话确认，待实现；下图是目标时序，不是 <code>736ef59</code> 的交付事实。</strong> 上传、扫描、审批和入口鉴权仍承接前述业务流程；与存储有关的执行路径改为下图。图中的“发布执行服务”可运行在 backend/Celery，backend API 接收 manager 的文件请求。</p>
@@ -608,13 +608,13 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>不持 MinIO 主凭据、Docker socket 或集群 API 凭据</td>
 </tr>
 <tr>
-<td>BiSheng SDK</td>
+<td>doberman-agent SDK</td>
 <td>应用侧身份上下文、检索及附件 API 封装</td>
 <td>应用请求头、环境变量、后端检索 API、manager 附件 API</td>
 <td>是应用内库，不是额外常驻服务</td>
 </tr>
 </tbody></table></div>
-<p>依据：<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/main.py#L79">C23</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress.py#L444">C27</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/README.md#L1">C31</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py#L134">C38</a>。</p>
+<p>依据：<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/main.py#L79">C23</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress.py#L444">C27</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/README.md#L1">C31</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py#L134">C38</a>。</p>
 <p><strong>已确认目标，待实现：</strong></p>
 <div class="table-scroll"><table>
 <thead>
@@ -711,7 +711,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>可达数据库文件；文件权限/锁可用；快照 MinIO 可用；业务权限由后端先校验</td>
 </tr>
 </tbody></table></div>
-<p>依据：<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/admission.py#L137">C39</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a>。</p>
+<p>依据：<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/preview.py#L18">C20</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/admission.py#L137">C39</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a>。</p>
 <p><strong>目标职责调整：</strong> 上表“附件服务”从 manager 移除；“镜像构建”的源码获取改为 backend 下载接口；“SQLite 管理”保留本地执行，但快照保存改为向 backend 上传并等待持久确认。停用/删除只清理执行体、状态和明确要求删除的本地卷，远端附件/产物/快照由 backend 处理。manager 自检相应检查平台文件接口、任务认证和本地备份条件，不再检查 MinIO 账号或 bucket。其余构建、探活和恢复能力仍受 Engine、磁盘、包源及网络条件约束。</p>
 <h3>4.3 关键接口与参数来源</h3>
 <div class="table-scroll"><table>
@@ -808,7 +808,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>manager 接口用内部 HMAC；实际用户操作授权在后端</td>
 </tr>
 </tbody></table></div>
-<p>以上均为当前已检查接口，不是完整 OpenAPI 文档。manager <code>/healthz</code> 是明确的免 HMAC 存活检查；不能由 healthz 成功推断 Docker、MinIO 或部署前置全部可用。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/main.py#L79">C23</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/auth.py#L42">C35</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py#L134">C38</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L128">C41</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a></p>
+<p>以上均为当前已检查接口，不是完整 OpenAPI 文档。manager <code>/healthz</code> 是明确的免 HMAC 存活检查；不能由 healthz 成功推断 Docker、MinIO 或部署前置全部可用。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/main.py#L79">C23</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/clients.py#L177">C24</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/auth.py#L42">C35</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py#L134">C38</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L128">C41</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a></p>
 <p>下面两个 JSON 是<strong>当前基线</strong>中后端向 manager 发送的脱敏意图示例。<code>code_url</code> 必须能从 manager 下载；它不是应用运行期间使用的地址。JSON 字段以代码契约为准，示例值不代表现场默认值；其中 MinIO 预签名 URL 和 <code>code_object_key</code> 不属于目标存储协议。</p>
 <pre><code class="language-json">{
   &quot;app_id&quot;: &quot;app-example&quot;,
@@ -818,7 +818,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
   &quot;version_no&quot;: 1,
   &quot;port&quot;: 8080,
   &quot;code_object_key&quot;: &quot;apps/app-example/versions/a1b2c3d4e5f647809abcdef0123456789/code.tar.gz&quot;,
-  &quot;code_url&quot;: &quot;https://minio.example.internal/bisheng-apps/...&lt;presigned&gt;&quot;,
+  &quot;code_url&quot;: &quot;https://minio.example.internal/doberman-agent-apps/...&lt;presigned&gt;&quot;,
   &quot;build_args&quot;: {}
 }
 </code></pre>
@@ -827,12 +827,12 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
   &quot;slug&quot;: &quot;leave-helper&quot;,
   &quot;version_id&quot;: &quot;a1b2c3d4e5f647809abcdef0123456789&quot;,
   &quot;version_no&quot;: 1,
-  &quot;image_ref&quot;: &quot;bisheng-app/leave-helper:1-a1b2c3d4&quot;,
+  &quot;image_ref&quot;: &quot;doberman-agent-app/leave-helper:1-a1b2c3d4&quot;,
   &quot;tier&quot;: {&quot;cpu&quot;: 0.5, &quot;mem&quot;: 1024},
   &quot;port&quot;: 8080,
-  &quot;env&quot;: {&quot;BISHENG_APP_TOKEN&quot;: &quot;&lt;redacted&gt;&quot;},
+  &quot;env&quot;: {&quot;DOBERMAN_AGENT_APP_TOKEN&quot;: &quot;&lt;redacted&gt;&quot;},
   &quot;health&quot;: {&quot;path&quot;: &quot;/&quot;, &quot;interval&quot;: 10, &quot;timeout&quot;: 3, &quot;retries&quot;: 3},
-  &quot;platform_api_base&quot;: &quot;https://bisheng.example.internal&quot;,
+  &quot;platform_api_base&quot;: &quot;https://platform.example.com.internal&quot;,
   &quot;base_path&quot;: &quot;/apps/leave-helper&quot;,
   &quot;egress_domains&quot;: []
 }
@@ -878,19 +878,19 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
   &quot;app_id&quot;: &quot;app-example&quot;,
   &quot;source&quot;: {
     &quot;artifact_id&quot;: &quot;artifact-example&quot;,
-    &quot;download_url&quot;: &quot;https://bisheng.example.internal/api/v1/internal/app-runtime/artifacts/artifact-example/content&quot;,
+    &quot;download_url&quot;: &quot;https://platform.example.com.internal/api/v1/internal/app-runtime/artifacts/artifact-example/content&quot;,
     &quot;sha256&quot;: &quot;&lt;expected-sha256&gt;&quot;,
     &quot;size_bytes&quot;: 1048576
   },
   &quot;snapshot_upload&quot;: {
     &quot;snapshot_id&quot;: &quot;snapshot-example&quot;,
-    &quot;upload_url&quot;: &quot;https://bisheng.example.internal/api/v1/internal/app-runtime/snapshots/snapshot-example/content&quot;,
+    &quot;upload_url&quot;: &quot;https://platform.example.com.internal/api/v1/internal/app-runtime/snapshots/snapshot-example/content&quot;,
     &quot;idempotency_key&quot;: &quot;dep-example:before-migrate&quot;
   }
 }
 </code></pre>
 <p>认证应同时考虑服务身份与任务授权：manager 调平台文件接口使用受控服务身份，下载/上传权限绑定 app、版本、任务、操作、有效期和幂等键；准备/初始化执行体仅获得最小任务授权。签发方和 backend 校验方属于平台，manager 只消费授权。当前 HMAC 的字段与防重放限制见 §6.5，不能默认原接口已经具备这里的任务约束。</p>
-<p>SDK 的 <code>BISHENG_APP_STORAGE_ENDPOINT/TOKEN</code> 使用方式应保持兼容，但服务端归属迁到 backend；当前 SDK 解析 manager 错误信封、附件令牌又在 manager 期望状态中校验，因此迁移需提供兼容 API 适配或同步升级 SDK，不能只替换 URL。应用令牌轮换、停用/删除后的拒绝策略和预览隔离由 backend 统一定义并验证。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/_storage_remote.py#L3">C33</a></p>
+<p>SDK 的 <code>DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN</code> 使用方式应保持兼容，但服务端归属迁到 backend；当前 SDK 解析 manager 错误信封、附件令牌又在 manager 期望状态中校验，因此迁移需提供兼容 API 适配或同步升级 SDK，不能只替换 URL。应用令牌轮换、停用/删除后的拒绝策略和预览隔离由 backend 统一定义并验证。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py#L3">C33</a></p>
 <h3>4.4 配置归属与应用注入变量</h3>
 <p><strong>当前基线配置：</strong></p>
 <div class="table-scroll"><table>
@@ -937,8 +937,8 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td><code>RTM_EGRESS_PROXY</code>、<code>RTM_PLATFORM_BASE_URL</code>、构建/运行允许目标、internal 网络和需要的宿主防火墙前置</td>
 </tr>
 </tbody></table></div>
-<p>容量、构建源及 manager 数据根不从后端 YAML 自动继承。后端 AppRuntimeConf 对历史遗留同名配置会告警并指出对应 RTM 环境变量。manager 获取源码只需要短期 URL，但附件读写和 SQLite 快照上传由它直接访问 MinIO，因此还要向 manager 进程注入 <code>RTM_MINIO_ENDPOINT/ACCESS_KEY/SECRET_KEY</code> 和 <code>RTM_STORAGE_BUCKET</code>；这些配置不会从后端配置自动读取。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/core/config/app_runtime.py#L45">C05</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/precheck_service.py#L156">C07</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></p>
-<p>这里的“单独配置”指进程需要收到连接参数，不要求另建 MinIO 实例，也不要求另建 manager 专用桶。当前 Compose 指向平台已有的 <code>minio:9000</code>，使用共享私有桶 <code>bisheng-apps</code>；源码、附件和 SQLite 快照按对象前缀区分。它们共用这一私有桶，区别于平台已有的 <code>bisheng</code> 公共用途桶。生产环境可为 manager 分配权限受限的独立访问凭据，但“独立凭据”不等于“独立实例或独立桶”，也不是当前代码强制的条件。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></p>
+<p>容量、构建源及 manager 数据根不从后端 YAML 自动继承。后端 AppRuntimeConf 对历史遗留同名配置会告警并指出对应 RTM 环境变量。manager 获取源码只需要短期 URL，但附件读写和 SQLite 快照上传由它直接访问 MinIO，因此还要向 manager 进程注入 <code>RTM_MINIO_ENDPOINT/ACCESS_KEY/SECRET_KEY</code> 和 <code>RTM_STORAGE_BUCKET</code>；这些配置不会从后端配置自动读取。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/core/config/app_runtime.py#L45">C05</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/precheck_service.py#L156">C07</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></p>
+<p>这里的“单独配置”指进程需要收到连接参数，不要求另建 MinIO 实例，也不要求另建 manager 专用桶。当前 Compose 指向平台已有的 <code>minio:9000</code>，使用共享私有桶 <code>doberman-agent-apps</code>；源码、附件和 SQLite 快照按对象前缀区分。它们共用这一私有桶，区别于平台已有的 <code>doberman-agent</code> 公共用途桶。生产环境可为 manager 分配权限受限的独立访问凭据，但“独立凭据”不等于“独立实例或独立桶”，也不是当前代码强制的条件。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></p>
 <p><strong>已确认目标配置：</strong> 下列变更应随接口迁移落地，不应仅删除环境变量而保留当前直连代码。</p>
 <div class="table-scroll"><table>
 <thead>
@@ -966,7 +966,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <tr>
 <td>应用附件 endpoint/token/max file</td>
 <td>backend 附件服务与应用凭据模块</td>
-<td>随受控 deploy intent 传入的应用句柄，manager 注入 <code>BISHENG_APP_STORAGE_*</code>；backend 为令牌校验权威</td>
+<td>随受控 deploy intent 传入的应用句柄，manager 注入 <code>DOBERMAN_AGENT_APP_STORAGE_*</code>；backend 为令牌校验权威</td>
 </tr>
 <tr>
 <td>本地 SQLite 与构建/编排参数</td>
@@ -985,32 +985,32 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 </thead>
 <tbody><tr>
-<td><code>PORT/BISHENG_APP_PORT</code></td>
+<td><code>PORT/DOBERMAN_AGENT_APP_PORT</code></td>
 <td>清单 port 经 manager 注入</td>
 <td>应用需监听正确端口与 <code>0.0.0.0</code></td>
 </tr>
 <tr>
-<td><code>BISHENG_APP_ID/SLUG/VERSION/VERSION_ID/BASE_PATH</code></td>
+<td><code>DOBERMAN_AGENT_APP_ID/SLUG/VERSION/VERSION_ID/BASE_PATH</code></td>
 <td>后端版本意图＋manager</td>
 <td>识别应用与访问路径；保留变量由平台覆盖</td>
 </tr>
 <tr>
-<td><code>BISHENG_APP_DB_PATH/URL</code></td>
+<td><code>DOBERMAN_AGENT_APP_DB_PATH/URL</code></td>
 <td>manager</td>
 <td>固定指向 <code>/data/app.db</code> 与 SQLite URL</td>
 </tr>
 <tr>
-<td><code>BISHENG_PLATFORM_API_BASE</code></td>
+<td><code>DOBERMAN_AGENT_PLATFORM_API_BASE</code></td>
 <td>部署意图经 manager 注入</td>
 <td>SDK 平台 API 地址；不能填写构建容器不可达的 localhost</td>
 </tr>
 <tr>
-<td><code>BISHENG_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB</code></td>
+<td><code>DOBERMAN_AGENT_APP_STORAGE_ENDPOINT/TOKEN/MAX_FILE_MB</code></td>
 <td>当前 manager 生成；目标由 backend 提供、manager 注入</td>
 <td>当前指向 manager，目标指向 backend 本 app 附件 API；不暴露 MinIO 主凭据；当前令牌校验不能直接沿用为平台权威</td>
 </tr>
 <tr>
-<td><code>BISHENG_APP_TOKEN</code></td>
+<td><code>DOBERMAN_AGENT_APP_TOKEN</code></td>
 <td>后端能力凭据服务</td>
 <td>应用主体凭据；更新时可能重签，不应等同于访客登录态</td>
 </tr>
@@ -1025,12 +1025,12 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>出站路径与主体；依赖客户端应实际使用代理</td>
 </tr>
 <tr>
-<td><code>X-BiSheng-*</code>、<code>X-BiSheng-Access-Token</code></td>
+<td><code>X-doberman-agent-*</code>、<code>X-doberman-agent-Access-Token</code></td>
 <td>app-proxy 按请求注入</td>
 <td>访问者身份、app_id、请求关联与 OBO；应用不能据自身凭据猜测访客身份</td>
 </tr>
 </tbody></table></div>
-<p>当前 Python entrypoint 支持参数、<code>BISHENG_APP_START</code>、<code>Procfile web:</code>、<code>main.py/app.py</code> 的解析优先级，但托管发布没有让开发者设置 <code>BISHENG_APP_START</code> 的通路；实际应提交 Procfile 或约定入口。Node 还支持 <code>package.json</code> 的 start/main 和默认 JS 文件。静态 runtime 直接运行平台 nginx。入口约定本身也是托管契约，不能只描述“传一个 command”。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/README.md#L1">C31</a></p>
+<p>当前 Python entrypoint 支持参数、<code>DOBERMAN_AGENT_APP_START</code>、<code>Procfile web:</code>、<code>main.py/app.py</code> 的解析优先级，但托管发布没有让开发者设置 <code>DOBERMAN_AGENT_APP_START</code> 的通路；实际应提交 Procfile 或约定入口。Node 还支持 <code>package.json</code> 的 start/main 和默认 JS 文件。静态 runtime 直接运行平台 nginx。入口约定本身也是托管契约，不能只描述“传一个 command”。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/README.md#L1">C31</a></p>
 <h3>4.5 Docker 和 K8s 的前置条件比较</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -1079,7 +1079,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 <tr>
 <td>网络</td>
-<td>默认网、<code>bisheng-apps</code> 应用网、<code>bisheng-build</code> 构建网、出口代理及实际生效的底层限制</td>
+<td>默认网、<code>doberman-agent-apps</code> 应用网、<code>doberman-agent-build</code> 构建网、出口代理及实际生效的底层限制</td>
 <td>CNI/NetworkPolicy 可用并验证；构建/应用目标分开控制</td>
 <td>初始化下载访问 backend 产物接口，任务凭据不扩散给业务代码；manager/准备任务不直连 MinIO</td>
 </tr>
@@ -1096,10 +1096,10 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>Helm/manifests 增加包初始化及依赖产物管理，仍需现场验证</td>
 </tr>
 </tbody></table></div>
-<p>Compose 服务 <code>build:</code> 能在开发机构建，不代表离线现场可直接执行。交付时应预制管理层服务镜像、基础镜像和工具镜像，避免现场构建管理服务再遇到 pip 下载问题。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></p>
+<p>Compose 服务 <code>build:</code> 能在开发机构建，不代表离线现场可直接执行。交付时应预制管理层服务镜像、基础镜像和工具镜像，避免现场构建管理服务再遇到 pip 下载问题。<a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></p>
 <p>存储拆分适用于 Docker 和后续 K8s 两种执行后端：manager 及其受控准备/初始化任务访问 backend 文件接口，由 backend 访问 MinIO；应用访问 backend 附件接口。网络策略、代理允许目标和部署自检应据此更新。K8s 中 manager 仍需能在受控执行环境访问对应 SQLite 数据卷，具体挂载执行方式待 F059 设计，不能假设远端 PVC 可直接从 manager 进程本机打开。</p>
 <h3>4.6 权限不能只按进程用户或 socket 挂载判断</h3>
-<p>当前 socket proxy 做端点级白名单，manager 不直挂 socket；不过允许的容器 create/start/build 等 API 仍具有很强的编排能力。端点白名单不等于按 app_id 限权，也不自动验证 bind mount、特权参数和租户边界。manager 必须固定安全容器参数，且编排网络与凭据不能开放给普通应用。Docker 官方也强调 daemon API 对宿主机的权限影响。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a> <a href="https://docs.docker.com/engine/security/">R10</a></p>
+<p>当前 socket proxy 做端点级白名单，manager 不直挂 socket；不过允许的容器 create/start/build 等 API 仍具有很强的编排能力。端点白名单不等于按 app_id 限权，也不自动验证 bind mount、特权参数和租户边界。manager 必须固定安全容器参数，且编排网络与凭据不能开放给普通应用。Docker 官方也强调 daemon API 对宿主机的权限影响。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a> <a href="https://docs.docker.com/engine/security/">R10</a></p>
 <p>因此，“改成 Java”“不安装 Docker CLI”“通过 HTTP API”各自都不能证明权限很小；进程独立、API 权限控制和商业代码保护需要分别论证。K8s 形态可通过 namespace/RBAC 限制资源范围，但还需要准入策略约束可创建 Pod 的安全字段，不能只给 create pods 就认定已完成隔离。</p>
 <h3>4.7 离线交付清单与验收层次</h3>
 <div class="table-scroll"><table>
@@ -1146,8 +1146,8 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>页面可访问不等于模型、知识检索和附件可用，应分别验证</td>
 </tr>
 </tbody></table></div>
-<p>客户没有仓库时，镜像路线的现有 K8s 规格要求随工场附带最小仓库。仓库自身需要先由离线安装流程启动，再灌入其他镜像，不能形成“仓库镜像也只能从尚未启动的仓库拉取”的闭环。仓库需要持久卷、认证与节点可达地址。若所有节点预装固定运行镜像，应用包路线可不因每次发版额外建设应用镜像仓库，但新增节点和镜像升级仍要纳入交付。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a> <a href="https://distribution.github.io/distribution/about/">R12</a></p>
-<p>manager 的 <code>/v1/runtime/status</code> 会检查编排后端、应用网络、数据目录、模板、基础镜像、附件/出站相关前置。它不能证明任意应用依赖闭包已完整离线化，也不能代替现场故障恢复测试。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/readonly.py#L245">C40</a></p>
+<p>客户没有仓库时，镜像路线的现有 K8s 规格要求随工场附带最小仓库。仓库自身需要先由离线安装流程启动，再灌入其他镜像，不能形成“仓库镜像也只能从尚未启动的仓库拉取”的闭环。仓库需要持久卷、认证与节点可达地址。若所有节点预装固定运行镜像，应用包路线可不因每次发版额外建设应用镜像仓库，但新增节点和镜像升级仍要纳入交付。<a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a> <a href="https://distribution.github.io/distribution/about/">R12</a></p>
+<p>manager 的 <code>/v1/runtime/status</code> 会检查编排后端、应用网络、数据目录、模板、基础镜像、附件/出站相关前置。它不能证明任意应用依赖闭包已完整离线化，也不能代替现场故障恢复测试。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/readonly.py#L245">C40</a></p>
 <p>目标离线包应包含 backend 新增文件/附件接口和兼容 SDK，manager 包不再包含 MinIO 访问配置。平台侧仍要准备 MinIO/私有桶和存储权限；manager 自检转为平台 API、认证、传输与本地备份前置，不能把“不直连 MinIO”理解成客户环境不需要对象存储。</p>
 <p><a id="section-5"></a></p>
 <h2>5. 发布路线与同类产品评审</h2>
@@ -1168,7 +1168,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <tr>
 <td>Modal</td>
 <td>环境镜像安装系统/语言依赖；<code>add_local_dir(copy=False)</code> 可在容器启动时加载代码，代码修改不必重建环境镜像</td>
-<td>借鉴环境和代码分离，不据此推断 Modal 可按毕昇方式离线私有化 <a href="https://modal.com/docs/sdk/py/latest/Image#add_local_dir">R03</a></td>
+<td>借鉴环境和代码分离，不据此推断 Modal 可按doberman-agent方式离线私有化 <a href="https://modal.com/docs/sdk/py/latest/Image#add_local_dir">R03</a></td>
 </tr>
 <tr>
 <td>Cloud Foundry</td>
@@ -1183,7 +1183,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <tr>
 <td>Coolify</td>
 <td>源码构建镜像；用户提供镜像时跳过构建，再管理容器和入口</td>
-<td>当前毕昇路线有成熟参照；通用应用可重复部署和环境封装较直接 <a href="https://coolify.io/docs/applications/">R06</a></td>
+<td>当前doberman-agent路线有成熟参照；通用应用可重复部署和环境封装较直接 <a href="https://coolify.io/docs/applications/">R06</a></td>
 </tr>
 </tbody></table></div>
 <p>以上比较的是可验证的交付机制。是否开源、能否离线、协议限制和商业许可需要按具体产品版本另评估，不能因为技术路线相似就直接引入整套产品。</p>
@@ -1207,7 +1207,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>代码小改</td>
 <td>发起构建；依赖层缓存命中时只更新后续层</td>
 <td>更新代码包，复用兼容依赖环境</td>
-<td>由用户 CI 重新产出镜像，毕昇跳过构建</td>
+<td>由用户 CI 重新产出镜像，doberman-agent跳过构建</td>
 </tr>
 <tr>
 <td>依赖变化</td>
@@ -1252,7 +1252,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>容器/Pod；用户镜像也必须遵守平台限制</td>
 </tr>
 </tbody></table></div>
-<p>当前每次源码发布都会进入 build 阶段，没有应用级“比较依赖后跳过整次构建”的实现。Docker 模板先复制依赖清单、安装依赖，再复制源码；缓存可用时复用依赖层。<code>pip --no-cache-dir</code> 关闭的是 pip 下载缓存，不等于关闭 Docker 层缓存。一次性 K8s 构建 Job 若不显式保留/导入外部构建缓存，不能自动获得上一 Job 的层缓存。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42">C11</a> <a href="https://docs.docker.com/build/cache/backends/">R11</a></p>
+<p>当前每次源码发布都会进入 build 阶段，没有应用级“比较依赖后跳过整次构建”的实现。Docker 模板先复制依赖清单、安装依赖，再复制源码；缓存可用时复用依赖层。<code>pip --no-cache-dir</code> 关闭的是 pip 下载缓存，不等于关闭 Docker 层缓存。一次性 K8s 构建 Job 若不显式保留/导入外部构建缓存，不能自动获得上一 Job 的层缓存。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42">C11</a> <a href="https://docs.docker.com/build/cache/backends/">R11</a></p>
 <h3>5.3 应用包路线的建议链路</h3>
 <p>发布产物路线 B 仍待评审；下图已纳入本次确认的存储边界，准备 Job 和应用初始化均通过 backend 传输产物，不直接访问 MinIO。</p>
 <figure class="sequence" data-diagram="5"><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 547" role="img" aria-labelledby="sequence-5-1-title sequence-5-1-desc" data-events="7"><title id="sequence-5-1-title">时序图 5 第 1 部分</title><desc id="sequence-5-1-desc">Backend 到 Store：1 保存不可变代码或前端产物包；Backend 到 Runtime：2 提交环境、产物引用及任务授权；Runtime 到 Runtime：3 查找兼容依赖产物；命中则复用；Runtime 到 Prepare：4 未命中则通过 backend 取源码并准备依赖；Prepare 到 Backend：5 上传依赖产物、摘要和兼容元数据；Backend 到 Store：6 保存并登记固定依赖产物；Runtime 到 Pod：7 创建固定运行镜像的 Pod 及独立数据 PVC</desc><defs><marker id="sequence-5-1-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="547" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="535" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="38" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend 发布与产物</text><text x="88" y="57" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">API</text><line x1="279" y1="76" x2="279" y2="535" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">商业 runtime</text><line x1="470" y1="76" x2="470" y2="535" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">依赖准备 Job</text><line x1="661" y1="76" x2="661" y2="535" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">MinIO</text><line x1="852" y1="76" x2="852" y2="535" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用 Pod</text><rect x="132.5" y="92" width="484" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="106" text-anchor="middle" font-size="13" fill="#28364c">1 保存不可变代码或前端产物包</text><line x1="88" y1="127" x2="661" y2="127" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="88" cy="127" r="2.7" fill="#465a7d"/><rect x="92" y="145" width="183" height="46" rx="5" fill="#fbfcff"/><text x="183.5" y="159" text-anchor="middle" font-size="13" fill="#28364c">2 提交环境、产物引用及任</text><text x="183.5" y="178" text-anchor="middle" font-size="13" fill="#28364c">务授权</text><line x1="88" y1="199" x2="279" y2="199" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="88" cy="199" r="2.7" fill="#465a7d"/><rect x="170" y="217" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="327" y="231" text-anchor="middle" font-size="13" fill="#28364c">3 查找兼容依赖产物；命中则复用</text><path d="M 279 252 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-5-1-arrow)"/><circle cx="279" cy="252" r="2.7" fill="#465a7d"/><rect x="283" y="280" width="183" height="46" rx="5" fill="#fbfcff"/><text x="374.5" y="294" text-anchor="middle" font-size="13" fill="#28364c">4 未命中则通过 backend</text><text x="374.5" y="313" text-anchor="middle" font-size="13" fill="#28364c">取源码并准备依赖</text><line x1="279" y1="334" x2="470" y2="334" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="279" cy="334" r="2.7" fill="#465a7d"/><rect x="92" y="352" width="374" height="27" rx="5" fill="#fbfcff"/><text x="279" y="366" text-anchor="middle" font-size="13" fill="#28364c">5 上传依赖产物、摘要和兼容元数据</text><line x1="470" y1="387" x2="88" y2="387" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="470" cy="387" r="2.7" fill="#465a7d"/><rect x="132.5" y="405" width="484" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="419" text-anchor="middle" font-size="13" fill="#28364c">6 保存并登记固定依赖产物</text><line x1="88" y1="440" x2="661" y2="440" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="88" cy="440" r="2.7" fill="#465a7d"/><rect x="323.5" y="458" width="484" height="27" rx="5" fill="#fbfcff"/><text x="565.5" y="472" text-anchor="middle" font-size="13" fill="#28364c">7 创建固定运行镜像的 Pod 及独立数据 PVC</text><line x1="279" y1="493" x2="852" y2="493" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-1-arrow)"/><circle cx="279" cy="493" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 5 · 第 1/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div><div class="diagram-panel"><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 456" role="img" aria-labelledby="sequence-5-2-title sequence-5-2-desc" data-events="6"><title id="sequence-5-2-title">时序图 5 第 2 部分</title><desc id="sequence-5-2-desc">Pod 到 Backend：8 初始化阶段请求代码和依赖内容；Backend 到 Store：9 读取已确认产物；Backend 到 Pod：10 流式返回文件；初始化校验摘要；Pod 到 Pod：11 只读挂载代码/依赖，读写挂载 /data；Pod 到 Runtime：12 就绪通过后切换路由；Runtime 到 Backend：13 返回发布结果与产物组合</desc><defs><marker id="sequence-5-2-arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7" fill="#465a7d"/></marker></defs><rect width="940" height="456" rx="12" fill="#fbfcff"/><line x1="88" y1="76" x2="88" y2="444" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="11" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="88" y="38" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">Backend 发布与产物</text><text x="88" y="57" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">API</text><line x1="279" y1="76" x2="279" y2="444" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="202" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="279" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">商业 runtime</text><line x1="470" y1="76" x2="470" y2="444" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="393" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="470" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">依赖准备 Job</text><line x1="661" y1="76" x2="661" y2="444" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="584" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="661" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">MinIO</text><line x1="852" y1="76" x2="852" y2="444" stroke="#d7deeb" stroke-dasharray="4 5"/><rect x="775" y="14" width="154" height="62" rx="9" fill="#eef2fa" stroke="#cbd5e5"/><text x="852" y="47" text-anchor="middle" font-size="14" font-weight="600" fill="#263959">应用 Pod</text><rect x="228" y="92" width="484" height="27" rx="5" fill="#fbfcff"/><text x="470" y="106" text-anchor="middle" font-size="13" fill="#28364c">8 初始化阶段请求代码和依赖内容</text><line x1="852" y1="127" x2="88" y2="127" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-2-arrow)"/><circle cx="852" cy="127" r="2.7" fill="#465a7d"/><rect x="132.5" y="145" width="484" height="27" rx="5" fill="#fbfcff"/><text x="374.5" y="159" text-anchor="middle" font-size="13" fill="#28364c">9 读取已确认产物</text><line x1="88" y1="180" x2="661" y2="180" stroke="#465a7d" stroke-width="1.6"  marker-end="url(#sequence-5-2-arrow)"/><circle cx="88" cy="180" r="2.7" fill="#465a7d"/><rect x="228" y="198" width="484" height="27" rx="5" fill="#fbfcff"/><text x="470" y="212" text-anchor="middle" font-size="13" fill="#28364c">10 流式返回文件；初始化校验摘要</text><line x1="88" y1="233" x2="852" y2="233" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-5-2-arrow)"/><circle cx="88" cy="233" r="2.7" fill="#465a7d"/><rect x="619" y="251" width="314" height="27" rx="5" fill="#f0f4fa"/><text x="776" y="265" text-anchor="middle" font-size="13" fill="#28364c">11 只读挂载代码/依赖，读写挂载 /data</text><path d="M 852 286 h 32 v 17 h -32" fill="none" stroke="#465a7d" stroke-width="1.5" marker-end="url(#sequence-5-2-arrow)"/><circle cx="852" cy="286" r="2.7" fill="#465a7d"/><rect x="323.5" y="314" width="484" height="27" rx="5" fill="#fbfcff"/><text x="565.5" y="328" text-anchor="middle" font-size="13" fill="#28364c">12 就绪通过后切换路由</text><line x1="852" y1="349" x2="279" y2="349" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-5-2-arrow)"/><circle cx="852" cy="349" r="2.7" fill="#465a7d"/><rect x="92" y="367" width="183" height="27" rx="5" fill="#fbfcff"/><text x="183.5" y="381" text-anchor="middle" font-size="13" fill="#28364c">13 返回发布结果与产物组合</text><line x1="279" y1="402" x2="88" y2="402" stroke="#465a7d" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#sequence-5-2-arrow)"/><circle cx="279" cy="402" r="2.7" fill="#465a7d"/></svg></div><figcaption>图 5 · 第 2/2 部分 · 按步骤编号连续阅读；窄屏可横向滚动</figcaption></div></figure><p><strong>建议的版本单元</strong>是 <code>运行镜像 digest＋代码包 SHA-256＋依赖产物 SHA-256＋启动/健康契约</code>。不要在多个在线实例共用的目录中覆盖代码，也不要在每次正常启动时联网执行任意 <code>pip install/npm install</code>。依赖准备应在上线前完成，失败不切流；运行初始化只取经过确认的产物。K8s 的 init container＋共享卷可以承接下载和准备步骤，但具体隔离与缓存属于新增实现。<a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-initialization/">R09</a></p>
@@ -1449,7 +1449,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <td>停用释放额度不等于删除数据库，恢复不能新建空库替代旧库</td>
 </tr>
 </tbody></table></div>
-<p>当前 manager 的 <code>AdmissionService</code> 只检查 CPU/内存，<code>DesiredStateStore</code> 是本地 JSON＋进程内锁；它们不是商业额度的全局事务实现。必须新增商业账本或等效的受控单写权威，并明确故障补偿和对账。<a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a> <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/admission.py#L137">C39</a></p>
+<p>当前 manager 的 <code>AdmissionService</code> 只检查 CPU/内存，<code>DesiredStateStore</code> 是本地 JSON＋进程内锁；它们不是商业额度的全局事务实现。必须新增商业账本或等效的受控单写权威，并明确故障补偿和对账。<a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a> <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/admission.py#L137">C39</a></p>
 <h3>6.5 各种保护手段能解决什么</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -1462,7 +1462,7 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 <tbody><tr>
 <td>当前内部 HMAC</td>
 <td>共享密钥下的调用方认证、方法/路径/请求体完整性</td>
-<td>不是厂商许可证；当前签名串没有时间戳和 nonce，不自带操作级防重放 <a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/auth.py#L42">C35</a></td>
+<td>不是厂商许可证；当前签名串没有时间戳和 nonce，不自带操作级防重放 <a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/auth.py#L42">C35</a></td>
 </tr>
 <tr>
 <td>网络隔离、最小权限</td>
@@ -1492,8 +1492,8 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tbody></table></div>
 <p>如果已有完整 manager 源码对外发布，后续闭源不能消除既有副本。客户控制宿主机时也可以自行搭建其他编排实现。实际目标应是保护官方商业实现和后续能力、提高绕过成本，并让标准交付路径中的额度可信，而不是承诺“拥有 root 的客户绝对无法绕过”。</p>
 <h3>6.6 Gateway 已有机制与需要新增的能力</h3>
-<p>所检查 Gateway 提交中存在 <code>dsh_entitlement</code> 的 RS256 签名校验；DSH 的 <code>DshLicenseState</code> 有内置 10 席位，并在签名无效/过期时计算其有效授权。它控制 DSH 席位，<strong>不是托管应用上线数量</strong>；不能直接复用该 audience、能力字段或过期回收策略来控制应用。<a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshEntitlementService.java#L39">G01</a> <a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshLicenseState.java#L13">G02</a></p>
-<p>可参考受信公钥、签名授权解析、有效授权状态和审计表达方式。托管模块仍需独立的能力标识、授权绑定、在线应用账本和执行校验；在本次检查的 Gateway 源码中未发现完整 app-hosting runtime 或相应在线应用额度实现。现有许可证状态接口也不能单独证明托管授权存在。<a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/config/LicenseStatusHolder.java#L19">G03</a></p>
+<p>所检查 Gateway 提交中存在 <code>dsh_entitlement</code> 的 RS256 签名校验；DSH 的 <code>DshLicenseState</code> 有内置 10 席位，并在签名无效/过期时计算其有效授权。它控制 DSH 席位，<strong>不是托管应用上线数量</strong>；不能直接复用该 audience、能力字段或过期回收策略来控制应用。G01 G02</p>
+<p>可参考受信公钥、签名授权解析、有效授权状态和审计表达方式。托管模块仍需独立的能力标识、授权绑定、在线应用账本和执行校验；在本次检查的 Gateway 源码中未发现完整 app-hosting runtime 或相应在线应用额度实现。现有许可证状态接口也不能单独证明托管授权存在。G03</p>
 <p><a id="section-7"></a></p>
 <h2>7. 评审事项、验证场景与实施影响</h2>
 <h3>7.1 应在定案前回答的事项</h3>
@@ -1680,257 +1680,257 @@ web: uvicorn main:app --host 0.0.0.0 --port $PORT
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/commands/deploy.py#L54">C01</a></td>
-<td><code>src/bisheng-cli/bisheng_cli/commands/deploy.py:54</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py#L54">C01</a></td>
+<td><code>src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py:54</code></td>
 <td>CLI 上传与轮询</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/packaging.py#L110">C02</a></td>
-<td><code>src/bisheng-cli/bisheng_cli/packaging.py:110</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/packaging.py#L110">C02</a></td>
+<td><code>src/doberman-agent-cli/doberman_agent_cli/packaging.py:110</code></td>
 <td>可重复打包与 SHA-256</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/schemas/app_manifest.py#L147">C03</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/schemas/app_manifest.py:147</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py#L147">C03</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py:147</code></td>
 <td>应用清单字段</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/package_service.py#L61">C04</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/package_service.py:61</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/package_service.py#L61">C04</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/package_service.py:61</code></td>
 <td>私有桶、解包与代码快照</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/core/config/app_runtime.py#L45">C05</a></td>
-<td><code>src/backend/bisheng/core/config/app_runtime.py:45</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/core/config/app_runtime.py#L45">C05</a></td>
+<td><code>src/backend/doberman_agent/core/config/app_runtime.py:45</code></td>
 <td>后端配置及包限制</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py:92</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L92">C06</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py:92</code></td>
 <td>异步发布阶段与接收入口</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/precheck_service.py#L156">C07</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/precheck_service.py:156</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/precheck_service.py#L156">C07</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/precheck_service.py:156</code></td>
 <td>构建、预签名下载与临时探活</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/schemas.py#L37">C08</a></td>
 <td><code>src/runtime-manager/runtime_manager/api/schemas.py:37</code></td>
 <td>编排 API 参数模型</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/builder.py#L76">C09</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/builder.py#L76">C09</a></td>
 <td><code>src/runtime-manager/runtime_manager/builder.py:76</code></td>
 <td>模板、基础镜像和构建流程</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/docker_backend.py#L124">C10</a></td>
 <td><code>src/runtime-manager/runtime_manager/docker_backend.py:124</code></td>
 <td>Docker API 协议与真实实现</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42">C11</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2#L42">C11</a></td>
 <td><code>src/runtime-manager/runtime_manager/templates/python3.11/Dockerfile.j2:42</code></td>
 <td>依赖层与源码层</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2#L27">C12</a></td>
 <td><code>src/runtime-manager/runtime_manager/templates/python3.11/entrypoint.sh.j2:27</code></td>
 <td>Python 启动入口</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2#L44">C13</a></td>
 <td><code>src/runtime-manager/runtime_manager/templates/node20/entrypoint.sh.j2:44</code></td>
 <td>Node 启动入口</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/publish_online_service.py#L110">C14</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/publish_online_service.py:110</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py#L110">C14</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py:110</code></td>
 <td>审批通过、停用分支与迁移顺序</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L283">C15</a></td>
-<td><code>src/backend/bisheng/app_runtime/domain/services/app_state_service.py:283</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L283">C15</a></td>
+<td><code>src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py:283</code></td>
 <td>应用状态与上线意图</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/lifecycle.py#L209">C16</a></td>
 <td><code>src/runtime-manager/runtime_manager/lifecycle.py:209</code></td>
 <td>容器参数、部署、路由切换与删除</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/config.py#L57">C17</a></td>
 <td><code>src/runtime-manager/runtime_manager/config.py:57</code></td>
 <td>RTM 配置、路径和超时默认值</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/desired_state.py#L229">C18</a></td>
 <td><code>src/runtime-manager/runtime_manager/desired_state.py:229</code></td>
 <td>本地期望状态持久化</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/reconciler.py#L192">C19</a></td>
 <td><code>src/runtime-manager/runtime_manager/reconciler.py:192</code></td>
 <td>重启接管、修复及孤儿清理</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/preview.py#L18">C20</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/preview.py#L18">C20</a></td>
 <td><code>src/runtime-manager/runtime_manager/preview.py:18</code></td>
 <td>审批预览的数据库隔离</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/appdb.py#L509">C21</a></td>
 <td><code>src/runtime-manager/runtime_manager/appdb.py:509</code></td>
 <td>SQLite 数据面、迁移和一致性快照</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/storage.py#L147">C22</a></td>
 <td><code>src/runtime-manager/runtime_manager/storage.py:147</code></td>
 <td>MinIO 附件句柄和应用隔离</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/main.py#L79">C23</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/main.py#L79">C23</a></td>
 <td><code>src/runtime-manager/runtime_manager/main.py:79</code></td>
 <td>manager 入口与路由注册</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/clients.py#L177">C24</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/clients.py#L177">C24</a></td>
 <td><code>src/app-proxy/app_proxy/clients.py:177</code></td>
 <td>入口鉴权和路由的双 RPC</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py#L88">C25</a></td>
-<td><code>src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py:88</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py#L88">C25</a></td>
+<td><code>src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py:88</code></td>
 <td>入口权限及 OBO</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/app-proxy/app_proxy/headers.py#L29">C26</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/app-proxy/app_proxy/headers.py#L29">C26</a></td>
 <td><code>src/app-proxy/app_proxy/headers.py:29</code></td>
 <td>身份头清理与注入</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress.py#L444">C27</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress.py#L444">C27</a></td>
 <td><code>src/runtime-manager/runtime_manager/egress.py:444</code></td>
 <td>出站策略持久化和运行配置</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/egress_proxy.py#L171">C28</a></td>
 <td><code>src/runtime-manager/runtime_manager/egress_proxy.py:171</code></td>
 <td>独立出站转发进程</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/docker-compose.yml#L277">C29</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/docker-compose.yml#L277">C29</a></td>
 <td><code>docker/docker-compose.yml:277</code></td>
 <td>四进程部署、网络、挂载和配置</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/docker/nginx/conf.d/default.conf#L80">C30</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/docker/nginx/conf.d/default.conf#L80">C30</a></td>
 <td><code>docker/nginx/conf.d/default.conf:80</code></td>
 <td>浏览器入口反向代理</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/README.md#L1">C31</a></td>
-<td><code>src/bisheng-sdk/README.md:1</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/README.md#L1">C31</a></td>
+<td><code>src/doberman-agent-sdk/README.md:1</code></td>
 <td>SDK 的运行位置与三类功能</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/retrieve.py#L40">C32</a></td>
-<td><code>src/bisheng-sdk/bisheng_sdk/retrieve.py:40</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/retrieve.py#L40">C32</a></td>
+<td><code>src/doberman-agent-sdk/doberman_agent_sdk/retrieve.py:40</code></td>
 <td>检索 API 与双重身份</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-sdk/bisheng_sdk/_storage_remote.py#L3">C33</a></td>
-<td><code>src/bisheng-sdk/bisheng_sdk/_storage_remote.py:3</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py#L3">C33</a></td>
+<td><code>src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py:3</code></td>
 <td>SDK 附件服务地址</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/features/v3.0.0/059-k8s-runtime-backend/spec.md#L108">C34</a></td>
 <td><code>features/v3.0.0/059-k8s-runtime-backend/spec.md:108</code></td>
 <td>K8s 构建、仓库和 PVC 规格</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/auth.py#L42">C35</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/auth.py#L42">C35</a></td>
 <td><code>src/runtime-manager/runtime_manager/auth.py:42</code></td>
 <td>内部 HMAC 的当前实现</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/capability_bus_service.py#L384">C36</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/capability_bus_service.py:384</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py#L384">C36</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/capability_bus_service.py:384</code></td>
 <td>应用凭据和模型地址注入</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/version_service.py#L138">C37</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/version_service.py:138</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/version_service.py#L138">C37</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/version_service.py:138</code></td>
 <td>冻结版本与镜像引用</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py#L134">C38</a></td>
-<td><code>src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py:134</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py#L134">C38</a></td>
+<td><code>src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py:134</code></td>
 <td>后端编排 RPC 客户端</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/admission.py#L137">C39</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/admission.py#L137">C39</a></td>
 <td><code>src/runtime-manager/runtime_manager/admission.py:137</code></td>
 <td>资源容量准入</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/readonly.py#L245">C40</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/readonly.py#L245">C40</a></td>
 <td><code>src/runtime-manager/runtime_manager/api/readonly.py:245</code></td>
 <td>运行环境自检</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L128">C41</a></td>
-<td><code>src/backend/bisheng/app_publish/api/endpoints/deploy.py:128</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L128">C41</a></td>
+<td><code>src/backend/doberman_agent/app_publish/api/endpoints/deploy.py:128</code></td>
 <td>发布 HTTP 接口及鉴权依赖</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/dev_toolkit/api/endpoints/distribution.py#L271">C42</a></td>
-<td><code>src/backend/bisheng/dev_toolkit/api/endpoints/distribution.py:271</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/dev_toolkit/api/endpoints/distribution.py#L271">C42</a></td>
+<td><code>src/backend/doberman_agent/dev_toolkit/api/endpoints/distribution.py:271</code></td>
 <td>SDK 的平台内分发</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/preview_instance_service.py#L440">C43</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/preview_instance_service.py:440</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py#L440">C43</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py:440</code></td>
 <td>预览参数与回收</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/probe.py#L126">C44</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/probe.py#L126">C44</a></td>
 <td><code>src/runtime-manager/runtime_manager/probe.py:126</code></td>
 <td>临时镜像探活与回收</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46">C45</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2#L46">C45</a></td>
 <td><code>src/runtime-manager/runtime_manager/templates/node20/Dockerfile.j2:46</code></td>
 <td>Node 依赖和前端编译</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/runtime-manager/runtime_manager/api/appdb.py#L27">C46</a></td>
 <td><code>src/runtime-manager/runtime_manager/api/appdb.py:27</code></td>
 <td>SQLite 数据管理接口</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/bisheng-cli/bisheng_cli/ignore.py#L42">C47</a></td>
-<td><code>src/bisheng-cli/bisheng_cli/ignore.py:42</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/doberman-agent-cli/doberman_agent_cli/ignore.py#L42">C47</a></td>
+<td><code>src/doberman-agent-cli/doberman_agent_cli/ignore.py:42</code></td>
 <td>CLI 默认排除规则</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng/blob/736ef593f3fc6e1634008c842d2604304d6f70a6/src/backend/bisheng/app_publish/domain/services/app_credential_service.py#L134">C48</a></td>
-<td><code>src/backend/bisheng/app_publish/domain/services/app_credential_service.py:134</code></td>
+<td><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py#L134">C48</a></td>
+<td><code>src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py:134</code></td>
 <td>应用凭据重签与撤销顺序</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshEntitlementService.java#L39">G01</a></td>
+<td>G01</td>
 <td><code>src/main/java/com/dataelem/gateway/dsh/service/DshEntitlementService.java:39</code></td>
 <td>DSH 签名校验</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/dsh/service/DshLicenseState.java#L13">G02</a></td>
+<td>G02</td>
 <td><code>src/main/java/com/dataelem/gateway/dsh/service/DshLicenseState.java:13</code></td>
 <td>DSH 免费席位基线</td>
 </tr>
 <tr>
-<td><a href="https://github.com/dataelement/bisheng-gateway/blob/faed249a96ea43a4c65b90765dd4054bf6e55722/src/main/java/com/dataelem/gateway/config/LicenseStatusHolder.java#L19">G03</a></td>
+<td>G03</td>
 <td><code>src/main/java/com/dataelem/gateway/config/LicenseStatusHolder.java:19</code></td>
 <td>Gateway 许可证状态</td>
 </tr>

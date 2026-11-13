@@ -14,8 +14,8 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
 
-from bisheng.permission.application.resource_api import _split_resource_key
-from bisheng.tenant.domain.services.f048_permission_subject import (
+from doberman_agent.permission.application.resource_api import _split_resource_key
+from doberman_agent.tenant.domain.services.f048_permission_subject import (
     TenantPermissionSubjectDirectory,
 )
 
@@ -48,8 +48,8 @@ def test_inherited_creator_rows_are_dropped() -> None:
 
 
 async def test_resource_display_names_resolves_spaces_and_folders(monkeypatch) -> None:
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
 
     async def load_spaces(ids: list[int]):
         assert ids == [3377]
@@ -79,7 +79,7 @@ async def test_resource_display_names_resolves_spaces_and_folders(monkeypatch) -
 
     monkeypatch.setattr(KnowledgeDao, "aget_list_by_ids", load_spaces)
     monkeypatch.setattr(KnowledgeFileDao, "aget_file_by_ids", load_folders)
-    monkeypatch.setattr("bisheng.core.database.get_async_db_session", lambda: db_session())
+    monkeypatch.setattr("doberman_agent.core.database.get_async_db_session", lambda: db_session())
 
     labels = await TenantPermissionSubjectDirectory().resource_display_names(
         (
@@ -112,7 +112,7 @@ async def test_resource_display_names_skips_deleted_hosted_apps(monkeypatch) -> 
     flag: the lookup must carry that predicate, or a service account's grant
     list keeps naming applications that no longer exist."""
 
-    from bisheng.database.models.app import App
+    from doberman_agent.database.models.app import App
 
     statements = []
 
@@ -125,7 +125,7 @@ async def test_resource_display_names_skips_deleted_hosted_apps(monkeypatch) -> 
     async def db_session():
         yield Session()
 
-    monkeypatch.setattr("bisheng.core.database.get_async_db_session", lambda: db_session())
+    monkeypatch.setattr("doberman_agent.core.database.get_async_db_session", lambda: db_session())
 
     labels = await TenantPermissionSubjectDirectory().resource_display_names((("app", "app-1"),))
 

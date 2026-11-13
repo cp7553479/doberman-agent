@@ -16,11 +16,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.database.models.tenant import ROOT_TENANT_ID
-from bisheng.llm.domain.schemas import LLMServerCreateReq
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID
+from doberman_agent.llm.domain.schemas import LLMServerCreateReq
+from doberman_agent.llm.domain.services.llm import LLMService
 
-SERVICE = "bisheng.llm.domain.services.llm"
+SERVICE = "doberman_agent.llm.domain.services.llm"
 CHILD_TENANT_ID = 7
 
 

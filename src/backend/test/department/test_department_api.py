@@ -9,7 +9,7 @@ Part of F002-department-tree.
 # ---------------------------------------------------------------------------
 # Setup: Create minimal app with department routes
 # ---------------------------------------------------------------------------
-# Pre-mock heavy imports before any bisheng import
+# Pre-mock heavy imports before any doberman_agent import
 import sys
 from contextlib import asynccontextmanager
 from unittest.mock import MagicMock, patch
@@ -29,8 +29,8 @@ from test.fixtures.mock_services import premock_import_chain
 
 premock_import_chain()
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.department.api.router import router as department_router
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.department.api.router import router as department_router
 
 
 class MockAdminUser:
@@ -257,7 +257,7 @@ def client(async_engine):
     app.dependency_overrides[UserPayload.get_login_user] = get_admin_user
 
     with patch(
-        "bisheng.department.domain.services.department_service.get_async_db_session",
+        "doberman_agent.department.domain.services.department_service.get_async_db_session",
         mock_get_async_db_session,
     ):
         with TestClient(app) as c:
@@ -289,7 +289,7 @@ def non_admin_client(async_engine):
     app.dependency_overrides[UserPayload.get_login_user] = get_non_admin
 
     with patch(
-        "bisheng.department.domain.services.department_service.get_async_db_session",
+        "doberman_agent.department.domain.services.department_service.get_async_db_session",
         mock_get_async_db_session,
     ):
         with TestClient(app) as c:

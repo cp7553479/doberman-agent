@@ -1,4 +1,4 @@
-import { Button, Select } from "@bisheng/ui";
+import { Button, Select } from "@doberman-agent/ui";
 import { GlobeIcon, Settings2Icon } from "lucide-react";
 import { useLocalize } from "~/hooks";
 import useSelectCopy from "~/hooks/useSelectCopy";

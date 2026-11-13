@@ -3,10 +3,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.chat.clients import workflow_client as workflow_client_module
-from bisheng.common.chat.clients.workflow_client import WorkflowClient
-from bisheng.database.models.flow import FlowStatus
-from bisheng.workflow.common.workflow import WorkflowStatus
+from doberman_agent.common.chat.clients import workflow_client as workflow_client_module
+from doberman_agent.common.chat.clients.workflow_client import WorkflowClient
+from doberman_agent.database.models.flow import FlowStatus
+from doberman_agent.workflow.common.workflow import WorkflowStatus
 
 
 class FakeRedisCallback:

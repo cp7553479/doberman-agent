@@ -16,7 +16,7 @@
 import { appActionState } from "./appActions"
 import { AppSecretSettings } from "./publish/AppSecretSettings"
 import { LoadingIcon } from "@/components/bs-icons/loading"
-import { Tabs } from "@bisheng/ui"
+import { Tabs } from "@doberman-agent/ui"
 import { useTranslation } from "react-i18next"
 import { useParams, useSearchParams } from "react-router-dom"
 import { HostedAppHeader } from "./Header"

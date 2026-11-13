@@ -1,8 +1,8 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import { clampKnowledgeQuotaGbDisplay,RoleQuotaState } from "./roleQuotaConfig";
 

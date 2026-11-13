@@ -2,7 +2,7 @@
 
 `POST /api/v2/filelib/retrieve`
 
-跨一个或多个知识库返回 top-k chunks，**不**调用 LLM 生成回答。面向外部检索集成场景（自带 LLM 的 agent、Deep Research 工作流、第三方 RAG 编排器），是 BiSheng 工作台「日常模式 + 知识库检索」中检索阶段的 HTTP 化暴露。
+跨一个或多个知识库返回 top-k chunks，**不**调用 LLM 生成回答。面向外部检索集成场景（自带 LLM 的 agent、Deep Research 工作流、第三方 RAG 编排器），是 doberman-agent 工作台「日常模式 + 知识库检索」中检索阶段的 HTTP 化暴露。
 
 ---
 
@@ -10,16 +10,16 @@
 
 | 场景 | 是否合适 |
 |---|---|
-| 外部 agent 用自己的 LLM 生成答案，需要 BiSheng 的检索能力 | ✅ |
+| 外部 agent 用自己的 LLM 生成答案，需要 doberman-agent 的检索能力 | ✅ |
 | Deep Research / DeepAgents 类多源检索拼接 | ✅ |
-| 自建 RAG 流水线接 BiSheng 知识库当 retriever | ✅ |
+| 自建 RAG 流水线接 doberman-agent 知识库当 retriever | ✅ |
 | 普通用户聊天问答 | ❌ 用 `POST /api/v1/knowledge/space/{space_id}/chat/folder`（SSE 流式 RAG） |
 
 ---
 
 ## 2. 认证
 
-沿用 BiSheng OpenAPI（`/api/v2/*`）的统一模式：**每个请求必须携带服务账号密钥**。
+沿用 doberman-agent OpenAPI（`/api/v2/*`）的统一模式：**每个请求必须携带服务账号密钥**。
 
 - 请求头 `Authorization: Bearer <密钥>`。无密钥一律拒绝，没有任何兼容开关或回落路径。
 - 不接收用户 JWT，也不读取 `access_token_cookie`。
@@ -70,7 +70,7 @@ Content-Type: application/json
 | 字段 | 类型 | 必填 | 默认 | 说明 |
 |---|---|---|---|---|
 | `query` | string | ✅ | — | 用户问题。最小长度 1。 |
-| `knowledge_base_ids` | int[] | ✅ | — | 要检索的知识库 ID 列表（即 BiSheng 内部的 knowledge space id），至少 1 个。 |
+| `knowledge_base_ids` | int[] | ✅ | — | 要检索的知识库 ID 列表（即 doberman-agent 内部的 knowledge space id），至少 1 个。 |
 | `filters` | object | ❌ | null | 检索过滤器，目前仅支持按知识库分别配置 tag 过滤。 |
 | `filters.knowledge_base_filters` | array | ❌ | `[]` | 每个 entry 配置一个 KB 的过滤条件。 |
 | `filters.knowledge_base_filters[].knowledge_base_id` | int | ✅ | — | 必须出现在 `knowledge_base_ids` 中，否则 400。 |
@@ -135,7 +135,7 @@ Content-Type: application/json
 |---|---|---|
 | `content` | string | chunk 原文。可能含 markdown 图片标记（`![](path/IMAGE_X.png)`），渲染时建议保留。 |
 | `knowledge_id` | int | 该 chunk 来源的知识库 ID。多 KB 调用下用于区分来源。 |
-| `document_id` | int | 文档（文件）ID，在 BiSheng 内对应 `KnowledgeFile.id`。 |
+| `document_id` | int | 文档（文件）ID，在 doberman-agent 内对应 `KnowledgeFile.id`。 |
 | `document_name` | string | 文档名称（含扩展名）。 |
 | `chunk_index` | int | chunk 在文档内的顺序号，从 0 开始。 |
 
@@ -176,7 +176,7 @@ Content-Type: application/json
 
 ### 5.2 业务错误（HTTP 200 + 错误 status_code）
 
-BiSheng 沿用了「HTTP 200 + body 内 status_code」的统一响应模型用于业务错误：
+doberman-agent 沿用了「HTTP 200 + body 内 status_code」的统一响应模型用于业务错误：
 
 | `status_code` | HTTP | 含义 | 何时触发 |
 |---|---|---|---|
@@ -207,7 +207,7 @@ BiSheng 沿用了「HTTP 200 + body 内 status_code」的统一响应模型用�
 ### 6.1 单 KB，整库检索
 
 ```bash
-curl -X POST 'http://bisheng-host:7860/api/v2/filelib/retrieve' \
+curl -X POST 'http://doberman-agent-host:7860/api/v2/filelib/retrieve' \
   -H 'Content-Type: application/json' \
   -d '{
     "query": "如何配置 SSO 登录?",
@@ -219,7 +219,7 @@ curl -X POST 'http://bisheng-host:7860/api/v2/filelib/retrieve' \
 ### 6.2 多 KB，部分库带 tag 过滤
 
 ```bash
-curl -X POST 'http://bisheng-host:7860/api/v2/filelib/retrieve' \
+curl -X POST 'http://doberman-agent-host:7860/api/v2/filelib/retrieve' \
   -H 'Content-Type: application/json' \
   -d '{
     "query": "审批流程的常见问题",
@@ -249,7 +249,7 @@ curl -X POST 'http://bisheng-host:7860/api/v2/filelib/retrieve' \
 import httpx
 
 resp = httpx.post(
-    "http://bisheng-host:7860/api/v2/filelib/retrieve",
+    "http://doberman-agent-host:7860/api/v2/filelib/retrieve",
     json={
         "query": "How do I configure tenant isolation?",
         "knowledge_base_ids": [1, 2],
@@ -270,16 +270,16 @@ from langchain_core.tools import tool
 import httpx
 
 @tool
-def bisheng_retrieve(query: str, knowledge_base_ids: list[int], top_k: int = 10) -> list[dict]:
-    """Retrieve top-k chunks from BiSheng knowledge bases without LLM generation."""
+def doberman_agent_retrieve(query: str, knowledge_base_ids: list[int], top_k: int = 10) -> list[dict]:
+    """Retrieve top-k chunks from doberman-agent knowledge bases without LLM generation."""
     resp = httpx.post(
-        "http://bisheng-host:7860/api/v2/filelib/retrieve",
+        "http://doberman-agent-host:7860/api/v2/filelib/retrieve",
         json={"query": query, "knowledge_base_ids": knowledge_base_ids, "top_k": top_k},
         timeout=30.0,
     )
     body = resp.json()
     if body.get("status_code") != 200:
-        raise RuntimeError(f"BiSheng retrieve failed: {body.get('status_message')}")
+        raise RuntimeError(f"doberman-agent retrieve failed: {body.get('status_message')}")
     return body["data"]["chunks"]
 ```
 
@@ -319,7 +319,7 @@ def bisheng_retrieve(query: str, knowledge_base_ids: list[int], top_k: int = 10)
 
 ### 7.5 标签作用域
 
-- BiSheng 的标签按 `(business_type, business_id)` 划分作用域。
+- doberman-agent 的标签按 `(business_type, business_id)` 划分作用域。
 - 本接口的 tag 在 `business_type=knowledge_space, business_id=<knowledge_base_id>` 的空间下查找。
 - 同名标签在不同 KB 下是不同记录——传 tag 名时不会跨 KB 混淆。
 
@@ -347,7 +347,7 @@ def bisheng_retrieve(query: str, knowledge_base_ids: list[int], top_k: int = 10)
 
 - **当前状态**：v2.6.0 引入。后续版本会补齐 `tag_match_mode=ALL`、可选的 `score` 字段、`metadata` 透传开关。
 - **向后兼容承诺**：现有字段（`query`、`knowledge_base_ids`、`filters`、`top_k`、`max_content`）的语义保持稳定；新增字段会以可选项加入。
-- **响应包装**沿用 BiSheng 全局响应模型，`data` 结构在 minor 版本内保持兼容。
+- **响应包装**沿用 doberman-agent 全局响应模型，`data` 结构在 minor 版本内保持兼容。
 
 ---
 

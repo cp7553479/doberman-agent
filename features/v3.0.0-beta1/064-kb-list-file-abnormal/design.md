@@ -22,7 +22,7 @@
 - 中信保客户文档库数量多，外层列表是 F027 游标分页（约 20 条/页），筛选必须下推 SQL，不能在内存滤完再分页。
 - `knowledgefile.status` 原先无可用复合索引；筛「仅异常」时，无异常的大库会沿 `knowledge_id` 扫完全部 SUCCESS 行才能证明不存在。
 - 文档库无文件级 ReBAC（库级可见即可），与知识空间文件夹 rollup 的 `view_file` 过滤不同。
-- Platform 尚未接入 `@bisheng/ui`；异常标签复用内层文件列表的红点+红字。
+- Platform 尚未接入 `@doberman-agent/ui`；异常标签复用内层文件列表的红点+红字。
 
 ---
 
@@ -50,10 +50,10 @@
 
 - **备选**：
   - A. 复用 `Files.tsx` 红点+红字
-  - B. 首次把 `@bisheng/ui` Tag 引进 Platform
+  - B. 首次把 `@doberman-agent/ui` Tag 引进 Platform
 - **选定**：A
 - **原因**：Platform 尚无该依赖；本次不应借一个标签完成组件库接入
-- **何时该重新考虑**：Platform 已统一接入 `@bisheng/ui`
+- **何时该重新考虑**：Platform 已统一接入 `@doberman-agent/ui`
 
 ---
 
@@ -83,7 +83,7 @@
 | `knowledge_file.py` | 异常状态常量、批量 EXISTS、复合索引声明 | 不组装列表行 |
 | `knowledge.py` DAO | 列表 WHERE 下推 EXISTS | 不计算展示文案 |
 | `knowledge_service.py` | 传筛选参数；QA+仅异常直接空页；异步组装布尔字段 | 不改权限裁决 |
-| `KnowledgeFile.tsx` | 列、红标签、表头筛选 | 不引入 `@bisheng/ui` |
+| `KnowledgeFile.tsx` | 列、红标签、表头筛选 | 不引入 `@doberman-agent/ui` |
 | `Files.tsx` | 读 `fileStatus=abnormal` 预筛内层 | 不改外层列表 |
 
 ---
@@ -132,7 +132,7 @@
 ## 8. 后续改进 / 不打算做的事
 
 - 异常文件数、分状态标签：产品只要布尔「异常」。
-- Platform 接入 `@bisheng/ui` Tag：等平台级接入，不在本 Feature 做。
+- Platform 接入 `@doberman-agent/ui` Tag：等平台级接入，不在本 Feature 做。
 - v2 筛选参数：本期无开放面需求。
 
 ---

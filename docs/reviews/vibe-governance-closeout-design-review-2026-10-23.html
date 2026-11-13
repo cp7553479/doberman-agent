@@ -27,10 +27,10 @@
 </tbody>
 </table>
 <ul>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-manual-apply-design-review-2026-10-23.md">本轮 F055 简化设计评审</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-manual-apply-architecture-final-2026-10-23.md">本轮独立复审</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-round3-review-2026-10-23.md">上轮三份设计的问题</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-simplification-2026-10-23.md">此前简化提案（历史，规格已确认）</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-manual-apply-design-review-2026-10-23.md">本轮 F055 简化设计评审</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-manual-apply-architecture-final-2026-10-23.md">本轮独立复审</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-round3-review-2026-10-23.md">上轮三份设计的问题</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-app-secrets-simplification-2026-10-23.md">此前简化提案（历史，规格已确认）</a></li>
 </ul>
 <h2 id="summary-3">2. 新旧方案对比</h2>
 <table>
@@ -362,7 +362,7 @@
 <blockquote>
 <p><strong>2026-10-23 设计评审稿，待用户单独确认。</strong> 规格已确认，本文新增设计尚未实现。
 现状基线：<code>5f2541f4bc483c24624fede9031c88c4ec6f58f4</code>；增量规格确认提交：<code>dda16a6502908ba8d58cff61dc350c0213b86c19</code>。旧版 D1–D15 编号保留，内容按当前代码刷新；历史任务的行号、坑编号和 MVP 后置说法不作为当前实现状态。</p>
-<p>What：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/spec.md">spec.md</a>（73 条 AC）；流水账：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/tasks.md">tasks.md</a>；不变量：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。本轮只补 AC-66、AC-67、AC-68、AC-69、AC-70、AC-71、AC-72、AC-73，对应历史 T098 / T099，不重开 F059 / F086 验收。</p>
+<p>What：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/spec.md">spec.md</a>（73 条 AC）；流水账：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/tasks.md">tasks.md</a>；不变量：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。本轮只补 AC-66、AC-67、AC-68、AC-69、AC-70、AC-71、AC-72、AC-73，对应历史 T098 / T099，不重开 F059 / F086 验收。</p>
 </blockquote>
 <h2 id="F054-part0-2">1. 目标与非目标</h2>
 <p>保持统一应用入口、平台身份注入、持久化数据和独立编排边界，补齐 Docker 应用访问宿主服务的隔离，以及 OBO 配置不完整时的入口拒绝。为 F055 用户确认的配置重建提供现有部署执行与受限运行环境只读协议。</p>
@@ -374,7 +374,7 @@
 <li>Docker 隔离规则必须在 <strong>Docker 宿主网络命名空间</strong>生效。manager 容器中执行 iptables 或检查容器自己的 INPUT，不能证明宿主已隔离。</li>
 <li>原生 nftables 与 iptables 是两种支持路径；本轮 Docker 托管网络只声明支持 IPv4。发现 IPv6、未识别网络后端、无法证明实际隔离时，拒绝新部署，不假装支持。</li>
 <li>宿主规则变更只操作自有链/表，不能清空 INPUT/FORWARD/DOCKER-USER，也不能修改其他网络的全局默认策略。</li>
-<li>Constitution Check：遵守 <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8。新增隔离报告由 Repository 落库（C1/C8）；租户对象、权限入口沿用 C3/C4；新字段/迁移用通用类型（C2），错误码沿用 161 段（C5）；HMAC 与 OBO 分开配置（C6）。本轮无铁律例外。</li>
+<li>Constitution Check：遵守 <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8。新增隔离报告由 Repository 落库（C1/C8）；租户对象、权限入口沿用 C3/C4；新字段/迁移用通用类型（C2），错误码沿用 161 段（C5）；HMAC 与 OBO 分开配置（C6）。本轮无铁律例外。</li>
 </ul>
 <h2 id="F054-part0-4">3. 方案对比与选定</h2>
 <h3 id="F054-part0-5">D1：独立 manager + backend 持久意图</h3>
@@ -382,7 +382,7 @@
 <h3 id="F054-part0-6">D2：Docker 经 socket proxy，K8s 经受限 API</h3>
 <p>当前 Docker 配置已经是 socket proxy，不再采用旧设计的“先直挂 docker.sock”。通用代理限制 API 面但不是业务授权器；manager 仍持有高权限编排面。拒绝把三种代理与 backend 合并来省进程。只有权限模型改变且验证隔离等价时重议。</p>
 <h3 id="F054-part0-7">D3：交付模式服从 F086 / F059</h3>
-<p>当前有 bundle、完整 image、source-image，支持 Python 3.11 / Node 20 / static，不再是首发 Python 模板单一路线。选用已冻结 delivery/profile/digest；拒绝运行中重新选择可变默认镜像。依赖缓存、离线交付和 K8s 组装的详细契约分别见 <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/086-vibe-runtime-delivery/design.md">F086 design</a>、<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/059-k8s-runtime-backend/design.md">F059 design</a>。新增运行时时再评估。</p>
+<p>当前有 bundle、完整 image、source-image，支持 Python 3.11 / Node 20 / static，不再是首发 Python 模板单一路线。选用已冻结 delivery/profile/digest；拒绝运行中重新选择可变默认镜像。依赖缓存、离线交付和 K8s 组装的详细契约分别见 <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/086-vibe-runtime-delivery/design.md">F086 design</a>、<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/059-k8s-runtime-backend/design.md">F059 design</a>。新增运行时时再评估。</p>
 <h3 id="F054-part0-8">D4：自愈与切流复用现有围栏</h3>
 <p>探活成功才提交路由；旧写入者确认停止才允许新的 SQLite 写入者；恢复沿用原操作、deadline、资源 UID，不以重启为理由无限延长。禁止只用容器名判定安全。底座证据见 F059 既有验收；本轮用户确认重建只复用这些机制。引入多实例数据模型时重议。</p>
 <h3 id="F054-part0-9">D5：app-proxy 保持独立入口</h3>
@@ -429,9 +429,9 @@ flowchart LR
 ```</pre></details><h3 id="F054-part2-1">4.2 既有公共合同（保留原编号语义）</h3>
 <p><strong>① runtime-manager 意图 RPC</strong>：旧 <code>POST /v1/intents/{build,deploy,stop}</code> 兼容通道与当前持久 v2 通道不可混淆。当前 backend <code>RuntimeDeliveryCoordinator</code> 创建 RuntimeOperation、wake manager；manager 以 node/role HMAC 从 <code>/api/v1/internal/app-runtime/v2/nodes/plan</code>、<code>operations/{id}</code> 拉取并 claim、上报 facts。冻结字段见 F086/F059，public caller 不可注入 sealed_env/runtime_env。旧 code_object_key 直读 MinIO 的设计不再使用。</p>
 <p><strong>② backend 状态动作 / 读口</strong>：<code>AppStateService.{publish,manual_publish,stop,resume,delete,stage_version}</code> 仍是 F055 的领域入口；<code>GET /api/v1/apps</code>、<code>/{id}</code>、<code>/{id}/instance</code>、<code>/{id}/versions</code>、<code>/{id}/logs</code>，PATCH 元信息与 actions 路由保持。版本列表只读，不提供绕过审批的直接切版本；<code>AppMetaService.update_meta</code> 为管线与页面共用。runtime-status 只供有权管理员；owner/租户范围由读服务决定，不拿 UI can 标志当后端权限。</p>
-<p><strong>③ app-proxy 注入头</strong>：<code>X-BiSheng-User-Id/User-Name/Tenant-Id/Dept-Id/Dept-Name/Dept-Path/Subject-Kind/App-Id/Access-Token/Request-Id</code>；姓名/部门等非 ASCII 值用现有 percent-encoding；入站 header lower + 下划线→连字符归一后剥离整个 x-bisheng 等价类。X-Forwarded-Prefix/Proto/Host 由 proxy 覆盖，不信客户端。OBO 现已有消费者，不能继续引用旧“可无 token 放行”例外。</p>
+<p><strong>③ app-proxy 注入头</strong>：<code>X-doberman-agent-User-Id/User-Name/Tenant-Id/Dept-Id/Dept-Name/Dept-Path/Subject-Kind/App-Id/Access-Token/Request-Id</code>；姓名/部门等非 ASCII 值用现有 percent-encoding；入站 header lower + 下划线→连字符归一后剥离整个 x-doberman-agent 等价类。X-Forwarded-Prefix/Proto/Host 由 proxy 覆盖，不信客户端。OBO 现已有消费者，不能继续引用旧“可无 token 放行”例外。</p>
 <p><strong>④ manifest 消费</strong>：形态归 F055；runtime/port/tier/database/egress/delivery/startup 由当前 schema 冻结后进入执行，见 F055 design §4.2③。新增业务 secret 名仅消费可信 formal 环境，不允许任何运行形态覆盖保留名。</p>
-<p><strong>⑤ 环境变量</strong>：<code>BISHENG_APP_DB_URL</code>、应用 base path、平台/模型/storage endpoint 与 operation-bound 凭据仍按 F086/F059 注入；本轮不改已有公开 SDK 变量名。正式、preview、probe 的身份/数据空间不可混用，构建进程不取得正式环境。</p>
+<p><strong>⑤ 环境变量</strong>：<code>DOBERMAN_AGENT_APP_DB_URL</code>、应用 base path、平台/模型/storage endpoint 与 operation-bound 凭据仍按 F086/F059 注入；本轮不改已有公开 SDK 变量名。正式、preview、probe 的身份/数据空间不可混用，构建进程不取得正式环境。</p>
 <p><strong>⑥ SQLite / 日志</strong>：DB URL 指向运行实例的 <code>/data/app.db</code>；Docker bind 与 K8s 独占 PVC 的宿主/集群映射由执行层持有。日志 <code>tail/since/keyword</code>、状态和数据动作先验 owner/租户；backend 只传意图，manager 执行备份/数据维护，经 backend 传快照。</p>
 <h3 id="F054-part2-2">4.3 关键模块职责</h3>
 <table>
@@ -449,7 +449,7 @@ flowchart LR
 <td>不接触容器、不匿名降级</td>
 </tr>
 <tr>
-<td><code>bisheng/main.py:lifespan</code></td>
+<td><code>doberman-agent/main.py:lifespan</code></td>
 <td>运行时开启时输出脱敏启动诊断</td>
 <td>不因此阻塞整个平台</td>
 </tr>
@@ -494,11 +494,11 @@ flowchart LR
 <tbody>
 <tr>
 <td>iptables</td>
-<td>自有 <code>BISHENG_APP_INPUT</code> / <code>BISHENG_APP_FORWARD</code> 链。宿主 INPUT 在其他宽泛 accept 之前跳转；FORWARD 由 DOCKER-USER 首部跳转。跳转匹配实际 app bridge 与源子网；自有链内只允许固定 egress IP/3128 的 ORIGINAL，以及源 app、<code>ctdir REPLY</code>、ESTABLISHED 的合法入口/探活响应，其余 DROP。<code>RELATED</code> 不宽泛放行</td>
+<td>自有 <code>DOBERMAN_AGENT_APP_INPUT</code> / <code>DOBERMAN_AGENT_APP_FORWARD</code> 链。宿主 INPUT 在其他宽泛 accept 之前跳转；FORWARD 由 DOCKER-USER 首部跳转。跳转匹配实际 app bridge 与源子网；自有链内只允许固定 egress IP/3128 的 ORIGINAL，以及源 app、<code>ctdir REPLY</code>、ESTABLISHED 的合法入口/探活响应，其余 DROP。<code>RELATED</code> 不宽泛放行</td>
 </tr>
 <tr>
 <td>nftables</td>
-<td>自有 <code>inet bisheng_egress</code>，同时具有 input / forward hook，优先级先于普通 filter 接受；匹配 bridge/源子网，允许条件与 iptables 同源生成。nft accept 仍需通过后续链，不能承诺绕过已有宿主拒绝策略</td>
+<td>自有 <code>inet doberman_agent_egress</code>，同时具有 input / forward hook，优先级先于普通 filter 接受；匹配 bridge/源子网，允许条件与 iptables 同源生成。nft accept 仍需通过后续链，不能承诺绕过已有宿主拒绝策略</td>
 </tr>
 <tr>
 <td>更新</td>
@@ -691,7 +691,7 @@ flowchart LR
 </section><section class="design" id="f055"><h1 id="F055-part0-1">Design: 应用发布管线与应用密钥管理</h1>
 <blockquote>
 <p><strong>2026-10-23 简化设计评审稿，待用户单独确认，未编码。</strong> 用户已确认 92 条 AC 的手动生效规格；源码基线 <code>5f2541f4bc483c24624fede9031c88c4ec6f58f4</code>。D1–D20 与 §1–§8 保持编号；正文覆盖旧三表/自动生效设计，不沿用历史设计的确认状态。</p>
-<p><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/spec.md">spec.md</a> · <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/tasks.md">tasks.md</a> · <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。主导质量属性：无意外停机、秘密隔离、运行配置与保存配置可辨识。F054 B1、F056 S1 的既有发现仍待修，不由本文宣称关闭。</p>
+<p><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/spec.md">spec.md</a> · <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/tasks.md">tasks.md</a> · <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。主导质量属性：无意外停机、秘密隔离、运行配置与保存配置可辨识。F054 B1、F056 S1 的既有发现仍待修，不由本文宣称关闭。</p>
 </blockquote>
 <h2 id="F055-part0-2">1. 目标与非目标</h2>
 <p>为已有发布/审批/运行管线补齐 owner 私有应用密钥：仅保存名称引用进版本，值加密存平台数据库，已审批正式实例按当前值注入。保存值不触发重启；页面提示当前实例与最新保存配置的差异，owner 确认后才复用部署流程重建当前版本。预检和审批预览只注入声明名与空值。</p>
@@ -702,7 +702,7 @@ flowchart LR
 <li>值只由同租户应用 natural owner 经平台会话修改；管理员、超管、审批人、SAK、PAT 均不能替 owner 写。权限 shortcut 不代替这个业务前置。</li>
 <li>声明属于冻结版本并需审批；值属于应用当前配置，改值/删值不创建版本或审批，也不自动创建运行操作。手动重建只能运行确认时的已批准当前版本，不能借机启动 pending_version。</li>
 <li>字段边界（拟定实现常量）：每应用最多 64 项；名称 ASCII <code>[A-Za-z_][A-Za-z0-9_]{0,127}</code>，区分大小写且精确匹配；值 UTF-8 不超过 16 KiB，整组不超过 128 KiB，禁止 NUL（无法放入进程 env），支持 Unicode/换行/空格/特殊字符且原样传递。空字符串表示缺失；全空格值不自动 trim 成空。</li>
-<li>遵守 <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8，不复制全局铁律。Constitution Check：新 Model/Repository/Service/Endpoint 分层；tenant_id 默认 None、非空、索引且注册自动注入；通用 LargeText/JsonType 和迁移单 head；仅 162 段新增错误码；平台持久 DB 为权威；不向 backend 引入容器 SDK。无例外。</li>
+<li>遵守 <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8，不复制全局铁律。Constitution Check：新 Model/Repository/Service/Endpoint 分层；tenant_id 默认 None、非空、索引且注册自动注入；通用 LargeText/JsonType 和迁移单 head；仅 162 段新增错误码；平台持久 DB 为权威；不向 backend 引入容器 SDK。无例外。</li>
 </ul>
 <h2 id="F055-part0-4">3. 方案对比与选定</h2>
 <h3 id="F055-part0-5">D1：同步接收 + Celery 阶段机</h3>
@@ -966,7 +966,7 @@ sequenceDiagram
 <p>在短时一致读取中选取 current App/version、route 与对应 operation 的 sealed_env；重新确认 route identity 未变化后才报告 same/different。最新配置在本次读的 revision 上比较声明子集，未引用项忽略，缺项归一为空；不作值 trim/编码转换。A→B→A 归为 same；仅配置 revision 增长不能归 different。若无运行实例，not_running；已有执行但快照缺失/无法解密、状态未知或 route 变化不能安全比较，unknown 并给安全原因，不返回空集合冒充 same。读后再发生保存属于下一次查询，响应含所观察 revision/route epoch；前端丢弃旧请求并在保存/操作终态刷新。</p>
 <p>运行上下文已由 operation 持有；只读服务不能返回任意历史 operation 的明文环境。日志及比较需要的受限上下文按现有操作留存管理；清理后不额外复制秘密历史，比较可用性退化为 unknown。changed_names 仅包含调用者有资格读取的当前声明名；审批人看版本缺值，不读生产差异。</p>
 <p><strong>⑤ 名称、平台变量与输出保护</strong></p>
-<p>保留 <code>BISHENG_*</code>、<code>RTM_*</code>、<code>KUBERNETES_*</code>、<code>MINIO_*</code>、<code>OPENAI_*</code>、<code>HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY</code>（含小写），及 <code>PATH/HOME/LD_*/PYTHONPATH/PYTHONHOME/NODE_OPTIONS/PORT/HOST</code>、启动器实际保留项，统一 deny policy、两侧测试锁定。禁止别名覆盖平台身份、模型通道、启动/依赖路径或出口；后续新增平台注入名必须同改 policy。</p>
+<p>保留 <code>doberman-agent_*</code>、<code>RTM_*</code>、<code>KUBERNETES_*</code>、<code>MINIO_*</code>、<code>OPENAI_*</code>、<code>HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY</code>（含小写），及 <code>PATH/HOME/LD_*/PYTHONPATH/PYTHONHOME/NODE_OPTIONS/PORT/HOST</code>、启动器实际保留项，统一 deny policy、两侧测试锁定。禁止别名覆盖平台身份、模型通道、启动/依赖路径或出口；后续新增平台注入名必须同改 policy。</p>
 <p>平台不打印写请求体/环境/引擎创建请求，错误只含 ref 与安全原因；runtime status/diagnostic 递归白名单序列化，禁 raw inspect/Secret 内容，日志下载不得拼接 env。客户端埋点不得读取密钥输入。</p>
 <p><strong>operation 绑定的敏感项合同</strong>：backend 从已批准版本的 <code>capabilities.secrets</code> 生成 <code>sensitive_env_names</code>（只含名），与 revision/declaration_digest 一起冻结在可信 operation；值仍只在 sealed_env。普通客户端不能提交或修改该集合。manager 从这一 operation 的 runtime_env 取这些名的值构建内存 <code>SensitiveValues</code>，不从“当前保存值”代替历史执行值；除原有平台 token/代理凭据规则外，这些业务值不受名称启发式或最短长度限制，空值忽略，短值/普通名一样处理。跨重启从受限 operation 重新取值，不能把敏感值清单写本地状态、日志、材料、query cache 或普通 JSON 诊断。</p>
 <table>
@@ -1231,7 +1231,7 @@ sequenceDiagram
 </section><section class="design" id="f056"><h1 id="F056-part0-1">Design: 应用广场、治理与运行记录查询</h1>
 <blockquote>
 <p><strong>2026-10-23 增量设计评审稿，待用户确认，未编码。</strong> 现状基线 <code>5f2541f4bc483c24624fede9031c88c4ec6f58f4</code>；规格确认提交 <code>dda16a6502908ba8d58cff61dc350c0213b86c19</code>。保留 D1–D11 与 §1–§8 编号，新增 D12–D15；历史 MVP“查询全后置”已不适用于现有操作审计。</p>
-<p><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/spec.md">spec.md</a>（61 条 AC）· <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/tasks.md">tasks.md</a> · <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。本次新增 AC-46 至 AC-61，修订 AC-26、AC-34；不接管模型/能力/访问记录的业务写入者。</p>
+<p><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/spec.md">spec.md</a>（61 条 AC）· <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/tasks.md">tasks.md</a> · <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/release-contract.md">release-contract.md</a>。本次新增 AC-46 至 AC-61，修订 AC-26、AC-34；不接管模型/能力/访问记录的业务写入者。</p>
 </blockquote>
 <h2 id="F056-part0-2">1. 目标与非目标</h2>
 <p>保留应用广场和统一授权交互，在现有“审计日志”页增加“应用运行”页签，查询/导出模型调用、能力调用和应用访问三类既有数据；让现有操作审计能够按应用找到密钥变更与凭据签发/撤销事件。</p>
@@ -1242,7 +1242,7 @@ sequenceDiagram
 <li>现有系统操作审计拥有更宽的菜单/管理范围规则，<strong>不直接复用其 <code>_resolve_audit_groups</code> 当新接口权限</strong>；保留旧接口行为。</li>
 <li>三类记录并不等于三类成功操作：无 app_id 的服务账号模型调用仍应显示；访问记录是入口 allow 合并窗口，不能展示为每个 HTTP 请求；缺历史字段用 ID/未知，不回填当前无关名称/用户。</li>
 <li>列表默认最近 7 天，可选择任意合法自定义区间或全部已留存时间；UTC ISO8601 带时区传输/规范化，start≤end；limit 1–100。<strong>不设 90 天查询或 10,000 行导出总量上限</strong>，导出覆盖所选条件下全部受授权记录。内部每批例如 500 行、worker 并发/租约和按字节输出分块仅控制资源，不变成用户可导出总量限制。</li>
-<li>Constitution Check：遵守 <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8。新读侧 Model/Repository/Service/Endpoint 分层；租户自动上下文不手拼通用 tenant 条件；全局超管进入显式审计 scope；通用索引/类型无 JSON_EXTRACT；模块错误码 163 段登记后使用；导出在受限对象存储不放 API 本地盘；无铁律例外。</li>
+<li>Constitution Check：遵守 <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/constitution.md">constitution.md</a> C1–C8。新读侧 Model/Repository/Service/Endpoint 分层；租户自动上下文不手拼通用 tenant 条件；全局超管进入显式审计 scope；通用索引/类型无 JSON_EXTRACT；模块错误码 163 段登记后使用；导出在受限对象存储不放 API 本地盘；无铁律例外。</li>
 </ul>
 <h2 id="F056-part0-4">3. 方案对比与选定</h2>
 <h3 id="F056-part0-5">D1：广场继续现有 UNION 与批量权限</h3>
@@ -1380,7 +1380,7 @@ flowchart LR
 </tr>
 </tbody>
 </table>
-<p>实施前确认 F056 现有代码归属：当前主要在 <code>api/services/audit_log.py</code> 与通用列表模块，新增读服务<strong>拟建立</strong> <code>bisheng/app_governance/{api,domain}</code>，仅管理本 Feature 读侧，不迁移旧广场/权限代码，不重构通用审计。名称不代表新 feature/domain owner；release-contract 仍由 F056 认领。</p>
+<p>实施前确认 F056 现有代码归属：当前主要在 <code>api/services/audit_log.py</code> 与通用列表模块，新增读服务<strong>拟建立</strong> <code>doberman-agent/app_governance/{api,domain}</code>，仅管理本 Feature 读侧，不迁移旧广场/权限代码，不重构通用审计。名称不代表新 feature/domain owner；release-contract 仍由 F056 认领。</p>
 <h3 id="F056-part2-3">4.4 本轮增量字段与接口合同（拟实现）</h3>
 <p><strong>① 拟新增会话 API</strong>：挂 F056 路由 <code>/api/v1/app-runtime-audit</code>；读取者必须通过平台 session dependency，不能走 <code>/api/v2</code>。</p>
 <table>

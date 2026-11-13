@@ -7,7 +7,7 @@
 
 ## 1. Goals and non-goals
 
-Extract client-based workflow/assistant conversation behavior into `@bisheng/chat`.
+Extract client-based workflow/assistant conversation behavior into `@doberman-agent/chat`.
 Client app chat, platform test, annotation and application-history viewers consume
 one presentation and interpretation implementation. Platform contributes its QA
 and annotation operations through typed host callbacks.
@@ -21,7 +21,7 @@ and `filterByUserPagination.test.tsx` are unrelated working-tree changes.
 Follow [constitution](../../../docs/constitution.md) C1–C8 and
 [release contract](../release-contract.md) V3-INV-5. No backend/API/schema changes.
 
-- `@bisheng/ui` is a presentation-only foundation; chat business components belong
+- `@doberman-agent/ui` is a presentation-only foundation; chat business components belong
   in a separate source-shipped workspace package, alongside `file-viewers`.
 - Client uses Recoil and react-query v4; platform uses Zustand and react-query v3.
   The package imports neither those stores/query clients nor application aliases,
@@ -32,7 +32,7 @@ Follow [constitution](../../../docs/constitution.md) C1–C8 and
   not share drafts, source IDs, form selection, pending uploads or callbacks.
 - UI work follows current `packages/ui/docs/` and landed components. The source
   of conversation layout/behavior is client `pages/appChat`, not platform forks.
-  Do not restyle `@bisheng/ui` or introduce a new UI/state-management library.
+  Do not restyle `@doberman-agent/ui` or introduce a new UI/state-management library.
 - Existing v1/v2/v3, guest/share auth, host/base URLs and upload contracts stay
   at the host boundary. A package callback is not an authorization decision.
 
@@ -40,10 +40,10 @@ Follow [constitution](../../../docs/constitution.md) C1–C8 and
 
 ### D1. One business package with explicit subpath boundaries
 
-Alternatives: move everything to `@bisheng/ui`; import client source from platform;
-add a workspace package. Select `packages/chat`, named `@bisheng/chat`, exporting
+Alternatives: move everything to `@doberman-agent/ui`; import client source from platform;
+add a workspace package. Select `packages/chat`, named `@doberman-agent/chat`, exporting
 React components from the main entry and pure contracts/normalizers/reducers from
-`@bisheng/chat/core`. A styles entry is explicit and limited to chat composition.
+`@doberman-agent/chat/core`. A styles entry is explicit and limited to chat composition.
 
 Reason: ui's contract forbids business services, while importing client directly
 pulls Recoil, contexts, route/asset assumptions and task/daily dependencies into
@@ -260,12 +260,12 @@ No process-wide custom event bus for form/choice submission in the new path.
 | Existing client v1/v2/v3, standalone/share and workflow auto-rerun guards | host must preserve exact handshake/auth/activation behavior; no automatic rerun in history mode |
 | Existing platform test payload/version assembly | must keep unsaved graph and model/config inputs |
 | Existing annotation/QA endpoints and permissions | writes remain platform-owned; IDs must be from the correct selected message |
-| `@bisheng/ui`, icons and current client composition | no style redesign; unfinished primitives follow the current client implementation privately rather than inventing a new design system |
+| `@doberman-agent/ui`, icons and current client composition | no style redesign; unfinished primitives follow the current client implementation privately rather than inventing a new design system |
 | Current Markdown/math/code/diagram dependencies | reuse installed compatible versions, lazy-load heavy diagram/code surfaces; client uses KaTeX while platform has MathJax, so migration validates formula fixtures |
-| Current file/citation viewers, `@bisheng/file-viewers` where applicable | URL/auth/base path differs; injected resolvers must preserve resource permissions and sandboxing |
+| Current file/citation viewers, `@doberman-agent/file-viewers` where applicable | URL/auth/base path differs; injected resolvers must preserve resource permissions and sandboxing |
 | Workspace source resolution and Tailwind scanning | both apps must scan chat source and consume explicit styles; no global selector/token resets |
 
-`react`, `react-dom` and `@bisheng/ui` are peers. Add existing required rendering
+`react`, `react-dom` and `@doberman-agent/ui` are peers. Add existing required rendering
 libraries as package dependencies with workspace/catalog versions when supported;
 do not rely on transitive node_modules resolution. Package-local lint forbids app
 aliases and store/query/router/request imports. Both app quality scripts include
@@ -293,7 +293,7 @@ whole-feature acceptance; QA business dialogs and excluded daily/task code remai
 
 Verification commands (from `src/frontend`, heavy jobs serial): package/core and
 host focused tests, `pnpm lint`, `pnpm typecheck`, `pnpm check-i18n`, and both app
-production builds. Include `@bisheng/chat` in root lint/typecheck, and add a
+production builds. Include `@doberman-agent/chat` in root lint/typecheck, and add a
 package test command. Record pre-existing failures rather than adding suppressions.
 No production code has changed at design review, so these implementation checks
 have not yet run for F086.
@@ -351,7 +351,7 @@ implementation remains pending full business acceptance; see verification.md.
 | Contract / non-obvious behavior | Why it matters | Implementation |
 |---|---|---|
 | Raw history is normalized before host-compatible message conversion | Reinterpreting already converted rows can lose question text, form values and files | `core/historyForHost.ts`, `core/hostMessages.ts` |
-| Compatibility rows carry `__bisheng_chat_snapshot`; outgoing history must use `messagesForTransport` | Runtime descriptors are not backend message fields; snapshots must not leak into requests or recursively grow | shared hostMessages; platform assistant TestChat payload |
+| Compatibility rows carry `__doberman-agent_chat_snapshot`; outgoing history must use `messagesForTransport` | Runtime descriptors are not backend message fields; snapshots must not leak into requests or recursively grow | shared hostMessages; platform assistant TestChat payload |
 | UI keys stay stable; canonical persisted IDs are strings, wire IDs retain original numeric values | Pending rows cannot be annotated or mistaken for stored IDs; backend payloads retain their existing shape | shared workflow/assistant core; Immer regression fixtures |
 | Assistant `end_cover/tool/{}` with host cover flag is an error control frame without run identity | Treating it as a normal tool result adds an empty card and leaves the run spinning | `assistantStreamForHost`; error-frame fixture |
 | Workflow tokens are deltas, explicit end/over is a snapshot | Prefix heuristics drop repeated tokens such as `ha` + `ha` | `applyWorkflowStream.ts` |
@@ -373,7 +373,7 @@ implementation remains pending full business acceptance; see verification.md.
 
 User confirmed client is the style authority and also owns Markdown components
 and rendering parameters. Shared `ChatMarkdown` now imports client-derived prose
-and syntax-highlight styles scoped to `.bs-mkdown.bisheng-chat-markdown`; platform
+and syntax-highlight styles scoped to `.bs-mkdown.doberman-agent-chat-markdown`; platform
 legacy `.bs-mkdown` rules remain for unrelated callers. No daily/task renderer or
 legacy sheet changed. The CSS scope uses higher specificity so import order does
 not change shared headings/tables/code.

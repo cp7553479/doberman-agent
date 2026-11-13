@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 from sqlalchemy.dialects import mysql, sqlite
 
-from bisheng.core.database import tenant_filter
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_file_repository_impl import (
     KnowledgeFileRepositoryImpl,
 )
 

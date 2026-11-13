@@ -9,10 +9,10 @@ import tempfile
 import pandas as pd
 import pytest
 
-from bisheng.common.constants.knowledge import KNOWLEDGE_MAX_CHUNK_CHARS
-from bisheng.common.errcode.knowledge import KnowledgeExcelChunkMaxError
-from bisheng.knowledge.rag.pipeline.loader.excel import ExcelLoader
-from bisheng.knowledge.rag.pipeline.loader.utils.md_from_excel import (
+from doberman_agent.common.constants.knowledge import KNOWLEDGE_MAX_CHUNK_CHARS
+from doberman_agent.common.errcode.knowledge import KnowledgeExcelChunkMaxError
+from doberman_agent.knowledge.rag.pipeline.loader.excel import ExcelLoader
+from doberman_agent.knowledge.rag.pipeline.loader.utils.md_from_excel import (
     ExcelRowTooLongError,
     process_dataframe_to_markdown_files,
     render_markdown_row,

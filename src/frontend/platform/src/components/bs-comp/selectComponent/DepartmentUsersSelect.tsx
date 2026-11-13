@@ -1,9 +1,9 @@
-import { Button, SearchInput } from '@bisheng/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 import { useSubjectSearch } from "./useSubjectSearch"
 import { SubjectBusinessId, SubjectSearchStatus } from "./SubjectSearchStatus"
 import { useLazyDepartmentTree } from "@/components/bs-comp/department"
 
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover"
 import {

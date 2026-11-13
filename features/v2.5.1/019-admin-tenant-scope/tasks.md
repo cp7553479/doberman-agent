@@ -3,7 +3,7 @@
 **关联规格**: [spec.md](./spec.md)
 **版本**: v2.5.1
 **分支**: `feat/v2.5.1/019-admin-tenant-scope`（base=`2.5.0-PM`，commit `81e597690`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/019-admin-tenant-scope`
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/019-admin-tenant-scope`
 **前置**: F011/F012/F013 已合入 `2.5.0-PM`（F012 的 ContextVar `_admin_scope_tenant_id` / `_is_management_api` 与 getter/setter 已就位；本 Feature **消费而非定义**）
 
 ---
@@ -24,7 +24,7 @@
 - 基础（errcode / config / action enum）无测试配对
 - Service 层：单测与实现合并同一任务（`test_xxx.py` 与实现文件同 PR）
 - API / Middleware / 钩子：集成测试紧随实现
-- Celery 任务用 `importlib` 旁路绕过 `bisheng.worker/__init__.py` eager-import（沿 F012 T11 范式）
+- Celery 任务用 `importlib` 旁路绕过 `doberman_agent.worker/__init__.py` eager-import（沿 F012 T11 范式）
 
 **前端 Platform 手动验证**：
 - 本 Feature 仅提供纯 axios 封装 `src/frontend/platform/src/controllers/API/admin.ts`
@@ -85,10 +85,10 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T01**: 错误码 `admin_scope.py`
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/admin_scope.py`
+  - `src/backend/doberman_agent/common/errcode/admin_scope.py`
   **逻辑**（参照 `common/errcode/tenant_resolver.py` 模式）:
   ```python
-  from bisheng.common.errcode.base import BaseErrorCode
+  from doberman_agent.common.errcode.base import BaseErrorCode
 
   class AdminScopeForbiddenError(BaseErrorCode):
       Code: int = 19701
@@ -106,14 +106,14 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T02**: `MultiTenantConf` 扩展 `admin_scope_ttl_seconds` + F011 `TenantAuditAction` 枚举扩展 + CLAUDE.md 同步
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/multi_tenant.py` — 新增字段:
+  - `src/backend/doberman_agent/core/config/multi_tenant.py` — 新增字段:
     ```python
     admin_scope_ttl_seconds: int = Field(
         default=14400,
         description='v2.5.1 F019 管理视图切换 Redis TTL（秒）；默认 4h 滑动',
     )
     ```
-  - `src/backend/bisheng/tenant/domain/constants.py` — `TenantAuditAction` 追加 1 行（放在 RESOURCE_SHARE_DISABLE 之后）:
+  - `src/backend/doberman_agent/tenant/domain/constants.py` — `TenantAuditAction` 追加 1 行（放在 RESOURCE_SHARE_DISABLE 之后）:
     ```python
     # v2.5.1 F019 — admin tenant-scope switch (Redis)
     ADMIN_SCOPE_SWITCH = 'admin.scope_switch'
@@ -127,14 +127,14 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 ### admin 模块骨架
 
-- [ ] **T03**: 新建 `bisheng.admin` 模块目录与空 `__init__.py`
+- [ ] **T03**: 新建 `doberman_agent.admin` 模块目录与空 `__init__.py`
   **文件（新建）**:
-  - `src/backend/bisheng/admin/__init__.py`（空）
-  - `src/backend/bisheng/admin/api/__init__.py`（空）
-  - `src/backend/bisheng/admin/api/endpoints/__init__.py`（空）
-  - `src/backend/bisheng/admin/domain/__init__.py`（空）
-  - `src/backend/bisheng/admin/domain/services/__init__.py`（空）
-  **逻辑**: 沿 `bisheng.tenant` 模块骨架（api/ + domain/services）；不引入额外子目录（无 models/ 无 schemas/，DTO 直接内联在 endpoint）
+  - `src/backend/doberman_agent/admin/__init__.py`（空）
+  - `src/backend/doberman_agent/admin/api/__init__.py`（空）
+  - `src/backend/doberman_agent/admin/api/endpoints/__init__.py`（空）
+  - `src/backend/doberman_agent/admin/domain/__init__.py`（空）
+  - `src/backend/doberman_agent/admin/domain/services/__init__.py`（空）
+  **逻辑**: 沿 `doberman_agent.tenant` 模块骨架（api/ + domain/services）；不引入额外子目录（无 models/ 无 schemas/，DTO 直接内联在 endpoint）
   **测试**: 无
   **覆盖 AC**: 无（结构性任务）
   **依赖**: 无
@@ -145,16 +145,16 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T04**: `TenantScopeService` + 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/admin/domain/services/tenant_scope.py`
+  - `src/backend/doberman_agent/admin/domain/services/tenant_scope.py`
   - `src/backend/test/test_admin_tenant_scope_service.py`
   **逻辑**（spec §5.2 签名严格对齐）:
   ```python
-  from bisheng.core.cache.redis_manager import get_redis_client
-  from bisheng.database.models.tenant import TenantDao, ROOT_TENANT_ID
-  from bisheng.database.models.audit_log import AuditLogDao
-  from bisheng.tenant.domain.constants import TenantAuditAction
-  from bisheng.common.errcode.admin_scope import AdminScopeTenantNotFoundError
-  from bisheng.core.config.settings import settings
+  from doberman_agent.core.cache.redis_manager import get_redis_client
+  from doberman_agent.database.models.tenant import TenantDao, ROOT_TENANT_ID
+  from doberman_agent.database.models.audit_log import AuditLogDao
+  from doberman_agent.tenant.domain.constants import TenantAuditAction
+  from doberman_agent.common.errcode.admin_scope import AdminScopeTenantNotFoundError
+  from doberman_agent.core.config.settings import settings
 
   class TenantScopeService:
       REDIS_KEY_TEMPLATE = 'admin_scope:{user_id}'
@@ -245,8 +245,8 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T05**: POST/GET `/api/v1/admin/tenant-scope` endpoint + 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/admin/api/endpoints/tenant_scope.py`
-  - `src/backend/bisheng/admin/api/router.py`
+  - `src/backend/doberman_agent/admin/api/endpoints/tenant_scope.py`
+  - `src/backend/doberman_agent/admin/api/router.py`
   - `src/backend/test/test_admin_tenant_scope_api.py`
   **逻辑**（spec §5.1 严格对齐）:
   ```python
@@ -255,10 +255,10 @@ T13 (AC 对照 + 本地回归) ← T01~T12
   from fastapi import APIRouter, Depends, Request
   from pydantic import BaseModel
 
-  from bisheng.common.dependencies.user_deps import UserPayload
-  from bisheng.common.schemas.api import resp_200
-  from bisheng.common.errcode.admin_scope import AdminScopeForbiddenError
-  from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+  from doberman_agent.common.dependencies.user_deps import UserPayload
+  from doberman_agent.common.schemas.api import resp_200
+  from doberman_agent.common.errcode.admin_scope import AdminScopeForbiddenError
+  from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
   router = APIRouter(prefix='/admin', tags=['admin-scope'])
 
@@ -301,7 +301,7 @@ T13 (AC 对照 + 本地回归) ← T01~T12
   ```python
   # admin/api/router.py
   from fastapi import APIRouter
-  from bisheng.admin.api.endpoints import tenant_scope
+  from doberman_agent.admin.api.endpoints import tenant_scope
 
   router = APIRouter()
   router.include_router(tenant_scope.router)
@@ -325,9 +325,9 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T06**: 全局路由注册
   **文件（修改）**:
-  - `src/backend/bisheng/api/router.py` — 加 2 行:
+  - `src/backend/doberman_agent/api/router.py` — 加 2 行:
     ```python
-    from bisheng.admin.api.router import router as admin_router
+    from doberman_agent.admin.api.router import router as admin_router
     router.include_router(admin_router)
     ```
   **测试**: 在 T05 集成测试的 TestClient 中隐式覆盖（endpoint URL 可达 = 路由注册成功）
@@ -340,19 +340,19 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T07**: `AdminScopeMiddleware` + 注册 + 单元 & 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/common/middleware/admin_scope.py`
+  - `src/backend/doberman_agent/common/middleware/admin_scope.py`
   - `src/backend/test/test_admin_scope_middleware.py`
   **文件（修改）**:
-  - `src/backend/bisheng/main.py` — 在 `CustomMiddleware` 之后（即第 99 行之后）注册 `AdminScopeMiddleware`
+  - `src/backend/doberman_agent/main.py` — 在 `CustomMiddleware` 之后（即第 99 行之后）注册 `AdminScopeMiddleware`
   **逻辑**（spec §5.3 严格对齐 + F012 ContextVar 消费）:
   ```python
   # common/middleware/admin_scope.py
   from starlette.middleware.base import BaseHTTPMiddleware
   from starlette.requests import Request
 
-  from bisheng.core.cache.redis_manager import get_redis_client
-  from bisheng.core.config.settings import settings
-  from bisheng.core.context.tenant import (
+  from doberman_agent.core.cache.redis_manager import get_redis_client
+  from doberman_agent.core.config.settings import settings
+  from doberman_agent.core.context.tenant import (
       set_admin_scope_tenant_id,
       set_is_management_api,
   )
@@ -414,7 +414,7 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T08**: logout 钩子接入 `clear_on_logout`
   **文件（修改）**:
-  - `src/backend/bisheng/user/api/user.py:156-159` — `logout` endpoint
+  - `src/backend/doberman_agent/user/api/user.py:156-159` — `logout` endpoint
   **逻辑**:
   ```python
   @router.post('/user/logout', status_code=201)
@@ -423,7 +423,7 @@ T13 (AC 对照 + 本地回归) ← T01~T12
       user: UserPayload = Depends(UserPayload.get_login_user_optional),  # optional 若已失效
   ):
       if user:
-          from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+          from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
           await TenantScopeService.clear_on_logout(user.user_id)
       auth_jwt.unset_access_token()
       return resp_200()
@@ -441,9 +441,9 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T09**: `UserTenantSyncService.sync_user` token_version+1 后清理 scope
   **文件（修改）**:
-  - `src/backend/bisheng/tenant/domain/services/user_tenant_sync_service.py` —— 在 `_invalidate_redis_caches()` 或 token_version +1 的事务提交点**之后**加一行:
+  - `src/backend/doberman_agent/tenant/domain/services/user_tenant_sync_service.py` —— 在 `_invalidate_redis_caches()` 或 token_version +1 的事务提交点**之后**加一行:
     ```python
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
     await TenantScopeService.clear_on_token_version_bump(user_id)
     ```
   **注意**:
@@ -459,7 +459,7 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 
 - [ ] **T10**: `clear_on_role_revoke` 挂接点定位 + 最佳努力接入
   **文件（调研）**:
-  - 搜 `src/backend/bisheng/permission/` 以下模式:
+  - 搜 `src/backend/doberman_agent/permission/` 以下模式:
     - `super_admin` write/delete
     - `system:global` tuple write/delete
     - `FGAClient.write` / `FGAClient.delete`
@@ -485,27 +485,27 @@ T13 (AC 对照 + 本地回归) ← T01~T12
 - [ ] **T11**: `admin_scope_cleanup` Celery 任务 + beat 注册 + 测试
   **租户上下文**: **跨租户巡检任务**（扫全部 `admin_scope:*`，不走 tenant_id → ContextVar 注入路径）；Celery headers 不携带 tenant_id，进程内 `current_tenant_id` ContextVar 为 None；对 `TenantDao.aget_non_active_ids()` 的跨 Tenant 查询必须用 `bypass_tenant_filter()` 包裹（spec §5.4 AD-07）
   **文件（新建）**:
-  - `src/backend/bisheng/worker/admin_scope/__init__.py`
-  - `src/backend/bisheng/worker/admin_scope/tasks.py`
+  - `src/backend/doberman_agent/worker/admin_scope/__init__.py`
+  - `src/backend/doberman_agent/worker/admin_scope/tasks.py`
   - `src/backend/test/test_admin_scope_cleanup_task.py`
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — `CeleryConf.validate` 注册:
+  - `src/backend/doberman_agent/core/config/settings.py` — `CeleryConf.validate` 注册:
     ```python
     if 'admin_scope_cleanup' not in self.beat_schedule:
         self.beat_schedule['admin_scope_cleanup'] = {
-            'task': 'bisheng.worker.admin_scope.tasks.admin_scope_cleanup',
+            'task': 'doberman_agent.worker.admin_scope.tasks.admin_scope_cleanup',
             'schedule': crontab.from_string('*/10 * * * *'),  # 每 10 分钟
         }
     ```
   **逻辑**（spec §5.4 严格对齐 + `bypass_tenant_filter` 必须包裹）:
   ```python
   import asyncio
-  from bisheng.worker.celery_app import bisheng_celery
-  from bisheng.core.cache.redis_manager import get_redis_client
-  from bisheng.core.context.tenant import bypass_tenant_filter
-  from bisheng.database.models.tenant import TenantDao
+  from doberman_agent.worker.celery_app import doberman_agent_celery
+  from doberman_agent.core.cache.redis_manager import get_redis_client
+  from doberman_agent.core.context.tenant import bypass_tenant_filter
+  from doberman_agent.database.models.tenant import TenantDao
 
-  @bisheng_celery.task(acks_late=True, time_limit=600, name='bisheng.worker.admin_scope.tasks.admin_scope_cleanup')
+  @doberman_agent_celery.task(acks_late=True, time_limit=600, name='doberman_agent.worker.admin_scope.tasks.admin_scope_cleanup')
   def admin_scope_cleanup():
       loop = asyncio.new_event_loop()
       try:
@@ -529,7 +529,7 @@ T13 (AC 对照 + 本地回归) ← T01~T12
   ```
   **注意**:
   - 任务注册的 `name=` 必须与 beat_schedule 的 `task` 字符串一致
-  - 测试用 `importlib.util.spec_from_file_location` 直接加载 `tasks.py`，绕过 `bisheng.worker/__init__.py` eager-import（沿 F012 T11 范式）
+  - 测试用 `importlib.util.spec_from_file_location` 直接加载 `tasks.py`，绕过 `doberman_agent.worker/__init__.py` eager-import（沿 F012 T11 范式）
   **测试**（4 条）:
   - `test_cleanup_removes_non_active_scopes` — Redis: `admin_scope:1=5, admin_scope:2=6, admin_scope:3=7`；TenantDao 返 `[5, 7]` → key 1 + 3 被 DEL，key 2 保留
   - `test_cleanup_noop_when_no_keys` — akeys 返 [] → 未调 aget_non_active_ids（fast-path）

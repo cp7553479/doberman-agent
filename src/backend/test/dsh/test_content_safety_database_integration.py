@@ -71,7 +71,7 @@ def baseline(*, credit=False):
             path = root / relative
             assert path.resolve().is_relative_to(root)
             assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
-        assert not (root / "bisheng/dsh/domain/models/content_safety_event.py").exists()
+        assert not (root / "doberman_agent/dsh/domain/models/content_safety_event.py").exists()
         return root
     except (KeyError, OSError, ValueError, AssertionError):
         raise pytest.UsageError(
@@ -120,7 +120,7 @@ def database_network(urls):
 
 @contextmanager
 def safe_connection_logging():
-    logger = logging.getLogger("bisheng.core.database.connection")
+    logger = logging.getLogger("doberman_agent.core.database.connection")
     previous = logger.disabled
     logger.disabled = True
     try:
@@ -235,7 +235,7 @@ def migration_child():
     from loguru import logger
 
     logging.disable(logging.CRITICAL)
-    logger.disable("bisheng")
+    logger.disable("doberman_agent")
     url = make_url(os.environ["DSH_TEST_DATABASE_URL"])
     if url.get_backend_name() == "mysql":
         mysql_owner(url)
@@ -252,11 +252,11 @@ def migration_child():
         from alembic import command
         from alembic.config import Config
 
-        from bisheng.common.services.config_service import settings
-        from bisheng.core.database import manager
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.common.services.config_service import settings
+        from doberman_agent.core.database import manager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        assert Path(sys.modules["bisheng"].__file__).resolve().is_relative_to(source)
+        assert Path(sys.modules["doberman_agent"].__file__).resolve().is_relative_to(source)
         assert not settings.openfga.enabled
         port = DatabaseConnectionManager(url.render_as_string(hide_password=False), hide_parameters=True)
         try:
@@ -301,12 +301,12 @@ def migration_child():
 def seed_legacy(engine):
     from sqlmodel import Session
 
-    from bisheng.database.models.tenant import Tenant
-    from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-    from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-    from bisheng.dsh.domain.models.model_call import DshModelCall
-    from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-    from bisheng.dsh.domain.services.profile import profile_scope
+    from doberman_agent.database.models.tenant import Tenant
+    from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+    from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+    from doberman_agent.dsh.domain.models.model_call import DshModelCall
+    from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+    from doberman_agent.dsh.domain.services.profile import profile_scope
 
     request_id, session_id = str(uuid4()), str(uuid4())
     with profile_scope(101), Session(engine) as session, session.begin():
@@ -357,15 +357,15 @@ def seed_credit(engine):
     """Seed using the actual archived credit models before any safety migration."""
     from sqlmodel import Session, select
 
-    from bisheng.dsh.domain.models.model_call import DshModelCall
-    from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-    from bisheng.dsh.domain.models.unified_policy import (
+    from doberman_agent.dsh.domain.models.model_call import DshModelCall
+    from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+    from doberman_agent.dsh.domain.models.unified_policy import (
         CreditRule,
         ModelVisibility,
         PersonalLedgerState,
         UnifiedPolicyAudit,
     )
-    from bisheng.dsh.domain.services.profile import profile_scope
+    from doberman_agent.dsh.domain.services.profile import profile_scope
 
     seed_legacy(engine)
     with profile_scope(101), Session(engine) as session, session.begin():
@@ -421,37 +421,37 @@ if __name__ == "__main__":
 from sqlalchemy.exc import DBAPIError  # noqa: E402
 from sqlmodel import Session, select  # noqa: E402
 
-from bisheng.common.errcode.dsh import (  # noqa: E402
+from doberman_agent.common.errcode.dsh import (  # noqa: E402
     DshContentSafetyConflictError,
     DshContentSafetyExpiredError,
     DshContentSafetyUnavailableError,
 )
-from bisheng.database.models.tenant import Tenant, UserTenant  # noqa: E402
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact  # noqa: E402
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request  # noqa: E402
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting  # noqa: E402
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState as State  # noqa: E402
-from bisheng.dsh.domain.models.model_call import DshModelCall  # noqa: E402
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage  # noqa: E402
-from bisheng.dsh.domain.models.unified_policy import (  # noqa: E402
+from doberman_agent.database.models.tenant import Tenant, UserTenant  # noqa: E402
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact  # noqa: E402
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request  # noqa: E402
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting  # noqa: E402
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState as State  # noqa: E402
+from doberman_agent.dsh.domain.models.model_call import DshModelCall  # noqa: E402
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage  # noqa: E402
+from doberman_agent.dsh.domain.models.unified_policy import (  # noqa: E402
     CreditRule,
     ModelVisibility,
     PersonalLedgerState,
     UnifiedPolicyAudit,
 )
-from bisheng.dsh.domain.repositories import content_safety, content_safety_projection  # noqa: E402
-from bisheng.dsh.domain.repositories.content_safety_maintenance import (  # noqa: E402
+from doberman_agent.dsh.domain.repositories import content_safety, content_safety_projection  # noqa: E402
+from doberman_agent.dsh.domain.repositories.content_safety_maintenance import (  # noqa: E402
     ContentSafetyMaintenanceRepository as Maintenance,
 )
-from bisheng.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository  # noqa: E402
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Queries  # noqa: E402
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings  # noqa: E402
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository as Writer  # noqa: E402
-from bisheng.dsh.domain.schemas.content_safety import ContentSafetyEvent  # noqa: E402
-from bisheng.dsh.domain.schemas.model_audit_events import AuditEvent  # noqa: E402
-from bisheng.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource  # noqa: E402
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter  # noqa: E402
-from bisheng.dsh.domain.services.profile import profile_scope  # noqa: E402
+from doberman_agent.dsh.domain.repositories.content_safety_queries import ContentSafetyQueryRepository  # noqa: E402
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Queries  # noqa: E402
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings  # noqa: E402
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository as Writer  # noqa: E402
+from doberman_agent.dsh.domain.schemas.content_safety import ContentSafetyEvent  # noqa: E402
+from doberman_agent.dsh.domain.schemas.model_audit_events import AuditEvent  # noqa: E402
+from doberman_agent.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource  # noqa: E402
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter  # noqa: E402
+from doberman_agent.dsh.domain.services.profile import profile_scope  # noqa: E402
 from test.dsh.content_safety_fixtures import safety_database  # noqa: E402
 from test.dsh.model_audit_fixtures import AUDIT_MODELS  # noqa: E402
 
@@ -507,7 +507,7 @@ def pair(request, tmp_path_factory):
                         created.append(name)
                 urls = [urls[0].set(database=name) for name in created]
             else:
-                from bisheng.core.database.connection import DatabaseConnectionManager
+                from doberman_agent.core.database.connection import DatabaseConnectionManager
 
                 for url in urls:
                     port = DatabaseConnectionManager(url.render_as_string(hide_password=False), hide_parameters=True)
@@ -520,7 +520,7 @@ def pair(request, tmp_path_factory):
                         assert not inspect(connection).get_table_names(), (
                             "DM8 fixture refuses pre-existing schema objects"
                         )
-            from bisheng.core.database.connection import DatabaseConnectionManager
+            from doberman_agent.core.database.connection import DatabaseConnectionManager
 
             port = DatabaseConnectionManager(urls[0].render_as_string(hide_password=False), hide_parameters=True)
             connections.append(port)

@@ -24,8 +24,8 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/models/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/domain/models/org_sync.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/models/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/models/org_sync.py`
 
 **内容**:
 - OrgSyncConfig ORM（spec §5 定义），含 tenant_id、所有字段、UniqueConstraint
@@ -45,7 +45,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f009_org_sync.py`
+- 新建: `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f009_org_sync.py`
 
 **内容**:
 - CREATE TABLE org_sync_config（所有列 + 索引 + UK）
@@ -65,7 +65,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/common/errcode/org_sync.py`
+- 新建: `src/backend/doberman_agent/common/errcode/org_sync.py`
 
 **内容**:
 - 10 个错误码类（22000~22009），继承 BaseErrorCode
@@ -82,7 +82,7 @@
 - [x] 完成
 
 **文件**:
-- 修改: `src/backend/bisheng/user/domain/models/user.py`
+- 修改: `src/backend/doberman_agent/user/domain/models/user.py`
 
 **内容**:
 - User 类新增 source 字段（default='local'）+ external_id 字段（nullable）
@@ -101,10 +101,10 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/providers/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/domain/providers/base.py`
-- 新建: `src/backend/bisheng/org_sync/domain/schemas/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/domain/schemas/remote_dto.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/base.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/schemas/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/schemas/remote_dto.py`
 
 **内容**:
 - OrgSyncProvider ABC：authenticate / fetch_departments / fetch_members / test_connection
@@ -125,7 +125,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/providers/feishu.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/feishu.py`
 
 **内容**:
 - authenticate()：POST /auth/v3/tenant_access_token/internal → 获取 tenant_access_token
@@ -146,7 +146,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/providers/generic_api.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/generic_api.py`
 
 **内容**:
 - authenticate()：根据 auth_type 验证连接（api_key → 带 header/query 参数请求测试端点；password → 基本认证）
@@ -166,8 +166,8 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/providers/wecom.py`
-- 新建: `src/backend/bisheng/org_sync/domain/providers/dingtalk.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/wecom.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/providers/dingtalk.py`
 
 **内容**:
 - 继承 OrgSyncProvider，4 个方法均 raise OrgSyncProviderError(msg="WeChat Work provider not implemented")
@@ -186,8 +186,8 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/services/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/domain/services/reconciler.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/services/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/services/reconciler.py`
 
 **内容**:
 - reconcile_departments(remote_depts, local_depts, source) → list[DeptOperation]
@@ -207,7 +207,7 @@
 - [x] 完成
 
 **文件**:
-- 修改: `src/backend/bisheng/org_sync/domain/services/reconciler.py`
+- 修改: `src/backend/doberman_agent/org_sync/domain/services/reconciler.py`
 
 **内容**:
 - reconcile_members(remote_members, local_users, local_user_depts, ext_to_local_dept, source) → list[MemberOperation]
@@ -226,7 +226,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/services/org_sync_service.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/services/org_sync_service.py`
 
 **内容**:
 - execute_sync(config_id, trigger_type, trigger_user)：主编排流程（spec §7 的 16 步）
@@ -251,14 +251,14 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/worker/org_sync/__init__.py`
-- 新建: `src/backend/bisheng/worker/org_sync/tasks.py`
-- 修改: `src/backend/bisheng/core/config/settings.py`
+- 新建: `src/backend/doberman_agent/worker/org_sync/__init__.py`
+- 新建: `src/backend/doberman_agent/worker/org_sync/tasks.py`
+- 修改: `src/backend/doberman_agent/core/config/settings.py`
 
 **内容**:
 - execute_org_sync(config_id, trigger_type, trigger_user) Celery task（time_limit=1800, soft_time_limit=1500）
 - check_org_sync_schedules() Beat task：每 60s 检查活跃 cron 配置，匹配时间则 dispatch execute_org_sync
-- CeleryConf.task_routes 增加 `"bisheng.worker.org_sync.*": {"queue": "knowledge_celery"}`
+- CeleryConf.task_routes 增加 `"doberman_agent.worker.org_sync.*": {"queue": "knowledge_celery"}`
 - beat_schedule 增加 check_org_sync_schedules（schedule=60.0）
 - 使用 croniter 库解析 cron_expression 判断是否到期
 - **tenant_id 传递**：发送任务时 tenant_id 通过 Celery headers 注入（`inject_tenant_header` signal），Worker 端 `before_task` signal 调用 `set_current_tenant_id()` 恢复到 ContextVar（INV-8）
@@ -276,7 +276,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/domain/schemas/org_sync_schema.py`
+- 新建: `src/backend/doberman_agent/org_sync/domain/schemas/org_sync_schema.py`
 
 **内容**:
 - OrgSyncConfigCreate：provider, config_name, auth_type, auth_config(dict), sync_scope, schedule_type, cron_expression
@@ -297,12 +297,12 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/api/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/api/router.py`
-- 新建: `src/backend/bisheng/org_sync/api/endpoints/__init__.py`
-- 新建: `src/backend/bisheng/org_sync/api/endpoints/sync_config.py`
-- 修改: `src/backend/bisheng/api/router.py`
+- 新建: `src/backend/doberman_agent/org_sync/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/api/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/api/router.py`
+- 新建: `src/backend/doberman_agent/org_sync/api/endpoints/__init__.py`
+- 新建: `src/backend/doberman_agent/org_sync/api/endpoints/sync_config.py`
+- 修改: `src/backend/doberman_agent/api/router.py`
 
 **内容**:
 - 5 个配置 CRUD 端点（spec §6.1~6.5）：
@@ -330,7 +330,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/org_sync/api/endpoints/sync_exec.py`
+- 新建: `src/backend/doberman_agent/org_sync/api/endpoints/sync_exec.py`
 
 **内容**:
 - 4 个执行端点（spec §6.6~6.9）：

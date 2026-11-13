@@ -15,7 +15,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode, create_react_agent
 
-from bisheng.workstation.domain.services.chat_service import (
+from doberman_agent.workstation.domain.services.chat_service import (
     _extract_tool_error,
     _handle_agent_tool_error,
     _is_nested_tool_event,

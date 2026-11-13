@@ -37,5 +37,5 @@ describe('workflow media attachments keep what the chip draws', () => {
         expect(helpers).toContain('mediaDurationSec: el.mediaDurationSec');
     });
 
-    // Rendering metadata is covered behaviorally in @bisheng/chat's attachment tests.
+    // Rendering metadata is covered behaviorally in @doberman-agent/chat's attachment tests.
 });

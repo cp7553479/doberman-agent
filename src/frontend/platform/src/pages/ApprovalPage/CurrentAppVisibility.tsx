@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { useTranslation } from 'react-i18next';
 import type { AppCurrentVisibility } from '@/controllers/API/approval';
 import { formatTimestamp } from '@/utils/displayTimestamp';

@@ -19,7 +19,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.workstation.domain.services import chat_service
 
 
 @pytest.fixture
@@ -44,7 +44,7 @@ def stub_pipeline(monkeypatch: pytest.MonkeyPatch):
 
 
 def _call_args(max_tokens: int):
-    data = SimpleNamespace(files=[{"file_id": "a", "filepath": "/bisheng/tender.pdf", "file_name": "tender.pdf"}])
+    data = SimpleNamespace(files=[{"file_id": "a", "filepath": "/doberman_agent/tender.pdf", "file_name": "tender.pdf"}])
     model_info = SimpleNamespace(visual=False)
     login_user = SimpleNamespace(user_id=1)
     ws_config = SimpleNamespace(maxTokens=max_tokens)

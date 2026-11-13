@@ -5,14 +5,14 @@ import json
 import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
 
-from bisheng.common.errcode.model_face import (
+from doberman_agent.common.errcode.model_face import (
     ModelFaceStreamInterruptedError,
     ModelFaceUpstreamError,
     ModelFaceUpstreamRateLimitedError,
     ModelFaceUpstreamRejectedError,
 )
-from bisheng.open_api.domain.schemas.model_gateway import ChatCompletionRequest
-from bisheng.open_api.domain.services.openai_codec import (
+from doberman_agent.open_api.domain.schemas.model_gateway import ChatCompletionRequest
+from doberman_agent.open_api.domain.services.openai_codec import (
     ChunkAssembler,
     build_completion,
     classify_stream_error,
@@ -205,6 +205,6 @@ def test_key_shaped_text_never_survives_into_a_message(text):
 def test_stream_error_event_carries_the_openai_shape():
     payload = _payload(ChunkAssembler.error(ModelFaceStreamInterruptedError()))["error"]
 
-    assert payload["bisheng_code"] == 26534
+    assert payload["doberman_agent_code"] == 26534
     assert payload["type"] == "server_error"
     assert payload["code"] == "stream_interrupted"

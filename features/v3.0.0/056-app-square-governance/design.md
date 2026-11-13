@@ -146,7 +146,7 @@ flowchart LR
 | `pages/LogPage/runtime/`、API/hook（新增） | 三视图、filters/table/export、错误和过期状态 | 不含秘密列，不读凭据明文接口 |
 | `AuditLogService` 与现有 systemLog | 查 app.secret 与可信凭据事件 | 不把 runtime 高频事件塞操作审计 |
 
-实施前确认 F056 现有代码归属：当前主要在 `api/services/audit_log.py` 与通用列表模块，新增读服务**拟建立** `bisheng/app_governance/{api,domain}`，仅管理本 Feature 读侧，不迁移旧广场/权限代码，不重构通用审计。名称不代表新 feature/domain owner；release-contract 仍由 F056 认领。
+实施前确认 F056 现有代码归属：当前主要在 `api/services/audit_log.py` 与通用列表模块，新增读服务**拟建立** `doberman-agent/app_governance/{api,domain}`，仅管理本 Feature 读侧，不迁移旧广场/权限代码，不重构通用审计。名称不代表新 feature/domain owner；release-contract 仍由 F056 认领。
 
 ### 4.4 本轮增量字段与接口合同（拟实现）
 
@@ -272,8 +272,8 @@ F056-S1 修订：运行绑定的真实撤销生产者由凭据 Owner 公共协�
 
 ### 2026-10-24 实现状态与交付合同补记
 
-- 新读域落 `bisheng/app_governance/{api,domain}`；三个事实表以白名单列读取，不 live join App，不改模型/能力的业务写入者。列表快照只保存条件，`scope_tenant_id=None` 表示已经核验的 global，申请者 tenant_id 保持非空；未额外存冗余 scope_mode。
-- `runtime_audit_source_timezone` 默认使用 `BISHENG_RUNTIME_AUDIT_SOURCE_TIMEZONE`，空时取进程 TZ，再取 UTC。它必须与事实表无时区时间的既有写入约定一致；查询条件/输出规范化 UTC，源时区冻结进快照。不补写历史时间或用户身份。
+- 新读域落 `doberman-agent/app_governance/{api,domain}`；三个事实表以白名单列读取，不 live join App，不改模型/能力的业务写入者。列表快照只保存条件，`scope_tenant_id=None` 表示已经核验的 global，申请者 tenant_id 保持非空；未额外存冗余 scope_mode。
+- `runtime_audit_source_timezone` 默认使用 `DOBERMAN_AGENT_RUNTIME_AUDIT_SOURCE_TIMEZONE`，空时取进程 TZ，再取 UTC。它必须与事实表无时区时间的既有写入约定一致；查询条件/输出规范化 UTC，源时区冻结进快照。不补写历史时间或用户身份。
 - 导出任务在默认 Celery 队列注册，Beat 每 30 秒恢复过期租约并 GC。每次新 attempt 从源 SELECT 开头重新流式扫描，独立进度事务；已确认上传的不可变分块收束为 EOF manifest，ready CAS 受 epoch/holder/租约约束。申请工作租户的短事务领取限制并发；实际跨进程资源负载仍待部署测量。
 - 下载保留期从 ready 算 10 分钟，backend 认证代理下载，验证 manifest/hash/每块、设置固定 Content-Length，拒绝把中断当完整文件；每块前再核验当前身份/管理视图。新增 `POST /exports/{id}/cancel` 供用户和运维中止，GC 完成状态持久记录，终态快照可独立清理。
 - 管理视图通过 `admin.application.tenant_scope.current_admin_scope` 重新读取，worker 不依赖 HTTP middleware 的上下文或失败回退；不改变旧操作审计的权限语义。

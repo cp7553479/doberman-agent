@@ -4,11 +4,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.dsh.api.endpoints.skills import list_skills
-from bisheng.linsight.domain.services.user_skills import UserSkillsService
+from doberman_agent.dsh.api.endpoints.skills import list_skills
+from doberman_agent.linsight.domain.services.user_skills import UserSkillsService
 
 
-@pytest.mark.parametrize("name", ["bisheng-docx", "bisheng-pptx", "bisheng-xlsx", "future-skill"])
+@pytest.mark.parametrize("name", ["doberman-agent-docx", "doberman-agent-pptx", "doberman-agent-xlsx", "future-skill"])
 @pytest.mark.parametrize("source", ["builtin", "manual", "sop_migrated", "personal"])
 async def test_skill_list_exposes_builtin_identity_from_stored_source(monkeypatch, name, source):
     record = SimpleNamespace(
@@ -25,7 +25,7 @@ async def test_skill_list_exposes_builtin_identity_from_stored_source(monkeypatc
     records = AsyncMock(return_value=[(record, False)])
     monkeypatch.setattr(UserSkillsService, "records", records)
     monkeypatch.setattr(
-        "bisheng.dsh.api.endpoints.skills.SkillService",
+        "doberman_agent.dsh.api.endpoints.skills.SkillService",
         lambda **kwargs: SimpleNamespace(get_detail=AsyncMock(return_value=SimpleNamespace(preview="Body", files=[]))),
     )
 

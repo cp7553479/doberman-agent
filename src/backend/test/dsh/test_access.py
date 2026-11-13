@@ -6,10 +6,10 @@ import time
 import jwt
 import pytest
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError, DshSessionRevokedError
-from bisheng.core.context import tenant as context
-from bisheng.dsh.domain.schemas.contracts import DshIdentitySnapshot, DshTenantDisplay, DshUserDisplay
-from bisheng.dsh.domain.services.access import DshAccessService, principal_scope
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError, DshSessionRevokedError
+from doberman_agent.core.context import tenant as context
+from doberman_agent.dsh.domain.schemas.contracts import DshIdentitySnapshot, DshTenantDisplay, DshUserDisplay
+from doberman_agent.dsh.domain.services.access import DshAccessService, principal_scope
 
 
 class Keys:
@@ -46,7 +46,7 @@ def token(**overrides):
     now = int(time.time())
     claims = {
         "iss": "test-issuer",
-        "aud": "bisheng-dsh-model",
+        "aud": "doberman-agent-dsh-model",
         "sub": "1001",
         "tenant_id": "2",
         "session_id": "session-test",
@@ -56,7 +56,7 @@ def token(**overrides):
         "jti": "test-jti",
     }
     claims.update(overrides)
-    return jwt.encode(claims, Keys.key, algorithm="HS256", headers={"kid": "test-key", "typ": "bisheng-dsh-access+jwt"})
+    return jwt.encode(claims, Keys.key, algorithm="HS256", headers={"kid": "test-key", "typ": "doberman-agent-dsh-access+jwt"})
 
 
 def service(seats=None):
@@ -67,7 +67,7 @@ def service(seats=None):
     "changes",
     [
         {"iss": "ordinary-jwt"},
-        {"aud": "bisheng-web"},
+        {"aud": "doberman-agent-web"},
         {"exp": 1},
         {"installation_id": "other"},
         {"session_version": True},

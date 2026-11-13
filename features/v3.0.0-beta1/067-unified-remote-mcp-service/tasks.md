@@ -54,7 +54,7 @@
   **依赖**: 无
 
 - [x] **T003**: 升级 MCP SDK 并落地服务端配置
-  **文件**: `src/backend/pyproject.toml`, `src/backend/uv.lock`, `src/backend/bisheng/core/config/open_platform.py`, `src/backend/bisheng/core/config/settings.py`
+  **文件**: `src/backend/pyproject.toml`, `src/backend/uv.lock`, `src/backend/doberman_agent/core/config/open_platform.py`, `src/backend/doberman_agent/core/config/settings.py`
   **逻辑**:
   - 将 MCP SDK 升级并锁定到 `>=1.27.2` 的兼容版本，不回退到已知会话鉴权漏洞版本。
   - 新增独立 `OpenMcpConf` 并接入 `Settings.open_mcp`；不复用出站客户端 `McpConf`，不改变现有开放 API 配置语义。
@@ -75,7 +75,7 @@
   **依赖**: T001
 
 - [x] **T005**: 抽取传输无关的 `OpenApiAccessContext` 并接入 MCP 认证
-  **文件**: `src/backend/bisheng/open_api/domain/services/access_context.py`, `src/backend/bisheng/open_api/api/dependencies.py`, `src/backend/bisheng/open_mcp/__init__.py`, `src/backend/bisheng/open_mcp/auth.py`
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/access_context.py`, `src/backend/doberman_agent/open_api/api/dependencies.py`, `src/backend/doberman_agent/open_mcp/__init__.py`, `src/backend/doberman_agent/open_mcp/auth.py`
   **逻辑**:
   - 从现有 dependency 抽取凭据验证、S/D/PAT、租户、principal、PermissionActor 生命周期；公共层不读取 MCP 参数、不依赖 FastAPI endpoint marker。
   - 现有 dependency 继续作为薄 HTTP wrapper，保留原校验顺序、异常、状态和 ContextVar 行为；MCP wrapper 每次 list/call 都重新认证且绝不缓存永久授权。
@@ -94,7 +94,7 @@
   **依赖**: T001, T003
 
 - [x] **T007**: 实现 MCP 合同模型与固定 allowlist registry
-  **文件**: `src/backend/bisheng/open_mcp/contracts.py`, `src/backend/bisheng/open_mcp/registry.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/contracts.py`, `src/backend/doberman_agent/open_mcp/registry.py`
   **逻辑**:
   - 为 10 个工具定义显式输入与成功输出 DTO；所有模型都以 JSON object 为根，并与 `tool-contracts.md` 完全一致。
   - registry 显式声明工具元数据、source route、scope、modes、PAT 可用性、annotations、handler 和结果类型；范围不随路由或 SDK 自动发现增长。
@@ -113,7 +113,7 @@
   **依赖**: T003, T007
 
 - [x] **T009**: 实现 compatibility 与 MCP result/error adapter
-  **文件**: `src/backend/bisheng/open_mcp/compatibility.py`, `src/backend/bisheng/open_mcp/result.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/compatibility.py`, `src/backend/doberman_agent/open_mcp/result.py`
   **逻辑**:
   - 按 `tool-contracts.md` 做 MCP 单向入参/出参转换，协议差异不得反向写入 API schema、endpoint 或公共业务 capability。
   - 实现 `McpErrorPayload`、稳定符号码、已有业务码透传、成功 structured output、tool error 与 JSON-RPC error 的明确分界；未知异常继续向协议层交由 `-32603` 处理并只写脱敏日志。
@@ -132,7 +132,7 @@
   **依赖**: T003, T007
 
 - [x] **T011**: 实现受控 base64/URL 上传适配
-  **文件**: `src/backend/bisheng/open_mcp/upload.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/upload.py`
   **逻辑**:
   - 在 MCP JSON 解析前执行请求体限制；base64 和 URL 下载均流式写入受控临时文件，并执行 design §5.12 的三层大小、SSRF、重定向、超时与清理护栏。
   - 安全适配完成后再交给既有文件类型、单文件大小、配额、解析参数和内容安全校验；不增加本地路径入口。
@@ -145,7 +145,7 @@
 - [x] **T012**: 编写 6 个知识资源工具测试
   **文件**: `src/backend/test/open_mcp/test_knowledge_tools.py`
   **逻辑**:
-  - 覆盖 `bisheng_knowledge_list/create/update/delete/clear/retrieve` 的完整输入、成功 DTO、空结果、分页、type 0/1/3、业务拒绝和资源动作检查。
+  - 覆盖 `doberman_agent_knowledge_list/create/update/delete/clear/retrieve` 的完整输入、成功 DTO、空结果、分页、type 0/1/3、业务拒绝和资源动作检查。
   - 同一主体/等价输入分别走 API 与 MCP facade，对比业务含义、数据归属、关键副作用和权限边界；明确允许的差异只限 MCP object/structuredContent/error 包装。
   - 验证 PAT 只可调用 list/retrieve，D 模式主体与数据归属正确，调用时权限变化立即生效。
   **测试**: `uv run pytest test/open_mcp/test_knowledge_tools.py test/open_mcp/test_api_freeze_contract.py`
@@ -153,7 +153,7 @@
   **依赖**: T005, T007, T009
 
 - [x] **T013**: 实现 6 个知识资源 MCP 工具
-  **文件**: `src/backend/bisheng/open_mcp/tools/__init__.py`, `src/backend/bisheng/open_mcp/tools/knowledge.py`, `src/backend/bisheng/open_mcp/compatibility.py`; **仅在 Gate D 成立时可新增** `src/backend/bisheng/open_endpoints/domain/services/filelib_capability_service.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/tools/__init__.py`, `src/backend/doberman_agent/open_mcp/tools/knowledge.py`, `src/backend/doberman_agent/open_mcp/compatibility.py`; **仅在 Gate D 成立时可新增** `src/backend/doberman_agent/open_endpoints/domain/services/filelib_capability_service.py`
   **逻辑**:
   - 工具绑定只做 registry 调度、MCP 参数转换和结果适配；业务授权、状态判断、持久化与异步副作用复用既有业务 Service/F048。
   - 如果 endpoint 中确有无法复用且重复的业务编排，只抽取最小传输无关 capability；不得修改现有 endpoint 的校验、分支、调用顺序、异常和响应，也不得把 MCP 合同下沉到公共层。
@@ -164,7 +164,7 @@
 - [x] **T014**: 编写 4 个文件工具测试
   **文件**: `src/backend/test/open_mcp/test_file_tools.py`
   **逻辑**:
-  - 覆盖 `bisheng_knowledge_file_upload/list/delete/files_delete`；上传的 `content_base64` 与 `file_url` 必须二选一，完整传递文件名、MIME、父级、解析与异步参数。
+  - 覆盖 `doberman_agent_knowledge_file_upload/list/delete/files_delete`；上传的 `content_base64` 与 `file_url` 必须二选一，完整传递文件名、MIME、父级、解析与异步参数。
   - 覆盖批量删除 object wrapper、分页、结构化 `TagItem[]`、空成功、资源权限/配额/类型/大小/状态错误及关键副作用。
   - 同一主体/等价输入分别走 API 与 MCP facade，比对业务语义与副作用；断言现有 multipart 和顶层数组 API 合同未变。
   **测试**: `uv run pytest test/open_mcp/test_file_tools.py test/open_mcp/test_upload.py test/open_mcp/test_api_freeze_contract.py`
@@ -172,7 +172,7 @@
   **依赖**: T005, T007, T009, T011
 
 - [x] **T015**: 实现 4 个文件 MCP 工具
-  **文件**: `src/backend/bisheng/open_mcp/tools/file.py`, `src/backend/bisheng/open_mcp/compatibility.py`; **仅在 Gate D 成立时可使用** `src/backend/bisheng/open_endpoints/domain/services/filelib_capability_service.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/tools/file.py`, `src/backend/doberman_agent/open_mcp/compatibility.py`; **仅在 Gate D 成立时可使用** `src/backend/doberman_agent/open_endpoints/domain/services/filelib_capability_service.py`
   **逻辑**:
   - 使用 T011 的受控上传入口和既有业务 Service/F048；只在 MCP 层转换 multipart/base64/file_url、query/path 展平、批量删除数组包装和成功 DTO。
   - 保持既有 API 文件类型、大小、配额、解析任务、删除副作用和错误链路不变；公共 capability 抽取继续受 Gate D 约束。
@@ -194,7 +194,7 @@
   **依赖**: T005, T013, T015
 
 - [x] **T017**: 实现 MCP Server、路由挂载与逐工具审计
-  **文件**: `src/backend/bisheng/open_mcp/server.py`, `src/backend/bisheng/main.py`, `src/backend/bisheng/open_api/api/middleware.py`, `src/backend/bisheng/open_api/domain/services/call_audit_service.py`
+  **文件**: `src/backend/doberman_agent/open_mcp/server.py`, `src/backend/doberman_agent/main.py`, `src/backend/doberman_agent/open_api/api/middleware.py`, `src/backend/doberman_agent/open_api/domain/services/call_audit_service.py`
   **逻辑**:
   - 创建无状态 Streamable HTTP MCP app，注册固定 registry 的 list/call handler并纳入应用 lifespan；直接挂载 `/api/v2/mcp`，不借 `/api/v2` endpoint marker 推导单一 scope，不新增端口或节点本地身份 session。
   - `tools/list` 按当前 principal 的 scope/mode/PAT 过滤；`tools/call` 重新认证、重新检查声明和资源权限后调用工具。

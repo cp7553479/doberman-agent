@@ -1,19 +1,19 @@
 // @ts-strict-ignore
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { ConversationComposer } from '@bisheng/chat';
+import { ConversationComposer } from '@doberman-agent/chat';
 import SpeechToTextComponent from "~/components/Voice/SpeechToText";
 import { useRecordingAudioLoading } from "~/components/Voice/textToSpeechStore";
 import { useVoiceModels } from "~/hooks/useVoice";
 import { useLocalize } from "~/hooks";
 import InputFiles from "./components/InputFiles";
-import { bishengConfState, currentRunningState } from "./store/atoms";
+import { dobermanAgentConfState, currentRunningState } from "./store/atoms";
 import { useAreaText } from "./useAreaText";
 import DragDropOverlay from "~/components/Chat/Input/Files/DragDropOverlay";
 import { useFileDropAndPaste } from "./useFileDropAndPaste";
 
 export default function ChatInput({ readOnly, v }) {
-    const [bishengConfig] = useRecoilState(bishengConfState);
+    const [dobermanAgentConfig] = useRecoilState(dobermanAgentConfState);
     const { inputDisabled, error: inputMsg, showUpload, showStop, showReRun } = useRecoilValue(currentRunningState);
     // useAreaText
     const { accepts, inputRef, setChatFiles, handleRestart, handleSendClick, handleStopClick } = useAreaText();
@@ -52,7 +52,7 @@ export default function ChatInput({ readOnly, v }) {
         busy={fileUploading || audioOpening} hasAttachments={fileCount > 0} showStop={showStop}
         showRestart={showReRun && !inputMsg.code && !showStop}
         labels={{ attach: localize('shared:app_chat.attach'), send: localize('shared:app_chat.send'), stop: localize('com_ui_stop'), restart: localize('com_ui_restart') }}
-        placeholder={placholder} hint={bishengConfig?.dialog_tips}
+        placeholder={placholder} hint={dobermanAgentConfig?.dialog_tips}
         onSend={() => { handleSendClick(); setFileCount(0); }} onStop={handleStopClick} onRestart={handleRestart}
         onAttach={showUpload ? () => inputFilesRef.current?.openPicker() : undefined} attachmentDisabled={audioOpening}
         onPaste={handlePaste} overlay={isDragging ? <DragDropOverlay /> : undefined}
@@ -60,7 +60,7 @@ export default function ChatInput({ readOnly, v }) {
             if (inputRef.current) { inputRef.current.value += text; inputRef.current.dispatchEvent(new Event('input', { bubbles: true })); }
         }} /> : undefined}
         attachments={showUpload ? <InputFiles hideTrigger ref={inputFilesRef} v={v} showVoice={showVoice} accepts={accepts}
-            disabled={readOnly || audioOpening || inputDisabled} size={bishengConfig?.uploaded_files_maximum_size || 50}
+            disabled={readOnly || audioOpening || inputDisabled} size={dobermanAgentConfig?.uploaded_files_maximum_size || 50}
             onChange={files => {
                 if (files === null) { setFileUploading(true); return; }
                 setFileUploading(false); setFileCount(files.length); setChatFiles(files);

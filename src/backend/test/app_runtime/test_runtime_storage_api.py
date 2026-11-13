@@ -35,9 +35,9 @@ class StorageObjects(MemoryObjects):
 
 @pytest.fixture
 async def storage_api(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.api.endpoints import app_storage as api
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeRoute, RuntimeStorageBinding
-    from bisheng.app_runtime.domain.services.app_storage_service import AppStorageService
+    from doberman_agent.app_runtime.api.endpoints import app_storage as api
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeRoute, RuntimeStorageBinding
+    from doberman_agent.app_runtime.domain.services.app_storage_service import AppStorageService
 
     svc = AppStorageService(runtime_repo, StorageObjects(), max_file_bytes=8)
     op = operation()
@@ -65,7 +65,7 @@ async def storage_api(runtime_repo, monkeypatch):
     app.include_router(api.router, prefix="/api/v1")
     app.dependency_overrides[api.service] = lambda: svc
     monkeypatch.setattr(api, "settings", SimpleNamespace(app_runtime=SimpleNamespace(enabled=True)))
-    headers = {"Authorization": "Bearer " + issued["env"]["BISHENG_APP_STORAGE_TOKEN"]}
+    headers = {"Authorization": "Bearer " + issued["env"]["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]}
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://platform", headers=headers
     ) as client:
@@ -92,7 +92,7 @@ async def test_scope_size_and_revocation(storage_api):
     assert (await client.get("/api/v1/apps/app-b/storage/objects")).status_code == 401
     over = await client.put("/api/v1/apps/app-a/storage/objects/big", content=b"123456789")
     assert over.status_code == 413 and over.json()["detail"]["code"] == "payload_too_large"
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeRoute
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeRoute
 
     row = (await repo.find(RuntimeRoute, route_key="app:app-a"))[0]
     row.status = "maintenance"
@@ -112,6 +112,6 @@ async def test_preview_namespace_cannot_read_production(storage_api):
     preview = await svc.issue(op, base_url="http://platform", preview_session="session-a")
     response = await client.get(
         "/api/v1/apps/app-a/storage/objects",
-        headers={"Authorization": "Bearer " + preview["env"]["BISHENG_APP_STORAGE_TOKEN"]},
+        headers={"Authorization": "Bearer " + preview["env"]["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]},
     )
     assert response.status_code == 200 and response.json()["objects"] == []

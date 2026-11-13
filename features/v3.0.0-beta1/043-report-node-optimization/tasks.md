@@ -29,7 +29,7 @@
 ### Wave 1 — 后端：变量解析兼容（可与 Wave 2 并行）
 
 - [x] **T001**: 占位符 key 规范化函数 + 单元测试
-  **文件**: `src/backend/bisheng/workflow/nodes/report/docx_replace.py`（新增模块级纯函数）
+  **文件**: `src/backend/doberman_agent/workflow/nodes/report/docx_replace.py`（新增模块级纯函数）
   `src/backend/test/workflow/test_report_placeholder.py`（新建，测试目录按模块分）
   **逻辑**: 纯函数 `normalize_placeholder_key(raw: str) -> str`——取**最后一个** `|` 之后的内容作为取数键；无 `|` 则整串返回（旧格式）。见 design §3 决策 4、§4.2。
   **测试**: 新格式 `报告生成\|node_a.output` → `node_a.output`；旧格式 `node_a.output` → 原样；显示名含 `|`（`a\|b\|node_a.output` → `node_a.output`）；带数组下标 `名称\|node_a.out#0` → `node_a.out#0`；空显示名 `\|node_a.out` → `node_a.out`
@@ -37,7 +37,7 @@
   **依赖**: 无
 
 - [x] **T002**: 报告节点执行期接入规范化
-  **文件**: `src/backend/bisheng/workflow/nodes/report/report.py`（`_run()` 内）
+  **文件**: `src/backend/doberman_agent/workflow/nodes/report/report.py`（`_run()` 内）
   **逻辑**: 调 `get_other_node_variable()` 前对占位符做一次 `normalize_placeholder_key`；**`workflow_variables` 字典 key 仍用占位符原文**（替换按原文匹配，改了会残留 `{{...}}`——design §5 坑 1）
   **测试**: T001 通过 + 手动跑一次含新旧两种占位符的工作流
   **覆盖 AC**: AC-04, AC-05, AC-06
@@ -46,7 +46,7 @@
 ### Wave 2 — 后端：手动保存端点
 
 - [x] **T003**: 「触发模板保存」端点
-  **文件**: `src/backend/bisheng/api/v1/workflow.py`（与 `/report/file`、`/report/callback` 同级新增）
+  **文件**: `src/backend/doberman_agent/api/v1/workflow.py`（与 `/report/file`、`/report/callback` 同级新增）
   **逻辑**: 入参 `version_key`；校验用户对该 workflow 有编辑权限（复用同文件既有 `ApplicationPermissionService` 校验写法）；用 `office_jwt_secret` 签名后向 `office_url` 的 Command Service 发 `c=forcesave`、`key=version_key`；按其返回码判定「指令已受理 / key 无效 / 无编辑会话 / 服务不可达」并返回。**不写 MinIO**（落盘走既有 callback）——design §3 决策 1、决策 2
   **约束**: 不新增错误码，失败以既有响应包装返回可读信息
   **覆盖 AC**: AC-01, AC-02

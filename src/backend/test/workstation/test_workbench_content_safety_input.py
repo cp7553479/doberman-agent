@@ -8,9 +8,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
+from doberman_agent.workstation.domain.services import chat_service
 
 AUTO_REPLY = "当前对话内容违反相关规范，请修改后重新输入"
 HIT = SensitiveWordCheckResult(

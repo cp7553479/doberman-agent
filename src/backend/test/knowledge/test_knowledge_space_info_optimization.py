@@ -15,16 +15,16 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from bisheng.common.errcode.knowledge_space import SpaceNotFoundError, SpacePermissionDeniedError
-from bisheng.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
-from bisheng.knowledge.api.dependencies import get_knowledge_space_service
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, KnowledgeState
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import SpaceSubscriptionStatusEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.knowledge_space import SpaceNotFoundError, SpacePermissionDeniedError
+from doberman_agent.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
+from doberman_agent.knowledge.api.dependencies import get_knowledge_space_service
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, KnowledgeState
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import SpaceSubscriptionStatusEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.knowledge.test_knowledge_space_service import _make_login_user, _make_member, _make_space
 
-MODULE = "bisheng.knowledge.domain.services.knowledge_space_service"
+MODULE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 STAGES = (
     "prepare",
     "auth",
@@ -49,7 +49,7 @@ def info_case():
     with ExitStack() as stack:
         stack.enter_context(
             patch(
-                "bisheng.approval.application.request_state.get_failed_request_keys",
+                "doberman_agent.approval.application.request_state.get_failed_request_keys",
                 new_callable=AsyncMock,
                 return_value=frozenset(),
             )
@@ -78,7 +78,7 @@ def info_case():
             ),
             auto_tag=stack.enter_context(patch.object(service, "_decorate_auto_tag_for_info", new_callable=AsyncMock)),
             metric=stack.enter_context(patch(f"{MODULE}.emit_metric")),
-            rebuild=stack.enter_context(patch("bisheng.worker.rebuild_knowledge_celery.delay")),
+            rebuild=stack.enter_context(patch("doberman_agent.worker.rebuild_knowledge_celery.delay")),
         )
         mocks.runtime.return_value = SimpleNamespace(effective_actions=AsyncMock(return_value={"download"}))
         yield mocks
@@ -304,7 +304,7 @@ async def test_ac06_success_metrics_are_bounded_and_counts_are_not_requeried(inf
 
 @pytest.fixture
 def info_client(info_case):
-    from bisheng.knowledge.api.endpoints.knowledge_space import router
+    from doberman_agent.knowledge.api.endpoints.knowledge_space import router
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")

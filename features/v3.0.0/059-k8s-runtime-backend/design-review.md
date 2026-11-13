@@ -18,7 +18,7 @@
 
 停止依据采用 [K8s v1.28.15 TerminatePod](https://github.com/kubernetes/kubernetes/blob/v1.28.15/pkg/kubelet/status/status_manager.go#L380-L486)、[终态延迟规则](https://github.com/kubernetes/kubernetes/blob/v1.28.15/pkg/kubelet/status/status_manager.go#L965-L1029)、[删除中 Pod 的绑定校验](https://github.com/kubernetes/kubernetes/blob/v1.28.15/pkg/registry/core/pod/storage/storage.go#L221-L232) 及 [AdmissionReview 的身份/子资源合同](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request)。status 来源限制是本次设计，不是已经安装或已探测的配置。
 
-现有数据边界重新核对 [AppDataService](../../../src/backend/bisheng/app_runtime/domain/services/app_data_service.py#L142)、[节点应用 scope](../../../src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py#L374)、[单应用数据 API](../../../src/runtime-manager/runtime_manager/api/platform_data.py#L16) 和 [Docker DataExecutor](../../../src/runtime-manager/runtime_manager/data_executor.py#L68)。材料分块规则对照 [RuntimeArtifactService](../../../src/backend/bisheng/app_runtime/domain/services/runtime_artifact_service.py#L146)，保留其持久 offset/摘要/SQL 确认原理，新增 workload 认证不冒充已实现。
+现有数据边界重新核对 [AppDataService](../../../src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py#L142)、[节点应用 scope](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py#L374)、[单应用数据 API](../../../src/runtime-manager/runtime_manager/api/platform_data.py#L16) 和 [Docker DataExecutor](../../../src/runtime-manager/runtime_manager/data_executor.py#L68)。材料分块规则对照 [RuntimeArtifactService](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_artifact_service.py#L146)，保留其持久 offset/摘要/SQL 确认原理，新增 workload 认证不冒充已实现。
 
 ## 场景交叉复核
 
@@ -89,7 +89,7 @@
 
 实施和部署阶段仍需执行设计 7.1、7.2 已列的 manager 失联/并发控制器、init 拉取与材料失败、status 规则允许/拒绝、停用数据会话及数据动作超时、分块重试/撤销、Docker 回归等场景。这些是现有验收门，当前未执行；本轮没有新开“已验证”记录或声称 189 上线成功。
 
-参考：[K8s v1.28.15 的终态延迟](https://github.com/kubernetes/kubernetes/blob/v1.28.15/pkg/kubelet/status/status_manager.go#L965-L1029)、[AdmissionReview 请求合同](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request)、[现有操作归属校验](../../../src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py#L290)、[现有材料安全归档](../../../src/runtime-manager/runtime_manager/bundle_inputs.py#L194)。
+参考：[K8s v1.28.15 的终态延迟](https://github.com/kubernetes/kubernetes/blob/v1.28.15/pkg/kubelet/status/status_manager.go#L965-L1029)、[AdmissionReview 请求合同](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request)、[现有操作归属校验](../../../src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py#L290)、[现有材料安全归档](../../../src/runtime-manager/runtime_manager/bundle_inputs.py#L194)。
 
 ## 审查历史
 

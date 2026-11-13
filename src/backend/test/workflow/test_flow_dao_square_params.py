@@ -21,13 +21,13 @@ from contextlib import contextmanager
 
 from sqlmodel import select
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.database.models.flow import FlowDao, FlowType
+from doberman_agent.database.models.flow import FlowDao, FlowType
 
 
 def _compiled(stmt) -> str:

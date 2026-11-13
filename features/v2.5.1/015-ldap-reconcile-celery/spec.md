@@ -9,11 +9,11 @@
 ## 1. 概述与用户故事
 
 作为 **集团 IT**，
-我希望 **系统每 6 小时自动校对 SSO 端部门树与 bisheng 内部结构，发现漂移时自动修复；SSO 换 HR 系统时提供 relink 接口重建映射**，
+我希望 **系统每 6 小时自动校对 SSO 端部门树与 doberman-agent 内部结构，发现漂移时自动修复；SSO 换 HR 系统时提供 relink 接口重建映射**，
 以便 **部门归属长期保持一致，换型不丢失用户归属**。
 
 核心能力：
-- Celery Beat 定时任务：每 6h 全量校对 LDAP/OAuth 部门树 vs bisheng
+- Celery Beat 定时任务：每 6h 全量校对 LDAP/OAuth 部门树 vs doberman-agent
 - 漂移处理策略：新增/命名变更自动同步；删除进入 orphaned；移动触发 UserTenantSyncService
 - **Gateway 实时 vs Celery 校对冲突处理**（INV-T12，PRD §9.5）：每 external_id 维护 `last_sync_ts`，按 ts 最大为准；同 ts 下 upsert+remove 冲突以 remove 为准
 - 新增 `POST /api/v1/internal/departments/relink`：SSO 换型时 path+name 回落匹配
@@ -27,13 +27,13 @@
 |----|------|------|---------|
 | AC-01 | 系统 | Celery Beat 定时触发 | 每 6h 执行一次 SSO 全量校对 |
 | AC-02 | 系统 | 发现 SSO 新部门 | 自动 upsert，mount 状态保留（不动标记） |
-| AC-03 | 系统 | 发现 SSO 删除部门 | bisheng 标记 is_deleted；挂载点进入 orphaned |
+| AC-03 | 系统 | 发现 SSO 删除部门 | doberman-agent 标记 is_deleted；挂载点进入 orphaned |
 | AC-04 | 系统 | 发现主部门跨 Tenant 变更 | 触发 UserTenantSyncService |
 | AC-05 | 运维 | POST /internal/departments/relink（策略 external_id_map） | 显式映射应用成功 |
 | AC-06 | 运维 | POST /internal/departments/relink（策略 path_plus_name） | 单候选自动 apply；多候选返回 conflicts 列表 |
 | AC-07 | 运维 | relink dry_run=true | 返回 would_apply 清单但不写入 |
 | AC-08 | 性能 | 10 万部门全量校对 | 执行时间 < 30 min；MySQL/Redis 压力可控（TBD 基线） |
-| AC-09 | 系统 | Gateway 实时同步 ts=T1 后 Celery 校对推送 ts=T0 (T0 < T1) | 跳过该 Celery 消息 + 写 `org_sync_log` level=warn；不覆盖 bisheng 当前状态 |
+| AC-09 | 系统 | Gateway 实时同步 ts=T1 后 Celery 校对推送 ts=T0 (T0 < T1) | 跳过该 Celery 消息 + 写 `org_sync_log` level=warn；不覆盖 doberman-agent 当前状态 |
 | AC-10 | 系统 | Celery 校对推送 ts=T2 (T2 > T1) | 应用变更；更新 `last_sync_ts=T2` |
 | AC-11 | 系统 | 同 ts 下 upsert（Gateway）和 remove（Celery）冲突 | 以 remove 为准（从严，避免幽灵部门）；写 audit_log + 站内消息；remove 应用后调用 **F011 `DepartmentDeletionHandler.on_deleted(dept_id, 'celery_reconcile')`** 统一处理孤儿 Tenant |
 | AC-12 | 系统 | 单 external_id 一周内出现 ≥3 次冲突 | Celery Beat `report_ts_conflicts_weekly` 每周一 09:00 聚合过去 7 天 `audit_log.action='dept.sync_conflict'` + `org_sync_log.event_type='ts_conflict'`；对同 external_id 冲突 ≥3 次的条目发送全局超管（站内消息 + 邮件）；payload 含冲突详情 + `是否需要 relink` 建议 + 本周总冲突数；连续 5 天未解决则升级至每日一次（由 Celery daily beat 独立任务 `report_ts_conflicts_daily_escalation` 检测周报发送后的"未解决"信号） |
@@ -82,7 +82,7 @@ Body: {"dept_id": ..., "chosen_new_external_id": "..."}
 
 每条同步消息（无论来自 Gateway 实时还是 Celery 校对）携带 `ts` 字段（源系统时间戳，单位秒）。
 
-bisheng 为每个 `Department.external_id` 维护：
+doberman-agent 为每个 `Department.external_id` 维护：
 
 ```sql
 -- 已存在的 org_sync_log 表新增 last_sync_ts 索引视图

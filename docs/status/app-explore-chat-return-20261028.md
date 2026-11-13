@@ -2,10 +2,10 @@
 
 ## 范围与基线
 
-- 修改仓库：`dataelement/bisheng`，目标 `feat/bisheng-work-120-main`。
+- 修改仓库：`cp7553479/doberman-agent`，目标 `feat/doberman-agent-work-120-main`。
 - 开始基线：`e468e2f2bcfe3c855e159193c0f96e18aec1453d`；PR 交付基线：`174394b3237d10460477fdefd0d4ba8871c7a913`；冲突处理同步目标：`d9cb1394a4fa1370f2fe40d7de41ab3f37194a70`。
-- 工作目录：`.worktrees/bisheng-app-explore-chat-return`；分支：`codex/app-explore-chat-return`。
-- 本次修改平台网页客户端。参考 macOS 测试运行时：Electron `43.0.0`；本机毕昇 Work 依赖 Harness `0.2.1-rc.2`。DSH Desktop v0.9.0 集成目录已查为干净，本次源码归属毕昇客户端。
+- 工作目录：`.worktrees/doberman-agent-app-explore-chat-return`；分支：`codex/app-explore-chat-return`。
+- 本次修改平台网页客户端。参考 macOS 测试运行时：Electron `43.0.0`；本机doberman-agent Work 依赖 Harness `0.2.1-rc.2`。DSH Desktop v0.9.0 集成目录已查为干净，本次源码归属doberman-agent客户端。
 
 ## 根因与实现
 

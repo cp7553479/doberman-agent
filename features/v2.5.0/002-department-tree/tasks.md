@@ -55,8 +55,8 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
 
 - [x] **T001**: Department/UserDepartment ORM + DAO + 错误码 + DAO 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/database/models/department.py` — Department + UserDepartment SQLModel 表定义 + DepartmentDao + UserDepartmentDao
-  - `src/backend/bisheng/common/errcode/department.py` — 210xx 错误码
+  - `src/backend/doberman_agent/database/models/department.py` — Department + UserDepartment SQLModel 表定义 + DepartmentDao + UserDepartmentDao
+  - `src/backend/doberman_agent/common/errcode/department.py` — 210xx 错误码
   - `src/backend/test/test_department_dao.py` — DAO 单元测试
   **逻辑**:
   - **`Department` 表**：id(INT PK AUTO), dept_id(VARCHAR 64 UNIQUE, 业务键如"BS@a3f7e"), name(VARCHAR 128 NOT NULL), parent_id(INT nullable, NULL=根部门), tenant_id(INT NOT NULL DEFAULT 1, INDEX), path(VARCHAR 512 NOT NULL, INDEX, 物化路径如"/1/2/3/"), sort_order(INT DEFAULT 0), source(VARCHAR 32 DEFAULT 'local'), external_id(VARCHAR 128 nullable), status(VARCHAR 16 DEFAULT 'active', INDEX), default_role_ids(JSON nullable), create_user(INT nullable), create_time(DATETIME server_default CURRENT_TIMESTAMP), update_time(DATETIME server_default CURRENT_TIMESTAMP ON UPDATE)
@@ -186,10 +186,10 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
 
 - [x] **T003**: DepartmentChangeHandler — TupleOperation DTO + 事件方法 + 日志 stub
   **文件（新建）**:
-  - `src/backend/bisheng/department/__init__.py` — 空 init
-  - `src/backend/bisheng/department/domain/__init__.py` — 空 init
-  - `src/backend/bisheng/department/domain/services/__init__.py` — 空 init
-  - `src/backend/bisheng/department/domain/services/department_change_handler.py` — TupleOperation + DepartmentChangeHandler
+  - `src/backend/doberman_agent/department/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/domain/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/domain/services/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/domain/services/department_change_handler.py` — TupleOperation + DepartmentChangeHandler
   **逻辑**:
   - `TupleOperation` dataclass:
     ```python
@@ -212,9 +212,9 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
 
 - [x] **T004**: DepartmentService + Schema + Service 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/department/domain/schemas/__init__.py` — 空 init
-  - `src/backend/bisheng/department/domain/schemas/department_schema.py` — Pydantic 请求/响应 DTO
-  - `src/backend/bisheng/department/domain/services/department_service.py` — DepartmentService 类
+  - `src/backend/doberman_agent/department/domain/schemas/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/domain/schemas/department_schema.py` — Pydantic 请求/响应 DTO
+  - `src/backend/doberman_agent/department/domain/services/department_service.py` — DepartmentService 类
   - `src/backend/test/test_department_service.py` — Service 单元测试
   **逻辑**:
   - **Pydantic Schema**（`department_schema.py`）:
@@ -327,18 +327,18 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
 
 - [x] **T005**: API Schema + 端点 + 路由注册
   **文件（新建）**:
-  - `src/backend/bisheng/department/api/__init__.py` — 空 init
-  - `src/backend/bisheng/department/api/router.py` — 路由聚合
-  - `src/backend/bisheng/department/api/endpoints/__init__.py` — 空 init
-  - `src/backend/bisheng/department/api/endpoints/department.py` — 部门 CRUD + tree + move 端点
-  - `src/backend/bisheng/department/api/endpoints/department_member.py` — 成员管理端点
+  - `src/backend/doberman_agent/department/api/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/api/router.py` — 路由聚合
+  - `src/backend/doberman_agent/department/api/endpoints/__init__.py` — 空 init
+  - `src/backend/doberman_agent/department/api/endpoints/department.py` — 部门 CRUD + tree + move 端点
+  - `src/backend/doberman_agent/department/api/endpoints/department_member.py` — 成员管理端点
   **文件（修改）**:
-  - `src/backend/bisheng/api/router.py` — 导入并注册 department_router
+  - `src/backend/doberman_agent/api/router.py` — 导入并注册 department_router
   **逻辑**:
   - **router.py**:
     ```python
-    from bisheng.department.api.endpoints.department import router as department_router
-    from bisheng.department.api.endpoints.department_member import router as department_member_router
+    from doberman_agent.department.api.endpoints.department import router as department_router
+    from doberman_agent.department.api.endpoints.department_member import router as department_member_router
     
     router = APIRouter(prefix='/departments', tags=['Department'])
     router.include_router(department_router)
@@ -356,9 +356,9 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
     - `POST /{dept_id}/members` — `add_members(dept_id: str, data: DepartmentMemberAdd, login_user=Depends(...))` → `resp_200(...)`
     - `DELETE /{dept_id}/members/{user_id}` — `remove_member(dept_id: str, user_id: int, login_user=Depends(...))` → `resp_200(...)`
   - 所有端点用 `try/except BaseErrorCode as e: return e.return_resp()` 捕获业务异常
-  - **api/router.py 注册**（在 `src/backend/bisheng/api/router.py` 中添加）:
+  - **api/router.py 注册**（在 `src/backend/doberman_agent/api/router.py` 中添加）:
     ```python
-    from bisheng.department.api.router import router as department_router
+    from doberman_agent.department.api.router import router as department_router
     router.include_router(department_router)
     ```
   **覆盖 AC**: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08, AC-09, AC-10, AC-11, AC-12, AC-13, AC-14, AC-15, AC-16
@@ -399,14 +399,14 @@ T001 (ORM + DAO + 错误码 + DAO 测试)
 
 - [x] **T007**: init_data 默认根部门创建 + 测试
   **文件（修改）**:
-  - `src/backend/bisheng/common/init_data.py` — 新增 `_init_default_root_department(session)` 函数
+  - `src/backend/doberman_agent/common/init_data.py` — 新增 `_init_default_root_department(session)` 函数
   **文件（新建）**:
   - `src/backend/test/test_init_root_department.py` — init_data 根部门创建测试
   **逻辑**:
   - 新增 async 函数 `_init_default_root_department(session)`:
-    1. `from bisheng.core.context.tenant import DEFAULT_TENANT_ID, bypass_tenant_filter`
-    2. `from bisheng.database.models.tenant import Tenant`
-    3. `from bisheng.database.models.department import Department`
+    1. `from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID, bypass_tenant_filter`
+    2. `from doberman_agent.database.models.tenant import Tenant`
+    3. `from doberman_agent.database.models.department import Department`
     4. `with bypass_tenant_filter():`
     5. 查询默认租户：`tenant = (await session.exec(select(Tenant).where(Tenant.id == DEFAULT_TENANT_ID))).first()`
     6. 如果 `tenant is None` 或 `tenant.root_dept_id is not None`：return（幂等检查）

@@ -448,7 +448,7 @@
 {
 "call_id": "call_d513cb3c32ca463d9e458c51",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023000
@@ -465,7 +465,7 @@
 {
 "call_id": "call_216975e1e67f4195b7809e8d",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023006
@@ -482,7 +482,7 @@
 {
 "call_id": "call_47851171ff73421185dfd92b",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023012
@@ -493,13 +493,13 @@
 "name": "thinking",
 "step_type": "thinking",
 "status": "end",
-"output": "The bisheng_code_interpreter seems to be returning empty logs. Let me try a simpler approach to check if node is available, and also try to run the script differently.",
+"output": "The doberman_agent_code_interpreter seems to be returning empty logs. Let me try a simpler approach to check if node is available, and also try to run the script differently.",
 "timestamp": 1786023014
 },
 {
 "call_id": "call_5be2f6a78b0c4e6698470456",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023018
@@ -516,7 +516,7 @@
 {
 "call_id": "call_44caf8a792f64ad5935cd10a",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023025
@@ -533,7 +533,7 @@
 {
 "call_id": "call_099cf202431b4e51a4caa944",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023029
@@ -567,7 +567,7 @@
 {
 "call_id": "call_e0ad9a072e524622a77d62db",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023156
@@ -578,13 +578,13 @@
 "name": "thinking",
 "step_type": "thinking",
 "status": "end",
-"output": "The bisheng_code_interpreter seems to not return any output at all - just exitcode 1 and empty log. Let me try running the Python code directly in the bisheng_code_interpreter instead of as a subprocess.",
+"output": "The doberman_agent_code_interpreter seems to not return any output at all - just exitcode 1 and empty log. Let me try running the Python code directly in the doberman_agent_code_interpreter instead of as a subprocess.",
 "timestamp": 1786023159
 },
 {
 "call_id": "call_27f161e07bf74f489ccb72e7",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023160
@@ -595,13 +595,13 @@
 "name": "thinking",
 "step_type": "thinking",
 "status": "end",
-"output": "The python-pptx library is available. Let me try running the script directly in the bisheng interpreter to see the actual error.",
+"output": "The python-pptx library is available. Let me try running the script directly in the doberman_agent interpreter to see the actual error.",
 "timestamp": 1786023163
 },
 {
 "call_id": "call_a5885bd482b445caa4bac3d4",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023165
@@ -618,7 +618,7 @@
 {
 "call_id": "call_32a6fbbf11464066afffc050",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023168
@@ -635,7 +635,7 @@
 {
 "call_id": "call_c402e47ccba44a5b9538bad0",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023171
@@ -652,7 +652,7 @@
 {
 "call_id": "call_32fba96e18414174b2547f76",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023179
@@ -669,7 +669,7 @@
 {
 "call_id": "call_03a47c59d0634a638d37f4dc",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023184
@@ -686,7 +686,7 @@
 {
 "call_id": "call_5b302d8147b94d8fbca97822",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023187
@@ -703,7 +703,7 @@
 {
 "call_id": "call_f088d854a434416093bbc1be",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023193
@@ -720,7 +720,7 @@
 {
 "call_id": "call_14fe83181d0e4232a60cdc02",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023197
@@ -731,13 +731,13 @@
 "name": "thinking",
 "step_type": "thinking",
 "status": "end",
-"output": "The bisheng_code_interpreter runs in a different working directory. The files I write with `write_file` go to `/home/user/scratch/` but the code interpreter runs from `/root/.cache/bisheng/linsight/40c386fc`. I need to write the Python script directly into the code interpreter's working directory, or use the output directory relative to the code interpreter.\n\nLet me re-read the SKILL.md: it says \"write final deliverables to the RELATIVE directory `output/`\" and \"intermediate files to `scratch/`\". The code interpreter's CWD has `output/` and `home/`. Let me check what's in `home/`.\n\nActually, I should just write the script directly in the Python code that I pass to bisheng_code_interpreter. Or I can write it to a file using write_file into the home directory and then access it from the code interpreter.\n\nLet me check: `home/user/` - what's there? And I should write the script to a location accessible from the code interpreter.",
+"output": "The doberman_agent_code_interpreter runs in a different working directory. The files I write with `write_file` go to `/home/user/scratch/` but the code interpreter runs from `/root/.cache/doberman_agent/linsight/40c386fc`. I need to write the Python script directly into the code interpreter's working directory, or use the output directory relative to the code interpreter.\n\nLet me re-read the SKILL.md: it says \"write final deliverables to the RELATIVE directory `output/`\" and \"intermediate files to `scratch/`\". The code interpreter's CWD has `output/` and `home/`. Let me check what's in `home/`.\n\nActually, I should just write the script directly in the Python code that I pass to doberman_agent_code_interpreter. Or I can write it to a file using write_file into the home directory and then access it from the code interpreter.\n\nLet me check: `home/user/` - what's there? And I should write the script to a location accessible from the code interpreter.",
 "timestamp": 1786023202
 },
 {
 "call_id": "call_11814c7c18d34a77a84819ee",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023204
@@ -748,13 +748,13 @@
 "name": "thinking",
 "step_type": "thinking",
 "status": "end",
-"output": "The code interpreter runs in `/root/.cache/bisheng/linsight/40c386fc`, and the write_file tool writes to `/home/user/scratch/`. From the code interpreter, I need to use `home/user/scratch/create_ppt.py` (relative path).",
+"output": "The code interpreter runs in `/root/.cache/doberman_agent/linsight/40c386fc`, and the write_file tool writes to `/home/user/scratch/`. From the code interpreter, I need to use `home/user/scratch/create_ppt.py` (relative path).",
 "timestamp": 1786023206
 },
 {
 "call_id": "call_171d3400883b401096fe6f44",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023207
@@ -873,7 +873,7 @@
 {
 "call_id": "call_47f3b8c77ba844679469bf9f",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023229
@@ -890,7 +890,7 @@
 {
 "call_id": "call_6377c9d225d44f38b7a8e948",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023235
@@ -907,7 +907,7 @@
 {
 "call_id": "call_75520c7442534d5586c9d882",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023241
@@ -924,7 +924,7 @@
 {
 "call_id": "call_c2b38515b34d4f7baa3e7ddc",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023246
@@ -941,7 +941,7 @@
 {
 "call_id": "call_3019fb0b152845bbb7b7cdfb",
 "task_id": "40c386fcea784289a0ab69d56566d992",
-"name": "bisheng_code_interpreter",
+"name": "doberman_agent_code_interpreter",
 "step_type": "tool",
 "status": "end",
 "timestamp": 1786023254

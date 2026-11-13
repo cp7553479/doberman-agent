@@ -1,6 +1,6 @@
 **PROCEED — 最终修订未发现 blocker、should-fix 或 nit，可以提交用户进行设计确认。** 本报告为独立架构建议，不构成实现、部署或操作授权。
 
-评审对象为 `/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration` 当前设计，源码基线为 `7b90271017b74f8c43075dd28e40d895462d6783`。本次复核重新读取了最终小修及其相关合同；`src/` 相对 HEAD 无未提交差异。未修改文件、运行测试、部署或委派任务。
+评审对象为 `/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration` 当前设计，源码基线为 `7b90271017b74f8c43075dd28e40d895462d6783`。本次复核重新读取了最终小修及其相关合同；`src/` 相对 HEAD 无未提交差异。未修改文件、运行测试、部署或委派任务。
 
 ## 七维评估
 
@@ -17,19 +17,19 @@
 ## 最终小修核对
 
 1. **幂等范围与 CAS 顺序一致。**  
-   [F055 design.md:190](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:190) 的 `(app_id,request_id)` 唯一约束与 [同文档:207](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:207) 的应用内唯一规则一致；action、ref、value、expected_revision 和确认参数进入 HMAC，历史同参请求先返回原结果，不会因当前 revision 已变化而误报 CAS 冲突或重复写入。此前 nit 已关闭。
+   [F055 design.md:190](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:190) 的 `(app_id,request_id)` 唯一约束与 [同文档:207](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:207) 的应用内唯一规则一致；action、ref、value、expected_revision 和确认参数进入 HMAC，历史同参请求先返回原结果，不会因当前 revision 已变化而误报 CAS 冲突或重复写入。此前 nit 已关闭。
 
 2. **配置修订与执行重试保持不同语义。**  
-   [F055 design.md:211](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:211) 明确每个新成功写入/删除均递增 revision，包括下线应用及未引用项；历史重放不递增。它与 `:108`“同一失败配置 revision 的新 attempt”一致：重试生效不会凭空产生新的配置内容。
+   [F055 design.md:211](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:211) 明确每个新成功写入/删除均递增 revision，包括下线应用及未引用项；历史重放不递增。它与 `:108`“同一失败配置 revision 的新 attempt”一致：重试生效不会凭空产生新的配置内容。
 
 3. **失败后的 guard 可以安全退出。**  
-   [F055 design.md:219](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:219) 已区分成功完成与失败、取消、超时：后者只有全部相关 writer 停止且清理确认后，才按 operation/revision CAS 释放；保留失败状态、不推进 applied_revision。它与 `:108`、`:212`、`:221` 的重试和未知执行约束相容，没有通过终态自动放开单写保护。
+   [F055 design.md:219](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:219) 已区分成功完成与失败、取消、超时：后者只有全部相关 writer 停止且清理确认后，才按 operation/revision CAS 释放；保留失败状态、不推进 applied_revision。它与 `:108`、`:212`、`:221` 的重试和未知执行约束相容，没有通过终态自动放开单写保护。
 
 4. **未知时间与完整导出语义一致。**  
-   [F056 design.md:75](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md:75) 明确 all 保留未知时间行，recent7d/custom 不伪造其区间归属；`:79–83` 的源读取合同仍覆盖完整匹配结果。更新后的 [数据流图:115](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md:115) 正确表达冻结条件和 watermark、worker 读取 source Repository、输出不可变 CSV 分块及 manifest，没有重新引入全量 ID 选择集。
+   [F056 design.md:75](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md:75) 明确 all 保留未知时间行，recent7d/custom 不伪造其区间归属；`:79–83` 的源读取合同仍覆盖完整匹配结果。更新后的 [数据流图:115](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md:115) 正确表达冻结条件和 watermark、worker 读取 source Repository、输出不可变 CSV 分块及 manifest，没有重新引入全量 ID 选择集。
 
 5. **部署 key 轮换边界保持收敛。**  
-   [F055 design.md:94](/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:94) 与 `:96` 仍将部署 key 定义为固定配置，并记录备份、误改拒绝和未来迁移说明；本轮没有要求实现轮换功能。owner 更新第三方业务密钥及刷新实例仍在范围内。
+   [F055 design.md:94](/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/055-app-publish-pipeline/design.md:94) 与 `:96` 仍将部署 key 定义为固定配置，并记录备份、误改拒绝和未来迁移说明；本轮没有要求实现轮换功能。owner 更新第三方业务密钥及刷新实例仍在范围内。
 
 ## Findings
 

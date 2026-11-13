@@ -2,7 +2,7 @@ import { Capabilities } from '~/types/chat';
 import { useFormContext, Controller } from 'react-hook-form';
 import type { AssistantForm } from '~/common';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { CircleHelpIcon } from '~/components/svg';
 import { useLocalize } from '~/hooks';
 import { ESide } from '~/common';

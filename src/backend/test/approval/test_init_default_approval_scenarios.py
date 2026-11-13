@@ -6,18 +6,18 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.approval.domain.models.approval_scenario import (
+from doberman_agent.approval.domain.models.approval_scenario import (
     ApprovalFlowDefinition,
     ApprovalFlowVersion,
     ApprovalNodeDefinition,
     ApprovalRouteRule,
     ApprovalScenario,
 )
-from bisheng.approval.domain.services.approval_seed_service import (
+from doberman_agent.approval.domain.services.approval_seed_service import (
     DEFAULT_APPROVAL_SCENARIO_SEEDS as _DEFAULT_APPROVAL_SCENARIO_SEEDS,
 )
-from bisheng.common.init_data import _init_default_approval_scenarios
-from bisheng.core.context.tenant import DEFAULT_TENANT_ID
+from doberman_agent.common.init_data import _init_default_approval_scenarios
+from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID
 
 
 @pytest_asyncio.fixture

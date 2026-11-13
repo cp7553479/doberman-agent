@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     TempCitationItemSchema,
     TempCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_resolve_service import CitationResolveService
-from bisheng.common.errcode.http_error import NotFoundError
+from doberman_agent.citation.domain.services.citation_resolve_service import CitationResolveService
+from doberman_agent.common.errcode.http_error import NotFoundError
 
 FORBIDDEN = "forbidden"
 EXPIRED = "expired"
@@ -69,15 +69,15 @@ async def test_session_owner_gets_freshly_signed_url_without_knowledge_file():
     minio = _minio()
     with (
         patch(
-            "bisheng.database.models.session.MessageSessionDao.async_get_one",
+            "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
             AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
         ),
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(return_value=minio),
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.query_by_id_sync",
+            "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.query_by_id_sync",
         ) as knowledge_file_mock,
         patch.object(service, "_permitted_file_ids", AsyncMock(return_value=set())) as permitted_mock,
     ):
@@ -113,11 +113,11 @@ async def test_share_recipient_of_this_workflow_chat_gets_signed_url():
     minio = _minio()
     with (
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(return_value=minio),
         ),
         patch(
-            "bisheng.database.models.session.MessageSessionDao.async_get_one",
+            "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
             AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
         ) as session_mock,
     ):
@@ -136,7 +136,7 @@ async def test_share_of_another_chat_does_not_open_temp_sources():
     item = _temp_item()
     service = _service(item)
     with patch(
-        "bisheng.database.models.session.MessageSessionDao.async_get_one",
+        "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
         AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
     ):
         result = await service.resolve_citations_with_reasons(
@@ -152,7 +152,7 @@ async def test_non_workflow_share_does_not_open_temp_sources():
     item = _temp_item()
     service = _service(item)
     with patch(
-        "bisheng.database.models.session.MessageSessionDao.async_get_one",
+        "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
         AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
     ):
         with pytest.raises(NotFoundError) as exc:
@@ -168,7 +168,7 @@ async def test_logged_in_non_owner_is_forbidden():
     item = _temp_item()
     service = _service(item)
     with patch(
-        "bisheng.database.models.session.MessageSessionDao.async_get_one",
+        "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
         AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
     ):
         with pytest.raises(NotFoundError) as exc:
@@ -181,11 +181,11 @@ async def test_owner_sees_expired_when_object_is_gone():
     service = _service(item)
     with (
         patch(
-            "bisheng.database.models.session.MessageSessionDao.async_get_one",
+            "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
             AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
         ),
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(return_value=_minio(exists=False)),
         ),
     ):
@@ -200,11 +200,11 @@ async def test_no_permission_and_missing_object_still_reports_forbidden():
     minio = _minio(exists=False)
     with (
         patch(
-            "bisheng.database.models.session.MessageSessionDao.async_get_one",
+            "doberman_agent.database.models.session.MessageSessionDao.async_get_one",
             AsyncMock(return_value=SimpleNamespace(user_id=42, chat_id="chat-1")),
         ),
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(return_value=minio),
         ),
     ):
@@ -229,7 +229,7 @@ async def test_debug_item_without_object_name_signs_still_live_tmp_object():
     minio = _minio()
     minio.tmp_bucket = "tmp-dir"
     with patch(
-        "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+        "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
         AsyncMock(return_value=minio),
     ):
         resolved = await service.resolve_citation(item.citationId, login_user=_owner())

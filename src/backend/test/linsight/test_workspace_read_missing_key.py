@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from minio.error import S3Error
 
-from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend, _is_missing_key
+from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend, _is_missing_key
 
 
 def _s3(code: str) -> S3Error:
@@ -27,7 +27,7 @@ def _s3(code: str) -> S3Error:
 
 def _backend(tmp_path, *, async_get=None, sync_get=None) -> WorkspaceBackend:
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
     if async_get is not None:
         minio.get_object = async_get
     if sync_get is not None:

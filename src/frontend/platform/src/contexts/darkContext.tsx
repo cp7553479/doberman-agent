@@ -20,7 +20,7 @@ export function DarkProvider({ children }) {
   useEffect(() => {
     // `.dark` goes on BOTH <html> and <body>; each one fixes a different layer.
     //
-    // <html>: the shared tokens (@bisheng/ui tokens.css) declare semantic
+    // <html>: the shared tokens (@doberman-agent/ui tokens.css) declare semantic
     // aliases such as `--text-1: var(--arco-gray-10)` on :root, and var()
     // inside a custom property is resolved on the element that declares it.
     // With `.dark` only on <body> those aliases were frozen at their light

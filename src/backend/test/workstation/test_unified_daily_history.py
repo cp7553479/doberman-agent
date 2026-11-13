@@ -16,8 +16,8 @@ from datetime import datetime
 import pytest
 from langchain_core.messages import AIMessage
 
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 def _task_turn(answer: str = "任务最终答案") -> ChatMessage:

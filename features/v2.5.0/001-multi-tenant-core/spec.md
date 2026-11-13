@@ -41,17 +41,17 @@
 F001 是 v2.5.0 权限体系改造的地基。它在系统的每一层（数据库、请求上下文、异步任务、存储路径）植入租户感知能力，但本身不暴露任何新的 API 或 UI。所有后续 Feature（F002~F010）依赖 F001 提供的租户隔离保障。
 
 **用户故事 1**:
-作为 **BiSheng 运维人员**，
+作为 **doberman-agent 运维人员**，
 我希望 **所有业务数据自动按 tenant_id 隔离**，
 以便 **后续多租户功能（F010）可以依赖数据库级别的隔离保障，无需逐模块手动添加 WHERE 条件**。
 
 **用户故事 2**:
-作为 **BiSheng 开发者**，
+作为 **doberman-agent 开发者**，
 我希望 **Celery 异步任务自动继承 HTTP 请求的租户上下文**，
 以便 **知识库文件解析、工作流执行等异步任务在正确的租户隔离下运行**。
 
 **用户故事 3**:
-作为 **BiSheng 运维人员**，
+作为 **doberman-agent 运维人员**，
 我希望 **升级到 v2.5.0 时所有存量数据自动归入默认租户(id=1)且存储路径不变**，
 以便 **零迁移成本升级，不影响生产环境已有的知识库文件和向量数据**。
 
@@ -113,7 +113,7 @@ from typing import Optional
 from sqlalchemy import Column, DateTime, String, Integer, JSON, text
 from sqlmodel import Field
 
-from bisheng.common.models.base import SQLModelSerializable
+from doberman_agent.common.models.base import SQLModelSerializable
 
 
 class Tenant(SQLModelSerializable, table=True):
@@ -265,13 +265,13 @@ N/A — F001 不涉及前端变更。
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/database/models/tenant.py` | Tenant + UserTenant ORM 模型 + TenantDao + UserTenantDao |
-| `src/backend/bisheng/core/context/tenant.py` | `current_tenant_id` ContextVar、getter/setter、bypass 上下文管理器 |
-| `src/backend/bisheng/core/database/tenant_filter.py` | SQLAlchemy `do_orm_execute` + `before_flush` 事件钩子 |
-| `src/backend/bisheng/core/config/multi_tenant.py` | `MultiTenantConf` Pydantic 配置模型 |
-| `src/backend/bisheng/core/storage/tenant_storage.py` | MinIO/Milvus/ES/Redis 前缀工具函数 |
-| `src/backend/bisheng/common/errcode/tenant.py` | 200xx 租户错误码 |
-| `src/backend/bisheng/worker/tenant_context.py` | Celery `before_task_publish` / `task_prerun` 信号处理 |
+| `src/backend/doberman_agent/database/models/tenant.py` | Tenant + UserTenant ORM 模型 + TenantDao + UserTenantDao |
+| `src/backend/doberman_agent/core/context/tenant.py` | `current_tenant_id` ContextVar、getter/setter、bypass 上下文管理器 |
+| `src/backend/doberman_agent/core/database/tenant_filter.py` | SQLAlchemy `do_orm_execute` + `before_flush` 事件钩子 |
+| `src/backend/doberman_agent/core/config/multi_tenant.py` | `MultiTenantConf` Pydantic 配置模型 |
+| `src/backend/doberman_agent/core/storage/tenant_storage.py` | MinIO/Milvus/ES/Redis 前缀工具函数 |
+| `src/backend/doberman_agent/common/errcode/tenant.py` | 200xx 租户错误码 |
+| `src/backend/doberman_agent/worker/tenant_context.py` | Celery `before_task_publish` / `task_prerun` 信号处理 |
 | Alembic 迁移脚本 | DDL: 创建 tenant/user_tenant 表 + 23+ 表添加 tenant_id |
 | `src/backend/test/conftest.py` | 最小 pytest fixture（SQLite in-memory + settings mock） |
 | `src/backend/test/test_tenant_context.py` | ContextVar + bypass 机制测试 |
@@ -283,12 +283,12 @@ N/A — F001 不涉及前端变更。
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/core/config/settings.py` | 添加 `multi_tenant: MultiTenantConf = MultiTenantConf()` 字段 |
-| `src/backend/bisheng/user/domain/services/auth.py` | LoginUser 添加 `tenant_id` 字段；JWT payload 添加 `tenant_id`；`init_login_user` 接受 `tenant_id`；`get_login_user` 从 subject 提取 `tenant_id` |
-| `src/backend/bisheng/utils/http_middleware.py` | `CustomMiddleware.dispatch` 解析 JWT cookie 提取 tenant_id 并设置 ContextVar；`WebSocketLoggingMiddleware` 同理 |
-| `src/backend/bisheng/core/database/manager.py` | 引擎创建后调用 `register_tenant_filter_events(engine)` |
-| `src/backend/bisheng/common/init_data.py` | 添加 `init_default_tenant()` 函数调用 |
-| `src/backend/bisheng/config.yaml` | 添加 `multi_tenant:` 配置节（enabled: false, default_tenant_code: "default"） |
+| `src/backend/doberman_agent/core/config/settings.py` | 添加 `multi_tenant: MultiTenantConf = MultiTenantConf()` 字段 |
+| `src/backend/doberman_agent/user/domain/services/auth.py` | LoginUser 添加 `tenant_id` 字段；JWT payload 添加 `tenant_id`；`init_login_user` 接受 `tenant_id`；`get_login_user` 从 subject 提取 `tenant_id` |
+| `src/backend/doberman_agent/utils/http_middleware.py` | `CustomMiddleware.dispatch` 解析 JWT cookie 提取 tenant_id 并设置 ContextVar；`WebSocketLoggingMiddleware` 同理 |
+| `src/backend/doberman_agent/core/database/manager.py` | 引擎创建后调用 `register_tenant_filter_events(engine)` |
+| `src/backend/doberman_agent/common/init_data.py` | 添加 `init_default_tenant()` 函数调用 |
+| `src/backend/doberman_agent/config.yaml` | 添加 `multi_tenant:` 配置节（enabled: false, default_tenant_code: "default"） |
 
 ---
 

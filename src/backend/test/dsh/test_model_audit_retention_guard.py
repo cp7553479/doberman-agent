@@ -14,23 +14,23 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, SQLModel, select
 
-from bisheng.common.errcode.dsh import (
+from doberman_agent.common.errcode.dsh import (
     DshContentSafetyConflictError,
     DshContentSafetyExpiredError,
     DshContentSafetyUnavailableError,
 )
-from bisheng.core.context.tenant import get_current_tenant_id, strict_tenant_filter
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
-from bisheng.dsh.domain.repositories import content_safety
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository as WriterRepository
-from bisheng.dsh.domain.schemas.model_audit_events import AuditEvent
-from bisheng.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
-from bisheng.dsh.domain.services.profile import profile_scope
+from doberman_agent.core.context.tenant import get_current_tenant_id, strict_tenant_filter
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting as Setting
+from doberman_agent.dsh.domain.repositories import content_safety
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository as Settings
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository as WriterRepository
+from doberman_agent.dsh.domain.schemas.model_audit_events import AuditEvent
+from doberman_agent.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+from doberman_agent.dsh.domain.services.profile import profile_scope
 from test.dsh.content_safety_fixtures import safety_database
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 from test.dsh.test_content_safety_repository import decoded, tenant_session, wire_hash

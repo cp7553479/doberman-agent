@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum
 from test.knowledge.test_knowledge_space_service import (
     _load_service_class,
     _make_file,
@@ -40,27 +40,27 @@ async def test_department_space_upload_does_not_create_approval_request(service)
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=space,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceFileDao.get_user_total_file_size",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceFileDao.get_user_total_file_size",
             new_callable=AsyncMock,
             return_value=0,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_knowledge_space_upload_limit_bytes",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_knowledge_space_upload_limit_bytes",
             new_callable=AsyncMock,
             return_value=None,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_tenant_storage_remaining_bytes",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_tenant_storage_remaining_bytes",
             new_callable=AsyncMock,
             return_value=None,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService.process_one_file",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService.process_one_file",
             return_value=added_file,
         ) as mock_process_one_file,
         patch.object(
@@ -69,19 +69,19 @@ async def test_department_space_upload_does_not_create_approval_request(service)
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.update",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.update",
             side_effect=lambda row: row,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_knowledge_update_time_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_knowledge_update_time_by_id",
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.get_async_db_session",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.get_async_db_session",
             new=_noop_db_session,
         ),
         patch(
-            "bisheng.approval.domain.services.approval_service.ApprovalService.create_department_space_upload_request",
+            "doberman_agent.approval.domain.services.approval_service.ApprovalService.create_department_space_upload_request",
             new_callable=AsyncMock,
         ) as mock_create_request,
     ):

@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_runtime.application.tenant_access import require_app_request_tenant
-from bisheng.app_runtime.domain.services.app_data_service import AppDataService
-from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
-from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-from bisheng.common.errcode.app_factory import AppNotFoundError
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.open_api.domain.context import (
+from doberman_agent.app_runtime.application.tenant_access import require_app_request_tenant
+from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
+from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
+from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+from doberman_agent.common.errcode.app_factory import AppNotFoundError
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.open_api.domain.context import (
     OpenApiPrincipal,
     reset_current_open_api_principal,
     set_current_open_api_principal,
@@ -64,8 +64,8 @@ def test_no_actor_does_not_create_a_background_bypass():
 
 
 async def test_same_tenant_still_requires_the_original_business_permission(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_state_service
-    from bisheng.common.errcode.app_factory import AppManageForbiddenError
+    from doberman_agent.app_runtime.domain.services import app_state_service
+    from doberman_agent.common.errcode.app_factory import AppManageForbiddenError
 
     require_app_request_tenant(1, actor(owner=False))
     monkeypatch.setattr(app_state_service, "check_tenant_admin", AsyncMock(return_value=False))

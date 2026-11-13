@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { showApiError } from "@/controllers/request"
 import { useRef, useState } from "react"
 

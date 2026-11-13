@@ -13,15 +13,15 @@ from sqlalchemy import event
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.core.database.model_discovery import discover_sqlmodel_module_names
-from bisheng.dsh_market.api.auth import MarketActor, market_actor, market_admin
-from bisheng.dsh_market.api.endpoints import router
-from bisheng.dsh_market.domain.bundle import BundleError, validate_bundle
-from bisheng.dsh_market.domain.models import MarketVersion
-from bisheng.dsh_market.domain.repository import ConflictError, MarketRepository
-from bisheng.dsh_market.domain.service import MarketService
-from bisheng.dsh_market.infrastructure import get_market_service
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.core.database.model_discovery import discover_sqlmodel_module_names
+from doberman_agent.dsh_market.api.auth import MarketActor, market_actor, market_admin
+from doberman_agent.dsh_market.api.endpoints import router
+from doberman_agent.dsh_market.domain.bundle import BundleError, validate_bundle
+from doberman_agent.dsh_market.domain.models import MarketVersion
+from doberman_agent.dsh_market.domain.repository import ConflictError, MarketRepository
+from doberman_agent.dsh_market.domain.service import MarketService
+from doberman_agent.dsh_market.infrastructure import get_market_service
 
 
 def bundle(version="1.0.0", dependencies=None, extra=None):
@@ -103,7 +103,7 @@ def test_offline_bundle_and_dependency_closure():
 
 
 def test_market_tables_are_discovered_by_online_schema_bootstrap():
-    assert "bisheng.dsh_market.domain.models" in discover_sqlmodel_module_names()
+    assert "doberman_agent.dsh_market.domain.models" in discover_sqlmodel_module_names()
 
 
 def test_large_manifest_catalog_keeps_order_and_current_employee_version(service):
@@ -328,9 +328,9 @@ def test_legacy_disabled_plugins_use_unpublished_state_and_remain_revoked(servic
 @pytest.mark.parametrize("desktop", [False, True])
 def test_market_sync_uses_online_identity_without_signing_key(service, monkeypatch, legacy_key, desktop):
     if legacy_key is None:
-        monkeypatch.delenv("BISHENG_DSH_MARKET_SIGNING_KEY", raising=False)
+        monkeypatch.delenv("DOBERMAN_AGENT_DSH_MARKET_SIGNING_KEY", raising=False)
     else:
-        monkeypatch.setenv("BISHENG_DSH_MARKET_SIGNING_KEY", legacy_key)
+        monkeypatch.setenv("DOBERMAN_AGENT_DSH_MARKET_SIGNING_KEY", legacy_key)
     plugin = published(service)
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
@@ -369,9 +369,9 @@ def test_admin_scope_requires_role_and_active_tenant(monkeypatch):
 
     from starlette.requests import Request
 
-    from bisheng.common import permission_identity
-    from bisheng.common.errcode.dsh_market import MarketPermissionError
-    from bisheng.dsh_market import infrastructure
+    from doberman_agent.common import permission_identity
+    from doberman_agent.common.errcode.dsh_market import MarketPermissionError
+    from doberman_agent.dsh_market import infrastructure
 
     active = AsyncMock(return_value=True)
     checker = AsyncMock(return_value=True)
@@ -383,7 +383,7 @@ def test_admin_scope_requires_role_and_active_tenant(monkeypatch):
     active.assert_not_called()
     with pytest.raises(MarketPermissionError):
         asyncio.run(market_admin(request, MarketActor(1, 10, True)))
-    from bisheng.core.context.tenant import (
+    from doberman_agent.core.context.tenant import (
         get_is_management_api,
         get_visible_tenant_ids,
         set_admin_scope_tenant_id,
@@ -493,7 +493,7 @@ def test_deleted_column_migration_upgrades_old_rows_and_replays():
     from sqlalchemy import text
 
     migration = runpy.run_path(
-        str(Path(__file__).parents[2] / "bisheng/core/database/alembic/versions/v3_0_0_f064_enterprise_market.py")
+        str(Path(__file__).parents[2] / "doberman_agent/core/database/alembic/versions/v3_0_0_f064_enterprise_market.py")
     )
     engine = create_engine("sqlite://")
     with engine.begin() as connection:
@@ -529,7 +529,7 @@ def test_preview_rechecks_version_after_other_import(service):
 
 
 def test_market_upload_limit_is_512_mib():
-    from bisheng.dsh_market.domain.bundle import MAX_UPLOAD_BYTES
+    from doberman_agent.dsh_market.domain.bundle import MAX_UPLOAD_BYTES
 
     assert MAX_UPLOAD_BYTES == 512 * 1024 * 1024
 

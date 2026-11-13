@@ -8,33 +8,33 @@ Mocks the DAO layer + ContextVar so this module runs without a live DB.
 
 from __future__ import annotations
 
-# F017: pre-mock the ``bisheng.api`` chain — importing
-# chat_message_service pulls ``bisheng.api.services.chat_imp`` which
-# triggers the full bisheng.api router init. That clashes with
+# F017: pre-mock the ``doberman_agent.api`` chain — importing
+# chat_message_service pulls ``doberman_agent.api.services.chat_imp`` which
+# triggers the full doberman_agent.api router init. That clashes with
 # conftest.py's premock_import_chain (which MagicMocks
-# ``bisheng.common.services``), so we defensively stub the api modules
+# ``doberman_agent.common.services``), so we defensively stub the api modules
 # ourselves. Same pattern used in F011/F013 tests.
 import sys as _sys  # noqa: E402
 from unittest.mock import MagicMock as _MagicMock  # noqa: E402
 
-# conftest.py premocks ``bisheng.common.services`` as MagicMock which
-# breaks later ``from bisheng.common.services.base import ...`` lookups.
+# conftest.py premocks ``doberman_agent.common.services`` as MagicMock which
+# breaks later ``from doberman_agent.common.services.base import ...`` lookups.
 # Drop that mock before our real imports so the package loads normally;
 # conftest's other premocks (errcodes, database models) remain untouched.
 for _common_services_mod in (
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services.telemetry.telemetry_service',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services.telemetry.telemetry_service',
 ):
     _sys.modules.pop(_common_services_mod, None)
 
 for _m in (
-    'bisheng.api',
-    'bisheng.api.services',
-    'bisheng.api.services.chat_imp',
-    'bisheng.api.v1',
-    'bisheng.api.v1.schemas',
+    'doberman_agent.api',
+    'doberman_agent.api.services',
+    'doberman_agent.api.services.chat_imp',
+    'doberman_agent.api.v1',
+    'doberman_agent.api.v1.schemas',
 ):
     _sys.modules.setdefault(_m, _MagicMock())
 
@@ -42,12 +42,12 @@ from unittest.mock import MagicMock, patch  # noqa: E402
 
 import pytest  # noqa: E402
 
-from bisheng.chat_session.domain.services.chat_message_service import (  # noqa: E402
+from doberman_agent.chat_session.domain.services.chat_message_service import (  # noqa: E402
     ChatMessageService,
     _resolve_leaf_tenant_id,
 )
-from bisheng.common.errcode.tenant_sharing import TenantContextMissingError  # noqa: E402
-from bisheng.core.context.tenant import current_tenant_id  # noqa: E402
+from doberman_agent.common.errcode.tenant_sharing import TenantContextMissingError  # noqa: E402
+from doberman_agent.core.context.tenant import current_tenant_id  # noqa: E402
 
 
 # ── Helpers ──────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ async def test_acreate_writes_leaf_tenant_id_from_context():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.chat_session.domain.services.chat_message_service.ChatMessageDao.insert_batch',
+            'doberman_agent.chat_session.domain.services.chat_message_service.ChatMessageDao.insert_batch',
             side_effect=_fake_insert,
         ):
             result = await ChatMessageService.acreate(
@@ -155,15 +155,15 @@ def test_add_qa_messages_stamps_both_messages_with_leaf_tenant():
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.chat_session.domain.services.chat_message_service.ChatMessageDao.insert_batch',
+            'doberman_agent.chat_session.domain.services.chat_message_service.ChatMessageDao.insert_batch',
             side_effect=_fake_insert,
         ), patch(
-            'bisheng.chat_session.domain.services.chat_message_service.MessageSessionDao.update_sensitive_status',
+            'doberman_agent.chat_session.domain.services.chat_message_service.MessageSessionDao.update_sensitive_status',
         ), patch(
-            'bisheng.chat_session.domain.services.chat_message_service.FlowDao.get_flow_by_id',
+            'doberman_agent.chat_session.domain.services.chat_message_service.FlowDao.get_flow_by_id',
             return_value=None,
         ), patch(
-            'bisheng.chat_session.domain.chat.ChatSessionService.get_or_create_session',
+            'doberman_agent.chat_session.domain.chat.ChatSessionService.get_or_create_session',
         ):
             ChatMessageService.add_qa_messages(data, _login_user(tenant_id=7), request_ip='1.2.3.4')
     finally:

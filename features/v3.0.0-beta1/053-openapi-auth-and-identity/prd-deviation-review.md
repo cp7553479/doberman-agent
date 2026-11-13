@@ -1,6 +1,6 @@
 # F053 开放 API 鉴权：实现与 PRD 偏离清单（评审转交）
 
-日期：2026-09-09　范围：`src/backend/bisheng/open_api/` 及相关模块　基准：`docs/PRD/3.0-beta2/3.0 开放 API 鉴权与身份传递 PRD.md`（含 §7 决策记录 D1–D20）
+日期：2026-09-09　范围：`src/backend/doberman_agent/open_api/` 及相关模块　基准：`docs/PRD/3.0-beta2/3.0 开放 API 鉴权与身份传递 PRD.md`（含 §7 决策记录 D1–D20）
 性质：代码静态审计，未跑接口。首轮对 `feat/3.0.0-beta2`（da2be5697）审计，随后按 `feat/3.0.0-beta1` 最新提交（59b27d1c1，2026-09-09 20:27）逐项复核；行号以 beta2 为准，复核结论以 beta1 为准。
 
 ## 结论
@@ -19,7 +19,7 @@
 | # | 决议 | 现状 | 备注 |
 |---|---|---|---|
 | 3 | D4：服务账号复用用户表，用类型字段区分 | 独立 `service_account` 表、自增主键、与 `user` 无关系（design 第 56、93 行明写作废 vibe 写法） | 工程上更干净，免掉登录守卫、选人排除、对账豁免三项成本；但推翻 PRD 已定条目。若追认，需回写 PRD §4.5 与 D4，并补错误码表中 26012 的去留说明 |
-| 4 | 身份头名 `X-Bisheng-On-Behalf-Of` | 改为 `X-On-Behalf-Of`（design K20），spec 第 50 行仍写旧名，PRD 的 AC-6/AC-10/AC-26/AC-38/AC-P15 逐字失效 | 与 OAuth OBO 同名更易混读。定一个名字，三处对齐 |
+| 4 | 身份头名 `X-doberman-agent-On-Behalf-Of` | 改为 `X-On-Behalf-Of`（design K20），spec 第 50 行仍写旧名，PRD 的 AC-6/AC-10/AC-26/AC-38/AC-P15 逐字失效 | 与 OAuth OBO 同名更易混读。定一个名字，三处对齐 |
 | 5 | §4.6.3：日常模式本次交付含知识库挂载、非流式、业务上下文指令；对外契约不暴露平台内部概念；会话列表/历史明确不做 | 无知识库入参（`to_internal()` 硬写 `use_knowledge_base=None`）；只有 SSE；无业务上下文字段；对外 schema 暴露 `clientTimestamp/parentMessageId/overrideParentMessageId/responseMessageId/isCreatedByUser/isContinued/generation`；新增 `GET /api/v2/chat/list`、`GET /api/v2/chat/info` | 锚点 `open_api/domain/schemas/workstation.py:25-39,52`、`open_endpoints/api/endpoints/workstation.py:40-45`、`chat.py:15-33`、`domain/scopes.py:50-57`。裁定：补齐还是降级到下一版；两个新端点是否追认 |
 | 6 | §4.9 铁律 1：移除固定身份兜底、`default_operator` 与 `enable_guest_access` 废弃 | v2 已清干净；默认操作员搬到新开的匿名 `/api/v3` 面继续以 `enable_guest_access` 为闸（design 第 96 行「只从 v2 移除」） | 缓解措施到位（`super_admin=False`、租户与资源双重收窄、仅已发布资源）。裁定是否追认 v3 匿名面 |
 

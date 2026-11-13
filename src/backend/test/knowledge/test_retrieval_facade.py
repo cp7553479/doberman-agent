@@ -14,27 +14,27 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.common.errcode.mcp_face import (
+from doberman_agent.common.errcode.mcp_face import (
     KnowledgeCapabilityRevokedError,
     KnowledgeUnreachableError,
     RetrievalIdentityMissingError,
     RetrievalScopeTooLargeError,
 )
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.schemas.retrieval_facade import (
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.schemas.retrieval_facade import (
     RETRIEVAL_TARGETS_MAX,
     RetrievalIdentity,
     RetrievalRequest,
 )
-from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
-from bisheng.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
-from bisheng.permission.application.identity import (
+from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+from doberman_agent.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
+from doberman_agent.permission.application.identity import (
     get_current_permission_actor,
     reset_current_permission_actor,
     set_current_permission_actor,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.knowledge.conftest import make_document
 
 SPACE = KnowledgeTypeEnum.SPACE.value
@@ -158,7 +158,7 @@ async def test_admin_actor_scans_tenant_but_personal_scope_does_not(
 ):
     """design 坑 7: the admin bypass is off for a data-scope-narrowed token."""
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     scans: list[dict] = []
 
@@ -381,7 +381,7 @@ async def test_permission_unavailable_never_returns_partial(fake_engine, knowled
 
 
 async def test_permission_check_failure_propagates_before_any_retrieval(monkeypatch, fake_engine, knowledge_rows):
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     knowledge_rows(1, SPACE)
 
@@ -441,7 +441,7 @@ async def test_data_scope_personal_is_carried_into_the_permission_check(fake_eng
         capture.actor = get_current_permission_actor()
         return {"1": frozenset({"visible"})}
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     original = facade_mod.batch_check_business_actions
     facade_mod.batch_check_business_actions = capture
@@ -459,7 +459,7 @@ def test_facade_imports_no_session_modules():
     import ast
     from pathlib import Path
 
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     tree = ast.parse(Path(facade_mod.__file__).read_text(encoding="utf-8"))
     imported: list[str] = []

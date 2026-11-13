@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ERRDIR = ROOT / "src/backend/bisheng/common/errcode"
+ERRDIR = ROOT / "src/backend/doberman_agent/common/errcode"
 SKIP = {"base.py", "__init__.py", "README.md"}
 
 

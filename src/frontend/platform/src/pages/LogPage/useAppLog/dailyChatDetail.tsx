@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading"
 import { Alert, AlertDescription } from "@/components/bs-ui/alert"
 
-import { Tooltip } from "@bisheng/ui"
-import { Outlined } from "bisheng-icons"
+import { Tooltip } from "@doberman-agent/ui"
+import { Outlined } from "@doberman-agent/icons"
 import { getChatHistoryApi } from "@/controllers/API"
 import ResouceModal from "@/pages/ChatAppPage/components/ResouceModal"
 import { Bot } from "lucide-react"

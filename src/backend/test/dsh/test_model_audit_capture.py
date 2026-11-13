@@ -2,7 +2,7 @@
 
 import json
 
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
 from test.dsh.model_audit_fixtures import AuditTestClock, ControlledAuditQueue
 
 

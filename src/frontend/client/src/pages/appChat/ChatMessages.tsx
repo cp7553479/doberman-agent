@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { ConversationMessages, SuggestedQuestions } from "@bisheng/chat";
+import { ConversationMessages, SuggestedQuestions } from "@doberman-agent/chat";
 import {
   messagesForPresentation,
   asRecord,
   displayText,
   describeRun,
   createRunLabels,
-} from "@bisheng/chat/core";
+} from "@doberman-agent/chat/core";
 import { ClientChatMarkdown } from "./components/ClientChatMarkdown";
 import appStore from "~/store";
 import { MessageCheckbox } from "~/components/Chat/MessageSelection";
@@ -24,7 +24,7 @@ import type { SelectableMessage } from "~/hooks/useMessageSelection";
 import { useLocalize } from "~/hooks";
 import InputForm from "./components/InputForm";
 import InputFormSkill from "./components/InputFormSkill";
-import { bishengConfState, currentChatState, currentRunningState } from "./store/atoms";
+import { dobermanAgentConfState, currentChatState, currentRunningState } from "./store/atoms";
 import { useMessage } from "./useMessages";
 
 // F028: only question + answer category rows are selectable. Intermediate
@@ -58,7 +58,7 @@ export default function ChatMessages({
   const { messageScrollRef, messages, chatId } = useMessage(readOnly);
   const { inputForm, guideWord, inputDisabled, error } = useRecoilValue(currentRunningState);
   const chatState = useRecoilValue(currentChatState);
-  const config = useRecoilValue(bishengConfState);
+  const config = useRecoilValue(dobermanAgentConfState);
   const latexParsing = useRecoilValue(appStore.LaTeXParsing);
   const localize = useLocalize();
   const { user } = useAuthContext();
@@ -139,7 +139,7 @@ export default function ChatMessages({
                   content={text}
                   readOnly={Boolean(readOnly)}
                   latexParsing={latexParsing}
-                  citations={message.raw.citations as import("@bisheng/chat").ChatCitation[] | undefined}
+                  citations={message.raw.citations as import("@doberman-agent/chat").ChatCitation[] | undefined}
                   messageId={message.sourceMessageId}
                   onOpenCitationPanel={onOpenCitationPanel}
                 />

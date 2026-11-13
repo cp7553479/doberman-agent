@@ -9,7 +9,7 @@
 
 ## 范围界定
 
-- **本 Feature 仅实现**：`WeComProvider` 类（替换 `src/backend/bisheng/org_sync/domain/providers/wecom.py` 中现有 stub）、管理台表单在 Provider 下拉选中"企业微信"时的配置字段、测试连接/远程树预览在企微下的行为、与之匹配的 i18n 文案与 E2E 测试。
+- **本 Feature 仅实现**：`WeComProvider` 类（替换 `src/backend/doberman_agent/org_sync/domain/providers/wecom.py` 中现有 stub）、管理台表单在 Provider 下拉选中"企业微信"时的配置字段、测试连接/远程树预览在企微下的行为、与之匹配的 i18n 文案与 E2E 测试。
 - **依赖（不在本 Feature 实现）**：`OrgSyncConfig` / `OrgSyncLog` ORM、Reconciler 引擎、`OrgSyncProvider` ABC、9 个 REST 端点、Celery Beat 调度任务、错误码 220xx —— 全部由 **v2.5.0/F009** 提供。
 - **本期明确不做**：企微 `change_contact` 实时事件回调；企微 OAuth SSO 登录；企微外部联系人同步；同 tenant 下多 agent_id 同步（均延后到 v2.5.2+）。
 
@@ -32,8 +32,8 @@
 ## 1. 概述与用户故事
 
 作为 **系统管理员（集团总部 IT/运营）**，
-我希望 **在 bisheng 管理台配置企业微信 corpid/corpsecret/agent_id，启用定时拉取部门与成员信息，让企微通讯录中启用状态的员工自动落到 bisheng 并归属到正确的部门**，
-以便 **集团 10 万人通讯录无需人工维护，且人员离职/转岗能在下一次同步周期（≤ 6h）内自动反映到 bisheng 的权限与 Tenant 归属上**。
+我希望 **在 doberman-agent 管理台配置企业微信 corpid/corpsecret/agent_id，启用定时拉取部门与成员信息，让企微通讯录中启用状态的员工自动落到 doberman-agent 并归属到正确的部门**，
+以便 **集团 10 万人通讯录无需人工维护，且人员离职/转岗能在下一次同步周期（≤ 6h）内自动反映到 doberman-agent 的权限与 Tenant 归属上**。
 
 ---
 
@@ -179,7 +179,7 @@
 
 ### 7.1 WeComProvider 类结构
 
-> 文件：`src/backend/bisheng/org_sync/domain/providers/wecom.py`（替换现有 stub）
+> 文件：`src/backend/doberman_agent/org_sync/domain/providers/wecom.py`（替换现有 stub）
 
 ```
 WeComProvider(OrgSyncProvider):
@@ -333,9 +333,9 @@ pages/SystemPage/components/OrgSync/
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/org_sync/domain/providers/wecom.py` | 替换 stub 为完整实现（见 §7.1） |
-| `src/backend/bisheng/org_sync/domain/services/org_sync_service.py` | 调 `get_provider` 前把 `_config_id` 注入 auth_config；入库前 pop |
-| `src/backend/bisheng/org_sync/domain/schemas/org_sync_schema.py` | `mask_sensitive_fields()` 扩展 WeCom 字段（corpsecret） + 配置 schema 校验 |
+| `src/backend/doberman_agent/org_sync/domain/providers/wecom.py` | 替换 stub 为完整实现（见 §7.1） |
+| `src/backend/doberman_agent/org_sync/domain/services/org_sync_service.py` | 调 `get_provider` 前把 `_config_id` 注入 auth_config；入库前 pop |
+| `src/backend/doberman_agent/org_sync/domain/schemas/org_sync_schema.py` | `mask_sensitive_fields()` 扩展 WeCom 字段（corpsecret） + 配置 schema 校验 |
 | `src/frontend/platform/src/components/bs-comp/menus/index.tsx` 或同等入口 | 添加「组织同步」二级菜单项 |
 | `src/frontend/platform/public/locales/{en-US,zh-Hans,ja}/bs.json` | 新增 `orgSync.*` 文案（三语） |
 

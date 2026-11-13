@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { act, cleanup, render } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import SimpleUpload from './simple';
@@ -8,7 +8,7 @@ const mock = vi.hoisted(() => ({
     drop: undefined as undefined | ((files: File[]) => Promise<void>),
 }));
 vi.mock('@/controllers/request', () => ({ default: { post: mock.post }, showApiError: mock.report }));
-vi.mock('@bisheng/ui', () => ({ notification: { open: mock.notice } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: mock.notice } }));
 vi.mock('react-dropzone', () => ({ useDropzone: ({ onDrop }: { onDrop: (files: File[]) => Promise<void> }) => {
     mock.drop = onDrop;
     return { getRootProps: () => ({}), getInputProps: () => ({}), isDragActive: false };

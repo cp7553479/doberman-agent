@@ -10,21 +10,21 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from sqlalchemy.dialects import sqlite
 
-from bisheng.common.errcode.permission import PermissionEnumerationIncompleteError
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.common.errcode.permission import PermissionEnumerationIncompleteError
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models.knowledge import (
     Knowledge,
     KnowledgeDao,
     KnowledgeState,
     KnowledgeTypeEnum,
 )
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.domain.schemas import (
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.domain.schemas import (
     VisibilityEnumerationStatus,
     VisibleObjectEnumerationResult,
 )
 
-_SERVICE = "bisheng.knowledge.domain.services.knowledge_space_service"
+_SERVICE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 class _User:

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import CardComponent from "@/components/bs-comp/cardComponent";
 import ProgressItem from "@/components/bs-comp/knowledgeUploadComponent/ProgressItem";
 
@@ -15,7 +15,7 @@ import { useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate,useParams } from "react-router-dom";
 import { resolveKnowledgeParseFailure } from "../knowledgeParseFailureMessage";
-import { normalizeApiError } from "@bisheng/api-client";
+import { normalizeApiError } from "@doberman-agent/api-client";
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 

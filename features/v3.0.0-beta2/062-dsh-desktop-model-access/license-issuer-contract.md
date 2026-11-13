@@ -8,14 +8,14 @@
 
 v2 固定 RS256（RSA PKCS#1 v1.5 + SHA-256），新厂商 RSA 签名密钥至少 2048 位；这里只规定新签名密钥，不改变旧加密算法。格式依据 [RFC 7515 §5.2](https://www.rfc-editor.org/rfc/rfc7515.html#section-5.2) 与算法依据 [RFC 7518 §3.3](https://www.rfc-editor.org/rfc/rfc7518.html#section-3.3)。
 
-Protected header 只允许 `alg=RS256`、`typ=bisheng-dsh-license+jwt`、非空 `kid`。拒绝 none/HS256、未知参数/crit、jku/x5u/jwk、重复 JSON key、非法 UTF-8、非对象和非有限数值。kid 只匹配运维预配厂商公钥集合，不网络发现；测试 fixture 的公钥绝不自动载入运行时信任配置。
+Protected header 只允许 `alg=RS256`、`typ=doberman-agent-dsh-license+jwt`、非空 `kid`。拒绝 none/HS256、未知参数/crit、jku/x5u/jwk、重复 JSON key、非法 UTF-8、非对象和非有限数值。kid 只匹配运维预配厂商公钥集合，不网络发现；测试 fixture 的公钥绝不自动载入运行时信任配置。
 
 ## 签名载荷
 
 | 字段 | 必填约束 |
 |---|---|
 | schema_version | JSON integer，严格等于 2，boolean 不视作 integer |
-| iss / aud | 精确为 `bisheng-license-issuer` / `bisheng-gateway:dsh`；aud 必须是字符串 |
+| iss / aud | 精确为 `doberman-agent-license-issuer` / `doberman-agent-gateway:dsh`；aud 必须是字符串 |
 | jti | 1～128字符，发行方唯一 License ID；不是累计额度的分片 |
 | iat / nbf / exp | 非负整数 Unix UTC 秒，≤2^53−1；iat≤nbf<exp；不接受浮点或字符串，不给 exp 额外宽限 |
 | legacy_binding | 原解密 JSON 除 dsh_entitlement 以外的**全部字段**对象，包含原值；不是只绑定 trial/pro 标签 |

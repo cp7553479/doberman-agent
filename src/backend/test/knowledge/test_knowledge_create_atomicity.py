@@ -19,8 +19,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
 
 KNOWLEDGE_ID = 4274
 
@@ -112,11 +112,11 @@ async def test_the_mirror_is_built_before_any_external_store() -> None:
         patch.object(KnowledgeService, "ensure_milvus_schema_ready", MagicMock()),
         patch.object(KnowledgeService, "audit_telemetry_service", MagicMock()),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
+            "doberman_agent.knowledge.domain.services.knowledge_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
             _milvus,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_service.KnowledgeRag.init_knowledge_es_vectorstore",
+            "doberman_agent.knowledge.domain.services.knowledge_service.KnowledgeRag.init_knowledge_es_vectorstore",
             _es,
         ),
     ):

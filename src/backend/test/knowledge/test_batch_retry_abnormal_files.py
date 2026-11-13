@@ -3,11 +3,11 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng import worker as worker_module
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent import worker as worker_module
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-_SERVICE = "bisheng.knowledge.domain.services.knowledge_space_service"
+_SERVICE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 async def test_batch_retry_accepts_timeout_file():

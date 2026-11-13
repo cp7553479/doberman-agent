@@ -10,7 +10,7 @@
 
 ## 1 开发范围与事实来源
 
-桌面客户端为 bisheng-work 的 `feat/3.0.0-dsh-audit` 工作树，不是本仓库的 Web client。现有代码锚点如下，依赖升级时须重新核验：
+桌面客户端为 doberman-agent-work 的 `feat/3.0.0-dsh-audit` 工作树，不是本仓库的 Web client。现有代码锚点如下，依赖升级时须重新核验：
 
 | 位置 | 读取或修改内容 | 不做什么 |
 |---|---|---|
@@ -112,7 +112,7 @@
 
 ~~~json
 {
-  "model": "bisheng:42",
+  "model": "doberman-agent:42",
   "messages": [
     {"role": "system", "content": "你是编程助手。"},
     {"role": "user", "content": "Current runtime context: ..."},
@@ -143,7 +143,7 @@
 
 ## 5 链路、存储与管理读取
 
-`可信 config 快照 → 企业插件解析已加载会话 → 适配器序列化并同步标注 → Electron 按可信能力净化 → 毕昇剥离扩展/严格业务校验 → 异步审计`
+`可信 config 快照 → 企业插件解析已加载会话 → 适配器序列化并同步标注 → Electron 按可信能力净化 → doberman-agent剥离扩展/严格业务校验 → 异步审计`
 
 1. 两端共享各自规范化函数，不能出现插件允许而主进程静默丢弃所有新字段。Electron 不信任请求自报能力；会话 resolver 失败只省略会话来源，不加载历史或阻断生成。
 2. 服务端字段与模型 DTO 分离，租户、用户、登录会话、request_id 和模式永远来自服务端；解析后仅用于审计，不加入统一模型入参或供应商 SDK 参数。
@@ -269,7 +269,7 @@ HTTP 200、SSE 正常结束和能力存在均不保证审计已持久化。客�
 
 ### 8.5 Gateway、管理返回与验收
 
-保持客户端→Nginx→Gateway→毕昇。通用/api/v1转发覆盖本接口，旧模型限流/响应改写不命中此路径，因此无需增加DshRoutes分类或改网关代码。毕昇复用DSH凭据、身份和既有席位校验；不因标题额外占席位或消耗Token。实际109代理链另行验收。
+保持客户端→Nginx→Gateway→doberman-agent。通用/api/v1转发覆盖本接口，旧模型限流/响应改写不命中此路径，因此无需增加DshRoutes分类或改网关代码。doberman-agent复用DSH凭据、身份和既有席位校验；不因标题额外占席位或消耗Token。实际109代理链另行验收。
 
 管理端group/tree/location节点返回可选`conversation_title: string|null`及`title_event_seq: integer|null`；按本次已授权页批量补充，不请求正文、不触发树重建、不做标题检索。新Platform优先显示用户名及标题，无标题回退编号，并保留编号查看/复制；未知旧字段缺失兼容。显示值是最新接收的客户端声明，不是历史请求时点快照。
 

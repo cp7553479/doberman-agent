@@ -108,7 +108,7 @@ def _run_upgrade(engine):
     The migration uses ``alembic.op.get_bind()`` — we patch that to hand
     back our engine's connection so the SQL runs in our test transaction.
     """
-    from bisheng.core.database.alembic.versions import (
+    from doberman_agent.core.database.alembic.versions import (
         v2_5_1_f035_user_tenant_subtree_cleanup as mig,
     )
     with engine.begin() as conn:

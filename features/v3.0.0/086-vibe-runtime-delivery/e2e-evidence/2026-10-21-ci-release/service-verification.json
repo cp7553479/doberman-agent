@@ -42,7 +42,7 @@
   },
   "images": {
     "runtime-manager": {
-      "reference": "dataelement/bisheng-runtime-manager:v3.0.0-test-vibe-amd64",
+      "reference": "cp7553479/doberman-agent-runtime-manager:v3.0.0-test-vibe-amd64",
       "image_id": "sha256:fc7e0987ecabec0b3a59b59926cad93a278a76863513b2d7d2c16f4c9a1e6ce4",
       "architecture": "amd64",
       "user": "",
@@ -61,7 +61,7 @@
       ]
     },
     "app-proxy": {
-      "reference": "dataelement/bisheng-app-proxy:v3.0.0-test-vibe-amd64",
+      "reference": "cp7553479/doberman-agent-app-proxy:v3.0.0-test-vibe-amd64",
       "image_id": "sha256:9787b6e0ddbc9128d60b08df83d78b8b1ab78f6fea1721c1aa70a618192499fa",
       "architecture": "amd64",
       "user": "appproxy",

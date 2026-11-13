@@ -13,14 +13,14 @@ import pytest
 from langchain.agents.middleware.types import ModelRequest, ModelResponse
 from langchain_core.messages import AIMessage, HumanMessage
 
-from bisheng.common.services.llm_error_classifier import (
+from doberman_agent.common.services.llm_error_classifier import (
     Behavior,
     ErrorType,
     classify_behavior,
     classify_for_event,
     label_error,
 )
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _DEGRADE_MESSAGE,
     _TRUNCATED_TURN_NUDGE,
     _TRUNCATED_TURN_RETRY_LIMIT,
@@ -29,7 +29,7 @@ from bisheng.linsight.domain.services.resilience_middleware import (
     _is_truncated_tool_call,
     _is_truncated_turn,
 )
-from bisheng.linsight.domain.task_exec import TaskExecutionError
+from doberman_agent.linsight.domain.task_exec import TaskExecutionError
 
 # The measured shape: reasoning only, nothing in content, no tool call.
 _USAGE = {"input_tokens": 79225, "output_tokens": 32000, "total_tokens": 111225}

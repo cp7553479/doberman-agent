@@ -9,11 +9,11 @@ import pytest
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.api.services.assistant_agent import AssistantAgent, AssistantCitationToolWrapper
-from bisheng.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
-from bisheng.workflow.common.citation_keys import WORKFLOW_CITATION_REGISTRY_ITEMS_KEY
-from bisheng.workflow.nodes.agent.agent import AgentNode, WorkflowCitationToolWrapper
-from bisheng.workflow.nodes.tool.tool import ToolNode
+from doberman_agent.api.services.assistant_agent import AssistantAgent, AssistantCitationToolWrapper
+from doberman_agent.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
+from doberman_agent.workflow.common.citation_keys import WORKFLOW_CITATION_REGISTRY_ITEMS_KEY
+from doberman_agent.workflow.nodes.agent.agent import AgentNode, WorkflowCitationToolWrapper
+from doberman_agent.workflow.nodes.tool.tool import ToolNode
 
 
 class _UrlInput(BaseModel):
@@ -47,11 +47,11 @@ class _FakeSearchTool(BaseTool):
 @pytest.fixture(autouse=True)
 def _no_redis():
     with (
-        patch("bisheng.api.services.assistant_agent.cache_citation_registry_items_sync"),
-        patch("bisheng.api.services.assistant_agent.cache_citation_registry_items"),
-        patch("bisheng.workflow.nodes.agent.agent.cache_citation_registry_items_sync"),
-        patch("bisheng.workflow.nodes.agent.agent.cache_citation_registry_items"),
-        patch("bisheng.workflow.nodes.tool.tool.cache_citation_registry_items_sync"),
+        patch("doberman_agent.api.services.assistant_agent.cache_citation_registry_items_sync"),
+        patch("doberman_agent.api.services.assistant_agent.cache_citation_registry_items"),
+        patch("doberman_agent.workflow.nodes.agent.agent.cache_citation_registry_items_sync"),
+        patch("doberman_agent.workflow.nodes.agent.agent.cache_citation_registry_items"),
+        patch("doberman_agent.workflow.nodes.tool.tool.cache_citation_registry_items_sync"),
     ):
         yield
 

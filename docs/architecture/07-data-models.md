@@ -1,10 +1,10 @@
 # 数据模型与存储层
 
-BiSheng 的持久化层由 MySQL 中的 24 个 SQLModel ORM 模型和 5 种异构存储引擎协同组成。关系型数据（用户、应用、会话、权限等）存储在 MySQL 中，通过统一的 DAO 模式提供同步/异步访问；向量数据存入 Milvus，关键词索引交给 Elasticsearch，文件对象托管于 MinIO，会话状态和缓存则由 Redis 承载。所有存储引擎的连接生命周期由 `core/context/` 下的上下文管理系统统一编排。
+doberman-agent 的持久化层由 MySQL 中的 24 个 SQLModel ORM 模型和 5 种异构存储引擎协同组成。关系型数据（用户、应用、会话、权限等）存储在 MySQL 中，通过统一的 DAO 模式提供同步/异步访问；向量数据存入 Milvus，关键词索引交给 Elasticsearch，文件对象托管于 MinIO，会话状态和缓存则由 Redis 承载。所有存储引擎的连接生命周期由 `core/context/` 下的上下文管理系统统一编排。
 
 ## 核心模型清单
 
-以下 24 个模型文件位于 `src/backend/bisheng/database/models/` 目录下：
+以下 24 个模型文件位于 `src/backend/doberman_agent/database/models/` 目录下：
 
 | 模型类 | 文件 | 用途 |
 |--------|------|------|
@@ -235,7 +235,7 @@ class FlowDao(FlowBase):
 
 ## 存储引擎职责
 
-BiSheng 采用 5 种存储引擎，各司其职：
+doberman-agent 采用 5 种存储引擎，各司其职：
 
 | 存储引擎 | 基础设施位置 | 存储内容 | 访问方式 |
 |----------|------------|---------|---------|

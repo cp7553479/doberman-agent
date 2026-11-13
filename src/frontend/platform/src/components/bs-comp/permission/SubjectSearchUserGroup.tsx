@@ -1,4 +1,4 @@
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { Search, Users } from "lucide-react";
 import { getGrantSubjectUserGroupsApi, type GrantSubjectUserGroup } from "@/controllers/API/permission";
 import { useTranslation } from "react-i18next";

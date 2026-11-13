@@ -3,7 +3,7 @@
  * Output streams across frames (extra_info.is_thinking); stepUtils already
  * concatenates the chunks, this row just renders the text when expanded.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import { ACCENT, BODY, MUTED } from './execTokens';

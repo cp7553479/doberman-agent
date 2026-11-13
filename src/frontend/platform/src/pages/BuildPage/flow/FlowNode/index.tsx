@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Alert, toast } from '@bisheng/ui';
+import { Alert, toast } from '@doberman-agent/ui';
 import { LoadingIcon } from '@/components/bs-icons/loading';
 import { Card,CardContent } from '@/components/bs-ui/card';
 
@@ -7,7 +7,7 @@ import { cname } from '@/components/bs-ui/utils';
 import { locationContext } from '@/contexts/locationContext';
 import { WorkflowNode } from '@/types/flow';
 import { Handle,NodeToolbar,Position } from '@xyflow/react';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback,useContext,useEffect,useMemo,useRef,useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ export const CustomHandle = ({ id = '', node, isLeft = false, className = '' }) 
                 id={id || "left_handle"}
                 type="target"
                 position={Position.Left}
-                className='bisheng-flow-handle group'
+                className='doberman_agent-flow-handle group'
                 onClick={(e) => {
                     posRef.current = { x: e.clientX, y: e.clientY }
                     setOpenLeft(true)
@@ -86,7 +86,7 @@ export const CustomHandle = ({ id = '', node, isLeft = false, className = '' }) 
             id={id || "right_handle"}
             type="source"
             position={Position.Right}
-            className='bisheng-flow-handle group'
+            className='doberman_agent-flow-handle group'
             onClick={(e) => {
                 posRef.current = { x: e.clientX, y: e.clientY }
                 setOpenRight(true)
@@ -245,19 +245,19 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
             </NodeToolbar>
 
             <div
-                className={cname(`bisheng-node hover:border-primary/10 max-w-[35rem] ${nodeWidthClass} ${selected ? 'border-primary/10' : ' border-transparent'}`, nodeError && 'border-red-500')}
+                className={cname(`doberman_agent-node hover:border-primary/10 max-w-[35rem] ${nodeWidthClass} ${selected ? 'border-primary/10' : ' border-transparent'}`, nodeError && 'border-red-500')}
                 data-id={node.id}
             >
                 {/* top */}
                 <RunLog node={node}>
-                    <div className='bisheng-node-top flex items-center'>
-                        {t('bisheng', { ns: 'bs' }) === 'BISHENG' && <LoadingIcon className='size-5 text-[#B3BBCD]' />}
-                        <span className='node-face text-sm text-[#B3BBCD]'>{t('bisheng', { ns: 'bs' })}</span>
+                    <div className='doberman_agent-node-top flex items-center'>
+                        {t('doberman_agent', { ns: 'bs' }) === 'doberman-agent' && <LoadingIcon className='size-5 text-[#B3BBCD]' />}
+                        <span className='node-face text-sm text-[#B3BBCD]'>{t('doberman_agent', { ns: 'bs' })}</span>
                     </div>
                 </RunLog>
 
                 {/* head */}
-                <div className='bisheng-node-head'>
+                <div className='doberman_agent-node-head'>
                     <div className='relative z-10 flex gap-2'>
                         <NodeLogo type={node.type} colorStr={node.name} />
                         <div className='flex-1 max-w-60'>
@@ -289,7 +289,7 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
                                 node.expand = !expend
                             }}>
                             <Outlined.Down
-                                className={`bisheng-label ${expend && 'rotate-180'}`}
+                                className={`doberman_agent-label ${expend && 'rotate-180'}`}
                                 size={16}
                             /></div>}
                     </div>

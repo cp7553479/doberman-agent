@@ -9,13 +9,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.tenant import UserTenant
-from bisheng.department.domain.repositories import permission_context_repository as repository_module
-from bisheng.department.domain.repositories.permission_context_repository import DepartmentContextRow
-from bisheng.department.domain.services.permission_context import DepartmentPermissionContextProvider
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.department.domain.repositories import permission_context_repository as repository_module
+from doberman_agent.department.domain.repositories.permission_context_repository import DepartmentContextRow
+from doberman_agent.department.domain.services.permission_context import DepartmentPermissionContextProvider
 
 
 @pytest.fixture

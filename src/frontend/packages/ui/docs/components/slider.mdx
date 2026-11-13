@@ -5,7 +5,7 @@ component: Slider
 
 # 滑块 Slider
 
-在**一个有边界的区间里调一个大致的值**，拖动时实时看到效果——音量、透明度、模型的随机性参数。组件库 `@bisheng/ui` 导出 **`Slider`**。规范全文见「文档 → 组件规范 → 滑块 Slider」。
+在**一个有边界的区间里调一个大致的值**，拖动时实时看到效果——音量、透明度、模型的随机性参数。组件库 `@doberman-agent/ui` 导出 **`Slider`**。规范全文见「文档 → 组件规范 → 滑块 Slider」。
 
 **组件把规范写死的部分**：只有一档尺寸（轨道 4px、滑块 16px，悬停与拖动放大到 18px、刻度点 8px）；滑块白底 + 品牌色描边环，已覆盖段品牌色，颜色跟随主题；控件 32px 高，和 medium 档输入框、按钮同排对齐；键盘 ← / → 一步、Shift + 方向键十步、Home / End 到两端；滚轮不改值；触屏热区 44px。这些没有 prop。
 
@@ -16,7 +16,7 @@ component: Slider
 默认用**数值气泡**显示当前值：悬停、拖动、键盘聚焦时出现在滑块正上方。适合只看效果、不在乎具体数的值。
 
 ```tsx
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 360 }}>
@@ -30,7 +30,7 @@ export default () => (
 值要被准确记住或复用（模型温度、阈值）时，用 `valueDisplay="input"`：右侧放一个 **small 档**数字输入框（固定，不随 `inputProps` 改），与滑块行垂直居中，两边双向同步。数字框里输入越界值，按数字输入框的规则报错，**滑块停在最后一个合法值上不动**。单位、步进按钮的读屏名称、报错文案经 `inputProps` 传给数字框。
 
 ```tsx
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ maxWidth: 420 }}>
@@ -56,7 +56,7 @@ export default () => (
 `value` 传一对数就是范围滑块，**两个滑块之间**是品牌色。两个滑块不能交叉，拖到重合就停住；点击轨道时，离得近的那个移过去。要精确值时两端各放一个数字框，左下限、右上限。
 
 ```tsx
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 24, maxWidth: 480 }}>
@@ -78,7 +78,7 @@ export default () => (
 值只有几个固定档位时加 `snapToMarks`：拖动中滑块自由移动，**松手吸附到最近的刻度**，`onValueChange` 只会报刻度上的值；键盘方向键一次跳一个刻度。
 
 ```tsx
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 24, maxWidth: 360 }}>
@@ -102,7 +102,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => {
   const [preview, setPreview] = React.useState(60);
@@ -123,7 +123,7 @@ export default () => {
 已覆盖段与滑块描边转灰，「禁止」光标；并排的数字框一起禁用。滑块本身**没有报错态**，范围校验交给并排的数字框。
 
 ```tsx
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'grid', gap: 24, maxWidth: 420 }}>

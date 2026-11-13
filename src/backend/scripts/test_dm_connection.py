@@ -20,7 +20,7 @@ HOST = "192.168.107.9"
 PORT = 5236
 USER = "SYSDBA"
 PASSWD = "6o+%s3z2NK7J"
-SCHEMA = "BISHENG"
+SCHEMA = "DOBERMAN_AGENT"
 
 SYNC_URL  = f"dm+dmPython://{USER}:{quote_plus(PASSWD)}@{HOST}:{PORT}/{SCHEMA}"
 ASYNC_URL = f"dm+dmAsync://{USER}:{quote_plus(PASSWD)}@{HOST}:{PORT}/{SCHEMA}"
@@ -123,7 +123,7 @@ def test_sa_async():
 def test_json_clob():
     from sqlalchemy import create_engine, text
     engine = create_engine(SYNC_URL_NO_DB)
-    tbl = "bisheng_test_json_clob"
+    tbl = "doberman_agent_test_json_clob"
     with engine.connect() as conn:
         conn.execute(text(f'DROP TABLE IF EXISTS "{tbl}"'))
         conn.execute(text(f'CREATE TABLE "{tbl}" ("id" INT, "payload" CLOB)'))
@@ -160,10 +160,10 @@ def test_inspector():
 
 @run("7. LargeText (CLOB) + JsonType round-trip via raw DDL")
 def test_type_decorators():
-    """Validate CLOB and JSON-as-CLOB storage without requiring the full bisheng install."""
+    """Validate CLOB and JSON-as-CLOB storage without requiring the full doberman_agent install."""
     from sqlalchemy import create_engine, text
     engine = create_engine(SYNC_URL_NO_DB)
-    tbl = "bisheng_test_types"
+    tbl = "doberman_agent_test_types"
     with engine.connect() as conn:
         conn.execute(text(f'DROP TABLE IF EXISTS "{tbl}"'))
         conn.execute(text(

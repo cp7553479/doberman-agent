@@ -2,10 +2,10 @@
 
 import pytest
 
-from bisheng.common.errcode.resource_owner_transfer import (
+from doberman_agent.common.errcode.resource_owner_transfer import (
     ResourceTransferUnsupportedTypeError,
 )
-from bisheng.tenant.domain.services.resource_type_registry import (
+from doberman_agent.tenant.domain.services.resource_type_registry import (
     REGISTRY,
     SUPPORTED_TYPES,
     get_meta,

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import type { FC } from 'react';
 import { BookCopy } from 'lucide-react';
 import { Content, Portal, Root, Trigger } from '@radix-ui/react-popover';

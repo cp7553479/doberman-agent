@@ -7,7 +7,7 @@ import pytest
 
 @pytest.mark.parametrize("delete,expected", [(0, True), (1, False), (None, False)])
 def test_owner_status_reuses_the_existing_batch_lookup(monkeypatch, delete, expected):
-    from bisheng.api.services import workflow
+    from doberman_agent.api.services import workflow
 
     service = workflow.WorkFlowService
     monkeypatch.setattr(service, "enabled_app_types", lambda: {35})

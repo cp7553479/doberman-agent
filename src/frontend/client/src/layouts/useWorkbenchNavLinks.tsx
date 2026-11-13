@@ -1,4 +1,4 @@
-import { Filled, Outlined } from 'bisheng-icons';
+import { Filled, Outlined } from '@doberman-agent/icons';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { matchPath, useLocation } from 'react-router-dom';

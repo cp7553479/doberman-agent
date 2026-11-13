@@ -53,7 +53,7 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_admin_returns_unlimited(self, mock_admin_user):
         """AC-19: Admin user always gets -1 (unlimited)."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         result = await QuotaService.get_effective_quota(
             user_id=1,
@@ -66,7 +66,7 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_multi_role_takes_max(self, mock_normal_user):
         """AC-17: Multi-role quota takes the maximum value (5, 10 → 10)."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         user_roles = [_make_user_role(3), _make_user_role(4)]
         roles = [
@@ -76,9 +76,9 @@ class TestGetEffectiveQuota:
         tenant = _make_tenant(quota_config=None)  # tenant unlimited
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -95,7 +95,7 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_any_role_unlimited_returns_unlimited(self, mock_normal_user):
         """AC-16: If any role has -1 for a resource type, return -1."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         user_roles = [_make_user_role(3), _make_user_role(4)]
         roles = [
@@ -104,9 +104,9 @@ class TestGetEffectiveQuota:
         ]
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -123,16 +123,16 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_missing_key_uses_default(self, mock_normal_user):
         """AC-18: Missing quota_config key uses DEFAULT_ROLE_QUOTA."""
-        from bisheng.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
+        from doberman_agent.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
 
         user_roles = [_make_user_role(3)]
         roles = [_make_role(3, {"channel": 5})]  # no 'knowledge_space' key
         tenant = _make_tenant(quota_config=None)
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -149,16 +149,16 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_null_config_uses_default(self, mock_normal_user):
         """Role with quota_config=None uses all defaults."""
-        from bisheng.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
+        from doberman_agent.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
 
         user_roles = [_make_user_role(3)]
         roles = [_make_role(3, None)]  # quota_config is None
         tenant = _make_tenant(quota_config=None)
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -175,13 +175,13 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_no_roles_uses_default(self, mock_normal_user):
         """User with no roles uses DEFAULT_ROLE_QUOTA."""
-        from bisheng.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
+        from doberman_agent.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
 
         tenant = _make_tenant(quota_config=None)
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=[])
             mock_tenant_dao.aget_by_id = AsyncMock(return_value=tenant)
@@ -197,16 +197,16 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_tenant_limit_caps_role_quota(self, mock_normal_user):
         """AC-22: Tenant hard limit caps effective quota via min(remaining, role)."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         user_roles = [_make_user_role(3)]
         roles = [_make_role(3, {"knowledge_space": 30})]
         tenant = _make_tenant(quota_config={"knowledge_space": 50})  # tenant limit 50
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -226,16 +226,16 @@ class TestGetEffectiveQuota:
     @pytest.mark.asyncio
     async def test_tenant_unlimited_ignores_tenant(self, mock_normal_user):
         """Tenant with null quota_config means unlimited — only role_quota matters."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         user_roles = [_make_user_role(3)]
         roles = [_make_role(3, {"channel": 15})]
         tenant = _make_tenant(quota_config=None)
 
         with (
-            patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-            patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+            patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+            patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
         ):
             mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
             mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -262,12 +262,12 @@ class TestCheckQuota:
     @pytest.mark.asyncio
     async def test_quota_exceeded_raises(self, mock_normal_user):
         """AC-20: TenantRoleQuotaExceededError(19402) when user_used >= effective."""
-        from bisheng.common.errcode.tenant_quota import TenantRoleQuotaExceededError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.tenant_quota import TenantRoleQuotaExceededError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with (
             patch(
-                "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles", new=AsyncMock(return_value=[])
+                "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles", new=AsyncMock(return_value=[])
             ),
             patch.object(QuotaService, "_apply_tenant_chain_cap", new=AsyncMock(return_value=(10, None))),
             patch.object(QuotaService, "get_user_resource_count", new=AsyncMock(return_value=10)),
@@ -283,11 +283,11 @@ class TestCheckQuota:
     @pytest.mark.asyncio
     async def test_quota_sufficient_returns_true(self, mock_normal_user):
         """AC-21: check_quota returns True when quota is sufficient."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with (
             patch(
-                "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles", new=AsyncMock(return_value=[])
+                "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles", new=AsyncMock(return_value=[])
             ),
             patch.object(QuotaService, "_apply_tenant_chain_cap", new=AsyncMock(return_value=(10, None))),
             patch.object(QuotaService, "get_user_resource_count", new=AsyncMock(return_value=5)),
@@ -311,10 +311,10 @@ class TestCheckInfoSourceSubscribeLimit:
     @pytest.mark.asyncio
     async def test_admin_operator_passes(self, mock_admin_user):
         """Admin operator short-circuits before any owner/usage lookup."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with patch(
-            "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
+            "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
             new=AsyncMock(side_effect=AssertionError("owner roles must not be queried")),
         ):
             await QuotaService.check_info_source_subscribe_limit(10, 1, ["s1"], login_user=mock_admin_user)
@@ -322,12 +322,12 @@ class TestCheckInfoSourceSubscribeLimit:
     @pytest.mark.asyncio
     async def test_admin_owner_exempt_for_non_admin_operator(self, mock_normal_user):
         """Creator holding AdminRole stays exempt when a plain manager edits the channel."""
-        from bisheng.database.constants import AdminRole
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.database.constants import AdminRole
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with (
             patch(
-                "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
+                "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
                 new=AsyncMock(return_value=[_make_user_role(AdminRole)]),
             ),
             patch.object(
@@ -342,12 +342,12 @@ class TestCheckInfoSourceSubscribeLimit:
     async def test_deduped_union_is_compared_to_limit(self, mock_normal_user):
         """Re-using an already-counted source never consumes a slot; only the
         deduped post-save total is compared against the effective limit."""
-        from bisheng.common.errcode.tenant_quota import TenantRoleQuotaExceededError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.tenant_quota import TenantRoleQuotaExceededError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with (
             patch(
-                "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
+                "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
                 new=AsyncMock(return_value=[_make_user_role(3)]),
             ),
             patch.object(QuotaService, "get_effective_quota", new=AsyncMock(return_value=3)),
@@ -379,12 +379,12 @@ class TestKI01SqlTemplateSchema:
         reserved word DM8 cannot quote inside ``text()``. Counting moved to
         ``_count_knowledge_space``; see test_knowledge_space_count_scope.py.
         """
-        from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+        from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
         assert "knowledge_space" not in _RESOURCE_COUNT_TEMPLATES
 
     def test_channel_no_phantom_status_filter(self):
-        from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+        from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
         for key in ("channel", "channel_subscribe"):
             tmpl = _RESOURCE_COUNT_TEMPLATES[key]
@@ -393,7 +393,7 @@ class TestKI01SqlTemplateSchema:
             )
 
     def test_channel_subscribe_counts_memberships(self):
-        from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+        from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
         tmpl = _RESOURCE_COUNT_TEMPLATES["channel_subscribe"]
         assert "FROM space_channel_member" in tmpl
@@ -402,7 +402,7 @@ class TestKI01SqlTemplateSchema:
         assert "{qualified_col}" in tmpl
 
     def test_tool_uses_t_prefix_table_name(self):
-        from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+        from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
         tmpl = _RESOURCE_COUNT_TEMPLATES["tool"]
         assert "FROM t_gpts_tools" in tmpl, (
@@ -411,7 +411,7 @@ class TestKI01SqlTemplateSchema:
 
     @pytest.mark.asyncio
     async def test_storage_count_preserves_fractional_gb(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         class _Result:
             def scalar(self):
@@ -427,7 +427,7 @@ class TestKI01SqlTemplateSchema:
             async def execute(self, *args, **kwargs):
                 return _Result()
 
-        with patch("bisheng.core.database.get_async_db_session", return_value=_Session()):
+        with patch("doberman_agent.core.database.get_async_db_session", return_value=_Session()):
             result = await QuotaService._count_resource("tenant_id", 1, "storage_gb")
 
         assert result == 1.5
@@ -437,12 +437,12 @@ class TestValidateQuotaConfig:
     """AC-10c: quota_config validation."""
 
     def test_valid_config(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         QuotaService.validate_quota_config({"knowledge_space": 30, "workflow": -1, "channel": 0})
 
     def test_menu_approval_mode_bool_or_int(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         QuotaService.validate_quota_config({"channel": 10, "menu_approval_mode": True})
         QuotaService.validate_quota_config({"channel": 10, "menu_approval_mode": False})
@@ -450,8 +450,8 @@ class TestValidateQuotaConfig:
         QuotaService.validate_quota_config({"menu_approval_mode": 1})
 
     def test_menu_approval_mode_invalid_value(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"menu_approval_mode": 2})
@@ -459,7 +459,7 @@ class TestValidateQuotaConfig:
             QuotaService.validate_quota_config({"menu_approval_mode": "true"})
 
     def test_scoped_menu_approval_modes_bool_or_int(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         QuotaService.validate_quota_config({"menu_approval_mode_workbench": True})
         QuotaService.validate_quota_config({"menu_approval_mode_workbench": 0})
@@ -475,8 +475,8 @@ class TestValidateQuotaConfig:
         )
 
     def test_scoped_menu_approval_modes_invalid_value(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"menu_approval_mode_workbench": 2})
@@ -484,21 +484,21 @@ class TestValidateQuotaConfig:
             QuotaService.validate_quota_config({"menu_approval_mode_admin": "true"})
 
     def test_invalid_non_integer(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"knowledge_space": "abc"})
 
     def test_invalid_negative_not_minus_one(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"knowledge_space": -5})
 
     def test_knowledge_space_file_one_decimal_gb(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         QuotaService.validate_quota_config({"knowledge_space_file": 0.1})
         QuotaService.validate_quota_config({"knowledge_space_file": 1.5})
@@ -507,8 +507,8 @@ class TestValidateQuotaConfig:
         QuotaService.validate_quota_config({"knowledge_space_file": -1})
 
     def test_knowledge_space_file_invalid_range_or_precision(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"knowledge_space_file": 0})
@@ -521,7 +521,7 @@ class TestValidateQuotaConfig:
 
     def test_storage_gb_one_decimal_accepted(self):
         """storage_gb mirrors knowledge_space_file: -1 or 0.1~99999 with 1 decimal."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         QuotaService.validate_quota_config({"storage_gb": 0.1})
         QuotaService.validate_quota_config({"storage_gb": 1.5})
@@ -532,8 +532,8 @@ class TestValidateQuotaConfig:
         QuotaService.validate_quota_config({"storage_gb": -1})
 
     def test_storage_gb_invalid_range_or_precision(self):
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         # 0 not allowed (0.1 minimum, mirrors knowledge_space_file)
         with pytest.raises(QuotaConfigInvalidError):
@@ -559,7 +559,7 @@ class TestValidateQuotaConfig:
 
     def test_info_source_subscribe_bounded_int(self):
         """info_source_subscribe: integer within [0, 10000]; default 200."""
-        from bisheng.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
+        from doberman_agent.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
 
         assert DEFAULT_ROLE_QUOTA["info_source_subscribe"] == 200
         QuotaService.validate_quota_config({"info_source_subscribe": 0})
@@ -568,8 +568,8 @@ class TestValidateQuotaConfig:
 
     def test_info_source_subscribe_invalid_type_or_range(self):
         """Rejects negative (incl. -1), > 10000, decimal, string and bool."""
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with pytest.raises(QuotaConfigInvalidError):
             QuotaService.validate_quota_config({"info_source_subscribe": -1})
@@ -602,14 +602,14 @@ class TestGetStorageUsedGbBatch:
 
     @pytest.mark.asyncio
     async def test_empty_input_returns_empty_dict(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         result = await QuotaService.get_storage_used_gb_batch([])
         assert result == {}
 
     @pytest.mark.asyncio
     async def test_root_and_leaf_mixed_picks_correct_path(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         root = _make_tenant_obj(1, parent_tenant_id=None)
         leaf_a = _make_tenant_obj(7, parent_tenant_id=1)
@@ -617,7 +617,7 @@ class TestGetStorageUsedGbBatch:
 
         with (
             patch(
-                "bisheng.database.models.tenant.TenantDao.aget_by_ids",
+                "doberman_agent.database.models.tenant.TenantDao.aget_by_ids",
                 new=AsyncMock(return_value=[root, leaf_a, leaf_b]),
             ),
             patch.object(
@@ -639,10 +639,10 @@ class TestGetStorageUsedGbBatch:
 
     @pytest.mark.asyncio
     async def test_missing_tenant_omitted_from_result(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with patch(
-            "bisheng.database.models.tenant.TenantDao.aget_by_ids",
+            "doberman_agent.database.models.tenant.TenantDao.aget_by_ids",
             new=AsyncMock(return_value=[]),
         ):
             result = await QuotaService.get_storage_used_gb_batch([99, 100])
@@ -655,12 +655,12 @@ class TestTenantStorageBytesHelpers:
 
     @pytest.mark.asyncio
     async def test_used_bytes_root_aggregates_children(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         root = _make_tenant_obj(1, parent_tenant_id=None)
         with (
             patch(
-                "bisheng.database.models.tenant.TenantDao.aget_by_id",
+                "doberman_agent.database.models.tenant.TenantDao.aget_by_id",
                 new=AsyncMock(return_value=root),
             ),
             patch.object(
@@ -680,12 +680,12 @@ class TestTenantStorageBytesHelpers:
 
     @pytest.mark.asyncio
     async def test_used_bytes_leaf_uses_strict(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         leaf = _make_tenant_obj(5, parent_tenant_id=1)
         with (
             patch(
-                "bisheng.database.models.tenant.TenantDao.aget_by_id",
+                "doberman_agent.database.models.tenant.TenantDao.aget_by_id",
                 new=AsyncMock(return_value=leaf),
             ),
             patch.object(
@@ -704,10 +704,10 @@ class TestTenantStorageBytesHelpers:
 
     @pytest.mark.asyncio
     async def test_used_bytes_unknown_tenant_returns_zero(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with patch(
-            "bisheng.database.models.tenant.TenantDao.aget_by_id",
+            "doberman_agent.database.models.tenant.TenantDao.aget_by_id",
             new=AsyncMock(return_value=None),
         ):
             used = await QuotaService.get_tenant_storage_used_bytes(999)
@@ -716,7 +716,7 @@ class TestTenantStorageBytesHelpers:
     @pytest.mark.asyncio
     async def test_remaining_bytes_unlimited_returns_none(self):
         """No cap on the chain → None (unlimited)."""
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with patch.object(
             QuotaService,
@@ -727,7 +727,7 @@ class TestTenantStorageBytesHelpers:
 
     @pytest.mark.asyncio
     async def test_remaining_bytes_returns_bytes(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         with patch.object(
             QuotaService,
@@ -740,8 +740,8 @@ class TestTenantStorageBytesHelpers:
     @pytest.mark.asyncio
     async def test_remaining_bytes_blocker_raises_19403(self):
         """Chain exhausted (any node remaining=0) → directly raises 19403."""
-        from bisheng.common.errcode.tenant_quota import TenantStorageQuotaExceededError
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.common.errcode.tenant_quota import TenantStorageQuotaExceededError
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         blocker = (5, "tenant_limit", 1.0, 1.0, "tenant-foo")
         with patch.object(
@@ -764,7 +764,7 @@ class TestKnowledgeSpaceFileMultiRoleMin:
     that sets this quota is unlimited."""
 
     def test_two_finite_takes_min(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         roles = [
             _make_role(1, {"knowledge_space_file": 0.1}),
@@ -773,7 +773,7 @@ class TestKnowledgeSpaceFileMultiRoleMin:
         assert QuotaService._aggregate_knowledge_space_file_limit_gb(roles) == 0.1
 
     def test_finite_and_unlimited_takes_finite(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         roles = [
             _make_role(1, {"knowledge_space_file": 0.1}),
@@ -782,7 +782,7 @@ class TestKnowledgeSpaceFileMultiRoleMin:
         assert QuotaService._aggregate_knowledge_space_file_limit_gb(roles) == 0.1
 
     def test_all_unlimited_returns_unlimited(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         roles = [
             _make_role(1, {"knowledge_space_file": -1}),
@@ -791,7 +791,7 @@ class TestKnowledgeSpaceFileMultiRoleMin:
         assert QuotaService._aggregate_knowledge_space_file_limit_gb(roles) == -1.0
 
     def test_none_set_falls_back_to_default(self):
-        from bisheng.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
+        from doberman_agent.role.domain.services.quota_service import DEFAULT_ROLE_QUOTA, QuotaService
 
         roles = [_make_role(1, {}), _make_role(2, None)]
         assert QuotaService._aggregate_knowledge_space_file_limit_gb(roles) == float(

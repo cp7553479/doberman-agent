@@ -44,13 +44,13 @@
 - AD-09: 新端点 `/api/v1/user-groups/...`，旧 `/api/v1/group/...` 原样保留
 
 **关键文件（预判）**:
-- 修改: `src/backend/bisheng/database/models/group.py`（扩展字段 + async DAO）
-- 修改: `src/backend/bisheng/database/models/user_group.py`（async DAO）
-- 新建: `src/backend/bisheng/user_group/`（DDD 模块：api/ + domain/）
-- 新建: `src/backend/bisheng/common/errcode/user_group.py`
-- 新建: `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f003_user_group.py`
-- 修改: `src/backend/bisheng/api/router.py`（路由注册）
-- 修改: `src/backend/bisheng/common/init_data.py`（默认用户组初始化）
+- 修改: `src/backend/doberman_agent/database/models/group.py`（扩展字段 + async DAO）
+- 修改: `src/backend/doberman_agent/database/models/user_group.py`（async DAO）
+- 新建: `src/backend/doberman_agent/user_group/`（DDD 模块：api/ + domain/）
+- 新建: `src/backend/doberman_agent/common/errcode/user_group.py`
+- 新建: `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f003_user_group.py`
+- 修改: `src/backend/doberman_agent/api/router.py`（路由注册）
+- 修改: `src/backend/doberman_agent/common/init_data.py`（默认用户组初始化）
 
 **关联不变量**: INV-1, INV-2
 
@@ -58,32 +58,32 @@
 
 ## 1. 概述与用户故事
 
-F003 为 BiSheng 引入多租户感知的用户组管理。用户组是跨部门的临时项目组，与部门（长期组织架构）互补。用户组是 ReBAC 权限体系的三大授权主体之一（`user`、`department#member`、`user_group#member`），F003 建立其数据基础和 OpenFGA 契约。
+F003 为 doberman-agent 引入多租户感知的用户组管理。用户组是跨部门的临时项目组，与部门（长期组织架构）互补。用户组是 ReBAC 权限体系的三大授权主体之一（`user`、`department#member`、`user_group#member`），F003 建立其数据基础和 OpenFGA 契约。
 
 无论多租户是否启用，用户组功能始终可用。单租户模式下默认租户(id=1)拥有全部用户组；多租户模式下每个租户有独立的用户组空间，名称仅需租户内唯一。
 
 **用户故事 1**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **能创建、编辑和删除用户组，并设置用户组的公开/私密可见性**，
 以便 **灵活管理跨部门项目团队，私密组可用于敏感项目的权限隔离**。
 
 **用户故事 2**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **能向用户组批量添加/移除成员，并设置组管理员**，
 以便 **后续通过用户组批量授予资源访问权限，组管理员可辅助管理组内事务**。
 
 **用户故事 3**:
-作为 **BiSheng 普通用户**，
+作为 **doberman-agent 普通用户**，
 我希望 **能看到所有公开的用户组和自己加入的私密用户组**，
 以便 **了解自己的组织归属，在资源授权时选择合适的用户组**。
 
 **用户故事 4**:
-作为 **BiSheng 后续 Feature 开发者**，
+作为 **doberman-agent 后续 Feature 开发者**，
 我希望 **F003 提供 GroupChangeHandler 元组 DTO 和 `acreate_default_group()` 服务方法**，
 以便 **F004 的 PermissionService 能消费用户组变更事件，F010 的租户创建流程能原子地创建默认用户组**。
 
 **用户故事 5**:
-作为 **BiSheng 运维人员**，
+作为 **doberman-agent 运维人员**，
 我希望 **升级到 v2.5.0 时现有用户组自动获得 visibility='public'，旧 API 继续正常工作**，
 以便 **零迁移成本升级，不影响现有功能**。
 
@@ -466,20 +466,20 @@ N/A — F003 不涉及前端变更。现有前端用户组管理页面继续使�
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/common/errcode/user_group.py` | 230xx 用户组错误码（7 个） |
-| `src/backend/bisheng/user_group/__init__.py` | DDD 模块包 |
-| `src/backend/bisheng/user_group/api/__init__.py` | API 子包 |
-| `src/backend/bisheng/user_group/api/router.py` | 路由聚合，prefix `/user-groups` |
-| `src/backend/bisheng/user_group/api/endpoints/__init__.py` | 端点子包 |
-| `src/backend/bisheng/user_group/api/endpoints/user_group.py` | 用户组 CRUD 端点（5 个） |
-| `src/backend/bisheng/user_group/api/endpoints/user_group_member.py` | 成员管理端点（4 个） |
-| `src/backend/bisheng/user_group/domain/__init__.py` | 领域子包 |
-| `src/backend/bisheng/user_group/domain/schemas/__init__.py` | DTO 子包 |
-| `src/backend/bisheng/user_group/domain/schemas/user_group_schema.py` | 请求/响应 Pydantic DTO |
-| `src/backend/bisheng/user_group/domain/services/__init__.py` | 服务子包 |
-| `src/backend/bisheng/user_group/domain/services/user_group_service.py` | 用户组核心业务逻辑 |
-| `src/backend/bisheng/user_group/domain/services/group_change_handler.py` | TupleOperation DTO + 事件方法 + execute() 日志 stub |
-| `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f003_user_group.py` | Alembic 迁移脚本 |
+| `src/backend/doberman_agent/common/errcode/user_group.py` | 230xx 用户组错误码（7 个） |
+| `src/backend/doberman_agent/user_group/__init__.py` | DDD 模块包 |
+| `src/backend/doberman_agent/user_group/api/__init__.py` | API 子包 |
+| `src/backend/doberman_agent/user_group/api/router.py` | 路由聚合，prefix `/user-groups` |
+| `src/backend/doberman_agent/user_group/api/endpoints/__init__.py` | 端点子包 |
+| `src/backend/doberman_agent/user_group/api/endpoints/user_group.py` | 用户组 CRUD 端点（5 个） |
+| `src/backend/doberman_agent/user_group/api/endpoints/user_group_member.py` | 成员管理端点（4 个） |
+| `src/backend/doberman_agent/user_group/domain/__init__.py` | 领域子包 |
+| `src/backend/doberman_agent/user_group/domain/schemas/__init__.py` | DTO 子包 |
+| `src/backend/doberman_agent/user_group/domain/schemas/user_group_schema.py` | 请求/响应 Pydantic DTO |
+| `src/backend/doberman_agent/user_group/domain/services/__init__.py` | 服务子包 |
+| `src/backend/doberman_agent/user_group/domain/services/user_group_service.py` | 用户组核心业务逻辑 |
+| `src/backend/doberman_agent/user_group/domain/services/group_change_handler.py` | TupleOperation DTO + 事件方法 + execute() 日志 stub |
+| `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f003_user_group.py` | Alembic 迁移脚本 |
 | `src/backend/test/test_user_group_dao.py` | DAO 单元测试 |
 | `src/backend/test/test_group_change_handler.py` | ChangeHandler 单元测试 |
 | `src/backend/test/test_user_group_service.py` | Service 单元测试 |
@@ -489,10 +489,10 @@ N/A — F003 不涉及前端变更。现有前端用户组管理页面继续使�
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/database/models/group.py` | Group 类添加 `__tablename__`、`tenant_id`、`visibility` 字段声明、`__table_args__` 复合唯一约束；GroupBase 去掉 `unique=True`；GroupDao 添加 async 方法 |
-| `src/backend/bisheng/database/models/user_group.py` | UserGroupDao 添加 async 方法 |
-| `src/backend/bisheng/api/router.py` | 导入并注册 `user_group_router` |
-| `src/backend/bisheng/common/init_data.py` | 添加 `_init_default_user_group(session)` 函数确保默认组有 visibility='public' |
+| `src/backend/doberman_agent/database/models/group.py` | Group 类添加 `__tablename__`、`tenant_id`、`visibility` 字段声明、`__table_args__` 复合唯一约束；GroupBase 去掉 `unique=True`；GroupDao 添加 async 方法 |
+| `src/backend/doberman_agent/database/models/user_group.py` | UserGroupDao 添加 async 方法 |
+| `src/backend/doberman_agent/api/router.py` | 导入并注册 `user_group_router` |
+| `src/backend/doberman_agent/common/init_data.py` | 添加 `_init_default_user_group(session)` 函数确保默认组有 visibility='public' |
 | `features/v2.5.0/release-contract.md` | 注册模块编码 230 = user_group |
 | `src/backend/test/fixtures/table_definitions.py` | TABLE_GROUP 增加 visibility 列定义 |
 | `src/backend/test/fixtures/factories.py` | 添加 `create_group()` + `create_user_group_member()` 工厂函数 |

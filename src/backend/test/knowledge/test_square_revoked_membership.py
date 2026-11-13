@@ -19,7 +19,7 @@ import pytest
 from sqlmodel import Field, SQLModel
 
 BACKEND = Path(__file__).resolve().parents[2]
-SERVICE = BACKEND / "bisheng/knowledge/domain/services/knowledge_space_service.py"
+SERVICE = BACKEND / "doberman_agent/knowledge/domain/services/knowledge_space_service.py"
 
 
 class Status(StrEnum):
@@ -83,9 +83,9 @@ def context(monkeypatch):
         "model": "embedding",
     }
     space = SimpleNamespace(**space_data, model_dump=lambda: space_data)
-    worker = ModuleType("bisheng.worker")
+    worker = ModuleType("doberman_agent.worker")
     worker.rebuild_knowledge_celery = SimpleNamespace()
-    user_module = ModuleType("bisheng.user.domain.services.user")
+    user_module = ModuleType("doberman_agent.user.domain.services.user")
     user_module.UserService = SimpleNamespace(get_avatar_share_link=AsyncMock())
     monkeypatch.setitem(sys.modules, worker.__name__, worker)
     monkeypatch.setitem(sys.modules, user_module.__name__, user_module)
@@ -193,7 +193,7 @@ async def test_info_and_square_clear_stale_joined_state_after_revocation(context
 
 @pytest.mark.parametrize("failed", [False, True])
 async def test_failed_execution_is_not_displayed_as_pending_in_info_or_square(context, monkeypatch, failed):
-    from bisheng.approval.application import request_state
+    from doberman_agent.approval.application import request_state
 
     context.member.is_active = False
     context.member.is_pending = True
@@ -216,7 +216,7 @@ async def test_failed_execution_is_not_displayed_as_pending_in_info_or_square(co
 
 
 async def test_failed_subscription_lookup_batches_only_pending_rows(context, monkeypatch):
-    from bisheng.approval.application import request_state
+    from doberman_agent.approval.application import request_state
 
     lookup = AsyncMock(return_value=frozenset({"space:74:user:7"}))
     monkeypatch.setattr(request_state, "get_failed_request_keys", lookup)
@@ -232,8 +232,8 @@ async def test_failed_subscription_lookup_batches_only_pending_rows(context, mon
 
 
 async def test_failed_reapplication_does_not_persist_pending_member_or_notify(context):
-    from bisheng.approval.domain.services.approval_gate import ApprovalGate
-    from bisheng.common.errcode.approval import ApprovalExecutionFailedError
+    from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
+    from doberman_agent.common.errcode.approval import ApprovalExecutionFailedError
 
     context.member.status = Membership.PENDING
     context.service.approval_gate = ApprovalGate(
@@ -341,7 +341,7 @@ async def test_reapplication_storage_uses_member_role(existing):
             "select": select,
             "update": update,
         }
-        path = BACKEND / "bisheng/common/models/space_channel_member.py"
+        path = BACKEND / "doberman_agent/common/models/space_channel_member.py"
         tree = ast.parse(path.read_text())
         cls = next(
             node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "SpaceChannelMemberDao"

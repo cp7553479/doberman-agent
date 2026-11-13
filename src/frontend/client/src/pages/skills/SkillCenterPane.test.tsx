@@ -22,7 +22,7 @@ jest.mock('~/mock/demo/DemoTag', () => ({ DemoTag: () => null }));
 jest.mock('~/components/Skills/SkillUploadDialog', () => ({ SkillUploadDialog: () => null }));
 jest.mock('~/components/ActionMenu', () => ({}));
 jest.mock('~/components/ui/DropdownMenu', () => ({}));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
   Button: ({ children, onClick }: { children: ReactNode; onClick: () => void }) => <button onClick={onClick}>{children}</button>,
   Switch: ({ checked, onCheckedChange, 'aria-label': label }: { checked: boolean; onCheckedChange: (value: boolean) => void; 'aria-label': string }) =>
     <button role="switch" aria-checked={checked} aria-label={label} onClick={() => onCheckedChange(!checked)} />,
@@ -36,7 +36,7 @@ jest.mock('~/components/ui/Dialog', () => ({
   DialogDescription: ({ children }: { children: ReactNode }) => <p>{children}</p>,
 }));
 
-const keys = ['bisheng-docx', 'bisheng-pptx', 'bisheng-xlsx'] as const;
+const keys = ['doberman_agent-docx', 'doberman_agent-pptx', 'doberman_agent-xlsx'] as const;
 const records = keys.map((name, index) => ({ id: index + 1, name, builtin_key: name, source: 'platform', enabled: true,
   display_name: resources['zh-Hans'].translation.com_builtin_skills[name].name,
   description: resources['zh-Hans'].translation.com_builtin_skills[name].description }));
@@ -75,7 +75,7 @@ test.each(keys)('%s is translated through the API, hook, search, list and detail
 test('the open detail follows language changes and the toggle uses the resource ID', async () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, cacheTime: 0 } } });
   const page = render(<Page client={client} />);
-  const key = 'bisheng-docx';
+  const key = 'doberman_agent-docx';
   const english = resources.en.translation.com_builtin_skills[key];
   fireEvent.click(await screen.findByRole('button', { name: `${i18n.t('com_skill_center_details')}: ${english.name}` }));
   await act(async () => { await i18n.changeLanguage('zh-Hans'); });

@@ -18,7 +18,7 @@ function skill(partial: Pick<SkillRecord, 'id' | 'displayName' | 'updatedAt'>): 
 
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
-jest.mock('bisheng-icons', () => {
+jest.mock('@doberman-agent/icons', () => {
   const icons = new Proxy({}, { get: () => () => null });
   return { Outlined: icons, Filled: icons, Colored: icons };
 });

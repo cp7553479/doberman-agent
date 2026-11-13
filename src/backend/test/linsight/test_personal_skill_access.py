@@ -11,19 +11,19 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.common.errcode.linsight import SkillNotFoundError, SkillVersionConflictError
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.personal_skill_service import PersonalSkillService
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.common.errcode.linsight import SkillNotFoundError, SkillVersionConflictError
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.personal_skill_service import PersonalSkillService
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
 OTHER_TENANT = 9
 USER = 11
 OTHER = 22
-GATE = "bisheng.permission.application.business_authorization.require_business_action"
+GATE = "doberman_agent.permission.application.business_authorization.require_business_action"
 
 
 def _md(name: str, body: str, display: str) -> bytes:
@@ -55,7 +55,7 @@ async def env(tmp_path, monkeypatch):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",

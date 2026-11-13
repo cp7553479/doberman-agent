@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.services.f048_system_resource_bootstrap import SystemOwnedResourceInventory
-from bisheng.permission.application.system_resource_reconcile import (
+from doberman_agent.api.services.f048_system_resource_bootstrap import SystemOwnedResourceInventory
+from doberman_agent.permission.application.system_resource_reconcile import (
     SystemOwnedReconcileReport,
     SystemOwnedResourceSpec,
     SystemOwnedResourceState,

@@ -1,8 +1,8 @@
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type DragEvent } from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Button } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Button } from '@doberman-agent/ui';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '~/components/ui/Dialog';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';

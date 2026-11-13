@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, Mock, call
 
 import pytest
 
-from bisheng.evaluation.domain.models.evaluation import Evaluation, EvaluationTaskStatus, ExecType
-from bisheng.evaluation.domain.services import evaluation_service as service
+from doberman_agent.evaluation.domain.models.evaluation import Evaluation, EvaluationTaskStatus, ExecType
+from doberman_agent.evaluation.domain.services import evaluation_service as service
 
 
 def _task(monkeypatch, exec_type, question_count=3, fail_at=None):

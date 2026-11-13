@@ -26,9 +26,9 @@ from sqlalchemy import Column, Integer, String, create_engine, text
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Field, Session, select
 
-from bisheng.common.models.base import SQLModelSerializable
-from bisheng.core.config.multi_tenant import MultiTenantConf
-from bisheng.core.context.tenant import (
+from doberman_agent.common.models.base import SQLModelSerializable
+from doberman_agent.core.config.multi_tenant import MultiTenantConf
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     bypass_tenant_filter_if,
     current_tenant_id,
@@ -40,15 +40,15 @@ from bisheng.core.context.tenant import (
 
 # Pre-mock the modules whose import chain would otherwise drag in real infra.
 _MOCK_MODULES = [
-    "bisheng.common.services",
-    "bisheng.common.services.config_service",
-    "bisheng.common.services.telemetry",
-    "bisheng.common.services.telemetry.telemetry_service",
+    "doberman_agent.common.services",
+    "doberman_agent.common.services.config_service",
+    "doberman_agent.common.services.telemetry",
+    "doberman_agent.common.services.telemetry.telemetry_service",
 ]
 for _m in _MOCK_MODULES:
     if _m not in sys.modules:
         _mock = MagicMock()
-        if _m == "bisheng.common.services.config_service":
+        if _m == "doberman_agent.common.services.config_service":
             _mock.settings = MagicMock()
             _mock.settings.multi_tenant = MultiTenantConf(enabled=False)
         sys.modules[_m] = _mock
@@ -65,7 +65,7 @@ class _SharedRow(SQLModelSerializable, table=True):
 
 @pytest.fixture()
 def filter_engine():
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     tenant_filter._initialized = False
     tenant_filter._tenant_aware_tables = set()
@@ -148,7 +148,7 @@ class TestCrossTenantShareRead:
 
 class TestHeaderShareTokenParser:
     async def test_missing_header_returns_none(self):
-        from bisheng.share_link.api.dependencies import header_share_token_parser
+        from doberman_agent.share_link.api.dependencies import header_share_token_parser
 
         service = MagicMock()
         service.get_share_link_by_token = AsyncMock()
@@ -158,8 +158,8 @@ class TestHeaderShareTokenParser:
 
     async def test_unknown_token_returns_none_instead_of_raising(self):
         """A stale header means "no share grant", not "this request is a 404"."""
-        from bisheng.common.errcode.http_error import NotFoundError
-        from bisheng.share_link.api.dependencies import header_share_token_parser
+        from doberman_agent.common.errcode.http_error import NotFoundError
+        from doberman_agent.share_link.api.dependencies import header_share_token_parser
 
         service = MagicMock()
         service.get_share_link_by_token = AsyncMock(side_effect=NotFoundError())
@@ -169,7 +169,7 @@ class TestHeaderShareTokenParser:
         assert result is None
 
     async def test_active_token_returns_the_share_link(self):
-        from bisheng.share_link.api.dependencies import header_share_token_parser
+        from doberman_agent.share_link.api.dependencies import header_share_token_parser
 
         share_link = MagicMock()
         service = MagicMock()
@@ -201,7 +201,7 @@ class TestShareTokenAuthorizationStillGates:
 
     @pytest.fixture()
     def endpoints(self, monkeypatch):
-        from bisheng.workstation.api.endpoints import chat as chat_endpoints
+        from doberman_agent.workstation.api.endpoints import chat as chat_endpoints
 
         dao = MagicMock()
         dao.aget_messages_by_chat_id = AsyncMock(return_value=[self._message_owned_by(1)])
@@ -273,7 +273,7 @@ class TestFileDownloadHonoursAWholeConversationShare:
 
     @pytest.fixture()
     def endpoints(self, monkeypatch):
-        from bisheng.linsight.api.endpoints import linsight as linsight_endpoints
+        from doberman_agent.linsight.api.endpoints import linsight as linsight_endpoints
 
         version = MagicMock()
         version.user_id = 1  # the owner
@@ -283,8 +283,8 @@ class TestFileDownloadHonoursAWholeConversationShare:
         monkeypatch.setattr(linsight_endpoints, "LinsightSessionVersionDao", dao)
 
         minio = MagicMock()
-        minio.bucket = "bisheng"
-        minio.get_share_link = AsyncMock(return_value="/bisheng/presigned?sig=x")
+        minio.bucket = "doberman_agent"
+        minio.get_share_link = AsyncMock(return_value="/doberman_agent/presigned?sig=x")
         monkeypatch.setattr(linsight_endpoints, "get_minio_storage", AsyncMock(return_value=minio))
         return linsight_endpoints
 
@@ -314,16 +314,16 @@ class TestFileDownloadHonoursAWholeConversationShare:
         result = await self._download(endpoints, self._whole_conversation_share(self.SESSION_ID))
 
         assert result.status_code == 200
-        assert result.data == {"file_path": "/bisheng/presigned?sig=x"}
+        assert result.data == {"file_path": "/doberman_agent/presigned?sig=x"}
 
     async def test_missing_token_is_still_rejected(self, endpoints):
-        from bisheng.common.errcode.http_error import UnAuthorizedError
+        from doberman_agent.common.errcode.http_error import UnAuthorizedError
 
         with pytest.raises(UnAuthorizedError):
             await self._download(endpoints, None)
 
     async def test_token_for_another_conversation_is_still_rejected(self, endpoints):
-        from bisheng.common.errcode.http_error import UnAuthorizedError
+        from doberman_agent.common.errcode.http_error import UnAuthorizedError
 
         with pytest.raises(UnAuthorizedError):
             await self._download(endpoints, self._whole_conversation_share("conv-not-shared"))

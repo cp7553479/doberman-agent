@@ -21,7 +21,7 @@ jest.mock('~/hooks/queries/data-provider', () => ({
     };
   },
 }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
   Modal: ({ children, title, footer, onOpenChange }) => <div role="dialog" onKeyDown={event => { if (event.key === 'Escape') onOpenChange(false); }}><h2>{title}</h2>{children}{footer}</div>,
   SearchInput: props => <input {...props} />,
   Button: ({ color, variant, ...props }) => { void color; void variant; return <button {...props} />; },

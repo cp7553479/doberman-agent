@@ -10,11 +10,11 @@ from uuid import uuid4
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.repositories.runtime_kubernetes_repository import RuntimeKubernetesRepository
-from bisheng.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.repositories.runtime_kubernetes_repository import RuntimeKubernetesRepository
+from doberman_agent.app_runtime.domain.services.runtime_kubernetes_service import RuntimeKubernetesService
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import ADMISSION, MANAGER, REF, register, short_hash

@@ -7,7 +7,7 @@ This follows the release-line Select migration brought in by merge 91975b365.
 ## Completed
 
 - Application usage log: replace the remaining legacy MultiSelect with the real
-  @bisheng/ui Select. Keep remote search, 10-item pagination, stable application
+  @doberman-agent/ui Select. Keep remote search, 10-item pagination, stable application
   IDs, selection across search results, and tag removal. Discard null/empty IDs
   before constructing options. The endpoint and request parameters are unchanged.
 - Permission dialogs and rosters: replace four native selects. Keep the model

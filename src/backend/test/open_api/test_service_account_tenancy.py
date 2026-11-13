@@ -6,23 +6,23 @@ from datetime import datetime
 import pytest
 from sqlmodel import select
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiAuthDependencyUnavailableError,
     ServiceAccountOwnerTenantMismatchError,
     ServiceAccountOwnerTenantUnresolvedError,
 )
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.application.service_account_tenancy import (
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.application.service_account_tenancy import (
     require_owner_tenant,
     revalidate_service_account,
 )
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.models.service_account import ServiceAccount
-from bisheng.open_api.domain.repositories.owner_repository import OwnerRepository
-from bisheng.open_api.domain.schemas.credential import KeyIssueRequest
-from bisheng.open_api.domain.services.credential_service import CredentialService
-from bisheng.open_api.domain.services.credential_validator import validate_bearer
-from bisheng.user.domain.models.user import User
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+from doberman_agent.open_api.domain.repositories.owner_repository import OwnerRepository
+from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest
+from doberman_agent.open_api.domain.services.credential_service import CredentialService
+from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
+from doberman_agent.user.domain.models.user import User
 
 
 async def seed(factory, *, owner=21, tenant=1, deleted=0, membership=True):
@@ -153,7 +153,7 @@ async def test_other_principals_do_not_use_the_service_account_gate(monkeypatch)
 
 
 async def test_account_disabled_after_cache_hit_still_refuses(open_api_db):
-    from bisheng.common.errcode.open_api import ServiceAccountInactiveError
+    from doberman_agent.common.errcode.open_api import ServiceAccountInactiveError
 
     account = await seed(open_api_db)
     cached = principal(account)

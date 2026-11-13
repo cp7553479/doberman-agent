@@ -32,7 +32,7 @@ def _body(response):
 
 
 def _payload(user_id: int, *, is_global_super: bool = False):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(
         user_id=user_id,
@@ -45,9 +45,9 @@ def _payload(user_id: int, *, is_global_super: bool = False):
 
 async def _store(publish_db, app, version, package_bytes: bytes) -> None:
     """Put ``package_bytes`` where the version row points (through the real key layout)."""
-    from bisheng.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key
-    from bisheng.core.storage.minio.minio_manager import get_minio_storage
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key
+    from doberman_agent.core.storage.minio.minio_manager import get_minio_storage
+    from doberman_agent.database.models.app_version import AppVersion
 
     key = snapshot_key(app.id, version.id)
     storage = await get_minio_storage()
@@ -74,8 +74,8 @@ async def stored_app(publish_db, app_factory, fake_minio, tarball_factory):
 
 async def _seed_task(publish_db, *, app, version_id: str, approver_user_id: int) -> int:
     """An ``app_publish_request`` instance about ``version_id`` with one task for ``approver_user_id``."""
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import SCENARIO_CODE
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstance, ApprovalTask
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import SCENARIO_CODE
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance, ApprovalTask
 
     async with publish_db() as session:
         instance = ApprovalInstance(
@@ -129,7 +129,7 @@ async def test_tree_lists_files_and_derived_directories(publish_db, api_app, sto
     assert data["role"] == "owner"
     assert data["truncated"] is False
     by_path = {entry["path"]: entry for entry in data["entries"]}
-    assert by_path["bisheng-app.yaml"]["type"] == "file"
+    assert by_path["doberman-agent-app.yaml"]["type"] == "file"
     assert by_path["src"]["type"] == "dir" and by_path["src/app"]["type"] == "dir"
     assert by_path["src/app/util.py"] == {
         "path": "src/app/util.py",
@@ -144,7 +144,7 @@ async def test_tree_lists_files_and_derived_directories(publish_db, api_app, sto
 
 
 async def test_tree_flags_binary_and_oversized_as_not_previewable(publish_db, api_app, stored_app, owner_user):
-    from bisheng.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
+    from doberman_agent.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
 
     app, version = await stored_app(
         extra_files={"logo.bin": b"\x89PNG\x00\x00binary", "big.txt": "x" * (MAX_SCAN_FILE_BYTES + 1)}
@@ -163,7 +163,7 @@ async def test_tree_marks_truncated_when_entries_exceed_the_deploy_limit(
     publish_db, api_app, stored_app, owner_user, monkeypatch
 ):
     """The walk stops at ``max_package_entries`` and says so, rather than listing a partial tree as complete."""
-    from bisheng.app_publish.domain.services import package_service
+    from doberman_agent.app_publish.domain.services import package_service
 
     limits = dict(package_service.deploy_limits())
     limits["max_package_entries"] = 2
@@ -182,7 +182,7 @@ async def test_tree_unwraps_single_top_level_directory(publish_db, api_app, app_
     app, version = await app_factory(with_version=True)
     package = _tar_bytes_from_members(
         [
-            _file_member("myapp/bisheng-app.yaml", b"name: x\nruntime: python3.11\nport: 8080\n"),
+            _file_member("myapp/doberman-agent-app.yaml", b"name: x\nruntime: python3.11\nport: 8080\n"),
             _file_member("myapp/main.py", b"print('hi')\n"),
             _file_member("myapp/lib/a.py", b"A = 1\n"),
         ]
@@ -195,7 +195,7 @@ async def test_tree_unwraps_single_top_level_directory(publish_db, api_app, app_
             await client.get(f"/api/v1/apps/{app.id}/versions/{version.id}/snapshot/file", params={"path": "lib/a.py"})
         )["data"]
 
-    assert {e["path"] for e in tree["entries"]} == {"bisheng-app.yaml", "main.py", "lib", "lib/a.py"}
+    assert {e["path"] for e in tree["entries"]} == {"doberman-agent-app.yaml", "main.py", "lib", "lib/a.py"}
     assert file["content"] == "A = 1\n"
 
 
@@ -240,7 +240,7 @@ async def test_file_returns_text_with_secrets_masked(publish_db, api_app, stored
 
 
 async def test_file_binary_and_oversized_degrade_without_bytes(publish_db, api_app, stored_app, owner_user):
-    from bisheng.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
+    from doberman_agent.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES
 
     app, version = await stored_app(
         extra_files={"logo.bin": b"\x89PNG\x00\x00binary", "big.txt": "x" * (MAX_SCAN_FILE_BYTES + 1)}
@@ -318,10 +318,10 @@ async def test_approver_resolved_by_the_real_publish_request_is_admitted(
     ``business_resource_type`` breaks here instead of silently locking every
     approver out of the review view in production.
     """
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
 
     app, version = await app_factory(with_version=True)
     await _store(publish_db, app, version, tarball_factory().read_bytes())
@@ -377,7 +377,7 @@ async def test_stranger_gets_business_code_not_403_404(publish_db, api_app, stor
 
 
 async def test_super_admin_and_tenant_admin_are_admitted(publish_db, api_app, stored_app, monkeypatch):
-    from bisheng.app_publish.domain.services import snapshot_browse_service
+    from doberman_agent.app_publish.domain.services import snapshot_browse_service
 
     app, version = await stored_app()
 
@@ -437,7 +437,7 @@ async def test_corrupt_snapshot_is_16256_not_500(publish_db, api_app, app_factor
 
 async def test_no_archive_download_route_exists(publish_db):
     """The snapshot is browsed one file at a time; there is no way to pull the whole archive (design D15)."""
-    from bisheng.app_publish.api.router import v1_router
+    from doberman_agent.app_publish.api.router import v1_router
 
     paths = {route.path for route in v1_router.routes}
     assert "/apps/{app_id}/versions/{version_id}/snapshot/tree" in paths
@@ -447,7 +447,7 @@ async def test_no_archive_download_route_exists(publish_db):
 
 async def test_mask_secrets_keeps_placeholders_and_counts():
     """Documentation-shaped values stay readable; real ones become ``***`` and are counted."""
-    from bisheng.app_publish.domain.services.secret_scanner import SECRET_MASK, mask_secrets
+    from doberman_agent.app_publish.domain.services.secret_scanner import SECRET_MASK, mask_secrets
 
     text = 'token = "your_token_goes_here_replace_me_now"\nsecret = "Zk8vQ2mN4pR7tW1yB5xC9eH3jL6sD0fG"\n'
     masked, count = mask_secrets(text)
@@ -462,7 +462,7 @@ async def test_mask_secrets_keeps_placeholders_and_counts():
 
 
 async def _add_version(publish_db, app, *, version_no: int, terminal_state: str | None = None):
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     async with publish_db() as session:
         row = AppVersion(
@@ -483,7 +483,7 @@ async def _add_version(publish_db, app, *, version_no: int, terminal_state: str 
 
 
 async def _set_pending(publish_db, app, version_id: str) -> None:
-    from bisheng.database.models.app import App
+    from doberman_agent.database.models.app import App
 
     async with publish_db() as session:
         row = await session.get(App, app.id)

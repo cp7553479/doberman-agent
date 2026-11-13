@@ -27,7 +27,7 @@
 - 技术评审证据原固定提交为 `736ef593f3fc6e1634008c842d2604304d6f70a6`。与当前 Vibe 比较，manager、app-proxy、backend app_runtime/app_publish 实现没有变更；Compose 有增量，因此新设计须以工作分支实际文件复核部署配置。
 - 同时读取的发布线为 `feat/3.0.0@c7788301f32f21db4ebec1b54744827efc22ca98`。它在 Vibe 之外还有提交；本次不未经评估合入全部发布线改动。
 - 原工作区仍为 `feat/3.0.0-beta3@05941384f5a13f8f0773192f008e3eb5017f560b`，含其他未提交改动，全部保留。
-- 隔离工作区：`/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng`。
+- 隔离工作区：`/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent`。
 - 功能分支：`codex/086-vibe-runtime-delivery`。使用 Codex 默认前缀；仓库已经有 `feat/3.0.0` 分支，不能同时建立同名路径下的 `feat/3.0.0/086-*` Git ref。
 
 本 Feature 只演进 Vibe 专属托管模块，因此以 Vibe 集成线为基线，沿用该分支 `release-contract.md` 的应用工场领域。若发现通用权限/审批/基础设施缺陷，按根 AGENTS 的发布线优先规则另外落发布线，再合入；本 Feature 不在派生分支改写通用功能后反向散播。
@@ -48,8 +48,8 @@
 
 - `src/runtime-manager/runtime_manager/{builder,config,lifecycle,appdb,desired_state,egress}.py`。
 - `src/app-proxy/app_proxy/clients.py`。
-- `src/backend/bisheng/app_publish/domain/services/` 与 `app_runtime/domain/services/`。
-- `src/bisheng-sdk/bisheng_sdk/_storage_remote.py`。
+- `src/backend/doberman_agent/app_publish/domain/services/` 与 `app_runtime/domain/services/`。
+- `src/doberman-agent-sdk/doberman_agent_sdk/_storage_remote.py`。
 - `docker/docker-compose.yml`、`.github/workflows/ci.yml`、`.github/workflows/release.yml`。
 
 这些是静态读取结论。本轮尚未执行容器部署、断网安装、数据库故障演练或 K8s 验证。

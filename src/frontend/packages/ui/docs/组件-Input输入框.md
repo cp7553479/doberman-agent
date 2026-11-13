@@ -82,7 +82,7 @@
 
 ### 5.1 聚焦不用主题色
 
-**BISHENG 输入框的聚焦是「灰描边加深 + 一圈灰色阴影」，不用主题色细描边。** 表单里输入框成片出现，聚焦只回答「光标在哪」，不承载语义；颜色留给真正需要说话的时刻——校验的危险色与警告色。
+**doberman-agent 输入框的聚焦是「灰描边加深 + 一圈灰色阴影」，不用主题色细描边。** 表单里输入框成片出现，聚焦只回答「光标在哪」，不承载语义；颜色留给真正需要说话的时刻——校验的危险色与警告色。
 
 ### 5.2 状态一览
 
@@ -126,7 +126,7 @@
 <!-- site-hide -->
 ## 落地（给实现窗口）
 
-**v1 组件已落地（2026-08-20）**：`packages/ui/src/components/Input/` —— `Input.tsx`（单行基座）/ `Textarea.tsx` / `PasswordInput.tsx` / `SearchInput.tsx` / `shared.ts`（外壳 cva + 三档取值 + 受控&非受控取值、清空、热区聚焦的共用件），由 `@bisheng/ui` 导出，demo 页 `docs/components/input.mdx`。下面 1–5 条按落地实况回填，第 6 条仍未做。
+**v1 组件已落地（2026-08-20）**：`packages/ui/src/components/Input/` —— `Input.tsx`（单行基座）/ `Textarea.tsx` / `PasswordInput.tsx` / `SearchInput.tsx` / `shared.ts`（外壳 cva + 三档取值 + 受控&非受控取值、清空、热区聚焦的共用件），由 `@doberman-agent/ui` 导出，demo 页 `docs/components/input.mdx`。下面 1–5 条按落地实况回填，第 6 条仍未做。
 
 1. ✅ cva `variants: { size, status, state }`（24 / 32 / 40，圆角 4 / 6 / 8，水平内边距含 1px 边框的 7 / 11 / 11），`status: error` 同步置 `aria-invalid`。Password / Search / addon 是同一基座填不同插槽的组合形态，没有另一套 API：`PasswordInput` / `SearchInput` 都只是 `Input` 的薄包装。**边框、填充、圆角、聚焦环全画在外壳 `div` 上，`<input>` 自身透明无边框**——这正是前后缀与 addon 能共用一条描边的原因。
 2. ✅ 颜色全走 token，组件内无裸 hex：常态描边 `border-border-base`；disabled 复用按钮三 token；错误 / 警告取功能色 main 档，聚焦环取对应 tint。
@@ -135,7 +135,7 @@
 5. ✅ iOS 防缩放：`.input-no-zoom` 在 `@media (max-width: 768px), (hover: none) and (pointer: coarse)` 内把 input / textarea 提到 16px / 24，用 `input.input-no-zoom` 元素+类选择器写，确保压得住档位自己的 `text-[length:…]`。另补 `.input-touch-hit`：**上下各一条透明热区**把可点区域撑到 ≥44px，而不是像按钮那样盖一整块——盖在框上的覆盖层会吃掉「点到第几个字」的那一下，光标只能落到末尾。清除 / 明暗切换按钮仍用按钮那套 `btn-touch-hit`。
 6. 🟨 存量迁移进行中（2026-08-25 扫描 + 首批）：
    - **扫描口径**（client/src，grep 文本计数）：旧 `~/components/ui/Input` 的 `<Input>` 57 处 / 52 文件、`<SearchInput>` 3 处；手拼原生 `<input>` 77 处；`<textarea>` 13 处；裸 hex 聚焦对 `#DDDDDD` + `#F1F5F9` 17 处 / 16 文件。
-   - **首批已落**（2026-08-25）：① 17 处裸 hex 聚焦对全部归并为 `border-border-deep` + `shadow-focus`（含规范点名的 `ExpandableSearchField`——其 32px 高配的 `rounded-lg` 同步归 md 档 6px、「蓝框」过时注释改写；文件重命名 rename 框 FileCard / FileListRow 三处属常亮环，静态类同步归并）；② 六个手拼搜索框换成 `@bisheng/ui` 的 `SearchInput`：ChannelSquare、KnowledgeSquare、ChannelMemberDialog、ChannelMemberManagementPanel、KnowledgeListPanel、SkillSelector——后两个在 Radix 菜单里，stopPropagation 从 `<input>` 上移到包一层的 wrapper（点放大镜、内边距、清除按钮也不能漏给菜单的 type-ahead / 关闭逻辑）；归并同时把 12px 字号收到档位 14px、28px 高收到 medium 32px；③ 旧 `components/ui/Input.tsx` 挂 `@deprecated` 指针（默认高 40 vs 32、className 落 input vs 落外壳两处语义差写明，不能盲替）。
+   - **首批已落**（2026-08-25）：① 17 处裸 hex 聚焦对全部归并为 `border-border-deep` + `shadow-focus`（含规范点名的 `ExpandableSearchField`——其 32px 高配的 `rounded-lg` 同步归 md 档 6px、「蓝框」过时注释改写；文件重命名 rename 框 FileCard / FileListRow 三处属常亮环，静态类同步归并）；② 六个手拼搜索框换成 `@doberman-agent/ui` 的 `SearchInput`：ChannelSquare、KnowledgeSquare、ChannelMemberDialog、ChannelMemberManagementPanel、KnowledgeListPanel、SkillSelector——后两个在 Radix 菜单里，stopPropagation 从 `<input>` 上移到包一层的 wrapper（点放大镜、内边距、清除按钮也不能漏给菜单的 type-ahead / 关闭逻辑）；归并同时把 12px 字号收到档位 14px、28px 高收到 medium 32px；③ 旧 `components/ui/Input.tsx` 挂 `@deprecated` 指针（默认高 40 vs 32、className 落 input vs 落外壳两处语义差写明，不能盲替）。
    - **第二批（2026-08-25，`<Input>` 收官）**：剩余 45 文件 / 50 处旧 `<Input>` 全部迁完。映射决策（用户拍板）：47 处 40px 默认高**全部归 medium**（32px，字号 14 不变）——分布盘点显示它们全是弹窗 / 侧栏表单字段与表格筛选框，正是 medium 档点名的场景，没有真正的登录大表单（LoginForm / ResetPassword 不用旧 Input）。做法：
      - 调用点逐个把 className 从「落在 `<input>`」翻成「落在外壳」：宽度类保留、老壳的 h-10 / border / placeholder 色 / focus 描边全删（壳已内建）；文字样式挪 `inputClassName`（QRPhase 的 mono、PromptName 的 2xl bold 等）。
      - 旧 `components/ui/Input.tsx` 翻成 **re-export**（Button 迁移同款，替换首批的 @deprecated 指针）：45 个文件的 import 一行未动，barrel 照常。
@@ -151,7 +151,7 @@
 
 - 聚焦阴影环 gray-2 为不透明色，放在非白底（如 fill-subtle 浅灰底卡片内）上会露一圈浅边；若后续出现灰底表单场景，再议是否改半透明等效值（现按白底表单为主定稿）。
 - ~~字数统计超限策略现按「截断录入」写；antd 另有「允许超出、计数标红、提交时拦」路线，若表单校验需要再议。~~ **2026-08-20 结案：走「允许超出」路线**，见 §4.4。
-- ~~`bisheng-icons` 没有 eye 图标，`PasswordInput` 的明暗切换图标暂由调用方传入。~~ **2026-08-26 结案**：图标包 0.2.33 补齐 `Outlined.Eye` / `Outlined.EyeClose`，已收成默认值；`revealIcon` / `hideIcon` prop 保留给要换图标的场景。
+- ~~`@doberman-agent/icons` 没有 eye 图标，`PasswordInput` 的明暗切换图标暂由调用方传入。~~ **2026-08-26 结案**：图标包 0.2.33 补齐 `Outlined.Eye` / `Outlined.EyeClose`，已收成默认值；`revealIcon` / `hideIcon` prop 保留给要换图标的场景。
 - Textarea 自动长高未内建：§2 要求它必须设上限，而目前没有调用场景来定这个上限，等真有场景再定 `autoSize` 的 API 形状。
 - Form 表单项（label、必填标记、错误文字字号与间距）未建档，错误提示的排版细节届时归口 Form 规范，本文只定「框下方 + 危险色 + 说清怎么改」。
 
@@ -166,8 +166,8 @@
 | 2026-08-20 | Textarea 补下限：§3 明确手动拉伸不得低于 32px（与 medium 控件同高），组件落 `min-h-[30px]`（+ 外壳 1px 上下描边 = 32px 可见高）；为让那行字在下限处完整居中，**上下内边距由 8px 改为 4px**（8px 需要 40px 的框，拉到底会把一行字上下各切一刀），常态三行高随之 84→76px；开字数统计的下限另算 56px | 待 committer 窗口提交 |
 | 2026-08-20 | **超限策略改为「允许超出」**（勾销待决策清单同名项）：§4.4 由「达到上限停止录入」改写为「字照打、计数照走、超出转危险色、拦截交给表单校验」，转红阈值由「达到」改为「超出」（50 / 50 是合法值）；组件不再把 `maxLength` 透传给 DOM，超限时另置 `aria-invalid` 给读屏 | 待 committer 窗口提交 |
 | 2026-08-25 | **client 落地首批**：存量扫描（57 处旧 `<Input>` / 77 处原生 `<input>` / 17 处裸 hex 聚焦对，口径见落地区 6）；17 处裸 hex 全部归并 token（ExpandableSearchField 的 rounded-lg→md、蓝框注释一并修正，勾销落地区 3 的遗留项）；六个手拼搜索框迁 `SearchInput`；旧 `ui/Input.tsx` 挂弃用指针 | 待 committer 窗口提交 |
-| 2026-08-25 | **client 第二批（`<Input>` 收官）**：剩余 45 文件 / 50 处旧 `<Input>` 全部迁至 `@bisheng/ui`（40px 默认高全部归 medium，用户拍板）；再收编五个手拼搜索框（KnowledgeSpaceSelect / AddToKnowledgeModal / ArchivedChatsTable / AddSourceDropdown / MultiSelect，累计 11 个）；PasswordForm 换 `PasswordInput` 并删父级明暗 flag（新增三语 key `com_ui_show_password` / `com_ui_hide_password`）；旧 `ui/Input.tsx` 翻成 re-export，import 零改动；例外与行为差见落地区 6 | 待 committer 窗口提交 |
-| 2026-08-26 | 勾销待决策「eye 图标缺位」：bisheng-icons 0.2.33 补齐 Eye / EyeClose，`PasswordInput` 的 `revealIcon` / `hideIcon` 收成默认值（prop 保留），PasswordForm 摘掉 lucide 的 Eye/EyeOff，demo 页同步 | 待 committer 窗口提交 |
+| 2026-08-25 | **client 第二批（`<Input>` 收官）**：剩余 45 文件 / 50 处旧 `<Input>` 全部迁至 `@doberman-agent/ui`（40px 默认高全部归 medium，用户拍板）；再收编五个手拼搜索框（KnowledgeSpaceSelect / AddToKnowledgeModal / ArchivedChatsTable / AddSourceDropdown / MultiSelect，累计 11 个）；PasswordForm 换 `PasswordInput` 并删父级明暗 flag（新增三语 key `com_ui_show_password` / `com_ui_hide_password`）；旧 `ui/Input.tsx` 翻成 re-export，import 零改动；例外与行为差见落地区 6 | 待 committer 窗口提交 |
+| 2026-08-26 | 勾销待决策「eye 图标缺位」：@doberman-agent/icons 0.2.33 补齐 Eye / EyeClose，`PasswordInput` 的 `revealIcon` / `hideIcon` 收成默认值（prop 保留），PasswordForm 摘掉 lucide 的 Eye/EyeOff，demo 页同步 | 待 committer 窗口提交 |
 | 2026-08-26 | 一键清除图标定稿：Outlined.CloseCircle → **Filled.CloseCircle，固定 14px 不随档，色降一档 text-4（悬停 text-3）**（设计师拍板，初版 12px 当天调 14px）；实现注意行容器的 `[&_svg]:size-*` 阶梯类会压过图标自身 class，尺寸用内联样式钉死 | 待 committer 窗口提交 |
 | 2026-08-25 | 新增 **`borderless` 形态**（Input / Textarea，Search / Password 透传）：嵌在自带描边容器里的字段整套关掉描边+悬停+聚焦环，1px 透明边保尺寸；此前用 `border-none` 类名压不干净聚焦环（`shadow-focus` 单独就画出一圈）。AddSourceDropdown、ArchivedChatsTable 两处改用该 prop；定档来源为创建频道添加信息源面板的设计反馈 | 待 committer 窗口提交 |
 | 2026-08-25 | **Textarea 首迁**：频道简介（创建频道/频道设置，设计点名）+ 知识空间设置两处文本域换规范 `Textarea`；旧 `ui/Textarea` 剩余 4 个消费者均为聊天 composer 形态，划出表单文本域范围不迁 | 待 committer 窗口提交 |

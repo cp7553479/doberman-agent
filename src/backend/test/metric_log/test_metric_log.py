@@ -12,8 +12,8 @@ from contextlib import contextmanager
 import pytest
 from loguru import logger
 
-from bisheng.common.services.metric_log import DbQueryHistogram, emit_metric, sql_op
-from bisheng.core.config.settings import MetricLogConf
+from doberman_agent.common.services.metric_log import DbQueryHistogram, emit_metric, sql_op
+from doberman_agent.core.config.settings import MetricLogConf
 
 
 @contextmanager
@@ -102,7 +102,7 @@ def test_emit_metric_marker_and_domain_first():
 
 def _patch_conf(monkeypatch, conf: MetricLogConf):
     # Patch the settings object that metric_log reads (real or premocked).
-    from bisheng.common.services import config_service
+    from doberman_agent.common.services import config_service
 
     monkeypatch.setattr(config_service.settings, "metric_log", conf, raising=False)
 

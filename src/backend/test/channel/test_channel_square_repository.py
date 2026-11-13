@@ -8,17 +8,17 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.channel.domain.models.channel import Channel, ChannelVisibilityEnum
-from bisheng.channel.domain.repositories.implementations.channel_repository_impl import (
+from doberman_agent.channel.domain.models.channel import Channel, ChannelVisibilityEnum
+from doberman_agent.channel.domain.repositories.implementations.channel_repository_impl import (
     ChannelRepositoryImpl,
 )
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.context.tenant import bypass_tenant_filter
 
 
 class _DmDialect(DefaultDialect):

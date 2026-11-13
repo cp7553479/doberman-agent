@@ -9,7 +9,7 @@ validation at call sites. Use shared controls without introducing compatibility
 wrappers. Status labels use Tag; numeric/unread indicators use Badge. Shared
 visual decisions stay owned by the design system.
 
-**Tech stack:** TypeScript, React, @bisheng/ui; each app keeps its existing stores,
+**Tech stack:** TypeScript, React, @doberman-agent/ui; each app keeps its existing stores,
 request layer and localization.
 
 **Spec:** spec.md; user-approved continuation covering the nine remaining families.

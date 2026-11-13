@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================
-# BiSheng 运维管理脚本
+# DobermanAgent 运维管理脚本
 # Usage: bash scripts/deploy.sh <command> [arguments]
 # =============================================================
 
@@ -15,8 +15,8 @@ if [[ -f "$ENV_FILE" ]]; then
 fi
 
 # 容器名常量（与 docker-compose.yml 对应）
-BACKEND_CONTAINER="bisheng-backend"
-WORKER_CONTAINER="bisheng-backend-worker"
+BACKEND_CONTAINER="doberman-agent-backend"
+WORKER_CONTAINER="doberman-agent-backend-worker"
 
 # 所有可管理的 compose service 名称
 ALL_SERVICES=(backend backend_worker frontend mysql redis elasticsearch minio milvus etcd gateway runtime-manager app-proxy)
@@ -63,7 +63,7 @@ header() { echo -e "${CYAN}${BOLD}$*${RESET}"; }
 # ─── 帮助 ────────────────────────────────────────────────────
 usage() {
   header "═══════════════════════════════════════════════"
-  header "   BiSheng 运维管理脚本"
+  header "   DobermanAgent 运维管理脚本"
   header "═══════════════════════════════════════════════"
   echo ""
   echo "  $0 install                   生成 .env 并部署（默认不启用 Gateway）"
@@ -175,7 +175,7 @@ cmd_version() {
   # Let Compose resolve dotenv quoting and interpolation without sourcing shell code.
   local image_config
   image_config="$(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" config --environment \
-    | awk '/^BISHENG_(BACKEND|FRONTEND)_IMAGE=/')"
+    | awk '/^DOBERMAN_AGENT_(BACKEND|FRONTEND)_IMAGE=/')"
   if [[ -z "$new_version" ]]; then
     info "当前 .env 配置的前后端镜像："
     printf '%s\n' "$image_config"
@@ -189,12 +189,12 @@ cmd_version() {
       repository="${repository%:*}"
     fi
     case "$key" in
-      BISHENG_BACKEND_IMAGE) backend_image="${repository}:${new_version}" ;;
-      BISHENG_FRONTEND_IMAGE) frontend_image="${repository}:${new_version}" ;;
+      DOBERMAN_AGENT_BACKEND_IMAGE) backend_image="${repository}:${new_version}" ;;
+      DOBERMAN_AGENT_FRONTEND_IMAGE) frontend_image="${repository}:${new_version}" ;;
     esac
   done <<< "$image_config"
   if [[ -z "$backend_image" || -z "$frontend_image" ]]; then
-    error "无法读取 BISHENG_BACKEND_IMAGE 或 BISHENG_FRONTEND_IMAGE"
+    error "无法读取 DOBERMAN_AGENT_BACKEND_IMAGE 或 DOBERMAN_AGENT_FRONTEND_IMAGE"
     return 2
   fi
 
@@ -203,8 +203,8 @@ cmd_version() {
   temporary_env="$(mktemp "${ENV_FILE}.XXXXXX")"
   if ! awk -v backend="$backend_image" -v frontend="$frontend_image" '
     BEGIN {
-      values["BISHENG_BACKEND_IMAGE"] = backend
-      values["BISHENG_FRONTEND_IMAGE"] = frontend
+      values["DOBERMAN_AGENT_BACKEND_IMAGE"] = backend
+      values["DOBERMAN_AGENT_FRONTEND_IMAGE"] = frontend
     }
     {
       key = $0
@@ -225,7 +225,7 @@ cmd_version() {
   mv "$temporary_env" "$ENV_FILE"
 
   info "✅ .env 中的镜像版本修改完成："
-  printf '%s\n' "BISHENG_BACKEND_IMAGE=${backend_image}" "BISHENG_FRONTEND_IMAGE=${frontend_image}"
+  printf '%s\n' "DOBERMAN_AGENT_BACKEND_IMAGE=${backend_image}" "DOBERMAN_AGENT_FRONTEND_IMAGE=${frontend_image}"
   warn "版本配置已保存。请先运行 '$0 upgrade-preview'，再携带 Store ID 和操作人 ID 执行 update。"
 }
 

@@ -1,5 +1,5 @@
 import { showApiError } from "~/api/request";
-import { Button, Tabs, Tag } from "@bisheng/ui";
+import { Button, Tabs, Tag } from "@doberman-agent/ui";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   decideApprovalTaskApi,

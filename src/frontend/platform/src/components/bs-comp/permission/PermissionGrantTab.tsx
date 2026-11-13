@@ -1,8 +1,8 @@
 // @ts-strict-ignore
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
-import { Alert, Button, Select } from '@bisheng/ui';
+import { Alert, Button, Select } from '@doberman-agent/ui';
 
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import {
   getGrantablePermissionModelsApi,
   mutateResourceGrantsApi,

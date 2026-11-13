@@ -35,8 +35,8 @@ from runtime_manager.static_inputs import STATIC_ROOT_CANDIDATES, select_static_
 NODE_LOCKFILES = ("package-lock.json", "npm-shrinkwrap.json")
 
 #: Where a static package keeps its entry page, most explicit first. ``dist/``
-#: and ``build/`` are soft-excluded by the CLI packager (``bisheng_cli.ignore``)
-#: and come back with a ``!dist/`` line in ``.bishengignore`` — the error below
+#: and ``build/`` are soft-excluded by the CLI packager (``doberman_agent_cli.ignore``)
+#: and come back with a ``!dist/`` line in ``.doberman-agentignore`` — the error below
 #: says so, because "I ran vite build and the platform says no index.html" is
 #: the failure this ordering produces.
 
@@ -102,7 +102,7 @@ def _static_facts(context_dir: Path) -> dict[str, Any]:
         "the static runtime needs an index.html at the package root or in one of "
         + ", ".join(f"{name}/" for name in STATIC_ROOT_CANDIDATES if name != ".")
         + " — dist/ and build/ are left out of the package by default; add a `!dist/` "
-        "line to .bishengignore to ship a built bundle"
+        "line to .doberman-agentignore to ship a built bundle"
     )
 
 

@@ -8,14 +8,14 @@ full-file preview/download URLs are gated by the viewer's view_file (AC-21/22).
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_resolve_service import CitationResolveService
+from doberman_agent.citation.domain.services.citation_resolve_service import CitationResolveService
 
 
 def _rag(citation_id: str, doc_id: int, access_scope: str = "per_user") -> CitationRegistryItemSchema:
@@ -79,15 +79,15 @@ async def test_resolve_citations_shared_metadata_no_url():
     with (
         patch.object(svc, "_permitted_file_ids", AsyncMock(return_value={3})),  # only doc 3 visible
         patch(
-            "bisheng.citation.domain.services.citation_resolve_service.KnowledgeFileDao.query_by_id_sync",
+            "doberman_agent.citation.domain.services.citation_resolve_service.KnowledgeFileDao.query_by_id_sync",
             side_effect=lambda fid: file_infos.get(fid),
         ),
         patch(
-            "bisheng.citation.domain.services.citation_resolve_service.KnowledgeService.get_file_share_url",
+            "doberman_agent.citation.domain.services.citation_resolve_service.KnowledgeService.get_file_share_url",
             return_value=("http://dl", "http://pv"),
         ) as share_url,
         patch(
-            "bisheng.citation.domain.services.citation_resolve_service.KnowledgeService.get_file_bbox",
+            "doberman_agent.citation.domain.services.citation_resolve_service.KnowledgeService.get_file_bbox",
             return_value=None,
         ),
     ):

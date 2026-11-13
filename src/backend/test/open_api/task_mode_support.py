@@ -11,10 +11,10 @@ from unittest.mock import AsyncMock
 
 from fastapi import HTTPException
 
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
-from bisheng.open_api.domain.services import task_mode_service
-from bisheng.open_api.domain.services.task_mode_service import OpenTaskModeService
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
+from doberman_agent.open_api.domain.services import task_mode_service
+from doberman_agent.open_api.domain.services.task_mode_service import OpenTaskModeService
 
 CONFIG = {
     "models": [{"id": "7", "name": "qwen"}],
@@ -106,28 +106,28 @@ def install_task_mode_seams(monkeypatch):
         state.submitted = (data, kwargs)
         return SimpleNamespace(), SimpleNamespace(id="svid-1")
 
-    monkeypatch.setattr("bisheng.common.dependencies.user_deps.UserPayload.assert_effective_web_menu_contains", _menu)
-    monkeypatch.setattr("bisheng.llm.domain.llm.base.BishengBase.get_model_server_info", _model_info)
+    monkeypatch.setattr("doberman_agent.common.dependencies.user_deps.UserPayload.assert_effective_web_menu_contains", _menu)
+    monkeypatch.setattr("doberman_agent.llm.domain.llm.base.DobermanAgentBase.get_model_server_info", _model_info)
     monkeypatch.setattr(OpenTaskModeService, "enabled_skill_rows", staticmethod(_enabled))
     monkeypatch.setattr(task_mode_service.KnowledgeDao, "aget_list_by_ids", _by_ids)
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions", _batch_actions
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions", _batch_actions
     )
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_visible", _batch_visible
+        "doberman_agent.permission.application.business_authorization.batch_check_business_visible", _batch_visible
     )
     monkeypatch.setattr(task_mode_service.TempUploadService, "assert_owned_references", AsyncMock())
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.workstation_service.WorkStationService.get_open_api_daily_config",
+        "doberman_agent.workstation.domain.services.workstation_service.WorkStationService.get_open_api_daily_config",
         AsyncMock(return_value=CONFIG),
     )
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.sensitive_word_policy_service."
+        "doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service."
         "SensitiveWordPolicyService.evaluate_workbench_user_text",
         lambda _tenant, text: state.blocked if state.blocked and state.blocked.word in text else None,
     )
-    monkeypatch.setattr("bisheng.workstation.domain.services.content_safety.workbench_tenant_id", lambda _u: 9)
-    monkeypatch.setattr("bisheng.workstation.domain.services.task_submit_service.submit_task_turn", _submit)
+    monkeypatch.setattr("doberman_agent.workstation.domain.services.content_safety.workbench_tenant_id", lambda _u: 9)
+    monkeypatch.setattr("doberman_agent.workstation.domain.services.task_submit_service.submit_task_turn", _submit)
     monkeypatch.setattr(OpenTaskModeService, "_queue_position", staticmethod(AsyncMock(return_value=3)))
     return state
 

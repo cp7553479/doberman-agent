@@ -1,4 +1,4 @@
-import { shouldRetryApiError } from '@bisheng/api-client';
+import { shouldRetryApiError } from '@doberman-agent/api-client';
 import debounce from 'lodash/debounce';
 import { Tools, AuthType } from '~/types/chat';
 import { TerminalSquareIcon, Loader } from 'lucide-react';

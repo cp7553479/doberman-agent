@@ -9,11 +9,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.dsh.domain.models.unified_policy import ModelVisibility, UnifiedPolicyAudit
-from bisheng.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
-from bisheng.dsh.domain.schemas.unified_policy import ModelVisibilityInput, PolicySubject
-from bisheng.llm.domain.models.llm_server import LLMDao, LLMModel, LLMServer
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.dsh.domain.models.unified_policy import ModelVisibility, UnifiedPolicyAudit
+from doberman_agent.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
+from doberman_agent.dsh.domain.schemas.unified_policy import ModelVisibilityInput, PolicySubject
+from doberman_agent.llm.domain.models.llm_server import LLMDao, LLMModel, LLMServer
 from test.dsh.test_subject_policy import subject_store as subject_store
 from test.dsh.test_unified_policy_repository import store as store
 
@@ -32,8 +32,8 @@ async def test_provider_create_append_preserve_scope_and_tenant(store):
     settings = SimpleNamespace(dsh=SimpleNamespace(enabled=True))
     try:
         with (
-            patch("bisheng.llm.domain.models.llm_server.get_async_db_session", sessions),
-            patch("bisheng.llm.domain.models.llm_server.settings", settings),
+            patch("doberman_agent.llm.domain.models.llm_server.get_async_db_session", sessions),
+            patch("doberman_agent.llm.domain.models.llm_server.settings", settings),
         ):
             provider = LLMServer(name="New provider", type="openai", user_id=20)
             model = LLMModel(model_name="dialogue", model_type="llm", user_id=20)

@@ -8,13 +8,13 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from langchain_core.messages import AIMessageChunk
 
-from bisheng.assistant.domain.services.published_assistant_service import (
+from doberman_agent.assistant.domain.services.published_assistant_service import (
     AssistantCompletion,
     PublishedAssistantService,
 )
-from bisheng.common.errcode.assistant import AssistantModelNotConfigError
-from bisheng.common.errcode.http_error import NotFoundError
-from bisheng.main import app
+from doberman_agent.common.errcode.assistant import AssistantModelNotConfigError
+from doberman_agent.common.errcode.http_error import NotFoundError
+from doberman_agent.main import app
 from test.open_api.test_dependencies import service_account_principal
 
 ENDPOINT = "/api/v2/assistant/chat/completions"
@@ -24,13 +24,13 @@ ASSISTANT_ID = "00000000-0000-0000-0000-000000000001"
 @pytest.fixture
 def authorized(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal(scopes=frozenset({"assistant:invoke"}))),
     )
     monkeypatch.setattr(
-        "bisheng.open_endpoints.api.endpoints.assistant.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
+        "doberman_agent.open_endpoints.api.endpoints.assistant.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
     )
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.assistant.telemetry_service.log_event", AsyncMock())
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.assistant.telemetry_service.log_event", AsyncMock())
 
 
 async def _post(body: dict):
@@ -47,7 +47,7 @@ def _sse_payloads(text: str) -> list[str]:
 @pytest.mark.parametrize("model", ["not-a-uuid", "", "1234"])
 async def test_invalid_assistant_id_is_a_400_parameter_error(authorized, monkeypatch, model):
     complete = AsyncMock()
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
 
     response = await _post({"model": model, "messages": [{"role": "user", "content": "hi"}]})
 
@@ -85,7 +85,7 @@ async def test_stream_error_is_an_openai_error_event_followed_by_done(authorized
     complete = AsyncMock(
         return_value=(AssistantCompletion(payload=None, stream=_failing_stream(error)), SimpleNamespace(name="a"))
     )
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
 
     response = await _post({"model": ASSISTANT_ID, "messages": [{"role": "user", "content": "hi"}], "stream": True})
 
@@ -114,7 +114,7 @@ async def test_domain_stream_does_not_write_errors_into_content(monkeypatch):
     monkeypatch.setattr(
         PublishedAssistantService, "get_info", AsyncMock(return_value=SimpleNamespace(temperature=0, name="a"))
     )
-    monkeypatch.setattr("bisheng.assistant.domain.services.published_assistant_service.AssistantAgent", FailingAgent)
+    monkeypatch.setattr("doberman_agent.assistant.domain.services.published_assistant_service.AssistantAgent", FailingAgent)
     completion, _info = await PublishedAssistantService.complete(
         assistant_id="a" * 32,
         model=ASSISTANT_ID,
@@ -154,7 +154,7 @@ async def test_non_stream_error_is_a_standard_error_response(authorized, monkeyp
     monkeypatch.setattr(
         PublishedAssistantService, "get_info", AsyncMock(return_value=SimpleNamespace(temperature=0, name="a"))
     )
-    monkeypatch.setattr("bisheng.assistant.domain.services.published_assistant_service.AssistantAgent", FailingAgent)
+    monkeypatch.setattr("doberman_agent.assistant.domain.services.published_assistant_service.AssistantAgent", FailingAgent)
 
     response = await _post({"model": ASSISTANT_ID, "messages": [{"role": "user", "content": "hi"}], "stream": False})
 

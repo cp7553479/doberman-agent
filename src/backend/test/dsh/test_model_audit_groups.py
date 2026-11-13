@@ -6,12 +6,12 @@ from hashlib import sha256
 import pytest
 from sqlalchemy import event
 
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.repositories.model_audit_maintenance import backfill_audit_presentation
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.schemas.model_audit_status import audit_status_facts, refresh_audit_status
-from bisheng.dsh.infrastructure.model_audit_codec import conversation_key
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.repositories.model_audit_maintenance import backfill_audit_presentation
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.schemas.model_audit_status import audit_status_facts, refresh_audit_status
+from doberman_agent.dsh.infrastructure.model_audit_codec import conversation_key
 from test.dsh.model_audit_fixtures import NOW, audit_database, audit_session
 from test.dsh.test_model_audit_flow import ADMIN, BASE, LOCAL_ADMIN, USER, fixture
 

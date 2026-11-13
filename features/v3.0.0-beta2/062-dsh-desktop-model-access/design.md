@@ -15,7 +15,7 @@
 
 ### 2026-09-21：免费席位与管理接口对齐
 
-本修订覆盖下文“免费席位也必须由签名授权提供”的旧约定。Gateway 内置免费 10 席；商业 License 用于提高席位上限，未配置、无效或过期时的实际授权以 Gateway 有效快照为准，BiSheng 不自行推算或补发席位。
+本修订覆盖下文“免费席位也必须由签名授权提供”的旧约定。Gateway 内置免费 10 席；商业 License 用于提高席位上限，未配置、无效或过期时的实际授权以 Gateway 有效快照为准，doberman-agent 不自行推算或补发席位。
 
 `GET /api/v1/dsh/admin/license` 接收并透传 Gateway 的 `source`（`builtin` / `signed`）与 `signed_license_status`（`active` / `not_granted` / `license_invalid` / `license_expired`）。`status` 仍表示当前有效能力状态；免费基线正常时为 `active`，`seat_limit=10`，`expires_at=null`。`signed_license_status` 单独描述商业签名授权，不覆盖当前有效状态。缺少新增字段的旧响应保留原展示，字段返回 `null`；不得根据席位数为 10 推断免费版。
 
@@ -23,7 +23,7 @@
 
 ## 1. 目标与非目标
 
-DSH Desktop 完成 BiSheng 用户登录后，用平台已配置的模型驱动客户端 Agent。Gateway 项目中的闭源 DSH 模块管理 License、固定席位和 DSH 会话；BiSheng 提供模型调用、治理和统一管理界面。
+DSH Desktop 完成 doberman-agent 用户登录后，用平台已配置的模型驱动客户端 Agent。Gateway 项目中的闭源 DSH 模块管理 License、固定席位和 DSH 会话；doberman-agent 提供模型调用、治理和统一管理界面。
 
 一期不引入独立授权服务部署、不迁移模型配置、不复用 V2 API Key、不自动释放席位。RPM/TPM、金额预算、部门共享池与统计导出不纳入。
 
@@ -33,33 +33,33 @@ DSH Desktop 完成 BiSheng 用户登录后，用平台已配置的模型驱动�
 
 | 约束 | 设计影响 |
 |---|---|
-| Gateway 对普通 BiSheng 可选 | DSH 默认关闭；开启后才初始化授权模块客户端。故障影响 DSH，不使普通业务启动失败 |
+| Gateway 对普通 doberman-agent 可选 | DSH 默认关闭；开启后才初始化授权模块客户端。故障影响 DSH，不使普通业务启动失败 |
 | 闭源代码放在 gateway 项目内 | 新增业务模块并随原进程部署；数据库归 Gateway，接口由 Controller 承载 |
 | DSH 是桌面公共客户端 | 安装包不包含服务账号 Secret；使用浏览器授权、一次性票据和 PKCE |
 | 席位长期绑定用户 | 席位与登录会话分表；刷新、登出、设备管理不改变席位计数 |
-| 模型配置继续由 BiSheng 持有 | DSH 模块只存 model_id 和使用策略，Gateway 不保存模型供应商密钥 |
+| 模型配置继续由 doberman-agent 持有 | DSH 模块只存 model_id 和使用策略，Gateway 不保存模型供应商密钥 |
 | 撤销后的新请求必须被拒绝 | 一期逐请求在线验席，不缓存正向席位判定；只缓存签名公钥 |
 | 模型提供给 Agent 使用 | 必须保留 tools、tool_choice、tool_calls、tool_call_id、流式工具参数 |
 | 多进程及流式响应 | 席位、会话、预算、操作进度均有共享存储；流结束前上下文不能被提前清理 |
 
 ### 2.1 商业控制的适用边界
 
-本设计能保证：未修改的官方链路中，Gateway 不超额分配席位、不向无资格用户签发有效 DSH 凭证，BiSheng 在每次新调用时验证资格。
+本设计能保证：未修改的官方链路中，Gateway 不超额分配席位、不向无资格用户签发有效 DSH 凭证，doberman-agent 在每次新调用时验证资格。
 
 它不能保证：拥有服务器控制权和模型配置的客户，修改开源后端跳过验席或重新实现模型接口后，仍被限制使用其自有模型。仅将签名私钥放进本地闭源 Gateway 也不构成绝对防破解。
 
-2026-09-09 用户明确接受上述边界；Spec US-C 已同步，OQ-01 已关闭。模型执行继续保留在 BiSheng。
+2026-09-09 用户明确接受上述边界；Spec US-C 已同步，OQ-01 已关闭。模型执行继续保留在 doberman-agent。
 
 ## 3. 方案对比与选定
 
 | 决策 | 备选 | 选定与原因 | 重新考虑条件 |
 |---|---|---|---|
-| D1 授权部署 | 独立新服务；Gateway 全局 Filter；Gateway 内独立模块 | Gateway 模块：已有 Java 服务、License 与调用 BiSheng 的 SDK；Controller 明确业务入口，Filter 不能承担席位事务 | 出现独立交付、独立扩缩容要求 |
+| D1 授权部署 | 独立新服务；Gateway 全局 Filter；Gateway 内独立模块 | Gateway 模块：已有 Java 服务、License 与调用 doberman-agent 的 SDK；Controller 明确业务入口，Filter 不能承担席位事务 | 出现独立交付、独立扩缩容要求 |
 | D2 凭证 | V2 PAT/SAK；普通 JWT；专用 DSH Token | 专用 Token：用户已确认与 V2 隔离，路由也可独立挂载；桌面无需内置服务账号 Secret | DSH 明确演变为公共开放 API 客户端 |
-| D3 模型执行 | 把模型配置迁入闭源；Gateway 另建模型 SDK；复用 BiSheng 模型业务 | 复用 LLMService/BishengLLM：现有供应商映射、Root 共享、online 开关和遥测均在该链路 | 未来产品要求改变已确认的模型执行信任边界 |
+| D3 模型执行 | 把模型配置迁入闭源；Gateway 另建模型 SDK；复用 doberman-agent 模型业务 | 复用 LLMService/DobermanAgentLLM：现有供应商映射、Root 共享、online 开关和遥测均在该链路 | 未来产品要求改变已确认的模型执行信任边界 |
 | D4 席位生命周期 | 会话 TTL 租约；固定用户席位 | 固定席位：AC-08 明确禁止离线或过期释放；保留 REVOKED 记录防止重新登录抢占 | 产品明确改为并发在线计费 |
 | D5 撤销一致性 | 短缓存 + 失效通知；逐请求验席 | 逐请求验席：满足 AC-17；去掉仅靠 Token 到期、缓存广播保证撤销的假设 | 测量显示验席成为瓶颈，且产品接受明确的撤销延迟 |
-| D6 管理体验 | 独立 Gateway 管理网站；BiSheng 聚合入口 | BiSheng 管理入口：用户、模型、用量在同一页面，Gateway 保留席位/会话真相 | Gateway 成为多产品通用授权平台 |
+| D6 管理体验 | 独立 Gateway 管理网站；doberman-agent 聚合入口 | doberman-agent 管理入口：用户、模型、用量在同一页面，Gateway 保留席位/会话真相 | Gateway 成为多产品通用授权平台 |
 | D7 月预算 | 每请求写 SQL；仅异步统计；Redis 原子账本 + Stream + 批量 SQL | Redis 按已用量准入、完成后实际入账，允许在途并发超额；Stream 投递，MySQL 持久化投影；不以异步 MySQL 数字决定放行。故障无法证明完整性时停止消费额度 | 若要求缓存故障后无损且无停机，另评审同步持久化日志或数据库逐请求方案 |
 | D8 License 扩展 | 叠加多个 License 后相加；单个有效 License 的能力集合 | 每个实例一个有效 License，按 capability 配置 DSH 席位；避免重复授权叠加，其他商业能力独立判断 | 明确要求插件许可证、独立采购和合并规则 |
 | D9 逐模型配置 | 共享用户月额度；逐模型独立额度 | 用户明确要求每个用户可配多个模型、各自独立额度；类型对象列表统一保存与CAS，避免模型间额度互借 | 以后明确要求共享池、单模型独立并发编辑或按模型反查用户时再评审存储拆分 |
@@ -71,23 +71,23 @@ DSH Desktop 完成 BiSheng 用户登录后，用平台已配置的模型驱动�
 
 ### 4.1 已核对代码
 
-本轮 BiSheng 开发基线为从 `v3.0.0-beta1-fix`（`02592397a3`）创建的 `feat/3.0.0-beta2-pre` worktree。Gateway 开发目录为 `/Users/zhangguoqing/works/bisheng-gateway`，开发分支为 `feat/dsh-access`，于 2026-09-09 从本地与远端一致的 `main`（`75a74ff28ea95cba0938ff4912317cade2353337`）创建并切换。不得以原 `cofco` 为开发基线。
+本轮 doberman-agent 开发基线为从 `v3.0.0-beta1-fix`（`02592397a3`）创建的 `feat/3.0.0-beta2-pre` worktree。Gateway 开发目录为 `/Users/zhangguoqing/works/doberman-agent-gateway`，开发分支为 `feat/dsh-access`，于 2026-09-09 从本地与远端一致的 `main`（`75a74ff28ea95cba0938ff4912317cade2353337`）创建并切换。不得以原 `cofco` 为开发基线。
 
-下表 BiSheng 部分主要沿用此前设计的源码核对记录，实施时须按当前基线逐项复核；Gateway LicenseLoader、LicenseStatusHolder、LicenseExpiredGlobalFilter、LicenseController 及既有 License 单元测试已在目标 main 基线只读复核，行为见 §4.5.4。源码核对不等于实际部署或新版兼容测试通过。
+下表 doberman-agent 部分主要沿用此前设计的源码核对记录，实施时须按当前基线逐项复核；Gateway LicenseLoader、LicenseStatusHolder、LicenseExpiredGlobalFilter、LicenseController 及既有 License 单元测试已在目标 main 基线只读复核，行为见 §4.5.4。源码核对不等于实际部署或新版兼容测试通过。
 
 | 已存在入口 | 当前行为 | F062 接入方式 |
 |---|---|---|
-| [api/router.py](../../../src/backend/bisheng/api/router.py) | V1 业务路由与 V2 `verify_open_api_access` 分开注册 | V1 新增 DSH 业务路由；不挂 V2 依赖 |
-| [user/domain/services/auth.py](../../../src/backend/bisheng/user/domain/services/auth.py) 的 LoginUser | 普通 JWT、用户身份与管理鉴权 | 浏览器授权和管理端复用，模型请求单独解析 DSH Token |
-| [utils/http_middleware.py](../../../src/backend/bisheng/utils/http_middleware.py) 的 CustomMiddleware | 以普通 JWT 设置租户；豁免路径会开启租户过滤 bypass | DSH 专用路径不能简单放入豁免白名单 |
-| [sso_sync/.../login_sync.py](../../../src/backend/bisheng/sso_sync/api/endpoints/login_sync.py) | HMAC 认证后同步组织/用户并发普通 JWT | 仅参考内部服务认证模式，不调用此端点冒充 DSH 登录 |
-| [llm/domain/models/llm_server.py](../../../src/backend/bisheng/llm/domain/models/llm_server.py) | LLMServer/LLMModel 配置；online 与探活 status 独立 | 引用原 model_id，不复制供应商配置 |
-| [LLMService](../../../src/backend/bisheng/llm/domain/services/llm.py) | get_model_for_call 支持当前租户与合法 Root 共享；get_bisheng_llm 构造模型 | 模型可调用性与实例构造都走该业务入口 |
-| [BishengLLM](../../../src/backend/bisheng/llm/domain/llm/llm.py) / [BishengBase](../../../src/backend/bisheng/llm/domain/llm/base.py) | 支持 bind_tools、异步生成与流；需要 app_id/app_type/app_name/user_id | 新适配器负责 OpenAI 协议，复用模型 SDK 与实际请求 |
-| [llm/domain/utils.py](../../../src/backend/bisheng/llm/domain/utils.py) | 供应商每日调用次数限制；模型遥测尽力写入 | 不将现有 limit 当月 token 配额；另建 DSH 结算账本 |
-| [ApplicationTypeEnum](../../../src/backend/bisheng/common/constants/enums/telemetry.py) | 尚无 DSH 类型 | 增加 DSH_DESKTOP 值及消费端展示映射 |
+| [api/router.py](../../../src/backend/doberman_agent/api/router.py) | V1 业务路由与 V2 `verify_open_api_access` 分开注册 | V1 新增 DSH 业务路由；不挂 V2 依赖 |
+| [user/domain/services/auth.py](../../../src/backend/doberman_agent/user/domain/services/auth.py) 的 LoginUser | 普通 JWT、用户身份与管理鉴权 | 浏览器授权和管理端复用，模型请求单独解析 DSH Token |
+| [utils/http_middleware.py](../../../src/backend/doberman_agent/utils/http_middleware.py) 的 CustomMiddleware | 以普通 JWT 设置租户；豁免路径会开启租户过滤 bypass | DSH 专用路径不能简单放入豁免白名单 |
+| [sso_sync/.../login_sync.py](../../../src/backend/doberman_agent/sso_sync/api/endpoints/login_sync.py) | HMAC 认证后同步组织/用户并发普通 JWT | 仅参考内部服务认证模式，不调用此端点冒充 DSH 登录 |
+| [llm/domain/models/llm_server.py](../../../src/backend/doberman_agent/llm/domain/models/llm_server.py) | LLMServer/LLMModel 配置；online 与探活 status 独立 | 引用原 model_id，不复制供应商配置 |
+| [LLMService](../../../src/backend/doberman_agent/llm/domain/services/llm.py) | get_model_for_call 支持当前租户与合法 Root 共享；get_doberman-agent_llm 构造模型 | 模型可调用性与实例构造都走该业务入口 |
+| [DobermanAgentLLM](../../../src/backend/doberman_agent/llm/domain/llm/llm.py) / [DobermanAgentBase](../../../src/backend/doberman_agent/llm/domain/llm/base.py) | 支持 bind_tools、异步生成与流；需要 app_id/app_type/app_name/user_id | 新适配器负责 OpenAI 协议，复用模型 SDK 与实际请求 |
+| [llm/domain/utils.py](../../../src/backend/doberman_agent/llm/domain/utils.py) | 供应商每日调用次数限制；模型遥测尽力写入 | 不将现有 limit 当月 token 配额；另建 DSH 结算账本 |
+| [ApplicationTypeEnum](../../../src/backend/doberman_agent/common/constants/enums/telemetry.py) | 尚无 DSH 类型 | 增加 DSH_DESKTOP 值及消费端展示映射 |
 | Gateway LicenseLoader / LicenseExpiredGlobalFilter | main 基线已有过期降级；WebFilter 放行转发给后端的 V1/V2，自有商业端点受控 | 保留旧 License 判定与响应；DSH capability 独立判定，见 §4.5.4 |
-| Gateway sdk/BsClient.java | 已有服务端调用 BiSheng 的接口 | 增加 DSH 专用 SDK 接口，不在客户端分发 SDK 密钥 |
+| Gateway sdk/BsClient.java | 已有服务端调用 doberman-agent 的接口 | 增加 DSH 专用 SDK 接口，不在客户端分发 SDK 密钥 |
 
 Gateway 文件均相对其项目 `src/main/java/com/dataelem/gateway/`。实现位于 `feat/dsh-access`；上表“当前行为”是实施前基线，以下记录已落地接线。
 
@@ -105,23 +105,23 @@ Gateway 文件均相对其项目 `src/main/java/com/dataelem/gateway/`。实现�
 flowchart LR
     D[DSH Desktop] -->|唯一公开 BASE| N[Nginx]
     W[系统浏览器] --> N
-    N -->|页面| UI[BiSheng 前端]
+    N -->|页面| UI[doberman-agent 前端]
     N -->|全部 API 流量| R[Gateway 路由层]
     R -->|api/dsh/* 自有接口| A[Gateway DSH 席位与会话]
-    R -->|api/v1/* 转发| B[BiSheng 后端]
+    R -->|api/v1/* 转发| B[doberman-agent 后端]
     A --> GD[(Gateway 数据库)]
     A -->|内部身份兑换| B
     B -->|每次新请求内部验席| A
     B --> P[DSH 模型策略与实时用量]
-    P --> V[LLMService / BishengLLM]
+    P --> V[LLMService / DobermanAgentLLM]
     V --> U[已配置模型供应商]
 ```
 
-客户端只访问同一 Nginx origin。Nginx 将全部 `/api/*` 交给 Gateway，Gateway 将已配置的 `/api/v1/*`、`/api/v2/*` 转发到 BiSheng，其余 `/api/*` 由自有 Controller 处理；版本前缀优先匹配。DSH 换证逻辑终点为 Gateway，模型请求逻辑终点为 BiSheng，传输均经过 Nginx/Gateway。模型实现不因代理链新增而重复。
+客户端只访问同一 Nginx origin。Nginx 将全部 `/api/*` 交给 Gateway，Gateway 将已配置的 `/api/v1/*`、`/api/v2/*` 转发到 doberman-agent，其余 `/api/*` 由自有 Controller 处理；版本前缀优先匹配。DSH 换证逻辑终点为 Gateway，模型请求逻辑终点为 doberman-agent，传输均经过 Nginx/Gateway。模型实现不因代理链新增而重复。
 
-配置边界：BiSheng 部署 `dsh.enabled`（默认 false，决定是否显示 DSH 管理入口）；管理页另有默认 false 的实例业务开关，两者都开启才允许 DSH 新登录与模型调用。业务开关和下载地址保存在已有全局 Config 表的 dsh_management 项；部署信任字段包括固定的 `gateway_internal_url`、同 Nginx origin 的 `platform_public_url`、复用既有用户同步共享 Secret；Token issuer 和各用途 key_id 由代码固定。内部 URL 指向真实服务地址，避免经公共反向代理形成回环；客户端不能提交任意 issuer 或验席 URL。
+配置边界：doberman-agent 部署 `dsh.enabled`（默认 false，决定是否显示 DSH 管理入口）；管理页另有默认 false 的实例业务开关，两者都开启才允许 DSH 新登录与模型调用。业务开关和下载地址保存在已有全局 Config 表的 dsh_management 项；部署信任字段包括固定的 `gateway_internal_url`、同 Nginx origin 的 `platform_public_url`、复用既有用户同步共享 Secret；Token issuer 和各用途 key_id 由代码固定。内部 URL 指向真实服务地址，避免经公共反向代理形成回环；客户端不能提交任意 issuer 或验席 URL。
 
-Gateway 新增 `dsh.enabled`、BiSheng 内部地址、同一个 `platform_public_url`、实例标识、DSH 签名密钥引用及客户端回调规则。DSH 用户配置只有 Nginx BASE；公开 client_id 通过 config 返回，所有 API 路径固定拼接到 BASE，不发现第二公开服务地址。config 不访问用户或模型数据。身份凭证保存在操作系统安全凭证存储中，不随 Agent 配置导出或写入普通配置文件。
+Gateway 新增 `dsh.enabled`、doberman-agent 内部地址、同一个 `platform_public_url`、实例标识、DSH 签名密钥引用及客户端回调规则。DSH 用户配置只有 Nginx BASE；公开 client_id 通过 config 返回，所有 API 路径固定拼接到 BASE，不发现第二公开服务地址。config 不访问用户或模型数据。身份凭证保存在操作系统安全凭证存储中，不随 Agent 配置导出或写入普通配置文件。
 
 ### 4.3 登录与固定占席
 
@@ -133,11 +133,11 @@ Gateway 新增 `dsh.enabled`、BiSheng 内部地址、同一个 `platform_public
 sequenceDiagram
     participant D as DSH Desktop
     participant W as 浏览器
-    participant B as BiSheng
+    participant B as doberman-agent
     participant G as Gateway DSH 模块
     D->>D: 生成 state 与 PKCE verifier
     D->>G: 创建授权事务，提交 challenge 和回调地址
-    G-->>D: auth_id 与 BiSheng 授权页地址
+    G-->>D: auth_id 与 doberman-agent 授权页地址
     D->>W: 打开外部浏览器
     W->>B: 既有登录并确认 DSH 授权
     B->>G: 获取并校验 auth_id 对应登录意图
@@ -171,15 +171,15 @@ sequenceDiagram
 3. 先验证 DSH 签名，再设置 tenant ContextVar，通过用户业务入口读取当前有效自然人。忽略客户端提供的管理租户覆盖，按现有隔离规则建立可见范围；不将整个 DSH 前缀加入 TENANT_CHECK_EXEMPT_PATHS。
 4. Gateway 每个新请求在线检查当前 entitlement、seat.state、grant_version 和 session.state。无正向缓存；超时/未知即拒绝本次请求。HS256 使用共享 Secret 派生的 Token 密钥，拒绝其他算法和 kid，不远程取钥。
 5. 可调用集合为“现有模型业务允许的集合”与“DSH 用户模型授权”的交集；合法 Root 共享通过 LLMService 判定。online=false 禁止调用；探活 status 不是永久权限，不因历史探活异常自行跳过 SDK 错误处理。
-6. 适配器把消息转换为 LangChain 消息，调用 `LLMService.get_bisheng_llm`，携带服务器确定的 model_id/user_id，以及 `app_type=DSH_DESKTOP`、`app_id=dsh`。DSH 仅收到逻辑模型标识，不收到模型配置、api_key 或 upstream URL。
+6. 适配器把消息转换为 LangChain 消息，调用 `LLMService.get_doberman-agent_llm`，携带服务器确定的 model_id/user_id，以及 `app_type=DSH_DESKTOP`、`app_id=dsh`。DSH 仅收到逻辑模型标识，不收到模型配置、api_key 或 upstream URL。
 7. 适配器使用 ainvoke/astream 和工具绑定；不得直接请求 llm.llm 绕开外层治理。SSE 逐块转发、自然背压，不缓存完整回答；取消时关闭上游迭代器，在 finally 中提交 Redis 结算事件或未知状态；提交失败按 §4.7.3 冻结受影响的准入并告警，不把未知用量记为零。
 8. 流式响应的租户/主体上下文覆盖生成器整个生命周期；应在流生成任务内显式建立并 finally reset，不能依赖一个在返回 StreamingResponse 时已经结束的上下文。
 
-现有 `BishengBase.get_class_instance` 会再次从缓存取模型/供应商。实施时在 LLM 业务层增加“强读并构造”的窄入口或明确的禁用缓存参数，复用原供应商初始化逻辑；DSH 不自行加载 LLMDao 或向通用构造器注入未经业务验证的配置。
+现有 `DobermanAgentBase.get_class_instance` 会再次从缓存取模型/供应商。实施时在 LLM 业务层增加“强读并构造”的窄入口或明确的禁用缓存参数，复用原供应商初始化逻辑；DSH 不自行加载 LLMDao 或向通用构造器注入未经业务验证的配置。
 
 | DSH 协议字段 | 约定 |
 |---|---|
-| model | `bisheng:<model_id>`，列表返回值原样回传；不按供应商模型名猜测映射 |
+| model | `doberman-agent:<model_id>`，列表返回值原样回传；不按供应商模型名猜测映射 |
 | messages | system/user/assistant/tool；保留 tool_call_id、assistant tool_calls 及工具结果 |
 | tools / tool_choice | 透传语义到既有模型适配器；不支持工具调用的模型不开放为 DSH Agent 模型 |
 | stream / stream_options | 支持 JSON 和 SSE；include_usage=true 时输出末尾用量块 |
@@ -201,14 +201,14 @@ sequenceDiagram
 | Gateway DB | DshSession | session_id、seat_id、grant_version、auth_id、state、expires_at、device_label；session_id 即 refresh family，设备信息只是描述 |
 | Gateway DB | DshRefreshToken | session_id、token_hash、generation、state；保存 ACTIVE / USED / REVOKED 历史，支持轮换重放检测 |
 | Gateway DB | GatewayOperation | operation_id 为当前环境数据库内全局主键并校验 actor/目标权限；记录动作、payload 摘要与结果，拒绝同 key 不同 payload |
-| BiSheng DB | DshUserPolicy | tenant_id + user_id 唯一策略；保存逐模型独立月额度对象列表及版本，不复制 LLMModel |
-| BiSheng DB | DshMonthlyUsage | 用户模型月用量的异步持久化投影；唯一键不变，准入读取 Redis 实时用户总量和模型分量，不读滞后 SQL |
-| BiSheng DB | DshModelCall | Stream 批量投影的逐请求完整状态；request_id + event_version 去重，与月汇总差额在同一 SQL 事务提交 |
-| BiSheng DB | DshAdminOperation | operation_id、操作者、目标、动作、payload 摘要、预期版本、状态与重试进度；同时作为持久化投递意图 |
+| doberman-agent DB | DshUserPolicy | tenant_id + user_id 唯一策略；保存逐模型独立月额度对象列表及版本，不复制 LLMModel |
+| doberman-agent DB | DshMonthlyUsage | 用户模型月用量的异步持久化投影；唯一键不变，准入读取 Redis 实时用户总量和模型分量，不读滞后 SQL |
+| doberman-agent DB | DshModelCall | Stream 批量投影的逐请求完整状态；request_id + event_version 去重，与月汇总差额在同一 SQL 事务提交 |
+| doberman-agent DB | DshAdminOperation | operation_id、操作者、目标、动作、payload 摘要、预期版本、状态与重试进度；同时作为持久化投递意图 |
 | Redis | 登录临时态、防重放 nonce、最近活跃、实时额度与用量事件 Stream | 配额区采用独立 noeviction 存储与持久化；不能套用普通缓存 TTL，失效不清零额度或释放席位 |
 | 密钥系统/部署 Secret | DSH 签名私钥、双向服务认证凭据 | Gateway 多副本共享同一有效密钥集并支持 kid 轮换；厂商 License 签名私钥永不进入客户部署 |
 
-DSH 签名载荷的能力部分为 `capabilities.dsh={enabled, seat_limit}`；免费 10 席也由可信签名授权表达，BiSheng 无硬编码免费分支。签名扩展放在兼容旧格式的可选字段中，见 §4.5.4；不能把未签名的同名字段直接解释为席位授权。新 License 替换原实例当前版本，不把两个 license_limit 相加。降配导致已分配数超限时不自动释放人员；进入 DSH 超配阻断状态，允许管理员撤销至满足上限后恢复。
+DSH 签名载荷的能力部分为 `capabilities.dsh={enabled, seat_limit}`；免费 10 席也由可信签名授权表达，doberman-agent 无硬编码免费分支。签名扩展放在兼容旧格式的可选字段中，见 §4.5.4；不能把未签名的同名字段直接解释为席位授权。新 License 替换原实例当前版本，不把两个 license_limit 相加。降配导致已分配数超限时不自动释放人员；进入 DSH 超配阻断状态，允许管理员撤销至满足上限后恢复。
 
 旧 Gateway LicenseLoader 使用内置密钥进行解密，不能直接作为新增 DSH 能力签名的证明；F062 增加厂商签名校验器，部署端仅持厂商公钥。旧 License 原样继续支撑既有 Gateway 能力；缺少 DSH 签名扩展只表示没有 DSH entitlement，不要求旧客户为继续使用原功能换证，也不默认赠送或赋予不限席位。开通 DSH 才由发行方补发兼容扩展授权。
 
@@ -229,13 +229,13 @@ stateDiagram-v2
 
 实施补充：`dsh_model_call.reconciliation_operation_id` 可空 VARCHAR(36)，在登记补记意图的同一事务锁定原请求并绑定唯一操作，保留审计引用；Redis 补记带 operation_generation 阻止旧worker迟到覆盖。
 
-以下 8 张新增表分别由 Gateway（4 张）和 BiSheng（4 张）迁移维护，不复用 api_credential 表。字段为本次实现契约；4 张 Python 模型已落地并通过 SQLite 建表及 MySQL DDL 编译检查，Gateway 4 张表及真实双库建表尚未验证。
+以下 8 张新增表分别由 Gateway（4 张）和 doberman-agent（4 张）迁移维护，不复用 api_credential 表。字段为本次实现契约；4 张 Python 模型已落地并通过 SQLite 建表及 MySQL DDL 编译检查，Gateway 4 张表及真实双库建表尚未验证。
 
-所有表包含非空 created_at / updated_at（逻辑 UTC datetime）；主键以各表 PK 声明为准，字段分组中的其他列不是联合主键。BIGINT 用户/模型引用沿用现有实体 ID；Gateway UUID 使用 VARCHAR(36)。JsonType 表示跨库抽象类型，BiSheng 采用既有兼容封装，Gateway 使用目标 MySQL/DM8 方言映射；不依赖数据库专用 JSON 查询。
+所有表包含非空 created_at / updated_at（逻辑 UTC datetime）；主键以各表 PK 声明为准，字段分组中的其他列不是联合主键。BIGINT 用户/模型引用沿用现有实体 ID；Gateway UUID 使用 VARCHAR(36)。JsonType 表示跨库抽象类型，doberman-agent 采用既有兼容封装，Gateway 使用目标 MySQL/DM8 方言映射；不依赖数据库专用 JSON 查询。
 
-BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域，不能依赖只覆盖 SELECT 的自动过滤。Gateway 从受信实例与租户上下文建立过滤条件；两库之间只有逻辑引用，无跨库外键。登录凭证和供应商密钥不落入业务响应或审计 JSON。
+doberman-agent 所有用户表必须携带 tenant_id，读写均显式校验作用域，不能依赖只覆盖 SELECT 的自动过滤。Gateway 从受信实例与租户上下文建立过滤条件；两库之间只有逻辑引用，无跨库外键。登录凭证和供应商密钥不落入业务响应或审计 JSON。
 
-关系：稳定安装实例 1:N Seat，Seat 1:N Session，Session 1:N RefreshToken；User 1:1 UserPolicy（内含模型 ID 集合），User × Model × Month 1:1 MonthlyUsage，MonthlyUsage 1:N ModelCall（同 tenant_id、user_id、model_id、usage_month）。License 是既有模块的授权输入，不是新增实体表。BiSheng AdminOperation 与 Gateway Operation 使用同一 operation_id 对账，不构造跨服务事务。
+关系：稳定安装实例 1:N Seat，Seat 1:N Session，Session 1:N RefreshToken；User 1:1 UserPolicy（内含模型 ID 集合），User × Model × Month 1:1 MonthlyUsage，MonthlyUsage 1:N ModelCall（同 tenant_id、user_id、model_id、usage_month）。License 是既有模块的授权输入，不是新增实体表。doberman-agent AdminOperation 与 Gateway Operation 使用同一 operation_id 对账，不构造跨服务事务。
 
 **Gateway · `gt_dsh_seat`：固定用户席位**
 
@@ -250,7 +250,7 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 | grant_version | BIGINT | 非空 / 初始 1 | 撤销、重新分配均递增，旧 Token 不可恢复 |
 | assigned_at / revoked_at | UTC datetime | revoked_at 可空 | 最近一次分配/撤销时间 |
 | username_search / display_name_search | MySQL VARCHAR(510) / DM8 VARCHAR(2040) | 可空 / 索引 | 完整容纳源User的255 Unicode字符及最多2倍小写展开；DM8按UTF-8字节保守预留，仅供检索展示，不参与授权，不截断名字 |
-| profile_version / profile_synced_at | BIGINT / BIGINT / UTC datetime | 可空 | 资料投影版本与同步时间；权威身份仍在 BiSheng |
+| profile_version / profile_synced_at | BIGINT / BIGINT / UTC datetime | 可空 | 资料投影版本与同步时间；权威身份仍在 doberman-agent |
 | last_login_at | UTC datetime | 可空 | 成功创建会话时更新；不随每次模型调用更新 |
 | last_operation_id | VARCHAR(36) | 可空 | 最近管理员操作；首次自动占席可空 |
 
@@ -288,14 +288,14 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 
 | 字段 | 逻辑类型 | 约束 / 默认 | 含义 |
 |---|---|---|---|
-| operation_id | VARCHAR(36) | PK / 非空 | 从 BiSheng 传入的稳定操作 ID |
+| operation_id | VARCHAR(36) | PK / 非空 | 从 doberman-agent 传入的稳定操作 ID |
 | tenant_id / user_id / actor_user_id | BIGINT | 非空 | 受信请求中的目标与管理员身份 |
 | action / expected_grant_version | VARCHAR(16) / BIGINT | 非空 | REVOKE / REASSIGN；阻止延迟旧命令覆盖新状态 |
 | payload_hash | CHAR(64) | 非空 | 同 operation_id 不同负载返回 409 |
 | status / result_grant_version | VARCHAR(16) / BIGINT | 结果版本可空 | SUCCEEDED / FAILED；与席位事务同提交，执行中不伪造成功 |
 | result_code / result_payload | VARCHAR(64) / JsonType | 可空 | 幂等重试返回原结果；不含 Token 或 Secret |
 
-**BiSheng · `dsh_user_policy`：用户逐模型独立月额度策略**
+**doberman-agent · `dsh_user_policy`：用户逐模型独立月额度策略**
 
 - PK id；UK (tenant_id, user_id, model_id)；索引 (tenant_id, model_id, enabled, user_id)
 - 每个用户模型独立记录、版本与同步所有者；写入只携当前模型 expected_version
@@ -309,7 +309,7 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 | updated_by | BIGINT | 非空 | 最近配置的真实管理员；完整变更历史见 UPDATE_POLICY 操作，未配置用户使用虚拟默认策略 |
 | pending_operation_id | VARCHAR(36) | 可空 | 当前策略编排所有者；同一用户的同一模型一次只接受一个未完成操作；不同模型可并行，完成后清空 |
 
-**BiSheng · `dsh_monthly_usage`：用户模型月用量汇总**
+**doberman-agent · `dsh_monthly_usage`：用户模型月用量汇总**
 
 - PK id；UK (tenant_id, user_id, usage_month, model_id)
 - 唯一索引前缀支持用户月份汇总；由消费者批量更新，不参与每请求 SQL 锁定；不按席位重新建账
@@ -317,12 +317,12 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 | 字段 | 逻辑类型 | 约束 / 默认 | 含义 |
 |---|---|---|---|
 | id / tenant_id / user_id | BIGINT | PK / 非空 | 用量归属稳定用户，席位释放不重置 |
-| model_id | BIGINT | 非空 / 联合唯一键成员 | 毕昇模型主键，不是上游模型名；与请求明细一致，不使用 NULL/0 表示用户总量 |
+| model_id | BIGINT | 非空 / 联合唯一键成员 | doberman-agent模型主键，不是上游模型名；与请求明细一致，不使用 NULL/0 表示用户总量 |
 | usage_month / billing_timezone | CHAR(7) / VARCHAR(64) | 非空 | 如 2026-09；保存月份归属时区 |
 | used_tokens | BIGINT | 非空 / 默认 0 | 已入账实际用量，非负；允许超过月限额，不截断超额部分 |
 | version / projected_at | BIGINT / UTC datetime | 默认 0 / 时间可空 | 持久化投影版本与时间；同事务应用明细差额，不代表实时额度 |
 
-**BiSheng · `dsh_model_call`：请求用量与结算明细**
+**doberman-agent · `dsh_model_call`：请求用量与结算明细**
 
 - PK request_id；服务端生成 UUID，结算按 request_id 幂等
 - INDEX (tenant_id, user_id, started_at)；INDEX (tenant_id, user_id, model_id, started_at)；INDEX (status, updated_at)；INDEX trace_id
@@ -331,7 +331,7 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 |---|---|---|---|
 | request_id / tenant_id / user_id | VARCHAR(36) / BIGINT / BIGINT | PK / 非空 | 调用与配额结算标识；用户 ID 来自 DshPrincipal |
 | seat_id / session_id / grant_version | VARCHAR(36) / VARCHAR(36) / BIGINT | 非空 | Gateway 引用与调用当时授权代次 |
-| model_id | BIGINT | 非空 | 既有字段单列说明：服务端鉴权后解析的毕昇模型主键，与月汇总模型 ID 一致 |
+| model_id | BIGINT | 非空 | 既有字段单列说明：服务端鉴权后解析的doberman-agent模型主键，与月汇总模型 ID 一致 |
 | usage_month / policy_version | CHAR(7) / BIGINT | 非空 | 准入月份与使用的策略版本；结算不重新按当前月份归属 |
 | event_version / quota_epoch | BIGINT / BIGINT | 非空 | 请求状态事件递增版本与准入代次；去重、乱序和重建依据 |
 | input_tokens / output_tokens / total_tokens | BIGINT | 可空 | NULL 表示尚未知；0 只表示可靠计量为零 |
@@ -340,9 +340,9 @@ BiSheng 所有用户表必须携带 tenant_id，读写均显式校验作用域�
 | provider_request_id | VARCHAR(256) | 可空 | 适配器取得的供应商请求标识；无法取得时仍保留本地 request_id，补记必须另有逐请求关联证据 |
 | trace_id / error_code / latency_ms | VARCHAR(64) / VARCHAR(64) / BIGINT | 错误/耗时可空 | 仅记录脱敏摘要，不默认保存完整消息 |
 
-**BiSheng · `dsh_admin_operation`：管理编排、不可变审计与可靠重试**
+**doberman-agent · `dsh_admin_operation`：管理编排、不可变审计与可靠重试**
 
-- PK operation_id；仅 REVOKE / REASSIGN 转发 Gateway 并复用相同 ID；UPDATE_POLICY / RECONCILE_USAGE 在 BiSheng 执行，SYNC_PROFILE 投递资料更新
+- PK operation_id；仅 REVOKE / REASSIGN 转发 Gateway 并复用相同 ID；UPDATE_POLICY / RECONCILE_USAGE 在 doberman-agent 执行，SYNC_PROFILE 投递资料更新
 - INDEX (status, next_retry_at)；INDEX (tenant_id, user_id, created_at)
 
 | 字段 | 逻辑类型 | 约束 / 默认 | 含义 |
@@ -370,9 +370,9 @@ Python实体通用创建/修改时间物理列统一为 `create_time/update_time
 | 策略更新 | SQL 登记操作/所有者 → Redis 冻结 → SQL user_policy + 审计快照 → Redis 安装版本 → 解冻 | §4.5.5 定义重试和审计；低频编排，不跨远程调用持 SQL 锁 |
 | 准入检查 / 实际用量入账 | Redis 总量 + 模型分量 + 请求 + Stream | 准入只检查已用量、记事件，完成后原子累计；不逐请求写 SQL |
 | SQL 批量投影 | monthly_usage + model_call | 同事务应用新旧明细差额，版本去重，提交后 ACK |
-| 管理编排 / 补记 | BiSheng admin_operation；席位动作再到 Gateway operation | 先持久化意图；策略、补记本地分派，超时重试同一 ID；不跨 HTTP 持有 DB 锁 |
+| 管理编排 / 补记 | doberman-agent admin_operation；席位动作再到 Gateway operation | 先持久化意图；策略、补记本地分派，超时重试同一 ID；不跨 HTTP 持有 DB 锁 |
 
-授权事务在 Gateway Redis 保留 5 分钟；identity_ticket 摘要在 BiSheng Redis 保留 60 秒并原子消费；内部 HMAC nonce 保留 120 秒。USED 刷新摘要属于持久安全记录，保留至会话绝对到期和审计保留期结束，不能在轮换时删除旧记录。清理 Session/RefreshToken 不改变 Seat 状态或席位计数。
+授权事务在 Gateway Redis 保留 5 分钟；identity_ticket 摘要在 doberman-agent Redis 保留 60 秒并原子消费；内部 HMAC nonce 保留 120 秒。USED 刷新摘要属于持久安全记录，保留至会话绝对到期和审计保留期结束，不能在轮换时删除旧记录。清理 Session/RefreshToken 不改变 Seat 状态或席位计数。
 
 #### 4.5.3 简化后的授权与用量口径
 
@@ -404,7 +404,7 @@ License 只保存于既有受管授权源；DSH 不建立第二份配置真相�
 
 | 代码锚点（Gateway 项目内） | 兼容基线 |
 |---|---|
-| `config/LicenseLoader.java:73` | 从既有 `BishengConfig.getLicense()` 读取密文，用原解密逻辑得到 JSON；读取 `version`、`expireDay` |
+| `config/LicenseLoader.java:73` | 从既有 `DobermanAgentConfig.getLicense()` 读取密文，用原解密逻辑得到 JSON；读取 `version`、`expireDay` |
 | `config/LicenseLoader.java:83` | `version=trial` 按服务器 LocalDate 与 `yyyy-MM-dd` 计算，剩余天数 `<=0`（含到期日当天）即过期 |
 | `config/LicenseLoader.java:98` | 当前非 trial 分支调用 updatePro，旧 pro 永久，不使用 expireDay 使其过期；不在 F062 顺手收紧其他历史输入的旧分支行为 |
 | `config/LicenseLoader.java:103` | 原 License 缺失 / 无法解密 / 旧字段解析失败标记原功能过期降级，不退出进程 |
@@ -470,10 +470,10 @@ License 只保存于既有受管授权源；DSH 不建立第二份配置真相�
 
 ### 4.6 会话、刷新与撤销
 
-- Access Token 建议 5 分钟，aud=`bisheng-dsh-model`；refresh 使用高熵随机值，仅持久化哈希，绝对有效期建议 30 天。时间值是本设计默认值，不写入 License 席位计数规则。
+- Access Token 建议 5 分钟，aud=`doberman-agent-dsh-model`；refresh 使用高熵随机值，仅持久化哈希，绝对有效期建议 30 天。时间值是本设计默认值，不写入 License 席位计数规则。
 - refresh 每次原子轮换，检查用户/租户状态、License、席位与会话版本；同一会话客户端串行刷新，检测已用 refresh 的重放时撤销该 family，要求重新登录。登录过期清理 session 不释放 SeatAssignment。
-- 普通登出仅撤销当前 DSH session；管理员撤销席位覆盖该席位全部 session，普通 BiSheng JWT 的 token_version 和 PAT/SAK 不改动。
-- 管理员调用 BiSheng 管理端：校验管理员及目标租户 → 持久化 operation → 调用 Gateway revoke → Gateway 事务修改席位版本与会话状态 → BiSheng 标记完成并返回。数据库事务不得跨远程调用持锁。
+- 普通登出仅撤销当前 DSH session；管理员撤销席位覆盖该席位全部 session，普通 doberman-agent JWT 的 token_version 和 PAT/SAK 不改动。
+- 管理员调用 doberman-agent 管理端：校验管理员及目标租户 → 持久化 operation → 调用 Gateway revoke → Gateway 事务修改席位版本与会话状态 → doberman-agent 标记完成并返回。数据库事务不得跨远程调用持锁。
 - 超时返回 PROCESSING + operation_id；后台重试或查询同一操作结果。Gateway 已成功而回包丢失时，不重复释放容量；无法确认不得显示成功。
 - 每个用户的撤销/重分配操作串行且带 expected_grant_version，旧的重试不能覆盖新的重分配。REVOKED 行保留，不能删除后让首次登录逻辑再次占席。
 - “撤销完成后的新请求”按 Gateway 验席的原子判定点排序；已经通过验席的在途请求允许完成。若要求中断在途 SSE，属于 §8 OQ-03，不以 Token TTL 伪装即时终止。
@@ -556,34 +556,34 @@ Redis 的 `unknown_usage` 集合仅统计缺失用量请求，不参与准入。
 
 | 新增或修改位置 | 职责 | 边界 |
 |---|---|---|
-| BiSheng `dsh/api/`、`dsh/domain/services/` | 薄端点、登录票据、DshPrincipal、调用与管理编排 | 不持有 Gateway 签名私钥或席位写权限 |
-| BiSheng `dsh/domain/repositories/`、`dsh/infrastructure/` | 本域 Repository、Gateway 客户端、OpenAI 协议适配 | Service 不直接 ORM；端点不跨模块导入其他端点 |
+| doberman-agent `dsh/api/`、`dsh/domain/services/` | 薄端点、登录票据、DshPrincipal、调用与管理编排 | 不持有 Gateway 签名私钥或席位写权限 |
+| doberman-agent `dsh/domain/repositories/`、`dsh/infrastructure/` | 本域 Repository、Gateway 客户端、OpenAI 协议适配 | Service 不直接 ORM；端点不跨模块导入其他端点 |
 | 既有用户、租户、模型模块的业务适配入口 | 可信身份/状态查询、模型可见性和调用 | 新增窄方法时保留原领域所有权，DSH 不直查其 ORM |
 | `api/router.py`、`utils/http_middleware.py` | 独立路由与认证策略接线 | 不给 V2 增加 DSH 回退，不全局绕过租户隔离 |
 | `common/constants/enums/telemetry.py` | DSH 应用类型和下游展示接线 | 保留所有旧枚举含义 |
 | platform `pages/SystemPage/dsh/`、`controllers/API/dsh.ts` | 分视图管理席位登录、模型额度及操作进度 | 沿用平台请求封装、Zustand/现有异步模式、bs-ui 和三语言资源；不新增被冻结的 react-query v3 import |
-| Gateway `dsh/controller、service、repository、dto/` | 发证、刷新、验席、固定席位事务、会话管理 | 不调用模型 SDK，不读取 BiSheng 模型 Secret |
+| Gateway `dsh/controller、service、repository、dto/` | 发证、刷新、验席、固定席位事务、会话管理 | 不调用模型 SDK，不读取 doberman-agent 模型 Secret |
 | Gateway License 业务、BsClient、服务认证、过滤器 | capability 校验、双向可信通信、DSH 自有路由 | DSH 到期不能通过全局商业过滤器连带阻断普通代理 |
 
-管理仍在 BiSheng，无独立 Gateway 网站。系统管理 / DSH Desktop 保留“席位与登录”“用户用量”和操作审计，登录会话用弹窗展示；席位列表不展示模型、额度、用量或最后模型调用。经 2026-09-10 用户批准，模型授权和额度统一移至“模型管理 → DSH 开放范围”，按模型搜索当前租户用户，包含未登录 DSH 的用户。具体界面边界、配套接口和验收见 [ui-demo-alignment.md](ui-demo-alignment.md)。
+管理仍在 doberman-agent，无独立 Gateway 网站。系统管理 / DSH Desktop 保留“席位与登录”“用户用量”和操作审计，登录会话用弹窗展示；席位列表不展示模型、额度、用量或最后模型调用。经 2026-09-10 用户批准，模型授权和额度统一移至“模型管理 → DSH 开放范围”，按模型搜索当前租户用户，包含未登录 DSH 的用户。具体界面边界、配套接口和验收见 [ui-demo-alignment.md](ui-demo-alignment.md)。
 
 #### 4.8.1 万级席位分页与检索
 
 | 环节 | 方案 |
 |---|---|
-| 分页主表 | Gateway 席位表；默认 ASSIGNED，可切 REVOKED。未分配用户走 BiSheng 既有用户选择器，不做全量用户跨库分页 |
+| 分页主表 | Gateway 席位表；默认 ASSIGNED，可切 REVOKED。未分配用户走 doberman-agent 既有用户选择器，不做全量用户跨库分页 |
 | 游标 | created_at DESC、seat_id DESC；limit 默认 50、最大 100，读取 limit+1 判断 has_more。签名 cursor 绑定租户/实例/筛选/排序；改变筛选重置游标 |
 | 检索 | user_id 精确、账号/显示名包含关键词匹配、席位状态；标准化输入、长度限制、转义通配符和 SQL 参数化。用户搜索支持任意位置的子串（如 `021` 匹配 `gzx021`），不区分英文大小写 |
 | 查询顺序 | Gateway SQL 内先检索和筛选有效会话，再 LIMIT；不在分页后过滤，不将上万 user_id 传给另一服务 |
-| 当前页补齐 | 一次 BiSheng 批量身份查询、一次会话聚合、一次 Redis 最近活跃批量读；无 N+1，无全量模型/用量查询 |
+| 当前页补齐 | 一次 doberman-agent 批量身份查询、一次会话聚合、一次 Redis 最近活跃批量读；无 N+1，无全量模型/用量查询 |
 | 计数 | 列表返回 next_cursor/has_more，不每页 COUNT；License 占用展示可缓存 10 秒并标 as_of，真实分配仍用事务内数量 |
 | 前端 | 搜索防抖 300ms、取消旧请求、防止过期响应覆盖；前后页游标栈，最多 100 行，不做深 OFFSET 跳页 |
 
 资料变更接线已落地：在原 User 表增加非空 BIGINT `dsh_profile_version`（server_default=0），由原用户事务递增，内部 DTO 映射为 `profile_version`。既有表变更用正式 Alembic DDL，数据回填由巡检完成；不新增第九张表，回退关闭 DSH 后保留版本字段，避免旧命令覆盖。用户改名通过用户业务接线；仅启停账号不登记名称同步，部门变更不登记 DSH 同步；用户 Repository 返回当前版本快照，DSH Profile Service 用同一 session 登记本域操作意图，不跨模块直调 Repository。保留 F012/F048 的权限/JWT/部门投影顺序与回滚规则；DSH 关闭不初始化远程依赖。
 
-gt_dsh_seat 只保存最小身份检索投影，不成为用户主数据。首次从可信身份兑换写入；改名由 BiSheng 低频 profiles/upsert 更新，按 profile_version 拒绝旧版本覆盖。用 dsh_admin_operation 增加 SYNC_PROFILE 动作作为用户改名同事务投递意图（通过业务钩子接入），payload 保存版本化资料；该动作 actor_user_id 和 expected_grant_version 可空，撤销/重分配仍要求管理员及授权版本。
+gt_dsh_seat 只保存最小身份检索投影，不成为用户主数据。首次从可信身份兑换写入；改名由 doberman-agent 低频 profiles/upsert 更新，按 profile_version 拒绝旧版本覆盖。用 dsh_admin_operation 增加 SYNC_PROFILE 动作作为用户改名同事务投递意图（通过业务钩子接入），payload 保存版本化资料；该动作 actor_user_id 和 expected_grant_version 可空，撤销/重分配仍要求管理员及授权版本。
 
-初始回填和周期版本巡检采用 user_id 游标，每批最多 100 条；失败重试，记录 profile_synced_at。检索短暂使用旧投影可标明同步延迟，当前页真实身份由 BiSheng 补齐。删除用户仍保留席位并显示“账号已删除”，不会因资料同步释放名额；鉴权始终读真实用户/租户状态，不读投影授权。
+初始回填和周期版本巡检采用 user_id 游标，每批最多 100 条；失败重试，记录 profile_synced_at。检索短暂使用旧投影可标明同步延迟，当前页真实身份由 doberman-agent 补齐。删除用户仍保留席位并显示“账号已删除”，不会因资料同步释放名额；鉴权始终读真实用户/租户状态，不读投影授权。
 
 排序键不可变，但筛选结果是实时集合而非快照；列表变更后刷新首屏，前端按 seat_id 去重。账号/显示名使用 `%关键词%` 包含检索，不能依赖名称 B-tree 索引进行前缀范围查找；保留租户、席位状态过滤和数据库游标分页，配合 EXISTS 会话过滤，避免先全量加载再筛选或逐用户 SQL。大规模数据下需实际执行计划验证。
 
@@ -597,7 +597,7 @@ gt_dsh_seat 只保存最小身份检索投影，不成为用户主数据。首�
 
 | 事实 | 不处理的后果 | 处理位置 |
 |---|---|---|
-| 放在 Gateway 项目不等于所有业务已依赖 Gateway | 新模块上线后 BiSheng 无法验席或管理 | DshGatewayClient 配置与能力探测；关闭时不初始化 |
+| 放在 Gateway 项目不等于所有业务已依赖 Gateway | 新模块上线后 doberman-agent 无法验席或管理 | DshGatewayClient 配置与能力探测；关闭时不初始化 |
 | Gateway 自有 Controller 不经过 Spring Cloud Gateway GlobalFilter | 只加路由 Filter 会漏掉发证/刷新端点 | DSH Controller / Service 自身认证与 capability 判定 |
 | 普通 JWT 中间件的“豁免”会开启 tenant bypass | DSH 路径可能跨租户读数据 | 专用认证分派与 context 生命周期测试 |
 | Root 共享模型不是当前租户自有行 | 直接比 tenant_id 会误拒绝合法模型 | LLMService.get_model_for_call；Spec AC-18/21 明确合法共享 |
@@ -648,7 +648,7 @@ gt_dsh_seat 只保存最小身份检索投影，不成为用户主数据。首�
 
 ### 6.1 接口清单（26 个端点已接线，客户端契约见 §6.0）
 
-`B` 为 BiSheng，`G` 为 Gateway。内部接口均使用独立服务认证；普通管理 JWT 不能直接调用 Gateway 内部管理接口。
+`B` 为 doberman-agent，`G` 为 Gateway。内部接口均使用独立服务认证；普通管理 JWT 不能直接调用 Gateway 内部管理接口。
 
 #### 登录与模型接口
 
@@ -656,30 +656,30 @@ DSH 仅配置 Nginx BASE，公开配置返回开关、client_id 与 contract_ver
 
 | 提供方 / 方法 / 路径 | 调用方 / 鉴权 | 关键入参 | 返回契约 | 关联数据 |
 |---|---|---|---|---|
-| BiSheng `GET /api/v1/dsh/config` | DSH；公开只读 | 无 | enabled, client_id, contract_version | 部署配置 |
+| doberman-agent `GET /api/v1/dsh/config` | DSH；公开只读 | 无 | enabled, client_id, contract_version | 部署配置 |
 | Gateway `POST /api/dsh/authorizations` | DSH；公共客户端 + 防滥用 | client_id, redirect_uri, code_challenge, code_challenge_method=S256, state, device_name（可选） | auth_id, authorize_url, expires_in | Redis 授权事务 |
-| BiSheng `POST /api/v1/dsh/authorize` | 浏览器；用户 JWT + CSRF | auth_id | identity_ticket, redirect_uri, state, expires_in（统一响应 data 内） | Redis 票据 |
+| doberman-agent `POST /api/v1/dsh/authorize` | 浏览器；用户 JWT + CSRF | auth_id | identity_ticket, redirect_uri, state, expires_in（统一响应 data 内） | Redis 票据 |
 | Gateway `POST /api/dsh/token` | DSH；票据 + PKCE / refresh | grant_type + identity_ticket/auth_id/code_verifier 或 refresh_token | token_type, access_token, refresh_token, expires_in, refresh_expires_in, session_id, session_expires_at, user, tenant | 有效 License（只读）, seat, session, refresh |
 | Gateway `POST /api/dsh/logout` | DSH；DSH Token / refresh | 当前会话凭证 | HTTP 204；当前会话撤销，席位保留 | session, refresh |
-| Gateway `GET /api/dsh/jwks` | BiSheng；公开只读 | 无 | keys: kid, kty, alg, use 及公钥参数 | 受管公钥集 |
-| BiSheng `GET /api/v1/dsh/models` | DSH；DSH Token + 在线验席 | 无 | OpenAI models 列表与能力说明 | user_policy 中 enabled=1 的模型记录 + 既有模型 |
-| BiSheng `POST /api/v1/dsh/chat/completions` | DSH；DSH Token + 在线验席 | model, messages, tools, stream, max_tokens | JSON / SSE + usage / tool_calls | policy, monthly_usage, model_call |
-| BiSheng `GET /api/v1/dsh/usage` | DSH；DSH Token + 在线验席 | 无；仅当前用户 | month, billing_timezone, period_start, reset_at, used, limit, remaining, source, as_of, quota_state | Redis 实时，SQL 仅降级展示 |
+| Gateway `GET /api/dsh/jwks` | doberman-agent；公开只读 | 无 | keys: kid, kty, alg, use 及公钥参数 | 受管公钥集 |
+| doberman-agent `GET /api/v1/dsh/models` | DSH；DSH Token + 在线验席 | 无 | OpenAI models 列表与能力说明 | user_policy 中 enabled=1 的模型记录 + 既有模型 |
+| doberman-agent `POST /api/v1/dsh/chat/completions` | DSH；DSH Token + 在线验席 | model, messages, tools, stream, max_tokens | JSON / SSE + usage / tool_calls | policy, monthly_usage, model_call |
+| doberman-agent `GET /api/v1/dsh/usage` | DSH；DSH Token + 在线验席 | 无；仅当前用户 | month, billing_timezone, period_start, reset_at, used, limit, remaining, source, as_of, quota_state | Redis 实时，SQL 仅降级展示 |
 
 #### 统一管理接口
 
 2026-09-10：模型管理新增按模型分页用户 GET 及单模型策略 GET，策略 PUT 改为单模型正文；见 [完整修订契约](./model-policy-row-revision.md)。以下用户策略 GET 为只读用量聚合，不能用于保存版本。
 
-均由 BiSheng 提供，管理员 JWT + 当前管理作用域；用户与租户不能由未验证参数替换。users/{id} 的管理操作可携带 tenant_id 查询参数明确已加载记录的归属：Root管理可选择受控目标，租户管理员只能选择当前scope。Gateway席位按当前环境全局 user_id 唯一；此参数不会创建跨租户重复席位或自动迁移授权，策略/历史仍按其原tenant隔离。
+均由 doberman-agent 提供，管理员 JWT + 当前管理作用域；用户与租户不能由未验证参数替换。users/{id} 的管理操作可携带 tenant_id 查询参数明确已加载记录的归属：Root管理可选择受控目标，租户管理员只能选择当前scope。Gateway席位按当前环境全局 user_id 唯一；此参数不会创建跨租户重复席位或自动迁移授权，策略/历史仍按其原tenant隔离。
 
 | 提供方 / 方法 / 路径 | 调用方 / 鉴权 | 关键入参 | 返回契约 | 关联数据 |
 |---|---|---|---|---|
-| BiSheng `GET /api/v1/dsh/admin/users` | 席位页；管理员 JWT | cursor, limit, keyword, seat_state, login_state | 身份/席位/登录 items, next_cursor, has_more, as_of | Gateway SQL 分页 + 当前页身份批量补齐，不查模型 |
-| BiSheng `GET /api/v1/dsh/admin/license` | 管理页面；管理员 JWT | 无 | 授权状态, used, limit, valid_until | Gateway 当前有效 License + 席位统计 |
-| BiSheng `PUT /api/v1/dsh/admin/users/{id}/models/{model_id}/policy` | 管理页面；管理员 JWT | operation_id, enabled, monthly_token_limit, expected_version | operation_id, status；成功含 policy/version，处理中含 phase | user_policy + admin_operation；见 §4.5.5 |
-| BiSheng `POST /api/v1/dsh/admin/users/{id}/revoke` | 管理页面；管理员 JWT | operation_id, expected_grant_version | SUCCEEDED / PROCESSING + operation_id | admin_operation → Gateway |
-| BiSheng `POST /api/v1/dsh/admin/users/{id}/reassign` | 管理页面；管理员 JWT | operation_id, expected_grant_version | SUCCEEDED / PROCESSING + 新授权版本 | admin_operation → Gateway |
-| BiSheng `GET /api/v1/dsh/admin/operations/{id}` | 管理页面；管理员 JWT | 路径 operation_id | status, phase, action, actor/target, before/after, 时间、result_code 及 result | admin_operation；含策略审计 |
+| doberman-agent `GET /api/v1/dsh/admin/users` | 席位页；管理员 JWT | cursor, limit, keyword, seat_state, login_state | 身份/席位/登录 items, next_cursor, has_more, as_of | Gateway SQL 分页 + 当前页身份批量补齐，不查模型 |
+| doberman-agent `GET /api/v1/dsh/admin/license` | 管理页面；管理员 JWT | 无 | 授权状态, used, limit, valid_until | Gateway 当前有效 License + 席位统计 |
+| doberman-agent `PUT /api/v1/dsh/admin/users/{id}/models/{model_id}/policy` | 管理页面；管理员 JWT | operation_id, enabled, monthly_token_limit, expected_version | operation_id, status；成功含 policy/version，处理中含 phase | user_policy + admin_operation；见 §4.5.5 |
+| doberman-agent `POST /api/v1/dsh/admin/users/{id}/revoke` | 管理页面；管理员 JWT | operation_id, expected_grant_version | SUCCEEDED / PROCESSING + operation_id | admin_operation → Gateway |
+| doberman-agent `POST /api/v1/dsh/admin/users/{id}/reassign` | 管理页面；管理员 JWT | operation_id, expected_grant_version | SUCCEEDED / PROCESSING + 新授权版本 | admin_operation → Gateway |
+| doberman-agent `GET /api/v1/dsh/admin/operations/{id}` | 管理页面；管理员 JWT | 路径 operation_id | status, phase, action, actor/target, before/after, 时间、result_code 及 result | admin_operation；含策略审计 |
 
 #### 内部服务接口
 
@@ -687,14 +687,14 @@ HTTP 或 HTTPS + 现有用户同步 Secret 派生的双向 HMAC；key_id 由代�
 
 | 提供方 / 方法 / 路径 | 调用方 / 鉴权 | 关键入参 | 返回契约 | 关联数据 |
 |---|---|---|---|---|
-| BiSheng `POST /api/v1/internal/dsh/identity/redeem` | Gateway → BiSheng；服务 HMAC | identity_ticket, auth_id, client_id, redirect_uri, code_challenge | DshIdentitySnapshot（见下） | Redis 消费票据 + 用户业务 |
-| BiSheng `POST /api/v1/internal/dsh/identity/check` | Gateway → BiSheng；服务 HMAC | 受信租户、用户 | DshIdentitySnapshot（见下） | 既有用户/租户业务 |
-| Gateway `POST /api/internal/dsh/introspect` | BiSheng → Gateway；服务 HMAC + DSH Token | token | active, seat_id, session_id, grant_version, reason | 有效 License（只读）, seat, session |
-| Gateway `POST /api/internal/dsh/authorizations/resolve` | BiSheng → Gateway；服务 HMAC | auth_id | challenge, redirect_uri, client_id, state, expires_in | Redis 授权事务 |
-| Gateway `POST /api/internal/dsh/management/read` | BiSheng → Gateway；HMAC + 管理员上下文 | resource, cursor, limit, keyword, seat_state, login_state, target | license / seats / sessions 分页摘要 | License、席位检索投影与有效会话；目标租户受限 |
-| Gateway `POST /api/internal/dsh/seats/revoke` | BiSheng → Gateway；服务 HMAC + 管理员上下文 | operation_id, target, expected_grant_version | 结果、新授权版本 | operation + seat/session；License 只读 |
-| Gateway `POST /api/internal/dsh/seats/reassign` | BiSheng → Gateway；服务 HMAC + 管理员上下文 | operation_id, target, expected_grant_version | 结果、新授权版本 | operation + seat；License 只读 |
-| Gateway `POST /api/internal/dsh/operations/read` | BiSheng → Gateway；服务 HMAC | operation_id | UNKNOWN / SUCCEEDED / FAILED | operation |
+| doberman-agent `POST /api/v1/internal/dsh/identity/redeem` | Gateway → doberman-agent；服务 HMAC | identity_ticket, auth_id, client_id, redirect_uri, code_challenge | DshIdentitySnapshot（见下） | Redis 消费票据 + 用户业务 |
+| doberman-agent `POST /api/v1/internal/dsh/identity/check` | Gateway → doberman-agent；服务 HMAC | 受信租户、用户 | DshIdentitySnapshot（见下） | 既有用户/租户业务 |
+| Gateway `POST /api/internal/dsh/introspect` | doberman-agent → Gateway；服务 HMAC + DSH Token | token | active, seat_id, session_id, grant_version, reason | 有效 License（只读）, seat, session |
+| Gateway `POST /api/internal/dsh/authorizations/resolve` | doberman-agent → Gateway；服务 HMAC | auth_id | challenge, redirect_uri, client_id, state, expires_in | Redis 授权事务 |
+| Gateway `POST /api/internal/dsh/management/read` | doberman-agent → Gateway；HMAC + 管理员上下文 | resource, cursor, limit, keyword, seat_state, login_state, target | license / seats / sessions 分页摘要 | License、席位检索投影与有效会话；目标租户受限 |
+| Gateway `POST /api/internal/dsh/seats/revoke` | doberman-agent → Gateway；服务 HMAC + 管理员上下文 | operation_id, target, expected_grant_version | 结果、新授权版本 | operation + seat/session；License 只读 |
+| Gateway `POST /api/internal/dsh/seats/reassign` | doberman-agent → Gateway；服务 HMAC + 管理员上下文 | operation_id, target, expected_grant_version | 结果、新授权版本 | operation + seat；License 只读 |
+| Gateway `POST /api/internal/dsh/operations/read` | doberman-agent → Gateway；服务 HMAC | operation_id | UNKNOWN / SUCCEEDED / FAILED | operation |
 
 **内部 `DshIdentitySnapshot`（redeem / check 共用）**：
 
@@ -712,7 +712,7 @@ Gateway 在首次换证与每次刷新时，将该次受信快照的 user/tenant
 
 resolve 的 expires_in 为 Redis 剩余 TTL 秒（1–300）；Python 票据 TTL=min(60,expires_in)，拒绝过期事务。此为内部字段补全，客户端 0.3.0 不变。
 
-DSH Token 的 JOSE header 固定 typ=bisheng-dsh-access+jwt、alg=HS256、kid=dsh-access-v1。DSH Token 声明固定为 `iss, aud, sub, tenant_id, seat_id, session_id, grant_version, iat, exp, jti`；sub 是稳定 user_id 字符串，不能作为可任意更换的邮箱或用户名。所有状态更新主体从可信认证结果建立。
+DSH Token 的 JOSE header 固定 typ=doberman-agent-dsh-access+jwt、alg=HS256、kid=dsh-access-v1。DSH Token 声明固定为 `iss, aud, sub, tenant_id, seat_id, session_id, grant_version, iat, exp, jti`；sub 是稳定 user_id 字符串，不能作为可任意更换的邮箱或用户名。所有状态更新主体从可信认证结果建立。
 
 | 补充契约 | 约束 |
 |---|---|
@@ -730,9 +730,9 @@ DSH Token 的 JOSE header 固定 typ=bisheng-dsh-access+jwt、alg=HS256、kid=ds
 
 | 提供方 / 接口 | 鉴权 | 请求与返回 |
 |---|---|---|
-| Gateway `POST /api/internal/dsh/profiles/upsert` | BiSheng 服务 HMAC | 最多 100 条 user_id、username/display_name、profile_version；按版本幂等更新已有席位检索投影，不创建席位或改变授权 |
-| BiSheng `GET /api/v1/dsh/admin/users/{id}/policy` | 管理员 JWT、同租户 | 指定用户的模型策略、额度及 source/as_of 用量，供用户用量只读视图；保存后单行刷新使用新增模型策略 GET |
-| BiSheng `GET /api/v1/dsh/admin/users/{id}/sessions` | 管理员 JWT、同租户 | cursor/limit 的设备会话列表，内部复用 Gateway management/read |
+| Gateway `POST /api/internal/dsh/profiles/upsert` | doberman-agent 服务 HMAC | 最多 100 条 user_id、username/display_name、profile_version；按版本幂等更新已有席位检索投影，不创建席位或改变授权 |
+| doberman-agent `GET /api/v1/dsh/admin/users/{id}/policy` | 管理员 JWT、同租户 | 指定用户的模型策略、额度及 source/as_of 用量，供用户用量只读视图；保存后单行刷新使用新增模型策略 GET |
+| doberman-agent `GET /api/v1/dsh/admin/users/{id}/sessions` | 管理员 JWT、同租户 | cursor/limit 的设备会话列表，内部复用 Gateway management/read |
 
 管理 `GET /api/v1/dsh/admin/users/{id}/policy` 的已实现补充字段：`tenant_id` 是后端授权解析的真实目标，单模型管理接口同样返回/使用该目标，不能从 simple 用户列表或管理员登录租户猜测。`available_models` 为 `{id:int,name:string,is_root_shared:boolean}[]`，其中 name 与 Desktop 目录共用展示规则：“提供方名称 / 管理员配置的模型展示名称”；模型展示名称 `name` 去除首尾空白后为空时使用调用名称 `model_name`，提供方名称为空时使用提供方类型；由目标租户原模型强读筛选在线 LLM 后逐模型强校验；`available_models_source=live|unavailable` 区分无候选与依赖失败。`last_call` 为最近 SQL 投影的 `{request_id,model_id,status,started_at,finished_at,total_tokens,projected_at}` 或 null，`last_call_source=persisted|unavailable` 区分无历史和读取失败；未知用量为 null，记录允许投影延迟。以上只补普通管理员接口，7 个 Desktop 客户端接口及 0.3.0 不变。
 
@@ -740,7 +740,7 @@ DSH Token 的 JOSE header 固定 typ=bisheng-dsh-access+jwt、alg=HS256、kid=ds
 
 已提供 `IdentityService.authorize/redeem/check`、`DshAccessService.authenticate`、`DshModelService.list_models/complete`、`DshUsageService.check_and_start/record_usage/reconcile_unknown`。SQL 投影由独立 `DshProjectionService` 承担；管理分别由 `DshManagementService`、`DshAdminService` 与 `DshReconciliationService` 编排。接口返回领域 DTO，不向 Endpoint 暴露 ORM 查询。
 
-BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模型选择调用现有模型业务授权。需要具体资源授权的操作由业务侧构造已验证目标后进入 `permission.application`；不直接访问 OpenFGA，也不把 DSH model grant 当成可绕过原权限的替代结论。
+doberman-agent 管理入口采用既有管理员能力校验并限定目标租户；模型选择调用现有模型业务授权。需要具体资源授权的操作由业务侧构造已验证目标后进入 `permission.application`；不直接访问 OpenFGA，也不把 DSH model grant 当成可绕过原权限的替代结论。
 
 内部服务通信采用固定 HTTP/HTTPS origin + 独立 HMAC-SHA256 协议，复用现有 SSO Secret 并按方向/Token 用途派生密钥，不新增密钥配置，不使用 License 密钥。签名覆盖 method、规范化 path、body_hash、key_id、timestamp、nonce；内部端点不使用 query 参数传签名数据。时间窗建议 ±60 秒，nonce 共享存储原子占用 120 秒；重试用新 nonce、同 operation_id。服务端从固定方向的 key_id 与既有共享 Secret 验证发送方；不接受请求体指定信任域，不携带安装标识。采用 HTTPS 时仍校验证书，不禁用 TLS 验证；采用 HTTP 时直接连接配置的固定 origin，不新增开关。
 
@@ -759,13 +759,13 @@ BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模
 
 ### 6.4 部署与升级
 
-先发布 Gateway 模块及其数据库迁移、可信 License 和密钥，再发布 BiSheng DSH 模块及 DDL，最后在平台启用 DSH。只执行结构迁移，所有用户初始为从未分配；不把已有 Web 登录或 PAT 自动转换为席位。
+先发布 Gateway 模块及其数据库迁移、可信 License 和密钥，再发布 doberman-agent DSH 模块及 DDL，最后在平台启用 DSH。只执行结构迁移，所有用户初始为从未分配；不把已有 Web 登录或 PAT 自动转换为席位。
 
 同一 Gateway 多副本共享数据库与签名密钥版本，SQL/nonce 存储不可用时只使 DSH 失败关闭。License 到期时仍允许已认证管理员读取状态和执行撤销，便于释放与整理；拒绝登录、刷新、重分配和模型准入。
 
 当前 Gateway 的 LicenseExpiredGlobalFilter 会把自有 `/api/*` 视为整体商业端点。新增 DSH 路径须先分流到独立 capability 策略，并区分读取/撤销与发证/消费操作，防止旧整站过期逻辑提前拦截所有 DSH 管理请求；普通代理和旧商业端点保持原有判定。
 
-关闭 BiSheng 的 DSH 开关即可停止新 DSH 请求，保留席位/会话/预算记录；这不是释放席位操作。旧版 BiSheng 的普通 API 兼容性不因新 Gateway 模块改变。后续重新开启按既有授权版本验席，不重建空账本。
+关闭 doberman-agent 的 DSH 开关即可停止新 DSH 请求，保留席位/会话/预算记录；这不是释放席位操作。旧版 doberman-agent 的普通 API 兼容性不因新 Gateway 模块改变。后续重新开启按既有授权版本验席，不重建空账本。
 
 ## 7. 测试与可观测
 
@@ -775,7 +775,7 @@ BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模
 |---|---|---|
 | 身份与协议单元 | PKCE、回调绑定、一次性票据重放、签名/aud/kid、HMAC nonce、普通 JWT/PAT/SAK 混用 | 01–04、13–16 |
 | Gateway 双数据库集成 | 空实例与 11 人抢 10 席的可串行化范围保护、冲突重试、同人并发、多设备、撤销/重分配乱序、刷新轮换、License 受控换版/过期/降配、多副本 | 05–12、14、17 |
-| BiSheng 业务集成 | 共享模型权限、同名异提供方模型 ID 区分、白名单、模型关闭/删除即时生效及历史用量保留、所选模型按实际用量达限拒绝新请求、其它模型不受该额度耗尽影响、在途继续并允许超额、首月行并发创建、跨月结算、断流 UNKNOWN、补偿幂等 | 18–24、30–31 |
+| doberman-agent 业务集成 | 共享模型权限、同名异提供方模型 ID 区分、白名单、模型关闭/删除即时生效及历史用量保留、所选模型按实际用量达限拒绝新请求、其它模型不受该额度耗尽影响、在途继续并允许超额、首月行并发创建、跨月结算、断流 UNKNOWN、补偿幂等 | 18–24、30–31 |
 | 端到端 | 浏览器登录→模型列表→带工具调用的 Agent 多轮→逐块 SSE→登出保席→管理员撤销→旧凭证拒绝→重新分配仍拒绝旧凭证 | 01–29 |
 | 回归 | DSH 关闭/Gateway 不可用、常规 JWT 与 V2 PAT/SAK、其他租户、管理员作用域 | 16–17、25–34 |
 | 规模与故障 | 分页/检索无 N+1；跨模型原子计数、重复乱序事件、SQL 提交后 ACK 丢失、消费者崩溃、积压背压、Redis 丢尾/主切换门禁、策略冻结中断恢复 | 22–23、27、33–34 |
@@ -798,7 +798,7 @@ BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模
 
 | ID | 当前缺口 | 本稿处理 | 影响 |
 |---|---|---|---|
-| OQ-01（已关闭） | 官方链路商业控制的适用边界 | 2026-09-09 用户接受仅保证未修改的官方 DSH 链路；Spec US-C 已同步 | 不再是设计阻塞；模型执行继续在 BiSheng |
+| OQ-01（已关闭） | 官方链路商业控制的适用边界 | 2026-09-09 用户接受仅保证未修改的官方 DSH 链路；Spec US-C 已同步 | 不再是设计阻塞；模型执行继续在 doberman-agent |
 | OQ-02（已关闭） | Root 共享模型验收口径 | 按本轮修复要求同步 AC-18/21/30：既有业务认可的合法访问范围与 DSH 授权取交集 | 自有/合法共享允许，未经授权跨租户拒绝；取消共享后新调用拒绝 |
 | OQ-03 | 撤销是否必须终止已通过验席的在途 SSE 未明确 | 默认禁止撤销后的新准入，已准入请求完成；不实现主动中断广播 | 设计默认值，确认时可调整 |
 | OQ-04（异常策略已确认；供应商样本待验收） | 供应商计量能力 | 缺少 usage 仅记录未知明细，不冻结；可选可靠补记 | 外部供应商兼容样本尚未完成，不声称全部模型已联调 |
@@ -828,7 +828,7 @@ BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模
 | 2026-09-08 | 万级席位游标检索与身份投影；席位视图仅身份/登录；Redis 实时配额 + Stream + 批量 SQL，新增 3 个接口，保留 8 张表 | 用户补充规模、界面、高频模型调用场景 |
 | 2026-09-08 | 月汇总新增 model_id 并调整联合唯一键；调用明细已有 model_id 单列说明，补充模型查询索引与跨模型汇总并发规则；仍按用户月总额限流 | 用户要求同时支持用户及用户加模型的用量维度 |
 | 2026-09-08 | 补齐 23 个接口；按评审意见精简至 8 张表，复用 License 解析结果，合并用户模型范围与月总上限，保留月用量及请求明细；同步 HTML | 用户要求补充并简化设计 |
-| 2026-09-07 | 迁入 v3.0.0-beta2 并形成完整设计草案；核对 BiSheng 模型/身份链路与本地 Gateway 分支；明确固定席位、独立凭证、强验席、协议适配、预算账本和评审缺口 | 用户指定版本并要求产出设计 |
+| 2026-09-07 | 迁入 v3.0.0-beta2 并形成完整设计草案；核对 doberman-agent 模型/身份链路与本地 Gateway 分支；明确固定席位、独立凭证、强验席、协议适配、预算账本和评审缺口 | 用户指定版本并要求产出设计 |
 
 ## 2026-09-09 逐模型额度与配置类型修订
 
@@ -836,9 +836,9 @@ BiSheng 管理入口采用既有管理员能力校验并限定目标租户；模
 
 管理 GET/PUT policy 的 models 为对象列表，移除顶层 monthly_token_limit。用量汇总保留所有历史模型的实际消费；展示的 limit 是当前配置限额之和，remaining 为各模型 `max(limit-used,0)` 之和，不用总量相减，也不因移除模型而清理历史。恢复摘要与策略 CAS 必须包含完整逐模型配置，相同 ID 集合与限额总和不能证明配置相同。
 
-Desktop GET usage 增加可选 `model=bisheng:<id>`，响应字段不变；选中模型时只返回该模型用量/限额/剩余，未配置模型返回 model_not_allowed。省略 model 时为不可借用的汇总展示。客户端应在模型选择/切换及调用后查询对应模型，本次参数及计量语义变化必须同步客户端；见 client-api.md 修订记录。
+Desktop GET usage 增加可选 `model=doberman-agent:<id>`，响应字段不变；选中模型时只返回该模型用量/限额/剩余，未配置模型返回 model_not_allowed。省略 model 时为不可借用的汇总展示。客户端应在模型选择/切换及调用后查询对应模型，本次参数及计量语义变化必须同步客户端；见 client-api.md 修订记录。
 
-本轮 DM8 真库按用户授权暂缓。毕昇新增业务 SQL 使用 ORM；允许列默认值/约束表达式及 DDL 方言适配。Gateway 维持既有 Mapper 写法，独立审查其分页、行锁、字符与 LOB 兼容性。
+本轮 DM8 真库按用户授权暂缓。doberman-agent新增业务 SQL 使用 ORM；允许列默认值/约束表达式及 DDL 方言适配。Gateway 维持既有 Mapper 写法，独立审查其分页、行锁、字符与 LOB 兼容性。
 
 - 2026-09-09：按用户明确修订取消 UNKNOWN 冻结，缺失用量保留明细；删除 DSH 部门字段、筛选和同步。客户端契约升级 0.3.0，客户端确认与联调尚待完成。
 
@@ -859,7 +859,7 @@ Desktop GET usage 增加可选 `model=bisheng:<id>`，响应字段不变；选�
 - 适配器归一化缓存读/写量，随 UsageEvent 完整 JSON 经 Redis Stream 投影到 SQL；同版本冲突比较包含两个字段，重复事件不得重复入账。月汇总仍只累加 `total_tokens`。
 - 成功、失败或取消时以已观察到的供应商用量记录缓存详情；未知总量不伪造零值。人工补记接口不扩展新参数，本次不新增界面、缓存价格或额度折算。
 - 客户端字段、JSON/SSE 示例与空值语义见 client-api.md §7.3；本轮无需改变时序。
-- 按用户确认的未发布功能处理方式不新增 Alembic revision。109 独立 DSH 库先给原表增加上述可空列，再由用户统一更新 Bisheng API 与消费用量事件的 Worker 镜像；旧 Worker 不应与会产生新字段的 API 混用。新代码兼容缺失缓存字段的旧事件。Gateway 不需要修改。
+- 按用户确认的未发布功能处理方式不新增 Alembic revision。109 独立 DSH 库先给原表增加上述可空列，再由用户统一更新 doberman-agent API 与消费用量事件的 Worker 镜像；旧 Worker 不应与会产生新字段的 API 混用。新代码兼容缺失缓存字段的旧事件。Gateway 不需要修改。
 
 ## 2026-09-11：部署解绑与协议分层
 

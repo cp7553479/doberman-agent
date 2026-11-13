@@ -7,10 +7,10 @@ import pytest
 from fastapi import Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.open_api import OpenApiCredentialMissingError
-from bisheng.open_api.api import dependencies
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_endpoints.api.endpoints import filelib
+from doberman_agent.common.errcode.open_api import OpenApiCredentialMissingError
+from doberman_agent.open_api.api import dependencies
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_endpoints.api.endpoints import filelib
 from test.open_api.test_dependencies import service_account_principal
 
 FLAGS = ("retain_images", "force_ocr", "enable_formula", "filter_page_header_footer")

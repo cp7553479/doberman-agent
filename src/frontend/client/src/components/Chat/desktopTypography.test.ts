@@ -3,20 +3,20 @@
 describe('desktop typography surface initialization', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    delete document.documentElement.dataset.bishengSurface;
+    delete document.documentElement.dataset.dobermanAgentSurface;
     window.history.replaceState(null, '', '/workspace');
   });
 
   afterEach(() => {
     sessionStorage.clear();
-    delete document.documentElement.dataset.bishengSurface;
+    delete document.documentElement.dataset.dobermanAgentSurface;
     window.history.replaceState(null, '', '/workspace');
     jest.restoreAllMocks();
   });
 
   function initialize() {
     jest.isolateModules(() => { jest.requireActual('./desktopEmbedding'); });
-    return document.documentElement.dataset.bishengSurface;
+    return document.documentElement.dataset.dobermanAgentSurface;
   }
 
   it('selects desktop typography before rendering the embedded entry', () => {
@@ -28,7 +28,7 @@ describe('desktop typography surface initialization', () => {
     window.history.replaceState(null, '', '/workspace?embed=dsh');
     initialize();
     window.history.replaceState(null, '', '/workspace/knowledge/space/1/settings');
-    delete document.documentElement.dataset.bishengSurface;
+    delete document.documentElement.dataset.dobermanAgentSurface;
     expect(initialize()).toBe('desktop');
   });
 

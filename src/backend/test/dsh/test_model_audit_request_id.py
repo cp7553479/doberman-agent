@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import httpx
 
-from bisheng.common.errcode.dsh import DshUpstreamErrorError
+from doberman_agent.common.errcode.dsh import DshUpstreamErrorError
 from test.dsh import test_model_service, test_models_api
 
 service_setup = test_model_service.service_setup
@@ -19,7 +19,7 @@ async def test_upstream_failure_response_id_matches_business_call(app_setup):
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test"},
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "synthetic"}],
             },
         )
@@ -35,7 +35,7 @@ async def test_invalid_business_parameters_never_start_usage(app_setup):
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test"},
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "synthetic"}],
                 "forged": 1,
                 "audit_context": {"conversation_id": "valid"},
@@ -53,7 +53,7 @@ async def test_settlement_failure_does_not_replace_request_id_or_replay(app_setu
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test"},
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "synthetic"}],
             },
         )

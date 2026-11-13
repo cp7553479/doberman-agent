@@ -1,12 +1,12 @@
-import { TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Button, SearchInput } from '@bisheng/ui';
+import { TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 
 
 
 import { DepartmentTreeNode } from "@/types/api/department";
 import { cn } from "@/utils";
-import { Tooltip as SharedTooltip,Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip,Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback,useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -16,9 +16,9 @@
 
 ## 基线与验证
 
-- 仓库：`dataelement/bisheng`，目标 `feat/bisheng-work-120-main`，远端核对 SHA `2a726f5c97be74670d99718cdc475cb1f7331b62`。
-- 工作目录：`.worktrees/bisheng-chat-knowledge-session-isolation`；分支 `codex/chat-knowledge-session-isolation`。
-- 本次修改属于桌面嵌入的 Web Chat。桌面参考目录 `.worktrees/dsh-desktop-v090-integration` 检查时干净；已安装参考 Harness `0.2.1-rc.2`。DSH 旧仓库的远端 `v0.9.0` 分支查询返回空，Web 修复采用上述毕昇目标分支。
+- 仓库：`cp7553479/doberman-agent`，目标 `feat/doberman-agent-work-120-main`，远端核对 SHA `2a726f5c97be74670d99718cdc475cb1f7331b62`。
+- 工作目录：`.worktrees/doberman-agent-chat-knowledge-session-isolation`；分支 `codex/chat-knowledge-session-isolation`。
+- 本次修改属于桌面嵌入的 Web Chat。桌面参考目录 `.worktrees/dsh-desktop-v090-integration` 检查时干净；已安装参考 Harness `0.2.1-rc.2`。DSH 旧仓库的远端 `v0.9.0` 分支查询返回空，Web 修复采用上述doberman-agent目标分支。
 - 定向 Jest：4 个文件、31 项通过，覆盖 C1/K1 与 C2/K2 往返、组件重挂载、发送、重新生成、清空、首条消息 ID 迁移、迟到响应、账号隔离、主 Chat 与订阅草稿隔离、默认值、组织库开关及存储异常。
 - 客户端生产构建通过。依赖使用现有安装目录；测试通过本地启动辅助文件提供 jsdom 的 TextEncoder/TextDecoder，Babel runtime 通过 NODE_PATH 定位。依赖版本与锁文件保持。
 - 扩展输入框回归：17 项中 13 项通过，4 项工具／技能显示预期失败。对同一 SHA 的原始源码独立运行后，4 项失败名称与断言相同，记录为基线失败。相关组件与这些测试保持原有内容。

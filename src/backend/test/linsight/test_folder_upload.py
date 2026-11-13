@@ -22,19 +22,19 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.linsight import (
+from doberman_agent.common.errcode.linsight import (
     LinsightFolderDepthExceededError,
     LinsightFolderFileCountExceededError,
     LinsightFolderTotalSizeExceededError,
 )
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.schemas.linsight_schema import SubmitFileSchema
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.schemas.linsight_schema import SubmitFileSchema
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
 
 
 class FakeMinio:
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         self.store: dict[tuple[str, str], bytes] = {}
 
@@ -197,7 +197,7 @@ async def _ingest(submits, temp_infos):
     with (
         patch.object(Impl, "_get_redis", return_value=fake_redis),
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
     ):
@@ -210,7 +210,7 @@ async def test_folder_upload_rebuilds_the_tree_in_the_workspace():
     result, minio = await _ingest(submits, [_temp_info("f1", "Q1.xlsx")])
 
     assert result[0]["workspace_path"] == "/uploads/年报/2024/Q1.md"
-    assert ("bisheng", "workspace/svid1/uploads/年报/2024/Q1.md") in minio.store
+    assert ("doberman_agent", "workspace/svid1/uploads/年报/2024/Q1.md") in minio.store
 
 
 async def test_flat_upload_layout_is_untouched():
@@ -218,7 +218,7 @@ async def test_flat_upload_layout_is_untouched():
     result, minio = await _ingest(submits, [_temp_info("f1", "My Report.pdf")])
 
     assert result[0]["workspace_path"] == "/uploads/My Report.md"
-    assert ("bisheng", "workspace/svid1/uploads/My Report.md") in minio.store
+    assert ("doberman_agent", "workspace/svid1/uploads/My Report.md") in minio.store
 
 
 async def test_same_filename_in_two_directories_both_survive():
@@ -231,8 +231,8 @@ async def test_same_filename_in_two_directories_both_survive():
 
     assert result[0]["workspace_path"] == "/uploads/报告/summary.md"
     assert result[1]["workspace_path"] == "/uploads/附件/summary.md"
-    assert ("bisheng", "workspace/svid1/uploads/报告/summary.md") in minio.store
-    assert ("bisheng", "workspace/svid1/uploads/附件/summary.md") in minio.store
+    assert ("doberman_agent", "workspace/svid1/uploads/报告/summary.md") in minio.store
+    assert ("doberman_agent", "workspace/svid1/uploads/附件/summary.md") in minio.store
 
 
 async def test_raw_original_lands_beside_its_markdown_view():
@@ -250,7 +250,7 @@ async def test_raw_original_lands_beside_its_markdown_view():
     with (
         patch.object(Impl, "_get_redis", return_value=fake_redis),
         patch(
-            "bisheng.linsight.domain.services.workbench_impl.get_minio_storage",
+            "doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage",
             new=AsyncMock(return_value=fake_minio),
         ),
     ):
@@ -259,7 +259,7 @@ async def test_raw_original_lands_beside_its_markdown_view():
         )
 
     assert result[0]["raw_workspace_path"] == "/uploads/年报/2024/Q1.xlsx"
-    assert ("bisheng", "workspace/svid1/uploads/年报/2024/Q1.xlsx") in fake_minio.store
+    assert ("doberman_agent", "workspace/svid1/uploads/年报/2024/Q1.xlsx") in fake_minio.store
 
 
 async def test_crafted_relative_path_stays_inside_uploads():

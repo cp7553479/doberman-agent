@@ -7,7 +7,7 @@ from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base
 from sqlmodel import Session
 
-from bisheng.user.domain.repositories import management_search_repository as repository
+from doberman_agent.user.domain.repositories import management_search_repository as repository
 
 Base = declarative_base()
 

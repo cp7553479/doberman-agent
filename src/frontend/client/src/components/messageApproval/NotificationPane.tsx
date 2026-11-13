@@ -1,4 +1,4 @@
-import { Segmented } from "@bisheng/ui";
+import { Segmented } from "@doberman-agent/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MessageItem, MessageReadState } from "~/api/message";

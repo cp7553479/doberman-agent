@@ -8,11 +8,11 @@ import pytest
 from fastapi import APIRouter, Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.models.api_credential import ApiCredential
-from bisheng.open_api.domain.scopes import open_api_scope
-from bisheng.open_api.domain.services.credential_service import hash_token
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+from doberman_agent.open_api.domain.scopes import open_api_scope
+from doberman_agent.open_api.domain.services.credential_service import hash_token
 
 
 @pytest.mark.parametrize("subject_kind", ["service_account", "natural_person"])
@@ -69,15 +69,15 @@ async def test_lifecycle_denials_use_distinct_codes(fake_redis, monkeypatch, sub
         )
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_validator.CredentialRepository.get_by_hash",
+        "doberman_agent.open_api.domain.services.credential_validator.CredentialRepository.get_by_hash",
         AsyncMock(return_value=None if state == "unknown" else row),
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_validator.ServiceAccountRepository.get",
+        "doberman_agent.open_api.domain.services.credential_validator.ServiceAccountRepository.get",
         AsyncMock(return_value=holder),
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.repositories.owner_repository.OwnerRepository.get_active_natural_person",
+        "doberman_agent.open_api.domain.repositories.owner_repository.OwnerRepository.get_active_natural_person",
         AsyncMock(return_value=holder),
     )
     app = FastAPI()

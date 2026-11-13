@@ -23,8 +23,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 from .conftest import ROOT_TENANT_ID, TENANT_ADMIN_USER_ID
 
@@ -85,7 +85,7 @@ class _FakeResources:
 
     async def resolve(self, *, resource_type, resource_id, actor, action):
         if self.denied:
-            from bisheng.common.errcode.permission import PermissionDeniedError
+            from doberman_agent.common.errcode.permission import PermissionDeniedError
 
             raise PermissionDeniedError()
         return self.target
@@ -104,7 +104,7 @@ def _target(app_id: str) -> VerifiedPermissionTarget:
 
 
 def _request(changes: list[dict], key: str = "idem-1"):
-    from bisheng.permission.domain.schemas import GrantMutationRequest
+    from doberman_agent.permission.domain.schemas import GrantMutationRequest
 
     return GrantMutationRequest.model_validate(
         {
@@ -117,8 +117,8 @@ def _request(changes: list[dict], key: str = "idem-1"):
 
 
 def _api(runtime, target, *, denied: bool = False, register_app: bool = True):
-    from bisheng.app_runtime.domain.services.visibility_audit import HostedAppVisibilityAuditListener
-    from bisheng.permission.application.resource_api import (
+    from doberman_agent.app_runtime.domain.services.visibility_audit import HostedAppVisibilityAuditListener
+    from doberman_agent.permission.application.resource_api import (
         F048ResourcePermissionApi,
         GrantChangeListenerRegistry,
     )
@@ -159,7 +159,7 @@ def test_callback_registered_for_app():
     """
     import inspect
 
-    from bisheng.api.services import f048_permission_runtime
+    from doberman_agent.api.services import f048_permission_runtime
 
     source = inspect.getsource(f048_permission_runtime.initialize_f048_api_runtime)
     assert 'grant_listeners.register("app", HostedAppVisibilityAuditListener())' in source
@@ -280,7 +280,7 @@ async def test_tenant_admin_operator_is_self(app_db, app_factory, audit_sink):
 
 async def test_non_owner_denied(app_db, app_factory, audit_sink):
     """The backend gate is ``manage_permission`` on ``_target`` — and it runs first."""
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     app, _ = await app_factory()
     runtime = _FakeRuntime(roster=[])
@@ -298,7 +298,7 @@ async def test_non_owner_denied(app_db, app_factory, audit_sink):
 
 async def test_audit_failure_does_not_rollback_grant(app_db, app_factory, monkeypatch):
     """A dead audit insert must not report a failure for a mutation that succeeded."""
-    from bisheng.database.models.audit_log import AuditLogDao
+    from doberman_agent.database.models.audit_log import AuditLogDao
 
     app, _ = await app_factory()
     runtime = _FakeRuntime(roster=[])
@@ -345,7 +345,7 @@ async def test_move_records_subject_and_model(app_db, app_factory, audit_sink):
 
 def test_registry_rejects_duplicate_registration():
     """Registering twice is a wiring bug, not a last-one-wins."""
-    from bisheng.permission.application.resource_api import GrantChangeListenerRegistry
+    from doberman_agent.permission.application.resource_api import GrantChangeListenerRegistry
 
     registry = GrantChangeListenerRegistry()
     registry.register("app", object())

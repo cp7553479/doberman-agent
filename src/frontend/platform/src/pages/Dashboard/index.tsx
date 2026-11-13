@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { locationContext } from "@/contexts/locationContext"
 import { showApiError } from "@/controllers/request"

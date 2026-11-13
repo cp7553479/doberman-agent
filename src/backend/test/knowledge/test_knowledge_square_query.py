@@ -8,15 +8,15 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models.knowledge import (
     AuthTypeEnum,
     Knowledge,
     KnowledgeDao,

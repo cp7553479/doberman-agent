@@ -49,7 +49,7 @@ class Capture extends AudioWorkletProcessor {
     return true;
   }
 }
-registerProcessor('bisheng-asr-capture', Capture);
+registerProcessor('doberman_agent-asr-capture', Capture);
 `;
 
 export class PcmCapture {
@@ -80,7 +80,7 @@ export class PcmCapture {
     try {
       await this.context.audioWorklet.addModule(url);
       if (signal.aborted || this.closed) return;
-      this.node = new AudioWorkletNode(this.context, "bisheng-asr-capture");
+      this.node = new AudioWorkletNode(this.context, "doberman_agent-asr-capture");
       this.node.port.onmessage = (
         event: MessageEvent<Float32Array | { flushed: true }>,
       ) => {

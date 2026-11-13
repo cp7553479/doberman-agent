@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.services import stale_projection_reconciler as reconciler
+from doberman_agent.knowledge.domain.services import stale_projection_reconciler as reconciler
 
 
 @dataclass(frozen=True)

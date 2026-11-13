@@ -18,7 +18,7 @@ vi.mock('compressorjs', () => ({
 }));
 
 const file = new File(['image'], 'logo.png', { type: 'image/png' });
-const uploaded = { file_path: '/bisheng/icon/new.png', relative_path: 'icon/new.png' };
+const uploaded = { file_path: '/doberman_agent/icon/new.png', relative_path: 'icon/new.png' };
 function mount(label = 'Assistant logo', image = '/old.png') {
     const onUpload = vi.fn();
     const view = render(<IconUploadSection label={label} image={image} enabled onToggle={vi.fn()} onUpload={onUpload} />);

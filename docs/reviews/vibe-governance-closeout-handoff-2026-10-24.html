@@ -150,8 +150,8 @@ K8s → 延用 F059 能力证明，不读取 Docker 宿主证明
 <ol>
 <li>backend、默认 Celery worker、Beat、app-proxy、runtime-manager 和前端使用本轮源码构建。Compose 中既有公开镜像标签不会自动包含这些代码；本轮没有发行新镜像。</li>
 <li>对已有数据库执行 <code>alembic upgrade head</code>，新增 <code>app_access_log.app_name_snapshot</code> 可空列，无历史回填。新查询快照、导出任务、宿主证明表通过项目现有模型发现/create_all 路径创建。升级时确认实际 schema 齐备，不只检查进程健康。</li>
-<li>backend/worker 使用一致的平台存储和加密配置，私有 <code>bisheng-apps</code> 桶允许创建、读写和按任务前缀清理。导出不依赖 API 主机本地目录；Beat 每 30 秒续办/清理，默认 worker 必须消费相应任务。</li>
-<li><code>BISHENG_RUNTIME_AUDIT_SOURCE_TIMEZONE</code> 应匹配现有三类记录的无时区数据库时间约定；未设置时使用进程 <code>TZ</code>，再回落 UTC。查询将请求 UTC 转为源时区，输出转回 UTC，快照冻结源时区；不做旧记录重写。</li>
+<li>backend/worker 使用一致的平台存储和加密配置，私有 <code>doberman-agent-apps</code> 桶允许创建、读写和按任务前缀清理。导出不依赖 API 主机本地目录；Beat 每 30 秒续办/清理，默认 worker 必须消费相应任务。</li>
+<li><code>DOBERMAN_AGENT_RUNTIME_AUDIT_SOURCE_TIMEZONE</code> 应匹配现有三类记录的无时区数据库时间约定；未设置时使用进程 <code>TZ</code>，再回落 UTC。查询将请求 UTC 转为源时区，输出转回 UTC，快照冻结源时区；不做旧记录重写。</li>
 <li>F055 部署加密密钥沿用运维配置，勿在聊天、仓库、日志或测试报告内写真实环境变量值。配置保存不触发重启，只有用户确认应用后进入既有重建流程。</li>
 <li><strong>Docker 必须先按安装说明启用宿主隔离单元</strong>：宿主 Python 包、可用 Engine API、明确的 iptables/nft 后端、IPv4 internal 应用/构建网络、受控 egress、固定 digest 的 Python canary 镜像，以及实际监听的管理探测目标。宿主工具可用宿主 socket；使用受限 API 代理时需明确允许检查和 canary 的 create/exec/start/stop 操作。不要求宿主 Docker CLI，不给 manager root/NET_ADMIN。</li>
 <li>backend 独立配置 <code>host-isolation</code> 角色 HMAC 密钥和 node descriptor，manager 保留 <code>manager</code> 角色。先生成 descriptor、更新映射，再启动宿主 timer 和 manager。报告有效期 60 秒，每 30 秒真实重探；心跳不能代替宿主证明。每 Engine 一个宿主单元，覆盖该节点应用和构建网络。</li>

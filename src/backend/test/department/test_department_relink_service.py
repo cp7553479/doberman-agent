@@ -19,14 +19,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.sso_sync import (
+from doberman_agent.common.errcode.sso_sync import (
     SsoRelinkConflictUnresolvedError,
     SsoRelinkStrategyUnsupportedError,
 )
-from bisheng.org_sync.domain.schemas.relink import RelinkRequest
+from doberman_agent.org_sync.domain.schemas.relink import RelinkRequest
 
 
-MODULE = 'bisheng.org_sync.domain.services.relink_service'
+MODULE = 'doberman_agent.org_sync.domain.services.relink_service'
 
 
 def _dept(*, id, external_id='OLD', path='/Root/A', name='A', tenant_id=1):
@@ -65,7 +65,7 @@ def relink_mocks(monkeypatch):
         get=AsyncMock(return_value=[]),
         delete=AsyncMock(),
     )
-    from bisheng.org_sync.domain.services.relink_service import (
+    from doberman_agent.org_sync.domain.services.relink_service import (
         DepartmentRelinkService,
     )
     monkeypatch.setattr(DepartmentRelinkService, 'store', fake_store)
@@ -90,7 +90,7 @@ class TestExternalIdMapStrategy:
 
     async def test_external_id_map_strategy_applies(self, relink_mocks):
         """AC-05"""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.aget_by_source_ext.return_value = _dept(
@@ -115,7 +115,7 @@ class TestExternalIdMapStrategy:
 
     async def test_external_id_map_skips_missing_dept(self, relink_mocks):
         """Non-existent old_ext must not crash — simply skip."""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.aget_by_source_ext.return_value = None
@@ -142,7 +142,7 @@ class TestPathPlusNameStrategy:
         self, relink_mocks,
     ):
         """AC-06 single-candidate"""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.aget_by_source_ext.return_value = _dept(
@@ -167,7 +167,7 @@ class TestPathPlusNameStrategy:
         self, relink_mocks,
     ):
         """AC-06 multi-candidate — no auto-apply, conflicts persisted."""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.aget_by_source_ext.return_value = _dept(
@@ -205,7 +205,7 @@ class TestDryRun:
 
     async def test_dry_run_returns_would_apply_no_db_write(self, relink_mocks):
         """AC-07"""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.aget_by_source_ext.return_value = _dept(
@@ -238,7 +238,7 @@ class TestUnknownStrategy:
         time, so the service branch only fires if the caller constructs
         a RelinkRequest via model_construct (bypassing validation) — we
         replicate that here to verify the explicit raise path."""
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         req = RelinkRequest.model_construct(
@@ -261,7 +261,7 @@ class TestUnknownStrategy:
 class TestResolveConflict:
 
     async def test_resolve_conflict_applies_chosen_candidate(self, relink_mocks):
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.store.get.return_value = [
@@ -287,7 +287,7 @@ class TestResolveConflict:
     async def test_resolve_conflict_raises_19316_when_not_in_candidates(
         self, relink_mocks,
     ):
-        from bisheng.org_sync.domain.services.relink_service import (
+        from doberman_agent.org_sync.domain.services.relink_service import (
             DepartmentRelinkService,
         )
         relink_mocks.store.get.return_value = [

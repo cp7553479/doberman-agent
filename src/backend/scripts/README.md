@@ -5,7 +5,7 @@ This directory contains manual maintenance and migration scripts for the backend
 ## Built-in knowledge retrieval tool
 
 `register_work_knowledge_tool.py` completes the Work knowledge-search upgrade in
-an existing database: register `bisheng_knowledge_search`, reconcile its category
+an existing database: register `doberman_agent_knowledge_search`, reconcile its category
 through the F048 permission facade, and verify the projection is CURRENT. Fresh
 installations use the seed catalog. Run one process during release maintenance
 from `src/backend` with the live service `config`:
@@ -70,7 +70,7 @@ are outside this fixture. No prompt text or credentials are printed.
 ### `diagnose_dm_column_reflection.py`
 
 Read-only comparison of DM8 catalog metadata, SQLAlchemy
-`Inspector.get_columns()`, and BiSheng's shared `column_exists()` helper. Use it
+`Inspector.get_columns()`, and doberman-agent's shared `column_exists()` helper. Use it
 when Alembic reports that a column already exists after the helper reported it
 missing.
 
@@ -86,7 +86,7 @@ Specify another target or override the schema inferred from `database_url`:
 
 ```bash
 /app/.venv/bin/python scripts/diagnose_dm_column_reflection.py \
-  --schema BISHENG \
+  --schema DOBERMAN_AGENT \
   --table knowledge \
   --column metadata_fields
 ```
@@ -108,7 +108,7 @@ cd src/backend
 bash scripts/verify_mcp_stdio_blocked.sh --base-url http://HOST:7860 \
   --username admin --password '***'
 
-BISHENG_PASSWORD='***' bash scripts/verify_mcp_stdio_blocked.sh \
+DOBERMAN_AGENT_PASSWORD='***' bash scripts/verify_mcp_stdio_blocked.sh \
   --base-url http://HOST:7860 --username admin
 ```
 
@@ -160,8 +160,8 @@ credential and does not expose write or destructive calls.
 Run from `src/backend/`:
 
 ```bash
-export BISHENG_MCP_URL=https://bisheng.example.com/api/v2/mcp
-export BISHENG_API_KEY='<full-scope-api-key>'
+export DOBERMAN_AGENT_MCP_URL=https://doberman-agent.example.com/api/v2/mcp
+export DOBERMAN_AGENT_API_KEY='<full-scope-api-key>'
 .venv/bin/python scripts/verify_open_mcp.py --expected-profile full
 ```
 
@@ -170,12 +170,12 @@ Optional read-only smoke calls:
 ```bash
 .venv/bin/python scripts/verify_open_mcp.py \
   --expected-profile full \
-  --call-tool bisheng_knowledge_list \
+  --call-tool doberman_agent_knowledge_list \
   --arguments-json '{"type":0,"page_size":1}'
 
 .venv/bin/python scripts/verify_open_mcp.py \
   --expected-profile full \
-  --call-tool bisheng_knowledge_file_list \
+  --call-tool doberman_agent_knowledge_file_list \
   --arguments-json '{"knowledge_id":123,"page_size":1}'
 ```
 
@@ -185,7 +185,7 @@ intentionally restricted API key: it still rejects tools outside the F067
 allowlist, but does not prove that all ten release tools are present.
 
 ```bash
-export BISHENG_API_KEY='<personal-access-token>'
+export DOBERMAN_AGENT_API_KEY='<personal-access-token>'
 .venv/bin/python scripts/verify_open_mcp.py --expected-profile pat
 ```
 
@@ -193,7 +193,7 @@ For delegated service-account mode, add `--on-behalf-of <external-user-id>`.
 Use `--end-user <partition>` only for the existing end-user partition mode;
 the two headers are mutually exclusive. To keep secrets out of shell history
 and process arguments, the credential is accepted only through the environment
-variable named by `--api-key-env` (default `BISHENG_API_KEY`). Exit codes are
+variable named by `--api-key-env` (default `DOBERMAN_AGENT_API_KEY`). Exit codes are
 `0` for success, `2` for missing/invalid local configuration, `3` for a
 connection/protocol failure, and `4` for an allowlist or tool-call failure.
 
@@ -1012,7 +1012,7 @@ PYTHONPATH=./ .venv/bin/python scripts/restore_skills_to_local.py --apply
 
 > **F035 step 3 of 4 — AUTO at startup.** Runs automatically on service startup
 > (`main.lifespan`, idempotent, failure never blocks boot); shared logic in
-> `bisheng/permission/domain/linsight_task_mode_menu_backfill.py`. This CLI is only
+> `doberman_agent/permission/domain/linsight_task_mode_menu_backfill.py`. This CLI is only
 > for a manual re-run or dry-run preview. See `docs/architecture/08-deployment.md` → 升级 checklist.
 
 Grants WEB_MENU `linsight_task_mode` to every role that already has `home`.
@@ -1032,7 +1032,7 @@ config=config.yaml PYTHONPATH=./ .venv/bin/python scripts/backfill_linsight_task
 
 > **F035 step 2 of 4 — AUTO at startup.** Runs automatically on service startup
 > (`main.lifespan`, idempotent, failure never blocks boot); shared logic in
-> `bisheng/llm/domain/services/linsight_default_model_backfill.py`. This CLI is only
+> `doberman_agent/llm/domain/services/linsight_default_model_backfill.py`. This CLI is only
 > for a manual re-run or dry-run preview. See `docs/architecture/08-deployment.md` → 升级 checklist.
 
 F035 Track E (deepagents). Rewrites every tenant's `linsight_llm` config row in
@@ -1101,7 +1101,7 @@ PYTHONPATH=./ .venv/bin/python scripts/migrate_f068_knowledge_chat_entries.py \
   --apply \
   --expected-input-sha256 <dry-run-sha256> \
   --batch-size 500 \
-  --checkpoint-file /var/lib/bisheng/f068-tenant-3.checkpoint.json
+  --checkpoint-file /var/lib/doberman_agent/f068-tenant-3.checkpoint.json
 ```
 
 ### `backfill_message_citation_relations.py`
@@ -1293,7 +1293,7 @@ python scripts/dsh_migrate_role_policies.py --tenant 2 --actor 1 --model 7 --app
 
 `upgrade_vibe_runtime.py` uses authenticated scope APIs only. Export a signed manager
 `/v2/upgrade/inventory` during the maintenance window, review its SHA256, then run
-dry-run first with `BISHENG_MANAGEMENT_TOKEN`, `--inventory`, `--base-url` and
+dry-run first with `DOBERMAN_AGENT_MANAGEMENT_TOKEN`, `--inventory`, `--base-url` and
 `--report`. `--apply` additionally requires `--acknowledge-maintenance` and
 `--expected-inventory-sha256`. The backend rechecks live Engine facts. After import,
 use `POST /api/v1/apps/{app_id}/runtime/upgrade/rebind` to rebuild the current frozen

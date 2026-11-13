@@ -9,11 +9,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.services import f048_system_resource_bootstrap as bootstrap
-from bisheng.permission.application.system_resource_reconcile import (
+from doberman_agent.api.services import f048_system_resource_bootstrap as bootstrap
+from doberman_agent.permission.application.system_resource_reconcile import (
     SystemOwnedReconcileReport,
 )
-from bisheng.tool.domain.models.gpts_tools import GptsToolsType
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsType
 
 
 class _Result:

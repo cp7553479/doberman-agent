@@ -6,9 +6,9 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.services.projection import DshProjectionService
-from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.services.projection import DshProjectionService
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal

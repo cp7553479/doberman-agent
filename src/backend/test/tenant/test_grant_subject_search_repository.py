@@ -8,13 +8,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.group import Group
-from bisheng.database.models.tenant import Tenant, UserTenant
-from bisheng.tenant.domain.repositories import grant_department_repository
-from bisheng.tenant.domain.repositories import grant_subject_search_repository as queries
-from bisheng.tenant.domain.services.f048_permission_subject import TenantPermissionSubjectDirectory
-from bisheng.user.domain.models.user import User
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.group import Group
+from doberman_agent.database.models.tenant import Tenant, UserTenant
+from doberman_agent.tenant.domain.repositories import grant_department_repository
+from doberman_agent.tenant.domain.repositories import grant_subject_search_repository as queries
+from doberman_agent.tenant.domain.services.f048_permission_subject import TenantPermissionSubjectDirectory
+from doberman_agent.user.domain.models.user import User
 
 
 @pytest.fixture()
@@ -162,8 +162,8 @@ async def test_historical_membership_is_not_a_grant_candidate(directory):
 async def test_stale_selected_user_has_a_specific_membership_error(directory, monkeypatch):
     from unittest.mock import AsyncMock
 
-    from bisheng.common.errcode.permission import PermissionSubjectUnavailableError
-    from bisheng.database.models.tenant import UserTenantDao
+    from doberman_agent.common.errcode.permission import PermissionSubjectUnavailableError
+    from doberman_agent.database.models.tenant import UserTenantDao
 
     monkeypatch.setattr(
         UserTenantDao,

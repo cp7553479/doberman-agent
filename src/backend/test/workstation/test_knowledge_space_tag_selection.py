@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pydantic import ValidationError
 
-from bisheng.workstation.domain.schemas.chat import UseKnowledgeBaseParam
+from doberman_agent.workstation.domain.schemas.chat import UseKnowledgeBaseParam
 
 
 def test_tag_filter_round_trip():
@@ -24,11 +24,11 @@ def test_tag_filter_rejects_invalid_selection(filters):
 
 
 async def test_tag_scope_reuses_primary_and_visibility_prefilter(monkeypatch):
-    from bisheng.knowledge.domain.services.knowledge_file_visibility_service import (
+    from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import (
         IndexFilter,
         KnowledgeFileVisibilityService,
     )
-    from bisheng.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
+    from doberman_agent.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
 
     repo = SimpleNamespace(
         tag_belongs_to_space=AsyncMock(return_value=True), list_tagged_file_ids=AsyncMock(return_value=[40, 41])
@@ -43,9 +43,9 @@ async def test_tag_scope_reuses_primary_and_visibility_prefilter(monkeypatch):
 
 
 async def test_invalid_or_empty_tag_never_widens_scope(monkeypatch):
-    from bisheng.common.errcode.tag import TagNotExistError
-    from bisheng.knowledge.domain.services.knowledge_file_visibility_service import KnowledgeFileVisibilityService
-    from bisheng.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
+    from doberman_agent.common.errcode.tag import TagNotExistError
+    from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import KnowledgeFileVisibilityService
+    from doberman_agent.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
 
     repo = SimpleNamespace(
         tag_belongs_to_space=AsyncMock(return_value=False), list_tagged_file_ids=AsyncMock(return_value=[])
@@ -65,9 +65,9 @@ async def test_invalid_or_empty_tag_never_widens_scope(monkeypatch):
 async def test_both_indexes_receive_scope_before_retrieval(monkeypatch, tagged):
     from langchain_core.documents import Document
 
-    from bisheng.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
-    from bisheng.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
-    from bisheng.workstation.domain.services import workstation_service as module
+    from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
+    from doberman_agent.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
+    from doberman_agent.workstation.domain.services import workstation_service as module
 
     calls = []
 
@@ -130,8 +130,8 @@ async def test_both_indexes_receive_scope_before_retrieval(monkeypatch, tagged):
 
 
 async def test_daily_tool_freezes_user_tag_and_drops_it_for_unselected_subset(monkeypatch):
-    from bisheng.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
-    from bisheng.workstation.domain.services import chat_service as module
+    from doberman_agent.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
+    from doberman_agent.workstation.domain.services import chat_service as module
 
     query = AsyncMock(return_value=([], [], []))
     monkeypatch.setattr(module.WorkStationService, "queryChunksFromDB", query)
@@ -161,8 +161,8 @@ async def test_repository_checks_tag_owner_type_and_space_file_links(monkeypatch
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.database.models.group_resource import ResourceTypeEnum
-    from bisheng.knowledge.domain.repositories import knowledge_space_tag_repository as module
+    from doberman_agent.database.models.group_resource import ResourceTypeEnum
+    from doberman_agent.knowledge.domain.repositories import knowledge_space_tag_repository as module
 
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async with engine.begin() as connection:
@@ -199,9 +199,9 @@ async def test_repository_checks_tag_owner_type_and_space_file_links(monkeypatch
 
 
 async def test_daily_selection_preserves_fixed_tag_metadata(monkeypatch):
-    from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
-    from bisheng.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
-    from bisheng.workstation.domain.services import chat_service as module
+    from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+    from doberman_agent.knowledge.domain.services.knowledge_space_tag_filter_service import KnowledgeSpaceTagFilterService
+    from doberman_agent.workstation.domain.services import chat_service as module
 
     validate = AsyncMock()
     monkeypatch.setattr(KnowledgeSpaceTagFilterService, "validate_selection", validate)

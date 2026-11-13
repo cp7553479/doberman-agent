@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshToolArgumentsInvalidError, DshToolUnsupportedError
-from bisheng.tool.domain.services.saved_schema import SavedToolSchema
+from doberman_agent.common.errcode.dsh import DshToolArgumentsInvalidError, DshToolUnsupportedError
+from doberman_agent.tool.domain.services.saved_schema import SavedToolSchema
 
 
 def saved(root, *, components=None, body_schema=None, parameters=None):

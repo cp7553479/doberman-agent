@@ -27,25 +27,25 @@
 ### Wave 1 — 后端修复（可并行）
 
 - [x] **T001**: JWT 密钥解析模块 + 去掉代码默认值
-  **文件**: `bisheng/user/domain/services/jwt_secret.py`（新）、`bisheng/core/config/settings.py`、`bisheng/common/models/config.py`、`bisheng/user/domain/services/auth.py`
+  **文件**: `doberman-agent/user/domain/services/jwt_secret.py`（新）、`doberman-agent/core/config/settings.py`、`doberman-agent/common/models/config.py`、`doberman-agent/user/domain/services/auth.py`
   **AC**: AC-01、AC-02、AC-03、AC-05
 - [x] **T002**: 排序参数白名单（接口 Literal + DAO 校验）
-  **文件**: `bisheng/knowledge/domain/models/knowledge_space_file.py`、`bisheng/knowledge/api/endpoints/knowledge_space.py`
+  **文件**: `doberman-agent/knowledge/domain/models/knowledge_space_file.py`、`doberman-agent/knowledge/api/endpoints/knowledge_space.py`
   **AC**: AC-06、AC-07、AC-08
 - [x] **T003**: HTML 本地媒体目录围栏
-  **文件**: `bisheng/knowledge/rag/pipeline/loader/utils/md_from_html.py`
+  **文件**: `doberman-agent/knowledge/rag/pipeline/loader/utils/md_from_html.py`
   **AC**: AC-09、AC-10
 - [x] **T004**: 文件下载工具本地路径围栏
-  **文件**: `bisheng/core/cache/utils.py`
+  **文件**: `doberman-agent/core/cache/utils.py`
   **AC**: AC-11、AC-12
 - [x] **T005**: 建应用权限依赖并挂到两个创建端点
-  **文件**: `bisheng/user/domain/services/auth.py`、`bisheng/api/v1/workflow.py`、`bisheng/api/v1/assistant.py`
+  **文件**: `doberman-agent/user/domain/services/auth.py`、`doberman-agent/api/v1/workflow.py`、`doberman-agent/api/v1/assistant.py`
   **AC**: AC-13、AC-14
 
 ### Wave 2 — 测试与文档
 
 - [x] **T006**: 五组单测（见 design §6）+ 修正 `test/tenant/test_tenant_auth.py` 合跑时的密钥来源
-- [x] **T007**: `docker/bisheng/config/config.yaml` 注释示例、`docs/architecture/08-deployment.md` 配置说明与升级 checklist
+- [x] **T007**: `docker/doberman-agent/config/config.yaml` 注释示例、`docs/architecture/08-deployment.md` 配置说明与升级 checklist
 - [x] **T008**: `release-contract.md` 登记 F072（表 1 无新增领域对象、INV-36、表 3、变更历史）
 
 ### Wave 3 — 验证与发版

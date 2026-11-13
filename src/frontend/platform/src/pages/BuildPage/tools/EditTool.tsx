@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Textarea, toast } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Textarea, toast } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { Dialog,DialogContent,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
@@ -11,8 +11,8 @@ import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from "@/comp
 
 import { createTool,deleteTool,downloadToolSchema,testToolApi,updateTool } from "@/controllers/API/tools";
 import { showApiError } from "@/controllers/request";
-import { RadioGroup,Radio as RadioGroupItem } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { RadioGroup,Radio as RadioGroupItem } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { forwardRef,useEffect,useImperativeHandle,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppHint } from "../components/AppHint";
@@ -89,7 +89,7 @@ export const TestDialog = forwardRef<{
             </DialogHeader>
             {testShow && <div className="flex flex-col gap-8 py-6">
                 <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
-                    <label htmlFor="name" className="bisheng-label">{t('test.parametersAndValues')}</label>
+                    <label htmlFor="name" className="doberman_agent-label">{t('test.parametersAndValues')}</label>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -120,7 +120,7 @@ export const TestDialog = forwardRef<{
                 </div>
                 <Button onClick={handleTest} disabled={loading}>{t('test.test')}</Button>
                 <div className="">
-                    <label htmlFor="desc" className="bisheng-label">{t('test.result')}</label>
+                    <label htmlFor="desc" className="doberman_agent-label">{t('test.result')}</label>
                     <Textarea id="desc" name="desc" value={result} placeholder={t('test.outResultPlaceholder')} readOnly textareaClassName={"mt-2"} />
                 </div>
             </div>}
@@ -334,7 +334,7 @@ const EditTool = forwardRef((props: any, ref) => {
                     <label htmlFor="open" className="px-6">{t('tools.authenticationType')}</label>
                     <div className="px-6">
                         <div className="px-6 mb-4" >
-                            <label htmlFor="open" className="bisheng-label">{t('tools.authType')}</label>
+                            <label htmlFor="open" className="doberman_agent-label">{t('tools.authType')}</label>
                             <RadioGroup
                                 id="authMethod"
                                 name="authMethod"
@@ -354,7 +354,7 @@ const EditTool = forwardRef((props: any, ref) => {
                         </div>
                         {formState.authMethod === "apikey" && (<>
                             <div className="px-6 mb-4" >
-                                <Label htmlFor="open" className="bisheng-label flex items-center gap-1">
+                                <Label htmlFor="open" className="doberman_agent-label flex items-center gap-1">
                                     {t('tools.authTypeLabel')}
                                     <AppHint content={<div>
                                         <p>{t('tools.basicBearerDescription')}</p>
@@ -384,7 +384,7 @@ const EditTool = forwardRef((props: any, ref) => {
                             </div>
                             {formState.authType === "custom" && <>
                                 <div className="px-6 mb-4" >
-                                    <Label htmlFor="apiLocation" className="bisheng-label flex items-center gap-1">
+                                    <Label htmlFor="apiLocation" className="doberman_agent-label flex items-center gap-1">
                                         {t('tools.apiLocationLabel')}
                                         <AppHint content={<div>
                                             <p>{t('tools.headerDescription')}</p>
@@ -411,14 +411,14 @@ const EditTool = forwardRef((props: any, ref) => {
                                     </RadioGroup>
                                 </div>
                                 <div className="px-6 mb-4">
-                                    <Label className="bisheng-label" htmlFor="parameter">
+                                    <Label className="doberman_agent-label" htmlFor="parameter">
                                         <span className="text-red-500">*</span> {t('tools.parameterName')}
                                     </Label>
                                     <Input id="parameter" name="parameter" placeholder={t('tools.parameterPlaceholder')} value={formState.parameter} onChange={handleInputChange} className={"mt-2"} />
                                 </div>
                             </>}
                             <div className="px-6 mb-4">
-                                <Label className="bisheng-label" htmlFor="apiKey">
+                                <Label className="doberman_agent-label" htmlFor="apiKey">
                                     <span className="text-red-500">*</span> {t('tools.apiKeyLabel')}
                                 </Label>
                                 <Input id="apiKey" name="apiKey" placeholder={t('tools.apiKeyPlaceholder')} value={formState.apiKey} onChange={handleInputChange} className={"mt-2"} />
@@ -464,7 +464,7 @@ const EditTool = forwardRef((props: any, ref) => {
                 <label htmlFor="open" className="px-6">{t('tools.authenticationType')}</label>
                 <div className="px-6">
                     <div className="px-6 mb-4" >
-                        <label htmlFor="open" className="bisheng-label">{t('tools.authType')}</label>
+                        <label htmlFor="open" className="doberman_agent-label">{t('tools.authType')}</label>
                         <RadioGroup
                             id="authMethod"
                             name="authMethod"

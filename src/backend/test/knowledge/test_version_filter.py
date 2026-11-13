@@ -1,7 +1,7 @@
 """Tests for the version_filter RAG helper module."""
 import pytest
 
-from bisheng.knowledge.rag.version_filter import build_primary_only_filter
+from doberman_agent.knowledge.rag.version_filter import build_primary_only_filter
 
 
 def test_empty_ids_no_base():

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { departmentDisplayPath } from "@/components/bs-comp/department/departmentDisplayName";
 import { MemberTableView } from "./MemberTableView";
 

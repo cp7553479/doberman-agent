@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import type { WorkflowFileFieldProps } from '@bisheng/chat';
+import type { WorkflowFileFieldProps } from '@doberman-agent/chat';
 import type { ReactNode } from 'react';
 
 import { FileSearch2, Loader2 } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { bishengConfState } from "../store/atoms";
+import { dobermanAgentConfState } from "../store/atoms";
 import { useRecoilState } from "recoil";
 import { useToastContext } from "~/Providers";
 import { Button } from "~/components";
@@ -68,14 +68,14 @@ export default function InputFileComponent({
         setMyValue(value);
     }, [value]);
 
-    const [bishengConfig] = useRecoilState(bishengConfState)
+    const [dobermanAgentConfig] = useRecoilState(dobermanAgentConfState)
 
     const { showToast } = useToastContext();
 
     const checkFileSize = (file) => {
-        const maxSize = (bishengConfig?.uploaded_files_maximum_size || 50) * 1024 * 1024;
+        const maxSize = (dobermanAgentConfig?.uploaded_files_maximum_size || 50) * 1024 * 1024;
         if (file.size > maxSize) {
-            return t('com_inputfile_exceed_limit', { 0: file.name, 1: (bishengConfig?.uploaded_files_maximum_size || 50) })
+            return t('com_inputfile_exceed_limit', { 0: file.name, 1: (dobermanAgentConfig?.uploaded_files_maximum_size || 50) })
         }
         return ''
     }

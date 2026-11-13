@@ -11,12 +11,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.dsh_market.api.auth import MarketActor, market_actor, market_admin
-from bisheng.dsh_market.api.endpoints import router
-from bisheng.dsh_market.domain.repository import MarketRepository
-from bisheng.dsh_market.domain.service import MarketService
-from bisheng.dsh_market.infrastructure import get_market_service
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.dsh_market.api.auth import MarketActor, market_actor, market_admin
+from doberman_agent.dsh_market.api.endpoints import router
+from doberman_agent.dsh_market.domain.repository import MarketRepository
+from doberman_agent.dsh_market.domain.service import MarketService
+from doberman_agent.dsh_market.infrastructure import get_market_service
 
 
 class ObjectStore:

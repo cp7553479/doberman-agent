@@ -108,9 +108,6 @@ catalogs:
     axios:
       specifier: 1.20.0
       version: 1.20.0
-    bisheng-icons:
-      specifier: ^0.2.36
-      version: 0.2.36
     class-variance-authority:
       specifier: 0.7.1
       version: 0.7.1
@@ -241,21 +238,6 @@ importers:
       '@ariakit/react-core':
         specifier: ^0.4.15
         version: 0.4.26(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@bisheng/api-client':
-        specifier: workspace:*
-        version: link:../packages/api-client
-      '@bisheng/chat':
-        specifier: workspace:*
-        version: link:../packages/chat
-      '@bisheng/diagram-runtime':
-        specifier: workspace:*
-        version: link:../packages/diagram-runtime
-      '@bisheng/file-viewers':
-        specifier: workspace:*
-        version: link:../packages/file-viewers
-      '@bisheng/ui':
-        specifier: workspace:*
-        version: link:../packages/ui
       '@codesandbox/sandpack-react':
         specifier: ^2.19.10
         version: 2.20.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -265,6 +247,24 @@ importers:
       '@dicebear/core':
         specifier: ^7.0.4
         version: 7.2.0
+      '@doberman-agent/api-client':
+        specifier: workspace:*
+        version: link:../packages/api-client
+      '@doberman-agent/chat':
+        specifier: workspace:*
+        version: link:../packages/chat
+      '@doberman-agent/diagram-runtime':
+        specifier: workspace:*
+        version: link:../packages/diagram-runtime
+      '@doberman-agent/file-viewers':
+        specifier: workspace:*
+        version: link:../packages/file-viewers
+      '@doberman-agent/icons':
+        specifier: workspace:*
+        version: link:../packages/icons
+      '@doberman-agent/ui':
+        specifier: workspace:*
+        version: link:../packages/ui
       '@headlessui/react':
         specifier: ^2.1.2
         version: 2.2.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -349,9 +349,6 @@ importers:
       axios:
         specifier: 'catalog:'
         version: 1.20.0
-      bisheng-icons:
-        specifier: ^0.2.36
-        version: 0.2.36(react@18.3.1)
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -698,10 +695,13 @@ importers:
 
   packages/chat:
     dependencies:
-      '@bisheng/file-viewers':
+      '@doberman-agent/file-viewers':
         specifier: workspace:*
         version: link:../file-viewers
-      '@bisheng/ui':
+      '@doberman-agent/icons':
+        specifier: workspace:*
+        version: link:../icons
+      '@doberman-agent/ui':
         specifier: workspace:*
         version: link:../ui
       '@radix-ui/react-dialog':
@@ -710,9 +710,6 @@ importers:
       '@radix-ui/react-popover':
         specifier: 'catalog:'
         version: 1.3.1(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      bisheng-icons:
-        specifier: 'catalog:'
-        version: 0.2.36(react@18.3.1)
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@18.3.1)
@@ -783,12 +780,12 @@ importers:
 
   packages/file-viewers:
     dependencies:
-      '@bisheng/ui':
+      '@doberman-agent/icons':
+        specifier: workspace:*
+        version: link:../icons
+      '@doberman-agent/ui':
         specifier: workspace:*
         version: link:../ui
-      bisheng-icons:
-        specifier: 'catalog:'
-        version: 0.2.36(react@18.3.1)
       dompurify:
         specifier: 'catalog:'
         version: 3.4.17
@@ -842,10 +839,19 @@ importers:
         specifier: 'catalog:'
         version: 3.2.7(@types/debug@4.1.13)(@types/node@20.19.43)(jiti@2.7.0)(jsdom@25.0.1(canvas@2.11.2))(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.0)
 
+  packages/icons:
+    dependencies:
+      react:
+        specifier: '>=17.0.0'
+        version: 18.3.1
+
   packages/locales: {}
 
   packages/ui:
     dependencies:
+      '@doberman-agent/icons':
+        specifier: workspace:*
+        version: link:../icons
       '@radix-ui/react-checkbox':
         specifier: 'catalog:'
         version: 1.4.1(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -876,9 +882,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: 'catalog:'
         version: 1.4.1(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      bisheng-icons:
-        specifier: 'catalog:'
-        version: 0.2.36(react@18.3.1)
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -913,19 +916,22 @@ importers:
 
   platform:
     dependencies:
-      '@bisheng/api-client':
+      '@doberman-agent/api-client':
         specifier: workspace:*
         version: link:../packages/api-client
-      '@bisheng/chat':
+      '@doberman-agent/chat':
         specifier: workspace:*
         version: link:../packages/chat
-      '@bisheng/diagram-runtime':
+      '@doberman-agent/diagram-runtime':
         specifier: workspace:*
         version: link:../packages/diagram-runtime
-      '@bisheng/file-viewers':
+      '@doberman-agent/file-viewers':
         specifier: workspace:*
         version: link:../packages/file-viewers
-      '@bisheng/ui':
+      '@doberman-agent/icons':
+        specifier: workspace:*
+        version: link:../packages/icons
+      '@doberman-agent/ui':
         specifier: workspace:*
         version: link:../packages/ui
       '@headlessui/react':
@@ -1009,9 +1015,6 @@ importers:
       base64-js:
         specifier: ^1.5.1
         version: 1.5.1
-      bisheng-icons:
-        specifier: 'catalog:'
-        version: 0.2.36(react@18.3.1)
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -5034,11 +5037,6 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-
-  bisheng-icons@0.2.36:
-    resolution: {integrity: sha512-OwM9iCuTuZsatyvylkL1odefKlLw+dTr7pzKDnTt1j5baOKfhNx+Fwkv1yXxWn4k1OekEs1JA8NgxDolLR44sg==}
-    peerDependencies:
-      react: '>=17.0.0'
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -9867,7 +9865,7 @@ packages:
     resolution: {integrity: sha512-KH8XLdrq9T5YHJO/ixrjivHfmF2PC2CdVoK6RWZB4yftMykYIaXY1mxZYAic70vADM54kpMQF+dYmvl5NRNy1g==}
 
   vditor@file:platform/local-packages/vditor-3.11.1.tgz:
-    resolution: {integrity: sha512-qqDNfVM24H9fpVcPzbCGO8Rfx+VwhxwonWIz/9pM8flaxNEEtvsrMtD8Y/NOYGeja7miFw/snyljxrpg4k1DUg==, tarball: file:platform/local-packages/vditor-3.11.1.tgz}
+    resolution: {integrity: sha512-0PNOPdSaR0Oc1rWY84YSjLw+XXJhYa8Wgk1GnYKg6eqycGdV+FBW0vOeYbVkUbgRnOs2MG7xSNZJT3146Ysb0g==, tarball: file:platform/local-packages/vditor-3.11.1.tgz}
     version: 3.11.1
 
   vfile-location@4.1.0:
@@ -14645,10 +14643,6 @@ snapshots:
   big.js@5.2.2: {}
 
   binary-extensions@2.3.0: {}
-
-  bisheng-icons@0.2.36(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   bl@4.1.0:
     dependencies:

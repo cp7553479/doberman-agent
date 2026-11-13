@@ -31,7 +31,7 @@ def definition(revision=1):
 
 @pytest.fixture
 def actors(monkeypatch):
-    from bisheng.app_runtime.domain.services import runtime_profile_service as mod
+    from doberman_agent.app_runtime.domain.services import runtime_profile_service as mod
 
     async def identity(actor):
         return actor
@@ -46,8 +46,8 @@ def actors(monkeypatch):
 
 async def test_immutable_revision_and_default_freeze(runtime_repo, actors):
     """AC-14, AC-15, AC-16: defaults change future resolution, not old revisions."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
 
     service = RuntimeProfileService(runtime_repo)
     a = await service.import_revision(definition(), actor=actors.admin)
@@ -65,8 +65,8 @@ async def test_immutable_revision_and_default_freeze(runtime_repo, actors):
 
 async def test_only_superadmin_manages_global_catalog(runtime_repo, actors):
     """AC-14, AC-30: owner and service account do not become global admins."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_profile_service import RuntimeProfileService
 
     service = RuntimeProfileService(runtime_repo)
     for actor in [actors.owner, actors.sak]:
@@ -78,7 +78,7 @@ def test_official_delivery_requires_both_architectures():
     """AC-31, AC-55: amd64-only is not a successful official release."""
     from pydantic import ValidationError
 
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
 
     body = definition()
     del body["platforms"]["linux/arm64"]
@@ -88,8 +88,8 @@ def test_official_delivery_requires_both_architectures():
 
 def test_private_material_and_restore_owner_guard(actors):
     """AC-30, AC-45: admin status never grants another owner's data action."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_profile_service import require_natural_owner
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_profile_service import require_natural_owner
 
     app = SimpleNamespace(tenant_id=1, owner_user_id=10)
     require_natural_owner(app, actors.owner)
@@ -107,8 +107,8 @@ def test_offline_catalog_export_matches_backend_normalized_identity():
     import importlib.util
     from pathlib import Path
 
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
-    from bisheng.app_runtime.domain.services.runtime_protocol import content_digest
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import RuntimeProfileDefinition
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import content_digest
 
     script = Path(__file__).parents[3] / "runtime-manager/tools/runtime_materials.py"
     spec = importlib.util.spec_from_file_location("runtime_materials_contract", script)

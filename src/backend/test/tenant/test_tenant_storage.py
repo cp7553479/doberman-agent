@@ -3,7 +3,7 @@
 Covers AC-10: default tenant returns empty string, new tenants get prefixes.
 """
 
-from bisheng.core.storage.tenant_storage import (
+from doberman_agent.core.storage.tenant_storage import (
     get_es_index_prefix,
     get_milvus_collection_prefix,
     get_minio_prefix,

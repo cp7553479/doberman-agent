@@ -1,10 +1,10 @@
 import { HeaderTenantScope } from "@/components/HeaderTenantScope";
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownChevron, DropdownItem, DropdownSeparator, Select } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem, DropdownSeparator, Select } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
 import { GithubIcon } from "@/components/bs-icons";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
@@ -13,7 +13,7 @@ import i18next from "i18next";
 import { GanttChartIcon, Lock, MoonStar, Sun } from "lucide-react";
 
 import { useDshBrowserConfig } from "@/hooks/useDshBrowserConfig";
-import { Tooltip, TooltipProvider } from "@bisheng/ui";
+import { Tooltip, TooltipProvider } from "@doberman-agent/ui";
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -143,12 +143,12 @@ export default function MainLayout() {
                         <div className="inline-block">
                             {/* @ts-ignore */}
                             <img
-                                src={getBrandAssetUrl("headerLogoLight", "/assets/bisheng/login-logo-small.png")}
+                                src={getBrandAssetUrl("headerLogoLight", "/assets/doberman-agent/login-logo-small.png")}
                                 className="w-[104px] ml-[38px] rounded dark:hidden"
                                 alt=""
                             />
                             <img
-                                src={getBrandAssetUrl("headerLogoDark", "/assets/bisheng/logo-small-dark.png")}
+                                src={getBrandAssetUrl("headerLogoDark", "/assets/doberman-agent/logo-small-dark.png")}
                                 className="w-[104px] ml-[38px] rounded hidden dark:block"
                                 alt=""
                             />
@@ -404,7 +404,7 @@ export default function MainLayout() {
                                                 tabIndex={0}
                                                 className="h-[72px] w-[78px] cursor-pointer bg-background-tip rounded-lg hover:bg-[#1b1f23] hover:text-[white] transition-all dark:hover:bg-background-tip-darkhover"
                                             >
-                                                <Link className="flex h-full w-full flex-col items-center justify-center" to={"https://github.com/dataelement/bisheng"} target="_blank">
+                                                <Link className="flex h-full w-full flex-col items-center justify-center" to={"https://github.com/cp7553479/doberman-agent"} target="_blank">
                                                     <GithubIcon className="side-bar-button-size mx-auto w-5 h-5 " />
                                                     <span className="block text-[12px] mt-[8px] font-bold">
                                                         {t("menu.github")}
@@ -468,7 +468,7 @@ export default function MainLayout() {
                     <p className=" text-sm text-center">{t("menu.forBestExperience")}</p>
                     {!appConfig.isPro && (
                         <div className="flex mt-8 justify-center gap-4">
-                            <a href={"https://github.com/dataelement/bisheng"} target="_blank">
+                            <a href={"https://github.com/cp7553479/doberman-agent"} target="_blank">
                                 <GithubIcon className="side-bar-button-size mx-auto" />
                                 Github
                             </a>

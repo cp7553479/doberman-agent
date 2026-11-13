@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.database.models.session import MessageSessionDao
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
-from bisheng.linsight.domain.services import state_message_manager, workbench_impl
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.database.models.session import MessageSessionDao
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
+from doberman_agent.linsight.domain.services import state_message_manager, workbench_impl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
 
 
 @pytest.fixture
@@ -21,9 +21,9 @@ def io(monkeypatch):
     async def _remove(svid):
         captured["removed"].append(svid)
 
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.LinsightQueue = lambda *a, **k: SimpleNamespace(remove=_remove)
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
     monkeypatch.setattr(workbench_impl, "get_redis_client", AsyncMock(return_value=SimpleNamespace()))
     monkeypatch.setattr(MessageSessionDao, "touch_session", AsyncMock())
 
@@ -65,7 +65,7 @@ async def test_queue_failure_does_not_block_termination(io, monkeypatch):
     async def _boom(_svid):
         raise RuntimeError("redis down")
 
-    sys.modules["bisheng.linsight.worker"].LinsightQueue = lambda *a, **k: SimpleNamespace(remove=_boom)
+    sys.modules["doberman_agent.linsight.worker"].LinsightQueue = lambda *a, **k: SimpleNamespace(remove=_boom)
     session = LinsightSessionVersion(id="SV-2", session_id="chat-1", user_id=7, question="q", tenant_id=1)
 
     await LinsightWorkbenchImpl.terminate(session)

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Select } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Select } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
@@ -133,14 +133,14 @@ export default function RunLog({ node, children }) {
     if (state === Status.normal) return children;
 
     if (state === Status.loading) return (
-        <div className='bisheng-node-top flex items-center'>
+        <div className='doberman_agent-node-top flex items-center'>
             <Outlined.Loading size={16} className="animate-spin text-primary mr-2" />
             <span className='text-sm text-primary'>{t('running')}</span>
         </div>
     );
 
     if (state === Status.success) return (
-        <div className='bisheng-node-top flex justify-between bg-[#E6FBF1] dark:bg-[#303134]'>
+        <div className='doberman_agent-node-top flex justify-between bg-[#E6FBF1] dark:bg-[#303134]'>
             <div className='flex items-center gap-2 text-sm'>
                 <div className='rounded-full w-4 h-4 bg-[#00C78C] text-gray-50 flex items-center justify-center'><Outlined.Check size={14} /></div>
                 <span>{t('runSuccess')}</span>
@@ -150,7 +150,7 @@ export default function RunLog({ node, children }) {
     );
 
     return (
-        <div className='bisheng-node-top flex justify-between bg-[#FCEAEA] dark:bg-[#303134]'>
+        <div className='doberman_agent-node-top flex justify-between bg-[#FCEAEA] dark:bg-[#303134]'>
             <div className='flex items-center gap-2 text-sm'>
                 <div className='rounded-full w-4 h-4 bg-[#F04438] text-gray-50 flex items-center justify-center'><Outlined.Close size={14} /></div>
                 <span>{t('runFailed')}</span>

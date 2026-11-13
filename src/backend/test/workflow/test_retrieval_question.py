@@ -4,11 +4,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.workflow.common.knowledge import RagUtils
-from bisheng.workflow.common.retrieval_question import normalize_retrieval_question
-from bisheng.workflow.nodes.knowledge_retriever.knowledge_retriever import KnowledgeRetriever
-from bisheng.workflow.nodes.qa_retriever.qa_retriever import QARetrieverNode
-from bisheng.workflow.nodes.rag.rag import RagNode
+from doberman_agent.workflow.common.knowledge import RagUtils
+from doberman_agent.workflow.common.retrieval_question import normalize_retrieval_question
+from doberman_agent.workflow.nodes.knowledge_retriever.knowledge_retriever import KnowledgeRetriever
+from doberman_agent.workflow.nodes.qa_retriever.qa_retriever import QARetrieverNode
+from doberman_agent.workflow.nodes.rag.rag import RagNode
 
 
 @pytest.mark.parametrize(
@@ -104,14 +104,14 @@ def test_knowledge_retriever_skips_retriever_setup_for_empty_questions():
 
     with (
         patch(
-            "bisheng.workflow.nodes.knowledge_retriever.knowledge_retriever.annotate_rag_documents_with_citations",
+            "doberman_agent.workflow.nodes.knowledge_retriever.knowledge_retriever.annotate_rag_documents_with_citations",
             return_value=[],
         ),
         patch(
-            "bisheng.workflow.nodes.knowledge_retriever.knowledge_retriever.collect_rag_citation_registry_items",
+            "doberman_agent.workflow.nodes.knowledge_retriever.knowledge_retriever.collect_rag_citation_registry_items",
             return_value=[],
         ),
-        patch("bisheng.workflow.nodes.knowledge_retriever.knowledge_retriever.cache_citation_registry_items_sync"),
+        patch("doberman_agent.workflow.nodes.knowledge_retriever.knowledge_retriever.cache_citation_registry_items_sync"),
     ):
         result = node._run("execution-id")
 
@@ -142,20 +142,20 @@ def test_rag_node_skips_retrieval_for_empty_questions():
 
     with (
         patch(
-            "bisheng.workflow.nodes.rag.rag.create_stuff_documents_chain",
+            "doberman_agent.workflow.nodes.rag.rag.create_stuff_documents_chain",
             return_value=chain,
         ),
         patch(
-            "bisheng.workflow.nodes.rag.rag.annotate_rag_documents_with_citations",
+            "doberman_agent.workflow.nodes.rag.rag.annotate_rag_documents_with_citations",
             return_value=[],
         ),
         patch(
-            "bisheng.workflow.nodes.rag.rag.collect_rag_citation_registry_items",
+            "doberman_agent.workflow.nodes.rag.rag.collect_rag_citation_registry_items",
             return_value=[],
         ),
-        patch("bisheng.workflow.nodes.rag.rag.cache_citation_registry_items_sync"),
+        patch("doberman_agent.workflow.nodes.rag.rag.cache_citation_registry_items_sync"),
         patch(
-            "bisheng.workflow.nodes.rag.rag.LLMNodeCallbackHandler",
+            "doberman_agent.workflow.nodes.rag.rag.LLMNodeCallbackHandler",
             return_value=llm_callback,
         ),
     ):

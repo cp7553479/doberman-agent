@@ -9,8 +9,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.worker.dsh.operations import register_operation_tasks
-from bisheng.worker.dsh.usage import register_usage_tasks
+from doberman_agent.worker.dsh.operations import register_operation_tasks
+from doberman_agent.worker.dsh.usage import register_usage_tasks
 
 
 class ThreadLocalTaskApp:
@@ -42,9 +42,9 @@ def across_thread(factory):
 @pytest.mark.parametrize("kind", ["operation", "usage", "inspection"])
 @pytest.mark.parametrize("headers", [{"tenant_id": 1}, {}, {"tenant_id": 2}, {"tenant_id": "1"}, {"tenant_id": True}])
 def test_request_tenant_survives_async_thread_bridge(monkeypatch, kind, headers):
-    from bisheng.dsh import operations_runtime
-    from bisheng.worker import _asyncio_utils
-    from bisheng.worker.dsh.registry import register_dsh_tasks
+    from doberman_agent.dsh import operations_runtime
+    from doberman_agent.worker import _asyncio_utils
+    from doberman_agent.worker.dsh.registry import register_dsh_tasks
 
     resume = AsyncMock(return_value=7)
     drain = AsyncMock(return_value=(7, False))

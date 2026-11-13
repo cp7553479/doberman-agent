@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 
 /**
- * Brand-themed folder icon — a faithful replica of bisheng-icons `Colored.Folder`
+ * Brand-themed folder icon — a faithful replica of @doberman-agent/icons `Colored.Folder`
  * with its hard-coded blues re-pointed to the brand palette so it follows the
  * blue ⇄ green theme switch (the packaged Colored icon can't be recolored).
  *

@@ -34,7 +34,7 @@
 - **技能只能经代码执行器生效**。脚本必须 exit 0，结果用 stdout 表达；子进程用 `sys.executable` 启动；cwd 是工作区根。相关规则见 `builtin_skills/AGENTS.md`。E2B 执行器看不到 `skills/` 目录。
 - **部署是纯文本环境**。平台默认的 dashscope 通道不收 base64 图片，因此模型选模板、做检查都不能依赖看图。
 - **用户端字体不可知**。文件最终由用户机器上的 PowerPoint 或 WPS 渲染；服务器只有 `fonts-wqy-zenhei`（见 `base.Dockerfile:13`）。
-- **pre-commit 限制单文件不超过 500KB**（`.pre-commit-config.yaml:13-14`，`src/backend/bisheng/**` 不在豁免列表里）。
+- **pre-commit 限制单文件不超过 500KB**（`.pre-commit-config.yaml:13-14`，`src/backend/doberman_agent/**` 不在豁免列表里）。
 - **多节点（C8）**。预览产物放 MinIO，单飞锁放 Redis；本地磁盘只存一次转换用的临时文件。
 - **错误码**。灵思模块 110 段内取 **11025**。已在发版线和 vibe 两条线 grep 确认未占用；登记见 release-contract 的"已分配模块编码"。
 
@@ -131,8 +131,8 @@
 
 ### 4.1 PPT 生成数据流
 
-1. **种子化技能包**。启动时，`builtin_skill_seeder.py` 把 `bisheng-pptx`（含 `templates/**`，按字节读取）写进 MinIO 的技能包对象。
-2. **物化到工作区**。任务开始时，`task_exec._provision_session_skills` 把技能文件物化到工作区 `skills/bisheng-pptx/`。
+1. **种子化技能包**。启动时，`builtin_skill_seeder.py` 把 `doberman-agent-pptx`（含 `templates/**`，按字节读取）写进 MinIO 的技能包对象。
+2. **物化到工作区**。任务开始时，`task_exec._provision_session_skills` 把技能文件物化到工作区 `skills/doberman-agent-pptx/`。
 3. **模型选模板**。模型读 SKILL.md，运行 `list_templates.py` 得到模板和版式的文字目录。
 4. **写大纲**。模型写 `scratch/outline.md`，每页一行：首读结论、`layout_id`、证据。
 5. **写构建脚本**。模型写 `scratch/build_deck.py`，用 `deck_template.Deck` 依次 `add` 原型页、`fill` 插槽、放 `chart` / `table` / `image`，最后 `save` 到 `output/<名>.pptx`。`save` 会删除原型页，并写出 `scratch/<名>.manifest.json`。
@@ -192,11 +192,11 @@
 | 模块与文件 | 职责 | 不做什么 |
 |---|---|---|
 | `src/backend/scripts/pptx_templates/{themes,layouts,build_templates}.py` | 开发期产出 5 份 `template.pptx`、`layouts.json` 和 `catalog.json` | 不随技能包下发 |
-| `bisheng-pptx/scripts/deck_template.py` | `Deck.open/add/fill/drop/table/chart/image/save`；克隆页面并改写 rId；填写时记录超容量；保存时删除原型页并写 manifest | 不做检查判定（交给 `deck_checks`） |
-| `bisheng-pptx/scripts/deck_render.py` | 原生图表（含瀑布图）与表格的渲染，生成脚本和 `Deck` 共用 | 不读写模板清单 |
-| `bisheng-pptx/scripts/list_templates.py` | 以纯文本列出模板、适用场景和版式表 | 不渲染图片 |
-| `bisheng-pptx/scripts/deck_checks.py` | 实现四项新检查和基线差分 | 不打印"结论: 通过"（只有 `inspect_*` 可以打印） |
-| `bisheng-pptx/scripts/inspect_deck.py` | 新增 `--manifest` 参数并能自动查找；合并输出 | 不改变既有检查的阈值 |
+| `doberman-agent-pptx/scripts/deck_template.py` | `Deck.open/add/fill/drop/table/chart/image/save`；克隆页面并改写 rId；填写时记录超容量；保存时删除原型页并写 manifest | 不做检查判定（交给 `deck_checks`） |
+| `doberman-agent-pptx/scripts/deck_render.py` | 原生图表（含瀑布图）与表格的渲染，生成脚本和 `Deck` 共用 | 不读写模板清单 |
+| `doberman-agent-pptx/scripts/list_templates.py` | 以纯文本列出模板、适用场景和版式表 | 不渲染图片 |
+| `doberman-agent-pptx/scripts/deck_checks.py` | 实现四项新检查和基线差分 | 不打印"结论: 通过"（只有 `inspect_*` 可以打印） |
+| `doberman-agent-pptx/scripts/inspect_deck.py` | 新增 `--manifest` 参数并能自动查找；合并输出 | 不改变既有检查的阈值 |
 | `linsight/domain/services/artifact_preview_service.py` | 会话版本鉴权、文件归属校验、缓存、单飞锁、转换 | 不处理 HTTP 细节 |
 | `linsight/api/endpoints/linsight.py` | 新增 `file_preview` 接口；`file_download` 改调 `load_accessible_version` | 不在接口层写业务判断 |
 | `knowledge/.../libreoffice_converter.py` | `convert_ppt_to_pdf` 增加可选参数 `timeout`，默认值保持 180 | 不改既有调用方的行为 |

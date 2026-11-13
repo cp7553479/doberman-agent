@@ -1,6 +1,6 @@
-import { CitationReferences } from '@bisheng/chat/citation-views';
-import type { ChatCitation } from '@bisheng/chat/citations';
-import { notification } from '@bisheng/ui';
+import { CitationReferences } from '@doberman-agent/chat/citation-views';
+import type { ChatCitation } from '@doberman-agent/chat/citations';
+import { notification } from '@doberman-agent/ui';
 import { usePlatformCitationServices } from './usePlatformCitationServices';
 import { renderPlatformCitationFile } from './PlatformCitationFile';
 import { useCitationMediaQuery } from './useCitationMediaQuery';

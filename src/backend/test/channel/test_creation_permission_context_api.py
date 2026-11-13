@@ -8,9 +8,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.api.endpoints import channel_manager as endpoints
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ChannelCreateLimitExceededError
+from doberman_agent.channel.api.endpoints import channel_manager as endpoints
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ChannelCreateLimitExceededError
 
 
 class _Prospective:
@@ -60,11 +60,11 @@ async def test_creation_context_and_candidates_use_server_tenant_and_same_shape(
     login_user = SimpleNamespace(user_id=7, tenant_id=3)
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.QuotaService.get_effective_quota",
+            "doberman_agent.channel.domain.services.channel_service.QuotaService.get_effective_quota",
             new=AsyncMock(return_value=-1),
         ),
         patch(
-            "bisheng.channel.domain.services.channel_service.resolve_permission_actor",
+            "doberman_agent.channel.domain.services.channel_service.resolve_permission_actor",
             new=AsyncMock(return_value=SimpleNamespace(user_id=7, current_tenant_id=3)),
         ),
     ):
@@ -95,7 +95,7 @@ async def test_channel_quota_fails_closed_before_permission_directory() -> None:
     members.find_channel_memberships.return_value = [SimpleNamespace(business_id="channel-1")]
     channels.find_channels_by_ids.return_value = [SimpleNamespace(id="channel-1")]
     with patch(
-        "bisheng.channel.domain.services.channel_service.QuotaService.get_effective_quota",
+        "doberman_agent.channel.domain.services.channel_service.QuotaService.get_effective_quota",
         new=AsyncMock(return_value=1),
     ):
         with pytest.raises(ChannelCreateLimitExceededError):

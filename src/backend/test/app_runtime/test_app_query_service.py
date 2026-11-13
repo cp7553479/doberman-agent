@@ -7,7 +7,7 @@ Two things this file is really guarding:
   request interceptor turns a GET answered with 403/404 into a full-page
   redirect (design pit 25). A test that only asserted "raises" would pass with
   the wrong exception class.
-* **One log scope, three doors.** The detail tab, ``bisheng logs`` (F053) and the
+* **One log scope, three doors.** The detail tab, ``doberman-agent logs`` (F053) and the
   MCP tool must see the *same* lines; only who may open each door differs.
 """
 
@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
-from bisheng.common.errcode.app_factory import (
+from doberman_agent.app_runtime.domain.constants import AppState
+from doberman_agent.common.errcode.app_factory import (
     AppLogForbiddenError,
     AppManageForbiddenError,
     AppNotFoundError,
@@ -27,7 +27,7 @@ pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator")
 
 
 def _super_admin_payload(user_id: int = 90999):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name="f054-super", user_role=[], tenant_id=1, is_global_super=True)
 
@@ -40,22 +40,22 @@ class TestDetail:
         :3001 and ``/apps`` is not in the vite proxy, so the link would point at
         a page that does not exist.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.common.services.config_service import settings
 
-        monkeypatch.setattr(settings.app_runtime, "entry_base_url", "https://bisheng.example.com/", raising=False)
+        monkeypatch.setattr(settings.app_runtime, "entry_base_url", "https://doberman-agent.example.com/", raising=False)
         app, _ = await app_factory(slug="my-app", state=AppState.ONLINE.value)
 
         detail = await AppQueryService.get_detail(app.id, actor=app_owner.payload)
 
-        assert detail["entry_url"] == "https://bisheng.example.com/apps/my-app"
+        assert detail["entry_url"] == "https://doberman-agent.example.com/apps/my-app"
         assert detail["slug"] == "my-app" and detail["state"] == AppState.ONLINE.value
         assert detail["owner_user_id"] == app_owner.user_id
 
     async def test_detail_falls_back_to_a_relative_entry_path(self, app_db, app_factory, app_owner, monkeypatch):
         """An unconfigured deployment still gets a usable link, just a relative one."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.common.services.config_service import settings
 
         monkeypatch.setattr(settings.app_runtime, "entry_base_url", "", raising=False)
         app, _ = await app_factory(slug="rel-app")
@@ -63,7 +63,7 @@ class TestDetail:
         assert (await AppQueryService.get_detail(app.id, actor=app_owner.payload))["entry_url"] == "/apps/rel-app"
 
     async def test_detail_denied_for_unrelated_user(self, app_db, app_factory, normal_user, tenant_admins):
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory()
         with pytest.raises(AppManageForbiddenError):
@@ -72,7 +72,7 @@ class TestDetail:
     async def test_cross_tenant_app_id_is_not_found(self, app_db, app_factory, sub_tenant, app_owner):
         """Explicit tenant check on top of the auto filter: the listener rewrites
         SELECTs only, and a management read must not depend on that alone."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         theirs, _ = await app_factory(tenant_id=sub_tenant.tenant_id, owner_user_id=sub_tenant.admin_user_id)
         with pytest.raises(AppNotFoundError):
@@ -82,11 +82,11 @@ class TestDetail:
 class TestInstance:
     async def test_instance_status_shape(self, app_db, app_factory, app_owner, fake_orchestrator):
         """AC-23 — the shape-neutral instance view, straight from the manager."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, version = await app_factory(state=AppState.ONLINE.value)
         fake_orchestrator.responses["status"] = {
-            "instance_id": "bisheng-app-x",
+            "instance_id": "doberman-agent-app-x",
             "phase": "running",
             "health": "healthy",
             "current_version_id": version.id,
@@ -110,7 +110,7 @@ class TestInstance:
 
     async def test_missing_instance_is_not_an_error(self, app_db, app_factory, app_owner, fake_orchestrator):
         """A stopped app has no instance; the detail page still renders."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         fake_orchestrator.responses["status"] = AppNotFoundError()
         app, _ = await app_factory(state=AppState.STOPPED.value)
@@ -123,7 +123,7 @@ class TestInstance:
     ):
         """Contract §2 — "the backend is down" and "the instance is gone" are two
         answers. Merging them makes a dockerd restart read as "app deleted"."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         fake_orchestrator.responses["status"] = AppOrchestratorUnavailableError()
         app, _ = await app_factory(state=AppState.ONLINE.value)
@@ -136,7 +136,7 @@ class TestLogs:
     async def test_logs_scope_identical_across_three_entries(self, app_db, app_factory, app_owner, fake_orchestrator):
         """AC-23 / AC-55 — detail tab, CLI (F053) and MCP tool (F052) read the
         same lines through the same call; only the door differs."""
-        from bisheng.app_runtime.domain.services.app_query_service import (
+        from doberman_agent.app_runtime.domain.services.app_query_service import (
             LOG_ENTRY_CLI,
             LOG_ENTRY_DETAIL,
             LOG_ENTRY_MCP,
@@ -160,7 +160,7 @@ class TestLogs:
     ):
         """AC-55 — a business pre-check, not an F048 check: the permission runtime
         short-circuits administrators to ALLOW, so it cannot express this."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         admin = _super_admin_payload(90888)
@@ -174,7 +174,7 @@ class TestLogs:
 
     async def test_logs_denied_returns_business_code_not_403(self, app_db, app_factory, normal_user, tenant_admins):
         """Pit 25 — 403 on a GET makes the platform SPA navigate away from the page."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         app, _ = await app_factory()
         with pytest.raises(AppLogForbiddenError) as excinfo:
@@ -185,7 +185,7 @@ class TestLogs:
     async def test_cli_and_mcp_entries_are_owner_only(self, app_db, app_factory, tenant_admins):
         """A credential acts for its resource owner; a tenant admin's key must not
         widen it to every app in the tenant (open-API boundary)."""
-        from bisheng.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
 
         app, _ = await app_factory()
         admin = _super_admin_payload(90888)
@@ -202,7 +202,7 @@ class TestLogs:
         zero retention cost); "no output yet" is an empty list, not an error."""
         import sqlmodel
 
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         fake_orchestrator.responses["logs"] = {"lines": []}
         app, _ = await app_factory(state=AppState.ONLINE.value)
@@ -226,15 +226,15 @@ class TestLogs:
         child-tenant key; and under D19 a token survives its holder moving
         tenants, so ``owner_user_id`` still matches on the app they left behind.
         ``get_logs`` reaches the check through ``_load`` rather than
-        ``_load_visible``, so without this comparison ``bisheng logs`` reads a
+        ``_load_visible``, so without this comparison ``doberman-agent logs`` reads a
         Root application the platform face already answers 16101 for.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import (
+        from doberman_agent.app_runtime.domain.services.app_query_service import (
             LOG_ENTRY_CLI,
             LOG_ENTRY_MCP,
             AppQueryService,
         )
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         from .conftest import ROOT_TENANT_ID, SUB_TENANT_ID
 
@@ -261,8 +261,8 @@ class TestLogs:
     ):
         """The guard is a tenant *comparison*, not a "root only" rule: an app and a
         key that live in the same child tenant are the ordinary case and pass."""
-        from bisheng.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         from .conftest import SUB_TENANT_ID
 
@@ -284,8 +284,8 @@ class TestLogs:
         one layer down; asserted here so the service answers the same 16101 on
         its own, rather than depending on a filter that a call path without
         tenant context would not have injected."""
-        from bisheng.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.app_runtime.domain.services.app_query_service import LOG_ENTRY_CLI, AppQueryService
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         from .conftest import SUB_TENANT_ID
 
@@ -305,7 +305,7 @@ class TestLogs:
 class TestRuntimeStatus:
     async def test_runtime_status_superadmin_only(self, app_db, app_owner, tenant_admins, fake_orchestrator):
         """AC-23 — one endpoint, both deployment shapes, super admin only."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         status = await AppQueryService.get_runtime_status(actor=_super_admin_payload())
         assert status["backend_available"] is True and status["supported_runtimes"] == ["python3.11"]
@@ -322,8 +322,8 @@ class TestVersionsAndList:
         is empty for a hosted app; reusing the workflow component against it
         would offer a "switch version" control that edits a *workflow*.
         """
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-        from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
         app, _first = await app_factory(state=AppState.ONLINE.value)
         async with app_db() as session:
@@ -342,7 +342,7 @@ class TestVersionsAndList:
             await session.commit()
             second_id = second.id
 
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         await AppStateService.stage_version(app.id, second_id)
 
@@ -367,7 +367,7 @@ class TestVersionsAndList:
         self, app_db, app_factory, app_owner, normal_user, tenant_admins, sub_tenant
     ):
         """AC-57 — an owner sees their own; a tenant administrator sees the tenant's."""
-        from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+        from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
         mine, _ = await app_factory(owner_user_id=app_owner.user_id)
         theirs, _ = await app_factory(owner_user_id=normal_user.user_id)
@@ -386,9 +386,9 @@ class TestVersionsAndList:
 
 @pytest.mark.parametrize("approval_status", ["pending", "rejected", "withdrawn"])
 async def test_version_history_joins_its_exact_approval(app_db, app_factory, app_owner, approval_status):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeployment
-    from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstance
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeployment
+    from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance
 
     app, version = await app_factory()
     async with app_db() as session:

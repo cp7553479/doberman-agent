@@ -33,7 +33,7 @@
   **依赖**: 无
 
 - [x] **T002**: schema 校验器
-  **文件**: `src/backend/bisheng/llm/domain/schemas.py`
+  **文件**: `src/backend/doberman_agent/llm/domain/schemas.py`
   **逻辑**: `model_name` `before` validator `strip()`；strip 后空串走 pydantic 校验失败，不进 Service。不改服务商名、不并进 `strip_config_whitespace`
   **覆盖 AC**: AC-01, AC-03, AC-05, AC-06
   **依赖**: T001

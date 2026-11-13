@@ -11,9 +11,9 @@
 
 | Layer | Used | Notes |
 |-------|------|-------|
-| Local mac | partial | AST `py_compile` only; no BiShengVENV conda env; base python lacks celery so full import fails |
+| Local mac | partial | AST `py_compile` only; no DobermanAgentVENV conda env; base python lacks celery so full import fails |
 | Test server (192.168.106.114) | ⏳ pending T09 | `uv sync --extra test` then `.venv/bin/pytest test/test_quota_service*.py test/e2e/test_e2e_tenant_quota_hierarchy.py -v` |
-| Real OpenFGA store | ⏳ pending T09 | F013 store `bisheng` already in place; shared_to tuples for Root resources written by business layer (F017 — pending) |
+| Real OpenFGA store | ⏳ pending T09 | F013 store `doberman-agent` already in place; shared_to tuples for Root resources written by business layer (F017 — pending) |
 
 ---
 
@@ -36,7 +36,7 @@
 
 ## Manual QA Checklist (spec §7)
 
-Execute on 114 after `uv sync` + `.venv/bin/uvicorn bisheng.main:app --port 7860` with `multi_tenant.enabled=true`.
+Execute on 114 after `uv sync` + `.venv/bin/uvicorn doberman_agent.main:app --port 7860` with `multi_tenant.enabled=true`.
 
 ### §7-1 Single-tenant 100% quota blocks
 
@@ -116,7 +116,7 @@ Execute on 114 after `uv sync` + `.venv/bin/uvicorn bisheng.main:app --port 7860
 | Item | Result | Evidence |
 |------|--------|----------|
 | pytest `test_quota_service*.py` + `test_require_quota_decorator.py` | ✅ 36/36 passed | `uv run --extra test pytest test/test_quota_service.py test/test_quota_service_tenant_tree.py test/test_quota_service_check_chain.py test/test_require_quota_decorator.py -v` ran in 0.59s (after fixing patch target in `test_count_usage_strict_returns_zero_on_missing_template`) |
-| pytest `test_e2e_tenant_quota_hierarchy.py` (6 active + 6 skip) | ✅ 6 passed / 6 skipped / 0 failed | `E2E_ADMIN_PASSWORD=Bisheng@top1 uv run --extra test pytest test/e2e/test_e2e_tenant_quota_hierarchy.py -v` (1.18s); required (a) `TenantService.aset_quota` to call `QuotaService.validate_quota_config`, (b) shared E2E helper fix: `helpers/auth.py` `get_admin_token` now reads `E2E_ADMIN_PASSWORD` env var + `create_test_user` RSA-encrypts the password (backend's `/user/create` expects RSA ciphertext per `UserService.decrypt_md5_password`; plain caused 10600 on follow-up login) |
+| pytest `test_e2e_tenant_quota_hierarchy.py` (6 active + 6 skip) | ✅ 6 passed / 6 skipped / 0 failed | `E2E_ADMIN_PASSWORD=doberman-agent@top1 uv run --extra test pytest test/e2e/test_e2e_tenant_quota_hierarchy.py -v` (1.18s); required (a) `TenantService.aset_quota` to call `QuotaService.validate_quota_config`, (b) shared E2E helper fix: `helpers/auth.py` `get_admin_token` now reads `E2E_ADMIN_PASSWORD` env var + `create_test_user` RSA-encrypts the password (backend's `/user/create` expects RSA ciphertext per `UserService.decrypt_md5_password`; plain caused 10600 on follow-up login) |
 | §7-4 Root aggregate — Root=30 workflows, 0 active Children | ✅ verified | MySQL: `SELECT tenant_id, COUNT(*) FROM flow WHERE flow_type=10 AND status!=0 GROUP BY tenant_id` → `1, 30`; GET `/tenants/quota/tree` → `root.usage[workflow].used=30, children_count=0`. Orphaned tenant id=2 correctly excluded from aggregate (proves `aget_children_ids_active` filters `status='active'`, INV-T9 satisfied) |
 | AC-03 full cycle (§7-8 equivalent) | ✅ verified | E2E test + probe: `storage_gb / user_count / model_tokens_monthly` persisted in `tenant.quota_config`; unknown key → 24005; extended `VALID_QUOTA_KEYS` honored end-to-end |
 | AC-06 tree API | ✅ verified | Probe shows correct `{root: TenantQuotaTreeNode, children: []}` structure; all 11 `VALID_QUOTA_KEYS` present in `root.usage` with `used/limit/utilization` fields; unauth → 401; super-admin-only gate enforced |

@@ -2,7 +2,7 @@ import { Control, Controller, UseFormSetValue, UseFormGetValues } from 'react-ho
 import { CircleHelpIcon } from '~/components/svg';
 import { useLocalize } from '~/hooks';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { ESide } from '~/common';
 import type { AssistantForm } from '~/common';
 

@@ -9,13 +9,13 @@
 **优先级**: P1（修复共用信息源被过度退订导致的频道静默断更；消除热路径 JSON 全表扫）
 **所属版本**: v2.6.0（合入 `feat/2.6.0-beta3` 分支）
 **模块编码**: 复用 channel 模块现有错误码（190 段，Owner F026），**不新增错误码**（订阅上限沿用 `InformationSourceSubscriptionLimitError` = 19007）
-**依赖**: 外部情报服务 `bisheng_information_client`（`/information/subscribe` `/information/unsubscribe`）；Celery 默认 `celery` 队列 + Beat；与 F026-channel-active-authorization 同改 `channel_service.py`，但领域不重叠（F026 拥有频道授权/`space_channel_member` channel 字段写行为，本特性拥有 `channel_info_source` 订阅生命周期写行为，二者解耦）
+**依赖**: 外部情报服务 `doberman_agent_information_client`（`/information/subscribe` `/information/unsubscribe`）；Celery 默认 `celery` 队列 + Beat；与 F026-channel-active-authorization 同改 `channel_service.py`，但领域不重叠（F026 拥有频道授权/`space_channel_member` channel 字段写行为，本特性拥有 `channel_info_source` 订阅生命周期写行为，二者解耦）
 **契约登记**: 已在 [release-contract.md](../release-contract.md) 表 1（`ChannelInfoSourceSubscription` 领域归属）、表 3（依赖图）、变更历史登记 F031
 
 > **范围边界**
 > - **本次纳入**：
 >   1. 确立「订阅意图唯一真相 = 租户内所有 `channel.source_list` 的并集」；
->   2. `channel_info_source` 定位为「已订阅集合 + 展示元数据」的物化视图，**行存在 ⟺ 毕昇认定该源已订阅**；
+>   2. `channel_info_source` 定位为「已订阅集合 + 展示元数据」的物化视图，**行存在 ⟺ doberman-agent认定该源已订阅**；
 >   3. 订阅判据切到 `channel_info_source` 主键索引查询（取代 `find_channels_by_source_id` 的 JSON 全表扫）；
 >   4. 去掉 `dismiss_channel` / `update_channel` 移除源时的**同步退订**；
 >   5. 新增**每日对账** Celery Beat 任务：`desired ↔ channel_info_source ↔ 外部情报服务` 三方收敛（退订 + 兜底补订阅 + 删悬挂行）；
@@ -196,7 +196,7 @@ for each active tenant:                     # Beat 注入租户上下文
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/worker/information/reconcile.py` | Celery Beat 薄包装：遍历活跃租户 → 逐租户调 `ChannelService.reconcile_information_subscriptions()`（不含业务逻辑） |
+| `src/backend/doberman_agent/worker/information/reconcile.py` | Celery Beat 薄包装：遍历活跃租户 → 逐租户调 `ChannelService.reconcile_information_subscriptions()`（不含业务逻辑） |
 | `src/backend/test/channel/test_channel_source_subscription.py` | 同步订阅判据 + dismiss/update 不退订的单测 |
 | `src/backend/test/channel/test_information_subscription_reconcile.py` | 对账 to_sub/to_unsub/失败隔离单测（直接测 service 方法，不经 Celery） |
 
@@ -228,5 +228,5 @@ for each active tenant:                     # Beat 注入租户上下文
 
 - 版本契约: [features/v2.6.0/release-contract.md](../release-contract.md)
 - 审批/频道订阅参考: `.claude/skills/approval-module`（频道订阅审批链路，与本特性的"信息源情报订阅"是两回事，勿混淆）
-- 外部情报客户端: `src/backend/bisheng/core/external/bisheng_information_client/client.py`
-- 既有文章同步 Beat: `src/backend/bisheng/worker/information/article.py`
+- 外部情报客户端: `src/backend/doberman_agent/core/external/doberman_agent_information_client/client.py`
+- 既有文章同步 Beat: `src/backend/doberman_agent/worker/information/article.py`

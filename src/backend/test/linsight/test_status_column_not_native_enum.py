@@ -11,11 +11,11 @@ from __future__ import annotations
 
 from sqlalchemy.dialects import mysql
 
-from bisheng.linsight.domain.models.linsight_execute_task import (
+from doberman_agent.linsight.domain.models.linsight_execute_task import (
     ExecuteTaskStatusEnum,
     LinsightExecuteTask,
 )
-from bisheng.linsight.domain.models.linsight_session_version import (
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersion,
     SessionVersionStatusEnum,
 )

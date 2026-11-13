@@ -1,13 +1,13 @@
 import unittest
 
-from bisheng.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
-from bisheng.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
+from doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
+from doberman_agent.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
 
 
 class PaddleOcrTest(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        self.tmp_dir = "/Users/zhangguoqing/works/bisheng/src/backend/test/knowledge/rag"
-        self.file_path = "/Users/zhangguoqing/works/bisheng/src/backend/test/knowledge/rag/test1.pdf"
+        self.tmp_dir = "/Users/zhangguoqing/works/doberman_agent/src/backend/test/knowledge/rag"
+        self.file_path = "/Users/zhangguoqing/works/doberman_agent/src/backend/test/knowledge/rag/test1.pdf"
         self.url = ""
 
     def test_load(self):

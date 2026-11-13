@@ -476,12 +476,12 @@
       "helper_null_lock_smoke_exit": 0,
       "images": {
         "manager": {
-          "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-143606851-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-143606851-amd64",
           "image_id": "sha256:727a725ed148acede43aaf4052f923eda229498d5e4a83db2cd6946562140b18",
           "native_smoke": true
         },
         "helper": {
-          "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261023-143606851-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261023-143606851-amd64",
           "image_id": "sha256:63c1243998c8ca303e59f2bed080ca70b4e7938914849dc77c7b0cef85d6ff35",
           "native_smoke": true
         }
@@ -870,12 +870,12 @@
           {
             "before_sha256": "ef1e5204a1003c49b98b5b329058d616760054614a633eaf611e9639ff66258b",
             "after_sha256": "6cff3d17ab50e864d0436bdb560613f0f64bfc1bf2ea36131659e4fb822fc68b",
-            "file": "bisheng/app_runtime/domain/services/runtime_data_grant_service.py"
+            "file": "doberman-agent/app_runtime/domain/services/runtime_data_grant_service.py"
           },
           {
             "before_sha256": "c6216578607f1b3da79f22b1e6367070f1007db2dc5a63578dc6656b36cd9830",
             "after_sha256": "767f522cf0db734476bf6a578d7849287a47a14ba05ea685d75b09ed93810a2a",
-            "file": "bisheng/app_runtime/domain/services/runtime_data_session_service.py"
+            "file": "doberman-agent/app_runtime/domain/services/runtime_data_session_service.py"
           }
         ],
         "other_services_restarted": false,
@@ -1238,8 +1238,8 @@
     "current_native_deployment": {
       "backend": {
         "files": {
-          "bisheng/app_runtime/domain/services/runtime_data_session_service.py": "ca6eb28964b717f0744ae2db4d5ab11ec2541563b40e49035be50e49fb471626",
-          "bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py": "e74775a5837014f0c608a1efd306b19d021d2a11de54d2e95a7b944c9df6b0ef"
+          "doberman-agent/app_runtime/domain/services/runtime_data_session_service.py": "ca6eb28964b717f0744ae2db4d5ab11ec2541563b40e49035be50e49fb471626",
+          "doberman-agent/app_runtime/domain/repositories/runtime_delivery_repository.py": "e74775a5837014f0c608a1efd306b19d021d2a11de54d2e95a7b944c9df6b0ef"
         },
         "backend_and_worker_restarted": true,
         "source_revision": "6f254f337dd6e8a36733501a2266bf08a04a56e9",
@@ -1374,25 +1374,25 @@
         "platform": "linux/amd64",
         "images": {
           "manager": {
-            "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+            "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-0d5ef7b2b-amd64",
             "image_id": "sha256:c3a5255e893973935e26c7f48adcc218f0bb14bd4b522fd8eaea75a35aabc659",
             "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
             "variant": null
           },
           "helper": {
-            "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+            "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261023-0d5ef7b2b-amd64",
             "image_id": "sha256:9cd5d3e1331f4b8c81c6335c4e3034e1eb9c63b94f1968e9dc4357180c2296a9",
             "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
             "variant": null
           },
           "assembler": {
-            "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+            "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-amd64",
             "image_id": "sha256:ccd89b540e02611fe1b7b24e7b7b991197b8f29d3462e1bb47962c2aca58f2d9",
             "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
             "variant": null
           },
           "assembler-public-ca": {
-            "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-public-ca-amd64",
+            "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-public-ca-amd64",
             "image_id": "sha256:ddc11511399ae6f3f9689a076a8cc6bb5c6b8db34bb194d892603fe20264f19e",
             "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
             "variant": "registry-public-ca"
@@ -1762,8 +1762,8 @@
     "status_protection": true,
     "binding_protection": true,
     "backend_sources": {
-      "src/backend/bisheng/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
-      "src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
+      "src/backend/doberman_agent/app_runtime/domain/repositories/runtime_kubernetes_repository.py": "2aeb4eccb208e6deba9f34acaf7b0f2e0db57e8e5fae6fa9b3ce638eec6d875c",
+      "src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py": "866efa5e8feebd838a804b60a3ec7f0d49c9edd2d8fb0e690c7f08c7a8197fe3"
     },
     "namespace_uid": "6b72687f-fdaf-4ee9-9a97-cf088a30d88b",
     "descriptor_configmap_uid": "9bcf2c14-d457-4947-bf9c-adb6e70ffd18",

@@ -3,7 +3,7 @@ import { resources } from '~/locales/i18n';
 import { capabilityCounts, filterCapabilities, localizeCapability } from './catalog';
 import type { Capability } from '~/api/capabilities';
 const item = (id: string, kind: Capability['kind'], ready: boolean, name: string): Capability => ({
-  id, resource_id: 1, kind, ready, name, description: 'Enterprise capability', provider: 'BISHENG', demo: false,
+  id, resource_id: 1, kind, ready, name, description: 'Enterprise capability', provider: 'doberman-agent', demo: false,
   trial: null, invocation_name: `runtime-${id}`,
 });
 const items = [item('1', 'skill', true, 'Order review'), item('2', 'api', true, 'Order query'), item('3', 'mcp', false, 'Inventory')];
@@ -93,7 +93,7 @@ test('time uses the existing tool translation for title and description', async 
 
 test.each(['en', 'zh-Hans', 'ja'] as const)('knowledge search reuses the existing %s category translation', async lng => {
   const i18n = await language(lng);
-  const knowledge: Capability = { ...company, tool_key: 'bisheng_knowledge_search' };
+  const knowledge: Capability = { ...company, tool_key: 'doberman_agent_knowledge_search' };
   const categoryKey = Object.entries(englishTools.categories).find(([, value]) => value.name === 'Knowledge base search')?.[0];
   const copy = Object.entries(resources[lng].tool.categories).find(([key]) => key === categoryKey)?.[1];
   expect(localizeCapability(knowledge, i18n.t.bind(i18n))).toMatchObject({ name: copy?.name, description: copy?.desc });

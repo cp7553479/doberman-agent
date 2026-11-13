@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.database.models.department import DepartmentDao, UserDepartmentDao
-from bisheng.database.models.tenant import TenantDao, UserTenantDao
-from bisheng.tenant.domain.services.user_tenant_reconcile_service import (
+from doberman_agent.database.models.department import DepartmentDao, UserDepartmentDao
+from doberman_agent.database.models.tenant import TenantDao, UserTenantDao
+from doberman_agent.tenant.domain.services.user_tenant_reconcile_service import (
     UserTenantReconcileContext,
     UserTenantReconcileService,
 )

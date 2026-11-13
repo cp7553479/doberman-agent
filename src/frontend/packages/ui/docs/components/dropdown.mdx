@@ -6,7 +6,7 @@ statusNote: 桌面端已落地；手机档底部面板（§8）待做，业务�
 
 # 下拉菜单 Dropdown
 
-把**一组相关的动作**收进一个按钮里，点开再选；点完就执行，触发器本身不变。组件库 `@bisheng/ui` 导出 **`Dropdown`** 与 `DropdownItem` / `DropdownGroup` / `DropdownSeparator` / `DropdownSub` / `DropdownChevron` / `DropdownButton`。规范全文见「文档 → 组件规范 → 下拉菜单 Dropdown」。
+把**一组相关的动作**收进一个按钮里，点开再选；点完就执行，触发器本身不变。组件库 `@doberman-agent/ui` 导出 **`Dropdown`** 与 `DropdownItem` / `DropdownGroup` / `DropdownSeparator` / `DropdownSub` / `DropdownChevron` / `DropdownButton`。规范全文见「文档 → 组件规范 → 下拉菜单 Dropdown」。
 
 **壳把规范写死的部分**：面板外壳、32px 菜单项、分组标题、分隔线与[选择器](/components/select)面板同一套；宽度随内容、最小 120px 最大 280px，不与触发器等宽；菜单开着时触发器保持悬停态、`DropdownChevron` 翻转；禁用项置灰不隐藏；危险项红字、悬停换红色浅底；点菜单项先关菜单再执行。这些没有 prop。
 
@@ -18,8 +18,8 @@ statusNote: 桌面端已落地；手机档底部面板（§8）待做，业务�
 
 ```tsx
 import React from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Button, Dropdown, DropdownItem, DropdownSeparator } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Button, Dropdown, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
 
 export default () => (
   <Dropdown
@@ -49,7 +49,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Button, Dropdown, DropdownChevron, DropdownItem } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12 }}>
@@ -91,7 +91,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { DropdownButton, DropdownItem } from '@bisheng/ui';
+import { DropdownButton, DropdownItem } from '@doberman-agent/ui';
 
 const MENU = (
   <>
@@ -129,7 +129,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Button, Dropdown, DropdownChevron, DropdownGroup, DropdownItem, DropdownSeparator } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownGroup, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
 
 export default () => {
   const [showArchived, setShowArchived] = React.useState(true);
@@ -166,8 +166,8 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Button, Dropdown, DropdownItem, DropdownSub } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Button, Dropdown, DropdownItem, DropdownSub } from '@doberman-agent/ui';
 
 export default () => (
   <Dropdown
@@ -196,7 +196,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Button, Dropdown, DropdownChevron, DropdownItem } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem } from '@doberman-agent/ui';
 
 export default () => (
   <Dropdown

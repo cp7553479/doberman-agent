@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.open_mcp.contracts import (
+from doberman_agent.open_mcp.contracts import (
     KnowledgeFileDeleteInput,
     KnowledgeFileListInput,
     KnowledgeFilesDeleteInput,
     KnowledgeFileUploadInput,
 )
-from bisheng.open_mcp.tools import file as file_tools
-from bisheng.open_mcp.tools.file import (
+from doberman_agent.open_mcp.tools import file as file_tools
+from doberman_agent.open_mcp.tools.file import (
     knowledge_file_delete,
     knowledge_file_list,
     knowledge_file_upload,
@@ -26,7 +26,7 @@ async def _repositories():
 
 
 def _install_repositories(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.application.knowledge_repositories", _repositories)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.knowledge_repositories", _repositories)
 
 
 @pytest.mark.asyncio
@@ -49,7 +49,7 @@ async def test_file_list_preserves_structured_tags_and_filters_legacy_fields(mon
             "writeable": True,
         }
     )
-    monkeypatch.setattr("bisheng.open_mcp.application.list_knowledge_files", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.list_knowledge_files", facade)
 
     result = await knowledge_file_list(KnowledgeFileListInput(knowledge_id=67))
 
@@ -77,9 +77,9 @@ async def test_file_upload_passes_managed_path_to_application_facade(monkeypatch
         }
     )
     preflight = AsyncMock()
-    monkeypatch.setattr("bisheng.open_mcp.tools.file.prepared_upload", _prepared)
-    monkeypatch.setattr("bisheng.open_mcp.application.ensure_upload_allowed", preflight)
-    monkeypatch.setattr("bisheng.open_mcp.application.upload_knowledge_file", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.tools.file.prepared_upload", _prepared)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.ensure_upload_allowed", preflight)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.upload_knowledge_file", facade)
 
     result = await knowledge_file_upload(
         KnowledgeFileUploadInput(
@@ -108,9 +108,9 @@ async def test_file_upload_rejects_target_before_materializing_file(monkeypatch)
 
     preflight = AsyncMock(side_effect=RuntimeError("denied"))
     facade = AsyncMock()
-    monkeypatch.setattr("bisheng.open_mcp.tools.file.prepared_upload", _prepared)
-    monkeypatch.setattr("bisheng.open_mcp.application.ensure_upload_allowed", preflight)
-    monkeypatch.setattr("bisheng.open_mcp.application.upload_knowledge_file", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.tools.file.prepared_upload", _prepared)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.ensure_upload_allowed", preflight)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.upload_knowledge_file", facade)
 
     with pytest.raises(RuntimeError, match="denied"):
         await knowledge_file_upload(
@@ -135,7 +135,7 @@ async def test_file_upload_rejects_target_before_materializing_file(monkeypatch)
 )
 async def test_file_delete_handlers_use_application_facade(monkeypatch, handler, arguments, expected):
     facade = AsyncMock()
-    monkeypatch.setattr("bisheng.open_mcp.application.delete_knowledge_files", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.delete_knowledge_files", facade)
 
     result = await handler(arguments)
 

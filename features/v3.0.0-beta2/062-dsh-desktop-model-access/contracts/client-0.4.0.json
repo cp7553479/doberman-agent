@@ -1,6 +1,6 @@
 {
   "contract_version": "0.4.0",
-  "base": "https://bisheng.example.com",
+  "base": "https://platform.example.com.com",
   "source": "client-api.md",
   "endpoints": [
     {
@@ -31,7 +31,7 @@
         "http_status": 200,
         "body": {
           "auth_id": "auth_01_example",
-          "authorize_url": "https://bisheng.example.com/desktop-login?auth_id=auth_01_example",
+          "authorize_url": "https://platform.example.com.com/desktop-login?auth_id=auth_01_example",
           "expires_in": 300
         }
       }
@@ -88,10 +88,10 @@
           "object": "list",
           "data": [
             {
-              "id": "bisheng:42",
+              "id": "doberman-agent:42",
               "object": "model",
               "created": 1788919200,
-              "owned_by": "bisheng",
+              "owned_by": "doberman-agent",
               "display_name": "百炼 / qwen-max",
               "capabilities": {
                 "streaming": true,
@@ -107,7 +107,7 @@
       "method": "POST",
       "path": "/api/v1/dsh/chat/completions",
       "request": {
-        "model": "bisheng:42",
+        "model": "doberman-agent:42",
         "messages": [
           {
             "role": "user",
@@ -144,7 +144,7 @@
           "id": "chatcmpl-example",
           "object": "chat.completion",
           "created": 1788919200,
-          "model": "bisheng:42",
+          "model": "doberman-agent:42",
           "choices": [
             {
               "index": 0,
@@ -195,7 +195,7 @@
       "query": {
         "model": {
           "required": false,
-          "pattern": "^bisheng:[1-9][0-9]*$",
+          "pattern": "^doberman-agent:[1-9][0-9]*$",
           "description": "Select one configured model for independent monthly usage; omitted values are informational totals, never a shared allowance."
         }
       }
@@ -251,7 +251,7 @@
     }
   },
   "tool_followup": {
-    "model": "bisheng:42",
+    "model": "doberman-agent:42",
     "messages": [
       {
         "role": "user",
@@ -315,10 +315,10 @@
     }
   ],
   "sse_frames": [
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":null}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hello\"},\"finish_reason\":null}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}",
-    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"bisheng:42\",\"choices\":[],\"usage\":{\"prompt_tokens\":10,\"completion_tokens\":1,\"total_tokens\":11}}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":null}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hello\"},\"finish_reason\":null}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}",
+    "{\"id\":\"chatcmpl-example\",\"object\":\"chat.completion.chunk\",\"created\":1788919200,\"model\":\"doberman-agent:42\",\"choices\":[],\"usage\":{\"prompt_tokens\":10,\"completion_tokens\":1,\"total_tokens\":11}}",
     "[DONE]",
     "{\"error\":{\"message\":\"Upstream connection interrupted\",\"type\":\"upstream_error\",\"code\":\"upstream_error\"},\"request_id\":\"req_example\"}"
   ],
@@ -638,7 +638,7 @@
     "limits_scope": "tenant_user_model_month",
     "rate_limiting": false,
     "aggregate_remaining": "sum(max(model_limit - model_used, 0))",
-    "model_usage_path": "/api/v1/dsh/usage?model=bisheng:42"
+    "model_usage_path": "/api/v1/dsh/usage?model=doberman-agent:42"
   },
   "missing_usage_success": {
     "http_status": 200,

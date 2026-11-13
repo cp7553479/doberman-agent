@@ -9,9 +9,9 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from bisheng_langchain.gpts.load_tools import load_tools
-from bisheng_langchain.gpts.tools.web_fetch import tool as web_fetch_tool
-from bisheng_langchain.gpts.tools.web_fetch.tool import (
+from doberman_agent_langchain.gpts.load_tools import load_tools
+from doberman_agent_langchain.gpts.tools.web_fetch import tool as web_fetch_tool
+from doberman_agent_langchain.gpts.tools.web_fetch.tool import (
     DEFAULT_MAX_CHARS,
     DeepSeekFetch,
     WebFetchTool,

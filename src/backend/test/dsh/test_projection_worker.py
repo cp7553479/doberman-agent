@@ -10,17 +10,17 @@ import pytest
 from sqlalchemy import select
 from sqlmodel import Session
 
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.services.projection import DshProjectionService
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.services.projection import DshProjectionService
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal
 from test.dsh.test_usage_repository import usage_db as usage_db
 
 _spec = importlib.util.spec_from_file_location(
-    "dsh_usage_task", Path(__file__).resolve().parents[2] / "bisheng/worker/dsh/usage.py"
+    "dsh_usage_task", Path(__file__).resolve().parents[2] / "doberman_agent/worker/dsh/usage.py"
 )
 _module = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_module)

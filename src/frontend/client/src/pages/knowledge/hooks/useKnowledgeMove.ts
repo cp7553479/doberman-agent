@@ -8,7 +8,7 @@ import {
     type MovedEntry,
     type MoveResult,
 } from "~/api/knowledge";
-import { toast } from "@bisheng/ui";
+import { toast } from "@doberman-agent/ui";
 
 import { useConfirm, useToastContext } from "~/Providers";
 import { useLocalize } from "~/hooks";

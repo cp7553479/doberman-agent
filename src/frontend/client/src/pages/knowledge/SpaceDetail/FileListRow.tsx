@@ -1,11 +1,11 @@
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Button, Dropdown, DropdownItem, DropdownSeparator, Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Button, Dropdown, DropdownItem, DropdownSeparator, Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { FileSearch, GitBranch, History } from "lucide-react";
 import { useState } from "react";
 
 import { FileStatus, FileType, type KnowledgeFile } from "~/api/knowledge";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 
 import { useLocalize } from "~/hooks";
 import { cn } from "~/utils";

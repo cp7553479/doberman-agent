@@ -33,11 +33,11 @@ if _BACKEND_ROOT not in sys.path:
 
 from loguru import logger  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkillDao  # noqa: E402
-from bisheng.linsight.domain.services.skill_store import LEGACY_TENANT_SKILLS_DIR, SkillStore  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkillDao  # noqa: E402
+from doberman_agent.linsight.domain.services.skill_store import LEGACY_TENANT_SKILLS_DIR, SkillStore  # noqa: E402
 
 
 async def restore(apply: bool, legacy_root: Path, store: SkillStore) -> dict:

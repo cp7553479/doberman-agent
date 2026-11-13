@@ -15,9 +15,10 @@ REVISION = "a" * 40
 
 
 def sync_images(tmp_path, monkeypatch, arch="amd64", failure=""):
+    monkeypatch.setenv("RUNTIME_MIRROR_NAMESPACE", "registry.example.invalid/cp7553479")
     metadata = {}
     for number, name in enumerate(IMAGE_NAMES, 1):
-        tag = f"dataelement/bisheng-{name}:v-test-{arch}"
+        tag = f"ghcr.io/cp7553479/doberman-agent-{name}:v-test-{arch}"
         metadata[name] = {
             "Id": "sha256:" + f"{number:064x}",
             "Os": "linux",
@@ -63,13 +64,13 @@ args=sys.argv[1:]
 with Path("commands.jsonl").open("a") as stream:stream.write(json.dumps(args)+"\\n")
 failure=os.environ.get("SYNC_TEST_FAILURE","")
 if args[:3]==["buildx","imagetools","inspect"]:
- if failure=="existing" and "bisheng-app-static:" in args[3]:sys.exit(0)
+ if failure=="existing" and "doberman-agent-app-static:" in args[3]:sys.exit(0)
  print("unauthorized: manifest not found (authentication required)" if failure=="auth" else "manifest unknown",file=sys.stderr)
  sys.exit(1)
 elif args[0]=="push":
  if failure=="push":sys.exit(42)
 elif args[:2]==["image","inspect"]:
- tag=args[-1]; name=tag.split("bisheng-")[1].split(":")[0]
+ tag=args[-1]; name=tag.split("doberman-agent-")[1].split(":")[0]
  metadata=json.loads(Path("metadata.json").read_text())[name]
  metadata["RepoTags"].append(tag)
  metadata["RepoDigests"].append(tag.split(":")[0]+"@sha256:"+"e"*64)
@@ -83,7 +84,7 @@ elif args[0]!="tag":sys.exit(99)
     monkeypatch.setenv("RUNTIME_RELEASE", "v-test")
     monkeypatch.setenv("TARGET_ARCH", arch)
     result = subprocess.run(
-        ["bash", str(ROOT / "scripts/sync_runtime_images_cr.sh")],
+        ["bash", str(ROOT / "scripts/sync_runtime_images.sh")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -101,16 +102,16 @@ def test_sync_preserves_native_image_ids_and_records_only_cr_digests(tmp_path, m
     tags = [item for item in commands if item[0] == "tag"]
     assert len(tags) == 9
     assert {item[1] for item in tags} == {image["Id"] for image in metadata.values()}
-    assert all(item[2].startswith("cr.dataelem.com/dataelement/") for item in tags)
+    assert all(item[2].startswith("registry.example.invalid/cp7553479/") for item in tags)
     assert not any(item[0] in {"build", "pull", "run"} for item in commands)
     pushes = [item for item in commands if item[0] == "push"]
     assert len(pushes) == 9
-    inventory = json.loads((tmp_path / f"dist/cr/runtime-images-{arch}.json").read_text())
+    inventory = json.loads((tmp_path / f"dist/mirror/runtime-images-{arch}.json").read_text())
     assert inventory["state"] == "published-native-verified"
     assert inventory["platform"] == f"linux/{arch}"
     for name, image in inventory["images"].items():
         assert image["image_id"] == metadata[name]["Id"]
-        assert image["image"].startswith(f"cr.dataelem.com/dataelement/bisheng-{name}@sha256:")
+        assert image["image"].startswith(f"registry.example.invalid/cp7553479/doberman-agent-{name}@sha256:")
         assert image["tag"].endswith(f":v-test-{arch}")
 
 
@@ -118,7 +119,7 @@ def test_sync_preserves_native_image_ids_and_records_only_cr_digests(tmp_path, m
 def test_sync_failure_cannot_produce_a_published_cr_inventory(tmp_path, monkeypatch, failure):
     result, commands, _ = sync_images(tmp_path, monkeypatch, failure=failure)
     assert result.returncode != 0
-    assert not (tmp_path / "dist/cr/runtime-images-amd64.json").exists()
+    assert not (tmp_path / "dist/mirror/runtime-images-amd64.json").exists()
     if failure != "push":
         assert not any(item[0] in {"tag", "push"} for item in commands)
 
@@ -129,10 +130,10 @@ def test_both_cr_architectures_produce_a_release_and_domestic_profile_catalog(tm
         directory = tmp_path / arch
         result, _, _ = sync_images(directory, monkeypatch, arch)
         assert result.returncode == 0, result.stderr
-        paths.append(directory / f"dist/cr/runtime-images-{arch}.json")
+        paths.append(directory / f"dist/mirror/runtime-images-{arch}.json")
     release = merge_inventories([json.loads(path.read_text()) for path in paths])
     assert len(release["offline_layers"]["runtime_images"]) == 18
-    assert all(image.startswith("cr.dataelem.com/") for image in release["offline_layers"]["runtime_images"])
+    assert all(image.startswith("registry.example.invalid/cp7553479/") for image in release["offline_layers"]["runtime_images"])
     output = tmp_path / "runtime-profiles.json"
     result = subprocess.run(
         [
@@ -157,5 +158,5 @@ def test_both_cr_architectures_produce_a_release_and_domestic_profile_catalog(tm
     for profile in profiles:
         assert set(profile["platforms"]) == {"linux/amd64", "linux/arm64"}
         for platform in profile["platforms"].values():
-            assert platform["runtime_image"].startswith("cr.dataelem.com/")
-            assert platform["preparer_image"].startswith("cr.dataelem.com/")
+            assert platform["runtime_image"].startswith("registry.example.invalid/cp7553479/")
+            assert platform["preparer_image"].startswith("registry.example.invalid/cp7553479/")

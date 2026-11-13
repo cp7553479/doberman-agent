@@ -1,4 +1,4 @@
-import { Button, Input, notification, Pagination, Segmented } from '@bisheng/ui';
+import { Button, Input, notification, Pagination, Segmented } from '@doberman-agent/ui';
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 

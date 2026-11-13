@@ -124,7 +124,7 @@
     "status_code": 422
   },
   "gateway_db_user_connection": [
-    "bisheng_gateway@%",
+    "doberman_agent_gateway@%",
     "6"
   ],
   "/": 200,
@@ -132,12 +132,12 @@
   "/api/v1/env": {
     "http": 200,
     "status_code": 200,
-    "bisheng_pro": true
+    "doberman_agent_pro": true
   },
   "/workspace/api/v1/env": {
     "http": 200,
     "status_code": 200,
-    "bisheng_pro": true
+    "doberman_agent_pro": true
   },
   "/api/oauth2/list": {
     "http": 200,

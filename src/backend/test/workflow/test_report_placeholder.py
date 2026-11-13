@@ -8,7 +8,7 @@ values by node id (release-contract INV-8). Legacy templates hold the bare
 See features/v3.0.0-beta1/043-report-node-optimization/design.md §3 decision 3/4.
 """
 
-from bisheng.workflow.nodes.report.docx_replace import normalize_placeholder_key
+from doberman_agent.workflow.nodes.report.docx_replace import normalize_placeholder_key
 
 
 class TestNormalizePlaceholderKey:

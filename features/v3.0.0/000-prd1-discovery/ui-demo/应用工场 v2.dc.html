@@ -26,8 +26,8 @@ input,button,select,textarea{font-family:inherit}
 
   <div style="display:flex;justify-content:space-between;align-items:center;min-height:60px;flex-shrink:0;padding:8px 24px 8px 34px;gap:20px;flex-wrap:wrap">
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="assets/bisheng-logo.png" alt="BISHENG" style="height:20px;width:auto">
-      <span style="font-size:16px;font-weight:600;letter-spacing:.08em;color:#212121">BISHENG</span>
+      <img src="assets/doberman-agent-logo.png" alt="doberman-agent" style="height:20px;width:auto">
+      <span style="font-size:16px;font-weight:600;letter-spacing:.08em;color:#212121">doberman-agent</span>
       <span style="margin-left:12px;font-size:12px;color:#86909C;border:1px solid #E5E6EB;border-radius:5px;padding:2px 8px;background:#fff">应用工场 PRD-1 · v1.9 交互 demo</span>
     </div>
     <sc-if value="{{ isBuildList }}" hint-placeholder-val="{{ true }}">
@@ -111,7 +111,7 @@ input,button,select,textarea{font-family:inherit}
 
             <div style="border:1px solid #E8ECF5;border-radius:10px;background:#FAFBFF;padding:14px 18px;margin:12px 0 18px">
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-                <span style="font-size:13.5px;font-weight:500;color:#212121">本地 <span style="font-family:ui-monospace,Menlo,monospace">bisheng</span> CLI</span>
+                <span style="font-size:13.5px;font-weight:500;color:#212121">本地 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent</span> CLI</span>
                 <span style="font-size:12px;color:#86909C">deploy 管线：托管预检 → 密钥扫描 → 审批 → 上线托管。运行时形态：<span style="color:#024DE3">{{ formLabel }}</span></span>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -164,7 +164,7 @@ input,button,select,textarea{font-family:inherit}
             <sc-if value="{{ listEmpty }}" hint-placeholder-val="{{ false }}">
               <div style="padding:44px;text-align:center;border:1px dashed #E5E6EB;border-radius:9px">
                 <div style="font-size:13.5px;color:#4E5969">没有符合条件的托管应用</div>
-                <div style="font-size:12.5px;color:#86909C;margin-top:6px;line-height:19px">首发 <span style="font-family:ui-monospace,Menlo,monospace">bisheng deploy</span> 后应用出现在这里，owner = 该 key 所属服务账号的资源归属人。</div>
+                <div style="font-size:12.5px;color:#86909C;margin-top:6px;line-height:19px">首发 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent deploy</span> 后应用出现在这里，owner = 该 key 所属服务账号的资源归属人。</div>
               </div>
             </sc-if>
           </div>
@@ -245,7 +245,7 @@ input,button,select,textarea{font-family:inherit}
                   <div style="border:1px solid #E5E6EB;border-radius:10px;padding:18px 20px">
                     <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
                       <span style="font-size:14px;font-weight:500;color:#212121">能力声明</span>
-                      <span style="font-size:12px;color:#86909C">完整白话清单 · 取自 bisheng-app.yaml，审批通过 = 应用侧授权</span>
+                      <span style="font-size:12px;color:#86909C">完整白话清单 · 取自 doberman-agent-app.yaml，审批通过 = 应用侧授权</span>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:8px">
                       <sc-for list="{{ app.caps }}" as="c" hint-placeholder-count="4">
@@ -336,7 +336,7 @@ input,button,select,textarea{font-family:inherit}
                       <span style="color:#86909C">描述</span><span style="color:#212121;line-height:19px">{{ app.desc }}</span>
                       <span style="color:#86909C">标签</span><span style="color:#A0A6B0">未设标签（本版不做标签设置）</span>
                     </div>
-                    <div style="font-size:12px;color:#86909C;margin-top:10px;line-height:18px">取自 bisheng-app.yaml、随 deploy 更新。元信息不属能力声明，修改不触发审批、计审计。</div>
+                    <div style="font-size:12px;color:#86909C;margin-top:10px;line-height:18px">取自 doberman-agent-app.yaml、随 deploy 更新。元信息不属能力声明，修改不触发审批、计审计。</div>
                   </div>
                 </div>
               </div>
@@ -373,7 +373,7 @@ input,button,select,textarea{font-family:inherit}
               <div style="max-width:880px">
                 <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
                   <span style="font-size:15px;font-weight:500;color:#212121">运行日志</span>
-                  <span style="font-size:12px;color:#86909C">只读 · 与 <span style="font-family:ui-monospace,Menlo,monospace">bisheng logs</span>、MCP 日志工具同权限口径与内容范围</span>
+                  <span style="font-size:12px;color:#86909C">只读 · 与 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent logs</span>、MCP 日志工具同权限口径与内容范围</span>
                 </div>
                 <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:20px;color:#C9D4E8;max-height:400px;overflow-y:auto">
                   <sc-for list="{{ logLines }}" as="l" hint-placeholder-count="6">
@@ -405,7 +405,7 @@ input,button,select,textarea{font-family:inherit}
                     </div>
                   </sc-for>
                 </div>
-                <div style="border:1px dashed #E5E6EB;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;line-height:20px;color:#4E5969;text-wrap:pretty">本版不做平台侧回滚：本地有完整 git 历史，等价手段是 <span style="font-family:ui-monospace,Menlo,monospace">git checkout</span> 旧版本后重新 <span style="font-family:ui-monospace,Menlo,monospace">bisheng deploy</span>，走同一条审批管线。应急止血始终是<span style="color:#212121">下线</span>。版本快照的四要素（代码 / 能力声明 / 注入配置 / 资源档位）已按同一快照存储，将来补回滚可统一回退。</div>
+                <div style="border:1px dashed #E5E6EB;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:12.5px;line-height:20px;color:#4E5969;text-wrap:pretty">本版不做平台侧回滚：本地有完整 git 历史，等价手段是 <span style="font-family:ui-monospace,Menlo,monospace">git checkout</span> 旧版本后重新 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent deploy</span>，走同一条审批管线。应急止血始终是<span style="color:#212121">下线</span>。版本快照的四要素（代码 / 能力声明 / 注入配置 / 资源档位）已按同一快照存储，将来补回滚可统一回退。</div>
               </div>
             </sc-if>
           </div>
@@ -690,7 +690,7 @@ input,button,select,textarea{font-family:inherit}
               <div style="font-size:13.5px;font-weight:500;color:#212121;margin-bottom:8px">两条通道，各有各的闸，互不校验</div>
               <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:20px;color:#4E5969">
                 <div style="background:#FBFBFB;border:1px solid #F2F3F5;border-radius:8px;padding:10px 12px">界面通道（构建 → 应用 → 新建入口）：既有<span style="font-family:ui-monospace,Menlo,monospace"> create_app </span>权限点。关闭父项「构建」时级联失效。</div>
-                <div style="background:#FBFBFB;border:1px solid #F2F3F5;border-radius:8px;padding:10px 12px">CLI 通道（<span style="font-family:ui-monospace,Menlo,monospace">bisheng deploy</span> 首发）：闸在 key 的<span style="font-family:ui-monospace,Menlo,monospace"> app:manage </span>位——<span style="color:#212121">不查资源归属人的角色权限</span>，否则「归属人一停用其名下密钥即失效」。</div>
+                <div style="background:#FBFBFB;border:1px solid #F2F3F5;border-radius:8px;padding:10px 12px">CLI 通道（<span style="font-family:ui-monospace,Menlo,monospace">doberman-agent deploy</span> 首发）：闸在 key 的<span style="font-family:ui-monospace,Menlo,monospace"> app:manage </span>位——<span style="color:#212121">不查资源归属人的角色权限</span>，否则「归属人一停用其名下密钥即失效」。</div>
               </div>
               <div style="font-size:12px;color:#86909C;margin-top:10px;line-height:18px">代价：复用既有权限点意味着无法单独灰度托管应用（勾了就三种类型都能建）。真正的灰度闸是部署开关（环境级）与按人签发密钥（人级）。</div>
             </div>
@@ -839,10 +839,10 @@ input,button,select,textarea{font-family:inherit}
                     <span style="font-size:11.5px;color:#86909C">应用工场增量</span>
                   </div>
                   <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;line-height:18px">
-                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">MCP Server</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://bisheng.cofco.com/mcp</div></div>
-                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">OpenAI 兼容 base URL</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://bisheng.cofco.com/v1</div></div>
-                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">CLI 安装包（链接，非文件）</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://bisheng.cofco.com/dl/bisheng-cli</div></div>
-                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">登录指引</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121">bisheng login --key &lt;你的 key&gt;</div></div>
+                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">MCP Server</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://platform.example.com.com/mcp</div></div>
+                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">OpenAI 兼容 base URL</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://platform.example.com.com/v1</div></div>
+                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">CLI 安装包（链接，非文件）</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121;word-break:break-all">https://platform.example.com.com/dl/doberman-agent-cli</div></div>
+                    <div style="background:#fff;border:1px solid #E4EAFB;border-radius:7px;padding:8px 10px"><div style="color:#86909C">登录指引</div><div style="font-family:ui-monospace,Menlo,monospace;color:#212121">doberman-agent login --key &lt;你的 key&gt;</div></div>
                   </div>
                   <button onClick="{{ copyAccess }}" style="width:100%;height:34px;margin-top:12px;background:#024DE3;color:#fff;border:none;border-radius:7px;font-size:13.5px;font-weight:500;cursor:pointer">一键复制接入信息</button>
                   <div style="font-size:11.5px;color:#86909C;margin-top:9px;line-height:17px">文本<span style="color:#212121">不含 key 值</span>，也不含任何可换取 key 值的凭据——接入信息不机密、可随时重发；key 值机密、只有一次，由管理员单独转交。未部署开放能力层时本区不出现。</div>
@@ -1305,14 +1305,14 @@ class Component extends DCLogic {
       recycled: ["已回收", "审批出终态 / 超时（默认 7 天，部署配置项）/ 手动回收后实例被回收。", "重新拉起", "#86909C"]
     };
     const PV = PVMAP[s.preview] || PVMAP.idle;
-    const fileList = ["bisheng-app.yaml", "app.py", "requirements.txt", "AGENTS.md"];
-    const fileBody = s.activeFile === "bisheng-app.yaml"
+    const fileList = ["doberman-agent-app.yaml", "app.py", "requirements.txt", "AGENTS.md"];
+    const fileBody = s.activeFile === "doberman-agent-app.yaml"
       ? "name: " + ticket.appName + "\nruntime: python3.11\nresource_tier: perf          # 未声明时取轻量档\ncapabilities:\n  knowledge:\n    - 公开产品手册库\n    - 销售话术库              # 本次迭代新增声明\n  models:\n    - Qwen2.5-72B-Instruct    # 模型管理页原名\n  secrets:\n    - crm_token               # 引用名，值由平台注入"
       : s.activeFile === "requirements.txt"
-        ? "bisheng-sdk>=0.3          # auth / retrieve / storage 三件套\nopenai>=1.40              # 模型走官方 OpenAI 兼容客户端，不进 SDK\nSQLAlchemy>=2.0           # 应用数据库用标准库连平台注入的连接\nfastapi>=0.111"
+        ? "doberman-agent-sdk>=0.3          # auth / retrieve / storage 三件套\nopenai>=1.40              # 模型走官方 OpenAI 兼容客户端，不进 SDK\nSQLAlchemy>=2.0           # 应用数据库用标准库连平台注入的连接\nfastapi>=0.111"
         : s.activeFile === "AGENTS.md"
-          ? "# 本项目由本地 coding agent 维护\n\n技能目录：.bisheng/skills（bisheng skills sync 拉取，首发两包）\n- 部署纳管\n- 平台能力接线   ⚠ auth 一节：禁止自建登录页——唯一的静默失败点"
-          : "from bisheng_sdk import auth, retrieve, storage\nfrom openai import OpenAI          # 模型：行业标准库 + 平台注入的 base_url/key\nimport os\n\nuser = auth.current_user()          # 平台注入身份，唯一可信来源；不写登录页\ndocs = retrieve.search(\n    kb=\"公开产品手册库\",             # 能力声明内的知识库\n    query=q,\n    as_user=user,                    # per-user 过滤，文件级、fail-closed\n)\nllm = OpenAI(base_url=os.environ[\"BISHENG_MODEL_BASE_URL\"],\n             api_key=os.environ[\"BISHENG_MODEL_KEY\"])";
+          ? "# 本项目由本地 coding agent 维护\n\n技能目录：.doberman-agent/skills（doberman-agent skills sync 拉取，首发两包）\n- 部署纳管\n- 平台能力接线   ⚠ auth 一节：禁止自建登录页——唯一的静默失败点"
+          : "from doberman_agent_sdk import auth, retrieve, storage\nfrom openai import OpenAI          # 模型：行业标准库 + 平台注入的 base_url/key\nimport os\n\nuser = auth.current_user()          # 平台注入身份，唯一可信来源；不写登录页\ndocs = retrieve.search(\n    kb=\"公开产品手册库\",             # 能力声明内的知识库\n    query=q,\n    as_user=user,                    # per-user 过滤，文件级、fail-closed\n)\nllm = OpenAI(base_url=os.environ[\"DOBERMAN_AGENT_MODEL_BASE_URL\"],\n             api_key=os.environ[\"DOBERMAN_AGENT_MODEL_KEY\"])";
     const diffLines = [
       { t: "--- a/app.py", k: "m" }, { t: "+++ b/app.py", k: "m" }, { t: "@@ -12,6 +12,9 @@", k: "m" },
       { t: "  docs = retrieve.search(kb=\"公开产品手册库\", query=q, as_user=user)", k: "c" },
@@ -1502,7 +1502,7 @@ class Component extends DCLogic {
       runtimeOpen: !!s.runtime, runtimeOk: fbKind === "ok", runtimeFallback: !!s.runtime && fbKind !== "ok",
       runtimeApp: (s.runtime || {}).app,
       runtimeWho: (s.runtime || {}).approver ? "周颖 · 法务部（审批人本人；平台能力按 owner 权限放行、计审计）" : me + " · 信息技术部",
-      runtimeUrl: "https://bisheng.cofco.com/apps/" + (fbKind === "ok" ? "contract-ledger" : "app-x"),
+      runtimeUrl: "https://platform.example.com.com/apps/" + (fbKind === "ok" ? "contract-ledger" : "app-x"),
       closeRuntime: () => this.setState({ runtime: null }),
       fallbackTitle: fb[0], fallbackBody: fb[1], fallbackBtn: fb[2],
       fallbackAction: () => {
@@ -1653,7 +1653,7 @@ class Component extends DCLogic {
         needVis: app.status === "online" && app.vis.length === 0,
         visChips: (app.vis.length ? app.vis.map(v => ({ name: (AUTH_OPTS.find(o => o.id === v) || { name: v }).name, style: "font-size:12.5px;background:#E6EDFC;color:#024DE3;border-radius:5px;padding:3px 9px" }))
           : [{ name: "仅 owner 可见", style: "font-size:12.5px;background:#FFF4E5;color:#B54708;border-radius:5px;padding:3px 9px" }]),
-        url: "https://bisheng.cofco.com/apps/" + app.id,
+        url: "https://platform.example.com.com/apps/" + app.id,
         runBtn: app.status === "stopped" ? "重新上线" : "下线"
       },
       detailTabs: [["publish", "发布"], ["data", "数据"], ["logs", "运行日志"], ["version", "版本"]].map(([id, label]) => ({
@@ -1687,7 +1687,7 @@ class Component extends DCLogic {
       submitPublish: () => {
         this.patchApp(app.id, a => ({ ...a, inflight: true, reject: null, versions: [{ no: "v" + (a.versions.length + 1), type: a.versions.length ? "迭代" : "首发", time: "2026-08-17 10:52", caps: a.caps.length + " 项能力声明", state: "pending" }, ...a.versions] }));
         this.setState(st => ({ tickets: [{ id: "t-" + Date.now(), appId: app.id, appName: app.name, kind: app.versions.length ? "迭代" : "首发", owner: app.owner, dept: "信息技术部", source: app.source, submitted: "2026-08-17 10:52", tier: tierName + "（" + (s.tiers.find(t => t.id === app.tier) || {}).spec + "）", state: "pending" }, ...st.tickets] }));
-        this.flash("已提交发布 · 冻结待上线版本快照 → 密钥扫描 → 审批单进入审批中心（与本地 bisheng deploy 等价）");
+        this.flash("已提交发布 · 冻结待上线版本快照 → 密钥扫描 → 审批单进入审批中心（与本地 doberman-agent deploy 等价）");
       },
       withdraw: () => {
         this.patchApp(app.id, a => ({ ...a, inflight: false, versions: a.versions.map(v => v.state === "pending" ? { ...v, state: "withdrawn" } : v) }));
@@ -1762,15 +1762,15 @@ class Component extends DCLogic {
             apps: [...st.apps, { id, name: "差旅报销问答", owner: me, desc: "本地开发的差旅问答，首发 deploy 导入纳管。", status: "draft", tier: "light", source: "CLI 导入", vis: [], inflight: true, reject: null, vi: 0, caps: [{ name: "集团差旅管理办法库", type: "knowledge", note: "检索 · 声明层白名单收窄" }], versions: [{ no: "v1", type: "首发", time: "2026-08-17 10:44", caps: "1 项能力声明", state: "pending" }] }],
             tickets: [{ id: "t-" + Date.now(), appId: id, appName: "差旅报销问答", kind: "首发", owner: me, dept: "信息技术部", source: "CLI 导入", submitted: "2026-08-17 10:44", tier: "轻量（1 核 / 2 GB）", state: "pending" }, ...st.tickets]
           }));
-          return "$ bisheng deploy\n✔ 托管预检通过（依赖构建 / 应用包声明校验 / 启动探活）\n✔ 发布前密钥扫描通过\n✔ 已生成首发审批单 → 平台预置审批流（部门管理员 ∪ 租户管理员，或签）\n  owner = 该 key 所属服务账号的资源归属人（" + me + "）\n  准入闸 = key 上的 app:manage 位，与角色权限无关\n  ↳ 上线后别忘了去「详情页 · 发布」设置可见范围，否则除你之外无人可见";
+          return "$ doberman-agent deploy\n✔ 托管预检通过（依赖构建 / 应用包声明校验 / 启动探活）\n✔ 发布前密钥扫描通过\n✔ 已生成首发审批单 → 平台预置审批流（部门管理员 ∪ 租户管理员，或签）\n  owner = 该 key 所属服务账号的资源归属人（" + me + "）\n  准入闸 = key 上的 app:manage 位，与角色权限无关\n  ↳ 上线后别忘了去「详情页 · 发布」设置可见范围，否则除你之外无人可见";
         }],
-        ["持 delegate 的 key login", () => "$ bisheng login --key bs-sak-••••7d31\n✖ 拒绝：这把 key 配置为委托专用（持 delegate 位），本地开发请另发一把\n  MCP 工具面 / 模型协议面 / CLI 三面一律以服务账号自身身份执行，不承载委托\n  按权限位在通道入口直接拒绝——不静默落回模式 S，也不返回 26016 参数错误"],
-        ["预检失败（自带中间件）", () => "$ bisheng deploy\n✖ 托管预检失败：docker-compose.yml 声明了 postgres:15\n  托管运行契约：平台提供语言运行时 / 应用数据库 / 附件存储 / 能力总线与密钥注入 / 内网镜像依赖安装\n  应用不得自带数据库、消息队列、缓存，或白名单外的外网地址\n  改造指引见「部署纳管」技能包；应用数据库用标准库连平台注入的连接（不走 SDK）\n  预检失败不产生审批单"],
-        ["密钥扫描阻断", () => "$ bisheng deploy\n✔ 托管预检通过\n✖ 发布前密钥扫描命中 2 条规则（与平台内发布同一规则集）\n  config/settings.py:14  规则 platform-key-prefix（bs-sak- 前缀模式）\n  config/settings.py:19  规则 db-connection-string\n  （不回显命中的密钥值本身）\n  本地修复后重新 deploy"],
-        ["在途审批单再 deploy", () => "$ bisheng deploy\n✖ 拒绝：应用「客服知识速查」存在在途审批单（迭代 · 待审）\n  同一应用同时至多一个在途审批单，请先在详情页 · 发布撤回，或等待终态"],
-        ["改/删列未确认", () => "$ bisheng deploy\n✖ 预检检出破坏性结构变更：contract_ledger 删除列 legacy_no、修改列 amount 类型\n  需显式确认：交互确认或 --confirm-schema-change\n  确认后进入管线，迁移前自动留生产数据快照"],
-        ["非归属人的 key", () => "$ bisheng deploy\n✖ 拒绝：应用「合同台账助手」owner 为「李工」，当前 key 的资源归属人不是 owner\n  归属在创建时固化、改字段不追溯已有应用；归属转移顺延 v3.1"],
-        ["skills sync", () => "$ bisheng skills sync\n✔ 已从当前登录平台拉取毕昇开发技能包（首发两包）\n  · 部署纳管      bisheng-app.yaml / 能力声明 / 安全红线 / 托管运行契约 / deploy 排障\n  · 平台能力接线  SDK 三件套（auth / retrieve / storage）+ 模型与应用数据库的标准库接法\n  ⚠ auth 一节是唯一「写错了应用照样跑、只是身份错了」的静默失败点\n  提示：login 成功后已自动 sync 过一次，本命令用于平台升级后更新"]
+        ["持 delegate 的 key login", () => "$ doberman-agent login --key bs-sak-••••7d31\n✖ 拒绝：这把 key 配置为委托专用（持 delegate 位），本地开发请另发一把\n  MCP 工具面 / 模型协议面 / CLI 三面一律以服务账号自身身份执行，不承载委托\n  按权限位在通道入口直接拒绝——不静默落回模式 S，也不返回 26016 参数错误"],
+        ["预检失败（自带中间件）", () => "$ doberman-agent deploy\n✖ 托管预检失败：docker-compose.yml 声明了 postgres:15\n  托管运行契约：平台提供语言运行时 / 应用数据库 / 附件存储 / 能力总线与密钥注入 / 内网镜像依赖安装\n  应用不得自带数据库、消息队列、缓存，或白名单外的外网地址\n  改造指引见「部署纳管」技能包；应用数据库用标准库连平台注入的连接（不走 SDK）\n  预检失败不产生审批单"],
+        ["密钥扫描阻断", () => "$ doberman-agent deploy\n✔ 托管预检通过\n✖ 发布前密钥扫描命中 2 条规则（与平台内发布同一规则集）\n  config/settings.py:14  规则 platform-key-prefix（bs-sak- 前缀模式）\n  config/settings.py:19  规则 db-connection-string\n  （不回显命中的密钥值本身）\n  本地修复后重新 deploy"],
+        ["在途审批单再 deploy", () => "$ doberman-agent deploy\n✖ 拒绝：应用「客服知识速查」存在在途审批单（迭代 · 待审）\n  同一应用同时至多一个在途审批单，请先在详情页 · 发布撤回，或等待终态"],
+        ["改/删列未确认", () => "$ doberman-agent deploy\n✖ 预检检出破坏性结构变更：contract_ledger 删除列 legacy_no、修改列 amount 类型\n  需显式确认：交互确认或 --confirm-schema-change\n  确认后进入管线，迁移前自动留生产数据快照"],
+        ["非归属人的 key", () => "$ doberman-agent deploy\n✖ 拒绝：应用「合同台账助手」owner 为「李工」，当前 key 的资源归属人不是 owner\n  归属在创建时固化、改字段不追溯已有应用；归属转移顺延 v3.1"],
+        ["skills sync", () => "$ doberman-agent skills sync\n✔ 已从当前登录平台拉取doberman-agent开发技能包（首发两包）\n  · 部署纳管      doberman-agent-app.yaml / 能力声明 / 安全红线 / 托管运行契约 / deploy 排障\n  · 平台能力接线  SDK 三件套（auth / retrieve / storage）+ 模型与应用数据库的标准库接法\n  ⚠ auth 一节是唯一「写错了应用照样跑、只是身份错了」的静默失败点\n  提示：login 成功后已自动 sync 过一次，本命令用于平台升级后更新"]
       ].map(([label, fn]) => ({ label, style: chipStyle(false), run: () => { const out = fn(); if (out) this.setState({ deployLog: out }); } })),
       openMsgs: () => this.setState({ modal: "msgs" }),
       toast: s.toast

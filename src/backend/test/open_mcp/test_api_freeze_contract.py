@@ -1,7 +1,7 @@
 import inspect
 
-from bisheng.open_api.domain.scopes import OPEN_API_SCOPE_MAP
-from bisheng.open_mcp.registry import SOURCE_ALLOWLIST
+from doberman_agent.open_api.domain.scopes import OPEN_API_SCOPE_MAP
+from doberman_agent.open_mcp.registry import SOURCE_ALLOWLIST
 
 EXPECTED_API_ROUTES = {
     "create": ("POST", "/filelib/", 200),
@@ -81,7 +81,7 @@ def test_source_allowlist_remains_a_subset_of_existing_open_api_routes():
 
 
 def test_source_api_batch_delete_and_multipart_contract_remain_frozen():
-    from bisheng.open_endpoints.api.endpoints.filelib import delete_file_batch_api, upload_file
+    from doberman_agent.open_endpoints.api.endpoints.filelib import delete_file_batch_api, upload_file
 
     batch_annotation = delete_file_batch_api.__annotations__["file_ids"]
     assert batch_annotation == list[int]
@@ -90,7 +90,7 @@ def test_source_api_batch_delete_and_multipart_contract_remain_frozen():
 
 
 def test_all_ten_source_routes_and_http_statuses_remain_frozen():
-    from bisheng.open_endpoints.api.endpoints.filelib import router
+    from doberman_agent.open_endpoints.api.endpoints.filelib import router
 
     actual = {}
     for route in router.routes:
@@ -101,7 +101,7 @@ def test_all_ten_source_routes_and_http_statuses_remain_frozen():
 
 
 def test_all_ten_source_endpoint_parameter_lists_remain_frozen():
-    from bisheng.open_endpoints.api.endpoints import filelib
+    from doberman_agent.open_endpoints.api.endpoints import filelib
 
     actual = {name: tuple(inspect.signature(getattr(filelib, name)).parameters) for name in EXPECTED_PARAMETERS}
     assert actual == EXPECTED_PARAMETERS

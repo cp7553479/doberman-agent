@@ -5,8 +5,8 @@ import { SubjectSearchUserGroup } from "./SubjectSearchUserGroup";
 type Locale = "zh-Hans" | "en" | "ja";
 let mockLocale: Locale = "zh-Hans";
 
-jest.mock("bisheng-icons", () => {
-  const actual = jest.requireActual("bisheng-icons");
+jest.mock("@doberman-agent/icons", () => {
+  const actual = jest.requireActual("@doberman-agent/icons");
   return { ...actual, Outlined: { ...actual.Outlined, PeopleGroup: () => null } };
 });
 

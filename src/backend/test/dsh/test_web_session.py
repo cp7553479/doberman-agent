@@ -7,15 +7,15 @@ from unittest.mock import AsyncMock, patch
 import jwt
 import pytest
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError
-from bisheng.core.config.dsh import DshSettings
-from bisheng.dsh.domain.services import web_session
-from bisheng.dsh.domain.services.access import DshPrincipal
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError
+from doberman_agent.core.config.dsh import DshSettings
+from doberman_agent.dsh.domain.services import web_session
+from doberman_agent.dsh.domain.services.access import DshPrincipal
 
 
 @pytest.fixture(autouse=True)
 def restore_visible_tenant_context():
-    from bisheng.core.context.tenant import set_visible_tenant_ids
+    from doberman_agent.core.context.tenant import set_visible_tenant_ids
 
     token = set_visible_tenant_ids(None)
     yield
@@ -41,8 +41,8 @@ async def test_exchange_binds_short_cookie_and_keeps_access_token_server_side(mo
     )
     user = SimpleNamespace(user_name="Alice", token_version=3, delete=0)
     with (
-        patch("bisheng.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)),
-        patch("bisheng.user.domain.services.auth.AuthJwt") as auth,
+        patch("doberman_agent.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)),
+        patch("doberman_agent.user.domain.services.auth.AuthJwt") as auth,
     ):
         auth.return_value.create_access_token.return_value = "browser-cookie"
         result = await web_session.create_web_session(runtime, access)
@@ -75,8 +75,8 @@ async def test_browser_requests_recheck_desktop_grant(monkeypatch, case):
     runtime = SimpleNamespace(access=SimpleNamespace(authenticate=authenticate))
     subject = {"dsh_web_session": "x" * 43, "user_id": 42, "tenant_id": 3 if case == "tenant_changed" else 2}
     with (
-        patch("bisheng.dsh.access_runtime.get_runtime", AsyncMock(return_value=runtime)),
-        patch("bisheng.dsh.access_runtime.get_settings"),
+        patch("doberman_agent.dsh.access_runtime.get_runtime", AsyncMock(return_value=runtime)),
+        patch("doberman_agent.dsh.access_runtime.get_settings"),
     ):
         if case == "valid":
             await web_session.validate_web_session(SimpleNamespace(), subject)
@@ -87,7 +87,7 @@ async def test_browser_requests_recheck_desktop_grant(monkeypatch, case):
 
 
 async def test_http_middleware_rejects_revoked_desktop_cookie():
-    from bisheng.utils.http_middleware import _apply_token_version_and_visible
+    from doberman_agent.utils.http_middleware import _apply_token_version_and_visible
 
     subject = {"user_id": 42, "tenant_id": 2, "token_version": 3, "dsh_web_session": "x" * 43}
     with patch.object(web_session, "validate_web_session", AsyncMock(side_effect=DshInvalidAccessTokenError())):
@@ -96,7 +96,7 @@ async def test_http_middleware_rejects_revoked_desktop_cookie():
 
 
 async def test_websocket_login_rechecks_desktop_cookie():
-    from bisheng.user.domain.services.auth import LoginUser
+    from doberman_agent.user.domain.services.auth import LoginUser
 
     subject = {"user_id": 42, "user_name": "Alice", "tenant_id": 2, "token_version": 3, "dsh_web_session": "x" * 43}
     auth = SimpleNamespace(get_subject=lambda **kwargs: subject)
@@ -117,7 +117,7 @@ async def test_exchange_rejects_expiring_or_inactive_identity(monkeypatch, remai
     access = "Bearer " + jwt.encode({"exp": 1000 + remaining}, "fixture-signing-key-long-enough-32", algorithm="HS256")
     runtime = SimpleNamespace(access=SimpleNamespace(authenticate=AsyncMock(return_value=principal())))
     user = None if deleted is None else SimpleNamespace(user_name="Alice", token_version=3, delete=deleted)
-    with patch("bisheng.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)):
+    with patch("doberman_agent.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)):
         with pytest.raises(DshInvalidAccessTokenError):
             await web_session.create_web_session(runtime, access)
     redis.set.assert_not_awaited()
@@ -125,7 +125,7 @@ async def test_exchange_rejects_expiring_or_inactive_identity(monkeypatch, remai
 
 @pytest.mark.parametrize("desktop,token_valid", [(True, True), (True, False), (False, True)])
 async def test_browser_and_desktop_session_policies(monkeypatch, desktop, token_valid):
-    import bisheng.utils.http_middleware as middleware
+    import doberman_agent.utils.http_middleware as middleware
 
     subject = {"user_id": 42, "tenant_id": 2, "token_version": 3}
     if desktop:
@@ -136,7 +136,7 @@ async def test_browser_and_desktop_session_policies(monkeypatch, desktop, token_
     monkeypatch.setattr(middleware, "_validate_token_version", AsyncMock(return_value=token_valid))
     monkeypatch.setattr(middleware, "_validate_current_session_token", current)
     monkeypatch.setattr(middleware, "_check_is_global_super", AsyncMock(return_value=False))
-    with patch("bisheng.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=SimpleNamespace(delete=0))):
+    with patch("doberman_agent.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=SimpleNamespace(delete=0))):
         result = await middleware._apply_token_version_and_visible(SimpleNamespace(), "cookie", decoded_subject=subject)
     if desktop and token_valid:
         assert result is None
@@ -160,11 +160,11 @@ async def test_registered_exchange_route_owns_desktop_credentials(monkeypatch, h
     import httpx
     from fastapi import FastAPI
 
-    import bisheng.utils.http_middleware as middleware
-    from bisheng.dsh.api.dependencies import get_runtime
-    from bisheng.dsh.api.endpoints import web_session as endpoint
-    from bisheng.dsh.api.router import router
-    from bisheng.utils.http_middleware import CustomMiddleware
+    import doberman_agent.utils.http_middleware as middleware
+    from doberman_agent.dsh.api.dependencies import get_runtime
+    from doberman_agent.dsh.api.endpoints import web_session as endpoint
+    from doberman_agent.dsh.api.router import router
+    from doberman_agent.utils.http_middleware import CustomMiddleware
 
     exchange = AsyncMock(return_value={"cookie": "browser-cookie", "expires_in": 300})
     monkeypatch.setattr(endpoint, "create_web_session", exchange)
@@ -175,7 +175,7 @@ async def test_registered_exchange_route_owns_desktop_credentials(monkeypatch, h
     app.include_router(router, prefix="/api/v1")
     runtime = SimpleNamespace()
     app.dependency_overrides[get_runtime] = lambda: runtime
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.example") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.example") as client:
         response = await client.post("/api/v1/dsh/web-session", headers=headers, json={})
     assert response.status_code == status
     assert response.headers["cache-control"] == "no-store"
@@ -190,7 +190,7 @@ async def test_registered_exchange_route_owns_desktop_credentials(monkeypatch, h
 async def test_exchange_uses_real_jwt_signer_with_bounded_lifetime(monkeypatch):
     import json
 
-    from bisheng.user.domain.services.auth import AuthJwt
+    from doberman_agent.user.domain.services.auth import AuthJwt
 
     secret = "fixture-signing-key-long-enough-32"
     signer = AuthJwt.__new__(AuthJwt)
@@ -207,8 +207,8 @@ async def test_exchange_uses_real_jwt_signer_with_bounded_lifetime(monkeypatch):
     )
     user = SimpleNamespace(user_name="Alice", token_version=3, delete=0)
     with (
-        patch("bisheng.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)),
-        patch("bisheng.user.domain.services.auth.AuthJwt", return_value=signer),
+        patch("doberman_agent.user.domain.models.user.UserDao.aget_user", AsyncMock(return_value=user)),
+        patch("doberman_agent.user.domain.services.auth.AuthJwt", return_value=signer),
     ):
         result = await web_session.create_web_session(runtime, access)
     assert result["expires_in"] == 300

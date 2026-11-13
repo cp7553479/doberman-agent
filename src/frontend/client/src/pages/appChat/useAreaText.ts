@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { FLOW_TYPES } from ".";
 import { SkillMethod } from "./appUtils/skillMethod";
-import { chatFileState, chatIdState, currentChatState, runningState, submitDataState, tabsState, bishengConfState } from "./store/atoms";
+import { chatFileState, chatIdState, currentChatState, runningState, submitDataState, tabsState, dobermanAgentConfState } from "./store/atoms";
 import { ActionType } from "./useWebsocket";
 import { fileAcceptToInputAccept, normalizeFileAccept } from "./fileAcceptUtils";
 
@@ -35,7 +35,7 @@ export const useAreaText = () => {
     const chatState = useRecoilValue(currentChatState)
     const [chatId] = useRecoilState(chatIdState)
     const [tabs] = useRecoilState(tabsState)
-    const bishengConfig = useRecoilValue(bishengConfState)
+    const dobermanAgentConfig = useRecoilValue(dobermanAgentConfState)
 
     const [accepts, setAccepts] = useState('')
 
@@ -176,7 +176,7 @@ export const useAreaText = () => {
                 case EVENT_TYPE.FILE_ACCEPTS:
                     const { chatId: _chatId, fileAccept } = event.detail
                     const kinds = normalizeFileAccept(fileAccept, {
-                        mediaEnabled: !!bishengConfig?.enable_media_upload,
+                        mediaEnabled: !!dobermanAgentConfig?.enable_media_upload,
                     })
                     const acceptStr = fileAcceptToInputAccept(kinds)
                     chatId === _chatId && setAccepts(acceptStr || '*')

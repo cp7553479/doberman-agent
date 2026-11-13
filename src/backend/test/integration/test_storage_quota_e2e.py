@@ -31,9 +31,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 
 async def main() -> int:
-    from bisheng.role.domain.services.quota_service import QuotaService
-    from bisheng.common.errcode.tenant_quota import TenantStorageQuotaExceededError
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.role.domain.services.quota_service import QuotaService
+    from doberman_agent.common.errcode.tenant_quota import TenantStorageQuotaExceededError
+    from doberman_agent.database.models.tenant import TenantDao
 
     # Real DB read of the default tenant (id=1). Confirms storage_gb is set.
     tenant = await TenantDao.aget_by_id(1)
@@ -65,7 +65,7 @@ async def main() -> int:
     # chain (the bug being fixed).
     captured: list = []
     with patch(
-        'bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles',
+        'doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles',
         new=AsyncMock(return_value=[]),
     ), patch.object(
         QuotaService, '_count_usage_strict',
@@ -105,7 +105,7 @@ async def main() -> int:
 
     # Drive the real FastAPI exception handler so we see the exact JSON
     # the frontend interceptor would receive.
-    from bisheng.main import handle_http_exception
+    from doberman_agent.main import handle_http_exception
 
     # handle_http_exception expects (req, exc); the request object is only
     # used for logging, so a MagicMock suffices.

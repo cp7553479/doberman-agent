@@ -79,10 +79,10 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T01**: 错误码 `sso_sync.py` + `SSOSyncConf` + Settings 注册 + CLAUDE.md 同步
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/sso_sync.py` — 8 个 `BaseErrorCode` 子类（19301-19313）
-  - `src/backend/bisheng/core/config/sso_sync.py` — `SSOSyncConf`
+  - `src/backend/doberman_agent/common/errcode/sso_sync.py` — 8 个 `BaseErrorCode` 子类（19301-19313）
+  - `src/backend/doberman_agent/core/config/sso_sync.py` — `SSOSyncConf`
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — 注册 `sso_sync: SSOSyncConf`
+  - `src/backend/doberman_agent/core/config/settings.py` — 注册 `sso_sync: SSOSyncConf`
   - `CLAUDE.md` — 错误码表 `193=tenant_sync (F014/F015)` 已存在；验证即可
   **错误码清单**:
   ```python
@@ -113,7 +113,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T02**: Alembic 迁移 + SQLite table_definitions 同步 + OrgSyncConfig seed
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f014_sso_sync_fields.py`
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f014_sso_sync_fields.py`
   **文件（修改）**:
   - `src/backend/test/fixtures/table_definitions.py` — `TABLE_DEPARTMENT` 追加两列
   **逻辑**:
@@ -153,7 +153,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T03**: `Department` 模型加字段 + `DepartmentDao` 扩展 3 方法 + DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/department.py` — `Department` 加字段 + `DepartmentDao` 加方法
+  - `src/backend/doberman_agent/database/models/department.py` — `Department` 加字段 + `DepartmentDao` 加方法
   **文件（新建）**:
   - `src/backend/test/test_department_sso_dao.py`
   **逻辑**:
@@ -191,7 +191,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T04**: `OrgSyncTsGuard` 服务 + 决策矩阵测试
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/services/ts_guard.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/ts_guard.py`
   - `src/backend/test/test_org_sync_ts_guard.py`
   **逻辑**:
   ```python
@@ -237,18 +237,18 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T05**: `verify_hmac` FastAPI Dependency + body replay + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/__init__.py`
-  - `src/backend/bisheng/sso_sync/domain/__init__.py`
-  - `src/backend/bisheng/sso_sync/domain/services/__init__.py`
-  - `src/backend/bisheng/sso_sync/domain/services/hmac_auth.py`
+  - `src/backend/doberman_agent/sso_sync/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/domain/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/hmac_auth.py`
   - `src/backend/test/test_sso_hmac_auth.py`
   - `src/backend/test/fixtures/sso_sync.py` — 复用 fixture（`hmac_signer` / `hmac_secret_configured`）
   **逻辑**:
   ```python
   import hmac, hashlib
   from fastapi import Request
-  from bisheng.common.services.config_service import settings
-  from bisheng.common.errcode.sso_sync import SsoHmacInvalidError
+  from doberman_agent.common.services.config_service import settings
+  from doberman_agent.common.errcode.sso_sync import SsoHmacInvalidError
 
   def compute_signature(method: str, path: str, raw_body: bytes, secret: str) -> str:
       msg = f'{method.upper()}\n{path}\n'.encode() + raw_body
@@ -285,8 +285,8 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T06**: Payload Schemas + validation 测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/schemas/__init__.py`
-  - `src/backend/bisheng/sso_sync/domain/schemas/payloads.py`
+  - `src/backend/doberman_agent/sso_sync/domain/schemas/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/domain/schemas/payloads.py`
   - `src/backend/test/test_sso_payload_schemas.py`
   **Schema 清单**（对齐 spec §5.1 + §5.2）:
   ```python
@@ -350,7 +350,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T07**: `DeptUpsertService` 幂等树构建 + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/services/dept_upsert_service.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/dept_upsert_service.py`
   - `src/backend/test/test_dept_upsert_service.py`
   **接口**（spec §5.2 + INV-T12）:
   ```python
@@ -390,7 +390,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T08**: `LoginSyncService.execute` 11 步编排 + 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/services/login_sync_service.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/login_sync_service.py`
   - `src/backend/test/test_sso_login_sync_service.py`
   **逻辑**（plan §4 步骤 1-11）:
   ```python
@@ -472,7 +472,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T09**: `_upsert_user` cross-source 分支 + 测试
   **文件（修改）**:
-  - `src/backend/bisheng/sso_sync/domain/services/login_sync_service.py` — 添加 `_upsert_user` helper
+  - `src/backend/doberman_agent/sso_sync/domain/services/login_sync_service.py` — 添加 `_upsert_user` helper
   - `src/backend/test/test_sso_login_sync_service.py` — 追加测试
   **逻辑**:
   ```python
@@ -532,7 +532,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T10**: `TenantMappingHandler` + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/services/tenant_mapping_handler.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/tenant_mapping_handler.py`
   - `src/backend/test/test_sso_tenant_mapping.py`
   **逻辑**（Phase 3 决策 3：允许绕过 super_admin）:
   ```python
@@ -583,7 +583,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T11**: `DepartmentsSyncService.execute` 批量编排 + 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/services/departments_sync_service.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/departments_sync_service.py`
   - `src/backend/test/test_sso_departments_sync_service.py`
   **逻辑**（plan §5 流程）:
   ```python
@@ -655,7 +655,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T12**: `_OrgSyncLogBuffer` 工具 + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/domain/services/org_sync_log_writer.py`
+  - `src/backend/doberman_agent/sso_sync/domain/services/org_sync_log_writer.py`
   - `src/backend/test/test_sso_org_sync_log_writer.py`
   **逻辑**:
   ```python
@@ -703,15 +703,15 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T13**: API endpoints + Router 挂载 + TENANT_CHECK_EXEMPT_PATHS
   **文件（新建）**:
-  - `src/backend/bisheng/sso_sync/api/__init__.py`
-  - `src/backend/bisheng/sso_sync/api/router.py`
-  - `src/backend/bisheng/sso_sync/api/endpoints/__init__.py`
-  - `src/backend/bisheng/sso_sync/api/endpoints/login_sync.py`
-  - `src/backend/bisheng/sso_sync/api/endpoints/departments_sync.py`
+  - `src/backend/doberman_agent/sso_sync/api/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/api/router.py`
+  - `src/backend/doberman_agent/sso_sync/api/endpoints/__init__.py`
+  - `src/backend/doberman_agent/sso_sync/api/endpoints/login_sync.py`
+  - `src/backend/doberman_agent/sso_sync/api/endpoints/departments_sync.py`
   - `src/backend/test/test_sso_api_integration.py`
   **文件（修改）**:
-  - `src/backend/bisheng/api/router.py` — import `sso_sync_router` 并 `router.include_router(sso_sync_router)`
-  - `src/backend/bisheng/utils/http_middleware.py` — `TENANT_CHECK_EXEMPT_PATHS` 加入 `/api/v1/internal/sso/login-sync` / `/api/v1/departments/sync`
+  - `src/backend/doberman_agent/api/router.py` — import `sso_sync_router` 并 `router.include_router(sso_sync_router)`
+  - `src/backend/doberman_agent/utils/http_middleware.py` — `TENANT_CHECK_EXEMPT_PATHS` 加入 `/api/v1/internal/sso/login-sync` / `/api/v1/departments/sync`
   **端点骨架**:
   ```python
   # login_sync.py
@@ -747,7 +747,7 @@ T01 (SSOSyncConf + errcode)
 
 - [x] **T14**: 禁用 Tenant 阻断 + `primary_dept_external_id` None 分支
   **文件（修改）**:
-  - `src/backend/bisheng/sso_sync/domain/services/login_sync_service.py` — 已在 T08 骨架写入 ⑨ 步；本任务仅补齐测试与容错
+  - `src/backend/doberman_agent/sso_sync/domain/services/login_sync_service.py` — 已在 T08 骨架写入 ⑨ 步；本任务仅补齐测试与容错
   - `src/backend/test/test_sso_login_sync_service.py`
   **测试**（3 条）:
   - `test_disabled_leaf_tenant_returns_19303` — 预置 Tenant.status='disabled'，登录 → 403+19303
@@ -816,6 +816,6 @@ cd src/backend
 
 # 启动后手工 QA（T15）
 export BS_SSO_SYNC__GATEWAY_HMAC_SECRET=test-secret-12345
-.venv/bin/uvicorn bisheng.main:app --port 7860
+.venv/bin/uvicorn doberman_agent.main:app --port 7860
 # 用 httpx/curl 发签名请求到 /api/v1/internal/sso/login-sync + /api/v1/departments/sync
 ```

@@ -1,10 +1,10 @@
-# DSH Desktop 接入 BiSheng：客户端开发与联调接口契约
+# DSH Desktop 接入 doberman-agent：客户端开发与联调接口契约
 
 > **2026-10-14 模型审计可选扩展（待实现与真实联调）**：客户端并行开发请同时阅读 [模型审计客户端接口契约 0.3](./audit-guardrails-proposal/client-api-audit-extension.md) 和 [任务清单](./audit-guardrails-proposal/tasks.md#client-work)。仅在服务端 `GET /dsh/config` 明确公布能力后附加 `conversation_id`、`request_kind`；无能力或无效关联字段不重放模型请求。本扩展不要求升级 `contract_version=0.5.0`，本文其余既有线协议保持不变；此说明不表示当前部署已经支持审计。
 
-> 2026-10-08 唤起协议更新：默认唤起地址改为 `bisheng://login`，仍自动附加当前毕昇 origin 的 `server` 参数。已保存的地址不自动覆盖；已有环境需在“客户端 → 接入设置”保存新地址。
+> 2026-10-08 唤起协议更新：默认唤起地址改为 `doberman-agent://login`，仍自动附加当前doberman-agent origin 的 `server` 参数。已保存的地址不自动覆盖；已有环境需在“客户端 → 接入设置”保存新地址。
 
-> 2026-09-29 界面名称与地址默认值更新（唤起默认值已按 2026-10-08 修订）：毕昇网站的 DSH / DSH Desktop 文案统一显示为“客户端”（英文 Client，日文 クライアント），接口路径、字段和错误码不变。未保存配置或缺少相应字段时，`launch_url` 默认 `bisheng://login`，`download_url` 默认 `https://www.dshdesktop.com/zh/enterprise/`。已保存的自定义地址保持不变，显式空下载地址仍隐藏下载入口；已有环境如需使用新下载地址，应在“客户端 → 接入设置”中修改并保存。
+> 2026-09-29 界面名称与地址默认值更新（唤起默认值已按 2026-10-08 修订）：doberman-agent网站的 DSH / DSH Desktop 文案统一显示为“客户端”（英文 Client，日文 クライアント），接口路径、字段和错误码不变。未保存配置或缺少相应字段时，`launch_url` 默认 `doberman-agent://login`，`download_url` 默认 `https://www.dshdesktop.com/zh/enterprise/`。已保存的自定义地址保持不变，显式空下载地址仍隐藏下载入口；已有环境如需使用新下载地址，应在“客户端 → 接入设置”中修改并保存。
 
 > **2026-09-20 会话版本修复（已批准）**：创建授权事务新增可选 `client_version`，取 DSH Desktop 应用实际版本，随后保存至登录会话。协议版本仍为 `0.5.0`；该字段不是协议版本，不参与登录资格判断。两端配套更新，不为测试阶段旧 Gateway 增加降级重试。详见 [会话版本修订](./client-version-revision.md)。
 
@@ -24,13 +24,13 @@
 
 ## 1. 接入结论与需求来源
 
-用户只配置一个 **BiSheng Nginx 公开地址**，支持 HTTP 或 HTTPS，例如 `http://192.168.106.109:13001`。登录、换证、刷新、模型与用量请求全部使用这个地址；无需填写 Gateway 地址、模型供应商地址或供应商密钥。
+用户只配置一个 **doberman-agent Nginx 公开地址**，支持 HTTP 或 HTTPS，例如 `http://192.168.106.109:13001`。登录、换证、刷新、模型与用量请求全部使用这个地址；无需填写 Gateway 地址、模型供应商地址或供应商密钥。
 
 需求依据：2026-09-09 实际读取的[飞书 PRD v0.7（2026-09-03）](https://dataelem.feishu.cn/wiki/NHkFwHOrjizdmekwnuYc1CHsnPc) §4.1、§4.2、§4.5、§4.6，当前 [F062 Spec](./spec.md)、[Design](./design.md)，以及本次确认的单入口部署与商业控制边界。PRD 与后续设计存在演进，按下表接入：
 
 | PRD / 需求 | 本期客户端契约 |
 |---|---|
-| 登录复用 BiSheng；桌面入口 A、固定链接入口 B | 均使用系统浏览器；B 先唤起客户端，再创建与 A 相同的 PKCE 授权事务，见 §4.2 |
+| 登录复用 doberman-agent；桌面入口 A、固定链接入口 B | 均使用系统浏览器；B 先唤起客户端，再创建与 A 相同的 PKCE 授权事务，见 §4.2 |
 | PRD 早期 PAT / `model:invoke` / F051 模型面 | 已被后续设计替代：使用独立 DSH Token 和本文 `/api/v1/dsh/*`，不调用 PAT/SAK 签发接口 |
 | PRD 固定链接直接携 code 拉起客户端 | 本文补充：深链只带平台地址，票据仍在客户端创建 PKCE 后签发；不接受无本地事务的 code 自动登录 |
 | 本机回调不可用时复制授权码 | 复制当前事务的一次性 `identity_ticket`，保留本地 `auth_id` 与 verifier；不是手动粘贴长效 Token |
@@ -47,13 +47,13 @@
 
 ### 2.1 一个地址，两类接口
 
-设 `BASE = https://bisheng.example.com`，保存时删除末尾 `/`。本期地址为 origin（协议、主机、可选端口），不支持额外部署路径前缀；不填写 `/api`、`/api/v1` 或 `/workspace`。客户端接受 HTTP 和 HTTPS，不强制跳转或升级协议；使用 HTTPS 时校验证书。109 联调 BASE 为 `http://192.168.106.109:13001`，无需导入 CA。
+设 `BASE = https://platform.example.com.com`，保存时删除末尾 `/`。本期地址为 origin（协议、主机、可选端口），不支持额外部署路径前缀；不填写 `/api`、`/api/v1` 或 `/workspace`。客户端接受 HTTP 和 HTTPS，不强制跳转或升级协议；使用 HTTPS 时校验证书。109 联调 BASE 为 `http://192.168.106.109:13001`，无需导入 CA。
 
 ```text
 DSH / 浏览器 → BASE 对应的 Nginx
-                       ├─ 页面请求 → BiSheng 前端
+                       ├─ 页面请求 → doberman-agent 前端
                        └─ /api/* → Gateway
-                                      ├─ /api/v1/*、/api/v2/* → BiSheng 后端
+                                      ├─ /api/v1/*、/api/v2/* → doberman-agent 后端
                                       └─ 其他 /api/* → Gateway 自有接口
 ```
 
@@ -61,21 +61,21 @@ DSH / 浏览器 → BASE 对应的 Nginx
 
 | # | 方法和完整路径（均在 BASE 下） | 执行业务的服务 | 客户端用途 | 凭证 |
 |---|---|---|---|---|
-| 1 | `GET /api/v1/dsh/config` | BiSheng | 探测开关与公开 client_id | 无 |
+| 1 | `GET /api/v1/dsh/config` | doberman-agent | 探测开关与公开 client_id | 无 |
 | 2 | `POST /api/dsh/authorizations` | Gateway | 建立浏览器授权事务 | 无；公共客户端 |
 | 3 | `POST /api/dsh/token` | Gateway | 首次换证 / 刷新 | 一次性票据 + PKCE / refresh token |
 | 4 | `POST /api/dsh/logout` | Gateway | 撤销当前设备会话 | DSH access token 或 refresh token |
-| 5 | `GET /api/v1/dsh/models` | BiSheng | 企业模型列表 | DSH access token |
-| 6 | `POST /api/v1/dsh/chat/completions` | BiSheng | JSON / SSE 模型调用 | DSH access token |
-| 7 | `GET /api/v1/dsh/usage` | BiSheng | 当前用户逐模型月用量（省略模型为汇总） | DSH access token |
+| 5 | `GET /api/v1/dsh/models` | doberman-agent | 企业模型列表 | DSH access token |
+| 6 | `POST /api/v1/dsh/chat/completions` | doberman-agent | JSON / SSE 模型调用 | DSH access token |
+| 7 | `GET /api/v1/dsh/usage` | doberman-agent | 当前用户逐模型月用量（省略模型为汇总） | DSH access token |
 
-浏览器页面另调用 `POST /api/v1/dsh/authorize`（§4.3），它使用普通 BiSheng 登录会话。桌面端不收集用户密码、不读取浏览器 JWT，也不直接调用该接口。`GET /api/dsh/jwks` 供服务端验签，不是客户端接入依赖。
+浏览器页面另调用 `POST /api/v1/dsh/authorize`（§4.3），它使用普通 doberman-agent 登录会话。桌面端不收集用户密码、不读取浏览器 JWT，也不直接调用该接口。`GET /api/dsh/jwks` 供服务端验签，不是客户端接入依赖。
 
 ### 2.2 请求与响应
 
 - POST 默认 `Content-Type: application/json; charset=utf-8`。除 SSE 外，响应为 JSON。
 - 桌面端这 7 个接口的成功响应均为**裸 JSON**，不包 `status_code/status_message/data`；`models.data` 是模型数组，不是业务统一响应包装。logout 成功为 204，无响应体。
-- 浏览器 `/authorize` 与管理接口沿用 BiSheng `UnifiedResponseModel`，见 §4.3；客户端不要编写“猜包装”的兼容逻辑。
+- 浏览器 `/authorize` 与管理接口沿用 doberman-agent `UnifiedResponseModel`，见 §4.3；客户端不要编写“猜包装”的兼容逻辑。
 - 需要 access token 时只发送 `Authorization: Bearer <access_token>`。refresh token 只放 token/logout 的 JSON body。请求 URL、日志、provider 导出、报错截图不得含凭证。
 - 每个 HTTP 响应带服务端生成的 `X-Request-ID`；错误体内的 `request_id` 与它一致。客户端不要把它当重试幂等键；`chatcmpl-*` 的响应 ID 也不是重放键。
 - 带凭证或个人数据的响应使用 `Cache-Control: no-store`。错误使用真实 HTTP 状态码，禁止 HTTP 200 包裹失败。
@@ -85,7 +85,7 @@ DSH / 浏览器 → BASE 对应的 Nginx
 
 ### 2.3 客户端何时调用什么
 
-以下远程路径全部拼接到同一个 BASE。时序图中的“平台入口”就是 Nginx，服务端自行分派到 Gateway 或 BiSheng；客户端无需直接连接两个服务。
+以下远程路径全部拼接到同一个 BASE。时序图中的“平台入口”就是 Nginx，服务端自行分派到 Gateway 或 doberman-agent；客户端无需直接连接两个服务。
 
 | 触发时机 | 调用顺序 / 本地动作 | 进入下一步的条件 | 时序 |
 |---|---|---|---|
@@ -135,12 +135,12 @@ PKCE：verifier 为 43～128 个 RFC 7636 unreserved ASCII 字符，建议 32 �
 
 ### 4.2 入口 B：固定网页链接唤起客户端
 
-固定入口为 `https://bisheng.example.com/desktop-login`，由平台前端提供；可放入工作台“DSH Desktop”入口或入职文档。它不含身份、auth_id 或票据。
+固定入口为 `https://platform.example.com.com/desktop-login`，由平台前端提供；可放入工作台“DSH Desktop”入口或入职文档。它不含身份、auth_id 或票据。
 
 页面常驻“打开 DSH Desktop”按钮，触发：
 
 ```text
-dsh-desktop://login?server=https%3A%2F%2Fbisheng.example.com
+dsh-desktop://login?server=https%3A%2F%2Fdoberman-agent.example.com
 ```
 
 客户端注册此协议，处理首次启动和已运行时的协议事件。仅接受 `login` host、空 path、一个 URL 编码的 `server` 参数；重复参数、userinfo、片段、额外路径和非 HTTP/HTTPS server 拒绝。解析后展示平台地址并让用户确认；未确认不得替换现有 BASE 或向新平台发送任何已有凭证。
@@ -172,7 +172,7 @@ dsh-desktop://login?server=https%3A%2F%2Fbisheng.example.com
 ```json
 {
   "auth_id":"auth_01_example",
-  "authorize_url":"https://bisheng.example.com/desktop-login?auth_id=auth_01_example",
+  "authorize_url":"https://platform.example.com.com/desktop-login?auth_id=auth_01_example",
   "expires_in":300
 }
 ```
@@ -298,10 +298,10 @@ Content-Type: application/json
 {
   "object":"list",
   "data":[{
-    "id":"bisheng:42",
+    "id":"doberman-agent:42",
     "object":"model",
     "created":1788919200,
-    "owned_by":"bisheng",
+    "owned_by":"doberman-agent",
     "display_name":"百炼 / qwen-max",
     "capabilities":{"streaming":true,"tools":true,"reasoning_content":false}
   }]
@@ -310,9 +310,9 @@ Content-Type: application/json
 
 上述字段均必返；created 为 Unix 秒。capabilities 三项为布尔值，`reasoning_content` 表示该适配器已验证的 DeepSeek 兼容扩展能力；不依据模型名推断。模型列表必须已经过现有模型可访问性与 DSH 白名单过滤；合法共享模型的物理 tenant_id 不返回给客户端作为过滤依据。
 
-`display_name` 与毕昇管理端共用展示规则：`提供方名称 / 供应商调用名称`。模型部分优先使用调用名称 `model_name`，去除首尾空白后为空时回落到管理员配置的展示名称 `name`；提供方名称为空时使用提供方类型。两部分均去除首尾空白。`id` 使用稳定的 `bisheng:<model.id>`，用于权限、额度与请求路由；`owned_by` 为 `bisheng`。修改模型调用名称或展示名称后，客户端在下一次目录刷新时获取新名称。
+`display_name` 与doberman-agent管理端共用展示规则：`提供方名称 / 供应商调用名称`。模型部分优先使用调用名称 `model_name`，去除首尾空白后为空时回落到管理员配置的展示名称 `name`；提供方名称为空时使用提供方类型。两部分均去除首尾空白。`id` 使用稳定的 `doberman-agent:<model.id>`，用于权限、额度与请求路由；`owned_by` 为 `doberman-agent`。修改模型调用名称或展示名称后，客户端在下一次目录刷新时获取新名称。
 
-列表一次返回当前用户全部可用模型，本期无分页参数。空数组为成功结果，展示“管理员尚未开放可用企业模型”。模型名只用于展示，调用必须原样使用 id（`bisheng:<model_id>`），不传供应商原始模型名或自行拼接名称。
+列表一次返回当前用户全部可用模型，本期无分页参数。空数组为成功结果，展示“管理员尚未开放可用企业模型”。模型名只用于展示，调用必须原样使用 id（`doberman-agent:<model_id>`），不传供应商原始模型名或自行拼接名称。
 
 企业扩展包配置：
 
@@ -354,7 +354,7 @@ tool 消息必带 tool_call_id 并对应前面的 assistant tool_calls；assista
 
 ```json
 {
-  "model":"bisheng:42",
+  "model":"doberman-agent:42",
   "messages":[{"role":"user","content":"查询文档 KB-1 的标题"}],
   "tools":[{"type":"function","function":{"name":"lookup_document","description":"Find a document title","parameters":{"type":"object","properties":{"id":{"type":"string"}},"required":["id"]}}}],
   "tool_choice":"auto",
@@ -370,7 +370,7 @@ tool 消息必带 tool_call_id 并对应前面的 assistant tool_calls；assista
   "id":"chatcmpl-example",
   "object":"chat.completion",
   "created":1788919200,
-  "model":"bisheng:42",
+  "model":"doberman-agent:42",
   "choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_1","type":"function","function":{"name":"lookup_document","arguments":"{\"id\":\"KB-1\"}"}}]},"finish_reason":"tool_calls"}],
   "usage":{"prompt_tokens":100,"completion_tokens":20,"total_tokens":120,"prompt_tokens_details":{"cached_tokens":80,"cache_creation_tokens":null}}
 }
@@ -380,7 +380,7 @@ tool 消息必带 tool_call_id 并对应前面的 assistant tool_calls；assista
 
 ```json
 {
-  "model":"bisheng:42",
+  "model":"doberman-agent:42",
   "messages":[
     {"role":"user","content":"查询文档 KB-1 的标题"},
     {"role":"assistant","content":null,"tool_calls":[{"id":"call_1","type":"function","function":{"name":"lookup_document","arguments":"{\"id\":\"KB-1\"}"}}]},
@@ -399,13 +399,13 @@ tool 消息必带 tool_call_id 并对应前面的 assistant tool_calls；assista
 正常文本流示例（事件间空行是协议的一部分）：
 
 ```text
-data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"bisheng:42","choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null}]}
+data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"doberman-agent:42","choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null}]}
 
-data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"bisheng:42","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}
+data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"doberman-agent:42","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}
 
-data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"bisheng:42","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"doberman-agent:42","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
 
-data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"bisheng:42","choices":[],"usage":{"prompt_tokens":10,"completion_tokens":1,"total_tokens":11,"prompt_tokens_details":{"cached_tokens":8,"cache_creation_tokens":null}}}
+data: {"id":"chatcmpl-example","object":"chat.completion.chunk","created":1788919200,"model":"doberman-agent:42","choices":[],"usage":{"prompt_tokens":10,"completion_tokens":1,"total_tokens":11,"prompt_tokens_details":{"cached_tokens":8,"cache_creation_tokens":null}}}
 
 data: [DONE]
 
@@ -458,7 +458,7 @@ SSE 仅在 `stream_options.include_usage=true` 时返回最终 usage 块；未�
 
 ## 8. 当前模型月用量与账户汇总
 
-`GET {BASE}/api/v1/dsh/usage?model=bisheng:42`，Bearer DSH access token，无用户或月份参数。`model` 是可选参数，格式与 chat/completions.model 一致；当前用户未配置该模型时返回 403 model_not_allowed。选择或切换模型后、调用完成后查询该模型的独立月用量。200：
+`GET {BASE}/api/v1/dsh/usage?model=doberman-agent:42`，Bearer DSH access token，无用户或月份参数。`model` 是可选参数，格式与 chat/completions.model 一致；当前用户未配置该模型时返回 403 model_not_allowed。选择或切换模型后、调用完成后查询该模型的独立月用量。200：
 
 ```json
 {
@@ -538,7 +538,7 @@ error.message 为可展示的服务端说明，不解析其文案；error.code �
 
 ### 10.2 联调环境由平台方提供
 
-一个 HTTP 或 HTTPS BASE；Gateway DSH 模块和 BiSheng DSH API 版本；桌面下载版本；T1/T2 测试租户及普通用户 / 管理员；有效测试 License（例如 10 席）；已开放且 tools/usage 适配验证通过的模型 ID；可控席位撤销与配额配置入口；按 X-Request-ID 查询服务端日志的方式。真实供应商和模型名单目前未提供，不能据示例宣称任意模型已兼容。
+一个 HTTP 或 HTTPS BASE；Gateway DSH 模块和 doberman-agent DSH API 版本；桌面下载版本；T1/T2 测试租户及普通用户 / 管理员；有效测试 License（例如 10 席）；已开放且 tools/usage 适配验证通过的模型 ID；可控席位撤销与配额配置入口；按 X-Request-ID 查询服务端日志的方式。真实供应商和模型名单目前未提供，不能据示例宣称任意模型已兼容。
 
 Nginx/Gateway 联调检查：完整路径转发、Authorization 透传、DSH 独立认证不误走普通 JWT/V2、SSE 无代理缓冲与自动重试、取消能传到上游、超时覆盖长生成、公开 origin 不变；反向代理外部 host/proto 来自受信部署配置，不采信任意外部转发头拼授权 URL。
 
@@ -785,7 +785,7 @@ sequenceDiagram
     desktop->>platform: POST /api/v1/dsh/chat/completions
     alt 429 monthly_token_limit_exceeded
         platform-->>desktop: 月额度已达限
-        desktop->>platform: GET /api/v1/dsh/usage?model=bisheng:所选模型ID
+        desktop->>platform: GET /api/v1/dsh/usage?model=doberman-agent:所选模型ID
         platform-->>desktop: used、limit、reset_at 或 unavailable
         desktop->>desktop: 展示达限，停止自动调用，等待额度恢复
     else 403 model_not_allowed
@@ -865,4 +865,4 @@ sequenceDiagram
 
 用户已批准本人会话/用量查询和逐会话吊销；完整接口及验收边界见 [self-service-revision.md](./self-service-revision.md)。部门仅展示，不同步 Gateway；客户端冻结的登录与模型协议不变。
 
-2026-09-10 网页入口配置修订：管理页可保存 `launch_url` 基础协议地址，默认 `dsh-desktop://login`；网页附加当前毕昇 origin 的唯一 `server` 参数。现有桌面端默认无需改动。更换基础协议或路径需要客户端相应支持及安装注册；本项不修改 0.4.0 的客户端接口、PKCE 或回调时序。详见 [管理配置修订](./management-settings-revision.md)。
+2026-09-10 网页入口配置修订：管理页可保存 `launch_url` 基础协议地址，默认 `dsh-desktop://login`；网页附加当前doberman-agent origin 的唯一 `server` 参数。现有桌面端默认无需改动。更换基础协议或路径需要客户端相应支持及安装注册；本项不修改 0.4.0 的客户端接口、PKCE 或回调时序。详见 [管理配置修订](./management-settings-revision.md)。

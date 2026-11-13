@@ -1,5 +1,5 @@
 import { getCitationAccessScope } from '@/controllers/citationScope';
-import { ChatMarkdown, type ChatMarkdownProps, type ChatCitation } from '@bisheng/chat';
+import { ChatMarkdown, type ChatMarkdownProps, type ChatCitation } from '@doberman-agent/chat';
 import { useTranslation } from 'react-i18next';
 import { getCitationDetail, getCitationUnresolvedReason, resolveCitationDetails, type ChatCitation as PlatformCitation } from '@/controllers/API';
 import CitationDocumentPreviewDrawer from '../chatComponent/CitationDocumentPreviewDrawer';

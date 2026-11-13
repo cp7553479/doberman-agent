@@ -6,11 +6,11 @@ import json
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.models.config import Config, ConfigKeyEnum  # noqa: E402
-from bisheng.core.context.manager import close_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.workstation.domain.models import TenantWorkstationConfigDao  # noqa: E402
+from doberman_agent.common.models.config import Config, ConfigKeyEnum  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.workstation.domain.models import TenantWorkstationConfigDao  # noqa: E402
 
 KEYS = (
     ConfigKeyEnum.WORKSTATION.value,

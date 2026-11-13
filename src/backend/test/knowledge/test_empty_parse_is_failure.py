@@ -22,10 +22,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.api.services import knowledge_imp
-from bisheng.common.errcode.knowledge import KnowledgeFileEmptyError
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.rag.pipeline.types import PipelineResult, PipelineStage
+from doberman_agent.api.services import knowledge_imp
+from doberman_agent.common.errcode.knowledge import KnowledgeFileEmptyError
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.rag.pipeline.types import PipelineResult, PipelineStage
 
 
 def _file() -> KnowledgeFile:

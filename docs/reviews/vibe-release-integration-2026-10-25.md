@@ -36,7 +36,7 @@
 
 ## 部署约束和当前状态
 
-- 116 已只读认证成功，现部署目录 `/opt/server/bisheng-test`；内存余量紧张，先更新本次授权的应用服务，配置新 runtime 前复测容量。不停止无关服务、不删除既有业务数据、不降低容量或隔离门槛。
+- 116 已只读认证成功，现部署目录 `/opt/server/doberman-agent-test`；内存余量紧张，先更新本次授权的应用服务，配置新 runtime 前复测容量。不停止无关服务、不删除既有业务数据、不降低容量或隔离门槛。
 - 189 复用先前专用 known_hosts 严格核验；8 CPU、约 56 GiB 可用内存、约 465 GiB 可用磁盘。既有 `e2e-f059-*` 应用、PVC、准入和服务继续保留，新平台使用独立命名空间/安装标识。
 - 189 新平台计划复用 116 的独立数据库和 OpenFGA store；116 的 Redis 逻辑库均已有数据，因此新平台另配独立 Redis，不复用或清空现有任务队列。公开/临时桶分别配置。Vibe 私有对象由现有 UUID 应用/任务前缀隔开，当前固定私有桶设计不声称是不同平台的独立桶。
 - 现有 Drone release 流水线构建 backend/frontend/sandbox 并自动更新 116。本轮 runtime 镜像另从最终 release 同一源码构建原生 amd64，固定不可变版本和 digest 交付内网，不把旧 runtime 镜像当作已更新。
@@ -70,7 +70,7 @@
 
 ### 189 Kubernetes
 
-- 新建 `bisheng-vibe-runtime-system`、`bisheng-vibe-runtime-apps`、`bisheng-vibe-installer`、`bisheng-vibe-platform`；Helm release `bisheng-vibe-runtime` revision 1 安装成功。manager、app-proxy、egress、admission 四个 Deployment 均为 1/1。
+- 新建 `doberman-agent-vibe-runtime-system`、`doberman-agent-vibe-runtime-apps`、`doberman-agent-vibe-installer`、`doberman-agent-vibe-platform`；Helm release `doberman-agent-vibe-runtime` revision 1 安装成功。manager、app-proxy、egress、admission 四个 Deployment 均为 1/1。
 - 新建四个 1 GiB production、三个 4 GiB scratch、两个 1 GiB preflight 专用有界 ext4 loop 文件系统及 Retain local PV；持久 systemd 挂载和 kubelet 挂载依赖已配置，未重启 kubelet。尚未把这项准备工作当作 SQLite 锁/fsync 或重启验收。
 - 定向 RBAC：允许新 manager 在 execution namespace 创建 Pod；拒绝读取 control Secret，拒绝 exec、attach、portforward。使用显式 `--subresource` 验证，避免 `pods/exec` CLI 简写被错误解释成基础资源。
 - descriptor 的 `probe_report` 仍为空；四个控制进程 Running **不代表运行域已 ready**。未生成虚假报告、未开启应用部署。
@@ -102,7 +102,7 @@
 
 - **116：容量拒绝。** 实测主机约 58 GiB 已使用、可用约 2.7 GiB；Milvus 约 32 GiB，另一个项目 backend 约 6 GiB。现有预约与保留策略计算出的 Vibe 可用预算为 1 MiB，脚本未提交新应用。不调整保留/超卖策略，不停止无关服务；已请求用户指定可释放资源或先保留 116 部署。
 - **189：唯一应用已接收，准备阶段失败。** `e2e-vibe-k8s-20261025` 的 app ID 为 `c63121a2f58441df953762501fdc62d3`；首次 deployment `3685d71782c546f69a10e0adf3670495` 在 `precheck_build` 返回 16227。已定位为 Celery worker 调用 manager 的 wakeup 被部署补充 NetworkPolicy 拦截；初始规则只列 backend。异步执行资源已清理，临时发布密钥已回收；不把接收成功、控制进程健康或安装探测通过写成应用上线通过。
-- **精确网络规则等待明确授权。** 自动审批拒绝将平台 backend/worker 放入 manager 入站来源，理由是部署授权未明确此网络访问范围。已提交唯一精确规则：来源 `bisheng-vibe-platform`，组件 backend 或 worker，目的 `bisheng-vibe-runtime-system` 的 runtime-manager TCP 8091，继续独立 HMAC。该规则尚未执行；批准后只重试原应用主流程。
+- **精确网络规则等待明确授权。** 自动审批拒绝将平台 backend/worker 放入 manager 入站来源，理由是部署授权未明确此网络访问范围。已提交唯一精确规则：来源 `doberman-agent-vibe-platform`，组件 backend 或 worker，目的 `doberman-agent-vibe-runtime-system` 的 runtime-manager TCP 8091，继续独立 HMAC。该规则尚未执行；批准后只重试原应用主流程。
 
 ### 交付与运行限制
 
@@ -117,7 +117,7 @@
 ### 仅修正本次阻塞
 
 1. 用户明确批准的 worker/backend → manager TCP 8091 精确入站规则已 apply，并同步回安装清单；执行应用的 NetworkPolicy、RBAC 和 HMAC 不变。证据 `k8s189-worker-control-rule-applied.json`。
-2. 新建专用卷缺少 `.bisheng-volume.json`，storage-guard 按预期拒绝。确认新 execution namespace 无 Pod、九个卷均为 Available/Released、local path 与安装身份匹配且为独立 ext4 后，补齐安装标记；没有清理 claimRef 或删除卷数据。
+2. 新建专用卷缺少 `.doberman-agent-volume.json`，storage-guard 按预期拒绝。确认新 execution namespace 无 Pod、九个卷均为 Available/Released、local path 与安装身份匹配且为独立 ext4 后，补齐安装标记；没有清理 claimRef 或删除卷数据。
 3. 原版本 prepare 和 probe 均 completed/cleanup complete，审批通过后 outbox 暴露 MySQL `MissingGreenlet`。根因为事务内凭据 flush 未加载服务器默认 create_time，随后同步 DTO 读取触发隐式 IO。`CredentialRepository.create_in_transaction` 增加显式 await refresh，不新增 commit。测试关闭 INSERT RETURNING 后先复现，再配对验证修复及 rollback：**2 passed**；Ruff、定向架构守卫、diff check 通过。按 SDD hotfix 流程完成七维度审查，先推发布线，再由 Vibe 和 release 继承；审查见 `vibe-credential-defaults-hotfix-2026-10-25.md`。
 4. 189 backend/worker/Beat 使用同一固定 hotfix digest；应用与中间件数据保持。通过既有管理员“审批异常重试”API 恢复原审批实例 1，没有手工把状态改成成功，也没有重新上传版本。
 5. app-proxy 原内部 HTTP backendBase 不在本安装网络放行范围内，入口仍503。改为现有已放通的 HTTPS 平台 origin，并给原生 app-proxy 镜像加入**公开**平台 CA，沿用现有系统信任 HTTPS 方案。非 root 导入/TLS 信任烟测通过；保持 TLS 校验，不增加网络权限；同源 Helm values 保存新地址与固定镜像 digest。没有提交额外 Chart 功能。正式 data-helper 启动就绪存在短暂延迟，Service 全部就绪后复查入口成功。

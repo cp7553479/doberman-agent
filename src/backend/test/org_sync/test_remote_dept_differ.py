@@ -1,4 +1,4 @@
-"""Tests for F015 :mod:`bisheng.org_sync.domain.services.remote_dept_differ`.
+"""Tests for F015 :mod:`doberman_agent.org_sync.domain.services.remote_dept_differ`.
 
 The differ is a pure function so every test exercises a hand-built
 snapshot of local departments + remote DTOs and inspects the returned
@@ -22,8 +22,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO
-from bisheng.org_sync.domain.services.remote_dept_differ import (
+from doberman_agent.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO
+from doberman_agent.org_sync.domain.services.remote_dept_differ import (
     ArchiveOp,
     MoveOp,
     RemoteDeptDiffer,

@@ -1,6 +1,6 @@
 """Process configuration — environment variables only, never the platform config.yaml.
 
-app-proxy does not import ``bisheng`` (D5-C), so it cannot read
+app-proxy does not import ``doberman-agent`` (D5-C), so it cannot read
 ``settings.app_runtime``. The deployment is responsible for keeping the two
 sides in sync; the mapping below is the contract (design §4.2 ⑧ / K10):
 
@@ -40,7 +40,7 @@ DEFAULT_PORT = 8090
 DEFAULT_ENTRY_PREFIX = "/apps"
 
 #: Platform session cookie. Must match ``_extract_http_access_token``
-#: (``bisheng/utils/http_middleware.py:60-73``). The cookie is host-only and
+#: (``doberman-agent/utils/http_middleware.py:60-73``). The cookie is host-only and
 #: ``path=/``, which is exactly why ``/apps/*`` on the same origin gets it for
 #: free — the whole "no second login" promise (AC-26) rests on this (K7).
 ACCESS_TOKEN_COOKIE = "access_token_cookie"

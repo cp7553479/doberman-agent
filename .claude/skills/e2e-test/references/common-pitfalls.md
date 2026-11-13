@@ -1,14 +1,14 @@
-# BiSheng E2E 测试常见陷阱与诊断修复
+# DobermanAgent E2E 测试常见陷阱与诊断修复
 
 ## 陷阱 1：业务错误 HTTP 200
 
 **症状**：`assert resp.status_code == 400` 失败，实际收到 200。
 
-**原因**：BiSheng 的 `UnifiedResponseModel` 将业务错误包装在 HTTP 200 响应体中，通过 `status_code` 字段区分。
+**原因**：DobermanAgent 的 `UnifiedResponseModel` 将业务错误包装在 HTTP 200 响应体中，通过 `status_code` 字段区分。
 
 **修复**：
 ```python
-# ❌ BiSheng 业务错误也返回 HTTP 200
+# ❌ DobermanAgent 业务错误也返回 HTTP 200
 assert resp.status_code == 400
 
 # ✅ 检查响应体中的 status_code
@@ -23,7 +23,7 @@ assert body["status_message"] != "SUCCESS"
 
 **症状**：登录 API 返回错误，或后续请求 401。
 
-**原因**：BiSheng 登录密码需要 RSA 加密。前端从 `/api/v1/user/public_key` 获取公钥后加密。
+**原因**：DobermanAgent 登录密码需要 RSA 加密。前端从 `/api/v1/user/public_key` 获取公钥后加密。
 
 **修复**：
 ```python
@@ -91,7 +91,7 @@ assert_resp_200(get_resp)  # 如果失败，说明 OpenFGA 元组没写入
 
 **症状**：`DELETE /resource/{id}` 返回错误，因为有关联数据未先删除。
 
-**原因**：BiSheng 资源间有关联关系（如知识库→文件、助手→工具/技能/知识库），删除有顺序要求。
+**原因**：DobermanAgent 资源间有关联关系（如知识库→文件、助手→工具/技能/知识库），删除有顺序要求。
 
 **修复**：
 ```python
@@ -145,7 +145,7 @@ data = await wait_for_status(
 
 **症状**：列表查询返回的数据数量不对。
 
-**原因**：BiSheng 不同 API 的分页参数名称可能不同（`page`/`page_num`、`limit`/`page_size`/`size`）。
+**原因**：DobermanAgent 不同 API 的分页参数名称可能不同（`page`/`page_num`、`limit`/`page_size`/`size`）。
 
 **修复**：
 ```python
@@ -168,7 +168,7 @@ total = data["total"]  # 总数
 
 **症状**：WebSocket 连接失败或消息收不到。
 
-**原因**：BiSheng 的 WebSocket 使用特殊的认证方式（`UserPayload.get_login_user_from_ws`），token 通过 query 参数传递。
+**原因**：DobermanAgent 的 WebSocket 使用特殊的认证方式（`UserPayload.get_login_user_from_ws`），token 通过 query 参数传递。
 
 **修复**：
 ```python

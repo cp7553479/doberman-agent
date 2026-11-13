@@ -14,31 +14,31 @@ from dataclasses import dataclass
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import (
+from doberman_agent.common.errcode.knowledge_space import (
     SpaceFileNameDuplicateError,
     SpaceFileSizeLimitError,
     SpacePermissionDeniedError,
 )
-from bisheng.common.errcode.tenant_quota import TenantStorageQuotaExceededError
-from bisheng.common.errcode.workstation import (
+from doberman_agent.common.errcode.tenant_quota import TenantStorageQuotaExceededError
+from doberman_agent.common.errcode.workstation import (
     ConversationImportFailedError,
     ConversationImportFolderNotFoundError,
     ConversationImportPermissionDeniedError,
     ConversationImportQuotaExceededError,
     ConversationImportSpaceNotFoundError,
 )
-from bisheng.common.services.config_service import settings as bisheng_settings
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFileDao
-from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
-from bisheng.user.domain.services.auth import LoginUser
-from bisheng.workstation.domain.schemas.conversation_export import (
+from doberman_agent.common.services.config_service import settings as doberman_agent_settings
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFileDao
+from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+from doberman_agent.user.domain.services.auth import LoginUser
+from doberman_agent.workstation.domain.schemas.conversation_export import (
     ImportMessagesToKnowledgeRequest,
 )
-from bisheng.workstation.domain.services import conversation_export_service as svc_mod
-from bisheng.workstation.domain.services.conversation_export_service import (
+from doberman_agent.workstation.domain.services import conversation_export_service as svc_mod
+from doberman_agent.workstation.domain.services.conversation_export_service import (
     ConversationExportService,
 )
 
@@ -207,7 +207,7 @@ def patch_import_deps(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(SpaceFileDao, "async_list_children", classmethod(_fake_list_children))
     monkeypatch.setattr(svc_mod, "save_uploaded_file", _fake_save_uploaded_file)
     monkeypatch.setattr(
-        type(bisheng_settings),
+        type(doberman_agent_settings),
         "aget_all_config",
         staticmethod(_fake_all_config),
     )

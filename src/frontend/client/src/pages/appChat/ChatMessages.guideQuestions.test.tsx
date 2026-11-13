@@ -5,15 +5,15 @@ import { emitAreaTextEvent } from './useAreaText';
 
 let mockRunning = { guideWord: ['Example question'], error: { code: '', data: null }, inputDisabled: false, inputForm: false as boolean | object };
 jest.mock('recoil', () => ({ useRecoilValue: (key: string) => key === 'running' ? mockRunning : key === 'chat' ? { flow: { flow_type: 5 } } : {} }));
-jest.mock('./store/atoms', () => ({ currentRunningState: 'running', currentChatState: 'chat', bishengConfState: 'config' }));
+jest.mock('./store/atoms', () => ({ currentRunningState: 'running', currentChatState: 'chat', dobermanAgentConfState: 'config' }));
 jest.mock('~/store', () => ({ __esModule: true, default: { LaTeXParsing: 'latex' } }));
 jest.mock('./useMessages', () => ({ useMessage: () => ({ messages: [], chatId: 'assistant-chat', messageScrollRef: { current: null } }) }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key, useAuthContext: () => ({ user: {} }) }));
-jest.mock('@bisheng/chat', () => ({
+jest.mock('@doberman-agent/chat', () => ({
   ConversationMessages: () => null,
   SuggestedQuestions: ({ questions, onSelect }: { questions: string[]; onSelect: (value: string) => void }) => <>{questions.map(question => <button key={question} onClick={() => onSelect(question)}>{question}</button>)}</>,
 }));
-jest.mock('@bisheng/chat/core', () => ({ messagesForPresentation: () => [], createRunLabels: () => ({}) }));
+jest.mock('@doberman-agent/chat/core', () => ({ messagesForPresentation: () => [], createRunLabels: () => ({}) }));
 jest.mock('~/components/Chat/MessageSelection', () => ({ SelectionMessagesProvider: ({ children }: React.PropsWithChildren) => <>{children}</>, SelectAllBelowBanner: () => null, MessageCheckbox: () => null }));
 jest.mock('~/components/ui/Avatar', () => ({ Avatar: () => null, AvatarImage: () => null, AvatarName: () => null }));
 jest.mock('./components/ClientChatMarkdown', () => ({ ClientChatMarkdown: () => null }));

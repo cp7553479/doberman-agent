@@ -18,8 +18,8 @@ import fitz
 from loguru import logger
 from reportlab.pdfbase import pdfmetrics
 
-from bisheng.knowledge.rag.pipeline.loader.utils import ofd_converter
-from bisheng.knowledge.rag.pipeline.loader.utils.ofd_converter import (
+from doberman_agent.knowledge.rag.pipeline.loader.utils import ofd_converter
+from doberman_agent.knowledge.rag.pipeline.loader.utils.ofd_converter import (
     convert_ofd_to_pdf,
 )
 

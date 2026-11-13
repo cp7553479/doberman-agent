@@ -3,11 +3,11 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.knowledge.rag.pipeline.base import NormalPipeline
-from bisheng.knowledge.rag.pipeline.transformer.content_safety import ContentSafetyTransformer
-from bisheng.sensitive_word.domain.schemas import SensitiveWordBusinessType
-from bisheng.sensitive_word.domain.services.exceptions import ContentSafetyViolation
-from bisheng.sensitive_word.domain.services.sensitive_word_policy_service import (
+from doberman_agent.knowledge.rag.pipeline.base import NormalPipeline
+from doberman_agent.knowledge.rag.pipeline.transformer.content_safety import ContentSafetyTransformer
+from doberman_agent.sensitive_word.domain.schemas import SensitiveWordBusinessType
+from doberman_agent.sensitive_word.domain.services.exceptions import ContentSafetyViolation
+from doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service import (
     SensitiveWordPolicyService,
 )
 
@@ -39,7 +39,7 @@ def test_normalize_words_dedupes_and_keeps_phrase_spaces():
 
 def test_check_text_counts_custom_word_hits(monkeypatch):
     monkeypatch.setattr(
-        'bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
+        'doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
         lambda **kwargs: _policy(custom_words='敏感词\n禁用词'),
     )
 
@@ -59,7 +59,7 @@ def test_check_text_counts_custom_word_hits(monkeypatch):
 
 def test_check_text_uses_builtin_and_custom_words(monkeypatch):
     monkeypatch.setattr(
-        'bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
+        'doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
         lambda **kwargs: _policy(words_types=['builtin', 'custom'], custom_words='自定义词'),
     )
     monkeypatch.setattr(
@@ -79,7 +79,7 @@ def test_check_text_uses_builtin_and_custom_words(monkeypatch):
 
 def test_disabled_or_empty_policy_is_not_effective(monkeypatch):
     monkeypatch.setattr(
-        'bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
+        'doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
         lambda **kwargs: _policy(enabled=True, words_types=['custom'], custom_words=''),
     )
 
@@ -95,7 +95,7 @@ def test_disabled_or_empty_policy_is_not_effective(monkeypatch):
 
 def test_content_safety_transformer_raises_on_hits(monkeypatch):
     monkeypatch.setattr(
-        'bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
+        'doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
         lambda **kwargs: _policy(custom_words='拦截词', auto_reply='不允许上传'),
     )
 
@@ -121,7 +121,7 @@ def test_pipeline_stops_before_vector_write_when_content_safety_raises(monkeypat
             self.called = True
 
     monkeypatch.setattr(
-        'bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
+        'doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy',
         lambda **kwargs: _policy(custom_words='拦截词'),
     )
 

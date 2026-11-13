@@ -153,8 +153,8 @@ this existing editor. Real user workflow acceptance remains with the running UI.
 Platform now uses the same MessageFrame around the active workflow form as the
 client, including the application logo/name and body indentation. Its transcript
 padding follows the client. WorkflowForm no longer uses the platform-only
-`bisheng-label` class; scoped shared CSS pins label typography. Both workflow
-upload adapters render WorkflowFileField from @bisheng/chat, with the file icon
+`doberman-agent-label` class; scoped shared CSS pins label typography. Both workflow
+upload adapters render WorkflowFileField from @doberman-agent/chat, with the file icon
 inside the same clickable field and a normal-weight filename. Hosts retain
 upload services, limits, file paths and display-name callbacks. Other callers of
 the existing upload adapters retain their presentation.
@@ -186,7 +186,7 @@ all F086 work in local checkpoint 5e93dfff2 and a pre-merge recovery archive at
 /tmp/f086-premerge-files.tar.gz, then merged origin/feat/3.0.0 at 58996f12b.
 Three textual conflicts: release-contract.md keeps both F086 and F087 history
 entries; both InputForm adapters retain shared chat layout/upload/submission and
-adopt the upstream @bisheng/ui Select plus the upstream localized copy hooks.
+adopt the upstream @doberman-agent/ui Select plus the upstream localized copy hooks.
 No old message renderers or deleted legacy select wrappers were restored. The
 upstream InputFormSkill and voice callback changes also survived the auto-merge.
 
@@ -195,7 +195,7 @@ upstream InputFormSkill and voice callback changes also survived the auto-merge.
   covering real shared Select single/multiple submission pass (72 total).
   /tmp/f086-merge-chat-tests.log, /tmp/f086-merge-platform-tests.log,
   /tmp/f086-merge-select-tests.log.
-- @bisheng/chat and @bisheng/ui typechecks/lint pass; resolved form files and the
+- @doberman-agent/chat and @doberman-agent/ui typechecks/lint pass; resolved form files and the
   new regression test pass targeted lint.
 - Browser: actual platform InputForm uses the upstream 32px Select, gray focus
   border and 2px gray shadow; popup stays below the trigger, single/multiple work,
@@ -216,7 +216,7 @@ upstream InputFormSkill and voice callback changes also survived the auto-merge.
 User authorized migrating ordinary platform selects and explicitly retaining
 specialized panels. Inventory and module acceptance cases are recorded in
 platform-select-migration.md. The remaining application-log picker and twelve
-native value selectors now use @bisheng/ui Select; add-approver actions use the
+native value selectors now use @doberman-agent/ui Select; add-approver actions use the
 shared Dropdown. Two unused legacy selector implementations were removed.
 Native option-change tests were updated to exercise the real shared option menus
 and aria-disabled guards, with disabled click assertions retained. No permission
@@ -309,7 +309,7 @@ legacy fields keep their existing unrestricted behavior.
 
 - Both hosts already render ConversationAttachments, but client supplied a legacy
   FileIcon. Removed that host override and the unused renderIcon port; the shared
-  card now selects bisheng-icons Colored file icons for supported extensions
+  card now selects doberman-agent-icons Colored file icons for supported extensions
   (Word/WPS, Excel/ET, CSV, PowerPoint/DPS, Markdown, HTML, text), with Outlined
   PDF/generic fallback. Extension matching is case-insensitive.
 - Kept client-style card layout, unified semantic colors, fixed icon slots and
@@ -327,7 +327,7 @@ legacy fields keep their existing unrestricted behavior.
   remain unused; late responses cannot overwrite another conversation's identity.
 - Restored small primary solid buttons for similar-question and QA actions,
   with hover/focus visibility and the similar-question action aligned right.
-  Kept existing flag icon because bisheng-icons has no equivalent flag icon.
+  Kept existing flag icon because doberman-agent-icons has no equivalent flag icon.
 - RED: two new identity tests failed. GREEN: 17 tests across annotation routing,
   forms and metadata pass, including out-of-order metadata. Changed-file lint
   passes. /tmp/f086-annotation-header-red.log,

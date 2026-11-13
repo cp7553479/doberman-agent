@@ -18,7 +18,7 @@ import pytest
 
 
 def _payload(external_user_id="u1", name="Alice", email="alice@x.com", phone=None):
-    from bisheng.sso_sync.domain.schemas.payloads import (
+    from doberman_agent.sso_sync.domain.schemas.payloads import (
         LoginSyncRequest,
         UserAttrsDTO,
     )
@@ -61,7 +61,7 @@ def _tenant(tid=15, status="active"):
 
 @pytest.fixture()
 def patches(monkeypatch):
-    from bisheng.sso_sync.domain.services import login_sync_service as m
+    from doberman_agent.sso_sync.domain.services import login_sync_service as m
 
     redis = MagicMock()
     redis.async_connection = MagicMock()
@@ -155,7 +155,7 @@ def patches(monkeypatch):
         "_reject_login_if_user_has_no_usable_access",
         AsyncMock(return_value=None),
     )
-    from bisheng.database.models.tenant import UserTenantDao
+    from doberman_agent.database.models.tenant import UserTenantDao
 
     monkeypatch.setattr(
         UserTenantDao,
@@ -192,7 +192,7 @@ class TestCrossSourceReuseAndMigrate:
     async def test_feishu_user_reused_and_source_migrated(self, patches):
         """Existing source='feishu' user → reuse + UPDATE source='sso'
         + audit ``user.source_migrated``."""
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -229,7 +229,7 @@ class TestCrossSourceReuseAndMigrate:
         assert metadata.get("new_source") == "sso"
 
     async def test_cross_source_reuse_syncs_user_attrs(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -258,7 +258,7 @@ class TestCrossSourceReuseAndMigrate:
         assert updated_user.update_time is not None
 
     async def test_new_sso_user_created_when_truly_missing(self, patches):
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -284,8 +284,8 @@ class TestCrossSourceReuseAndMigrate:
     async def test_cross_source_deleted_account_raises_forbidden(self, patches):
         """If the legacy cross-source account is already disabled (delete=1),
         refuse to adopt it silently."""
-        from bisheng.common.errcode.user import UserForbiddenError
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.common.errcode.user import UserForbiddenError
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 
@@ -308,7 +308,7 @@ class TestCrossSourceReuseAndMigrate:
         """Rare race: another writer has already flipped the row to
         source='sso' between our two DAO lookups. Adopt the row, but do
         NOT write a migration audit (nothing to migrate)."""
-        from bisheng.sso_sync.domain.services.login_sync_service import (
+        from doberman_agent.sso_sync.domain.services.login_sync_service import (
             LoginSyncService,
         )
 

@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 import { FileIcon } from "@/components/bs-icons/file";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { delChunkInPreviewApi,previewFileSplitApi,updatePreviewChunkApi } from "@/controllers/API";
 import { handleUiRequest } from "@/controllers/request";
 import { cn } from "@/util/utils";

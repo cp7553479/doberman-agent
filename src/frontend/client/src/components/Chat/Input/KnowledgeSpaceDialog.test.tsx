@@ -18,7 +18,7 @@ jest.mock('~/hooks', () => ({
     isFetching: false, isError: mockError, retry: mockRetry,
   }),
 }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
   Modal: ({ children, footer, onOpenChange }) => <div role="dialog" onKeyDown={(event) => { if (event.key === 'Escape') onOpenChange(false); }}>{children}{footer}</div>,
   SearchInput: (props) => <input {...props} />,
   Button: ({ color, variant, ...props }) => { void color; void variant; return <button {...props} />; },

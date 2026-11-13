@@ -3,7 +3,7 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
@@ -11,8 +11,8 @@ from bisheng.citation.domain.schemas.citation_schema import (
     TempCitationItemSchema,
     TempCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import attach_temp_object_names
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.citation.domain.services.citation_prompt_helper import attach_temp_object_names
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
 
 OBJECT_NAME = "chat/42/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.pdf"
 
@@ -66,11 +66,11 @@ def test_cited_temp_item_reuses_promoted_object_name_and_refreshes_cache():
 
     with (
         patch(
-            "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+            "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
             side_effect=_save,
         ) as cache_mock,
         patch(
-            "bisheng.core.storage.chat_attachment.promote_chat_attachments_sync",
+            "doberman_agent.core.storage.chat_attachment.promote_chat_attachments_sync",
         ) as promote_mock,
     ):
         result = attach_temp_object_names([item], files, user_id=42)
@@ -94,11 +94,11 @@ def test_uncited_files_are_not_promoted():
         {"filename": "未引用.docx", "file_url": "https://minio.example/tmp/b.docx"},
     ]
     with patch(
-        "bisheng.core.storage.chat_attachment.promote_chat_attachments_sync",
+        "doberman_agent.core.storage.chat_attachment.promote_chat_attachments_sync",
         return_value=files,
     ) as promote_mock:
         with patch(
-            "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+            "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
             side_effect=lambda items: items,
         ):
             attach_temp_object_names([cited], files, user_id=42)
@@ -119,11 +119,11 @@ def test_missing_object_name_promotes_only_the_matched_file():
 
     with (
         patch(
-            "bisheng.core.storage.chat_attachment.promote_chat_attachments_sync",
+            "doberman_agent.core.storage.chat_attachment.promote_chat_attachments_sync",
             side_effect=_promote,
         ) as promote_mock,
         patch(
-            "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+            "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
             side_effect=lambda items: items,
         ),
     ):
@@ -140,11 +140,11 @@ def test_promote_failure_drops_that_citation_and_keeps_others():
 
     with (
         patch(
-            "bisheng.core.storage.chat_attachment.promote_chat_attachments_sync",
+            "doberman_agent.core.storage.chat_attachment.promote_chat_attachments_sync",
             side_effect=RuntimeError("minio down"),
         ),
         patch(
-            "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+            "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
             side_effect=lambda items: items,
         ),
     ):
@@ -159,7 +159,7 @@ def test_cache_write_failure_drops_temp_citations():
     files = [{"filename": "报价单.pdf", "object_name": OBJECT_NAME}]
 
     with patch(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
         side_effect=RuntimeError("redis down"),
     ):
         result = attach_temp_object_names([temp, rag], files, user_id=42)
@@ -179,11 +179,11 @@ def test_source_url_promotes_when_question_files_are_missing():
 
     with (
         patch(
-            "bisheng.core.storage.chat_attachment.promote_chat_attachments_sync",
+            "doberman_agent.core.storage.chat_attachment.promote_chat_attachments_sync",
             side_effect=_promote,
         ) as promote_mock,
         patch(
-            "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+            "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
             side_effect=lambda items: items,
         ),
     ):
@@ -197,7 +197,7 @@ def test_workflow_temp_prefix_is_rejected():
     item = _temp_item()
     files = [{"filename": "报价单.pdf", "object_name": "workflow_temp/42/x.pdf"}]
     with patch(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items_sync",
         side_effect=lambda items: items,
     ):
         result = attach_temp_object_names([item], files, user_id=42)

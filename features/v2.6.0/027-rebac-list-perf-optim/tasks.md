@@ -57,7 +57,7 @@
 - [ ] **T002**: 三表 keyset 索引盘点 + 条件性 alembic migration（含 downgrade）
   **文件**:
   - 盘点脚本（一次性）：`src/backend/scripts/check_keyset_indexes.py`（新建，可丢弃）
-  - 条件性新建：`src/backend/bisheng/core/database/alembic/versions/v2_6_0_f027_keyset_indexes.py`
+  - 条件性新建：`src/backend/doberman_agent/core/database/alembic/versions/v2_6_0_f027_keyset_indexes.py`
   **逻辑**:
   - 用 `inspect(engine).get_indexes(table)` 校验：
     - `knowledge` 表是否含 `(update_time DESC, id DESC)` 与 `(create_time DESC, id DESC)`；
@@ -75,7 +75,7 @@
   **依赖**: 无
 
 - [ ] **T003**: 确认现有 `KnowledgeService.get_knowledge` 的 `sort_by` 默认值
-  **文件**: 只读 `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`
+  **文件**: 只读 `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`
   **逻辑**:
   - grep `sort_by` 默认值在现有 service 内部的处理；
   - 落档实际默认值（`update_time` 或 `create_time` 或其它）；
@@ -89,7 +89,7 @@
 
 - [x] **T004**: `common/cursor.py` 编解码工具 + 单元测试 ✅ 2026-05-28 (16/16 PASS)
   **文件**:
-  - `src/backend/bisheng/common/cursor.py`（新建）
+  - `src/backend/doberman_agent/common/cursor.py`（新建）
   - `src/backend/test/common/test_cursor.py`（新建）
   **逻辑**:
   - 实现 `encode_cursor(sort_key, *, context)` 与 `decode_cursor(cursor, *, expected_key_len, expected_context)`，schema = `{"v":1, "s":<context>, "k":[...]}`，base64url；
@@ -106,14 +106,14 @@
   **依赖**: 无
 
 - [x] **T005**: `PageInfiniteCursorData[T]` 响应 envelope ✅ 2026-05-28
-  **文件**: `src/backend/bisheng/common/schemas/api.py`（修改，追加类）
+  **文件**: `src/backend/doberman_agent/common/schemas/api.py`（修改，追加类）
   **逻辑**: 按 spec §5.1 实现 `class PageInfiniteCursorData(BaseModel, Generic[T])`：字段 `data: List[T]`, `page_size: int`, `has_more: bool`, `next_cursor: Optional[str] = None`。
   **测试**: —（纯类型定义，由 T008/T010/T012 集成测试覆盖）
   **覆盖 AC**: AC-01, AC-02, AC-03
   **依赖**: 无
 
 - [x] **T006**: `_build_keyset_where(sort_cols, cursor_values)` helper ✅ 2026-05-28 (6/6 PASS，含 CASE 表达式作 sort_col)
-  **文件**: `src/backend/bisheng/database/utils/keyset.py`（新建）
+  **文件**: `src/backend/doberman_agent/database/utils/keyset.py`（新建）
   **逻辑**:
   - 默认实现：`sqlalchemy.tuple_(*sort_cols) > sqlalchemy.tuple_(*cursor_values)`；
   - **`sort_cols` 接受任意 SQLAlchemy ColumnElement**——既可以是普通表列 (`Knowledge.update_time`) 也可以是 SQLAlchemy `Case` 表达式（用于 AD-14 方案 A 的 ext_rank）；
@@ -128,9 +128,9 @@
 
 - [x] **T007**: 新增 3 个 `*InvalidCursorError` 错误码 ✅ 2026-05-28 (8/8 PASS) ⚠ 10990 被 BackendProcessingError 占用,改用 **10991**
   **文件**:
-  - `src/backend/bisheng/common/errcode/knowledge.py`（追加）
-  - `src/backend/bisheng/common/errcode/flow.py`（追加）
-  - `src/backend/bisheng/common/errcode/knowledge_space.py`（追加）
+  - `src/backend/doberman_agent/common/errcode/knowledge.py`（追加）
+  - `src/backend/doberman_agent/common/errcode/flow.py`（追加）
+  - `src/backend/doberman_agent/common/errcode/knowledge_space.py`（追加）
   **逻辑**:
   - `KnowledgeInvalidCursorError(Code=10991, Msg="Invalid pagination cursor")`；
   - `AppInvalidCursorError(Code=10550, Msg="Invalid pagination cursor")`；
@@ -161,9 +161,9 @@
 
 - [x] **T009**: `KnowledgeService.get_knowledge` + `KnowledgeDao` cursor 实现 ✅ 2026-05-29 (T008 全绿) ⚠ 新发现 AD-15 sort_by=name 用伪 cursor
   **文件**:
-  - `src/backend/bisheng/knowledge/api/endpoints/knowledge.py:333-375`
-  - `src/backend/bisheng/knowledge/domain/services/knowledge_service.py:211-270`
-  - `src/backend/bisheng/knowledge/domain/models/knowledge.py:359-368`（`acount_user_knowledge` 调用方移除；如全仓无其他引用，本任务一并删除该 DAO 方法）
+  - `src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py:333-375`
+  - `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py:211-270`
+  - `src/backend/doberman_agent/knowledge/domain/models/knowledge.py:359-368`（`acount_user_knowledge` 调用方移除；如全仓无其他引用，本任务一并删除该 DAO 方法）
   **逻辑**: 按 spec §7.1：
   1. 端点参数 `page_num` 删除，新增 `cursor: Optional[str] = None`；
   2. service 构造 `context = f"knowledge|sort_by={sort_by or '<T003 落档默认值>'}"`；
@@ -189,9 +189,9 @@
 
 - [x] **T011**: `WorkFlowService.get_all_flows` + `FlowDao.aget_all_apps` cursor 实现 ✅ 2026-05-29 ⚠ chat.py 两处 `data, total` 同步改为 `has_more`
   **文件**:
-  - `src/backend/bisheng/api/v1/workflow.py:331-350`
-  - `src/backend/bisheng/api/services/workflow.py:153-232`
-  - `src/backend/bisheng/database/models/flow.py:526-605`
+  - `src/backend/doberman_agent/api/v1/workflow.py:331-350`
+  - `src/backend/doberman_agent/api/services/workflow.py:153-232`
+  - `src/backend/doberman_agent/database/models/flow.py:526-605`
   **逻辑**: 按 spec §7.2：
   1. 端点 `page_num` 删除，新增 `cursor`；
   2. service `context = "flow|sort=update_time"`，调 `decode_cursor`；
@@ -221,9 +221,9 @@
 
 - [x] **T013**: `KnowledgeSpaceService.list_space_children` + `_scan_visible_child_items` + `SpaceFileDao.async_list_children` cursor 重构 + ext_rank 函数对 ✅ 2026-05-29 ⚠ 发现实际排序键是混合方向 4-tuple (file_type, ext_rank, update_time, id),build_keyset_where 同步扩展支持 per-column direction
   **文件**:
-  - `bisheng/knowledge/api/endpoints/knowledge_space.py:263-289`
-  - `bisheng/knowledge/domain/services/knowledge_space_service.py:2239-2339`
-  - `bisheng/knowledge/domain/models/knowledge_space_file.py:11-160`（`SpaceFileDao.async_list_children` + 新增 `_compute_ext_rank_case_when()` 工厂）
+  - `doberman-agent/knowledge/api/endpoints/knowledge_space.py:263-289`
+  - `doberman-agent/knowledge/domain/services/knowledge_space_service.py:2239-2339`
+  - `doberman-agent/knowledge/domain/models/knowledge_space_file.py:11-160`（`SpaceFileDao.async_list_children` + 新增 `_compute_ext_rank_case_when()` 工厂）
   **逻辑**: 按 spec §7.3 + AD-14 方案 A：
   1. 新增 **`SpaceFileDao._compute_ext_rank_case_when()` -> `sqlalchemy.Case`** 工厂方法：用现有 `order_field_text()` 的 15-WHEN 顺序构造 `sqlalchemy.case((LOWER(file_name).like('%.pdf'), 1), (..., 2), ..., else_=<未识别值>)`；
   2. 新增 **`_compute_ext_rank_python(file_name: str) -> int`** 工具函数（同模块）：Python 端镜像同样的 15 个 `endswith` 顺序匹配（**必须与 #1 严格输出一致**，T012 有断言）；
@@ -257,8 +257,8 @@
 
 - [x] **T015**: `DepartmentService.aget_tree` + `DepartmentTreeNode` schema 删除 `member_count` ✅ 2026-05-29
   **文件**:
-  - `src/backend/bisheng/department/domain/services/department_service.py:415-503`（删除 lines 461-469 的 COUNT 子句、`count_result`、`count_map`，节点 dict 移除 `member_count` 键）
-  - `src/backend/bisheng/department/domain/schemas/department_schema.py:95`（删除 `DepartmentTreeNode.member_count` 字段）
+  - `src/backend/doberman_agent/department/domain/services/department_service.py:415-503`（删除 lines 461-469 的 COUNT 子句、`count_result`、`count_map`，节点 dict 移除 `member_count` 键）
+  - `src/backend/doberman_agent/department/domain/schemas/department_schema.py:95`（删除 `DepartmentTreeNode.member_count` 字段）
   **逻辑**: spec §7.4；`aget_department` 保持原状。
   **测试**: T014 全部通过
   **覆盖 AC**: AC-13
@@ -266,7 +266,7 @@
 
 ### 阶段 5：前端 Platform（手动验证）
 
-- [x] **T016**: 知识库列表改 cursor + `useInfiniteQuery`（platform）✅ 2026-05-29 ⚠ 用既有 `<LoadMore>` IntersectionObserver + 新增 `useInfiniteCursorTable` hook(非 react-query;BiSheng platform 现有 useTable 同型替换);改 4 个调用方:KnowledgeFile / KnowledgeQa / selectComponent/knowledge / SopMarkdown
+- [x] **T016**: 知识库列表改 cursor + `useInfiniteQuery`（platform）✅ 2026-05-29 ⚠ 用既有 `<LoadMore>` IntersectionObserver + 新增 `useInfiniteCursorTable` hook(非 react-query;doberman-agent platform 现有 useTable 同型替换);改 4 个调用方:KnowledgeFile / KnowledgeQa / selectComponent/knowledge / SopMarkdown
   **文件**:
   - `src/frontend/platform/src/controllers/API/index.ts:241-250`（`getKnowledgeListApi`）
   - `src/frontend/platform/src/pages/KnowledgePage/`（消费组件，tasks 开工时定位确切文件）
@@ -381,12 +381,12 @@
 - [x] **T023**: ReBAC 静态验证（grep 收尾 + 边界范围反向断言）✅ 2026-05-29 (6/6 PASS,test/test_f027_rebac_static_grep.py;含 AC-10/11/15/16 全部断言:acount_user_knowledge 调用方 0、aget_all_apps 内 count_statement 0、async_list_children page= 调用 0、_scan_visible_child_items 凑够即停 + batch_cursor 出现、aget_department/resource_permission 边界保留 member_count)
   **文件**: 无新建；CI 脚本或本地一次性 grep
   **逻辑**: 按 spec §2.3 AC-10 / AC-11 静态扫描清单 + spec §1 范围边界反向断言：
-  - `grep -r "acount_user_knowledge(" src/backend/bisheng/` → 期望 0 调用方；
-  - `grep -nE "count_statement|func.count\(sub_query\.c\.id\)" src/backend/bisheng/api/services/workflow.py src/backend/bisheng/database/models/flow.py` → 期望 0；
-  - `grep -nE "SpaceFileDao.async_list_children\(.*page=" src/backend/bisheng/` → 期望 0；
+  - `grep -r "acount_user_knowledge(" src/backend/doberman_agent/` → 期望 0 调用方；
+  - `grep -nE "count_statement|func.count\(sub_query\.c\.id\)" src/backend/doberman_agent/api/services/workflow.py src/backend/doberman_agent/database/models/flow.py` → 期望 0；
+  - `grep -nE "SpaceFileDao.async_list_children\(.*page=" src/backend/doberman_agent/` → 期望 0；
   - `_scan_visible_child_items` 函数体 grep `break` 与「凑够即停」逻辑（含 `> page_size` 退出条件）；
-  - **AC-16 反向断言**：`grep -n "member_count" src/backend/bisheng/permission/api/endpoints/resource_permission.py` → 期望 **仍含**（spec §1 明确「资源授权页部门树保留 member_count」，本次不动；防止 T015 改 department schema 时连带误删）；
-  - **AC-15 反向断言**：`grep -nE "member_count.*=.*count_result|data\['member_count'\]" src/backend/bisheng/department/domain/services/department_service.py` → 期望仍含 `aget_department` 内的 member_count 计算（spec §1 明确单部门 GET 保留）。
+  - **AC-16 反向断言**：`grep -n "member_count" src/backend/doberman_agent/permission/api/endpoints/resource_permission.py` → 期望 **仍含**（spec §1 明确「资源授权页部门树保留 member_count」，本次不动；防止 T015 改 department schema 时连带误删）；
+  - **AC-15 反向断言**：`grep -nE "member_count.*=.*count_result|data\['member_count'\]" src/backend/doberman_agent/department/domain/services/department_service.py` → 期望仍含 `aget_department` 内的 member_count 计算（spec §1 明确单部门 GET 保留）。
   **结果落档**: 「实际偏差记录」§T023 落档 grep 命中行（前 4 项应为 0；后 2 项应**非 0**，是边界保留反向断言）
   **覆盖 AC**: AC-10, AC-11, AC-15, AC-16
   **依赖**: T009, T011, T013, T015
@@ -454,7 +454,7 @@
 **结论**: **AD-13 主路径生效**；T006 实现 `_build_keyset_where` 时使用 SQLAlchemy `tuple_()` 表达式，**不需要**展开形式 fallback。
 **备注**:
 - 本测试沿用 F025 `test_approval_dialect_compat.py` 模式（dialect 编译断言，无需真实 DB 连接）；
-- 若未来 BiSheng 引入真实 DM8 SQLAlchemy 方言包（替代 `DefaultDialect` 樁），需在 T021 端到端 smoke 中再次验证；
+- 若未来 doberman-agent 引入真实 DM8 SQLAlchemy 方言包（替代 `DefaultDialect` 樁），需在 T021 端到端 smoke 中再次验证；
 - 单列 `tuple_(col) > tuple_(val)` 形式在 MySQL 上可能 emit 为 `(col) > (val)` 或 `col > val`，等价；T006 helper 行为不受影响。
 
 ### §T002：keyset 索引盘点
@@ -483,8 +483,8 @@
 
 **日期**: 2026-05-28
 **探查文件**:
-- `bisheng/knowledge/api/endpoints/knowledge.py:333`
-- `bisheng/knowledge/domain/services/knowledge_service.py:217`
+- `doberman-agent/knowledge/api/endpoints/knowledge.py:333`
+- `doberman-agent/knowledge/domain/services/knowledge_service.py:217`
 
 **结果**:
 - 默认值 = `"update_time"` ✓ 与 spec §7.1 假设一致；

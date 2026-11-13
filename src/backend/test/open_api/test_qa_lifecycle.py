@@ -9,10 +9,10 @@ from fastapi import FastAPI, HTTPException
 from httpx import ASGITransport, AsyncClient
 from pydantic import ValidationError
 
-from bisheng.open_api.api import dependencies as open_api_dependencies
-from bisheng.open_api.api.exception_handlers import open_api_http_status, register_open_api_exception_handlers
-from bisheng.open_endpoints.api.endpoints import filelib
-from bisheng.open_endpoints.domain.schemas.filelib import APIAddQAParam, APIAppendQAParam, QueryQAParam
+from doberman_agent.open_api.api import dependencies as open_api_dependencies
+from doberman_agent.open_api.api.exception_handlers import open_api_http_status, register_open_api_exception_handlers
+from doberman_agent.open_endpoints.api.endpoints import filelib
+from doberman_agent.open_endpoints.domain.schemas.filelib import APIAddQAParam, APIAppendQAParam, QueryQAParam
 
 USER = SimpleNamespace(user_id=7)
 
@@ -33,7 +33,7 @@ def test_query_qa_returns_every_source(monkeypatch):
 def test_query_by_condition_v1_has_no_source_filter_by_default(monkeypatch):
     from contextlib import contextmanager
 
-    from bisheng.knowledge.domain.models import knowledge_file
+    from doberman_agent.knowledge.domain.models import knowledge_file
 
     captured = []
 

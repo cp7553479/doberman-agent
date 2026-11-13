@@ -18,8 +18,8 @@ class TestReplaceUserMemberships:
 
     @pytest.mark.asyncio
     async def test_rejects_groups_outside_manageable_scope(self, mock_group_owner):
-        from bisheng.common.errcode.user_group import UserGroupPermissionDeniedError
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.common.errcode.user_group import UserGroupPermissionDeniedError
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         manageable = [SimpleNamespace(id=10)]
 
@@ -36,7 +36,7 @@ class TestReplaceUserMemberships:
 
     @pytest.mark.asyncio
     async def test_replaces_only_manageable_memberships(self, mock_group_owner):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         manageable = [
             SimpleNamespace(id=10),
@@ -53,7 +53,7 @@ class TestReplaceUserMemberships:
             UserGroupService, "_list_manageable_groups",
             new_callable=AsyncMock, return_value=manageable,
         ), patch(
-            "bisheng.user_group.domain.services.user_group_service.UserGroupDao",
+            "doberman_agent.user_group.domain.services.user_group_service.UserGroupDao",
         ) as mock_dao, patch.object(
             UserGroupService, "aremove_member", new_callable=AsyncMock,
         ) as mock_remove, patch.object(
@@ -75,7 +75,7 @@ class TestCreateGroupCompatibility:
 
     @pytest.mark.asyncio
     async def test_create_group_writes_legacy_creator_admin_row(self, mock_group_owner):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         created_group = SimpleNamespace(
             id=25,
@@ -87,13 +87,13 @@ class TestCreateGroupCompatibility:
         )
 
         with patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupDao',
         ) as mock_group_dao, patch(
-            'bisheng.user_group.domain.services.user_group_service.UserGroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.UserGroupDao',
         ) as mock_user_group_dao, patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupChangeHandler',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupChangeHandler',
         ) as mock_change_handler, patch(
-            'bisheng.user_group.domain.services.user_group_service._ensure_create_group',
+            'doberman_agent.user_group.domain.services.user_group_service._ensure_create_group',
             new_callable=AsyncMock,
         ), patch.object(
             UserGroupService, '_enrich_group', new_callable=AsyncMock,
@@ -126,7 +126,7 @@ class TestManageableGroups:
 
     @pytest.mark.asyncio
     async def test_global_super_is_treated_as_admin_for_manageable_groups(self):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         login_user = SimpleNamespace(
             user_id=88,
@@ -137,7 +137,7 @@ class TestManageableGroups:
         all_groups = [SimpleNamespace(id=1), SimpleNamespace(id=2)]
 
         with patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupDao',
         ) as mock_group_dao:
             mock_group_dao.aget_all_groups = AsyncMock(return_value=(all_groups, len(all_groups)))
 
@@ -148,7 +148,7 @@ class TestManageableGroups:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_is_treated_as_admin_for_manageable_groups(self):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         login_user = SimpleNamespace(
             user_id=66,
@@ -159,10 +159,10 @@ class TestManageableGroups:
         all_groups = [SimpleNamespace(id=3), SimpleNamespace(id=4)]
 
         with patch(
-            'bisheng.department.domain.services.department_service._is_tenant_admin',
+            'doberman_agent.department.domain.services.department_service._is_tenant_admin',
             new_callable=AsyncMock, return_value=True,
         ), patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupDao',
         ) as mock_group_dao:
             mock_group_dao.aget_all_groups = AsyncMock(return_value=(all_groups, len(all_groups)))
 
@@ -176,7 +176,7 @@ class TestListGroups:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_gets_all_groups_in_management_list(self):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         login_user = SimpleNamespace(
             user_id=66,
@@ -187,10 +187,10 @@ class TestListGroups:
         groups = [SimpleNamespace(id=1, group_name='A'), SimpleNamespace(id=2, group_name='B')]
 
         with patch(
-            'bisheng.department.domain.services.department_service._is_tenant_admin',
+            'doberman_agent.department.domain.services.department_service._is_tenant_admin',
             new_callable=AsyncMock, return_value=True,
         ), patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupDao',
         ) as mock_group_dao, patch.object(
             UserGroupService, '_enrich_groups',
             new_callable=AsyncMock, return_value=[{'id': 1}, {'id': 2}],
@@ -209,23 +209,23 @@ class TestDeleteGroupDecoupled:
 
     @pytest.mark.asyncio
     async def test_delete_group_only_runs_residual_side_effects(self, mock_group_owner):
-        from bisheng.user_group.domain.services.user_group_service import UserGroupService
+        from doberman_agent.user_group.domain.services.user_group_service import UserGroupService
 
         group = SimpleNamespace(id=42, create_user=mock_group_owner.user_id)
 
         with patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupDao',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupDao',
         ) as mock_group_dao, patch(
-            'bisheng.user_group.domain.services.user_group_service.GroupChangeHandler',
+            'doberman_agent.user_group.domain.services.user_group_service.GroupChangeHandler',
         ) as mock_change_handler, patch(
-            'bisheng.user_group.domain.services.user_group_service._ensure_delete_group',
+            'doberman_agent.user_group.domain.services.user_group_service._ensure_delete_group',
             new_callable=AsyncMock,
         ), patch(
-            'bisheng.user_group.domain.services.user_group_service.purge_user_group_residual_sync',
+            'doberman_agent.user_group.domain.services.user_group_service.purge_user_group_residual_sync',
         ) as mock_purge, patch(
-            'bisheng.permission.domain.services.owner_service.OwnerService',
+            'doberman_agent.permission.domain.services.owner_service.OwnerService',
         ) as mock_owner, patch(
-            'bisheng.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService',
+            'doberman_agent.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService',
         ) as mock_rbac:
             mock_group_dao.aget_by_id = AsyncMock(return_value=group)
             mock_group_dao.adelete = AsyncMock()

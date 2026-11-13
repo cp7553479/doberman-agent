@@ -8,7 +8,7 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RUNTIME_TABLES,
     RuntimeCapacityReservation,
     RuntimeNode,
@@ -18,8 +18,8 @@ from bisheng.app_runtime.domain.models.runtime_delivery import (
 
 @pytest.fixture
 async def runtime_repo(monkeypatch):
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeDeliveryRepository
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeDeliveryRepository
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     token = current_tenant_id.set(1)
     engine = create_async_engine("sqlite+aiosqlite://")
@@ -34,9 +34,9 @@ async def runtime_repo(monkeypatch):
     def begin(connection):
         connection.exec_driver_sql("BEGIN")
 
-    from bisheng.app_runtime.domain.models.runtime_host_isolation import RuntimeHostIsolationReport
-    from bisheng.app_runtime.domain.repositories.host_isolation_repository import REQUIRED
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.models.runtime_host_isolation import RuntimeHostIsolationReport
+    from doberman_agent.app_runtime.domain.repositories.host_isolation_repository import REQUIRED
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         settings.app_runtime,
@@ -101,7 +101,7 @@ def operation(key="request-1", app="app-a", digest="a" * 64):
 
 async def test_request_idempotency_and_digest_conflict(runtime_repo):
     """AC-36: response loss returns the same operation; changed input is rejected."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     first = await runtime_repo.create_operation(operation())
     assert (await runtime_repo.create_operation(operation())).id == first.id
@@ -111,7 +111,7 @@ async def test_request_idempotency_and_digest_conflict(runtime_repo):
 
 async def test_capacity_reserved_once_and_unknown_stop_stays_counted(runtime_repo):
     """AC-34, AC-63: reservations precede changes and require confirmed stop to release."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     a = await runtime_repo.create_operation(operation())
     held = await runtime_repo.admit(a.id, memory_mb=768, cpu_millicores=1000)
@@ -128,7 +128,7 @@ async def test_capacity_reserved_once_and_unknown_stop_stays_counted(runtime_rep
 
 async def test_assignment_rejects_competing_or_stale_executor(runtime_repo):
     """AC-35, AC-50: one durable owner, including across repository instances."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     a = await runtime_repo.create_operation(operation())
     claim = await runtime_repo.claim(a.id, node_id="node-a", generation=a.generation, owner_epoch=a.owner_epoch)
@@ -142,7 +142,7 @@ async def test_assignment_rejects_competing_or_stale_executor(runtime_repo):
 
 async def test_stale_node_cannot_admit_new_work(runtime_repo):
     """AC-34, AC-37: stale Engine observations cannot authorize a new write."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     node = await runtime_repo.get(RuntimeNode, "node-a")
     node.heartbeat_at = datetime.utcnow() - timedelta(minutes=5)
@@ -154,8 +154,8 @@ async def test_stale_node_cannot_admit_new_work(runtime_repo):
 
 async def test_scope_and_write_validation(runtime_repo):
     """AC-06, AC-61: tenant mismatch is refused even before ORM hooks run."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     token = current_tenant_id.set(2)
     try:
@@ -167,7 +167,7 @@ async def test_scope_and_write_validation(runtime_repo):
 
 async def test_late_unclaimed_operation_cannot_take_back_new_generation(runtime_repo):
     """AC-35: an older queued operation cannot overwrite a newer completed owner."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     old = await runtime_repo.create_operation(operation("old"))
     new_request = operation("new")
@@ -218,9 +218,9 @@ async def test_caller_environment_never_enters_plaintext_operation_intent(runtim
     """AC-53: only the backend's sealing step can attach execution credentials."""
     from types import SimpleNamespace
 
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     async def load(app):
         return SimpleNamespace(id=app, tenant_id=1, state="draft")
@@ -245,9 +245,9 @@ async def test_failed_admission_does_not_leave_executable_intent(runtime_repo):
     """AC-35, AC-36: a capacity failure rolls back the enclosing operation transaction."""
     from types import SimpleNamespace
 
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     async def load(app):
         return SimpleNamespace(id=app, tenant_id=1, state="draft")

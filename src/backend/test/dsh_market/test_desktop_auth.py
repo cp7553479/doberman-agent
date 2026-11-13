@@ -9,12 +9,12 @@ import pytest
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.dsh import DshSessionRevokedError
-from bisheng.core.context import tenant as context
-from bisheng.dsh.domain.services.access import DshAccessService
-from bisheng.dsh_market.api.auth import MarketActor, market_actor, market_admin
-from bisheng.utils.http_middleware import CustomMiddleware, owns_dsh_credential
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.dsh import DshSessionRevokedError
+from doberman_agent.core.context import tenant as context
+from doberman_agent.dsh.domain.services.access import DshAccessService
+from doberman_agent.dsh_market.api.auth import MarketActor, market_actor, market_admin
+from doberman_agent.utils.http_middleware import CustomMiddleware, owns_dsh_credential
 from test.dsh.test_access import Identities, Keys, token
 
 
@@ -29,7 +29,7 @@ class Sessions:
 
 @pytest.fixture
 def market_app(monkeypatch):
-    import bisheng.dsh.access_runtime as runtime
+    import doberman_agent.dsh.access_runtime as runtime
 
     sessions = Sessions()
     access = DshAccessService("test-issuer", Keys(), Identities(), sessions)
@@ -90,7 +90,7 @@ async def test_revoked_session_and_invalid_token_signature_are_rejected(market_a
             claims,
             b"wrong-test-key-for-signature-check",
             algorithm="HS256",
-            headers={"kid": "test-key", "typ": "bisheng-dsh-access+jwt"},
+            headers={"kid": "test-key", "typ": "doberman-agent-dsh-access+jwt"},
         )
         result = await client.get("/api/v1/dsh/market/catalog", headers={"Authorization": "Bearer " + forged})
         assert result.status_code == 401
@@ -133,7 +133,7 @@ def test_market_error_code_survives_platform_exception_envelope():
     from fastapi import HTTPException
     from starlette.requests import Request
 
-    from bisheng.main import handle_http_exception
+    from doberman_agent.main import handle_http_exception
 
     request = Request({"type": "http", "method": "GET", "path": "/api/v1/dsh/market/catalog", "headers": []})
     response = handle_http_exception(

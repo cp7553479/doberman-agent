@@ -32,7 +32,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     ArticleCitationPayloadSchema,
     CitationRegistryItemSchema,
     CitationType,
@@ -40,8 +40,8 @@ from bisheng.citation.domain.schemas.citation_schema import (
     RagCitationPayloadSchema,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_resolve_service import CitationResolveService
-from bisheng.common.errcode.http_error import NotFoundError
+from doberman_agent.citation.domain.services.citation_resolve_service import CitationResolveService
+from doberman_agent.common.errcode.http_error import NotFoundError
 
 FORBIDDEN = "forbidden"
 EXPIRED = "expired"

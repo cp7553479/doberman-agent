@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { InputProps } from '@bisheng/ui';
+import type { InputProps } from '@doberman-agent/ui';
 import { Input } from '~/components/ui/Input';
 import { cn } from '~/utils';
 

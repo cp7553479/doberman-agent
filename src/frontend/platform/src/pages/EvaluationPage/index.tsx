@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Pagination, Button } from '@bisheng/ui';
+import { Pagination, Button } from '@doberman-agent/ui';
 
 import {
   Table,
@@ -15,8 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { checkSassUrl } from "@/components/bs-comp/FileView";
 import { LoadingIcon } from "@/components/bs-icons/loading";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
-import { Tag, Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag, Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 
 import {
@@ -198,7 +198,7 @@ export default function EvaluationPage() {
             </Table>
           </div>
       </div>
-      <div className="bisheng-table-footer px-6 bg-background-login">
+      <div className="doberman_agent-table-footer px-6 bg-background-login">
         <div className="ml-auto">
           <Pagination locale={paginationLocale}
             current={page}

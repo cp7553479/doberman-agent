@@ -14,11 +14,11 @@ import pytest
 import uvicorn
 from sqlmodel import SQLModel
 
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
-from bisheng.dsh.infrastructure.model_audit_activity import RedisAuditActivity
-from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-from bisheng.dsh.infrastructure.model_audit_storage import BishengMinioAuditObjects, EncryptedAuditStorage
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
+from doberman_agent.dsh.infrastructure.model_audit_activity import RedisAuditActivity
+from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+from doberman_agent.dsh.infrastructure.model_audit_storage import DobermanAgentMinioAuditObjects, EncryptedAuditStorage
 from test.dsh.audit_local_server import docker_stores
 from test.dsh.model_audit_fixtures import AUDIT_MODELS, FaultAuditObjects, audit_database
 from test.dsh.model_audit_harness import AuditHarness
@@ -43,13 +43,13 @@ async def test_actual_desktop_sources_against_owned_mysql_redis_minio():
     assert probe.is_file()
     token, admin = secrets.token_hex(24), secrets.token_hex(24)
     with docker_stores() if mode == "1" else memory_stores() as (engine, redis, stores):
-        from bisheng.user.domain.models.user import User
+        from doberman_agent.user.domain.models.user import User
 
         SQLModel.metadata.create_all(engine, tables=[model.__table__ for model in AUDIT_MODELS] + [User.__table__])
         tenant_filter.register_tenant_filter_events()
         tenant_filter._tenant_aware_tables.update(model.__tablename__ for model in AUDIT_MODELS)
         storage = EncryptedAuditStorage(
-            BishengMinioAuditObjects() if mode == "1" else stores,
+            DobermanAgentMinioAuditObjects() if mode == "1" else stores,
             AuditKeyRing({"fixture": secrets.token_bytes(32)}, active_id="fixture"),
         )
         activity = (

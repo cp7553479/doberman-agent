@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.api.services import assistant as assistant_module
-from bisheng.api.services.assistant import AssistantService
+from doberman_agent.api.services import assistant as assistant_module
+from doberman_agent.api.services.assistant import AssistantService
 
 
 class _FakeAgent:
@@ -114,7 +114,7 @@ def test_create_assistant_no_longer_calls_the_model():
 
 
 def test_create_request_accepts_an_empty_role():
-    from bisheng.api.v1.schemas import AssistantCreateReq
+    from doberman_agent.api.v1.schemas import AssistantCreateReq
 
     assert AssistantCreateReq(name="a", logo="").prompt == ""
     assert AssistantCreateReq(name="a", prompt="翻译助手", logo="").prompt == "翻译助手"

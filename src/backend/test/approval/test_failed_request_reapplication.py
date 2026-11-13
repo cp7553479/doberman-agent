@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.approval.application.request_state import get_failed_request_keys
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateRequest
-from bisheng.approval.domain.services.approval_gate import ApprovalGate
-from bisheng.common.errcode.approval import ApprovalExecutionFailedError
+from doberman_agent.approval.application.request_state import get_failed_request_keys
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateRequest
+from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
+from doberman_agent.common.errcode.approval import ApprovalExecutionFailedError
 
 SCENARIOS = [
     "knowledge_space_subscribe_request",

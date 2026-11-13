@@ -10,10 +10,10 @@
 
 ## 基线
 
-- 当前远端 `dataelement/bisheng:feat/bisheng-work-120-main@611fb0f1ac949d3b03fa960cbbc3ff442c0bbfbd`，通过 GitHub 连接器核实。
+- 当前远端 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@611fb0f1ac949d3b03fa960cbbc3ff442c0bbfbd`，通过 GitHub 连接器核实。
 - 初始本地基线 `de390d4fb` 与远端 `3120e714f` 源码树一致；交付时同步刚合入的附件下载修复，远端基线源码树为 `0d67fdce2d93e3c116eb694bb6138e1d70ca83be`。
 - 受影响服务文件在远端的原始 blob 为 `ca73793d99b6ddd17f3a1e6db2606b2fd940748a`，与本地修复前一致。
-- 本次工作目录 `.worktrees/bisheng-app-deleted-session-history-20261102`，分支 `codex/app-deleted-session-history`。
+- 本次工作目录 `.worktrees/doberman-agent-app-deleted-session-history-20261102`，分支 `codex/app-deleted-session-history`。
 
 ## 验证
 

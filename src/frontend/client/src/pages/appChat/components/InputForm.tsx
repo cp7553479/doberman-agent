@@ -1,21 +1,21 @@
-import { MessageFrame, WorkflowFileField, WorkflowForm } from '@bisheng/chat';
-import { normalizeFormFields, type RawMessage } from '@bisheng/chat/core';
+import { MessageFrame, WorkflowFileField, WorkflowForm } from '@doberman-agent/chat';
+import { normalizeFormFields, type RawMessage } from '@doberman-agent/chat/core';
 import type { ReactNode } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 import useSelectCopy from '~/hooks/useSelectCopy';
 import { useToastContext } from '~/Providers';
 import { useLocalize } from '~/hooks';
 import { emitAreaTextEvent, EVENT_TYPE } from '../useAreaText';
 import { fileAcceptToInputAccept, normalizeFileAccept } from '../fileAcceptUtils';
-import { bishengConfState } from '../store/atoms';
+import { dobermanAgentConfState } from '../store/atoms';
 import InputFileComponent from './InputFileComponent';
 
 interface InputFormProps { data: RawMessage; flow: { name: string }; logo?: ReactNode }
 export function InputForm({ data, flow, logo }: InputFormProps) {
     const localize = useLocalize();
     const selectCopy = useSelectCopy();
-    const config = useRecoilValue(bishengConfState);
+    const config = useRecoilValue(dobermanAgentConfState);
     const { showToast } = useToastContext();
     return <MessageFrame title={flow.name} logo={logo}>
         <WorkflowForm key={String(data.node_id)} fields={normalizeFormFields(data.value)} canExecute

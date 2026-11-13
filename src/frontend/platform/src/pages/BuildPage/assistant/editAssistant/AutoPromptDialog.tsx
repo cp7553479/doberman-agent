@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Textarea, notification, toast } from '@bisheng/ui';
+import { Button, Textarea, notification, toast } from '@doberman-agent/ui';
 import { TitleIconBg } from "@/components/bs-comp/cardComponent";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { DialogClose,DialogContent,DialogFooter } from "@/components/bs-ui/dialog";

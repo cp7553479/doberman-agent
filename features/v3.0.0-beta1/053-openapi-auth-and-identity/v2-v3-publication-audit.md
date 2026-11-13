@@ -19,24 +19,24 @@
 
 | 文件 | 当前写法 | 与本次口径的关系 |
 |---|---|---|
-| [PRD 附录 B.1](</home/highway/PycharmProjects/bisheng/docs/PRD/3.0-beta2/3.0 开放 API 鉴权与身份传递 PRD.md:2379>) | workflow invoke/stop/WS、assistant completions/WS/info、flows 详情全部列为 v2 加鉴权能力；2408 行将 ASR/TTS 列为加鉴权能力 | PRD 尚未体现“这组发布接口整体迁离 v2” |
-| [spec §1](/home/highway/PycharmProjects/bisheng/features/v3.0.0-beta1/053-openapi-auth-and-identity/spec.md:11) | v2 全部密钥鉴权，工作流/助手免登录发布用 v3 allowlist | 没有明确写删除哪些旧 v2 入口，留下了双版本解释空间 |
-| [design §5.F F1](/home/highway/PycharmProjects/bisheng/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:318) | “相同业务能力的 v2 路由保留为密钥鉴权版本” | 直接造成 7 个重复发布入口；需要改为列明迁移、删除清单 |
-| [design §5.F F1 allowlist](/home/highway/PycharmProjects/bisheng/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:320) | 只列 9 个 v3 入口 | 未列语音配置、ASR/TTS，也没有逐项核对页面共用辅助请求 |
-| [design 风险 12 / 前端验收](/home/highway/PycharmProjects/bisheng/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:464) | 要求覆盖完整调用图、guest 页面无 v2 遗留 | 只检查 v2 遗留不够：当前实际漏项是仍需登录的 v1 |
-| [v2 测试用 API 文档](/home/highway/PycharmProjects/bisheng/features/v3.0.0-beta1/053-openapi-auth-and-identity/openapi-v2-key-auth-api.md:1) | 42 HTTP + 2 WS，包括上述发布和语音接口 | 与现状匹配；但应随新迁移范围重新生成，不能仅改标题或藏掉文档条目 |
+| [PRD 附录 B.1](</home/highway/PycharmProjects/doberman-agent/docs/PRD/3.0-beta2/3.0 开放 API 鉴权与身份传递 PRD.md:2379>) | workflow invoke/stop/WS、assistant completions/WS/info、flows 详情全部列为 v2 加鉴权能力；2408 行将 ASR/TTS 列为加鉴权能力 | PRD 尚未体现“这组发布接口整体迁离 v2” |
+| [spec §1](/home/highway/PycharmProjects/doberman-agent/features/v3.0.0-beta1/053-openapi-auth-and-identity/spec.md:11) | v2 全部密钥鉴权，工作流/助手免登录发布用 v3 allowlist | 没有明确写删除哪些旧 v2 入口，留下了双版本解释空间 |
+| [design §5.F F1](/home/highway/PycharmProjects/doberman-agent/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:318) | “相同业务能力的 v2 路由保留为密钥鉴权版本” | 直接造成 7 个重复发布入口；需要改为列明迁移、删除清单 |
+| [design §5.F F1 allowlist](/home/highway/PycharmProjects/doberman-agent/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:320) | 只列 9 个 v3 入口 | 未列语音配置、ASR/TTS，也没有逐项核对页面共用辅助请求 |
+| [design 风险 12 / 前端验收](/home/highway/PycharmProjects/doberman-agent/features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md:464) | 要求覆盖完整调用图、guest 页面无 v2 遗留 | 只检查 v2 遗留不够：当前实际漏项是仍需登录的 v1 |
+| [v2 测试用 API 文档](/home/highway/PycharmProjects/doberman-agent/features/v3.0.0-beta1/053-openapi-auth-and-identity/openapi-v2-key-auth-api.md:1) | 42 HTTP + 2 WS，包括上述发布和语音接口 | 与现状匹配；但应随新迁移范围重新生成，不能仅改标题或藏掉文档条目 |
 
 补充：v2/v3 工作流都调用 `PublishedWorkflowService`，助手都调用 `PublishedAssistantService`。存在两个入口适配层，但不能据此说执行引擎整套复制了两份。删除重复路由时，共用服务仍需保留。
 
 ## 3. 从“对外发布 → 免登录地址”追踪实际页面
 
-入口生成见 [ChatLink.tsx](/home/highway/PycharmProjects/bisheng/src/frontend/platform/src/components/bs-comp/apiComponent/ChatLink.tsx:78)：
+入口生成见 [ChatLink.tsx](/home/highway/PycharmProjects/doberman-agent/src/frontend/platform/src/components/bs-comp/apiComponent/ChatLink.tsx:78)：
 
 - 工作流：`/workspace/chat/flow/{id}`
 - 助手：`/workspace/chat/assistant/{id}`
 - 带 `/auth/` 的链接是需要登录的另一条页面入口。
 
-[client 路由](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/routes/index.tsx:278) 将前两者挂到 guest 模式；[版本选择](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/standaloneChat/StandaloneChatContext.tsx:11) 返回 `v3`。platform 旧 `/chat/flow/`、`/chat/assistant/` 路由已重定向到 client，因此不能把 platform 旧组件中的 `v2` 字样直接当成当前发布页的真实请求。
+[client 路由](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/routes/index.tsx:278) 将前两者挂到 guest 模式；[版本选择](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/standaloneChat/StandaloneChatContext.tsx:11) 返回 `v3`。platform 旧 `/chat/flow/`、`/chat/assistant/` 路由已重定向到 client，因此不能把 platform 旧组件中的 `v2` 字样直接当成当前发布页的真实请求。
 
 | 阶段 | 当前请求 / 动作 | 结论 |
 |---|---|---|
@@ -53,13 +53,13 @@
 
 调用证据：
 
-- [详情和历史](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/index.tsx:148)、[WS 地址](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/useChatHelpers.ts:36)、[会话标题](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/useWebsocket.ts:96)。
-- [输入框加载模型配置](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/ChatInput.tsx:24) → [模型配置查询](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/hooks/queries/queries.ts:554) → [v1 配置 URL](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/index.ts:43)。
-- [录音转换](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/components/Voice/SpeechToText.tsx:164) → [v1 ASR URL](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/index.ts:21)。
-- [朗读按钮](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/components/Voice/TextToSpeechButton.tsx:30) → [v1 TTS URL](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/index.ts:34)。
-- [后端三个 v1 接口均要求登录](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/llm/api/router.py:230)。
+- [详情和历史](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/index.tsx:148)、[WS 地址](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/useChatHelpers.ts:36)、[会话标题](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/useWebsocket.ts:96)。
+- [输入框加载模型配置](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/ChatInput.tsx:24) → [模型配置查询](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/hooks/queries/queries.ts:554) → [v1 配置 URL](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/index.ts:43)。
+- [录音转换](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/components/Voice/SpeechToText.tsx:164) → [v1 ASR URL](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/index.ts:21)。
+- [朗读按钮](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/components/Voice/TextToSpeechButton.tsx:30) → [v1 TTS URL](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/index.ts:34)。
+- [后端三个 v1 接口均要求登录](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/llm/api/router.py:230)。
 
-因此，在没有登录态的新浏览器中，即便 v3 对话正常，模型配置查询仍会被登录依赖拒绝，语音按钮可能不显示；已有登录态或查询缓存可能掩盖问题。[请求拦截器](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/request.ts:226) 已对 guest 链接停止 401 登录跳转，但这只避免跳转，并不让语音接口变为可用。
+因此，在没有登录态的新浏览器中，即便 v3 对话正常，模型配置查询仍会被登录依赖拒绝，语音按钮可能不显示；已有登录态或查询缓存可能掩盖问题。[请求拦截器](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/request.ts:226) 已对 guest 链接停止 401 登录跳转，但这只避免跳转，并不让语音接口变为可用。
 
 2026-09-11 用户纠正范围：platform“API 访问”是对接文档，已恢复 F053 修改前的完整 v2 说明。误增的 `POST /api/v3/workflow/invoke`、`POST /api/v3/workflow/stop`、`POST /api/v3/assistant/chat/completions` 已移除；免登录页面通过 v3 WebSocket 完成执行和交互，不需要这三个 HTTP 入口。
 
@@ -67,16 +67,16 @@
 
 | 能力 | 当前请求 | 代码现状与处理边界 |
 |---|---|---|
-| 通用聊天附件上传 | `POST /api/v1/knowledge/upload` | [uploadChatFile](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/apps.ts:271) 接收版本参数但生成 URL 时没有使用。后端端点本来就无登录依赖；不能误报为 v2 密钥阻断。若发布调用统一收口 v3，需要新增受发布资源约束的上传入口，保留站内/日常对话原入口 |
-| 工作流文件节点上传 | `POST /api/v1/upload/{flow_id}`；部分分支用上述 knowledge/upload | [InputFileComponent](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/components/InputFileComponent.tsx:85) 的两类上传均需覆盖；后端旧上传端点未声明登录依赖 |
-| 点赞、复制、反馈 | `POST /api/v1/liked`、`/chat/copied`、`/chat/comment` | [MessageButtons](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/components/MessageButtons.tsx:21) 仍会触发；这些旧端点未声明登录依赖，没有对应 v3；如迁移，应绑定发布会话和消息 |
-| 点赞 / 复制的埋点 | `POST /api/v1/session/chat/message/telemetry` | [前端调用](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/apps.ts:110) 附带发出，而 [后端](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/chat_session/api/endpoints/session.py:45) 要求登录；这是另一项 guest 交互下的登录依赖残留 |
+| 通用聊天附件上传 | `POST /api/v1/knowledge/upload` | [uploadChatFile](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/apps.ts:271) 接收版本参数但生成 URL 时没有使用。后端端点本来就无登录依赖；不能误报为 v2 密钥阻断。若发布调用统一收口 v3，需要新增受发布资源约束的上传入口，保留站内/日常对话原入口 |
+| 工作流文件节点上传 | `POST /api/v1/upload/{flow_id}`；部分分支用上述 knowledge/upload | [InputFileComponent](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/components/InputFileComponent.tsx:85) 的两类上传均需覆盖；后端旧上传端点未声明登录依赖 |
+| 点赞、复制、反馈 | `POST /api/v1/liked`、`/chat/copied`、`/chat/comment` | [MessageButtons](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/components/MessageButtons.tsx:21) 仍会触发；这些旧端点未声明登录依赖，没有对应 v3；如迁移，应绑定发布会话和消息 |
+| 点赞 / 复制的埋点 | `POST /api/v1/session/chat/message/telemetry` | [前端调用](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/apps.ts:110) 附带发出，而 [后端](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/chat_session/api/endpoints/session.py:45) 要求登录；这是另一项 guest 交互下的登录依赖残留 |
 | 引用卡片及详情 | `POST /api/v1/citations/resolve`、`GET /api/v1/citations/{id}` | 有引用内容时可能自动批量补齐，点击时再查详情。可选登录；当前 F054 规则明确限制匿名读取知识/文章来源。不能把 v2 的单数 `/citation/{id}` 直接迁成匿名接口来替换这条链路 |
-| 应用失效后的信息回退 | `GET /api/v1/chat/info` | [应用初始化失败分支](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/appChat/index.tsx:162) 仍调用站内接口；guest 应使用发布资源失效信息，不应依赖登录态补救 |
+| 应用失效后的信息回退 | `GET /api/v1/chat/info` | [应用初始化失败分支](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/appChat/index.tsx:162) 仍调用站内接口；guest 应使用发布资源失效信息，不应依赖登录态补救 |
 | 公共环境、品牌、静态资源 | 如 `/api/v1/env`、图片和对象存储地址 | 按已有公共能力保留，不因 URL 含 v1 就判定迁移失败 |
 | 导出、导入知识库、管理及分享功能 | 站内相应 v1 请求 | 不是本次发布 API 迁移的自动开放范围；guest 页面应按能力控制，尤其不能把知识库写入接口直接开放到 v3 |
 
-引用证据：[client 引用 URL](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/api/chatApi.ts:25)；[有引用时批量补齐](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/components/Chat/Messages/Content/CitationReferencesDrawer.tsx:289)；[匿名知识引用规则](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/citation/domain/services/citation_resolve_service.py:301)。
+引用证据：[client 引用 URL](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/api/chatApi.ts:25)；[有引用时批量补齐](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/components/Chat/Messages/Content/CitationReferencesDrawer.tsx:289)；[匿名知识引用规则](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py:301)。
 
 ## 5. 按本次口径应落地的迁移清单
 
@@ -124,8 +124,8 @@
 
 现有测试的覆盖缺口：
 
-- [v3 路由测试](/home/highway/PycharmProjects/bisheng/src/backend/test/public_endpoints/test_http_allowlist.py:5) 将 9 个路由写成精确允许清单，语音遗漏因此不会被这个测试检出。
-- [前端 guest 测试](/home/highway/PycharmProjects/bisheng/src/frontend/client/src/pages/standaloneChat/StandaloneChatPage.test.ts:7) 虽名为 “every guest URL”，实际仅测版本选择与标题 URL，没有挂载语音/附件/反馈组件，也没有检查完整请求集合。
+- [v3 路由测试](/home/highway/PycharmProjects/doberman-agent/src/backend/test/public_endpoints/test_http_allowlist.py:5) 将 9 个路由写成精确允许清单，语音遗漏因此不会被这个测试检出。
+- [前端 guest 测试](/home/highway/PycharmProjects/doberman-agent/src/frontend/client/src/pages/standaloneChat/StandaloneChatPage.test.ts:7) 虽名为 “every guest URL”，实际仅测版本选择与标题 URL，没有挂载语音/附件/反馈组件，也没有检查完整请求集合。
 
 修复验收应使用清空 cookie、localStorage 和查询缓存的独立浏览器，覆盖两类应用的首次加载、历史、发送、停止、录音、朗读、附件、引用、反馈；同时验证已迁移的旧 v2 入口不存在，剩余 v2 无密钥仍拒绝，v3 不要求密钥。
 
@@ -135,50 +135,50 @@
 
 | 方法与路径 | 当前权限位 | 处理 | 源码 |
 |---|---|---|---|
-| `WS /api/v2/assistant/chat/{assistant_id}` | `assistant:invoke` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/assistant.py:123) |
-| `POST /api/v2/assistant/chat/completions` | `assistant:invoke` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/assistant.py:33) |
-| `GET /api/v2/assistant/info/{assistant_id}` | `assistant:read` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/assistant.py:92) |
-| `GET /api/v2/assistant/list` | `assistant:read` | 保留 v2 密钥鉴权 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/assistant.py:101) |
-| `GET /api/v2/auth/whoami` | 仅鉴权 | 保留 v2 密钥鉴权 | [auth.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_api/api/endpoints/auth.py:13) |
-| `GET /api/v2/chat/info` | `chat:invoke` | 保留 v2 密钥鉴权 | [chat.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/chat.py:26) |
-| `GET /api/v2/chat/list` | `chat:invoke` | 保留 v2 密钥鉴权 | [chat.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/chat.py:15) |
-| `GET /api/v2/citation/{citation_id}` | `knowledge:read` | 保留 v2 密钥鉴权 | [citation.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/citation.py:21) |
-| `GET /api/v2/filelib/` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:204) |
-| `POST /api/v2/filelib/` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:121) |
-| `PUT /api/v2/filelib/` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:170) |
-| `DELETE /api/v2/filelib/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:245) |
-| `POST /api/v2/filelib/add_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:583) |
-| `POST /api/v2/filelib/add_relative_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:606) |
-| `POST /api/v2/filelib/chunks` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:486) |
-| `POST /api/v2/filelib/chunks_string` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:534) |
-| `DELETE /api/v2/filelib/clear/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:275) |
-| `POST /api/v2/filelib/delete_file` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:409) |
-| `GET /api/v2/filelib/detail_qa` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:677) |
-| `GET /api/v2/filelib/download_statistic` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:569) |
-| `DELETE /api/v2/filelib/file/{file_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:400) |
-| `POST /api/v2/filelib/file/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:304) |
-| `GET /api/v2/filelib/file/list` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:418) |
-| `DELETE /api/v2/filelib/qa/{qa_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:623) |
-| `POST /api/v2/filelib/query_qa` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:738) |
-| `POST /api/v2/filelib/retrieve` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:687) |
-| `POST /api/v2/filelib/update_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/filelib.py:647) |
-| `GET /api/v2/flows/{flow_id}` | `workflow:read` | 按本次口径删除 v2，保留 v3 | [flow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/flow.py:13) |
-| `POST /api/v2/knowledge/add_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:46) |
-| `DELETE /api/v2/knowledge/delete_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:92) |
-| `POST /api/v2/knowledge/file/add_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:140) |
-| `DELETE /api/v2/knowledge/file/delete_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:193) |
-| `POST /api/v2/knowledge/file/list_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:220) |
-| `PUT /api/v2/knowledge/file/modify_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:166) |
-| `GET /api/v2/knowledge/get_metadata_fields/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:118) |
-| `PUT /api/v2/knowledge/modify_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:68) |
-| `POST /api/v2/knowledge/upload` | `chat:invoke` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py:26) |
-| `POST /api/v2/llm/workbench/asr` | `assistant:invoke` | 按本次口径迁至 v3，删除 v2 | [llm.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/llm.py:11) |
-| `POST /api/v2/llm/workbench/tts` | `assistant:invoke` | 按本次口径迁至 v3，删除 v2 | [llm.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/llm.py:20) |
-| `WS /api/v2/workflow/chat/{workflow_id}` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/workflow.py:136) |
-| `POST /api/v2/workflow/invoke` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/workflow.py:33) |
-| `POST /api/v2/workflow/stop` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/workflow.py:118) |
-| `POST /api/v2/workstation/chat/completions` | `chat:invoke` | 保留 v2 密钥鉴权 | [workstation.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/workstation.py:27) |
-| `GET /api/v2/workstation/config` | `chat:invoke` | 保留 v2 密钥鉴权 | [workstation.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/open_endpoints/api/endpoints/workstation.py:18) |
+| `WS /api/v2/assistant/chat/{assistant_id}` | `assistant:invoke` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py:123) |
+| `POST /api/v2/assistant/chat/completions` | `assistant:invoke` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py:33) |
+| `GET /api/v2/assistant/info/{assistant_id}` | `assistant:read` | 按本次口径删除 v2，保留 v3 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py:92) |
+| `GET /api/v2/assistant/list` | `assistant:read` | 保留 v2 密钥鉴权 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py:101) |
+| `GET /api/v2/auth/whoami` | 仅鉴权 | 保留 v2 密钥鉴权 | [auth.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_api/api/endpoints/auth.py:13) |
+| `GET /api/v2/chat/info` | `chat:invoke` | 保留 v2 密钥鉴权 | [chat.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/chat.py:26) |
+| `GET /api/v2/chat/list` | `chat:invoke` | 保留 v2 密钥鉴权 | [chat.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/chat.py:15) |
+| `GET /api/v2/citation/{citation_id}` | `knowledge:read` | 保留 v2 密钥鉴权 | [citation.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/citation.py:21) |
+| `GET /api/v2/filelib/` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:204) |
+| `POST /api/v2/filelib/` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:121) |
+| `PUT /api/v2/filelib/` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:170) |
+| `DELETE /api/v2/filelib/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:245) |
+| `POST /api/v2/filelib/add_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:583) |
+| `POST /api/v2/filelib/add_relative_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:606) |
+| `POST /api/v2/filelib/chunks` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:486) |
+| `POST /api/v2/filelib/chunks_string` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:534) |
+| `DELETE /api/v2/filelib/clear/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:275) |
+| `POST /api/v2/filelib/delete_file` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:409) |
+| `GET /api/v2/filelib/detail_qa` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:677) |
+| `GET /api/v2/filelib/download_statistic` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:569) |
+| `DELETE /api/v2/filelib/file/{file_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:400) |
+| `POST /api/v2/filelib/file/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:304) |
+| `GET /api/v2/filelib/file/list` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:418) |
+| `DELETE /api/v2/filelib/qa/{qa_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:623) |
+| `POST /api/v2/filelib/query_qa` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:738) |
+| `POST /api/v2/filelib/retrieve` | `knowledge:read` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:687) |
+| `POST /api/v2/filelib/update_qa` | `knowledge:write` | 保留 v2 密钥鉴权 | [filelib.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py:647) |
+| `GET /api/v2/flows/{flow_id}` | `workflow:read` | 按本次口径删除 v2，保留 v3 | [flow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/flow.py:13) |
+| `POST /api/v2/knowledge/add_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:46) |
+| `DELETE /api/v2/knowledge/delete_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:92) |
+| `POST /api/v2/knowledge/file/add_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:140) |
+| `DELETE /api/v2/knowledge/file/delete_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:193) |
+| `POST /api/v2/knowledge/file/list_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:220) |
+| `PUT /api/v2/knowledge/file/modify_user_metadata` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:166) |
+| `GET /api/v2/knowledge/get_metadata_fields/{knowledge_id}` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:118) |
+| `PUT /api/v2/knowledge/modify_metadata_fields` | `knowledge:write` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:68) |
+| `POST /api/v2/knowledge/upload` | `chat:invoke` | 保留 v2 密钥鉴权 | [knowledge.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py:26) |
+| `POST /api/v2/llm/workbench/asr` | `assistant:invoke` | 按本次口径迁至 v3，删除 v2 | [llm.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/llm.py:11) |
+| `POST /api/v2/llm/workbench/tts` | `assistant:invoke` | 按本次口径迁至 v3，删除 v2 | [llm.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/llm.py:20) |
+| `WS /api/v2/workflow/chat/{workflow_id}` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py:136) |
+| `POST /api/v2/workflow/invoke` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py:33) |
+| `POST /api/v2/workflow/stop` | `workflow:invoke` | 按本次口径删除 v2，保留 v3 | [workflow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py:118) |
+| `POST /api/v2/workstation/chat/completions` | `chat:invoke` | 保留 v2 密钥鉴权 | [workstation.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/workstation.py:27) |
+| `GET /api/v2/workstation/config` | `chat:invoke` | 保留 v2 密钥鉴权 | [workstation.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/open_endpoints/api/endpoints/workstation.py:18) |
 
 ## 8. 全部 v3 路由清单（9 项，2026-09-11 更新）
 
@@ -186,12 +186,12 @@
 
 | 方法与路径 | 当前准入 | 处理 | 源码 |
 |---|---|---|---|
-| `WS /api/v3/assistant/chat/{assistant_id}` | 发布准入 | 保留免登录发布入口 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/assistant.py) |
-| `GET /api/v3/assistant/info/{assistant_id}` | 发布准入 | 保留免登录发布入口 | [assistant.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/assistant.py) |
-| `POST /api/v3/chat/gen_title` | 发布准入 | 保留免登录发布入口 | [chat.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/chat.py:27) |
-| `GET /api/v3/chat/history` | 发布准入 | 保留免登录发布入口 | [chat.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/chat.py:14) |
-| `GET /api/v3/flows/{flow_id}` | 发布准入 | 保留免登录发布入口 | [flow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/flow.py:15) |
-| `WS /api/v3/workflow/chat/{workflow_id}` | 发布准入 | 保留免登录发布入口 | [workflow.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/workflow.py) |
-| `GET /api/v3/llm/workbench` | 发布准入及 flow_id 绑定 | 保留发布页语音配置 | [llm.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/llm.py) |
-| `POST /api/v3/llm/workbench/asr` | 发布准入及 flow_id 绑定 | 保留录音转文字 | [llm.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/llm.py) |
-| `POST /api/v3/llm/workbench/tts` | 发布准入及 flow_id 绑定 | 保留文字朗读 | [llm.py](/home/highway/PycharmProjects/bisheng/src/backend/bisheng/public_endpoints/api/endpoints/llm.py) |
+| `WS /api/v3/assistant/chat/{assistant_id}` | 发布准入 | 保留免登录发布入口 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/assistant.py) |
+| `GET /api/v3/assistant/info/{assistant_id}` | 发布准入 | 保留免登录发布入口 | [assistant.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/assistant.py) |
+| `POST /api/v3/chat/gen_title` | 发布准入 | 保留免登录发布入口 | [chat.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/chat.py:27) |
+| `GET /api/v3/chat/history` | 发布准入 | 保留免登录发布入口 | [chat.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/chat.py:14) |
+| `GET /api/v3/flows/{flow_id}` | 发布准入 | 保留免登录发布入口 | [flow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/flow.py:15) |
+| `WS /api/v3/workflow/chat/{workflow_id}` | 发布准入 | 保留免登录发布入口 | [workflow.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/workflow.py) |
+| `GET /api/v3/llm/workbench` | 发布准入及 flow_id 绑定 | 保留发布页语音配置 | [llm.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/llm.py) |
+| `POST /api/v3/llm/workbench/asr` | 发布准入及 flow_id 绑定 | 保留录音转文字 | [llm.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/llm.py) |
+| `POST /api/v3/llm/workbench/tts` | 发布准入及 flow_id 绑定 | 保留文字朗读 | [llm.py](/home/highway/PycharmProjects/doberman-agent/src/backend/doberman_agent/public_endpoints/api/endpoints/llm.py) |

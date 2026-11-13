@@ -23,7 +23,7 @@ class TestFileDownloadHonoursAWholeConversationShare:
 
     @pytest.fixture()
     def endpoints(self, monkeypatch):
-        from bisheng.linsight.api.endpoints import linsight as linsight_endpoints
+        from doberman_agent.linsight.api.endpoints import linsight as linsight_endpoints
 
         version = MagicMock()
         version.user_id = 1  # the owner
@@ -33,8 +33,8 @@ class TestFileDownloadHonoursAWholeConversationShare:
         monkeypatch.setattr(linsight_endpoints, "LinsightSessionVersionDao", dao)
 
         minio = MagicMock()
-        minio.bucket = "bisheng"
-        minio.get_share_link = AsyncMock(return_value="/bisheng/presigned?sig=x")
+        minio.bucket = "doberman_agent"
+        minio.get_share_link = AsyncMock(return_value="/doberman_agent/presigned?sig=x")
         monkeypatch.setattr(linsight_endpoints, "get_minio_storage", AsyncMock(return_value=minio))
         return linsight_endpoints
 
@@ -72,7 +72,7 @@ class TestFileDownloadHonoursAWholeConversationShare:
         result = await self._download(endpoints, self._whole_conversation_share(self.SESSION_ID))
 
         assert result.status_code == 200
-        assert result.data == {"file_path": "/bisheng/presigned?sig=x"}
+        assert result.data == {"file_path": "/doberman_agent/presigned?sig=x"}
 
     async def test_single_version_share_still_grants_the_download(self, endpoints):
         result = await self._download(endpoints, self._single_version_share(self.VERSION_ID))
@@ -80,13 +80,13 @@ class TestFileDownloadHonoursAWholeConversationShare:
         assert result.status_code == 200
 
     async def test_missing_token_is_still_rejected(self, endpoints):
-        from bisheng.common.errcode.http_error import UnAuthorizedError
+        from doberman_agent.common.errcode.http_error import UnAuthorizedError
 
         with pytest.raises(UnAuthorizedError):
             await self._download(endpoints, None)
 
     async def test_token_for_another_conversation_is_still_rejected(self, endpoints):
-        from bisheng.common.errcode.http_error import UnAuthorizedError
+        from doberman_agent.common.errcode.http_error import UnAuthorizedError
 
         with pytest.raises(UnAuthorizedError):
             await self._download(endpoints, self._whole_conversation_share("conv-not-shared"))

@@ -1,5 +1,5 @@
-import { Button, Tooltip } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, Tooltip } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { ZoomOut } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { CopyMessageAction } from '../components/CopyMessageAction';

@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import httpx
 import openai
 
-from bisheng.core.ai.asr import aliyun_asr_client
-from bisheng.core.ai.asr.aliyun_asr_client import AliyunASRClient
-from bisheng.core.ai.asr.openai_asr_client import transcribe_with_openai_sdk
-from bisheng.core.ai.base import ASRSegment, join_sentence_texts
+from doberman_agent.core.ai.asr import aliyun_asr_client
+from doberman_agent.core.ai.asr.aliyun_asr_client import AliyunASRClient
+from doberman_agent.core.ai.asr.openai_asr_client import transcribe_with_openai_sdk
+from doberman_agent.core.ai.base import ASRSegment, join_sentence_texts
 
 
 class _FakeRecognition:

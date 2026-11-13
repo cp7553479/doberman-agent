@@ -6,15 +6,15 @@ import httpx
 import pytest
 from mcp import types
 
-from bisheng.open_api.domain.context import (
+from doberman_agent.open_api.domain.context import (
     OpenApiPrincipal,
     get_current_open_api_principal,
     reset_current_open_api_principal,
     set_current_open_api_principal,
 )
-from bisheng.open_mcp.auth import current_mcp_scope
-from bisheng.open_mcp.contracts import ResourceListData
-from bisheng.open_mcp.server import MCP_PATH, OpenMcpDispatchMiddleware, create_open_mcp_runtime
+from doberman_agent.open_mcp.auth import current_mcp_scope
+from doberman_agent.open_mcp.contracts import ResourceListData
+from doberman_agent.open_mcp.server import MCP_PATH, OpenMcpDispatchMiddleware, create_open_mcp_runtime
 
 
 @pytest.fixture(autouse=True)
@@ -25,14 +25,14 @@ def direct_handler_admission(request, monkeypatch):
     # Existing handler tests own the tool contract, not the SDK transport or
     # membership provider (covered with real SQL by F113's separate tests).
     monkeypatch.setattr(
-        "bisheng.open_mcp.server.StreamableHTTPSessionManager", lambda **kwargs: SimpleNamespace(app=kwargs["app"])
+        "doberman_agent.open_mcp.server.StreamableHTTPSessionManager", lambda **kwargs: SimpleNamespace(app=kwargs["app"])
     )
 
     async def validate(header):
         assert header == "Bearer handler-fixture"
         return get_current_open_api_principal()
 
-    monkeypatch.setattr("bisheng.open_mcp.server.validate_bearer", validate)
+    monkeypatch.setattr("doberman_agent.open_mcp.server.validate_bearer", validate)
     token = current_mcp_scope.set({"type": "http", "headers": [(b"authorization", b"Bearer handler-fixture")]})
     try:
         yield
@@ -73,9 +73,9 @@ async def test_list_tools_returns_only_principal_visible_tools():
         reset_current_open_api_principal(token)
 
     assert {tool.name for tool in result.root.tools} == {
-        "bisheng_knowledge_list",
-        "bisheng_knowledge_retrieve",
-        "bisheng_knowledge_file_list",
+        "doberman_agent_knowledge_list",
+        "doberman_agent_knowledge_retrieve",
+        "doberman_agent_knowledge_file_list",
     }
 
 
@@ -85,13 +85,13 @@ async def test_call_tool_success_returns_structured_result_and_audits(monkeypatc
     audits = []
 
     async def _execute(name, arguments):
-        assert name == "bisheng_knowledge_list"
+        assert name == "doberman_agent_knowledge_list"
         assert arguments == {"type": 0}
         return ResourceListData(data=[], page_size=10, has_more=False)
 
-    monkeypatch.setattr("bisheng.open_mcp.server.execute_tool", _execute)
+    monkeypatch.setattr("doberman_agent.open_mcp.server.execute_tool", _execute)
     monkeypatch.setattr(
-        "bisheng.open_mcp.server.open_api_call_audit_service.enqueue",
+        "doberman_agent.open_mcp.server.open_api_call_audit_service.enqueue",
         audits.append,
     )
     token = set_current_open_api_principal(_principal())
@@ -99,7 +99,7 @@ async def test_call_tool_success_returns_structured_result_and_audits(monkeypatc
         result = await _handler(runtime, types.CallToolRequest)(
             types.CallToolRequest(
                 params=types.CallToolRequestParams(
-                    name="bisheng_knowledge_list",
+                    name="doberman_agent_knowledge_list",
                     arguments={"type": 0},
                 )
             )
@@ -113,7 +113,7 @@ async def test_call_tool_success_returns_structured_result_and_audits(monkeypatc
     assert len(audits) == 1
     audit = audits[0]
     assert audit.target_type == "mcp_tool"
-    assert audit.target_id == "bisheng_knowledge_list"
+    assert audit.target_id == "doberman_agent_knowledge_list"
     assert audit.tenant_id == 3
     assert audit.audit_metadata["channel"] == "mcp"
     assert audit.audit_metadata["result"] == "success"
@@ -128,9 +128,9 @@ async def test_call_tool_denied_by_scope_does_not_execute_and_audits_error(monke
     async def _unexpected_execute(name, arguments):
         raise AssertionError("denied tool must not execute")
 
-    monkeypatch.setattr("bisheng.open_mcp.server.execute_tool", _unexpected_execute)
+    monkeypatch.setattr("doberman_agent.open_mcp.server.execute_tool", _unexpected_execute)
     monkeypatch.setattr(
-        "bisheng.open_mcp.server.open_api_call_audit_service.enqueue",
+        "doberman_agent.open_mcp.server.open_api_call_audit_service.enqueue",
         audits.append,
     )
     token = set_current_open_api_principal(_principal(scopes=frozenset({"knowledge:read"})))
@@ -138,7 +138,7 @@ async def test_call_tool_denied_by_scope_does_not_execute_and_audits_error(monke
         result = await _handler(runtime, types.CallToolRequest)(
             types.CallToolRequest(
                 params=types.CallToolRequestParams(
-                    name="bisheng_knowledge_delete",
+                    name="doberman_agent_knowledge_delete",
                     arguments={"knowledge_id": 67},
                 )
             )
@@ -155,13 +155,13 @@ async def test_call_tool_denied_by_scope_does_not_execute_and_audits_error(monke
 @pytest.mark.asyncio
 async def test_call_tool_validation_error_is_mcp_tool_error(monkeypatch):
     runtime = create_open_mcp_runtime()
-    monkeypatch.setattr("bisheng.open_mcp.server.open_api_call_audit_service.enqueue", lambda _: None)
+    monkeypatch.setattr("doberman_agent.open_mcp.server.open_api_call_audit_service.enqueue", lambda _: None)
     token = set_current_open_api_principal(_principal())
     try:
         result = await _handler(runtime, types.CallToolRequest)(
             types.CallToolRequest(
                 params=types.CallToolRequestParams(
-                    name="bisheng_knowledge_delete",
+                    name="doberman_agent_knowledge_delete",
                     arguments={"knowledge_id": 0},
                 )
             )
@@ -178,7 +178,7 @@ async def test_call_tool_unknown_name_is_rejected_by_mcp_protocol_before_executi
     runtime = create_open_mcp_runtime()
     audits = []
     monkeypatch.setattr(
-        "bisheng.open_mcp.server.open_api_call_audit_service.enqueue",
+        "doberman_agent.open_mcp.server.open_api_call_audit_service.enqueue",
         audits.append,
     )
     token = set_current_open_api_principal(_principal())
@@ -235,7 +235,7 @@ async def test_real_streamable_http_initialize_then_stateless_list(monkeypatch):
         finally:
             reset_current_open_api_principal(token)
 
-    monkeypatch.setattr("bisheng.open_mcp.auth.open_api_access_context", _authenticated)
+    monkeypatch.setattr("doberman_agent.open_mcp.auth.open_api_access_context", _authenticated)
     runtime = create_open_mcp_runtime()
     headers = {"Accept": "application/json, text/event-stream"}
     transport = httpx.ASGITransport(app=runtime.app)

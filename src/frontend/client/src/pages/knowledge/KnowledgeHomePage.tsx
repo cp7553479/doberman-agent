@@ -1,7 +1,7 @@
 import type { KnowledgeSpace } from "~/api/knowledge";
 import { MODULE_HOME_FRAME, ModuleHomeHeader } from "~/components/ModuleHome";
-import { Button } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize, useWorkbenchMenuNames } from "~/hooks";
 import { KnowledgeSpaceSidebar } from "./sidebar/KnowledgeSpaceSidebar";
 

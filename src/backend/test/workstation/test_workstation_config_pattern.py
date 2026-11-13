@@ -15,7 +15,7 @@ Aligned with feat/2.6.0 (commit 72fd1e8f0 "fix: unused pattern"): the pattern
 is removed entirely, matching how these fields are validated on the main branch.
 """
 
-from bisheng.api.v1.schemas import WorkstationConfig
+from doberman_agent.api.v1.schemas import WorkstationConfig
 
 
 def test_missing_fields_fall_back_to_empty_default():

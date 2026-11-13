@@ -1,4 +1,4 @@
-"""Tests for F012 ContextVar extensions in bisheng.core.context.tenant.
+"""Tests for F012 ContextVar extensions in doberman_agent.core.context.tenant.
 
 Validates:
 - v2.5.0 public signatures still work (get_current_tenant_id,
@@ -14,7 +14,7 @@ Pure ContextVar test — no DB, no Redis, no imports from the deep chain.
 
 import pytest
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id as _current_var,
     get_admin_scope_tenant_id,
@@ -85,12 +85,12 @@ class TestVisibleTenantIds:
         try:
             assert get_visible_tenant_ids() == frozenset({5, 1})
         finally:
-            from bisheng.core.context.tenant import visible_tenant_ids as v
+            from doberman_agent.core.context.tenant import visible_tenant_ids as v
             v.reset(token)
 
     def test_set_none_allowed(self):
         """None is a meaningful value (no IN-list filter for super admins)."""
-        from bisheng.core.context.tenant import visible_tenant_ids as v
+        from doberman_agent.core.context.tenant import visible_tenant_ids as v
         t1 = set_visible_tenant_ids(frozenset({2}))
         t2 = set_visible_tenant_ids(None)
         try:
@@ -136,7 +136,7 @@ class TestStrictFilterCM:
 class TestGetCurrentPriority:
 
     def test_admin_scope_overrides_current(self):
-        from bisheng.core.context.tenant import (
+        from doberman_agent.core.context.tenant import (
             _admin_scope_tenant_id as scope_var,
             current_tenant_id as cur_var,
         )
@@ -149,7 +149,7 @@ class TestGetCurrentPriority:
             cur_var.reset(t1)
 
     def test_admin_scope_none_falls_through(self):
-        from bisheng.core.context.tenant import current_tenant_id as cur_var
+        from doberman_agent.core.context.tenant import current_tenant_id as cur_var
         t1 = set_current_tenant_id(5)
         try:
             # admin_scope defaults to None → fall through to current.
@@ -168,7 +168,7 @@ class TestGetCurrentPriority:
 class TestIsManagementApi:
 
     def test_set_and_read(self):
-        from bisheng.core.context.tenant import _is_management_api as var
+        from doberman_agent.core.context.tenant import _is_management_api as var
         token = set_is_management_api(True)
         try:
             assert get_is_management_api() is True

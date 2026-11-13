@@ -63,8 +63,8 @@ export const useGetBsConfig = (
 ): QueryObserverResult<BsConfig> => {
   const queriesEnabled = useRecoilValue<boolean>(store.queriesEnabled);
   return useQuery<BsConfig>(
-    [QueryKeys.bishengConfig],
-    () => dataService.getBishengConfig().then(data => {
+    [QueryKeys.dobermanAgentConfig],
+    () => dataService.getDobermanAgentConfig().then(data => {
       if (data.models) data.models = normalizeModelNames(data.models);
       // Ensure nested object fields have defaults to prevent runtime errors
       const defaultIcon = { image: '', enabled: false };

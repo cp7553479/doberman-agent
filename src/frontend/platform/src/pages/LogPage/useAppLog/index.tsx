@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Pagination, Button, Select, toast } from '@bisheng/ui';
+import { Pagination, Button, Select, toast } from '@doberman-agent/ui';
 
 import FilterByApp from "@/components/bs-comp/filterTableDataComponent/FilterByApp";
 import FilterByDate from "@/components/bs-comp/filterTableDataComponent/FilterByDate";
@@ -7,8 +7,8 @@ import FilterByUser from "@/components/bs-comp/filterTableDataComponent/FilterBy
 import FilterByUsergroup from "@/components/bs-comp/filterTableDataComponent/FilterByUsergroup";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { LoadingIcon } from "@/components/bs-icons/loading";
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table";
@@ -387,7 +387,7 @@ export default function AppUseLog() {
                 </TableBody>
             </Table>
         </div>
-        <div className="bisheng-table-footer px-6 bg-background-login">
+        <div className="doberman_agent-table-footer px-6 bg-background-login">
             <p className="desc"></p>
             <div>
                 <Pagination locale={paginationLocale}

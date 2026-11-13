@@ -20,7 +20,7 @@
 #   bash scripts/tests/compose/verify-app-runtime-stability.sh --howto
 # 可选：--base-url https://127.0.0.1:4101（默认读 APP_ENTRY_BASE_URL 或 http://127.0.0.1:8090）
 #
-# **--token 是必需的**（也可用环境变量 BISHENG_ACCESS_TOKEN）：应用入口的第二步就是
+# **--token 是必需的**（也可用环境变量 DOBERMAN_AGENT_ACCESS_TOKEN）：应用入口的第二步就是
 # 会话校验，不带会话的请求恒定拿到 login 判定，脚本会把「没登录」误判成「应用挂了」。
 # 取法：浏览器登录平台后取 Cookie `access_token_cookie`，或用一个对该应用有 use
 # 权限的账号调 /api/v1/user/login 拿 access_token。用**非管理员**账号最贴近真实。
@@ -37,7 +37,7 @@
 set -uo pipefail
 
 SLUG=""
-TOKEN="${BISHENG_ACCESS_TOKEN:-}"
+TOKEN="${DOBERMAN_AGENT_ACCESS_TOKEN:-}"
 BASE_URL="${APP_ENTRY_BASE_URL:-http://127.0.0.1:8090}"
 CONFIRMED=0
 # AC-20 的预算：spec 写的是 5 分钟，留同样的 5 分钟，不放宽。
@@ -77,13 +77,13 @@ if [ "${HOWTO:-0}" = "1" ]; then
      date +%s
      # 两个时间戳之差 ≤ 300。注意 docker 的 restart policy **不会**管这种情况，
      # 动手的是 runtime-manager 的 reconciler（连续 2 轮 unhealthy 即重建）。
-     journalctl -u bisheng-runtime-manager | grep rtm.rebuild | tail -3
+     journalctl -u doberman-agent-runtime-manager | grep rtm.rebuild | tail -3
 
 2) AC-47：限额真的落在这个应用上
-     docker inspect "$(docker ps --filter label=bisheng.app.slug=<slug> -q)" \
+     docker inspect "$(docker ps --filter label=doberman-agent.app.slug=<slug> -q)" \
        --format '{{.HostConfig.NanoCpus}} {{.HostConfig.Memory}} {{.HostConfig.ReadonlyRootfs}}'
    期望：与该应用档位的 vCPU / MiB 一致，且 ReadonlyRootfs=true。
-   （标签名是 `bisheng.app.slug` / `bisheng.app.id`，点号分隔，不是连字符。）
+   （标签名是 `doberman-agent.app.slug` / `doberman-agent.app.id`，点号分隔，不是连字符。）
 HOWTO
   exit 0
 fi
@@ -93,7 +93,7 @@ if [ -z "$SLUG" ]; then
   exit 2
 fi
 if [ -z "$TOKEN" ]; then
-  echo "缺 --token（或 BISHENG_ACCESS_TOKEN）：没有会话的请求恒定是 login 判定，计时会全错。" >&2
+  echo "缺 --token（或 DOBERMAN_AGENT_ACCESS_TOKEN）：没有会话的请求恒定是 login 判定，计时会全错。" >&2
   exit 2
 fi
 if [ "$CONFIRMED" != "1" ]; then
@@ -107,16 +107,16 @@ ENTRY="${BASE_URL%/}/apps/${SLUG}/"
 
 # systemd 形态用 systemctl，compose 形态用 docker compose；两种都不在就退 2，
 # 不要猜——猜错的后果是「重启了个不相干的东西，然后报告零中断」。
-if systemctl is-active bisheng-runtime-manager >/dev/null 2>&1; then
+if systemctl is-active doberman-agent-runtime-manager >/dev/null 2>&1; then
   FORM="systemd"
-  restart_runtime() { systemctl restart bisheng-runtime-manager; }
-  stop_runtime()    { systemctl stop bisheng-runtime-manager; }
-  start_runtime()   { systemctl start bisheng-runtime-manager; }
-elif docker ps --format '{{.Names}}' | grep -qx bisheng-runtime-manager; then
+  restart_runtime() { systemctl restart doberman-agent-runtime-manager; }
+  stop_runtime()    { systemctl stop doberman-agent-runtime-manager; }
+  start_runtime()   { systemctl start doberman-agent-runtime-manager; }
+elif docker ps --format '{{.Names}}' | grep -qx doberman-agent-runtime-manager; then
   FORM="compose"
-  restart_runtime() { docker restart bisheng-runtime-manager >/dev/null; }
-  stop_runtime()    { docker stop bisheng-runtime-manager >/dev/null; }
-  start_runtime()   { docker start bisheng-runtime-manager >/dev/null; }
+  restart_runtime() { docker restart doberman-agent-runtime-manager >/dev/null; }
+  stop_runtime()    { docker stop doberman-agent-runtime-manager >/dev/null; }
+  start_runtime()   { docker start doberman-agent-runtime-manager >/dev/null; }
 else
   echo "runtime-manager 既不是 active 的 systemd 单元，也没有同名容器——先确认这台机器装了运行时层" >&2
   exit 2
@@ -132,10 +132,10 @@ entry_ok() {
 platform_ok() { curl -sf -o /dev/null --max-time 10 "$PLATFORM_URL"; }
 
 app_exec_body() {
-  # 按标签查，不按名字前缀：名字是 bisheng-app-{slug}-{version8}-g{generation}，
-  # 拿 `^bisheng-app-foo` 去匹配会连 slug 为 `foo-bar` 的应用一起捞上来，
+  # 按标签查，不按名字前缀：名字是 doberman-agent-app-{slug}-{version8}-g{generation}，
+  # 拿 `^doberman-agent-app-foo` 去匹配会连 slug 为 `foo-bar` 的应用一起捞上来，
   # 然后这个脚本就会去杀一个不相干的应用。重建会换名字，所以每次重新查。
-  docker ps --filter "label=bisheng.app.slug=${SLUG}" --format '{{.Names}}' | head -1
+  docker ps --filter "label=doberman-agent.app.slug=${SLUG}" --format '{{.Names}}' | head -1
 }
 
 echo -e "${BOLD}形态=${FORM}  入口=${ENTRY}  恢复预算=${RECOVERY_BUDGET_SECONDS}s${RESET}"

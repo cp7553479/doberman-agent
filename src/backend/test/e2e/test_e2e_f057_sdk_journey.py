@@ -12,9 +12,9 @@ skip):
 
 1. The SDK wheel is staged in the image — ``GET /api/v1/dev-toolkit/versions``
    answers a non-null ``data.sdk`` section (F057 T029) and
-   ``/api/v1/dev-toolkit/simple/bisheng-sdk/`` lists it (T027).
+   ``/api/v1/dev-toolkit/simple/doberman-agent-sdk/`` lists it (T027).
 2. ``app_runtime.obo_secret`` is configured **and differs from** ``jwt_secret``.
-   Otherwise app-proxy issues no ``X-BiSheng-Access-Token`` (it only warns once,
+   Otherwise app-proxy issues no ``X-Doberman-Agent-Access-Token`` (it only warns once,
    ``entry_authz_service.py``), every ``/ask`` answers "visitor credential
    missing", and the journey measures the deployment's configuration rather than
    the SDK. ``test_journey_03b`` fails loudly on exactly that, by design.
@@ -34,8 +34,8 @@ skip):
 
 Still blocked, and therefore **not** covered here (F057 design §6.2):
 
-* the local ``bisheng dev`` half of AC-14 — ``dev`` mints its own ``bsdev.``
-  handle that the platform cannot verify, and injects no ``BISHENG_APP_TOKEN``
+* the local ``doberman-agent dev`` half of AC-14 — ``dev`` mints its own ``bsdev.``
+  handle that the platform cannot verify, and injects no ``DOBERMAN_AGENT_APP_TOKEN``
   (blocker ③), so a local run cannot reach retrieve at all;
 * omitting ``knowledge_base_ids`` (contract ③) — ``RetrieveReq`` still requires
   at least one id, so the sample names them explicitly.
@@ -72,7 +72,7 @@ SKIP_REASON = (
     "set F057_E2E=1 only against a deployment where ALL of these hold: "
     "(1) the SDK wheel is staged — /api/v1/dev-toolkit/versions answers a non-null sdk section; "
     "(2) app_runtime.obo_secret is set and differs from jwt_secret, so app-proxy injects "
-    "X-BiSheng-Access-Token; "
+    "X-Doberman-Agent-Access-Token; "
     "(3) platform-wiring's example-sdk is deployed as two online applications declaring the same "
     "knowledge base (ids in F057_E2E_APP_ID / F057_E2E_APP_B_ID); "
     "(4) two non-admin accounts with different visible scopes in that knowledge base; "
@@ -88,33 +88,33 @@ pytestmark = pytest.mark.skipif(not E2E_ENABLED, reason=SKIP_REASON)
 # this list and the source of truth is caught in-repo by the SDK's
 # ``test_contract_alignment.py``; here it is the deployment that is under test.
 INJECTED_HEADER_NAMES = (
-    "x-bisheng-user-id",
-    "x-bisheng-user-name",
-    "x-bisheng-tenant-id",
-    "x-bisheng-dept-id",
-    "x-bisheng-dept-name",
-    "x-bisheng-dept-path",
-    "x-bisheng-subject-kind",
-    "x-bisheng-app-id",
-    "x-bisheng-access-token",
-    "x-bisheng-request-id",
+    "x-doberman-agent-user-id",
+    "x-doberman-agent-user-name",
+    "x-doberman-agent-tenant-id",
+    "x-doberman-agent-dept-id",
+    "x-doberman-agent-dept-name",
+    "x-doberman-agent-dept-path",
+    "x-doberman-agent-subject-kind",
+    "x-doberman-agent-app-id",
+    "x-doberman-agent-access-token",
+    "x-doberman-agent-request-id",
 )
 
 # Of the ten, the ones that are always there. The three ``dept-*`` headers are
 # **omitted, not emitted empty**, when the visitor has no department
 # (``app_proxy/headers.py``: "Absent material is omitted... an app doing
-# ``if request.headers.get("X-BiSheng-Dept-Id"):`` must be able to tell 'no
+# ``if request.headers.get("X-Doberman-Agent-Dept-Id"):`` must be able to tell 'no
 # department' from 'empty department'"). Asserting all ten unconditionally would
 # fail on a perfectly healthy deployment whose test accounts sit outside any
 # department — which is the common shape after an SSO first login.
 ALWAYS_INJECTED_HEADER_NAMES = (
-    "x-bisheng-user-id",
-    "x-bisheng-user-name",
-    "x-bisheng-tenant-id",
-    "x-bisheng-subject-kind",
-    "x-bisheng-app-id",
-    "x-bisheng-access-token",
-    "x-bisheng-request-id",
+    "x-doberman-agent-user-id",
+    "x-doberman-agent-user-name",
+    "x-doberman-agent-tenant-id",
+    "x-doberman-agent-subject-kind",
+    "x-doberman-agent-app-id",
+    "x-doberman-agent-access-token",
+    "x-doberman-agent-request-id",
 )
 
 
@@ -256,7 +256,7 @@ class TestE2EF057SdkJourney:
         client: httpx.AsyncClient,
         tmp_path_factory: pytest.TempPathFactory,
     ) -> None:
-        """AC-34 (install half): pip resolves ``bisheng-sdk`` from the platform itself."""
+        """AC-34 (install half): pip resolves ``doberman-agent-sdk`` from the platform itself."""
 
         versions = assert_resp_200(await client.get(f"{API_BASE}/dev-toolkit/versions"))
         sdk = versions.get("sdk")
@@ -279,7 +279,7 @@ class TestE2EF057SdkJourney:
                 index_url,
                 "--trusted-host",
                 httpx.URL(API_ORIGIN).host,
-                "bisheng-sdk",
+                "doberman-agent-sdk",
             ],
             capture_output=True,
             text=True,
@@ -288,7 +288,7 @@ class TestE2EF057SdkJourney:
         assert completed.returncode == 0, completed.stderr[-2000:]
 
         printed = subprocess.run(
-            [str(python), "-c", "import bisheng_sdk; print(bisheng_sdk.__version__)"],
+            [str(python), "-c", "import doberman_agent_sdk; print(doberman_agent_sdk.__version__)"],
             capture_output=True,
             text=True,
             timeout=120,
@@ -343,7 +343,7 @@ class TestE2EF057SdkJourney:
         assert response.status_code == 200, response.text[:300]
         injected = {key.lower() for key in response.json()}
 
-        assert response.json().get("x-bisheng-access-token"), (
+        assert response.json().get("x-doberman-agent-access-token"), (
             "no visitor credential injected — set app_runtime.obo_secret to a value "
             "different from jwt_secret and restart the backend"
         )
@@ -544,7 +544,7 @@ class TestE2EF057SdkJourney:
         errors while the process is still alive after the application went
         offline — cannot be observed from out here: stopping the application
         takes the container with it. That half is covered by the SDK's own unit
-        tests (``src/bisheng-sdk/tests/``), which drive the refusal envelopes
+        tests (``src/doberman-agent-sdk/tests/``), which drive the refusal envelopes
         directly.
         """
 

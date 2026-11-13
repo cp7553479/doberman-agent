@@ -39,8 +39,8 @@ and only requires deleting the line.
 import ast
 import os
 
-_BISHENG_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "bisheng"),
+_DOBERMAN_AGENT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "doberman_agent"),
 )
 _SKIP_DIR_FRAGMENTS = (
     f"{os.sep}test{os.sep}",
@@ -192,7 +192,7 @@ def _scan_file(path: str) -> list[tuple[str, int, str]]:
         if "tenant_id" in block_src:
             continue
 
-        rel = os.path.relpath(path, _BISHENG_ROOT)
+        rel = os.path.relpath(path, _DOBERMAN_AGENT_ROOT)
         offenders.append(
             (
                 rel,
@@ -207,7 +207,7 @@ def _scan_file(path: str) -> list[tuple[str, int, str]]:
 def test_bypass_tenant_filter_must_carry_tenant_id_predicate():
     """Naked ``select(<TenantAware>)`` inside ``bypass_tenant_filter`` blocks."""
     offenders: list[tuple[str, int, str]] = []
-    for root, dirs, files in os.walk(_BISHENG_ROOT):
+    for root, dirs, files in os.walk(_DOBERMAN_AGENT_ROOT):
         if any(frag in (root + os.sep) for frag in _SKIP_DIR_FRAGMENTS):
             dirs[:] = []
             continue
@@ -232,7 +232,7 @@ def test_bypass_tenant_filter_must_carry_tenant_id_predicate():
             "clause, or — if the cross-tenant read is intentional — append "
             "an ALLOWLIST entry in this file with a one-line reason.\n\n"
             "New violations:\n"
-            + "\n".join(f"  - bisheng/{path}:{ln} — {lookup[(path, ln)]}" for path, ln in new_violations)
+            + "\n".join(f"  - doberman_agent/{path}:{ln} — {lookup[(path, ln)]}" for path, ln in new_violations)
         )
     if stale_allowlist:
         msgs.append(

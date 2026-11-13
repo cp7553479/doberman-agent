@@ -19,7 +19,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastapi import HTTPException
 
-_MODULE = "bisheng.user.api.user"
+_MODULE = "doberman_agent.user.api.user"
 
 
 class _LoginUser:
@@ -30,7 +30,7 @@ class _LoginUser:
 
 
 async def _list(*, dept_scope, tenant_scope, admin_groups=()):
-    from bisheng.user.api.user import list_user
+    from doberman_agent.user.api.user import list_user
 
     with (
         patch(f"{_MODULE}.UserGroupDao") as group_dao,

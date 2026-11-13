@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, SearchInput, StateView } from '@bisheng/ui';
+import { Button, SearchInput, StateView } from '@doberman-agent/ui';
 import { SkillDetails } from '~/components/Skills/SkillDetails';
 import { useSkillCenter } from '~/components/Skills/useSkillCenter';
 import { matchesSkillSearch } from '~/components/Skills/localization';

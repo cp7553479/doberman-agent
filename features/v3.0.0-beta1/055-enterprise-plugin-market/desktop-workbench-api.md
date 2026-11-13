@@ -4,7 +4,7 @@
 
 ## 1. 接口与身份
 
-使用现有企业登录流程取得的 **DSH access token**，向同一个 BiSheng 公开地址发送请求：
+使用现有企业登录流程取得的 **DSH access token**，向同一个 doberman-agent 公开地址发送请求：
 
 ```http
 Authorization: Bearer <DSH access token>
@@ -17,14 +17,14 @@ Authorization: Bearer <DSH access token>
 | `GET /api/v1/dsh/market/workbenches/{id}/versions/{version_id}/artifact` | 下载当前版本原始 `.tgz` | 当前分支已实现 |
 | `GET /api/v1/dsh/market/capabilities` | 现有安装开关与市场能力 | 已实现，见[安装开关接入说明](desktop-install-policy-api.md) |
 
-前三个接口从已验证身份确定租户，不接收 `tenant_id`、`user_id` 或 `X-DSH-Market-Tenant` 来选择租户。不要使用管理员 Web 凭证、refresh token 或 MinIO 地址；Desktop 凭证不能调用 `/admin/*`。登录、账号、租户或 BiSheng 地址切换后，丢弃旧列表、详情和已下载的文件，并重新请求。
+前三个接口从已验证身份确定租户，不接收 `tenant_id`、`user_id` 或 `X-DSH-Market-Tenant` 来选择租户。不要使用管理员 Web 凭证、refresh token 或 MinIO 地址；Desktop 凭证不能调用 `/admin/*`。登录、账号、租户或 doberman-agent 地址切换后，丢弃旧列表、详情和已下载的文件，并重新请求。
 
-列表与详情成功时使用 BiSheng JSON 信封 `{status_code,status_message,data}`；须同时检查 HTTP 成功、`status_code === 200` 和字段类型。列表分页从 `page=1` 开始，`size` 范围为 1–100，默认建议 20。响应头为 `Cache-Control: no-store`；不要跨用户或租户复用缓存。
+列表与详情成功时使用 doberman-agent JSON 信封 `{status_code,status_message,data}`；须同时检查 HTTP 成功、`status_code === 200` 和字段类型。列表分页从 `page=1` 开始，`size` 范围为 1–100，默认建议 20。响应头为 `Cache-Control: no-store`；不要跨用户或租户复用缓存。
 
 ## 2. 查询列表
 
 ```http
-GET {BiSheng公开地址}/api/v1/dsh/market/workbenches?page=1&size=20
+GET {doberman-agent公开地址}/api/v1/dsh/market/workbenches?page=1&size=20
 Authorization: Bearer <DSH access token>
 ```
 
@@ -62,7 +62,7 @@ Authorization: Bearer <DSH access token>
 ## 3. 查询详情
 
 ```http
-GET {BiSheng公开地址}/api/v1/dsh/market/workbenches/0123456789abcdef0123456789abcdef
+GET {doberman-agent公开地址}/api/v1/dsh/market/workbenches/0123456789abcdef0123456789abcdef
 Authorization: Bearer <DSH access token>
 ```
 
@@ -102,10 +102,10 @@ Authorization: Bearer <DSH access token>
 
 ## 4. 下载原始包
 
-使用详情中的 `artifact_url`，只向当前 BiSheng 地址的同源 API 路径发请求，并携带相同的 DSH access token。不得把 token 发送到响应提供的其他域名；不得根据 `package_name`、`workbench_key` 或版本号自行猜测文件地址。
+使用详情中的 `artifact_url`，只向当前 doberman-agent 地址的同源 API 路径发请求，并携带相同的 DSH access token。不得把 token 发送到响应提供的其他域名；不得根据 `package_name`、`workbench_key` 或版本号自行猜测文件地址。
 
 ```http
-GET {BiSheng公开地址}/api/v1/dsh/market/workbenches/{id}/versions/{version_id}/artifact
+GET {doberman-agent公开地址}/api/v1/dsh/market/workbenches/{id}/versions/{version_id}/artifact
 Authorization: Bearer <DSH access token>
 ```
 
@@ -136,6 +136,6 @@ Authorization: Bearer <DSH access token>
 - 用两个样包分别看到仓库身份与旧身份；旧包 `workbench_key=null`，下载仍保持原始字节。
 - 分页、空列表、无效 ID、切换当前版本、跨租户访问均按上述契约处理。
 - 下载的字节数与 SHA-256 同详情一致；损坏、缺失和中途切换版本时不保留文件。
-- 切换 BiSheng 地址、账号或租户后重新请求，不复用旧目录、详情或下载文件。
+- 切换 doberman-agent 地址、账号或租户后重新请求，不复用旧目录、详情或下载文件。
 
 样包结构及校验结论见[工作台压缩包校验规则](workbench-package-validation.md)。目标环境部署后，应以实际 API 响应补充联调证据。

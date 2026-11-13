@@ -1,8 +1,8 @@
 # 后端领域模块总览
 
-BiSheng 后端采用 DDD（领域驱动设计）架构，将业务逻辑拆分为 15+ 自治领域模块，每个模块拥有独立的 API 层、领域服务层和数据访问层。模块间通过明确的接口交互，基础设施层（`core/`）提供数据库、缓存、对象存储、向量库等共享能力。
+doberman-agent 后端采用 DDD（领域驱动设计）架构，将业务逻辑拆分为 15+ 自治领域模块，每个模块拥有独立的 API 层、领域服务层和数据访问层。模块间通过明确的接口交互，基础设施层（`core/`）提供数据库、缓存、对象存储、向量库等共享能力。
 
-所有后端代码位于 `src/backend/bisheng/` 目录下。
+所有后端代码位于 `src/backend/doberman_agent/` 目录下。
 
 ## 模块清单
 
@@ -114,7 +114,7 @@ FastAPI Router (api/)
 `settings.py` 基于 Pydantic Settings，`Settings` 类包含约 40 个配置字段。配置加载优先级：
 
 ```
-YAML 文件 (config.yaml) --> 环境变量 (bisheng_*) --> 数据库配置合并 --> Redis 缓存 (100s TTL)
+YAML 文件 (config.yaml) --> 环境变量 (doberman-agent_*) --> 数据库配置合并 --> Redis 缓存 (100s TTL)
 ```
 
 支持 `!env ${VAR}` 语法从环境变量注入配置值。
@@ -167,11 +167,11 @@ SQLAlchemy 引擎工厂，支持同步和异步双模式会话。连接池默认
 HTTP 客户端管理和外部服务集成：
 
 - `http_client/` -- `HttpClientManager`，统一的 HTTP 客户端（连接池、超时、重试）
-- `bisheng_information_client/` -- 情报中心服务客户端
+- `doberman_agent_information_client/` -- 情报中心服务客户端
 
-## bisheng_langchain 扩展包
+## doberman_agent_langchain 扩展包
 
-独立的 LangChain 扩展包，位于 `src/backend/bisheng_langchain/`，作为单独的 Python 包安装，被主应用 `bisheng` 导入使用。
+独立的 LangChain 扩展包，位于 `src/backend/doberman_agent_langchain/`，作为单独的 Python 包安装，被主应用 `doberman-agent` 导入使用。
 
 包含以下子模块：
 

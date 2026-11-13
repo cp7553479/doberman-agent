@@ -35,7 +35,7 @@ vi.mock("qrcode.react", () => ({
   ),
 }))
 
-const ENTRY_URL = "https://bisheng.example.com/apps/demo-slug/"
+const ENTRY_URL = "https://doberman-agent.example.com/apps/demo-slug/"
 const browserEntryUrl = () => `${window.location.origin}/apps/demo-slug/`
 
 function buildApp(overrides: Partial<HostedAppDetail> = {}): HostedAppDetail {

@@ -121,7 +121,7 @@ Department.mounted_tenant_id INT UNSIGNED NULL  -- FK → tenant.id
 
 ### 5.4 audit_log 表扩展（2026-04-20 新增；**与 v2.5.0 AuditLog 兼容扩展**）
 
-**背景**：v2.5.0 已存在 `audit_log` 表（`src/backend/bisheng/database/models/audit_log.py`），字段：`operator_id / operator_name / group_ids / system_id / event_type / object_type / object_id / object_name / note / ip_address / create_time / update_time`。
+**背景**：v2.5.0 已存在 `audit_log` 表（`src/backend/doberman_agent/database/models/audit_log.py`），字段：`operator_id / operator_name / group_ids / system_id / event_type / object_type / object_id / object_name / note / ip_address / create_time / update_time`。
 
 **方案**：**ALTER 现表补充新字段**，旧字段保留供 v2.5.0 遗留代码兼容；新代码统一用新字段（`action / target_type / target_id / tenant_id / operator_tenant_id / reason / metadata`）。避免新建 `audit_log_v2` 导致两套审计系统分裂。
 
@@ -227,7 +227,7 @@ class DepartmentDeletionHandler:
 
 ### 5.4.3 TenantDao 扩展方法（F011 新增；供下游 Feature 调用）
 
-下列三个 DAO 方法由本 Feature 在 `src/backend/bisheng/tenant/domain/models/tenant.py` 新增，所有在依赖清单中声明使用它们的下游 Feature 必须等待本 feature 落地后才能实施：
+下列三个 DAO 方法由本 Feature 在 `src/backend/doberman_agent/tenant/domain/models/tenant.py` 新增，所有在依赖清单中声明使用它们的下游 Feature 必须等待本 feature 落地后才能实施：
 
 ```python
 class TenantDao:
@@ -330,7 +330,7 @@ class TenantDao:
 | 29 | share_link | share_link | N/A | **不过滤** | ☐ 分享链接公开访问不受 tenant_id 限制（PRD v1 决策） |
 | 30 | llm_server / llm_model | llm | ✓ 或 0 | `LLMDao.get_list` | ☐ tenant_id=0 表示系统级共享 |
 
-**注入实现**：`src/backend/bisheng/core/database/tenant_filter.py` 新增 SQLAlchemy event listener，按 `current_tenant_id` ContextVar 自动注入 IN 列表。
+**注入实现**：`src/backend/doberman_agent/core/database/tenant_filter.py` 新增 SQLAlchemy event listener，按 `current_tenant_id` ContextVar 自动注入 IN 列表。
 
 ---
 
@@ -405,7 +405,7 @@ class TenantDao:
 
 ## 9. 错误码分配
 
-> **模块编码 220**（tenant_tree）；原 spec 草稿声明 `MMM=190`，与 F004 permission 模块已上线的 19000~19005 直接冲突，于 2026-04-19 重新分配到 **220**（release-contract 表 3 同步修订）。实施代码见 `src/backend/bisheng/common/errcode/tenant_tree.py`。
+> **模块编码 220**（tenant_tree）；原 spec 草稿声明 `MMM=190`，与 F004 permission 模块已上线的 19000~19005 直接冲突，于 2026-04-19 重新分配到 **220**（release-contract 表 3 同步修订）。实施代码见 `src/backend/doberman_agent/common/errcode/tenant_tree.py`。
 
 - **MMM=220** (tenant_tree 模块)
 - 22001: 禁止嵌套挂载（MVP 锁 2 层）

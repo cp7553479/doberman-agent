@@ -11,7 +11,7 @@ if still truncating it hands the response off to the L3/L4 backstops.
 from langchain.agents.middleware.types import ModelRequest, ModelResponse
 from langchain_core.messages import AIMessage, HumanMessage
 
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _TRUNCATION_NUDGE,
     LinsightModelResilienceMiddleware,
     _is_truncated_tool_call,

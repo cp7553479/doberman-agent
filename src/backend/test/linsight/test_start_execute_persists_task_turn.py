@@ -19,8 +19,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.api.endpoints import linsight as endpoint
-from bisheng.linsight.domain.models.linsight_session_version import (
+from doberman_agent.linsight.api.endpoints import linsight as endpoint
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersion,
     SessionVersionStatusEnum,
 )
@@ -59,7 +59,7 @@ def patched_endpoint(monkeypatch):
     monkeypatch.setattr(endpoint.linsight_execute_utils, "get_redis_client", AsyncMock(return_value=SimpleNamespace()))
 
     # LinsightQueue and encode_queue_item are imported function-locally from
-    # bisheng.linsight.worker; inject a stub module so the heavy worker import
+    # doberman_agent.linsight.worker; inject a stub module so the heavy worker import
     # chain is never loaded.
     #
     # ⚠️ The stub must export everything the endpoint imports. ``encode_queue_item``
@@ -67,14 +67,14 @@ def patched_endpoint(monkeypatch):
     # not here, and since the import sits OUTSIDE the endpoint's try/except the
     # resulting ImportError propagated and broke both enqueue tests. Asserting on
     # the encoded payload below keeps the stub honest if the signature moves again.
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     queue_stub = SimpleNamespace(put=AsyncMock())
     fake_worker.LinsightQueue = lambda *a, **k: queue_stub
     fake_worker.encode_queue_item = lambda session_version_id, **kwargs: {
         "session_version_id": session_version_id,
         **kwargs,
     }
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
     captured["queue"] = queue_stub
 
     async def _fake_persist(session_model):

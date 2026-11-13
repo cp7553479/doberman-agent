@@ -1,0 +1,47 @@
+# Optional external gateway; supply a compatible image and license explicitly.
+services:
+  gateway-db-init:
+    profiles: [gateway]
+    image: ${MYSQL_IMAGE:?set MYSQL_IMAGE in docker/.env (see .env.example)}
+    environment:
+      MYSQL_PWD: "1234"
+      GATEWAY_DATABASE_PASSWORD: ${DOBERMAN_AGENT_GATEWAY_DB_PASSWORD:-}
+    volumes:
+      - ./gateway/init.sql:/schema.sql:ro
+      - ./gateway/init.sh:/init.sh:ro
+    entrypoint: ["bash", "/init.sh"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  gateway:
+    profiles: [gateway]
+    image: ${DOBERMAN_AGENT_GATEWAY_IMAGE:?run bash docker/install.sh to create docker/.env}
+    container_name: doberman-agent-gateway
+    environment:
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      # install.sh validates these values only when the gateway profile is enabled.
+      DOBERMAN_AGENT_LICENSE: ${DOBERMAN_AGENT_GATEWAY_LICENSE:-}
+      DOBERMAN_AGENT_GATEWAY_HMAC_SECRET: ${DOBERMAN_AGENT_GATEWAY_HMAC_SECRET:-}
+      DOBERMAN_AGENT_PUBLIC_URL: ${DOBERMAN_AGENT_PUBLIC_URL:-}
+      GATEWAY_DATABASE_PASSWORD: ${DOBERMAN_AGENT_GATEWAY_DB_PASSWORD:-}
+      SPRING_CONFIG_LOCATION: file:/application.yml
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/gateway/config/application.yml:/application.yml:ro
+      # A real user-provided file is required even with direct Compose commands.
+      - type: bind
+        source: ${DOBERMAN_AGENT_GATEWAY_LICENSE_FILE:-./gateway/license.required}
+        target: /run/secrets/doberman-agent-license
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      gateway-db-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    restart: on-failure

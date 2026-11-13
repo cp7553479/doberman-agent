@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 // src/features/chat-config/components/IconUploadSection.tsx
 
 
@@ -53,7 +53,7 @@ export function IconUploadSection({ label, image, onUpload }: IconUploadSectionP
   return (
     <div>
       <div className="flex items-center gap-4">
-        <Label className="bisheng-label">{label}</Label>
+        <Label className="doberman_agent-label">{label}</Label>
       </div>
       <Avator
         value={withBrandBaseUrl(image)}

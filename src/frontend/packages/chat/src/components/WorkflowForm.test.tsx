@@ -23,7 +23,7 @@ it('does not submit readonly forms or submit twice while waiting', () => {
 it('does not inherit the platform legacy label style', () => {
   const fields = normalizeFormFields([{ key: 'q', value: 'Question', type: 'text' }]);
   const { container } = render(<WorkflowForm fields={fields} canExecute submitLabel="Start" requiredMessage={label => label} onSubmit={vi.fn()} />);
-  expect(container.querySelector('.bisheng-label')).toBeNull();
+  expect(container.querySelector('.doberman_agent-label')).toBeNull();
 });
 it('keeps file upload paths and display names separate through the shared field port', () => {
   const onSubmit = vi.fn();

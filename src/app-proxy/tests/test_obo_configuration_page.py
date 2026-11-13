@@ -39,7 +39,7 @@ async def test_prior_allow_is_rechecked_after_configuration_invalidates(preview)
         calls.append(request)
         return httpx.Response(
             200,
-            json={"decision": "allow", "headers": {"X-BiSheng-User-Id": "7"}}
+            json={"decision": "allow", "headers": {"X-Doberman-Agent-User-Id": "7"}}
             if len(calls) == 1
             else {"decision": "unavailable", "reason": "identity_config_incomplete"},
         )

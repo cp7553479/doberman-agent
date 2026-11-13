@@ -75,10 +75,10 @@ def bootstrap():
     from celery import Celery, signals
 
     # Skip unrelated application-startup imports, retaining the real worker package path.
-    package = ModuleType("bisheng.worker")
-    package.__path__ = [str(Path(__file__).resolve().parents[2] / "bisheng/worker")]
-    sys.modules["bisheng.worker"] = package
-    context_signals = importlib.import_module("bisheng.worker.tenant_context")
+    package = ModuleType("doberman_agent.worker")
+    package.__path__ = [str(Path(__file__).resolve().parents[2] / "doberman_agent/worker")]
+    sys.modules["doberman_agent.worker"] = package
+    context_signals = importlib.import_module("doberman_agent.worker.tenant_context")
     assert Path(Celery.__module__.replace(".", "/")).parts[0] == "celery"
     assert signals.task_prerun.__class__.__module__ == "celery.utils.dispatch.signal"
     app = Celery("f111-content-safety", broker="memory://", backend="cache+memory://", set_as_current=False)
@@ -87,7 +87,7 @@ def bootstrap():
 
 
 def snapshot():
-    from bisheng.core.context import tenant as context
+    from doberman_agent.core.context import tenant as context
 
     return (
         context.get_current_tenant_id(),
@@ -98,7 +98,7 @@ def snapshot():
 
 
 def signal_control():
-    from bisheng.core.context import tenant as context
+    from doberman_agent.core.context import tenant as context
 
     app, _signals, _handlers = bootstrap()
     observed = []
@@ -128,11 +128,11 @@ class Runtime:
         from sqlalchemy import create_engine
         from sqlmodel import Session
 
-        from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState
+        from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState
         from test.dsh.content_safety_fixtures import SafetyClock, safety_database, safety_event_factory
 
         self.app, self.signals, _handlers = bootstrap()
-        worker = importlib.import_module("bisheng.worker.dsh.content_safety")
+        worker = importlib.import_module("doberman_agent.worker.dsh.content_safety")
         self.clock = SafetyClock()
         self.make = safety_event_factory(self.clock)
         self.engine = create_engine("sqlite:///" + str(database), connect_args={"check_same_thread": False})
@@ -157,7 +157,7 @@ class Runtime:
             with Session(self.engine, expire_on_commit=False) as session, session.begin():
                 yield repository_type(session)
 
-        composition = importlib.import_module("bisheng.dsh.operations_runtime")
+        composition = importlib.import_module("doberman_agent.dsh.operations_runtime")
         composition.repository_scope = repository_scope
         self.project, self.scan = worker.register_content_safety_tasks(self.app)
         self.direct = {task.name: task.apply_async for task in (self.project, self.scan)}
@@ -167,7 +167,7 @@ class Runtime:
             )
 
         def before_task(sender=None, **_kwargs):
-            from bisheng.core.context.tenant import current_tenant_id
+            from doberman_agent.core.context.tenant import current_tenant_id
 
             if sender.name in self.direct:
                 self.preruns.append(
@@ -195,9 +195,9 @@ class Runtime:
         raise AssertionError("Finite fixture did not converge within bounded task units")
 
     def seed(self, *, count=1, tenant=101, status="active"):
-        from bisheng.database.models.tenant import Tenant
-        from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-        from bisheng.dsh.domain.repositories import content_safety_projection
+        from doberman_agent.database.models.tenant import Tenant
+        from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+        from doberman_agent.dsh.domain.repositories import content_safety_projection
         from test.dsh.content_safety_fixtures import SafetyIdentity
         from test.dsh.test_content_safety_merge import committed_merge
         from test.dsh.test_content_safety_repository import tenant_session
@@ -219,8 +219,8 @@ class Runtime:
         return rows
 
     def ready(self, tenant=101):
-        from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-        from bisheng.dsh.domain.services.profile import profile_scope
+        from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+        from doberman_agent.dsh.domain.services.profile import profile_scope
         from test.dsh.test_content_safety_repository import tenant_session
 
         before = snapshot()
@@ -233,10 +233,10 @@ class Runtime:
     def counts(self, tenant=101):
         from sqlmodel import select
 
-        from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-        from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-        from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-        from bisheng.dsh.domain.services.profile import profile_scope
+        from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+        from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+        from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+        from doberman_agent.dsh.domain.services.profile import profile_scope
         from test.dsh.test_content_safety_repository import tenant_session
 
         before = snapshot()
@@ -261,7 +261,7 @@ class Runtime:
 
 
 def check_registration(runtime):
-    from bisheng.worker.dsh.registry import register_dsh_tasks
+    from doberman_agent.worker.dsh.registry import register_dsh_tasks
 
     register_dsh_tasks(runtime.app)
     for name in ("dsh.project_content_safety", "dsh.scan_content_safety"):
@@ -271,7 +271,7 @@ def check_registration(runtime):
 
 
 def check_headers(runtime, scenario):
-    from bisheng.core.context import tenant as context
+    from doberman_agent.core.context import tenant as context
 
     values = {
         "missing": (101, None),
@@ -293,7 +293,7 @@ def check_headers(runtime, scenario):
 
 
 def check_scope(runtime, *, failure=False):
-    from bisheng.core.context import tenant as context
+    from doberman_agent.core.context import tenant as context
 
     runtime.seed()
     runtime.seed(tenant=202)
@@ -361,7 +361,7 @@ def check_disabled(runtime, status):
 def check_bounded_scan(runtime):
     from uuid import uuid4
 
-    from bisheng.database.models.tenant import Tenant
+    from doberman_agent.database.models.tenant import Tenant
     from test.dsh.test_content_safety_repository import tenant_session
 
     Tenant.__table__.create(runtime.engine, checkfirst=True)
@@ -390,7 +390,7 @@ def check_bounded_scan(runtime):
 def check_lease_recovery(runtime):
     from datetime import UTC, datetime, timedelta
 
-    from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+    from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
     from test.dsh.test_content_safety_repository import tenant_session
 
     row = runtime.seed()[0]
@@ -414,10 +414,10 @@ def check_lease_recovery(runtime):
 
 
 def check_late_hit(runtime):
-    from bisheng.database.models.tenant import Tenant
-    from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-    from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-    from bisheng.dsh.domain.repositories import content_safety_projection
+    from doberman_agent.database.models.tenant import Tenant
+    from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+    from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+    from doberman_agent.dsh.domain.repositories import content_safety_projection
     from test.dsh.content_safety_fixtures import native_audit_factory
     from test.dsh.test_content_safety_groups import native
     from test.dsh.test_content_safety_merge import committed_merge

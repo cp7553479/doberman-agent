@@ -10,18 +10,18 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.api.v1.schemas import UsedAppPin
-from bisheng.common.errcode.workstation import UsedAppNotFoundError, UsedAppNotOnlineError
-from bisheng.database.models import flow as flow_mod
-from bisheng.database.models import user_link as link_mod
-from bisheng.database.models.assistant import Assistant
-from bisheng.database.models.flow import Flow
-from bisheng.workstation.api.endpoints import apps as apps_mod
+from doberman_agent.api.v1.schemas import UsedAppPin
+from doberman_agent.common.errcode.workstation import UsedAppNotFoundError, UsedAppNotOnlineError
+from doberman_agent.database.models import flow as flow_mod
+from doberman_agent.database.models import user_link as link_mod
+from doberman_agent.database.models.assistant import Assistant
+from doberman_agent.database.models.flow import Flow
+from doberman_agent.workstation.api.endpoints import apps as apps_mod
 
 
 @pytest.fixture
 async def pin_store(tmp_path, monkeypatch):
-    from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
 
     tenant_token = set_current_tenant_id(1)
     database = tmp_path / "pins.sqlite"

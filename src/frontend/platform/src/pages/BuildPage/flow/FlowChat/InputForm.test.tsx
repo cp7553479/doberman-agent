@@ -13,8 +13,8 @@ it('retains shared chat layout and submits upstream single/multiple Select value
         { key: 'tags', value: 'Tags', type: 'select', multiple: true, options: [{ text: 'Alpha' }, { text: 'Beta' }] },
     ] }} />);
     expect(screen.getByText('Workflow')).toBeInTheDocument();
-    expect(container.querySelector('.bisheng-chat-form')).toBeTruthy();
-    expect(container.querySelector('.bisheng-label')).toBeNull();
+    expect(container.querySelector('.doberman_agent-chat-form')).toBeTruthy();
+    expect(container.querySelector('.doberman_agent-label')).toBeNull();
     fireEvent.click(screen.getByRole('combobox', { name: 'Mode' }));
     fireEvent.click(screen.getByRole('option', { name: 'Second' }));
     fireEvent.click(screen.getByRole('combobox', { name: 'Tags' }));

@@ -66,7 +66,7 @@ CLI、接收保存、审批快照、正式版本查询、两个 SPA 展示和下
 ## 4. 交付安装件
 
 - CLI：`3.0.0.post1`，`min_compatible=3.0.0`，`platform.version=3.0.0`。
-- wheel：`bisheng_cli-3.0.0.post1-py3-none-any.whl`。
+- wheel：`doberman_agent_cli-3.0.0.post1-py3-none-any.whl`。
 - SHA-256：`6a128d56c2bdae6702f0239aa2995920539be121b717561f1e7f4914b8ca4b67`。
 - 同时交付模型字段和幂等 migration `f112_release_notes`；原版本 `vibe_merge_release_20261025` 为父 revision。
 - 升级必须先增加两列，并让 API 与 Celery 采用同一份代码，再开放带说明发布。仅回滚代码保留 nullable 列；执行 downgrade 会删除说明，须单独备份并确认。
@@ -75,7 +75,7 @@ CLI、接收保存、审批快照、正式版本查询、两个 SPA 展示和下
 
 已生成 opt-in 用例 `src/backend/test/e2e/test_e2e_vibe_release_notes.py`，配套 [操作清单](./e2e-checklist.md)。需要安装本提交的专用环境、专用 e2e-f112 应用、普通 owner/非 owner/跨租户账号和已指派审批人；仅在内存提供令牌。一次提交→审批决定→版本读取，不跑全量。
 
-116 仅只读盘点：后端当前使用 `cr.dataelem.com/dataelement/bisheng-backend:feat_3.0.0`，已有应用运行，尚未包含本次 F112。不能将本地验证当作该部署已支持说明。本轮未修改远端，需确认合适的测试更新窗口后执行真实 E2E，再完成 T028 与 T029 的正式 L2。
+116 仅只读盘点：后端当前使用 `cr.dataelem.com/cp7553479/doberman-agent-backend:feat_3.0.0`，已有应用运行，尚未包含本次 F112。不能将本地验证当作该部署已支持说明。本轮未修改远端，需确认合适的测试更新窗口后执行真实 E2E，再完成 T028 与 T029 的正式 L2。
 
 ## 6. 合并推送续办
 

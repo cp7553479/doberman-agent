@@ -8,14 +8,14 @@ import os
 import pytest
 from loguru import logger
 
-from bisheng.common.models.config import ConfigKeyEnum
-from bisheng.common.services.config_service import (
+from doberman_agent.common.models.config import ConfigKeyEnum
+from doberman_agent.common.services.config_service import (
     SANDBOX_ENDPOINT_CACHE_KEY,
     SANDBOX_ENDPOINT_CACHE_TTL,
     ConfigService,
     write_sandbox_endpoint_cache,
 )
-from bisheng.core.config.settings import SandboxConf, Settings, encrypt_token
+from doberman_agent.core.config.settings import SandboxConf, Settings, encrypt_token
 
 _UNREADABLE = "sandbox endpoint config unreadable; using deployment config"
 _ENV_PREFIX = "BS_SANDBOX_CONF__"
@@ -87,7 +87,7 @@ def deployment() -> _Holder:
 @pytest.fixture
 def redis(monkeypatch: pytest.MonkeyPatch) -> FakeRedis:
     client = FakeRedis()
-    monkeypatch.setattr("bisheng.common.services.config_service.get_redis_client_sync", lambda: client)
+    monkeypatch.setattr("doberman_agent.common.services.config_service.get_redis_client_sync", lambda: client)
     return client
 
 
@@ -102,7 +102,7 @@ def dao(monkeypatch: pytest.MonkeyPatch) -> dict:
             raise holder["error"]
         return holder["row"]
 
-    monkeypatch.setattr("bisheng.common.services.config_service.ConfigDao.get_config", get_config)
+    monkeypatch.setattr("doberman_agent.common.services.config_service.ConfigDao.get_config", get_config)
     return holder
 
 

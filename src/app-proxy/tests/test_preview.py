@@ -3,7 +3,7 @@
 Three properties, and the first is the reason this file exists at all:
 
 * **It is the same strip / inject code, not a second copy.** The assertions go
-  through the real upstream: the forged ``X_BiSheng_User_Id`` is gone, the
+  through the real upstream: the forged ``X_Doberman_Agent_User_Id`` is gone, the
   platform session cookie is gone, and the ten identity headers plus
   ``X-Forwarded-Prefix`` arrive — exactly as on ``/apps/{slug}``. A preview path
   that grew its own header handling is how ``X_Forwarded_User`` walked past
@@ -132,16 +132,16 @@ def test_forged_platform_headers_are_stripped(logged_in, preview_ready, echo_ups
         f"{BASE}/",
         headers={
             **NAVIGATE_HEADERS,
-            "X_BiSheng_User_Id": "1",
-            "X-BiSheng-Tenant-Id": "999",
-            "X-BiSheng-Subject-Kind": "service_account",
+            "X_Doberman_Agent_User_Id": "1",
+            "X-Doberman-Agent-Tenant-Id": "999",
+            "X-Doberman-Agent-Subject-Kind": "service_account",
         },
     )
 
     sent = _headers(echo_upstream.requests[-1])
-    assert sent["x-bisheng-user-id"] == "42"
-    assert sent["x-bisheng-tenant-id"] == "1"
-    assert sent["x-bisheng-subject-kind"] == "human"
+    assert sent["x-doberman-agent-user-id"] == "42"
+    assert sent["x-doberman-agent-tenant-id"] == "1"
+    assert sent["x-doberman-agent-subject-kind"] == "human"
 
 
 def test_the_platform_session_cookie_never_reaches_the_preview(logged_in, preview_ready, echo_upstream):
@@ -158,9 +158,9 @@ def test_the_identity_material_and_the_obo_token_are_injected(logged_in, preview
     logged_in.get(f"{BASE}/", headers=NAVIGATE_HEADERS)
 
     sent = _headers(echo_upstream.requests[-1])
-    assert sent["x-bisheng-access-token"] == "obo.preview.token"
-    assert sent["x-bisheng-app-id"] == "app-0001"
-    assert sent["x-bisheng-request-id"]
+    assert sent["x-doberman-agent-access-token"] == "obo.preview.token"
+    assert sent["x-doberman-agent-app-id"] == "app-0001"
+    assert sent["x-doberman-agent-request-id"]
 
 
 def test_the_prefix_stripped_is_the_previews_own(logged_in, preview_ready, echo_upstream):

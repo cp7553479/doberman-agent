@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, PasswordInput, toast } from '@bisheng/ui';
+import { Button, Input, PasswordInput, toast } from '@doberman-agent/ui';
 
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
@@ -10,7 +10,7 @@ import { createUserApi } from "@/controllers/API/user";
 import { handleUiRequest } from "@/controllers/request";
 import { handleEncrypt,PWD_RULE } from "@/pages/LoginPage/utils";
 import { copyText } from "@/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -69,15 +69,15 @@ export default function CreateUser({ open, onClose, onSave }) {
             </DialogHeader>
             <div className="flex flex-col gap-4 mb-4">
                 <div>
-                    <Label htmlFor="user" className="bisheng-label">{t('system.username')}</Label>
+                    <Label htmlFor="user" className="doberman_agent-label">{t('system.username')}</Label>
                     <Input id="user" value={form.user_name} onChange={(e) => setForm({ ...form, user_name: e.target.value })} placeholder={t('system.usernamePlaceholder')} className={"h-[48px]"} />
                 </div>
                 <div>
-                    <Label htmlFor="password" className="bisheng-label">{t('system.initialPassword')}</Label>
+                    <Label htmlFor="password" className="doberman_agent-label">{t('system.initialPassword')}</Label>
                     <PasswordInput id="password" value={form.password} placeholder={t('system.passwordPlaceholder')} onChange={(e) => setForm({ ...form, password: e.target.value })} className={"h-[48px]"} revealLabel={t('sharedUi.showPassword')} hideLabel={t('sharedUi.hidePassword')} />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <Label className="bisheng-label">{t('system.userGroupRoleSelection')}</Label>
+                    <Label className="doberman_agent-label">{t('system.userGroupRoleSelection')}</Label>
                     <div className="max-h-[520px] overflow-y-auto flex flex-col gap-2">
                         {items.map((item, index) => <UserRoleItem key={item.key}
                             groupId={item.groupId + ''}

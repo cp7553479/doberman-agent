@@ -19,13 +19,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.database.dialect_helpers import UPDATE_TIME_SERVER_DEFAULT, is_update_time_server_default
+from doberman_agent.core.database.dialect_helpers import UPDATE_TIME_SERVER_DEFAULT, is_update_time_server_default
 
 # test/database/test_update_time_default_alignment.py -> parents[2] == src/backend
 _BACKEND_ROOT = Path(__file__).resolve().parents[2]
 _MIGRATION = (
     _BACKEND_ROOT
-    / "bisheng"
+    / "doberman_agent"
     / "core"
     / "database"
     / "alembic"
@@ -86,8 +86,8 @@ class TestModelDeclarations:
     """The model side is the source of truth the migration aligns towards."""
 
     def test_update_time_columns_declare_the_shared_default(self):
-        from bisheng.common.models.base import SQLModelSerializable
-        from bisheng.core.database.model_discovery import import_all_sqlmodel_models
+        from doberman_agent.common.models.base import SQLModelSerializable
+        from doberman_agent.core.database.model_discovery import import_all_sqlmodel_models
 
         import_all_sqlmodel_models()
         offenders = sorted(

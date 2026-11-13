@@ -1,4 +1,4 @@
-import { Dropdown, DropdownItem } from "@bisheng/ui";
+import { Dropdown, DropdownItem } from "@doberman-agent/ui";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useInlineRename } from "./useInlineRename";
 

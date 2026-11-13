@@ -1,4 +1,4 @@
-import { Button } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
 import type { HostedAppDetail } from "@/controllers/API/hostedApp"
 import { appActionState } from "../appActions"
 import { useTranslation } from "react-i18next"

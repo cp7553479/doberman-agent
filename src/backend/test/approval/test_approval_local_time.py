@@ -10,8 +10,8 @@ mixing the two is invisible until someone compares them.
 
 from pathlib import Path
 
-# `bisheng.approval` is a namespace package (no __init__), so it has no __file__.
-APPROVAL_ROOT = Path(__file__).resolve().parents[2] / "bisheng" / "approval"
+# `doberman_agent.approval` is a namespace package (no __init__), so it has no __file__.
+APPROVAL_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent" / "approval"
 
 
 def test_approval_module_never_writes_utc_naive_times():

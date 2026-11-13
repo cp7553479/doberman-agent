@@ -133,7 +133,7 @@ _ASK = (
 
 def _ask_proxy(path: str, method: str = "GET") -> str:
     out = subprocess.run(
-        ["docker", "exec", "bisheng-runtime-manager", "python", "-c", _ASK, f"{_PROXY_BASE}{path}", method],
+        ["docker", "exec", "doberman-agent-runtime-manager", "python", "-c", _ASK, f"{_PROXY_BASE}{path}", method],
         capture_output=True,
         text=True,
         check=False,

@@ -20,8 +20,8 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({
   t: (key: string) => key, i18n: { t: (key: string) => key, language: 'en' },
 }) }));
 vi.mock('@/components/bs-icons/user', () => ({ UserIcon: () => null }));
-vi.mock('bisheng-icons', async (original) => {
-  const actual = await original<typeof import('bisheng-icons')>();
+vi.mock('@doberman-agent/icons', async (original) => {
+  const actual = await original<typeof import('@doberman-agent/icons')>();
   return { ...actual, Outlined: { ...actual.Outlined, Setting: () => null } };
 });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
@@ -79,7 +79,7 @@ it('clears old templates and ignores a stale response when management tenant cha
     .mockResolvedValueOnce([{ id: 301, name: 'New tenant template', order_num: 1 }]);
   managementPage();
   await waitFor(() => expect(state.list).toHaveBeenCalledTimes(1));
-  act(() => { window.dispatchEvent(new Event('bisheng:management-scope-changed')); });
+  act(() => { window.dispatchEvent(new Event('doberman_agent:management-scope-changed')); });
   await screen.findByText('New tenant template');
   await act(async () => { resolveOld([{ id: 201, name: 'Old tenant template', order_num: 1 }]); });
   expect(screen.queryByText('Old tenant template')).not.toBeInTheDocument();

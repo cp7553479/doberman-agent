@@ -17,7 +17,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.workstation.domain.services.media_cover_service import WorkstationMediaCoverService
+from doberman_agent.workstation.domain.services.media_cover_service import WorkstationMediaCoverService
 
 _COVER = "tmp/9f2c_cover.jpg"
 
@@ -39,7 +39,7 @@ async def _cover_for(name: str, *, extract=None, materialize=None):
             extract or AsyncMock(return_value=_COVER),
         ),
         patch(
-            "bisheng.core.storage.minio.minio_manager.get_minio_storage",
+            "doberman_agent.core.storage.minio.minio_manager.get_minio_storage",
             AsyncMock(return_value=object()),
         ),
         patch.object(WorkstationMediaCoverService, "cleanup_temp") as cleanup,

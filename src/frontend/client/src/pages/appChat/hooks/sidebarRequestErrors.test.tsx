@@ -2,7 +2,7 @@ import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 // eslint-disable-next-line no-restricted-imports -- Exercise the existing sidebar atoms with their real provider.
 import { RecoilRoot } from 'recoil';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { getAppConversationsApi } from '~/api/apps';
 import { useAppSidebar } from './useAppSidebar';
 import { useStandaloneSidebar } from '~/pages/standaloneChat/hooks/useStandaloneSidebar';

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Alert, Button, Cascader, Textarea, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Alert, Button, Cascader, Textarea, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
@@ -13,10 +13,10 @@ import {
     toModelCascaderOptions,
     toModelCascaderValue,
 } from "@/components/bs-comp/formFields/modelOptions";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 
 import { ModelFieldHint } from "../ModelFieldHint";
-import { Tooltip as Tip } from "@bisheng/ui";
+import { Tooltip as Tip } from "@doberman-agent/ui";
 import { getKnowledgeModelEnvelope, updateKnowledgeModelConfig } from "@/controllers/API/finetune";
 import { showApiError } from "@/controllers/request";
 
@@ -38,7 +38,7 @@ export const ModelSelect = ({ required = false, close = false, label, tooltipTex
 
     return (
         <div className="min-w-0">
-            {Boolean(label || required || tooltipText) && <Label className="bisheng-label inline-flex items-center">
+            {Boolean(label || required || tooltipText) && <Label className="doberman_agent-label inline-flex items-center">
                 <span>{label}</span>
                 {required && <span className="text-red-500 text-xs">*</span>}
                 {tooltipText && <ModelFieldHint className="ml-1" content={tooltipText} />}
@@ -115,7 +115,7 @@ export const PromptDialog = ({ value, onChange, onSave, label, children }) => {
                 <DialogTitle>{t('model.editPrompt')}</DialogTitle>
             </DialogHeader>
             <div>
-                <Label className="bisheng-label">{label || t('model.docKnowledgeAbstractPrompt')}</Label>
+                <Label className="doberman_agent-label">{label || t('model.docKnowledgeAbstractPrompt')}</Label>
                 <Textarea value={textValue} onChange={(e) => {
                         setTextValue(e.target.value)
                         modifyNotSavedRef.current = true;
@@ -318,7 +318,7 @@ export function KnowledgeModel({ llmOptions, embeddings, asrModel = [], onBack }
             />
             <div className="rounded-md border p-4 space-y-4">
                 <div className="flex items-center justify-between gap-6">
-                    <Label className="bisheng-label mb-0">{t('model.summaryGeneration')}</Label>
+                    <Label className="doberman_agent-label mb-0">{t('model.summaryGeneration')}</Label>
                     <div className="flex items-center gap-2">
                         <PromptDialog
                             value={form.abstractPrompt}
@@ -341,7 +341,7 @@ export function KnowledgeModel({ llmOptions, embeddings, asrModel = [], onBack }
                     </div>
                 </div>
                 <div className="flex items-center justify-between gap-6">
-                    <Label className="bisheng-label mb-0">{t('model.autoTagGeneration')}</Label>
+                    <Label className="doberman_agent-label mb-0">{t('model.autoTagGeneration')}</Label>
                     <div className="flex items-center gap-2">
                         <PromptDialog
                             value={form.autoTagPrompt}

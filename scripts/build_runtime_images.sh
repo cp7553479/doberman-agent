@@ -4,7 +4,7 @@ set -euo pipefail
 : "${RUNTIME_RELEASE:?set a new release identifier}"
 : "${TARGET_ARCH:?amd64 or arm64}"
 RUNTIME_PUBLISH="${RUNTIME_PUBLISH:-0}"
-RUNTIME_IMAGE_NAMESPACE="${RUNTIME_IMAGE_NAMESPACE:-dataelement}"
+RUNTIME_IMAGE_NAMESPACE="${RUNTIME_IMAGE_NAMESPACE:-ghcr.io/cp7553479}"
 [[ "$RUNTIME_RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9_.-]{0,100}$ ]] || exit 64
 [[ "$TARGET_ARCH" == amd64 || "$TARGET_ARCH" == arm64 ]] || exit 64
 # A forced Git tag update may explicitly reissue this exact release. Normal builds remain immutable.
@@ -33,7 +33,7 @@ metadata_dir="dist/runtime-metadata-${TARGET_ARCH}"
 inventory="dist/runtime-images-${TARGET_ARCH}.json"
 mkdir -p "$metadata_dir"
 names=(runtime-manager app-proxy runtime-helper runtime-assembler app-python app-python-preparer app-node app-node-preparer app-static)
-image_for() { printf '%s/bisheng-%s:%s-%s' "$RUNTIME_IMAGE_NAMESPACE" "$1" "$RUNTIME_RELEASE" "$TARGET_ARCH"; }
+image_for() { printf '%s/doberman-agent-%s:%s-%s' "$RUNTIME_IMAGE_NAMESPACE" "$1" "$RUNTIME_RELEASE" "$TARGET_ARCH"; }
 if [[ "$RUNTIME_PUBLISH" == 1 ]]; then
   for name in "${names[@]}"; do
     image="$(image_for "$name")"
@@ -96,8 +96,8 @@ from tempfile import TemporaryDirectory
 from runtime_manager.k8s_helper import resolve_download
 
 os.environ.update({"PIP_NO_INDEX": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1", "UV_OFFLINE": "1", "npm_config_offline": "true"})
-assert Path("/opt/bisheng/prepare.py").is_file()
-assert list(Path("/opt/bisheng/wheelhouse").glob("bisheng_sdk-0.1.1-*.whl"))
+assert Path("/opt/doberman-agent/prepare.py").is_file()
+assert list(Path("/opt/doberman-agent/wheelhouse").glob("doberman_agent_sdk-0.1.1-*.whl"))
 assert Path("/usr/share/licenses/node/Node.LICENSE").is_file()
 assert Path("/usr/local/bin/crane").is_file()
 assert Path("/usr/share/licenses/crane/crane-build.txt").is_file()
@@ -115,9 +115,9 @@ with TemporaryDirectory(prefix="native-resolve-") as temporary:
         return document, source, offline, output
 
     document, source, offline, output = resolve("requirements", "python3.11")
-    (source / "requirements.txt").write_text("bisheng-sdk==0.1.1\nfastapi==0.115.14\nuvicorn==0.35.0\n")
+    (source / "requirements.txt").write_text("doberman-agent-sdk==0.1.1\nfastapi==0.115.14\nuvicorn==0.35.0\n")
     resolve_download(document, source, offline, output)
-    assert list((output / "wheels").glob("bisheng_sdk-0.1.1-*.whl"))
+    assert list((output / "wheels").glob("doberman_agent_sdk-0.1.1-*.whl"))
     assert list((output / "wheels").glob("httpx-*.whl"))
 
     document, source, offline, output = resolve("uv-lock", "python3.11")
@@ -152,13 +152,13 @@ PY_RESOLVE
     app-proxy)
       docker run "${common[@]}" --entrypoint python "$image" -c 'import app_proxy.main';;
     app-python)
-      docker run "${common[@]}" --entrypoint python "$image" -c 'import os,bisheng_sdk,fastapi,uvicorn; assert os.getuid()==10001';;
+      docker run "${common[@]}" --entrypoint python "$image" -c 'import os,doberman_agent_sdk,fastapi,uvicorn; assert os.getuid()==10001';;
     app-python-preparer)
-      docker run "${common[@]}" --entrypoint python "$image" -c 'import os,venv; from pathlib import Path; assert os.getuid()==10001; assert (Path("/opt/bisheng/prepare.py")).is_file(); assert list(Path("/opt/bisheng/wheelhouse").glob("hatchling-*.whl"))';;
+      docker run "${common[@]}" --entrypoint python "$image" -c 'import os,venv; from pathlib import Path; assert os.getuid()==10001; assert (Path("/opt/doberman-agent/prepare.py")).is_file(); assert list(Path("/opt/doberman-agent/wheelhouse").glob("hatchling-*.whl"))';;
     app-node)
       docker run "${common[@]}" --entrypoint node "$image" -e 'if(process.versions.node.split(".")[0]!=="20"||process.getuid()!==10001)process.exit(1)';;
     app-node-preparer)
-      docker run "${common[@]}" --entrypoint python "$image" -c 'import os; from pathlib import Path; assert os.getuid()==10001; assert Path("/opt/bisheng/prepare.py").is_file()';;
+      docker run "${common[@]}" --entrypoint python "$image" -c 'import os; from pathlib import Path; assert os.getuid()==10001; assert Path("/opt/doberman-agent/prepare.py").is_file()';;
     app-static)
       docker run "${common[@]}" "$image" nginx -t
       # Keep the existing platform nginx configuration compatibility smoke.

@@ -15,12 +15,12 @@ import logging
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionInvalidResourceError
-from bisheng.knowledge.domain.services import knowledge_permission_service as module
-from bisheng.knowledge.domain.services.knowledge_permission_service import (
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError
+from doberman_agent.knowledge.domain.services import knowledge_permission_service as module
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import (
     KnowledgeContainerPermissionRecord,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 ACTOR = PermissionActor(user_id=7, current_tenant_id=1)
 

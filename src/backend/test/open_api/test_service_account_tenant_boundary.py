@@ -14,24 +14,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.open_api import ServiceAccountNotFoundError
-from bisheng.core.context.tenant import (
+from doberman_agent.common.errcode.open_api import ServiceAccountNotFoundError
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_admin_scope_tenant_id,
 )
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.api.endpoints import service_account as account_endpoints
-from bisheng.open_api.api.endpoints import service_account_keys as key_endpoints
-from bisheng.open_api.domain.repositories.service_account_repository import (
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.api.endpoints import service_account as account_endpoints
+from doberman_agent.open_api.api.endpoints import service_account_keys as key_endpoints
+from doberman_agent.open_api.domain.repositories.service_account_repository import (
     ServiceAccountRepository,
     current_tenant_scope,
 )
-from bisheng.open_api.domain.schemas.credential import KeyIssueRequest, KeyUpdateRequest
-from bisheng.open_api.domain.schemas.service_account import ServiceAccountCreate, ServiceAccountUpdate
-from bisheng.open_api.domain.services.service_account_service import ServiceAccountService
-from bisheng.permission.domain.schemas import GrantMutationRequest
-from bisheng.user.domain.models.user import User
+from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest, KeyUpdateRequest
+from doberman_agent.open_api.domain.schemas.service_account import ServiceAccountCreate, ServiceAccountUpdate
+from doberman_agent.open_api.domain.services.service_account_service import ServiceAccountService
+from doberman_agent.permission.domain.schemas import GrantMutationRequest
+from doberman_agent.user.domain.models.user import User
 
 ROOT_TENANT = 1
 CHILD_TENANT = 5

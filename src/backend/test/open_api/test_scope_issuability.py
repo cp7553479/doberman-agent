@@ -12,24 +12,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiDelegateExclusiveScopeError,
     OpenApiExtensionScopeNotDeployedError,
     PersonalTokenScopeInvalidError,
 )
-from bisheng.common.services.config_service import settings
-from bisheng.open_api.api.endpoints.service_account_keys import list_open_api_scopes
-from bisheng.open_api.domain.models.api_credential import (
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.open_api.api.endpoints.service_account_keys import list_open_api_scopes
+from doberman_agent.open_api.domain.models.api_credential import (
     SUBJECT_KIND_NATURAL_PERSON,
     SUBJECT_KIND_SERVICE_ACCOUNT,
 )
-from bisheng.open_api.domain.schemas.credential import (
+from doberman_agent.open_api.domain.schemas.credential import (
     DelegateScopeInput,
     KeyIssueRequest,
     KeyUpdateRequest,
 )
-from bisheng.open_api.domain.scopes import OPEN_API_SCOPE_MAP
-from bisheng.open_api.domain.services.credential_service import CredentialService
+from doberman_agent.open_api.domain.scopes import OPEN_API_SCOPE_MAP
+from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
 DELEGATE_TARGET = [DelegateScopeInput(subject_type="user", subject_id=9)]
 
@@ -55,7 +55,7 @@ def delegate_target_exists(monkeypatch):
         return {user_id: SimpleNamespace(user_id=user_id, tenant_id=1) for user_id in user_ids}
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
+        "doberman_agent.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
         active_users,
     )
 

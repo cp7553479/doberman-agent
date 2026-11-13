@@ -1,14 +1,14 @@
 /* Code typography and highlighting from client/style.css; scoped. */
-.bs-mkdown.bisheng-chat-markdown code,
-.bs-mkdown.bisheng-chat-markdown pre {
+.bs-mkdown.doberman_agent-chat-markdown code,
+.bs-mkdown.doberman_agent-chat-markdown pre {
   font-family: Consolas, Söhne Mono, Monaco, Andale Mono, Ubuntu Mono, monospace !important;
 }
-.bs-mkdown.bisheng-chat-markdown code[class='language-plaintext'] {
+.bs-mkdown.doberman_agent-chat-markdown code[class='language-plaintext'] {
   white-space: pre-line;
 }
-.bs-mkdown.bisheng-chat-markdown code.hljs,
-.bs-mkdown.bisheng-chat-markdown code[class*='language-'],
-.bs-mkdown.bisheng-chat-markdown pre[class*='language-'] {
+.bs-mkdown.doberman_agent-chat-markdown code.hljs,
+.bs-mkdown.doberman_agent-chat-markdown code[class*='language-'],
+.bs-mkdown.doberman_agent-chat-markdown pre[class*='language-'] {
   word-wrap: normal;
   background: none;
   color: #24292e;
@@ -22,54 +22,54 @@
   word-break: normal;
   word-spacing: normal;
 }
-.bs-mkdown.bisheng-chat-markdown pre[class*='language-'] {
+.bs-mkdown.doberman_agent-chat-markdown pre[class*='language-'] {
   border-radius: 0.3em;
   overflow: auto;
 }
-.bs-mkdown.bisheng-chat-markdown :not(pre)>code.hljs,
-.bs-mkdown.bisheng-chat-markdown :not(pre)>code[class*='language-'] {
+.bs-mkdown.doberman_agent-chat-markdown :not(pre)>code.hljs,
+.bs-mkdown.doberman_agent-chat-markdown :not(pre)>code[class*='language-'] {
   border-radius: 0.3em;
   padding: 0.1em;
   white-space: normal;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-comment {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-comment {
   color: #6a737d;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-meta {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-meta {
   color: #6a737d;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-built_in,
-.bs-mkdown.bisheng-chat-markdown .hljs-class .hljs-title {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-built_in,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-class .hljs-title {
   color: #6f42c1;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-doctag,
-.bs-mkdown.bisheng-chat-markdown .hljs-formula,
-.bs-mkdown.bisheng-chat-markdown .hljs-keyword,
-.bs-mkdown.bisheng-chat-markdown .hljs-literal {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-doctag,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-formula,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-keyword,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-literal {
   color: #d73a49;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-addition,
-.bs-mkdown.bisheng-chat-markdown .hljs-attribute,
-.bs-mkdown.bisheng-chat-markdown .hljs-meta-string,
-.bs-mkdown.bisheng-chat-markdown .hljs-regexp,
-.bs-mkdown.bisheng-chat-markdown .hljs-string {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-addition,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-attribute,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-meta-string,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-regexp,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-string {
   color: #032f62;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-attr,
-.bs-mkdown.bisheng-chat-markdown .hljs-number,
-.bs-mkdown.bisheng-chat-markdown .hljs-selector-attr,
-.bs-mkdown.bisheng-chat-markdown .hljs-selector-class,
-.bs-mkdown.bisheng-chat-markdown .hljs-selector-pseudo,
-.bs-mkdown.bisheng-chat-markdown .hljs-template-variable,
-.bs-mkdown.bisheng-chat-markdown .hljs-type,
-.bs-mkdown.bisheng-chat-markdown .hljs-variable {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-attr,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-number,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-selector-attr,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-selector-class,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-selector-pseudo,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-template-variable,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-type,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-variable {
   color: #005cc5;
 }
-.bs-mkdown.bisheng-chat-markdown .hljs-bullet,
-.bs-mkdown.bisheng-chat-markdown .hljs-link,
-.bs-mkdown.bisheng-chat-markdown .hljs-selector-id,
-.bs-mkdown.bisheng-chat-markdown .hljs-symbol,
-.bs-mkdown.bisheng-chat-markdown .hljs-title {
+.bs-mkdown.doberman_agent-chat-markdown .hljs-bullet,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-link,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-selector-id,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-symbol,
+.bs-mkdown.doberman_agent-chat-markdown .hljs-title {
   color: #6f42c1;
 }
 

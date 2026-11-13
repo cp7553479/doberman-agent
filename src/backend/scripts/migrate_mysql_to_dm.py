@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Unified MySQL -> DaMeng (DM8) DATA migration for BiSheng / Gateway / OpenFGA.
+"""Unified MySQL -> DaMeng (DM8) DATA migration for doberman-agent / Gateway / OpenFGA.
 
 Scope
 -----
 By default this script ONLY copies row data from MySQL to DM; the target DM
 schema must already exist, created by each application's own authoritative path:
 
-  * bisheng         : start the backend once against DM
+  * doberman_agent         : start the backend once against DM
                       (SQLModel.metadata.create_all + startup triggers), or run
                       `alembic upgrade head` against the DM URL.
-  * bisheng_gateway : execute docker/db/init_dm.sql on the DM schema.
+  * doberman_agent_gateway : execute docker/db/init_dm.sql on the DM schema.
   * openfga         : run `openfga migrate --datastore-engine dm --datastore-uri ...`.
 
 Pass --create-schema to instead create the DM tables generically from the MySQL
 schema (reflect + create_all, idempotent). This is uniform across all three
-databases and needs no app-specific tooling, but it does NOT create bisheng's
-update_time/computed-column triggers (added by the bisheng app at first startup)
+databases and needs no app-specific tooling, but it does NOT create doberman_agent's
+update_time/computed-column triggers (added by the doberman_agent app at first startup)
 nor the DM user/schema itself (a DBA step).
 
 For each logical database the script:
@@ -25,8 +25,8 @@ For each logical database the script:
   4. inserts in batches with IDENTITY_INSERT enabled and triggers/FKs disabled;
   5. re-enables triggers + FK constraints and reseeds IDENTITY counters.
 
-Run it inside the bisheng backend venv so the DM dialect monkey-patches in
-`bisheng.core.database.dialect_helpers` are loaded:
+Run it inside the doberman_agent backend venv so the DM dialect monkey-patches in
+`doberman_agent.core.database.dialect_helpers` are loaded:
 
     cd src/backend
     uv run python ../../scripts/migrate_mysql_to_dm.py --config migrate_dm.yaml
@@ -57,8 +57,8 @@ from sqlalchemy.engine import Engine
 # LONGTEXT/JSON->CLOB, CHAR handling, IDENTITY autoincrement fix). It is a
 # no-op on platforms without dmSQLAlchemy installed.
 try:
-    import bisheng.core.database.dialect_helpers  # noqa: F401
-except Exception:  # pragma: no cover - script may run outside bisheng venv
+    import doberman_agent.core.database.dialect_helpers  # noqa: F401
+except Exception:  # pragma: no cover - script may run outside doberman_agent venv
     pass
 
 
@@ -456,7 +456,7 @@ def _normalize_reflected_for_dm(md: MetaData) -> None:
                 col.type = Integer()
 
             # Strip "ON UPDATE CURRENT_TIMESTAMP" from server defaults: invalid in
-            # a DM column default. On DM the bisheng app maintains update_time via
+            # a DM column default. On DM the doberman_agent app maintains update_time via
             # a startup trigger instead.
             sd = col.server_default
             if sd is not None and getattr(sd, "arg", None) is not None:
@@ -471,8 +471,8 @@ def create_schema(src_engine: Engine, dst_engine: Engine, job: DbJob) -> None:
 
     Idempotent: existing DM tables are left untouched (checkfirst=True).
 
-    Not created here: bisheng's update_time / computed-column triggers — the
-    bisheng app installs those at first startup against DM. The target DM
+    Not created here: doberman_agent's update_time / computed-column triggers — the
+    doberman_agent app installs those at first startup against DM. The target DM
     user/schema itself must already exist (a DBA step); this only creates tables,
     indexes and constraints inside it.
     """
@@ -513,7 +513,7 @@ def resolve_tables(src_engine: Engine, dst_engine: Engine, job: DbJob, schema: s
     # keep each job to its own tables even when several logical databases were
     # consolidated into a SINGLE DM account/schema — in that case reflecting the
     # DM target returns the UNION of every database's tables, and without this
-    # scoping the bisheng_gateway job would also try to copy bisheng/openfga
+    # scoping the doberman_agent_gateway job would also try to copy doberman_agent/openfga
     # tables (and could overwrite same-named DM tables with the wrong source).
     src_names = {t.lower() for t in inspect(src_engine).get_table_names()}
 
@@ -687,7 +687,7 @@ def _safe(conn, statement: str) -> None:
 def _dm_schema_from_url(url: str) -> str | None:
     """Return the target DM schema named in a dm+dmPython URL, or None.
 
-    Mirrors bisheng connection.py::_normalize_dm_url: the schema may be given as a
+    Mirrors doberman_agent connection.py::_normalize_dm_url: the schema may be given as a
     ?schema= query param (DaMeng's connect kwarg, preferred) or a legacy /SCHEMA
     path; an explicit ?schema= wins. None means "use the login user's own schema".
     The schema is also applied explicitly to reflection/DML (OWNER=:schema /
@@ -706,7 +706,7 @@ def _dm_schema_from_url(url: str) -> str | None:
 def _dm_connect_url(url: str) -> str:
     """Build the DM connect URL: carry the schema via ?schema=, clear the path.
 
-    Mirrors bisheng connection.py::_normalize_dm_url. dmPython.connect() rejects a
+    Mirrors doberman_agent connection.py::_normalize_dm_url. dmPython.connect() rejects a
     URL *path* (SQLAlchemy maps it to the 'database' kwarg) but accepts the schema
     via the query string, which dmSQLAlchemy passes straight through to connect();
     both the sync (dmPython) and async (dmAsync) dialects accept schema=. So move
@@ -810,8 +810,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         "--create-schema",
         action="store_true",
         help="Create the DM tables from the MySQL schema (reflect + create_all, idempotent) "
-        "before loading data. Does not create bisheng's update_time/computed triggers "
-        "(the bisheng app adds those at first startup) or the DM user/schema itself.",
+        "before loading data. Does not create doberman_agent's update_time/computed triggers "
+        "(the doberman_agent app adds those at first startup) or the DM user/schema itself.",
     )
     parser.add_argument(
         "--verify",

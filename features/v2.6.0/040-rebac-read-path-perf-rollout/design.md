@@ -41,7 +41,7 @@
 
 ### 决策 1：频道详情慢——拆出独立未读端点（而非批量化或加开关）
 
-- **背景实证**：`get_channel_detail`（[channel_service.py:1683](../../../src/backend/bisheng/channel/domain/services/channel_service.py)）单请求 ES count 次数 = `1`（文章总数）`+ S×(1+⌈R/1000⌉)`（未读，S=子频道数、R=用户已读数）。即"贵"的是**未读**不是文章总数；且未读 **per-user、不可缓存**。预览弹窗 `ChannelPreviewDrawer` 根本不渲染未读，却照付这笔钱（且 `staleTime:0` 每开必算）。
+- **背景实证**：`get_channel_detail`（[channel_service.py:1683](../../../src/backend/doberman_agent/channel/domain/services/channel_service.py)）单请求 ES count 次数 = `1`（文章总数）`+ S×(1+⌈R/1000⌉)`（未读，S=子频道数、R=用户已读数）。即"贵"的是**未读**不是文章总数；且未读 **per-user、不可缓存**。预览弹窗 `ChannelPreviewDrawer` 根本不渲染未读，却照付这笔钱（且 `staleTime:0` 每开必算）。
 - **备选**：
   - A. 单接口加 `?include_unread=false` 开关，预览传 false — 改动最小；但响应形状随参数变、in-channel 仍走重接口。
   - B. 预览/详情两个完整接口 — 两者 ~90% 字段重复，维护双 schema。
@@ -61,19 +61,19 @@
 
 ### 决策 3：空间广场 batch_check + 共享上下文，保持全返回——INV-6 豁免论证
 
-- **背景实证**：`_format_accessible_spaces`（[knowledge_space_service.py:292](../../../src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py)，N+1 在 316–345）对每个可访问空间逐个 `get_permission_level` + `_get_effective_permission_ids`；`/joined`·`/department` **无分页、全量返回**；`list_uploadable_spaces`（~2004）还是串行 for。
+- **背景实证**：`_format_accessible_spaces`（[knowledge_space_service.py:292](../../../src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py)，N+1 在 316–345）对每个可访问空间逐个 `get_permission_level` + `_get_effective_permission_ids`；`/joined`·`/department` **无分页、全量返回**；`list_uploadable_spaces`（~2004）还是串行 for。
 - **备选**：
   - A. 按 INV-6 把 `/joined`·`/department` 也改 cursor 无限滚动。
-  - B. **保持全返回，仅消 N+1**：逐空间 `get_permission_level` → 单次 `batch_check`（[core/openfga/client.py:83](../../../src/backend/bisheng/core/openfga/client.py)）；逐空间 `_get_effective_permission_ids` → `filter_object_ids_by_permission_async`（[fine_grained_permission_service.py:586](../../../src/backend/bisheng/permission/domain/services/fine_grained_permission_service.py)）一次建上下文跨空间共享；`list_uploadable_spaces` 并行 + 共享上下文。
+  - B. **保持全返回，仅消 N+1**：逐空间 `get_permission_level` → 单次 `batch_check`（[core/openfga/client.py:83](../../../src/backend/doberman_agent/core/openfga/client.py)）；逐空间 `_get_effective_permission_ids` → `filter_object_ids_by_permission_async`（[fine_grained_permission_service.py:586](../../../src/backend/doberman_agent/permission/domain/services/fine_grained_permission_service.py)）一次建上下文跨空间共享；`list_uploadable_spaces` 并行 + 共享上下文。
 - **选定**：B（用户 2026-06-25 确认）。
 - **INV-6 豁免论证**（评审 medium 项，必须立住）：INV-6 的目的是**避免大列表深翻时 O(N×page×ReBAC) 的扫描+count**。`/joined`·`/department` 的结果集是**按"用户已加入空间 / 部门子树空间"天然有界**的 per-user 集合（量级数个~数十个），**不随租户资源总量增长**，且**无 page/深翻语义**。其真实成本是逐空间 N+1 权限检查，B 方案已根除（O(N) FGA → O(1) batch + 共享上下文）。强行 cursor 化会给"我加入的空间"侧栏引入无限滚动 UX 复杂度却无收益。**故登记 INV-6 例外**：*WHERE 列表结果集由 per-user 成员关系/部门子树天然有界且无深翻语义，可保留全返回，但 N+1 逐项权限检查必须批量化*。该例外写入 release-contract 变更历史。
 - **何时该重新考虑**：若某租户单用户可加入空间数膨胀到数百+（异常组织形态），再评估 cursor 化。
 
 ### 决策 4：C 组列表去 fetch-all——cursor 优先、小集合可有界拉取
 
-- **背景实证**（2026-06-25 核实，5 端点**均**仍 fetch-all）：助手列表 `get_all_assistants(name,0,0,...)`（[assistant.py:65](../../../src/backend/bisheng/api/services/assistant.py)）、工作台常用 `get_all_apps(...,page=0,limit=0)`（[workflow.py:815](../../../src/backend/bisheng/api/services/workflow.py)）、工作台最近（[apps.py:105](../../../src/backend/bisheng/workstation/api/endpoints/apps.py)）、空间文件搜索 `search_space_children`→`_paginate_items`（[knowledge_space_service.py:2845](../../../src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py)）。
+- **背景实证**（2026-06-25 核实，5 端点**均**仍 fetch-all）：助手列表 `get_all_assistants(name,0,0,...)`（[assistant.py:65](../../../src/backend/doberman_agent/api/services/assistant.py)）、工作台常用 `get_all_apps(...,page=0,limit=0)`（[workflow.py:815](../../../src/backend/doberman_agent/api/services/workflow.py)）、工作台最近（[apps.py:105](../../../src/backend/doberman_agent/workstation/api/endpoints/apps.py)）、空间文件搜索 `search_space_children`→`_paginate_items`（[knowledge_space_service.py:2845](../../../src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py)）。
 - **备选 / 选定（按端点分流）**：
-  - 保留分页语义的列表（助手、最近、常用、文件搜索）→ **INV-6 cursor**，复用 F027 `common/cursor.py` 与 `_scan_visible_child_items`（[:2690](../../../src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py)）的"边取边筛、凑够即停"范式；文件搜索带 keyword，优先用 `list_accessible_ids` 预过滤把权限推进 SQL 再分页。
+  - 保留分页语义的列表（助手、最近、常用、文件搜索）→ **INV-6 cursor**，复用 F027 `common/cursor.py` 与 `_scan_visible_child_items`（[:2690](../../../src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py)）的"边取边筛、凑够即停"范式；文件搜索带 keyword，优先用 `list_accessible_ids` 预过滤把权限推进 SQL 再分页。
   - 本身无需深翻的小集合（"推荐"capped）→ 有界拉取 + 共享上下文过滤，不强制 cursor（AC-15）。
 - **原因**：fetch-all 成本 O(租户该资源总量)，随增长失控；cursor/边取边筛把成本压到 O(可见集)。复用既有范式零新机制。错误码复用 F027 `AppInvalidCursorError`(10550)/`KnowledgeSpaceInvalidCursorError`(18070)，**不新增**。
 - **何时该重新考虑**：keyword 搜索若命中率极低致边取边筛扫批过多，改 ES/全文索引预过滤。
@@ -90,7 +90,7 @@
 
 ### 决策 6：每请求重建"名册"——版本派生 key 跨请求缓存（F036 §8 背书路径）
 
-- **背景实证**（2026-06-25 核实，问题真实存在）：service 每请求新建（[dependencies.py:108](../../../src/backend/bisheng/knowledge/api/dependencies.py) `get_knowledge_space_service`，FastAPI `Depends`）→ 每个 `/children` 请求 `_get_relation_bindings`（[:682](../../../src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py)）→ `_get_bindings`（[resource_permission.py:292](../../../src/backend/bisheng/permission/api/endpoints/resource_permission.py)）→ `ConfigDao.aget_config_by_key`（[common/models/config.py:80](../../../src/backend/bisheng/common/models/config.py)，**无缓存**）做 `SELECT config` + `json.loads(整份名册)` + 全量 legacy 扫描；`build_binding_index` 每请求重建索引；`_get_current_user_subject_strings`（[:883](../../../src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py)）每请求查用户组/部门。展开 N 层 = 翻 N 遍名册。**F036 优化的是逐项评估，刻意推迟了此项**。
+- **背景实证**（2026-06-25 核实，问题真实存在）：service 每请求新建（[dependencies.py:108](../../../src/backend/doberman_agent/knowledge/api/dependencies.py) `get_knowledge_space_service`，FastAPI `Depends`）→ 每个 `/children` 请求 `_get_relation_bindings`（[:682](../../../src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py)）→ `_get_bindings`（[resource_permission.py:292](../../../src/backend/doberman_agent/permission/api/endpoints/resource_permission.py)）→ `ConfigDao.aget_config_by_key`（[common/models/config.py:80](../../../src/backend/doberman_agent/common/models/config.py)，**无缓存**）做 `SELECT config` + `json.loads(整份名册)` + 全量 legacy 扫描；`build_binding_index` 每请求重建索引；`_get_current_user_subject_strings`（[:883](../../../src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py)）每请求查用户组/部门。展开 N 层 = 翻 N 遍名册。**F036 优化的是逐项评估，刻意推迟了此项**。
 - **备选**：
   - A. 提 `permission_cache` TTL / 写路径挂失效钩子跨请求复用上下文 — **F036 已否决**（跨域失效耦合）。
   - B. **版本派生 key 缓存**：按 bindings/models 配置行的**版本/内容哈希**派生 key，缓存"已解析+已建索引"的名册；按**用户主体版本**（用户组/部门变更版本）派生 key 缓存主体串。读侧自然失效，零写路径钩子。

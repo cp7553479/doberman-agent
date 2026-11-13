@@ -27,7 +27,7 @@ def _script_directory() -> ScriptDirectory:
     # the pytest working directory (alembic resolves it relative to cwd).
     cfg.set_main_option(
         "script_location",
-        str(_BACKEND_ROOT / "bisheng" / "core" / "database" / "alembic"),
+        str(_BACKEND_ROOT / "doberman_agent" / "core" / "database" / "alembic"),
     )
     return ScriptDirectory.from_config(cfg)
 

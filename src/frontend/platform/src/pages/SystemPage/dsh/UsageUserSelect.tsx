@@ -3,7 +3,7 @@ import { Command, CommandInput, CommandItem, CommandList } from "@/components/bs
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover";
 import { getDshUsagePresentationOverview as getDshUsageOverview } from "@/controllers/API/dshUsagePresentation";
 import type { DshUsageOverviewPage, DshUsageOverviewUser } from "@/types/dsh";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { UsageRange } from "./usageRange";

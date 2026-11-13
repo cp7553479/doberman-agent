@@ -13,17 +13,17 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.common.errcode.mcp_face import KnowledgeUnreachableError
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.knowledge.domain.schemas.retrieval_facade import (
+from doberman_agent.common.errcode.mcp_face import KnowledgeUnreachableError
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.knowledge.domain.schemas.retrieval_facade import (
     RetrievalChunk,
     RetrievalFacadeResult,
 )
-from bisheng.open_api.domain.context import (
+from doberman_agent.open_api.domain.context import (
     OpenApiPrincipal,
 )
-from bisheng.open_endpoints.api.endpoints import filelib as filelib_mod
-from bisheng.open_endpoints.domain.schemas.filelib import RetrieveReq, RetrieveResp
+from doberman_agent.open_endpoints.api.endpoints import filelib as filelib_mod
+from doberman_agent.open_endpoints.domain.schemas.filelib import RetrieveReq, RetrieveResp
 
 
 def _service_account_principal() -> OpenApiPrincipal:
@@ -261,7 +261,7 @@ async def test_filter_for_an_untargeted_knowledge_base_is_400(facade_spy, as_pri
 
 
 def test_top_k_cap_matches_the_facade_cap():
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RETRIEVAL_TOP_K_MAX
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RETRIEVAL_TOP_K_MAX
 
     field = RetrieveReq.model_fields["top_k"]
     caps = [getattr(one, "le", None) for one in field.metadata]
@@ -280,7 +280,7 @@ async def test_unreachable_maps_to_26321_http_404(facade_spy, as_principal):
     with pytest.raises(KnowledgeUnreachableError) as exc:
         await _call(RetrieveReq(query="q", knowledge_base_ids=[8, 9]))
 
-    from bisheng.open_api.api.exception_handlers import open_api_http_status
+    from doberman_agent.open_api.api.exception_handlers import open_api_http_status
 
     assert exc.value.code == 26321
     assert open_api_http_status(exc.value) == 404
@@ -295,7 +295,7 @@ async def test_permission_unavailable_is_503_with_25021_not_26030(facade_spy, as
     with pytest.raises(PermissionServiceUnavailableError) as exc:
         await _call(RetrieveReq(query="q", knowledge_base_ids=[8]))
 
-    from bisheng.open_api.api.exception_handlers import open_api_http_status
+    from doberman_agent.open_api.api.exception_handlers import open_api_http_status
 
     assert open_api_http_status(exc.value) == 503
     assert exc.value.code == 25021
@@ -310,8 +310,8 @@ def test_no_bypass_of_facade_in_open_face():
     import ast
     from pathlib import Path
 
-    import bisheng.open_api as open_api_pkg
-    import bisheng.open_endpoints as open_endpoints_pkg
+    import doberman_agent.open_api as open_api_pkg
+    import doberman_agent.open_endpoints as open_endpoints_pkg
 
     banned = ("aretrieve_chunks", "RetrievalEngine", "KnowledgeSpaceChatService")
     offenders: list[str] = []
@@ -339,7 +339,7 @@ def test_no_bypass_of_facade_in_open_face():
 
 
 def test_open_face_imports_the_facade():
-    import bisheng.open_endpoints.api.endpoints.filelib as module
+    import doberman_agent.open_endpoints.api.endpoints.filelib as module
 
     assert module.RetrievalFacadeService is not None
     assert isinstance(getattr(module, "RetrievalIdentity", None), type)
@@ -370,8 +370,8 @@ async def test_missing_principal_is_refused_by_the_facade(as_principal, monkeypa
     not invent an identity of its own when the gate left none behind.
     """
 
-    from bisheng.common.errcode.mcp_face import RetrievalIdentityMissingError
-    from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
+    from doberman_agent.common.errcode.mcp_face import RetrievalIdentityMissingError
+    from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
 
     as_principal(None)
     monkeypatch.setattr(facade_mod, "RetrievalEngine", MagicMock(side_effect=AssertionError("must not retrieve")))

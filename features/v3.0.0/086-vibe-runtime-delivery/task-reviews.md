@@ -17,21 +17,21 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T001 平台持久对象模型
 
-- 文件：[runtime_delivery.py](../../../src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py)
+- 文件：[runtime_delivery.py](../../../src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-15、AC-19、AC-35、AC-36、AC-50、AC-61。
 
 ### T002 模型发现注册
 
-- 文件：[tenant_filter.py](../../../src/backend/bisheng/core/database/tenant_filter.py)、[__init__.py](../../../src/backend/bisheng/app_runtime/domain/models/__init__.py)
+- 文件：[tenant_filter.py](../../../src/backend/doberman_agent/core/database/tenant_filter.py)、[__init__.py](../../../src/backend/doberman_agent/app_runtime/domain/models/__init__.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-14、AC-30、AC-50、AC-61。
 
 ### T003 平台运行交付配置
 
-- 文件：[app_runtime.py](../../../src/backend/bisheng/core/config/app_runtime.py)
+- 文件：[app_runtime.py](../../../src/backend/doberman_agent/core/config/app_runtime.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-03、AC-05、AC-53、AC-58。
@@ -52,7 +52,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T006 平台操作/容量Repository
 
-- 文件：[runtime_delivery_repository.py](../../../src/backend/bisheng/app_runtime/domain/repositories/runtime_delivery_repository.py)
+- 文件：[runtime_delivery_repository.py](../../../src/backend/doberman_agent/app_runtime/domain/repositories/runtime_delivery_repository.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：Repository本地21项回归、真实MySQL同步竞争5项通过；DM8原先待环境；用户2026-10-21确认本轮只做模型静态审查，已通过，实测留中央回归。
 - AC：AC-06、AC-34、AC-35、AC-36、AC-37、AC-39、AC-50、AC-61、AC-63。
@@ -66,7 +66,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T008 版本2服务身份与重放保护
 
-- 文件：[runtime_protocol.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_protocol.py)、[platform_protocol.py](../../../src/runtime-manager/runtime_manager/platform_protocol.py)
+- 文件：[runtime_protocol.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_protocol.py)、[platform_protocol.py](../../../src/runtime-manager/runtime_manager/platform_protocol.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-07、AC-49、AC-52、AC-53。
@@ -80,7 +80,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T010 平台产物传输
 
-- 文件：[runtime_artifact_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_artifact_service.py)、[runtime_object_store.py](../../../src/backend/bisheng/app_runtime/domain/repositories/runtime_object_store.py)
+- 文件：[runtime_artifact_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_artifact_service.py)、[runtime_object_store.py](../../../src/backend/doberman_agent/app_runtime/domain/repositories/runtime_object_store.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-05、AC-06、AC-07、AC-10、AC-19、AC-23、AC-28、AC-42、AC-43、AC-53。
@@ -94,7 +94,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T012 环境目录和授权边界
 
-- 文件：[runtime_profile_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_profile_service.py)、[runtime_delivery.py](../../../src/backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py)
+- 文件：[runtime_profile_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_profile_service.py)、[runtime_delivery.py](../../../src/backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-11、AC-12、AC-14、AC-15、AC-16、AC-17、AC-21、AC-24、AC-30、AC-31、AC-55、AC-56、AC-57、AC-59。
@@ -108,7 +108,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T014 内部操作与投影API
 
-- 文件：[runtime_delivery.py](../../../src/backend/bisheng/app_runtime/api/endpoints/runtime_delivery.py)、[router.py](../../../src/backend/bisheng/app_runtime/api/router.py)
+- 文件：[runtime_delivery.py](../../../src/backend/doberman_agent/app_runtime/api/endpoints/runtime_delivery.py)、[router.py](../../../src/backend/doberman_agent/app_runtime/api/router.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-34、AC-35、AC-36、AC-37、AC-48、AC-49、AC-50、AC-53。
@@ -122,7 +122,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T016 backend附件SDK兼容
 
-- 文件：[app_storage_service.py](../../../src/backend/bisheng/app_runtime/domain/services/app_storage_service.py)、[app_storage.py](../../../src/backend/bisheng/app_runtime/api/endpoints/app_storage.py)
+- 文件：[app_storage_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/app_storage_service.py)、[app_storage.py](../../../src/backend/doberman_agent/app_runtime/api/endpoints/app_storage.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-05、AC-08、AC-09、AC-10、AC-38、AC-39、AC-51、AC-53、AC-60。
@@ -136,21 +136,21 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T018 新版清单与旧模式兼容
 
-- 文件：[app_manifest.py](../../../src/backend/bisheng/app_publish/domain/schemas/app_manifest.py)、[manifest_validator.py](../../../src/backend/bisheng/app_publish/domain/services/manifest_validator.py)
+- 文件：[app_manifest.py](../../../src/backend/doberman_agent/app_publish/domain/schemas/app_manifest.py)、[manifest_validator.py](../../../src/backend/doberman_agent/app_publish/domain/services/manifest_validator.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-11、AC-12、AC-13、AC-17、AC-18、AC-25、AC-33、AC-60。
 
 ### T019 CLI应用包交付合同与失败测试
 
-- 文件：[test_delivery_v2.py](../../../src/bisheng-cli/tests/test_delivery_v2.py)
+- 文件：[test_delivery_v2.py](../../../src/doberman-agent-cli/tests/test_delivery_v2.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：独立进程单元/合同或配置静态检查。
 - AC：AC-07、AC-11、AC-13、AC-17、AC-25、AC-60。
 
 ### T020 CLI应用包交付
 
-- 文件：[project.py](../../../src/bisheng-cli/bisheng_cli/project.py)、[packaging.py](../../../src/bisheng-cli/bisheng_cli/packaging.py)
+- 文件：[project.py](../../../src/doberman-agent-cli/doberman_agent_cli/project.py)、[packaging.py](../../../src/doberman-agent-cli/doberman_agent_cli/packaging.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：独立进程单元/合同或配置静态检查。
 - AC：AC-07、AC-11、AC-13、AC-17、AC-25、AC-60。
@@ -234,7 +234,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T032 F055交付准备接线
 
-- 文件：[publish_pipeline_service.py](../../../src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py)
+- 文件：[publish_pipeline_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-11、AC-12、AC-13、AC-19、AC-29、AC-32、AC-33。
@@ -248,7 +248,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T034 版本冻结与凭据代际
 
-- 文件：[version_service.py](../../../src/backend/bisheng/app_publish/domain/services/version_service.py)、[app_credential_service.py](../../../src/backend/bisheng/app_publish/domain/services/app_credential_service.py)
+- 文件：[version_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/version_service.py)、[app_credential_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-15、AC-16、AC-19、AC-33、AC-36、AC-38、AC-51、AC-57、AC-60。
@@ -262,7 +262,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T036 F054/F055安全上线
 
-- 文件：[publish_online_service.py](../../../src/backend/bisheng/app_publish/domain/services/publish_online_service.py)、[app_state_service.py](../../../src/backend/bisheng/app_runtime/domain/services/app_state_service.py)
+- 文件：[publish_online_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py)、[app_state_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-02、AC-09、AC-34、AC-35、AC-36、AC-37、AC-38、AC-39、AC-40、AC-41、AC-42、AC-43、AC-44、AC-46。
@@ -304,7 +304,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T042 环境导入及owner维护API
 
-- 文件：[runtime_management.py](../../../src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py)、[runtime_management_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py)
+- 文件：[runtime_management.py](../../../src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py)、[runtime_management_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-14、AC-15、AC-24、AC-28、AC-30、AC-35、AC-45、AC-47、AC-53。
@@ -388,7 +388,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T054 CLI可分发wheel及锁定依赖
 
-- 文件：[bisheng_cli-3.0.0-py3-none-any.whl](../../../src/backend/bisheng/dev_toolkit/artifacts/bisheng_cli-3.0.0-py3-none-any.whl)、[manifest.json](../../../src/backend/bisheng/dev_toolkit/artifacts/manifest.json)
+- 文件：[doberman_agent_cli-3.0.0-py3-none-any.whl](../../../src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_cli-3.0.0-py3-none-any.whl)、[manifest.json](../../../src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-05、AC-13、AC-54、AC-60。
@@ -416,35 +416,35 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T058 发布交付协调器
 
-- 文件：[runtime_delivery_coordinator.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_delivery_coordinator.py)
+- 文件：[runtime_delivery_coordinator.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_delivery_coordinator.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-05、AC-15、AC-33、AC-37、AC-39、AC-41、AC-63。
 
 ### T059 凭据保护与执行代际读取
 
-- 文件：[runtime_payload.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_payload.py)、[runtime_credential_repository.py](../../../src/backend/bisheng/app_runtime/domain/repositories/runtime_credential_repository.py)
+- 文件：[runtime_payload.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_payload.py)、[runtime_credential_repository.py](../../../src/backend/doberman_agent/app_runtime/domain/repositories/runtime_credential_repository.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-39、AC-51、AC-53。
 
 ### T060 路由和出站投影业务
 
-- 文件：[runtime_projection_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py)、[runtime_egress_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_egress_service.py)
+- 文件：[runtime_projection_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py)、[runtime_egress_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_egress_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-39、AC-48、AC-49、AC-50、AC-51、AC-53。
 
 ### T061 存量与离线内容校验业务
 
-- 文件：[runtime_upgrade_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_upgrade_service.py)、[runtime_offline_package.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_offline_package.py)
+- 文件：[runtime_upgrade_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_upgrade_service.py)、[runtime_offline_package.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_offline_package.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-07、AC-13、AC-27、AC-30、AC-46、AC-57、AC-60。
 
 ### T062 控制客户端与范围回收
 
-- 文件：[runtime_control_client.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_control_client.py)、[runtime_cleanup_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_cleanup_service.py)
+- 文件：[runtime_control_client.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_control_client.py)、[runtime_cleanup_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_cleanup_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-09、AC-10、AC-26、AC-63。
@@ -500,14 +500,14 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T070 审批预览与授权接线
 
-- 文件：[preview_instance_service.py](../../../src/backend/bisheng/app_publish/domain/services/preview_instance_service.py)、[entry_authz_service.py](../../../src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py)
+- 文件：[preview_instance_service.py](../../../src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py)、[entry_authz_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-09、AC-33、AC-48、AC-51。
 
 ### T071 SDK中间件与创建入口约束
 
-- 文件：[http_middleware.py](../../../src/backend/bisheng/utils/http_middleware.py)、[test_runtime_layer_switch.py](../../../src/backend/test/app_runtime/test_runtime_layer_switch.py)
+- 文件：[http_middleware.py](../../../src/backend/doberman_agent/utils/http_middleware.py)、[test_runtime_layer_switch.py](../../../src/backend/test/app_runtime/test_runtime_layer_switch.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-05、AC-07、AC-53、AC-60。
@@ -521,7 +521,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T073 数据恢复审计登记
 
-- 文件：[audit_log.py](../../../src/backend/bisheng/database/models/audit_log.py)、[constants.py](../../../src/backend/bisheng/app_runtime/domain/constants.py)
+- 文件：[audit_log.py](../../../src/backend/doberman_agent/database/models/audit_log.py)、[constants.py](../../../src/backend/doberman_agent/app_runtime/domain/constants.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-45、AC-47。
@@ -598,7 +598,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T084 CLI及版本交付登记
 
-- 文件：[README.md](../../../src/bisheng-cli/README.md)、[release-contract.md](../../../features/v3.0.0/release-contract.md)
+- 文件：[README.md](../../../src/doberman-agent-cli/README.md)、[release-contract.md](../../../features/v3.0.0/release-contract.md)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：接口/字段/目录按工作树同步，输入评审文档哈希保持。
 - AC：AC-13、AC-30、AC-54、AC-58、AC-60、AC-62。
@@ -612,21 +612,21 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T086 平台执行事实与旧RPC适配
 
-- 文件：[runtime_operation_service.py](../../../src/backend/bisheng/app_runtime/domain/services/runtime_operation_service.py)、[orchestrator_client.py](../../../src/backend/bisheng/app_runtime/domain/services/orchestrator_client.py)
+- 文件：[runtime_operation_service.py](../../../src/backend/doberman_agent/app_runtime/domain/services/runtime_operation_service.py)、[orchestrator_client.py](../../../src/backend/doberman_agent/app_runtime/domain/services/orchestrator_client.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：backend 真SQL/服务/ASGI合同与既有发布回归。
 - AC：AC-06、AC-29、AC-35、AC-36、AC-37、AC-48、AC-50、AC-53、AC-63。
 
 ### T087 CLI既有入口回归适配
 
-- 文件：[test_cli.py](../../../src/bisheng-cli/tests/test_cli.py)
+- 文件：[test_cli.py](../../../src/doberman-agent-cli/tests/test_cli.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：独立进程单元/合同或配置静态检查。
 - AC：AC-11、AC-13、AC-17、AC-60。
 
 ### T088 CLI命令分发接线
 
-- 文件：[cli.py](../../../src/bisheng-cli/bisheng_cli/cli.py)、[main.py](../../../src/bisheng-cli/bisheng_cli/main.py)
+- 文件：[cli.py](../../../src/doberman-agent-cli/doberman_agent_cli/cli.py)、[main.py](../../../src/doberman-agent-cli/doberman_agent_cli/main.py)
 - 结果：本地任务合同完成；运行边界见验证汇总。
 - 证据：独立进程单元/合同或配置静态检查。
 - AC：AC-11、AC-13、AC-17、AC-60。
@@ -642,21 +642,21 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 ### T090 后台租户上下文执行边界
 
-- 范围：`src/backend/bisheng/core/context/tenant.py`、`src/backend/test/tenant/test_tenant_execution_scope.py`。
+- 范围：`src/backend/doberman_agent/core/context/tenant.py`、`src/backend/test/tenant/test_tenant_execution_scope.py`。
 - AC：AC-61、AC-62。
 - L1：PASS；绑定已验证目标租户，临时收窄visible set并清除继承的admin override/bypass，嵌套、异常和并发均恢复原上下文。
 - 证据：修复前新增回归3 failed/7 passed，修复后包含租户过滤/owner投影的组合回归56 passed；六个Python文件Ruff与arch-guard通过。109真实新库多租户启动初始化18项系统资源，首管理员注册成功。
 
 ### T091 系统资源启动投影租户绑定
 
-- 范围：`src/backend/bisheng/permission/application/system_resource_reconcile.py`、`src/backend/test/permission/test_f048_system_resource_reconcile.py`。
+- 范围：`src/backend/doberman_agent/permission/application/system_resource_reconcile.py`、`src/backend/test/permission/test_f048_system_resource_reconcile.py`。
 - AC：AC-61、AC-62。
 - L1：PASS；每个系统资源投影使用其可信tenant_id执行，保留原权限授权入口，不以全局bypass规避过滤。
 - 证据：修复前新增回归3 failed/7 passed，修复后包含租户过滤/owner投影的组合回归56 passed；六个Python文件Ruff与arch-guard通过。109真实新库多租户启动初始化18项系统资源，首管理员注册成功。
 
 ### T092 首次管理员仪表盘投影上下文
 
-- 范围：`src/backend/bisheng/api/services/f048_preset_dashboard_bootstrap.py`、`src/backend/test/permission/test_f048_preset_dashboard_bootstrap.py`。
+- 范围：`src/backend/doberman_agent/api/services/f048_preset_dashboard_bootstrap.py`、`src/backend/test/permission/test_f048_preset_dashboard_bootstrap.py`。
 - AC：AC-61、AC-62。
 - L1：PASS；首次自然注册及启动对账的预置dashboard owner投影显式绑定Root租户；已有owner与投影的幂等逻辑保持。
 - 证据：修复前新增回归3 failed/7 passed，修复后包含租户过滤/owner投影的组合回归56 passed；六个Python文件Ruff与arch-guard通过。109真实新库多租户启动初始化18项系统资源，首管理员注册成功。
@@ -668,14 +668,14 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 ### T093 字节计数范围与模型规范检查
 
 - L1：PASS；size_bytes和offset使用BigInteger，覆盖15表JsonType/时间默认/租户/唯一约束和索引静态检查，符合2GiB材料和10GiB快照合同；DM8不连接。
-- 文件：`src/backend/bisheng/app_runtime/domain/models/runtime_delivery.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`。
+- 文件：`src/backend/doberman_agent/app_runtime/domain/models/runtime_delivery.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`。
 - AC：AC-6、AC-35、AC-61。
 - 证据：model-review.md / model-review.json / model-review-tests.txt；没有连接真实DM8或执行新revision的真实升级。
 
 ### T094 已有运行时字节字段扩容迁移
 
 - L1：PASS；挂接已核对single head merge_vibe_f077_heads，DDL-only INTEGER到BIGINT；新库/已扩容跳过，异常类型失败，降级保留宽列；组合28项回归通过。
-- 文件：`src/backend/bisheng/core/database/alembic/versions/f086_runtime_byte_counters.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`。
+- 文件：`src/backend/doberman_agent/core/database/alembic/versions/f086_runtime_byte_counters.py`、`src/backend/test/app_runtime/test_runtime_model_contracts.py`。
 - AC：AC-6、AC-35、AC-61。
 - 证据：model-review.md / model-review.json / model-review-tests.txt；没有连接真实DM8或执行新revision的真实升级。
 
@@ -683,7 +683,7 @@ backend 两项失败在未改基线复现；frontend lint 95错误/1警告的归
 
 - L1：PASS，同一代理复核，无独立代理评审。范围仅.github/workflows/runtime-images.yml与scripts/build_runtime_images.sh两处grep替换，commit 755d4456e5；无服务接口/权限/数据模型变更。分层、数据库、前端约定不适用；命名、无凭据泄露、设计同步通过，前置T052/T047已完成。
 - shell与YAML语法通过；真实脚本guard的缺标签/已存在/认证失败三个隔离分支通过，现有镜像合同2 passed。已有标签拒绝为本地受控Registry结果验证，未额外重跑公开发行去覆盖既有标签。
-- [GitHub原生发行](https://github.com/dataelement/bisheng/actions/runs/39567381522)三job成功；两架构各7镜像、应用包原生集成、多架构服务索引和catalog成功。109公开服务镜像隔离启动/访问检查通过，原27服务容器不变，测试资源已回收。
+- [GitHub原生发行](https://github.com/cp7553479/doberman-agent/actions/runs/39567381522)三job成功；两架构各7镜像、应用包原生集成、多架构服务索引和catalog成功。109公开服务镜像隔离启动/访问检查通过，原27服务容器不变，测试资源已回收。
 - T053关闭；当前92/94，T055/T056仍开放。正式生产版本、完整断网新装、所有故障组合、平台目录导入不据此声称完成。证据：e2e-evidence/2026-10-21-ci-release/。
 
 ## 2026-10-23 开发整合定向复核

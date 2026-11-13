@@ -149,8 +149,8 @@ async def _build_linsight_agent(model):
 
     from langgraph.checkpoint.memory import InMemorySaver
 
-    from bisheng.common.services.config_service import ConfigService
-    from bisheng.linsight.domain.services import agent_factory
+    from doberman_agent.common.services.config_service import ConfigService
+    from doberman_agent.linsight.domain.services import agent_factory
 
     svid = f"e2e-resilience-{uuid.uuid4().hex[:10]}"
     session_model = type("S", (), {"id": svid, "tenant_id": 1, "user_id": 1, "model": None})()
@@ -228,7 +228,7 @@ async def r2_main_content_filter_raises():
     # And the failure classifier turns that raised exception into a precise,
     # frontend-friendly error_type (this is what _handle_task_failure emits).
     if raised is not None:
-        from bisheng.common.services.llm_error_classifier import classify_for_event
+        from doberman_agent.common.services.llm_error_classifier import classify_for_event
 
         try:
             wrapped = RuntimeError(f"Agent task execution failed: {raised}")
@@ -250,7 +250,7 @@ async def r2_main_content_filter_raises():
 async def r3_subagent_degrade_continues():
     from langchain.agents import create_agent
 
-    from bisheng.linsight.domain.services.resilience_middleware import (
+    from doberman_agent.linsight.domain.services.resilience_middleware import (
         _DEGRADE_MESSAGE,
         LinsightModelResilienceMiddleware,
     )
@@ -321,7 +321,7 @@ async def r5_insufficient_quota_exhausted_is_rate_limit():
         f"raised={type(raised).__name__ if raised else None} model_calls={model.calls}",
     )
     if raised is not None:
-        from bisheng.common.services.llm_error_classifier import classify_for_event
+        from doberman_agent.common.services.llm_error_classifier import classify_for_event
 
         wrapped = RuntimeError(f"Agent task execution failed: {raised}")
         wrapped.__cause__ = raised  # mirror task_exec's `raise ... from e`
@@ -353,7 +353,7 @@ async def r6_billing_exhaustion_is_quota_fail_fast():
         f"raised={type(raised).__name__ if raised else None} model_calls={model.calls}",
     )
     if raised is not None:
-        from bisheng.common.services.llm_error_classifier import classify_for_event
+        from doberman_agent.common.services.llm_error_classifier import classify_for_event
 
         wrapped = RuntimeError(f"Agent task execution failed: {raised}")
         wrapped.__cause__ = raised

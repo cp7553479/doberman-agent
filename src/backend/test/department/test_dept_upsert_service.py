@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.sso_sync import SsoDeptParentMissingError
-from bisheng.sso_sync.domain.schemas.payloads import DepartmentUpsertItem
+from doberman_agent.common.errcode.sso_sync import SsoDeptParentMissingError
+from doberman_agent.sso_sync.domain.schemas.payloads import DepartmentUpsertItem
 
 
 def _dept(ext, *, id=1, path="/", is_deleted=0, parent_id=None, is_tenant_root=0, mounted_tenant_id=None):
@@ -36,7 +36,7 @@ def _dept(ext, *, id=1, path="/", is_deleted=0, parent_id=None, is_tenant_root=0
 @pytest.mark.asyncio
 class TestAssertParentChainExists:
     async def test_all_present_returns_mapping(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -47,14 +47,14 @@ class TestAssertParentChainExists:
             return {"A": d1, "B": d2}.get(ext)
 
         with patch(
-            "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+            "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
             new=fake_get,
         ):
             got = await DeptUpsertService.assert_parent_chain_exists(["A", "B"])
         assert set(got.keys()) == {"A", "B"}
 
     async def test_missing_raises_19312(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -62,7 +62,7 @@ class TestAssertParentChainExists:
             return _dept("A") if ext == "A" else None
 
         with patch(
-            "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+            "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
             new=fake_get,
         ):
             with pytest.raises(Exception) as exc_info:
@@ -75,7 +75,7 @@ class TestAssertParentChainExists:
         )
 
     async def test_soft_deleted_treated_as_missing(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -83,14 +83,14 @@ class TestAssertParentChainExists:
             return _dept(ext, is_deleted=1)
 
         with patch(
-            "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+            "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
             new=fake_get,
         ):
             with pytest.raises(Exception):
                 await DeptUpsertService.assert_parent_chain_exists(["A"])
 
     async def test_empty_input_is_noop(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -107,7 +107,7 @@ class TestUpsertFromSyncPayload:
         single default-org root instead of becoming its own root, so the
         whole platform keeps exactly one root department.
         """
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -119,7 +119,7 @@ class TestUpsertFromSyncPayload:
             ts=100,
         )
         with patch(
-            "bisheng.department.domain.services.department_service."
+            "doberman_agent.department.domain.services.department_service."
             "DepartmentTopologyProjectionService.aupsert_synced_department",
             new_callable=AsyncMock,
             return_value=_dept("TOP", id=99),
@@ -149,7 +149,7 @@ class TestUpsertFromSyncPayload:
         attaches as its own root (``parent_id=None, path='/'``) so SSO
         sync is never blocked.
         """
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -160,7 +160,7 @@ class TestUpsertFromSyncPayload:
             ts=100,
         )
         with patch(
-            "bisheng.department.domain.services.department_service."
+            "doberman_agent.department.domain.services.department_service."
             "DepartmentTopologyProjectionService.aupsert_synced_department",
             new_callable=AsyncMock,
             return_value=_dept("TOP", id=99),
@@ -179,7 +179,7 @@ class TestUpsertFromSyncPayload:
         assert kwargs["parent_path"] == ""
 
     async def test_nested_upsert_derives_path_from_parent(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -193,12 +193,12 @@ class TestUpsertFromSyncPayload:
         )
         with (
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
                 new_callable=AsyncMock,
                 return_value=parent,
             ),
             patch(
-                "bisheng.department.domain.services.department_service."
+                "doberman_agent.department.domain.services.department_service."
                 "DepartmentTopologyProjectionService.aupsert_synced_department",
                 new_callable=AsyncMock,
                 return_value=_dept("C", id=9),
@@ -217,7 +217,7 @@ class TestUpsertFromSyncPayload:
         assert kwargs["parent_path"] == "/2/"
 
     async def test_missing_parent_raises_19312(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -230,12 +230,12 @@ class TestUpsertFromSyncPayload:
         )
         with (
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.department.domain.services.department_service."
+                "doberman_agent.department.domain.services.department_service."
                 "DepartmentTopologyProjectionService.aupsert_synced_department",
                 new_callable=AsyncMock,
             ) as upsert_mock,
@@ -250,7 +250,7 @@ class TestUpsertFromSyncPayload:
         upsert_mock.assert_not_awaited()
 
     async def test_soft_deleted_parent_raises_19312(self):
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -263,12 +263,12 @@ class TestUpsertFromSyncPayload:
         )
         with (
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
                 new_callable=AsyncMock,
                 return_value=dead_parent,
             ),
             patch(
-                "bisheng.department.domain.services.department_service."
+                "doberman_agent.department.domain.services.department_service."
                 "DepartmentTopologyProjectionService.aupsert_synced_department",
                 new_callable=AsyncMock,
             ),
@@ -287,10 +287,10 @@ class TestUpsertFromSyncPayload:
         already inside another mount, raise 22001 instead of letting the
         DAO write a nested ``is_tenant_root=1`` row.
         """
-        from bisheng.common.errcode.tenant_tree import (
+        from doberman_agent.common.errcode.tenant_tree import (
             TenantTreeNestingForbiddenError,
         )
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -310,16 +310,16 @@ class TestUpsertFromSyncPayload:
 
         with (
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
                 new_callable=AsyncMock,
                 return_value=new_parent,
             ),
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aassert_reparent_legal",
                 new=_reject,
             ),
             patch(
-                "bisheng.department.domain.services.department_service."
+                "doberman_agent.department.domain.services.department_service."
                 "DepartmentTopologyProjectionService.aupsert_synced_department",
                 new_callable=AsyncMock,
             ) as upsert_mock,
@@ -339,7 +339,7 @@ class TestUpsertFromSyncPayload:
         trigger the INV-T1 gate (avoids per-item DAO churn on idempotent
         sync rounds where most items are unchanged).
         """
-        from bisheng.sso_sync.domain.services.dept_upsert_service import (
+        from doberman_agent.sso_sync.domain.services.dept_upsert_service import (
             DeptUpsertService,
         )
 
@@ -355,16 +355,16 @@ class TestUpsertFromSyncPayload:
         gate = AsyncMock()
         with (
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aget_by_source_external_id",
                 new_callable=AsyncMock,
                 return_value=new_parent,
             ),
             patch(
-                "bisheng.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.sso_sync.domain.services.dept_upsert_service.DepartmentDao.aassert_reparent_legal",
                 new=gate,
             ),
             patch(
-                "bisheng.department.domain.services.department_service."
+                "doberman_agent.department.domain.services.department_service."
                 "DepartmentTopologyProjectionService.aupsert_synced_department",
                 new_callable=AsyncMock,
                 return_value=existing,

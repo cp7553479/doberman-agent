@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def query(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_query_service as module
+    from doberman_agent.app_runtime.domain.services import app_query_service as module
 
     monkeypatch.setattr(module.AppQueryService, "_load_visible", AsyncMock(return_value=SimpleNamespace(id="app-a")))
     return module
@@ -31,7 +31,7 @@ async def test_live_nullable_facts_and_public_whitelist(query, monkeypatch):
 
 
 async def test_ambiguous_old_manager_404_does_not_read_historical_instance(query, monkeypatch):
-    from bisheng.common.errcode.app_factory import AppNotFoundError, AppOrchestratorUnavailableError
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError, AppOrchestratorUnavailableError
 
     monkeypatch.setattr(query.orchestrator_client, "status", AsyncMock(side_effect=AppNotFoundError()))
 
@@ -44,7 +44,7 @@ async def test_ambiguous_old_manager_404_does_not_read_historical_instance(query
 
 
 async def test_observer_failure_is_not_no_execution(query, monkeypatch):
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
 
     monkeypatch.setattr(query.orchestrator_client, "status", AsyncMock(side_effect=AppOrchestratorUnavailableError()))
     with pytest.raises(AppOrchestratorUnavailableError):

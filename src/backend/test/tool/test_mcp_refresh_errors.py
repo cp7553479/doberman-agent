@@ -5,7 +5,7 @@ import httpx
 import pytest
 from httpx_sse import SSEError
 
-from bisheng.tool.domain.services.mcp_errors import mcp_error_code
+from doberman_agent.tool.domain.services.mcp_errors import mcp_error_code
 
 
 @pytest.mark.parametrize(
@@ -31,7 +31,7 @@ def test_http_errors_have_specific_business_codes(status, code):
 
 
 async def test_refresh_reports_each_failure_and_continues(monkeypatch):
-    from bisheng.tool.domain.services import tool as module
+    from doberman_agent.tool.domain.services import tool as module
 
     monkeypatch.setattr(
         module.GptsToolsDao,

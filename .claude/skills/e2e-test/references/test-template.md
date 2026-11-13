@@ -190,13 +190,13 @@ def assert_resp_error(resp, expected_code):
     assert body["status_code"] == expected_code
 
 # ❌ 错误：只检查 HTTP 状态码
-assert resp.status_code == 400  # BiSheng 业务错误也返回 HTTP 200
+assert resp.status_code == 400  # DobermanAgent 业务错误也返回 HTTP 200
 ```
 
 ## 认证模式
 
 ```python
-# ✅ JWT Cookie 认证（BiSheng 主要认证方式）
+# ✅ JWT Cookie 认证（DobermanAgent 主要认证方式）
 headers = {"Cookie": f"access_token_cookie={token}"}
 
 # ✅ 或 Header 认证

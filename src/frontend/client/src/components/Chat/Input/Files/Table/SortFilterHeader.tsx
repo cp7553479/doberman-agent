@@ -1,7 +1,7 @@
 import { Column } from '@tanstack/react-table';
 import { ListFilter, FilterX } from 'lucide-react';
 import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon } from '@radix-ui/react-icons';
-import { Dropdown, DropdownItem, DropdownSeparator } from '@bisheng/ui';
+import { Dropdown, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
 import { Button } from '~/components/ui/Button';
 import { useLocalize, TranslationKeys } from '~/hooks';
 import { cn } from '~/utils';

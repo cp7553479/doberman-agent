@@ -1,14 +1,14 @@
 // @ts-strict-ignore
 import { PlatformImagePreview } from '@/components/bs-comp/preview/DocumentPreview';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 import type { PdfScrollContext } from '@/components/bs-comp/preview/PlatformPdfPreview';
 import { labelTop as pdfLabelTop } from '@/components/bs-comp/preview/pdfEditing';
 import FileView from "@/components/bs-comp/FileView";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { cn } from "@/utils";
 
-import { ExcelPreview } from "@bisheng/file-viewers";
+import { ExcelPreview } from "@doberman-agent/file-viewers";
 import React,{ useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import useKnowledgeStore from "../useKnowledgeStore";

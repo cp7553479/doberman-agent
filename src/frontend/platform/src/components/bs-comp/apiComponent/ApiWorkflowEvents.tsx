@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/bs-ui/popover';
@@ -10,7 +10,7 @@ import { JsonItem } from './ApiAccess';
 
 export function ApiWorkflowEvents() {
     const { t } = useTranslation()
-    const brand = t('bisheng') === 'BISHENG' ? '' : t('bisheng')
+    const brand = t('doberman_agent') === 'doberman-agent' ? '' : t('doberman_agent')
 
     return (
     <Card className="mb-8">
@@ -18,7 +18,7 @@ export function ApiWorkflowEvents() {
             <CardTitle id="guide-t3">{t("api.workflowDoc.event_reference")}</CardTitle>
         </CardHeader>
         <CardContent className='relative'>
-            <p className='bisheng-label py-2'>{t("api.workflowDoc.event_schema_intro")}</p>
+            <p className='doberman_agent-label py-2'>{t("api.workflowDoc.event_schema_intro")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -120,10 +120,10 @@ export function ApiWorkflowEvents() {
                     </TableRow>
                 </TableBody>
             </Table>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.show_message")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.show_message")}</p>
 
             <h3 className='mt-8' id="guide-2">{t("api.workflowDoc.guide_question_event")}</h3>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -149,14 +149,14 @@ export function ApiWorkflowEvents() {
                     </TableRow>
                 </TableBody>
             </Table>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.handle_questions")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.handle_questions")}</p>
 
             <h3 className='mt-8' id="guide-3">{t("api.workflowDoc.dialog_input_event")}</h3>
             <div className='border border-red-200 rounded-sm bg-orange-100 p-4 text-sm'>
-                <p className='bisheng-label'>{t("api.workflowDoc.when_workflow_returns")}<span className="bg-orange-50">event="input"</span>{t("api.workflowDoc.and_condition")}<span className="bg-orange-50">input_type="dialog_input"</span>{t("api.workflowDoc.show_dialog")}</p>
-                <p className='bisheng-label mt-2'>{t("api.workflowDoc.next_request")}<span className="bg-orange-50">/invoke</span>{t("api.workflowDoc.required_keys")}<span className="bg-orange-50">node_id</span>,<span className="bg-orange-50">message_id</span>,<span className="bg-orange-50">session_id</span>{t("api.workflowDoc.and_dialog_input")}</p>
+                <p className='doberman_agent-label'>{t("api.workflowDoc.when_workflow_returns")}<span className="bg-orange-50">event="input"</span>{t("api.workflowDoc.and_condition")}<span className="bg-orange-50">input_type="dialog_input"</span>{t("api.workflowDoc.show_dialog")}</p>
+                <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.next_request")}<span className="bg-orange-50">/invoke</span>{t("api.workflowDoc.required_keys")}<span className="bg-orange-50">node_id</span>,<span className="bg-orange-50">message_id</span>,<span className="bg-orange-50">session_id</span>{t("api.workflowDoc.and_dialog_input")}</p>
             </div>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -183,8 +183,8 @@ export function ApiWorkflowEvents() {
                 </TableBody>
             </Table>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_label")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_label")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.render_dialog")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.include_fields")}<code className="bg-gray-200 p-1 rounded">node_id</code>、<code className="bg-gray-200 p-1 rounded">session_id</code>、<code className="bg-gray-200 p-1 rounded">message_id</code>{t("api.workflowDoc.invoke_again")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.without_files")}</li>
@@ -199,9 +199,9 @@ export function ApiWorkflowEvents() {
             </SyntaxHighlighter>
 
             <div className="mb-6">
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.with_files")}</li>
-                    <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                    <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                         <li className='mt-2 leading-6'>{t("api.workflowDoc.upload_intro")}</li>
                     </ul>
                 </ul>
@@ -226,8 +226,8 @@ def upload_file(local_path: str):
             </SyntaxHighlighter>
 
             <div className="mb-6">
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
-                    <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
+                    <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                         <li className='mt-2 leading-6'>{t("api.workflowDoc.combine_input_files")}</li>
                     </ul>
                 </ul>
@@ -242,10 +242,10 @@ def upload_file(local_path: str):
 
             <h3 className='mt-8' id="guide-5">{t("api.workflowDoc.form_input_event")}</h3>
             <div className='border border-red-200 rounded-sm bg-orange-100 p-4 text-sm'>
-                <p className='bisheng-label'>{t("api.workflowDoc.when_workflow_returns")}<span className="bg-orange-50">event="input"</span>{t("api.workflowDoc.and_condition")}<span className="bg-orange-50">input_type="form_input"</span>{t("api.workflowDoc.show_form")}</p>
-                <p className='bisheng-label mt-2'>{t("api.workflowDoc.next_request")}<span className="bg-orange-50">/invoke</span>{t("api.workflowDoc.required_fields")}<span className="bg-orange-50">node_id</span>, <span className="bg-orange-50">message_id</span>, <span className="bg-orange-50">session_id</span>{t("api.workflowDoc.and_form_values")}</p>
+                <p className='doberman_agent-label'>{t("api.workflowDoc.when_workflow_returns")}<span className="bg-orange-50">event="input"</span>{t("api.workflowDoc.and_condition")}<span className="bg-orange-50">input_type="form_input"</span>{t("api.workflowDoc.show_form")}</p>
+                <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.next_request")}<span className="bg-orange-50">/invoke</span>{t("api.workflowDoc.required_fields")}<span className="bg-orange-50">node_id</span>, <span className="bg-orange-50">message_id</span>, <span className="bg-orange-50">session_id</span>{t("api.workflowDoc.and_form_values")}</p>
             </div>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -272,8 +272,8 @@ def upload_file(local_path: str):
                 </TableBody>
             </Table>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_label")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_label")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.parse_fields")}<code className="bg-gray-200 p-1 rounded">input_schema.value</code>{t("api.workflowDoc.render_form_fields")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.upload_intro")}</li>
                 </ul>
@@ -296,7 +296,7 @@ def upload_file(local_path: str):
  financeA = upload_file("caibao.pdf")
  financeB = upload_file("caibao2.pdf")`}
             </SyntaxHighlighter>
-            <p className='mt-4 bisheng-label'>{t("api.workflowDoc.submission_keys")}<code className="bg-gray-200 p-1 rounded">key</code>{t("api.workflowDoc.include_context")}<code className="bg-gray-200 p-1 rounded">session_id</code>、<code className="bg-gray-200 p-1 rounded">message_id</code>、<code className="bg-gray-200 p-1 rounded">node_id</code>{t("api.workflowDoc.required_context")}</p>
+            <p className='mt-4 doberman_agent-label'>{t("api.workflowDoc.submission_keys")}<code className="bg-gray-200 p-1 rounded">key</code>{t("api.workflowDoc.include_context")}<code className="bg-gray-200 p-1 rounded">session_id</code>、<code className="bg-gray-200 p-1 rounded">message_id</code>、<code className="bg-gray-200 p-1 rounded">node_id</code>{t("api.workflowDoc.required_context")}</p>
             <SyntaxHighlighter
                 className="w-full max-w-[80vw] overflow-auto custom-scroll"
                 language={'json'}
@@ -306,7 +306,7 @@ def upload_file(local_path: str):
             </SyntaxHighlighter>
 
             <h3 className='mt-8' id="guide-6">{t("api.workflowDoc.output_event")}</h3>
-            <p className="bisheng-label py-2">{t("api.workflowDoc.event_example")}</p>
+            <p className="doberman_agent-label py-2">{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -336,8 +336,8 @@ def upload_file(local_path: str):
                 </TableBody>
             </Table>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_label")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_label")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.display_value")}<code className="bg-gray-200 p-1 rounded">output_schema.message</code>{t("api.workflowDoc.show_user")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.if_value")}<code className="bg-gray-200 p-1 rounded">files</code>{t("api.workflowDoc.show_file_actions")}</li>
                 </ul>
@@ -345,9 +345,9 @@ def upload_file(local_path: str):
 
             <h3 className='mt-8' id="guide-7">{t("api.workflowDoc.inline_input_event")}</h3>
             <div className='border border-red-200 rounded-sm bg-orange-100 p-4 text-sm'>
-                <p className='bisheng-label'>{t("api.workflowDoc.waiting_state")}</p>
+                <p className='doberman_agent-label'>{t("api.workflowDoc.waiting_state")}</p>
             </div>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -376,8 +376,8 @@ def upload_file(local_path: str):
                 </TableBody>
             </Table>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_label")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_label")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.display")}<code className="bg-gray-200 p-1 rounded">output_schema</code>{t("api.workflowDoc.content_suffix")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.based_on")}<code className="bg-gray-200 p-1 rounded">input_schema</code>{t("api.workflowDoc.render_inline_input")}<code className="bg-gray-200 p-1 rounded">input_schema.value.value</code>{t("api.workflowDoc.editable_default")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.submit_edited")}</li>
@@ -393,9 +393,9 @@ def upload_file(local_path: str):
 
             <h3 className='mt-8' id="guide-8">{t("api.workflowDoc.choice_event")}</h3>
             <div className='border border-red-200 rounded-sm bg-orange-100 p-4 text-sm'>
-                <p className='bisheng-label'>{t("api.workflowDoc.waiting_state")}</p>
+                <p className='doberman_agent-label'>{t("api.workflowDoc.waiting_state")}</p>
             </div>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -424,8 +424,8 @@ def upload_file(local_path: str):
                 </TableBody>
             </Table>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_label")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_label")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.display")}<code className="bg-gray-200 p-1 rounded">output_schema</code>{t("api.workflowDoc.content_suffix")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.based_on")}<code className="bg-gray-200 p-1 rounded">input_schema</code>{t("api.workflowDoc.render_options")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.submit_choice")}</li>
@@ -440,7 +440,7 @@ def upload_file(local_path: str):
             </SyntaxHighlighter>
 
             <h3 className='mt-8' id='guide-9'>{t("api.workflowDoc.stream_chunk_event")}</h3>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <SyntaxHighlighter
                 className="w-full overflow-auto custom-scroll"
                 language={'json'}
@@ -449,8 +449,8 @@ def upload_file(local_path: str):
                 {t("api.workflowDoc.stream_chunk_example")}
             </SyntaxHighlighter>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.client_handling")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.client_handling")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'><code className="bg-gray-200 p-1 rounded">status="stream"</code>{t("api.workflowDoc.stream_identity")}<code className="bg-gray-200 p-1 rounded">node_execution_id</code>{t("api.workflowDoc.and")}<code className="bg-gray-200 p-1 rounded">output_schema.output_key</code>{t("api.workflowDoc.stream_message_identity")}<code className="bg-gray-200 p-1 rounded">node_execution_id</code>{t("api.workflowDoc.so_use")}<code className="bg-gray-200 p-1 rounded">output_key</code>{t("api.workflowDoc.distinguish_messages")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.append_existing")}<code className="bg-gray-200 p-1 rounded">message</code>{t("api.workflowDoc.append_content")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.create_message")}<code className="bg-gray-200 p-1 rounded">message</code>{t("api.workflowDoc.subsequent_chunks")}<code className="bg-gray-200 p-1 rounded">message</code>{t("api.workflowDoc.combine_chunks")}</li>
@@ -458,7 +458,7 @@ def upload_file(local_path: str):
             </div>
 
             <h3 className='mt-8' id="guide-10">{t("api.workflowDoc.stream_end_event")}</h3>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <SyntaxHighlighter
                 className="w-full overflow-auto custom-scroll"
                 language={'json'}
@@ -467,8 +467,8 @@ def upload_file(local_path: str):
                 {t("api.workflowDoc.stream_end_example")}
             </SyntaxHighlighter>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_title")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_title")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>1. <code className="bg-gray-200 p-1 rounded">status="end"</code>{t("api.workflowDoc.find_completed_message")}<code className="bg-gray-200 p-1 rounded">message</code></li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.replace_with")}<code className="bg-gray-200 p-1 rounded">message</code>{t("api.workflowDoc.replace_final_answer")}</li>
                 </ul>
@@ -476,9 +476,9 @@ def upload_file(local_path: str):
 
             <h3 className='mt-8' id="guide-11">{t("api.workflowDoc.close_event")}</h3>
             <div className='border border-red-200 rounded-sm bg-orange-100 p-4 text-sm'>
-                <p className='bisheng-label'>{t("api.workflowDoc.when_received")}<span className="bg-orange-50">event="close"</span>{t("api.workflowDoc.workflow_finished")}</p>
+                <p className='doberman_agent-label'>{t("api.workflowDoc.when_received")}<span className="bg-orange-50">event="close"</span>{t("api.workflowDoc.workflow_finished")}</p>
             </div>
-            <p className='bisheng-label mt-2'>{t("api.workflowDoc.event_example")}</p>
+            <p className='doberman_agent-label mt-2'>{t("api.workflowDoc.event_example")}</p>
             <SyntaxHighlighter
                 className="w-full overflow-auto custom-scroll"
                 language={'json'}
@@ -487,8 +487,8 @@ def upload_file(local_path: str):
                 {t("api.workflowDoc.close_example")}
             </SyntaxHighlighter>
             <div className="mb-6">
-                <p className="bisheng-label py-2">{t("api.workflowDoc.handling_title")}</p>
-                <ul className="list-disc list-inside pl-4 mt-2 bisheng-label pb-2">
+                <p className="doberman_agent-label py-2">{t("api.workflowDoc.handling_title")}</p>
+                <ul className="list-disc list-inside pl-4 mt-2 doberman_agent-label pb-2">
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.check_close_message")}</li>
                     <li className='mt-2 leading-6'>{t("api.workflowDoc.show_close_error")}</li>
                 </ul>

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover"
 import { formatDate } from "@/util/utils"

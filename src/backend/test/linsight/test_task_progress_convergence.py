@@ -22,15 +22,15 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.linsight.domain.models.linsight_execute_task import (
+from doberman_agent.linsight.domain.models.linsight_execute_task import (
     ExecuteTaskStatusEnum,
     ExecuteTaskTypeEnum,
     LinsightExecuteTask,
 )
-from bisheng.linsight.domain.services.state_message_manager import MessageEventType
-from bisheng.linsight.domain.services.stream_event_mapper import StreamEventMapper
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
-from bisheng_langchain.linsight.event import GenerateSubTask, TaskEnd, TaskStart
+from doberman_agent.linsight.domain.services.state_message_manager import MessageEventType
+from doberman_agent.linsight.domain.services.stream_event_mapper import StreamEventMapper
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent_langchain.linsight.event import GenerateSubTask, TaskEnd, TaskStart
 
 SVID = "1f3c9a20-7b4e-4d11-9c3a-0a1b2c3d4e5f"
 

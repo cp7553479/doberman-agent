@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.worker.information import knowledge_delivery as worker_mod
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.worker.information import knowledge_delivery as worker_mod
 
 
 async def test_route_task_visits_each_tenant_and_publishes_config_with_tenant_payload():

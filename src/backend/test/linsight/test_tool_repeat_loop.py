@@ -3,12 +3,12 @@
 The failure tier (``test_tool_loop_middleware.py``) only counts tool ERRORS. This
 file covers the other loop shape: the model re-submitting a byte-identical tool call
 that keeps SUCCEEDING. Measured on 114, 2026-08-14 — a kimi-k3 run re-sent the same
-``bisheng_code_interpreter`` call 79 times over 78 minutes (13.8M input tokens) with
+``doberman_agent_code_interpreter`` call 79 times over 78 minutes (13.8M input tokens) with
 zero todos advanced, and every existing guard stayed silent.
 
 Three fixture details are deliberately faithful to that incident; getting them wrong
 means testing something that cannot fail:
-1. ``tool_call_id`` is CONSTANT across turns (``bisheng_code_interpreter:0`` — what
+1. ``tool_call_id`` is CONSTANT across turns (``doberman_agent_code_interpreter:0`` — what
    kimi-k3 returns via tokenrouter), not the unique ``call_<uuid>`` other vendors send.
 2. The offloaded tool result carries ``status="success"`` — that is precisely why the
    failure counter never fired.
@@ -25,15 +25,15 @@ from langchain.agents.middleware.types import ModelRequest
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from bisheng.linsight.domain.services.tool_loop_middleware import (
+from doberman_agent.linsight.domain.services.tool_loop_middleware import (
     LinsightToolLoopBreakerMiddleware,
     LinsightToolLoopError,
     build_tool_loop_breaker_middleware,
 )
 
-CI_TOOL = "bisheng_code_interpreter"
+CI_TOOL = "doberman_agent_code_interpreter"
 # Constant across turns — the whole point. See module docstring.
-CI_CALL_ID = "bisheng_code_interpreter:0"
+CI_CALL_ID = "doberman_agent_code_interpreter:0"
 CI_ARGS = {"python_code": "import fitz\nprint('x')"}
 
 
@@ -181,15 +181,15 @@ async def test_parallel_identical_calls_count_as_one_turn():
     turn = AIMessage(
         content="",
         tool_calls=[
-            {"name": CI_TOOL, "args": CI_ARGS, "id": "bisheng_code_interpreter:0", "type": "tool_call"},
-            {"name": CI_TOOL, "args": CI_ARGS, "id": "bisheng_code_interpreter:1", "type": "tool_call"},
+            {"name": CI_TOOL, "args": CI_ARGS, "id": "doberman_agent_code_interpreter:0", "type": "tool_call"},
+            {"name": CI_TOOL, "args": CI_ARGS, "id": "doberman_agent_code_interpreter:1", "type": "tool_call"},
         ],
     )
     messages = []
     for _ in range(5):
         messages.append(turn)
-        messages.append(_offloaded_tm(call_id="bisheng_code_interpreter:0"))
-        messages.append(_offloaded_tm(call_id="bisheng_code_interpreter:1"))
+        messages.append(_offloaded_tm(call_id="doberman_agent_code_interpreter:0"))
+        messages.append(_offloaded_tm(call_id="doberman_agent_code_interpreter:1"))
     # 5 turns < hard 8: counting per-call would have reached 10 and aborted here.
     await mw.aafter_model({"messages": messages}, None)
 

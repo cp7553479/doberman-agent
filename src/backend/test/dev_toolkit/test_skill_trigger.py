@@ -17,7 +17,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from bisheng.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
+from doberman_agent.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
 
 FIXTURE = Path(__file__).parent / "fixtures" / "skill_trigger_samples.md"
 SKILL_MD = SKILLS_DIR / "deploy-hosting" / "SKILL.md"
@@ -42,7 +42,7 @@ DEPLOY_INTENT = (
 CORE_DESCRIPTION_TERMS = ("部署", "发布", "上线", "应用平台", "应用广场", "deploy")
 
 # AC-19: the trigger must not be bound to any product name.
-PRODUCT_NAMES = ("毕昇", "bisheng", "BiSheng", "BISHENG")
+PRODUCT_NAMES = ("doberman-agent", "doberman_agent", "doberman-agent", "DOBERMAN_AGENT")
 
 
 def _samples() -> list[str]:
@@ -62,7 +62,7 @@ def test_at_least_ten_samples():
 
 
 def test_samples_are_product_name_neutral():
-    # If a sample said "毕昇", triggering on it would prove name-matching, not the
+    # If a sample said "doberman-agent", triggering on it would prove name-matching, not the
     # intent-matching AC-19 actually requires.
     for sample in _samples():
         assert not any(name in sample for name in PRODUCT_NAMES), f"product name in sample: {sample!r}"

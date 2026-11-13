@@ -28,7 +28,7 @@
  * tokens come from execTokens; the live 用时 ticker is isolated in GroupHeaderLabel
  * so a 100ms tick re-renders only the header text, never the group body.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { memo, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from 'react';
 import { useLocalize } from '~/hooks';
 import { useCollapseState } from '~/store/linsightCollapse';

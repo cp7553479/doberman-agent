@@ -21,7 +21,7 @@
 
 - 遵循 `docs/constitution.md` C1–C7。本特性不新增表、不新增 DAO 入口、不新增错误码。
 - **INV-8（本版本契约新增）**：报告模板变量解析必须以**节点 ID** 为取数键；解析端必须永久兼容旧格式 `{{nodeId.field}}`。
-- **文档编辑器是外部服务**：模板编辑用的是独立部署的 OnlyOffice Document Server（前端加载 `office_url` 下的 `api.js`，后端持有 `office_jwt_secret` 用于签名）。BiSheng 只提供模板文件的取/存与回调端点，**编辑器本身不在本仓库**，能做的动作受 OnlyOffice 的 API 边界限制。
+- **文档编辑器是外部服务**：模板编辑用的是独立部署的 OnlyOffice Document Server（前端加载 `office_url` 下的 `api.js`，后端持有 `office_jwt_secret` 用于签名）。doberman-agent 只提供模板文件的取/存与回调端点，**编辑器本身不在本仓库**，能做的动作受 OnlyOffice 的 API 边界限制。
 - 变量占位符是**存量文档里的既有内容**，格式变更等同于一次数据格式演进：只能"新写新格式 + 老格式永久可读"，不能一刀切。
 
 ---
@@ -90,7 +90,7 @@
 `插入变量 → 占位符文本进文档 → 执行报告节点 → 提取占位符 → 按节点 ID 取数 → 替换 → 生成 docx`
 
 - **插入**：`ReportWordEdit.tsx` 通过 `SelectVar` 选中变量后，把文本经 `postMessage` 交给 OnlyOffice 插件写进文档。当前传的是 `nodeId.field`；**本特性改为 `显示名|nodeId.field`**。
-- **提取**：`backend/bisheng/workflow/nodes/report/docx_replace.py` —— 正则 `\{\{([^}]+)\}\}` 扫段落/表格/页眉页脚，返回**占位符原文**列表。
+- **提取**：`backend/doberman-agent/workflow/nodes/report/docx_replace.py` —— 正则 `\{\{([^}]+)\}\}` 扫段落/表格/页眉页脚，返回**占位符原文**列表。
 - **取数**：`workflow/nodes/report/report.py` 的 `_run()` 逐个调 `get_other_node_variable(占位符)` → 最终落到 `graph_state.py` 的 `get_variable_by_str()`，按 `node_id.var_key#index` 解析。**本特性在此之前插入 key 规范化**。
 - **替换**：`replace_and_save(variables, ...)`，字典 key 必须是占位符原文。
 

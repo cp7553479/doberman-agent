@@ -12,12 +12,12 @@ from uuid import uuid4
 import pytest
 from sqlmodel import Session, select
 
-from bisheng.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditManifest
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle as Title
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Query
-from bisheng.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
+from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditManifest
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle as Title
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Query
+from doberman_agent.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
 from test.dsh.content_safety_fixtures import SafetyIdentity
 from test.dsh.test_model_audit_flow import ADMIN, BASE, USER, call, fixture
 from test.dsh.test_model_audit_title import PATH, UPDATE, install
@@ -154,10 +154,10 @@ async def test_later_callback_fills_missing_label_without_renaming_snapshot(cont
 async def test_production_name_reader_reuses_governed_metadata_and_tenant_scope(monkeypatch):
     from types import SimpleNamespace
 
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.dsh.content_safety_runtime import get_content_safety_service
-    from bisheng.dsh.domain.services.profile import profile_scope
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.dsh.content_safety_runtime import get_content_safety_service
+    from doberman_agent.dsh.domain.services.profile import profile_scope
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     async def metadata(model_id):
         assert get_current_tenant_id() == 202 and model_id == 42

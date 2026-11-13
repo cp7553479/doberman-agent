@@ -1,5 +1,5 @@
-import { ImageViewer as SharedImageViewer } from '@bisheng/file-viewers/image';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { ImageViewer as SharedImageViewer } from '@doberman-agent/file-viewers/image';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 interface ImageViewerProps { fileUrl: string; zoomLevel: number }
 export function ImageViewer({ fileUrl, zoomLevel }: ImageViewerProps) {
   const locale = usePreviewLocale();

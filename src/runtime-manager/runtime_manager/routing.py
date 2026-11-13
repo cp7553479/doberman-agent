@@ -3,7 +3,7 @@
 Answering with an *address* rather than a name is the whole design. On 114 the
 app-proxy is a host systemd unit outside every docker network: container names
 do not resolve there, and AC-33 forbids publishing a host port. The container's
-address on the ``bisheng-apps`` bridge is reachable from the host and from
+address on the ``doberman-agent-apps`` bridge is reachable from the host and from
 nowhere else — and it works identically in the compose deployment, so the two
 shapes share one mechanism instead of two (坑 30).
 

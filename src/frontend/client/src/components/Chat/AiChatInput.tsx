@@ -27,7 +27,7 @@ import { useComposerReferences } from "./Input/useComposerReferences";
 import { handleComposerResourceKeyDown } from "./Input/composerResourceKeyboard";
 import { AttachmentBar } from "~/components/Chat/Input/AttachmentBar";
 import DragDropOverlay from "~/components/Chat/Input/Files/DragDropOverlay";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { ArrowDown } from "lucide-react";
 import { Button } from "~/components/ui";
 import { useVoiceDraft } from "~/hooks/Input/useVoiceDraft";
@@ -39,7 +39,7 @@ import { useToastContext } from "~/Providers";
 import InputFiles from "~/pages/appChat/components/InputFiles";
 import { resolveUploadSizeLimits } from "~/pages/knowledge/knowledgeUtils";
 import { useFileDropAndPaste } from "~/pages/appChat/useFileDropAndPaste";
-import { bishengConfState } from "~/pages/appChat/store/atoms";
+import { dobermanAgentConfState } from "~/pages/appChat/store/atoms";
 import { cn, removeFocusRings } from "~/utils";
 import AiModelSelect from "./AiModelSelect";
 import type { AttachmentAsk } from "./chatAskHandoff";
@@ -195,10 +195,10 @@ const AiChatInput = memo(
             taskMode = false,
         } = features ?? {};
 
-        // Upload size limit comes from /api/v1/env (Recoil bishengConfState),
+        // Upload size limit comes from /api/v1/env (Recoil dobermanAgentConfState),
         // not /api/v1/workstation/config. bsConfig does not carry this field,
         // so reading it from bsConfig would silently fall back to 50MB.
-        const envConfig = useRecoilValue(bishengConfState);
+        const envConfig = useRecoilValue(dobermanAgentConfState);
 
         // Collapse toolbar labels to icons when the toolbar's own width (not the
         // viewport's) runs short — e.g. once the sidebar opens on a mid-size screen.

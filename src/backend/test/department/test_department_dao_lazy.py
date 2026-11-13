@@ -23,7 +23,7 @@ for _mod in ("celery", "celery.schedules", "celery.app", "celery.app.task"):
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
 
-from bisheng.database.models.department import DepartmentDao
+from doberman_agent.database.models.department import DepartmentDao
 
 _DDL = """CREATE TABLE IF NOT EXISTS department (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +86,7 @@ def _patch(engine):
         async with AsyncSession(engine) as session:
             yield session
 
-    return patch("bisheng.database.models.department.get_async_db_session", _factory)
+    return patch("doberman_agent.database.models.department.get_async_db_session", _factory)
 
 
 class TestAgetChildren:

@@ -12,7 +12,7 @@ export function acceptManagementScope(value: unknown) {
 
 export function announceManagementScope(tenantId: number) {
   acceptManagementScope(tenantId)
-  window.dispatchEvent(new Event('bisheng:management-scope-changed'))
+  window.dispatchEvent(new Event('doberman_agent:management-scope-changed'))
   try { window.localStorage.setItem(STORAGE_KEY, `${tenantId}:${Date.now()}`) } catch { /* Cross-tab sync is optional; current-tab scope is already invalidated. */ }
 }
 

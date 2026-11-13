@@ -12,10 +12,10 @@ from test.app_publish.test_app_secret_repository import secret_repository as sec
 
 @pytest.fixture(autouse=True)
 def authorization_ports(monkeypatch, publish_db):
-    from bisheng.app_runtime.domain.services import app_authorization_service
-    from bisheng.core.context.tenant import strict_tenant_filter
-    from bisheng.database.models.app import App
-    from bisheng.permission.application import relation_api
+    from doberman_agent.app_runtime.domain.services import app_authorization_service
+    from doberman_agent.core.context.tenant import strict_tenant_filter
+    from doberman_agent.database.models.app import App
+    from doberman_agent.permission.application import relation_api
 
     async def load_app(app_id):
         with strict_tenant_filter():
@@ -31,9 +31,9 @@ def authorization_ports(monkeypatch, publish_db):
 
 @pytest.fixture()
 def management_scope(monkeypatch):
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context import tenant
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context import tenant
+    from doberman_agent.core.database import tenant_filter
 
     monkeypatch.setattr(settings.multi_tenant, "enabled", True)
     tenant_filter.register_tenant_filter_events()
@@ -51,7 +51,7 @@ def management_scope(monkeypatch):
 
 
 async def child_environment(secret_repository, app_factory, owner_user):
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     app, version = await app_factory(tenant_id=2)
@@ -68,7 +68,7 @@ async def child_environment(secret_repository, app_factory, owner_user):
 async def test_super_admin_reads_only_selected_child_summary(
     secret_repository, app_factory, owner_user, super_admin_user, management_scope
 ):
-    from bisheng.core.context import tenant
+    from doberman_agent.core.context import tenant
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     with management_scope(selected=2):
@@ -90,7 +90,7 @@ async def test_super_admin_reads_only_selected_child_summary(
 async def test_management_view_cannot_bypass_concrete_tenant_selection(
     secret_repository, app_factory, owner_user, super_admin_user, management_scope, selected, legacy_global
 ):
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     with management_scope(selected=selected, legacy_global=legacy_global), pytest.raises(AppNotFoundError):
@@ -100,7 +100,7 @@ async def test_management_view_cannot_bypass_concrete_tenant_selection(
 async def test_non_super_cannot_forge_a_selected_tenant(
     secret_repository, app_factory, owner_user, management_scope, authorization_ports
 ):
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     authorization_ports.reset_mock()
@@ -113,7 +113,7 @@ async def test_non_super_cannot_forge_a_selected_tenant(
 async def test_same_tenant_reader_uses_edit_instead_of_owner_shortcut(
     secret_repository, app_factory, owner_user, management_scope, authorization_ports, can_edit
 ):
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     authorization_ports.reset_mock()
@@ -133,7 +133,7 @@ async def test_same_tenant_reader_uses_edit_instead_of_owner_shortcut(
 async def test_selected_super_admin_mutations_follow_edit_and_revision_control(
     secret_repository, app_factory, owner_user, super_admin_user, management_scope, authorization_ports
 ):
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     with management_scope(selected=2):
@@ -153,8 +153,8 @@ async def test_selected_super_admin_mutations_follow_edit_and_revision_control(
 async def test_management_api_uses_editor_permissions_and_masks_values(
     secret_repository, app_factory, owner_user, management_scope, api_app, monkeypatch, authorization_ports, can_edit
 ):
-    from bisheng.app_publish.api.endpoints import app_secrets
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.app_publish.api.endpoints import app_secrets
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     monkeypatch.setattr(app_secrets, "service", lambda: service)
@@ -175,8 +175,8 @@ async def test_management_api_uses_editor_permissions_and_masks_values(
 async def test_running_environment_read_restores_concrete_management_scope(
     secret_repository, app_factory, owner_user, super_admin_user, management_scope, monkeypatch, snapshot_fails
 ):
-    from bisheng.app_runtime.application import runtime_secrets
-    from bisheng.core.context import tenant
+    from doberman_agent.app_runtime.application import runtime_secrets
+    from doberman_agent.core.context import tenant
 
     app, service = await child_environment(secret_repository, app_factory, owner_user)
     async with service.repo.transaction() as session:

@@ -4,22 +4,22 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionDeniedError,
     PermissionFGAUnavailableError,
 )
-from bisheng.knowledge.api.endpoints.knowledge import (
+from doberman_agent.knowledge.api.endpoints.knowledge import (
     FILE_DOWNLOAD_PERMISSION_ACTION,
     FILE_PREVIEW_PERMISSION_ACTION,
 )
-from bisheng.knowledge.api.endpoints.knowledge_space import (
+from doberman_agent.knowledge.api.endpoints.knowledge_space import (
     SPACE_FILE_DOWNLOAD_PERMISSION_ACTION,
     SPACE_FILE_PREVIEW_PERMISSION_ACTION,
 )
-from bisheng.knowledge.domain.services.knowledge_permission_service import (
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import (
     KnowledgeFileDeliveryAuthorizationPort,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

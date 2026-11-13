@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { useSetRecoilState } from 'recoil';
-import { Segmented } from '@bisheng/ui';
+import { Segmented } from '@doberman-agent/ui';
 import type { SandpackPreviewRef, CodeEditorRef } from '@codesandbox/sandpack-react';
 import useArtifacts from '~/hooks/Artifacts/useArtifacts';
 import DownloadArtifact from './DownloadArtifact';

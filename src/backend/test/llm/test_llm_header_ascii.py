@@ -2,7 +2,7 @@
 
 import pytest
 
-from bisheng.llm.domain.llm.llm import _assert_ascii_http_header_values, _get_openai_params
+from doberman_agent.llm.domain.llm.llm import _assert_ascii_http_header_values, _get_openai_params
 
 
 def test_ascii_api_key_is_accepted():
@@ -16,7 +16,7 @@ def test_chinese_api_key_is_rejected():
 
 def test_chinese_default_header_is_rejected():
     with pytest.raises(ValueError, match="default_headers.X-Title"):
-        _assert_ascii_http_header_values({"api_key": "sk-ok", "default_headers": {"X-Title": "毕昇灵思"}})
+        _assert_ascii_http_header_values({"api_key": "sk-ok", "default_headers": {"X-Title": "doberman-agent灵思"}})
 
 
 def test_openai_params_rejects_non_ascii_key():

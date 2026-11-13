@@ -7,9 +7,9 @@ up as a citation card without a title, source or date.
 import json
 from unittest.mock import MagicMock, patch
 
-from bisheng.citation.domain.services.citation_prompt_helper import annotate_web_results_with_citations
-from bisheng_langchain.gpts.tools.web_search import tool as web_search_tool
-from bisheng_langchain.gpts.tools.web_search.tool import DeepSeekSearch, SearchTool
+from doberman_agent.citation.domain.services.citation_prompt_helper import annotate_web_results_with_citations
+from doberman_agent_langchain.gpts.tools.web_search import tool as web_search_tool
+from doberman_agent_langchain.gpts.tools.web_search.tool import DeepSeekSearch, SearchTool
 
 DEEPSEEK_PAYLOAD = {
     "results": [

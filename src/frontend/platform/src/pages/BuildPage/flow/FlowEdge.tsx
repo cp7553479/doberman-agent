@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Card,CardContent } from "@/components/bs-ui/card";
 import { BaseEdge,EdgeLabelRenderer,getBezierPath,Position } from "@xyflow/react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useMemo } from "react";
 import Sidebar from "./Sidebar";

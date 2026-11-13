@@ -1,4 +1,4 @@
-"""Stdlib logging for the isolation-environment runner. Must not import bisheng."""
+"""Stdlib logging for the isolation-environment runner. Must not import doberman_agent."""
 
 from __future__ import annotations
 

@@ -26,12 +26,12 @@ jest.mock("./AppPreviewPanel", () => ({
 }));
 
 /**
- * The diff presentation is the shared `@bisheng/file-viewers` component, tested
+ * The diff presentation is the shared `@doberman-agent/file-viewers` component, tested
  * on its own in the platform suite. Here it is a stub, so this file asserts
  * what the review view *feeds* it — which two versions, and whether it asks
  * for a diff at all.
  */
-jest.mock("@bisheng/file-viewers", () => ({
+jest.mock("@doberman-agent/file-viewers", () => ({
   VersionDiffView: ({ files, caption, emptyMessage }: Record<string, unknown>) => (
     <div data-testid="diff-stub">
       <span data-testid="diff-caption">{String(caption ?? "")}</span>
@@ -41,7 +41,7 @@ jest.mock("@bisheng/file-viewers", () => ({
   ),
 }));
 
-// jsdom ships no ResizeObserver, and `@bisheng/ui`'s Tabs measures its ink bar
+// jsdom ships no ResizeObserver, and `@doberman-agent/ui`'s Tabs measures its ink bar
 // with one. Without the stub every render here throws before any assertion.
 beforeAll(() => {
   (globalThis as { ResizeObserver?: unknown }).ResizeObserver = class {
@@ -81,7 +81,7 @@ const TREE = {
   version: { version_id: "ver-2", version_no: 2, kind: "iteration", terminal_state: null, submitted_at: null },
   role: "approver",
   entries: [
-    { path: "bisheng-app.yaml", name: "bisheng-app.yaml", type: "file", size: 20, previewable: true, reason: null },
+    { path: "doberman_agent-app.yaml", name: "doberman_agent-app.yaml", type: "file", size: 20, previewable: true, reason: null },
     { path: "logo.png", name: "logo.png", type: "file", size: 9000, previewable: false, reason: "binary" },
   ],
   total_files: 2,
@@ -112,7 +112,7 @@ describe("AppReviewView", () => {
     mockGetSnapshotFileApi.mockResolvedValue({
       version: TREE.version,
       role: "approver",
-      path: "bisheng-app.yaml",
+      path: "doberman_agent-app.yaml",
       size: 20,
       previewable: true,
       reason: null,
@@ -135,7 +135,7 @@ describe("AppReviewView", () => {
 
     await screen.findByTestId("review-source-pane");
     expect(mockGetSnapshotTreeApi).toHaveBeenCalledWith("app-1", "ver-2");
-    await waitFor(() => expect(mockGetSnapshotFileApi).toHaveBeenCalledWith("app-1", "ver-2", "bisheng-app.yaml"));
+    await waitFor(() => expect(mockGetSnapshotFileApi).toHaveBeenCalledWith("app-1", "ver-2", "doberman_agent-app.yaml"));
     expect(await screen.findByText(/runtime: python3.11/)).toBeInTheDocument();
   });
 
@@ -156,7 +156,7 @@ describe("AppReviewView", () => {
     mockGetSnapshotFileApi.mockResolvedValue({
       version: TREE.version,
       role: "approver",
-      path: "bisheng-app.yaml",
+      path: "doberman_agent-app.yaml",
       size: 0,
       previewable: true,
       reason: null,

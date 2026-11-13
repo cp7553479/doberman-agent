@@ -15,7 +15,7 @@
  * Renders nothing for in-place types, so callers can drop it into every row
  * without branching.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import { isHtmlArtifact, type ArtifactFile } from './artifactUtils';

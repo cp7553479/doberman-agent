@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 "use client"
 
-import { loadDiagramLibrary } from '@bisheng/diagram-runtime';
+import { loadDiagramLibrary } from '@doberman-agent/diagram-runtime';
 import type React from "react"
 
 import { Copy, DownloadIcon, ZoomIn, ZoomOut } from "lucide-react"
@@ -65,7 +65,7 @@ export default function MermaidBlock({ children }: { children: string }) {
     }, [])
 
     useEffect(() => {
-        const parentNode = document.querySelector(".bisheng-message")
+        const parentNode = document.querySelector(".doberman_agent-message")
         if (parentNode && containerRef.current) {
             containerRef.current.style.width = `${parentNode.clientWidth - 60}px`
         }

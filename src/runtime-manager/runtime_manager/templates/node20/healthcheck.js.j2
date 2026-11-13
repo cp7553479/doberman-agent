@@ -10,8 +10,8 @@
 "use strict";
 const http = require("http");
 
-const port = process.env.BISHENG_APP_PORT || process.env.PORT || "{{ port }}";
-let path = process.env.BISHENG_APP_HEALTH_PATH || "{{ health_path }}";
+const port = process.env.DOBERMAN_AGENT_APP_PORT || process.env.PORT || "{{ port }}";
+let path = process.env.DOBERMAN_AGENT_APP_HEALTH_PATH || "{{ health_path }}";
 if (!path.startsWith("/")) {
   path = "/" + path;
 }

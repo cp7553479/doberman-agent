@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button, Input, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import type React from "react";
 
-import { Tooltip } from "@bisheng/ui";
+import { Tooltip } from "@doberman-agent/ui";
 
 import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
@@ -13,7 +13,7 @@ import { Separator } from "@/components/bs-ui/separator";
 import { updateDashboard } from "@/controllers/API/dashboard";
 import { handleUiRequest, showApiError } from "@/controllers/request";
 import { useComponentEditorStore,useEditorDashboardStore } from "@/store/dashboardStore";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 
 import { useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

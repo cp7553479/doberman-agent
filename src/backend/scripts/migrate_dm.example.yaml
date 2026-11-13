@@ -1,9 +1,9 @@
 # MySQL -> DaMeng (DM8) data-migration config for migrate_mysql_to_dm.py
 #
 # This script copies DATA ONLY. Create the target DM schema FIRST:
-#   bisheng          : start the backend once against the DM URL, or run
+#   doberman_agent          : start the backend once against the DM URL, or run
 #                      `alembic upgrade head` against it.
-#   bisheng_gateway  : execute docker/db/init_dm.sql on the BISHENG_GATEWAY schema.
+#   doberman_agent_gateway  : execute docker/db/init_dm.sql on the DOBERMAN_AGENT_GATEWAY schema.
 #   openfga          : openfga migrate --datastore-engine dm --datastore-uri 'dm://...'
 #
 # CONNECTION SETTINGS VIA ENV VARS
@@ -23,11 +23,11 @@
 #   schema (DM_*_SCHEMA); they differ in a one-account / multi-schema deployment:
 #     DM_HOST              (default 127.0.0.1)  DM server ip / host
 #     DM_PORT              (default 5236)       DM server port
-#     DM_BISHENG_USER      (default BISHENG)          login account for bisheng
-#     DM_BISHENG_SCHEMA    (default BISHENG)          target schema for bisheng
-#     DM_BISHENG_PASSWORD  (required)                 password for that account
-#     DM_GATEWAY_USER      (default BISHENG_GATEWAY)  login account for the gateway
-#     DM_GATEWAY_SCHEMA    (default BISHENG_GATEWAY)  target schema for the gateway
+#     DM_DOBERMAN_AGENT_USER      (default DOBERMAN_AGENT)          login account for doberman_agent
+#     DM_DOBERMAN_AGENT_SCHEMA    (default DOBERMAN_AGENT)          target schema for doberman_agent
+#     DM_DOBERMAN_AGENT_PASSWORD  (required)                 password for that account
+#     DM_GATEWAY_USER      (default DOBERMAN_AGENT_GATEWAY)  login account for the gateway
+#     DM_GATEWAY_SCHEMA    (default DOBERMAN_AGENT_GATEWAY)  target schema for the gateway
 #     DM_GATEWAY_PASSWORD  (required)                 password for that account
 #     DM_OPENFGA_USER      (default OPENFGA)          login account for openfga
 #     DM_OPENFGA_SCHEMA    (default OPENFGA)          target schema for openfga
@@ -36,9 +36,9 @@
 # Example — one DM account 'jt_aizsk' writing into three separate schemas:
 #   export MYSQL_HOST=10.0.0.5 MYSQL_PORT=3306 MYSQL_USER=root MYSQL_PASSWORD=xxx
 #   export DM_HOST=192.168.107.9 DM_PORT=5236
-#   export DM_BISHENG_USER=jt_aizsk DM_GATEWAY_USER=jt_aizsk DM_OPENFGA_USER=jt_aizsk
-#   export DM_BISHENG_SCHEMA=BISHENG DM_GATEWAY_SCHEMA=BISHENG_GATEWAY DM_OPENFGA_SCHEMA=OPENFGA
-#   export DM_BISHENG_PASSWORD=yyy DM_GATEWAY_PASSWORD=yyy DM_OPENFGA_PASSWORD=yyy
+#   export DM_DOBERMAN_AGENT_USER=jt_aizsk DM_GATEWAY_USER=jt_aizsk DM_OPENFGA_USER=jt_aizsk
+#   export DM_DOBERMAN_AGENT_SCHEMA=DOBERMAN_AGENT DM_GATEWAY_SCHEMA=DOBERMAN_AGENT_GATEWAY DM_OPENFGA_SCHEMA=OPENFGA
+#   export DM_DOBERMAN_AGENT_PASSWORD=yyy DM_GATEWAY_PASSWORD=yyy DM_OPENFGA_PASSWORD=yyy
 #   bash scripts/migrate_mysql_to_dm.sh --config scripts/migrate_dm.yaml --dry-run
 #
 # DSN formats:
@@ -54,8 +54,8 @@
 # schema AND qualifies all reflection + DML to it (get_table_names(schema=...),
 # "SCHEMA"."TABLE", OWNER=:schema). Two deployments:
 #
-#   * One DM account, MULTIPLE schemas (e.g. login as jt_aizsk, but bisheng /
-#     bisheng_gateway / openfga live in their OWN schemas): set DM_*_USER to the
+#   * One DM account, MULTIPLE schemas (e.g. login as jt_aizsk, but doberman_agent /
+#     doberman_agent_gateway / openfga live in their OWN schemas): set DM_*_USER to the
 #     single login account and DM_*_SCHEMA to each target schema. Every job lands
 #     in its own schema even though all log in with the same account. The schema
 #     must already exist (the login user needs privileges on it) — the script
@@ -70,16 +70,16 @@
 # than one source DB (they would otherwise overwrite each other on a shared schema).
 
 databases:
-  bisheng:
-    source_url: "mysql+pymysql://${MYSQL_USER:-root}:${MYSQL_PASSWORD}@${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}/bisheng?charset=utf8mb4"
-    target_url: "dm+dmPython://${DM_BISHENG_USER:-BISHENG}:${DM_BISHENG_PASSWORD}@${DM_HOST:-127.0.0.1}:${DM_PORT:-5236}/?schema=${DM_BISHENG_SCHEMA:-BISHENG}"
+  doberman_agent:
+    source_url: "mysql+pymysql://${MYSQL_USER:-root}:${MYSQL_PASSWORD}@${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}/doberman_agent?charset=utf8mb4"
+    target_url: "dm+dmPython://${DM_DOBERMAN_AGENT_USER:-DOBERMAN_AGENT}:${DM_DOBERMAN_AGENT_PASSWORD}@${DM_HOST:-127.0.0.1}:${DM_PORT:-5236}/?schema=${DM_DOBERMAN_AGENT_SCHEMA:-DOBERMAN_AGENT}"
     # include: []   # empty = every table reflected on the DM target
     exclude:
       - alembic_version   # already excluded by default, listed here for clarity
 
-  bisheng_gateway:
-    source_url: "mysql+pymysql://${MYSQL_USER:-root}:${MYSQL_PASSWORD}@${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}/bisheng_gateway?charset=utf8mb4"
-    target_url: "dm+dmPython://${DM_GATEWAY_USER:-BISHENG_GATEWAY}:${DM_GATEWAY_PASSWORD}@${DM_HOST:-127.0.0.1}:${DM_PORT:-5236}/?schema=${DM_GATEWAY_SCHEMA:-BISHENG_GATEWAY}"
+  doberman_agent_gateway:
+    source_url: "mysql+pymysql://${MYSQL_USER:-root}:${MYSQL_PASSWORD}@${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}/doberman_agent_gateway?charset=utf8mb4"
+    target_url: "dm+dmPython://${DM_GATEWAY_USER:-DOBERMAN_AGENT_GATEWAY}:${DM_GATEWAY_PASSWORD}@${DM_HOST:-127.0.0.1}:${DM_PORT:-5236}/?schema=${DM_GATEWAY_SCHEMA:-DOBERMAN_AGENT_GATEWAY}"
 
   openfga:
     source_url: "mysql+pymysql://${MYSQL_USER:-root}:${MYSQL_PASSWORD}@${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}/openfga?charset=utf8mb4"

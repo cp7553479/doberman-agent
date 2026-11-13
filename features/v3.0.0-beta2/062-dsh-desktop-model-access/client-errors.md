@@ -1,8 +1,8 @@
 # 客户端错误原因适配清单
 
-整理日期：2026-10-08。用途：供 bisheng-work 企业插件、主进程和聊天界面统一适配错误原因；本文件是适配建议，不表示客户端代码已修改或部署。
+整理日期：2026-10-08。用途：供 doberman-agent-work 企业插件、主进程和聊天界面统一适配错误原因；本文件是适配建议，不表示客户端代码已修改或部署。
 
-核对基线：BiSheng `feat/3.0.0-beta2-pre / 48cef6967`、Gateway `feat/dsh-access / faed249a`、bisheng-work 本地提交 `b06e60e`。这是本地代码核对，不是对 109 当前所有错误场景的实测，也未判断远端是否另有未拉取提交。接口路径和错误码无需因本文调整，协议不需要升版。
+核对基线：doberman-agent `feat/3.0.0-beta2-pre / 48cef6967`、Gateway `feat/dsh-access / faed249a`、doberman-agent-work 本地提交 `b06e60e`。这是本地代码核对，不是对 109 当前所有错误场景的实测，也未判断远端是否另有未拉取提交。接口路径和错误码无需因本文调整，协议不需要升版。
 
 ## 1. 先保留原始错误，再决定展示和动作
 
@@ -166,24 +166,24 @@ Gateway 当前 message 基本由 `code.replace('_', ' ')` 生成，例如 `seat 
 
 其他 Gateway 空格文案若需要兼容，可以从本文明确枚举的 code 生成白名单；不能将任意英文句子空格替换为下划线后当成可信 code。
 
-### bisheng-work 本地错误（与服务端业务码分开）
+### doberman-agent-work 本地错误（与服务端业务码分开）
 
 | code 或精确关键词 | 原因和建议提示 |
 |---|---|
-| `network_error` / `Could not reach the BiSheng platform.` | 无法连接平台，可能是网络、地址、超时等；“无法连接毕昇平台，请检查地址和网络。”不要判断为席位未授权。 |
-| `invalid_response` / `INVALID_RESPONSE` / `BiSheng returned a non-JSON response (...)` | 返回格式不符合协议，可能是代理、路由或版本问题；“平台响应异常，请检查服务地址或联系管理员。”不直接展示 HTML。 |
+| `network_error` / `Could not reach the doberman-agent platform.` | 无法连接平台，可能是网络、地址、超时等；“无法连接doberman-agent平台，请检查地址和网络。”不要判断为席位未授权。 |
+| `invalid_response` / `INVALID_RESPONSE` / `doberman-agent returned a non-JSON response (...)` | 返回格式不符合协议，可能是代理、路由或版本问题；“平台响应异常，请检查服务地址或联系管理员。”不直接展示 HTML。 |
 | `STREAM_CLOSED` | 流提前结束/帧不完整；“连接中断，回答可能不完整，请手动重试。”保留已收到内容。 |
 | `EMPTY_RESPONSE` | 流结束却无模型输出；“模型未返回内容，请手动重试或联系管理员。” |
 | `UNKNOWN_MODEL` | 本地 provider 中找不到所选模型；刷新授权模型列表并重选。不能直接推断席位失效。 |
 | `UNSUPPORTED_CONTENT` / `UNSUPPORTED_OPTION` | 图片、工具或请求选项不被本地模型能力支持；按具体原因提示调整输入。 |
 | `Enterprise models are unavailable.` | 客户端当前未能确认模型可用性；展示“企业模型暂不可用”，有服务端原始错误时优先展示该原因。 |
 | `Enterprise session changed.` | 请求期间客户端会话/账号发生切换；“登录状态已变更，请刷新后重试。”不是管理员撤销的确定证据。 |
-| `BiSheng DSH contract version is incompatible with this Desktop build.` | 客户端协议兼容性校验失败；“客户端与平台版本不兼容，请联系管理员更新。”不是平台业务错误，不因此改服务端错误码。 |
+| `doberman-agent DSH contract version is incompatible with this Desktop build.` | 客户端协议兼容性校验失败；“客户端与平台版本不兼容，请联系管理员更新。”不是平台业务错误，不因此改服务端错误码。 |
 | `request_failed` / `PROVIDER_ERROR` / `UNKNOWN` | 兜底或分类，不是足够明确的根因；如有平台原始 code，必须优先保留并展示。 |
 
 ## 8. 当前适配缺口与验收清单
 
-当前核对到的 bisheng-work 实现：
+当前核对到的 doberman-agent-work 实现：
 
 - `packages/dsh-desktop-enterprise/openai.js / requestFailure` 将部分业务码映射到通用 LlmError 分类，但未将平台 code/type/message 完整作为独立信息传下去。`responseFailure` 只读取响应头请求 ID，遗漏只放在 JSON 中的 request_id；SSE 路径则已经传入 payload.request_id。两条路径需统一。
 - `packages/dsh-desktop-enterprise/client.js / formatEnterpriseSettingsError` 目前只有席位未分配/撤销的定向提示；设置页已有映射不能替代聊天错误映射。
@@ -204,6 +204,6 @@ Gateway 当前 message 基本由 `code.replace('_', ' ')` 生成，例如 `seat 
 
 ## 9. 代码依据
 
-- BiSheng：`src/backend/bisheng/common/errcode/dsh.py`（30 个 Python 注册项）；`src/backend/bisheng/dsh/api/responses.py`（JSON 适配）；`domain/services/access.py`（鉴权原因映射）；`domain/services/model.py`（错误转换、SSE、缺失用量处理）。
+- doberman-agent：`src/backend/doberman_agent/common/errcode/dsh.py`（30 个 Python 注册项）；`src/backend/doberman_agent/dsh/api/responses.py`（JSON 适配）；`domain/services/access.py`（鉴权原因映射）；`domain/services/model.py`（错误转换、SSE、缺失用量处理）。
 - Gateway：`src/main/java/com/dataelem/gateway/dsh/controller/DshControllerAdvice.java`（包括 seat_not_assigned 的 HTTP/code/type）；`service/DshSeatService.java`（席位检查）；`service/DshIntrospectionService.java`、`DshTokenService.java`（会话/刷新）；`DshLicenseState.java`（免费 10 席回退）。
 - 主协议：[client-api.md §4–§9](client-api.md)。本文补齐逐码原因与客户端提示，不新增 API 或更改授权边界。

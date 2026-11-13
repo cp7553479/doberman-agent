@@ -1,4 +1,4 @@
-import { Button, Modal } from '@bisheng/ui'
+import { Button, Modal } from '@doberman-agent/ui'
 import { useTranslation } from 'react-i18next'
 import type { RuntimeAuditExport, RuntimeAuditFilters, RuntimeAuditKind } from '@/controllers/API/runtimeAudit'
 import { formatTimestamp } from '@/utils/displayTimestamp'

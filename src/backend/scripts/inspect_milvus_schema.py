@@ -33,7 +33,7 @@ Usage
     # diff two collections (e.g. a healthy new one vs. a failing old one)
     python scripts/inspect_milvus_schema.py --diff new_col old_col
 
-Run it from ``src/backend`` so the ``bisheng`` package and config are importable.
+Run it from ``src/backend`` so the ``doberman_agent`` package and config are importable.
 """
 
 import argparse
@@ -42,7 +42,7 @@ from typing import Dict, List, Optional
 
 from pymilvus import Collection, DataType, connections, utility
 
-from bisheng.common.services.config_service import settings
+from doberman_agent.common.services.config_service import settings
 
 
 def _connect() -> str:
@@ -172,7 +172,7 @@ def main() -> int:
     if args.collection:
         names = [args.collection]
     elif args.knowledge_id is not None:
-        from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+        from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
 
         kb = KnowledgeDao.query_by_id(args.knowledge_id)
         if not kb:

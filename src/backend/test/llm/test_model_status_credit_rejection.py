@@ -7,9 +7,9 @@ user a broken model that the next probe immediately flips back.
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshModelNotAllowedError, DshMonthlyTokenLimitExceededError
-from test.llm.test_bisheng_llm_context_overflow import MESSAGES, _wrapper
-from test.llm.test_bisheng_llm_context_overflow import status_writes as status_writes
+from doberman_agent.common.errcode.dsh import DshModelNotAllowedError, DshMonthlyTokenLimitExceededError
+from test.llm.test_doberman_agent_llm_context_overflow import MESSAGES, _wrapper
+from test.llm.test_doberman_agent_llm_context_overflow import status_writes as status_writes
 
 REJECTIONS = [DshMonthlyTokenLimitExceededError, DshModelNotAllowedError]
 

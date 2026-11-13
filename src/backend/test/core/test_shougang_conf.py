@@ -1,14 +1,14 @@
 """Unit tests for ShougangConf and ConfigService.aget_shougang_conf."""
 from __future__ import annotations
 
-# The shared conftest pre-mocks bisheng.common.services.config_service as a
+# The shared conftest pre-mocks doberman_agent.common.services.config_service as a
 # MagicMock to avoid circular imports in most tests. Here we need the REAL
 # ConfigService, so we pop those mock entries before importing.
 import sys as _sys
 
 for _mod in (
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
 ):
     _sys.modules.pop(_mod, None)
 
@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, patch  # noqa: E402
 
 import pytest  # noqa: E402
 
-from bisheng.core.config.settings import ShougangConf  # noqa: E402
-from bisheng.common.services.config_service import ConfigService  # noqa: E402
+from doberman_agent.core.config.settings import ShougangConf  # noqa: E402
+from doberman_agent.common.services.config_service import ConfigService  # noqa: E402
 
 
 def test_shougang_conf_disabled_when_prefix_empty():

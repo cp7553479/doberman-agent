@@ -10,14 +10,14 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
-from bisheng.common.errcode.app_factory import AppSlugConflictError
+from doberman_agent.app_runtime.domain.constants import AppState
+from doberman_agent.common.errcode.app_factory import AppSlugConflictError
 
 pytestmark = pytest.mark.usefixtures("app_db")
 
 
 async def _load(app_db, app_id):
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with app_db() as session:
         return await AppDao.aget(session, app_id)
@@ -28,7 +28,7 @@ class TestCreateDraft:
         self, app_db, app_owner, fake_permission_projection
     ):
         """AC-01 / AC-11: identity, name, description, owner, tenant, state — and the owner grant."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         app_id = await AppProvisionService.create_draft(
             name="Sales Copilot",
@@ -54,7 +54,7 @@ class TestCreateDraft:
 
     async def test_slug_from_manifest_or_generated_from_name(self, app_db, app_owner, fake_permission_projection):
         """AC-08 — a declared slug wins; otherwise the display name is slugified."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         declared = await AppProvisionService.create_draft(
             name="Anything At All", slug="my-tool", description=None, owner_user_id=app_owner.user_id, tenant_id=1
@@ -68,7 +68,7 @@ class TestCreateDraft:
 
     async def test_chinese_name_still_yields_a_usable_slug(self, app_db, app_owner, fake_permission_projection):
         """A Chinese display name leaves no ASCII behind — the entry path still needs one."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         app_id = await AppProvisionService.create_draft(
             name="销售助手", slug=None, description=None, owner_user_id=app_owner.user_id, tenant_id=1
@@ -81,7 +81,7 @@ class TestCreateDraft:
     ):
         """AC-08 — the entry segment is resolved before any tenant context exists,
         so a collision with *any* tenant's app is a refusal, not a rename."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         await AppProvisionService.create_draft(
             name="Shared Name", slug="taken-slug", description=None, owner_user_id=app_owner.user_id, tenant_id=1
@@ -100,7 +100,7 @@ class TestCreateDraft:
     async def test_generated_slug_is_disambiguated_not_refused(self, app_db, app_owner, fake_permission_projection):
         """Two people naming an app the same must not deadlock each other: only a
         *declared* slug is a promise the platform refuses to break."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         first = await AppProvisionService.create_draft(
             name="Report Tool", slug=None, description=None, owner_user_id=app_owner.user_id, tenant_id=1
@@ -113,7 +113,7 @@ class TestCreateDraft:
 
     async def test_slug_immutable_name_mutable_and_duplicable(self, app_db, app_factory, app_owner, tenant_admins):
         """AC-01 / AC-08 — renaming never moves the entry URL, and names may repeat."""
-        from bisheng.app_runtime.domain.services.app_meta_service import EDITABLE_FIELDS, AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import EDITABLE_FIELDS, AppMetaService
 
         assert "slug" not in EDITABLE_FIELDS
 
@@ -128,7 +128,7 @@ class TestCreateDraft:
     async def test_owner_single_and_not_retroactive(self, app_db, app_factory, normal_user, fake_permission_projection):
         """AC-07 — one owner per app, fixed at creation; later ownership changes
         elsewhere do not reach back into apps that already exist."""
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
 
         existing, _ = await app_factory()
         original_owner = existing.owner_user_id
@@ -143,9 +143,9 @@ class TestCreateDraft:
     async def test_failed_owner_projection_leaves_no_row(self, app_db, app_owner, monkeypatch):
         """A row with no owner grant is invisible to everyone including its owner —
         and it would hold the globally unique slug hostage."""
-        from bisheng.app_runtime.domain.services import app_provision_service
-        from bisheng.app_runtime.domain.services.app_provision_service import AppProvisionService
-        from bisheng.database.models.app import AppDao
+        from doberman_agent.app_runtime.domain.services import app_provision_service
+        from doberman_agent.app_runtime.domain.services.app_provision_service import AppProvisionService
+        from doberman_agent.database.models.app import AppDao
 
         async def _boom(resource_type: str):
             raise RuntimeError("openfga is down")
@@ -169,7 +169,7 @@ class TestVersionRecords:
         *can* change one of the four in isolation. ``amark_terminal`` is the one
         single-column latch (the approval outcome) and is asserted as such.
         """
-        from bisheng.database.models.app_version import AppVersionDao
+        from doberman_agent.database.models.app_version import AppVersionDao
 
         writers = [name for name in vars(AppVersionDao) if not name.startswith("_")]
         assert set(writers) == {"ainsert", "aget", "alist_by_app", "amax_version_no", "amark_terminal"}
@@ -184,7 +184,7 @@ class TestVersionRecords:
         (the object key of their source snapshot). Every DAO read takes ``app_id``."""
         import inspect
 
-        from bisheng.database.models.app_version import AppVersionDao
+        from doberman_agent.database.models.app_version import AppVersionDao
 
         for name in ("aget", "alist_by_app", "amax_version_no", "amark_terminal"):
             assert "app_id" in inspect.signature(getattr(AppVersionDao, name)).parameters, name
@@ -199,7 +199,7 @@ class TestVersionRecords:
     async def test_rejected_or_withdrawn_never_writes_pending(self, app_db, app_factory):
         """AC-05 — a rejected iteration only latches ``terminal_state``; the running
         version keeps serving because nothing else was touched."""
-        from bisheng.database.models.app_version import TERMINAL_STATE_REJECTED, AppVersionDao
+        from doberman_agent.database.models.app_version import TERMINAL_STATE_REJECTED, AppVersionDao
 
         app, version = await app_factory(state=AppState.ONLINE.value)
         async with app_db() as session:
@@ -215,7 +215,7 @@ class TestVersionRecords:
 class TestStagingAndSelection:
     async def test_stage_version_writes_pending_without_state_change(self, app_db, app_factory):
         """AC-04 — approval while stopped records the version and leaves the app stopped."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, version = await app_factory(state=AppState.STOPPED.value)
 
@@ -228,7 +228,7 @@ class TestStagingAndSelection:
 
     async def test_resume_publish_pick_pending_then_current(self, app_db, app_factory):
         """The one 取版 rule: ``pending_version_id ?? current_version_id``."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, version = await app_factory(state=AppState.STOPPED.value)
         assert AppStateService._pick_version(app) == version.id

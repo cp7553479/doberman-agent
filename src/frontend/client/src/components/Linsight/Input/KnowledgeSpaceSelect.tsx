@@ -15,7 +15,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '~/components/ui';
-import { SearchInput } from '@bisheng/ui';
+import { SearchInput } from '@doberman-agent/ui';
 import { useGetBsConfig, useGetOrgToolList } from '~/hooks/queries/data-provider';
 import { useLocalize } from '~/hooks';
 import { useToastContext } from '~/Providers';

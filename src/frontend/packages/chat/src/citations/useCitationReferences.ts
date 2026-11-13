@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { usePreviewResource } from '@bisheng/file-viewers/resource';
+import { usePreviewResource } from '@doberman-agent/file-viewers/resource';
 import { createCitationUtilities } from './preview';
 import type { ChatCitation, CitationReferenceItem, CitationServices } from './types';
 export type CitationReadServices=Pick<CitationServices,'scopeKey'|'localize'|'getCitationDetail'|'resolveCitationDetails'|'getCitationUnresolvedReason'>;

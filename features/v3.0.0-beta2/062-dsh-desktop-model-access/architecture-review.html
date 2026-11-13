@@ -606,11 +606,11 @@
     <header class="topbar">
       <div class="title-block">
         <h1>DSH Desktop 登录、席位与模型转发技术架构</h1>
-        <p>DSH 是 Agent 客户端；BiSheng 提供已配置模型；Gateway 授权模块控制固定席位</p>
+        <p>DSH 是 Agent 客户端；doberman-agent 提供已配置模型；Gateway 授权模块控制固定席位</p>
       </div>
       <div class="decision" aria-label="核心决策">
         <span class="tag-purple">席位与 DSH Token：Gateway 授权模块</span>
-        <span class="tag-green">模型配置与转发：BiSheng</span>
+        <span class="tag-green">模型配置与转发：doberman-agent</span>
         <span class="tag-blue">V2 API 鉴权：不复用</span>
       </div>
     </header>
@@ -637,7 +637,7 @@
         <p>三类职责独立，管理体验统一</p>
       </div>
 
-      <div class="architecture" aria-label="DSH、Gateway 授权模块与 BiSheng 的系统关系">
+      <div class="architecture" aria-label="DSH、Gateway 授权模块与 doberman-agent 的系统关系">
         <article class="system">
           <div class="system-title">
             <span>DSH Desktop</span>
@@ -647,7 +647,7 @@
             <ul>
               <li><span class="dot"></span>发起浏览器登录</li>
               <li><span class="dot"></span>获取 DSH 专用 Token</li>
-              <li><span class="dot"></span>调用 BiSheng 模型驱动 Agent</li>
+              <li><span class="dot"></span>调用 doberman-agent 模型驱动 Agent</li>
             </ul>
           </div>
         </article>
@@ -673,7 +673,7 @@
 
         <article class="system core">
           <div class="system-title">
-            <span>BiSheng</span>
+            <span>doberman-agent</span>
             <span class="tag tag-green">现有平台</span>
           </div>
           <div class="system-body">
@@ -689,14 +689,14 @@
       </div>
 
       <div class="foot-note">
-        v3.0.0-beta2 / F062：DSH 授权模块在 gateway 项目内随进程部署。客户端只配置 Nginx 地址；模型流量经 Nginx → Gateway → BiSheng → 已配置模型，/api/dsh/* 由 Gateway 自有模块处理，/api/v1/* 转发到 BiSheng。验席与发证由 Gateway 负责。用户已接受仅保证未修改的官方链路；完整客户端契约见 client-api.md，服务端设计见 design.md。
-        <p>2026-09-09 用户修订：逐用户/模型独立月额度，一期无限流；主配置为强类型对象。DM8 真库本轮暂缓，毕昇业务无新增手写 SQL，Gateway 保留既有 Mapper 并审查兼容性。GET usage 的逐模型查询与显示语义须同步客户端。</p>
+        v3.0.0-beta2 / F062：DSH 授权模块在 gateway 项目内随进程部署。客户端只配置 Nginx 地址；模型流量经 Nginx → Gateway → doberman-agent → 已配置模型，/api/dsh/* 由 Gateway 自有模块处理，/api/v1/* 转发到 doberman-agent。验席与发证由 Gateway 负责。用户已接受仅保证未修改的官方链路；完整客户端契约见 client-api.md，服务端设计见 design.md。
+        <p>2026-09-09 用户修订：逐用户/模型独立月额度，一期无限流；主配置为强类型对象。DM8 真库本轮暂缓，doberman-agent业务无新增手写 SQL，Gateway 保留既有 Mapper 并审查兼容性。GET usage 的逐模型查询与显示语义须同步客户端。</p>
         <p>实施进展（2026-09-09）：两仓 26 个 HTTP 端点、固定席位、模型与实际配额、恢复 CLI 和平台页面已接线。本轮完成性复核修复与验证详见 <a href="./completion-audit.md">完成性复核</a>。详见 <a href="./tasks.md">任务表</a>、<a href="./root-integration-progress.md">集成记录</a>与<a href="./rollout.md">部署说明</a>。隔离 MySQL / Redis / MinIO 验证已执行；DM8 实机本轮按用户确认暂缓；目标旧发行二进制、真实 Desktop / Nginx / 供应商联调仍待外部环境。</p>
       </div>
 
       <div class="boundary-note">
         <div class="rule"><b>固定席位</b><span>只由管理员明确撤销</span></div>
-        <div class="rule"><b>模型来源</b><span>复用 BiSheng 已配置模型</span></div>
+        <div class="rule"><b>模型来源</b><span>复用 doberman-agent 已配置模型</span></div>
         <div class="rule"><b>凭证隔离</b><span>DSH Token 与 JWT、PAT、SAK 分离</span></div>
       </div>
     </section>
@@ -704,7 +704,7 @@
     <section id="sequence">
       <div class="section-head">
         <h2>核心时序</h2>
-        <p>登录证明身份，Gateway 授权模块占席发证，BiSheng 完成模型调用</p>
+        <p>登录证明身份，Gateway 授权模块占席发证，doberman-agent 完成模型调用</p>
       </div>
 
       <div class="scenario-controls" role="tablist" aria-label="时序场景">
@@ -718,7 +718,7 @@
           <div class="lane-head blank"></div>
           <div class="lane-head">用户 / 浏览器</div>
           <div class="lane-head">DSH Desktop</div>
-          <div class="lane-head">BiSheng</div>
+          <div class="lane-head">doberman-agent</div>
           <div class="lane-head">Gateway 授权模块</div>
 
           <div class="step-no">1</div>
@@ -752,11 +752,11 @@
           <div class="seq-cell event closed-event">席位保持 ASSIGNED</div>
         </div>
         <div class="mobile-sequence">
-          <div class="mobile-step"><b>1</b><div><b>BiSheng 登录</b><span>DSH 打开浏览器，用户完成平台登录</span></div></div>
-          <div class="mobile-step"><b>2</b><div><b>一次性身份票据</b><span>BiSheng 只证明用户身份，不分配席位</span></div></div>
+          <div class="mobile-step"><b>1</b><div><b>doberman-agent 登录</b><span>DSH 打开浏览器，用户完成平台登录</span></div></div>
+          <div class="mobile-step"><b>2</b><div><b>一次性身份票据</b><span>doberman-agent 只证明用户身份，不分配席位</span></div></div>
           <div class="mobile-step"><b>3</b><div><b>Gateway 授权模块占席</b><span>校验 License 后按用户原子分配固定席位</span></div></div>
           <div class="mobile-step"><b>4</b><div><b>Gateway 授权模块发证</b><span>向 DSH 签发专用访问 Token</span></div></div>
-          <div class="mobile-step"><b>5</b><div><b>获取模型</b><span>BiSheng 返回该用户可用于 DSH 的模型</span></div></div>
+          <div class="mobile-step"><b>5</b><div><b>获取模型</b><span>doberman-agent 返回该用户可用于 DSH 的模型</span></div></div>
         </div>
       </div>
 
@@ -764,9 +764,9 @@
         <div class="sequence">
           <div class="lane-head blank"></div>
           <div class="lane-head">DSH Agent</div>
-          <div class="lane-head">BiSheng DSH API</div>
+          <div class="lane-head">doberman-agent DSH API</div>
           <div class="lane-head">Gateway 授权模块</div>
-          <div class="lane-head">BiSheng LLMService</div>
+          <div class="lane-head">doberman-agent LLMService</div>
 
           <div class="step-no">1</div>
           <div class="seq-cell event">OpenAI 兼容请求 + DSH Token</div>
@@ -800,8 +800,8 @@
         </div>
         <div class="mobile-sequence">
           <div class="mobile-step"><b>1</b><div><b>DSH 发起模型请求</b><span>使用 OpenAI 兼容协议与 DSH 专用 Token</span></div></div>
-          <div class="mobile-step"><b>2</b><div><b>双层门控</b><span>BiSheng HMAC 验签，每次新请求向 Gateway 验席与会话版本</span></div></div>
-          <div class="mobile-step"><b>3</b><div><b>能力治理</b><span>BiSheng 校验模型白名单与月 token 上限</span></div></div>
+          <div class="mobile-step"><b>2</b><div><b>双层门控</b><span>doberman-agent HMAC 验签，每次新请求向 Gateway 验席与会话版本</span></div></div>
+          <div class="mobile-step"><b>3</b><div><b>能力治理</b><span>doberman-agent 校验模型白名单与月 token 上限</span></div></div>
           <div class="mobile-step"><b>4</b><div><b>现有模型链路</b><span>复用 LLMService 和平台内已配置的模型</span></div></div>
           <div class="mobile-step"><b>5</b><div><b>响应与审计</b><span>返回流式结果并记录调用用量</span></div></div>
         </div>
@@ -811,7 +811,7 @@
         <div class="sequence">
           <div class="lane-head blank"></div>
           <div class="lane-head">管理员</div>
-          <div class="lane-head">BiSheng 管理面</div>
+          <div class="lane-head">doberman-agent 管理面</div>
           <div class="lane-head">Gateway 授权模块</div>
           <div class="lane-head">DSH Desktop</div>
 
@@ -846,10 +846,10 @@
           <div class="seq-cell event">重新登录获取新 Token</div>
         </div>
         <div class="mobile-sequence">
-          <div class="mobile-step"><b>1</b><div><b>统一管理动作</b><span>管理员在 BiSheng 点击撤销席位</span></div></div>
+          <div class="mobile-step"><b>1</b><div><b>统一管理动作</b><span>管理员在 doberman-agent 点击撤销席位</span></div></div>
           <div class="mobile-step"><b>2</b><div><b>Gateway 授权模块撤销</b><span>席位进入 REVOKED，容量立即归还</span></div></div>
           <div class="mobile-step"><b>3</b><div><b>凭证失效</b><span>递增授权版本并撤销会话；旧 Token 无法刷新或通过验席</span></div></div>
-          <div class="mobile-step"><b>4</b><div><b>模型调用被拒绝</b><span>不影响用户正常登录 BiSheng 或使用 PAT</span></div></div>
+          <div class="mobile-step"><b>4</b><div><b>模型调用被拒绝</b><span>不影响用户正常登录 doberman-agent 或使用 PAT</span></div></div>
           <div class="mobile-step"><b>5</b><div><b>只能人工恢复</b><span>管理员重新分配后，用户重新登录</span></div></div>
         </div>
       </div>
@@ -898,10 +898,10 @@
     <section id="admin">
       <div class="section-head">
         <h2>统一管理面</h2>
-        <p>页面在 BiSheng，席位数据由 Gateway 授权模块维护</p>
+        <p>页面在 doberman-agent，席位数据由 Gateway 授权模块维护</p>
       </div>
 
-      <div class="admin-frame" aria-label="BiSheng DSH Desktop 接入管理页面示意">
+      <div class="admin-frame" aria-label="doberman-agent DSH Desktop 接入管理页面示意">
         <div class="admin-toolbar">
           <div>
             <div class="admin-title">系统管理 / DSH Desktop 接入</div>
@@ -951,7 +951,7 @@
 
       <div class="ownership">
         <div class="owner-column">
-          <h3>BiSheng</h3>
+          <h3>doberman-agent</h3>
           <ul class="owner-list">
             <li><b>身份</b><span>用户、租户、登录、identity ticket</span></li>
             <li><b>模型</b><span>现有 llm_server / llm_model 配置</span></li>
@@ -974,11 +974,11 @@
       </div>
 
       <div class="foot-note">
-        新增集成：仅在启用 DSH 时，BiSheng 配置 Gateway 授权模块地址与服务端认证，调用验席、撤销和重新分配接口；凭证保留在服务端。未启用 DSH 时，常规业务不建立该依赖。
+        新增集成：仅在启用 DSH 时，doberman-agent 配置 Gateway 授权模块地址与服务端认证，调用验席、撤销和重新分配接口；凭证保留在服务端。未启用 DSH 时，常规业务不建立该依赖。
       </div>
 
       <div class="foot-note">
-        三套鉴权互不混用：普通 JWT 仅用于常规 /api/v1；PAT / SAK 仅用于开放 /api/v2；DSH Token 仅用于 DSH 专用模型接口。Gateway 对 BiSheng 常规功能可选；启用 DSH 时必须部署 Gateway 并启用其中的授权模块。DSH 模块具有独立业务入口，不接入 V2 API Key 鉴权。
+        三套鉴权互不混用：普通 JWT 仅用于常规 /api/v1；PAT / SAK 仅用于开放 /api/v2；DSH Token 仅用于 DSH 专用模型接口。Gateway 对 doberman-agent 常规功能可选；启用 DSH 时必须部署 Gateway 并启用其中的授权模块。DSH 模块具有独立业务入口，不接入 V2 API Key 鉴权。
       </div>
       <div class="foot-note">
         已确认边界：闭源发证约束未修改的官方调用链；已准入流式请求默认允许完成。SDD R1–R5 已修订，实际实现与兼容验证待执行。详见 design.md §2.1、§8。
@@ -989,44 +989,44 @@
       <div class="section-head"><h2>接口设计</h2><p>26 个已接线接口 · 客户端 0.4.0 契约已冻结 · 与 Design §6.0–6.1 同步</p></div>
       <div class="boundary-note">
         <div class="rule"><b>客户端</b><span>票据 + PKCE 换 DSH Token</span></div>
-        <div class="rule"><b>管理端</b><span>JWT 鉴权后由 BiSheng 编排</span></div>
+        <div class="rule"><b>管理端</b><span>JWT 鉴权后由 doberman-agent 编排</span></div>
         <div class="rule"><b>服务间</b><span>HTTP/HTTPS + 既有共享 Secret 派生 HMAC，不走 PAT / SAK</span></div>
       </div>
-      <div class="technical-group"><h3>1. 登录与模型接口</h3><p>DSH 只配置 Nginx BASE，config 返回开关与公开 client_id；浏览器走用户 JWT，模型调用只接受 DSH Token。字段细节以客户端契约为准。后续接口或时序变更必须同步 Design、客户端文档并记录客户端确认和联调结果，不能只改服务端。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>GET</code> <code>/api/v1/dsh/config</code><br><span class="tag tag-green">BiSheng</span></td><td>DSH<br>公开只读</td><td><code>无</code></td><td>enabled, client_id, contract_version</td><td>部署配置</td></tr>
+      <div class="technical-group"><h3>1. 登录与模型接口</h3><p>DSH 只配置 Nginx BASE，config 返回开关与公开 client_id；浏览器走用户 JWT，模型调用只接受 DSH Token。字段细节以客户端契约为准。后续接口或时序变更必须同步 Design、客户端文档并记录客户端确认和联调结果，不能只改服务端。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>GET</code> <code>/api/v1/dsh/config</code><br><span class="tag tag-green">doberman-agent</span></td><td>DSH<br>公开只读</td><td><code>无</code></td><td>enabled, client_id, contract_version</td><td>部署配置</td></tr>
 <tr><td><code>POST</code> <code>/api/dsh/authorizations</code><br><span class="tag tag-purple">Gateway</span></td><td>DSH<br>公共客户端 + 防滥用</td><td><code>client_id, redirect_uri, code_challenge, code_challenge_method, state, device_name（可选）</code></td><td>auth_id, authorize_url, expires_in</td><td>Redis 授权事务</td></tr>
-<tr><td><code>POST</code> <code>/api/v1/dsh/authorize</code><br><span class="tag tag-green">BiSheng</span></td><td>浏览器<br>用户 JWT + CSRF</td><td><code>auth_id</code></td><td>identity_ticket, redirect_uri, state, expires_in</td><td>Redis 票据</td></tr>
+<tr><td><code>POST</code> <code>/api/v1/dsh/authorize</code><br><span class="tag tag-green">doberman-agent</span></td><td>浏览器<br>用户 JWT + CSRF</td><td><code>auth_id</code></td><td>identity_ticket, redirect_uri, state, expires_in</td><td>Redis 票据</td></tr>
 <tr><td><code>POST</code> <code>/api/dsh/token</code><br><span class="tag tag-purple">Gateway</span></td><td>DSH<br>票据 + PKCE / refresh</td><td><code>grant_type + identity_ticket/auth_id/code_verifier 或 refresh_token</code></td><td>access_token, refresh_token, expires_in，身份及会话期限（见客户端契约）</td><td>有效 License（只读）, seat, session, refresh</td></tr>
 <tr><td><code>POST</code> <code>/api/dsh/logout</code><br><span class="tag tag-purple">Gateway</span></td><td>DSH<br>DSH Token / refresh</td><td><code>当前会话凭证</code></td><td>204；当前会话撤销，席位保留</td><td>session, refresh</td></tr>
-<tr><td><code>GET</code> <code>/api/dsh/jwks</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng<br>公开只读</td><td><code>无</code></td><td>keys: kid, kty, alg, use 及公钥参数</td><td>受管公钥集</td></tr>
-<tr><td><code>GET</code> <code>/api/v1/dsh/models</code><br><span class="tag tag-green">BiSheng</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>无</code></td><td>OpenAI models 列表与能力说明</td><td>user_policy 中 enabled=1 的模型记录 + 既有模型</td></tr>
-<tr><td><code>POST</code> <code>/api/v1/dsh/chat/completions</code><br><span class="tag tag-green">BiSheng</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>model, messages, tools, stream, max_tokens</code></td><td>JSON / SSE + usage / tool_calls</td><td>policy, monthly_usage, model_call</td></tr>
-<tr><td><code>GET</code> <code>/api/v1/dsh/usage</code><br><span class="tag tag-green">BiSheng</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>可选 model=bisheng:&lt;id&gt;；仅当前用户</code></td><td>month, used, limit, remaining, source, as_of, quota_state 及计费时间边界（见客户端契约）</td><td>Redis live；SQL 仅降级展示</td></tr></tbody></table></div></div>
-<div class="technical-group"><h3>2. 统一管理接口</h3><p>均由 BiSheng 提供，管理员 JWT + 当前管理作用域；用户与租户不能由未验证参数替换。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>GET</code> <code>/api/v1/dsh/admin/users</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>cursor, limit, keyword, seat_state, login_state</code></td><td>身份/席位/登录 items, next_cursor, has_more, as_of</td><td>Gateway 分页 + 当前页身份，不查模型</td></tr>
-<tr><td><code>GET</code> <code>/api/v1/dsh/admin/license</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>无</code></td><td>授权状态, used, limit, valid_until</td><td>Gateway 当前有效 License + 席位统计</td></tr>
-<tr><td><code>PUT</code> <code>/api/v1/dsh/admin/users/{id}/models/{model_id}/policy</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, enabled, monthly_token_limit, expected_version</code></td><td>operation_id、status；成功含 policy/version，处理中含 phase</td><td>user_policy + admin_operation</td></tr>
-<tr><td><code>POST</code> <code>/api/v1/dsh/admin/users/{id}/revoke</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, expected_grant_version</code></td><td>SUCCEEDED / PROCESSING + operation_id</td><td>admin_operation → Gateway</td></tr>
-<tr><td><code>POST</code> <code>/api/v1/dsh/admin/users/{id}/reassign</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, expected_grant_version</code></td><td>SUCCEEDED / PROCESSING + 新授权版本</td><td>admin_operation → Gateway</td></tr>
-<tr><td><code>GET</code> <code>/api/v1/dsh/admin/operations/{id}</code><br><span class="tag tag-green">BiSheng</span></td><td>管理页面<br>管理员 JWT</td><td><code>路径 operation_id</code></td><td>status, phase, action, actor/target, before/after, 时间、result_code 及 result</td><td>admin_operation；含策略审计</td></tr>
-<tr><td><code>GET /api/v1/dsh/admin/models/{model_id}/users</code></td><td>模型开放范围<br>管理员 JWT</td><td>cursor, limit, keyword, authorized_only</td><td>当前模型用户配置分页；可包含未配置用户</td><td>模型索引 + 有效毕昇用户</td></tr>
+<tr><td><code>GET</code> <code>/api/dsh/jwks</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent<br>公开只读</td><td><code>无</code></td><td>keys: kid, kty, alg, use 及公钥参数</td><td>受管公钥集</td></tr>
+<tr><td><code>GET</code> <code>/api/v1/dsh/models</code><br><span class="tag tag-green">doberman-agent</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>无</code></td><td>OpenAI models 列表与能力说明</td><td>user_policy 中 enabled=1 的模型记录 + 既有模型</td></tr>
+<tr><td><code>POST</code> <code>/api/v1/dsh/chat/completions</code><br><span class="tag tag-green">doberman-agent</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>model, messages, tools, stream, max_tokens</code></td><td>JSON / SSE + usage / tool_calls</td><td>policy, monthly_usage, model_call</td></tr>
+<tr><td><code>GET</code> <code>/api/v1/dsh/usage</code><br><span class="tag tag-green">doberman-agent</span></td><td>DSH<br>DSH Token + 在线验席</td><td><code>可选 model=doberman-agent:&lt;id&gt;；仅当前用户</code></td><td>month, used, limit, remaining, source, as_of, quota_state 及计费时间边界（见客户端契约）</td><td>Redis live；SQL 仅降级展示</td></tr></tbody></table></div></div>
+<div class="technical-group"><h3>2. 统一管理接口</h3><p>均由 doberman-agent 提供，管理员 JWT + 当前管理作用域；用户与租户不能由未验证参数替换。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>GET</code> <code>/api/v1/dsh/admin/users</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>cursor, limit, keyword, seat_state, login_state</code></td><td>身份/席位/登录 items, next_cursor, has_more, as_of</td><td>Gateway 分页 + 当前页身份，不查模型</td></tr>
+<tr><td><code>GET</code> <code>/api/v1/dsh/admin/license</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>无</code></td><td>授权状态, used, limit, valid_until</td><td>Gateway 当前有效 License + 席位统计</td></tr>
+<tr><td><code>PUT</code> <code>/api/v1/dsh/admin/users/{id}/models/{model_id}/policy</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, enabled, monthly_token_limit, expected_version</code></td><td>operation_id、status；成功含 policy/version，处理中含 phase</td><td>user_policy + admin_operation</td></tr>
+<tr><td><code>POST</code> <code>/api/v1/dsh/admin/users/{id}/revoke</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, expected_grant_version</code></td><td>SUCCEEDED / PROCESSING + operation_id</td><td>admin_operation → Gateway</td></tr>
+<tr><td><code>POST</code> <code>/api/v1/dsh/admin/users/{id}/reassign</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>operation_id, expected_grant_version</code></td><td>SUCCEEDED / PROCESSING + 新授权版本</td><td>admin_operation → Gateway</td></tr>
+<tr><td><code>GET</code> <code>/api/v1/dsh/admin/operations/{id}</code><br><span class="tag tag-green">doberman-agent</span></td><td>管理页面<br>管理员 JWT</td><td><code>路径 operation_id</code></td><td>status, phase, action, actor/target, before/after, 时间、result_code 及 result</td><td>admin_operation；含策略审计</td></tr>
+<tr><td><code>GET /api/v1/dsh/admin/models/{model_id}/users</code></td><td>模型开放范围<br>管理员 JWT</td><td>cursor, limit, keyword, authorized_only</td><td>当前模型用户配置分页；可包含未配置用户</td><td>模型索引 + 有效doberman-agent用户</td></tr>
 <tr><td><code>GET /api/v1/dsh/admin/users/{id}/models/{model_id}/policy</code></td><td>单行刷新<br>管理员 JWT</td><td>user_id, model_id, tenant_id</td><td>enabled、monthly_token_limit、version、pending_operation_id</td><td>单条 user_policy</td></tr>
-<tr><td><code>GET /api/v1/dsh/admin/users/{id}/policy</code><br>BiSheng</td><td>模型与额度视图<br>管理员 JWT</td><td>路径 user_id；可选 tenant_id，由后端校验或定位授权目标</td><td>tenant_id、策略与月限额、available_models 及来源、用量 source/as_of、last_call 及来源</td><td>模型业务强读 + 策略 + Redis；SQL 用量降级与最近调用投影</td></tr>
-<tr><td><code>GET /api/v1/dsh/admin/users/{id}/sessions</code><br>BiSheng</td><td>席位会话详情<br>管理员 JWT</td><td>user_id, cursor, limit</td><td>会话/设备分页</td><td>Gateway management/read</td></tr></tbody></table></div></div>
+<tr><td><code>GET /api/v1/dsh/admin/users/{id}/policy</code><br>doberman-agent</td><td>模型与额度视图<br>管理员 JWT</td><td>路径 user_id；可选 tenant_id，由后端校验或定位授权目标</td><td>tenant_id、策略与月限额、available_models 及来源、用量 source/as_of、last_call 及来源</td><td>模型业务强读 + 策略 + Redis；SQL 用量降级与最近调用投影</td></tr>
+<tr><td><code>GET /api/v1/dsh/admin/users/{id}/sessions</code><br>doberman-agent</td><td>席位会话详情<br>管理员 JWT</td><td>user_id, cursor, limit</td><td>会话/设备分页</td><td>Gateway management/read</td></tr></tbody></table></div></div>
 <p class="technical-note">管理策略读响应固定返回经授权定位的 tenant_id；保存必须使用该租户。available_models 只包含目标租户可用且已通过 DSH 能力验证的模型，标记 is_root_shared；available_models_source 为 live/unavailable，不可用时阻止保存。last_call 仅返回 request_id、model_id、status、started_at、finished_at、total_tokens、projected_at，last_call_source 为 persisted/unavailable；空历史、数据不可用及未知用量必须分别展示。成功撤销或重分配后回读席位与 License，操作进度显示 phase，审计保留前后 state/grant_version。这些是平台管理接口补充；客户端 0.4.0 保留七个端点；本次逐模型查询与额度语义变更须同步客户端。</p>
-<div class="technical-group"><h3>3. 内部服务接口</h3><p>HTTP/HTTPS + 现有用户同步 Secret 派生的双向 HMAC；key_id 由代码固定并绑定安装实例，签名包含时间戳和 nonce。DSH 客户端不持有服务 Secret。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>POST</code> <code>/api/v1/internal/dsh/identity/redeem</code><br><span class="tag tag-green">BiSheng</span></td><td>Gateway → BiSheng<br>服务 HMAC</td><td><code>identity_ticket, auth_id, client_id, redirect_uri, code_challenge</code></td><td>DshIdentitySnapshot：实例、用户/租户 ID、状态、user/tenant 显示对象、profile_version</td><td>Redis 消费票据 + 用户业务</td></tr>
-<tr><td><code>POST</code> <code>/api/v1/internal/dsh/identity/check</code><br><span class="tag tag-green">BiSheng</span></td><td>Gateway → BiSheng<br>服务 HMAC</td><td><code>受信实例、租户、用户</code></td><td>DshIdentitySnapshot；每次刷新强读当前身份及显示对象</td><td>既有用户/租户业务</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/introspect</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC + DSH Token</td><td><code>token</code></td><td>active, seat_id, session_id, grant_version, reason</td><td>有效 License（只读）, seat, session</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/authorizations/resolve</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC</td><td><code>auth_id</code></td><td>challenge, redirect_uri, client_id, instance, state</td><td>Redis 授权事务</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/management/read</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>resource, cursor, limit, keyword, seat_state, login_state, target</code></td><td>license / seats / sessions 分页摘要</td><td>有效 License（只读）, seat, session</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/seats/revoke</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>operation_id, target, expected_grant_version</code></td><td>结果、新授权版本</td><td>operation + seat/session；License 只读</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/seats/reassign</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>operation_id, target, expected_grant_version</code></td><td>结果、新授权版本</td><td>operation + seat；License 只读</td></tr>
-<tr><td><code>POST</code> <code>/api/internal/dsh/operations/read</code><br><span class="tag tag-purple">Gateway</span></td><td>BiSheng → Gateway<br>服务 HMAC</td><td><code>operation_id</code></td><td>UNKNOWN / SUCCEEDED / FAILED</td><td>operation</td></tr>
-<tr><td><code>POST /api/internal/dsh/profiles/upsert</code><br>Gateway</td><td>BiSheng<br>服务 HMAC</td><td>至多 100 条身份字段、profile_version</td><td>按版本幂等更新结果</td><td>seat 检索投影；不改授权、不创建席位</td></tr></tbody></table></div></div>
+<div class="technical-group"><h3>3. 内部服务接口</h3><p>HTTP/HTTPS + 现有用户同步 Secret 派生的双向 HMAC；key_id 由代码固定并绑定安装实例，签名包含时间戳和 nonce。DSH 客户端不持有服务 Secret。</p><div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">接口 / 提供方</th><th scope="col">调用方 · 鉴权</th><th scope="col">关键入参</th><th scope="col">返回</th><th scope="col">关联数据</th></tr></thead><tbody><tr><td><code>POST</code> <code>/api/v1/internal/dsh/identity/redeem</code><br><span class="tag tag-green">doberman-agent</span></td><td>Gateway → doberman-agent<br>服务 HMAC</td><td><code>identity_ticket, auth_id, client_id, redirect_uri, code_challenge</code></td><td>DshIdentitySnapshot：实例、用户/租户 ID、状态、user/tenant 显示对象、profile_version</td><td>Redis 消费票据 + 用户业务</td></tr>
+<tr><td><code>POST</code> <code>/api/v1/internal/dsh/identity/check</code><br><span class="tag tag-green">doberman-agent</span></td><td>Gateway → doberman-agent<br>服务 HMAC</td><td><code>受信实例、租户、用户</code></td><td>DshIdentitySnapshot；每次刷新强读当前身份及显示对象</td><td>既有用户/租户业务</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/introspect</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC + DSH Token</td><td><code>token</code></td><td>active, seat_id, session_id, grant_version, reason</td><td>有效 License（只读）, seat, session</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/authorizations/resolve</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC</td><td><code>auth_id</code></td><td>challenge, redirect_uri, client_id, instance, state</td><td>Redis 授权事务</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/management/read</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>resource, cursor, limit, keyword, seat_state, login_state, target</code></td><td>license / seats / sessions 分页摘要</td><td>有效 License（只读）, seat, session</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/seats/revoke</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>operation_id, target, expected_grant_version</code></td><td>结果、新授权版本</td><td>operation + seat/session；License 只读</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/seats/reassign</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC + 管理员上下文</td><td><code>operation_id, target, expected_grant_version</code></td><td>结果、新授权版本</td><td>operation + seat；License 只读</td></tr>
+<tr><td><code>POST</code> <code>/api/internal/dsh/operations/read</code><br><span class="tag tag-purple">Gateway</span></td><td>doberman-agent → Gateway<br>服务 HMAC</td><td><code>operation_id</code></td><td>UNKNOWN / SUCCEEDED / FAILED</td><td>operation</td></tr>
+<tr><td><code>POST /api/internal/dsh/profiles/upsert</code><br>Gateway</td><td>doberman-agent<br>服务 HMAC</td><td>至多 100 条身份字段、profile_version</td><td>按版本幂等更新结果</td><td>seat 检索投影；不改授权、不创建席位</td></tr></tbody></table></div></div>
       <details class="technical-detail" id="sdd-fixes"><summary>SDD 修复：审计、可信身份与异常恢复</summary>
         <p>本轮复用 8 张表和 26 个 HTTP 接口。客户端 0.4.0 的 7 个接口保持冻结；内部身份 DTO、平台管理 policy 保存和 operations 查询有补充，两仓按 Design 同步实现。</p>
         <p><b>共享模型：</b>模型业务认可的租户自有或合法 Root 共享范围，与用户 DSH 授权取交集；取消共享后新调用拒绝。Spec AC-18/21/30 已统一。</p>
         <p><b>策略审计：</b>UPDATE_POLICY 以 operation_id 串行编排，策略和前后值/版本/actor 同事务提交；committed_at 与 effective_at 区分提交和生效。查询 operations 返回 phase、before/after 和结果；故障恢复同一操作，不覆盖历史。</p>
         <p><b>身份显示：</b>redeem/check 共用 DshIdentitySnapshot；首次换证与每次刷新返回当前可信 user/tenant。display_name 空时回退 username，租户名称空时回退 Tenant &lt;tenant.id&gt;；无有效账号或身份服务失败不签发成功凭据。</p>
-        <p><b>UNKNOWN：</b>拟建 DshReconciliationService 和 python -m bisheng.dsh.cli.reconcile 受控命令。真实管理员鉴权后，以逐请求证据、expected_event_version 和 operation_id 登记 RECONCILE_USAGE，复用 Lua/Stream/SQL 投影幂等结算；证据存受控 MinIO，命令不直改账本。</p>
+        <p><b>UNKNOWN：</b>拟建 DshReconciliationService 和 python -m doberman_agent.dsh.cli.reconcile 受控命令。真实管理员鉴权后，以逐请求证据、expected_event_version 和 operation_id 登记 RECONCILE_USAGE，复用 Lua/Stream/SQL 投影幂等结算；证据存受控 MinIO，命令不直改账本。</p>
         <p>未知用量只记录 USAGE_UNKNOWN 明细，token字段为NULL；不冻结用户或模型。补记为可选审计操作，策略变更和账本故障保护独立保留。</p>
         <p>完整字段、CLI 输入、幂等和故障恢复步骤见 <a href="design.md">Design §4.5.5、§4.7.4、§6.1</a>；复核结果见 <a href="design-review.md">设计评审报告</a>。生产恢复入口和故障验收见 <a href="quota-operations.md">配额运维</a>与<a href="recovery-acceptance.md">恢复报告</a>；外部环境门禁仍需关闭。</p>
       </details>
@@ -1041,7 +1041,7 @@
 }</pre>
         <p>刷新时 grant_type=refresh_token，提交 refresh_token；成功后两个凭证均由 Gateway 返回，刷新凭证每次轮换。同会话串行刷新，回包丢失不重放旧凭证。7 个客户端接口使用裸 JSON（logout 为 204）；浏览器 authorize 与管理接口沿用统一响应。</p>
         <h3>Agent 模型调用 · POST /api/v1/dsh/chat/completions</h3><pre>{
-  &quot;model&quot;: &quot;bisheng:42&quot;,
+  &quot;model&quot;: &quot;doberman-agent:42&quot;,
   &quot;messages&quot;: [
     {
       &quot;role&quot;: &quot;user&quot;,
@@ -1082,7 +1082,7 @@
     </section>
 
     <section id="tables" class="technical-section">
-      <div class="section-head"><h2>数据表设计</h2><p>Gateway 4 张 · BiSheng 4 张 · 拟定结构，未创建数据库表</p></div>
+      <div class="section-head"><h2>数据表设计</h2><p>Gateway 4 张 · doberman-agent 4 张 · 拟定结构，未创建数据库表</p></div>
       <div class="boundary-note">
         <div class="rule"><b>授权上限</b><span>当前 License 验签解析，不新建表</span></div>
         <div class="rule"><b>已用席位</b><span>统计 ASSIGNED；换 License 不清空</span></div>
@@ -1095,7 +1095,7 @@
           <li><b>1 → N 刷新代次</b><span>gt_dsh_refresh_token</span></li>
           <li><b>操作幂等与审计</b><span>gt_dsh_operation</span></li>
         </ul></div>
-        <div class="owner-column"><h3>BiSheng 数据库</h3><ul class="owner-list">
+        <div class="owner-column"><h3>doberman-agent 数据库</h3><ul class="owner-list">
           <li><b>逐模型额度对象列表</b><span>dsh_user_policy</span></li>
           <li><b>用户 × 模型 × 月份</b><span>dsh_monthly_usage</span></li>
           <li><b>1 → N 调用结算</b><span>dsh_model_call</span></li>
@@ -1108,11 +1108,11 @@
 <tr><td>Gateway<br><a href="#gt_dsh_session"><code>gt_dsh_session</code></a></td><td>登录设备与会话</td><td>PK session_id；UK auth_id；一个席位对应多个 Session</td></tr>
 <tr><td>Gateway<br><a href="#gt_dsh_refresh_token"><code>gt_dsh_refresh_token</code></a></td><td>刷新轮换与重放记录</td><td>PK refresh_id；UK token_hash；UK (session_id, generation)</td></tr>
 <tr><td>Gateway<br><a href="#gt_dsh_operation"><code>gt_dsh_operation</code></a></td><td>席位命令幂等与审计</td><td>PK operation_id；全局唯一，并校验 installation_id 作用域</td></tr>
-<tr><td>BiSheng<br><a href="#dsh_user_policy"><code>dsh_user_policy</code></a></td><td>用户逐模型独立月额度策略</td><td>PK id；UK (tenant_id, user_id, model_id)；索引 (tenant_id, model_id, enabled, user_id)</td></tr>
+<tr><td>doberman-agent<br><a href="#dsh_user_policy"><code>dsh_user_policy</code></a></td><td>用户逐模型独立月额度策略</td><td>PK id；UK (tenant_id, user_id, model_id)；索引 (tenant_id, model_id, enabled, user_id)</td></tr>
 
-<tr><td>BiSheng<br><a href="#dsh_monthly_usage"><code>dsh_monthly_usage</code></a></td><td>用户模型月用量汇总</td><td>PK id；UK (tenant_id, user_id, usage_month, model_id)</td></tr>
-<tr><td>BiSheng<br><a href="#dsh_model_call"><code>dsh_model_call</code></a></td><td>请求用量与结算明细</td><td>PK request_id；服务端生成 UUID，结算按 request_id 幂等</td></tr>
-<tr><td>BiSheng<br><a href="#dsh_admin_operation"><code>dsh_admin_operation</code></a></td><td>管理编排与可靠重试</td><td>PK operation_id；Gateway 复用相同 ID</td></tr></tbody></table></div>
+<tr><td>doberman-agent<br><a href="#dsh_monthly_usage"><code>dsh_monthly_usage</code></a></td><td>用户模型月用量汇总</td><td>PK id；UK (tenant_id, user_id, usage_month, model_id)</td></tr>
+<tr><td>doberman-agent<br><a href="#dsh_model_call"><code>dsh_model_call</code></a></td><td>请求用量与结算明细</td><td>PK request_id；服务端生成 UUID，结算按 request_id 幂等</td></tr>
+<tr><td>doberman-agent<br><a href="#dsh_admin_operation"><code>dsh_admin_operation</code></a></td><td>管理编排与可靠重试</td><td>PK operation_id；Gateway 复用相同 ID</td></tr></tbody></table></div>
       <p class="technical-note">类型为逻辑类型：BIGINT 非负计数、UTC 时间、JsonType 按 MySQL 与 DM8 映射。全部新表保留 created_at / updated_at；密码、签名私钥与明文 Token 均不入表。PK 以表级声明为准，字段分组不代表联合主键；所有用户数据读写均校验租户作用域。</p>
 
 <details id="gt_dsh_seat" class="technical-detail"><summary><code>gt_dsh_seat</code> · 固定用户席位</summary><p>PK seat_id；UK (installation_id, user_id)<br>INDEX (installation_id, state) 保护容量；管理索引按 installation_id、tenant_id 前缀，分别接 (state, created_at, seat_id)、(username_search, seat_id)、(display_name_search, seat_id)、(created_at, seat_id)；SQL 执行计划验证后确定最终组合</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td><code>seat_id</code></td><td><code>VARCHAR(36)</code></td><td>PK</td><td>UUID；被 Token、Session 与调用记录引用</td></tr>
@@ -1122,7 +1122,7 @@
 <tr><td><code>grant_version</code></td><td><code>BIGINT</code></td><td>非空 / 初始 1</td><td>撤销、重新分配均递增，旧 Token 不可恢复</td></tr>
 <tr><td><code>assigned_at / revoked_at</code></td><td><code>UTC datetime</code></td><td>revoked_at 可空</td><td>最近一次分配/撤销时间</td></tr>
 <tr><td><code>username_search / display_name_search</code></td><td><code>MySQL VARCHAR(510) / DM8 VARCHAR(2040)</code></td><td>可空 / 索引</td><td>按 Unicode 码点接受最多 255 字符原名，容纳小写扩展；仅检索展示，不参与授权</td></tr>
-<tr><td><code>profile_version / profile_synced_at</code></td><td><code>BIGINT / BIGINT / UTC datetime</code></td><td>可空</td><td>资料投影版本与同步时间；权威身份仍在 BiSheng</td></tr>
+<tr><td><code>profile_version / profile_synced_at</code></td><td><code>BIGINT / BIGINT / UTC datetime</code></td><td>可空</td><td>资料投影版本与同步时间；权威身份仍在 doberman-agent</td></tr>
 <tr><td><code>last_login_at</code></td><td><code>UTC datetime</code></td><td>可空</td><td>成功创建会话时更新；不随每次模型调用更新</td></tr>
 <tr><td><code>last_operation_id</code></td><td><code>VARCHAR(36)</code></td><td>可空</td><td>最近管理员操作；首次自动占席可空</td></tr></tbody></table></div></details>
 <details id="gt_dsh_session" class="technical-detail"><summary><code>gt_dsh_session</code> · 登录设备与会话</summary><p>PK session_id；UK auth_id；一个席位对应多个 Session<br>INDEX (seat_id, state, expires_at) 支持当前页有效会话 EXISTS/聚合；INDEX expires_at</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td><code>session_id</code></td><td><code>VARCHAR(36)</code></td><td>PK</td><td>登录会话标识，同时作为 refresh family 标识</td></tr>
@@ -1136,7 +1136,7 @@
 <tr><td><code>generation</code></td><td><code>BIGINT</code></td><td>非空 / 从 1 递增</td><td>同一会话内刷新代次</td></tr>
 <tr><td><code>state</code></td><td><code>VARCHAR(16)</code></td><td>非空</td><td>ACTIVE / USED / REVOKED；识别 USED 重放后撤销整族</td></tr>
 <tr><td><code>expires_at / used_at</code></td><td><code>UTC datetime</code></td><td>used_at 可空</td><td>有效期与首次消费时间；保留至会话绝对到期和安全审计保留期结束</td></tr></tbody></table></div></details>
-<details id="gt_dsh_operation" class="technical-detail"><summary><code>gt_dsh_operation</code> · 席位命令幂等与审计</summary><p>PK operation_id；全局唯一，并校验 installation_id 作用域<br>INDEX (installation_id, tenant_id, user_id, created_at)</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td><code>operation_id / installation_id</code></td><td><code>VARCHAR(36) / VARCHAR(64)</code></td><td>PK / 非空</td><td>从 BiSheng 传入的稳定操作 ID</td></tr>
+<details id="gt_dsh_operation" class="technical-detail"><summary><code>gt_dsh_operation</code> · 席位命令幂等与审计</summary><p>PK operation_id；全局唯一，并校验 installation_id 作用域<br>INDEX (installation_id, tenant_id, user_id, created_at)</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td><code>operation_id / installation_id</code></td><td><code>VARCHAR(36) / VARCHAR(64)</code></td><td>PK / 非空</td><td>从 doberman-agent 传入的稳定操作 ID</td></tr>
 <tr><td><code>tenant_id / user_id / actor_user_id</code></td><td><code>BIGINT</code></td><td>非空</td><td>受信请求中的目标与管理员身份</td></tr>
 <tr><td><code>action / expected_grant_version</code></td><td><code>VARCHAR(16) / BIGINT</code></td><td>非空</td><td>REVOKE / REASSIGN；阻止延迟旧命令覆盖新状态</td></tr>
 <tr><td><code>payload_hash</code></td><td><code>CHAR(64)</code></td><td>非空</td><td>同 operation_id 不同负载返回 409</td></tr>
@@ -1150,13 +1150,13 @@
 <tr><td>pending_operation_id</td><td>VARCHAR(36)</td><td>可空</td><td>当前策略编排所有者；同一用户同一模型一次只接受一个未完成操作；不同模型可并行，完成后清空</td></tr></tbody></table></div></details>
 
 <details id="dsh_monthly_usage" class="technical-detail"><summary><code>dsh_monthly_usage</code> · 用户模型月用量汇总</summary><p>PK id；UK (tenant_id, user_id, usage_month, model_id)<br>唯一索引前缀支持用户月份汇总；由消费者批量更新，不参与每请求 SQL 锁定；不按席位重新建账</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td><code>id / tenant_id / user_id</code></td><td><code>BIGINT</code></td><td>PK / 非空</td><td>用量归属稳定用户，席位释放不重置</td></tr>
-<tr><td><code>model_id</code></td><td><code>BIGINT</code></td><td>非空 / 联合唯一键成员</td><td>毕昇模型主键，不是上游模型名；与请求明细一致，不使用 NULL/0 表示用户总量</td></tr>
+<tr><td><code>model_id</code></td><td><code>BIGINT</code></td><td>非空 / 联合唯一键成员</td><td>doberman-agent模型主键，不是上游模型名；与请求明细一致，不使用 NULL/0 表示用户总量</td></tr>
 <tr><td><code>usage_month / billing_timezone</code></td><td><code>CHAR(7) / VARCHAR(64)</code></td><td>非空</td><td>如 2026-09；保存月份归属时区</td></tr>
 <tr><td><code>used_tokens</code></td><td><code>BIGINT</code></td><td>非空 / 默认 0</td><td>已入账实际用量，非负；允许超过月限额，不截断超额部分</td></tr>
 <tr><td><code>version / projected_at</code></td><td><code>BIGINT / UTC datetime</code></td><td>默认 0 / 时间可空</td><td>持久化投影版本与时间；同事务应用明细差额，不代表实时额度</td></tr></tbody></table></div></details>
 <details id="dsh_model_call" class="technical-detail"><summary><code>dsh_model_call</code> · 请求用量与结算明细</summary><p>PK request_id；服务端生成 UUID，结算按 request_id 幂等<br>INDEX (tenant_id, user_id, started_at)；INDEX (tenant_id, user_id, model_id, started_at)；INDEX (status, updated_at)；INDEX trace_id</p><div class="table-wrap"><table class="technical-table"><thead><tr><th>字段</th><th>逻辑类型</th><th>约束 / 默认</th><th>语义</th></tr></thead><tbody><tr><td>request_id / tenant_id / user_id</td><td>VARCHAR(36) / BIGINT / BIGINT</td><td>PK / 非空</td><td>调用与配额结算标识；用户 ID 来自 DshPrincipal</td></tr>
 <tr><td>seat_id / session_id / grant_version</td><td>VARCHAR(36) / VARCHAR(36) / BIGINT</td><td>非空</td><td>Gateway 引用与调用当时授权代次</td></tr>
-<tr><td>model_id</td><td>BIGINT</td><td>非空</td><td>既有字段单列说明：服务端鉴权后解析的毕昇模型主键，与月汇总模型 ID 一致</td></tr>
+<tr><td>model_id</td><td>BIGINT</td><td>非空</td><td>既有字段单列说明：服务端鉴权后解析的doberman-agent模型主键，与月汇总模型 ID 一致</td></tr>
 <tr><td>usage_month / policy_version</td><td>CHAR(7) / BIGINT</td><td>非空</td><td>准入月份与使用的策略版本；结算不重新按当前月份归属</td></tr>
 <tr><td>event_version / quota_epoch</td><td>BIGINT / BIGINT</td><td>非空</td><td>请求状态事件递增版本与准入代次；去重、乱序和重建依据</td></tr>
 <tr><td>input_tokens / output_tokens / total_tokens</td><td>BIGINT</td><td>可空</td><td>NULL 表示尚未知；0 只表示可靠计量为零</td></tr>
@@ -1183,7 +1183,7 @@
         <p>额度配置直接使用一行一条用户模型授权；通过数据库唯一约束和模型索引查询，每条记录独立版本与同步，不再保存用户 JSON。每次调用仍校验模型权限。一期不实现任何限流。</p>
       </div>
       <p class="technical-note">实时路径：Redis Lua 检查用户已用量是否低于限额 → 登记请求及 Stream 事件（不扣减）→ 模型调用 → Lua 原子累计实际 usage。Worker 批量写 SQL，准入不读滞后 SQL，不逐 SSE chunk 写库。</p>
-      <p class="technical-note">SQL 月行首次创建受唯一键保护；模型移除不删历史。结算沿用原 model_id/月，未知用量标 USAGE_UNKNOWN 待对账，不暂停该用户新调用，不估算扣款；/usage?model=bisheng:&lt;id&gt; 读该模型实时额度，无参数只作汇总展示，降级 SQL 展示必须带 source/as_of，不能用于准入。</p>
+      <p class="technical-note">SQL 月行首次创建受唯一键保护；模型移除不删历史。结算沿用原 model_id/月，未知用量标 USAGE_UNKNOWN 待对账，不暂停该用户新调用，不估算扣款；/usage?model=doberman-agent:&lt;id&gt; 读该模型实时额度，无参数只作汇总展示，降级 SQL 展示必须带 source/as_of，不能用于准入。</p>
       <div class="technical-group"><h3>事务与一致性</h3>
       <div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">操作</th><th scope="col">一次事务涉及</th><th scope="col">必须保证</th></tr></thead><tbody><tr><td>首次占席</td><td>Gateway：seat + session + refresh</td><td>MySQL 使用 SERIALIZABLE 范围事务；DM 使用 READ_COMMITTED，并在事务首条 SQL 对 gt_dsh_seat 加 EXCLUSIVE 表锁，锁后统计当前已提交席位再写入；统计 ASSIGNED 后对照有效 License；冲突重试，失败不释放已提交席位</td></tr>
 <tr><td>刷新</td><td>Gateway：session + refresh_token</td><td>锁会话；当前代变 USED、新代变 ACTIVE；旧代重放可反查并撤销该会话族</td></tr>
@@ -1191,12 +1191,12 @@
 <tr><td>修改用户策略</td><td>SQL 操作所有者 → Redis 冻结 → SQL 新版本及审计 → Redis 安装/移除本操作冻结原因</td><td>UPDATE_POLICY 保存前后值/版本、actor、提交与生效时间；原 operation_id 续跑，终态不可覆盖，其他冻结原因继续阻断</td></tr>
 <tr><td>准入检查 / 实际入账</td><td>Redis 用户量 + 模型量 + 请求 + Stream</td><td>同槽原子脚本；版本去重，正常每请求两次，不逐 token 写入</td></tr>
 <tr><td>批量持久化</td><td>SQL monthly_usage + model_call</td><td>按新旧明细差额更新；提交后 ACK，重复投递不重复记账</td></tr>
-<tr><td>跨服务重试</td><td>BiSheng：admin_operation → Gateway：operation</td><td>同 operation_id、同 payload_hash；查询终态后重放原 intent 核验，明确业务拒绝持久 FAILED，依赖不确定保留 PROCESSING；不跨 HTTP 持事务锁</td></tr></tbody></table></div></div>
+<tr><td>跨服务重试</td><td>doberman-agent：admin_operation → Gateway：operation</td><td>同 operation_id、同 payload_hash；查询终态后重放原 intent 核验，明确业务拒绝持久 FAILED，依赖不确定保留 PROCESSING；不跨 HTTP 持事务锁</td></tr></tbody></table></div></div>
       <p class="technical-note">不新增容量锁表。MySQL 使用 SERIALIZABLE 范围事务；DM 使用 READ_COMMITTED，并在事务首条 SQL 对 gt_dsh_seat 加 EXCLUSIVE 表锁，锁后统计当前已提交席位再写入。MySQL 空实例 11 人抢 10 席与既往 5 万席位分页已验证；DM 分支的锁顺序/回滚、分页、CLOB 与字节容量检查已通过，实机本轮暂缓。DM 表锁可能降低不同安装实例席位操作的并行度，事务内无远程调用。</p>
       <p class="technical-note">License 一期受控换版：暂停所有副本的新 DSH 准入与席位变更 → 等待席位事务结束 → 更新既有授权源 → 全部副本验签并确认同版本/摘要 → 恢复。失败保持 DSH 关闭；普通业务不受影响，已准入模型请求可完成，不承诺无停机热切换。</p>
       <div class="technical-group"><h3>非数据库状态</h3>
       <div class="table-wrap"><table class="technical-table"><thead><tr><th scope="col">位置</th><th scope="col">内容</th><th scope="col">失效行为</th></tr></thead><tbody><tr><td>Gateway Redis</td><td>auth_id / challenge / redirect_uri / state，5 分钟；HMAC nonce，120 秒</td><td>登录事务过期重开；不影响已分配席位</td></tr>
-<tr><td>BiSheng Redis</td><td>票据 60 秒、nonce 120 秒；独立配额区保存实时账本、请求状态、Stream</td><td>配额 noeviction + 持久化，不能套普通 TTL；主切换/缺失先冻结，不读旧 SQL 放行</td></tr>
+<tr><td>doberman-agent Redis</td><td>票据 60 秒、nonce 120 秒；独立配额区保存实时账本、请求状态、Stream</td><td>配额 noeviction + 持久化，不能套普通 TTL；主切换/缺失先冻结，不读旧 SQL 放行</td></tr>
 <tr><td>受管 Secret</td><td>复用用户同步的一个共享 Secret，程序按服务方向和 Token 用途派生；客户端不持有密钥</td><td>多副本复用本实例的现有 Secret；License 密钥独立</td></tr></tbody></table></div></div>
     </section>
 
@@ -1204,13 +1204,13 @@
       <div class="section-head"><h2>规模与实时限额</h2><p>万级席位分页 · 登录信息独立展示 · 高频写入移出请求链路</p></div>
       <h3>席位列表：先筛选分页，再补齐本页</h3>
       <div class="boundary-note">
-        <div class="rule"><b>BiSheng</b><span>管理员鉴权，传递游标与筛选</span></div>
+        <div class="rule"><b>doberman-agent</b><span>管理员鉴权，传递游标与筛选</span></div>
         <div class="rule"><b>Gateway SQL</b><span>身份投影检索 + 会话筛选 → LIMIT 51</span></div>
         <div class="rule"><b>当前页</b><span>批量身份、会话摘要、最近活跃</span></div>
       </div>
       <div class="table-wrap"><table class="technical-table"><thead><tr><th>问题</th><th>约定</th></tr></thead><tbody>
         <tr><td>上万席位</td><td>created_at + seat_id 稳定游标；默认 50、最多 100，limit+1 判断 has_more，不做深 OFFSET 或每页 COUNT。</td></tr>
-        <tr><td>跨库检索</td><td>Gateway 保存账号/名称的最小检索投影；前缀/ID 检索、状态筛选在 SQL 内先完成。当前页才批量读取 BiSheng 身份，不先传上万 ID，也不分页后过滤。</td></tr>
+        <tr><td>跨库检索</td><td>Gateway 保存账号/名称的最小检索投影；前缀/ID 检索、状态筛选在 SQL 内先完成。当前页才批量读取 doberman-agent 身份，不先传上万 ID，也不分页后过滤。</td></tr>
         <tr><td>资料变更</td><td>原用户表新增 dsh_profile_version，改名时原用户事务递增并登记 SYNC_PROFILE；profiles/upsert 按版本更新，部门变更不触发同步；失败重试，100 条游标回填；显示同步时点，投影绝不用于鉴权。新增字段走双库DDL，回退保留版本。</td></tr>
         <tr><td>登录状态</td><td>有有效会话 / 无有效会话 / 不可用；不等于实时在线。最近活跃仅是服务端观察值，不用于席位释放。</td></tr>
         <tr><td>首屏与查询</td><td>仅席位/登录列，无模型或用量；会话详情另分页。一次页级批量补齐，禁止 N+1；搜索防抖 300ms、丢弃过期响应。</td></tr>

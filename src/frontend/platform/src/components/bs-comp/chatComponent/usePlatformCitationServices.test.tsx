@@ -1,7 +1,7 @@
 import { act,cleanup,render,renderHook,waitFor } from '@testing-library/react';
 import { afterEach,expect,it,vi } from 'vitest';
-import { CitationDocumentPreview } from '@bisheng/chat/citation-views';
-import type { ChatCitation } from '@bisheng/chat/citations';
+import { CitationDocumentPreview } from '@doberman-agent/chat/citation-views';
+import type { ChatCitation } from '@doberman-agent/chat/citations';
 import request from '@/controllers/request';
 import { usePlatformCitationServices } from './usePlatformCitationServices';
 vi.mock('@/controllers/request',()=>({default:{get:vi.fn(),post:vi.fn()}}));

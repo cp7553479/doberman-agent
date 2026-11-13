@@ -4,15 +4,15 @@ from unittest.mock import Mock
 import pytest
 from fastapi import HTTPException
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionInvalidResourceError,
     PermissionServiceUnavailableError,
 )
-from bisheng.open_api.domain.scopes import get_open_api_scope_marker
-from bisheng.open_endpoints.api.endpoints import filelib
-from bisheng.open_endpoints.domain.schemas.filelib import QueryQAParam
-from bisheng.permission.application import business_authorization
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.open_api.domain.scopes import get_open_api_scope_marker
+from doberman_agent.open_endpoints.api.endpoints import filelib
+from doberman_agent.open_endpoints.domain.schemas.filelib import QueryQAParam
+from doberman_agent.permission.application import business_authorization
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 def test_qa_lookup_authorizes_owning_library_before_return(monkeypatch):

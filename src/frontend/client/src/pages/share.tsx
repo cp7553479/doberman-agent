@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 
-import { isApiError } from "@bisheng/api-client";
-import { Button } from "@bisheng/ui";
+import { isApiError } from "@doberman-agent/api-client";
+import { Button } from "@doberman-agent/ui";
 import { showApiError } from "~/api/request";
 import { useLocalize } from "~/hooks";
 import { useEffect, useState } from "react";

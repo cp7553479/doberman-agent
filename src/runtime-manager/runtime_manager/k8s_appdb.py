@@ -203,7 +203,7 @@ class KubernetesMaintenance:
         ):
             raise ExecutorError("purge_operation_refused")
         if action == "purge":
-            volume_ref = str(uuid5(NAMESPACE_URL, "bisheng-volume:" + current["node_id"] + ":" + current["app_id"]))
+            volume_ref = str(uuid5(NAMESPACE_URL, "doberman-agent-volume:" + current["node_id"] + ":" + current["app_id"]))
             try:
                 volume = runtime.platform.resource(volume_ref)
             except PlatformError as exc:
@@ -227,7 +227,7 @@ class KubernetesMaintenance:
             if action == "purge":
                 runtime.purge_volume(current)
             return previous["result"]
-        reference = str(uuid5(NAMESPACE_URL, "bisheng-maintenance:" + current["operation_id"] + ":" + action))
+        reference = str(uuid5(NAMESPACE_URL, "doberman-agent-maintenance:" + current["operation_id"] + ":" + action))
         purpose = "purge" if action == "purge" else ("restore" if action == "restore" else "migrate")
         plan = runtime._plan(current, purpose, reference=reference, image=runtime.document["helper_image"])
         profile = (body.get("resolved_delivery") or {}).get("profile", {})
@@ -277,9 +277,9 @@ class KubernetesMaintenance:
             if status.get("phase") == "Succeeded":
                 output = runtime.client.logs(plan.name, container="maintenance", tail=100)
                 lines = [
-                    line.removeprefix("BISHENG_RUNTIME_RESULT ")
+                    line.removeprefix("DOBERMAN_AGENT_RUNTIME_RESULT ")
                     for line in output.splitlines()
-                    if line.startswith("BISHENG_RUNTIME_RESULT ")
+                    if line.startswith("DOBERMAN_AGENT_RUNTIME_RESULT ")
                 ]
                 try:
                     if len(lines) != 1 or len(lines[0]) > 65536:

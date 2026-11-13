@@ -50,7 +50,7 @@ def validate_package(path: Path, slug: str) -> dict:
     """Inspect the root manifest without extracting the untrusted package."""
     validate_slug(slug)
     with tarfile.open(path, "r:gz") as archive:
-        candidates = [member for member in archive if member.name in {"bisheng-app.yaml", "./bisheng-app.yaml"}]
+        candidates = [member for member in archive if member.name in {"doberman-agent-app.yaml", "./doberman-agent-app.yaml"}]
         if len(candidates) != 1 or not candidates[0].isfile() or candidates[0].size > 65536:
             raise ValueError("one bounded regular root manifest is required")
         stream = archive.extractfile(candidates[0])

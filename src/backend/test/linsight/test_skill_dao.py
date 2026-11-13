@@ -9,9 +9,9 @@ from contextlib import asynccontextmanager
 import pytest
 from sqlalchemy.pool import StaticPool
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.core.context.tenant import set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.core.context.tenant import set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
 
 TENANT = 1
 
@@ -100,12 +100,12 @@ class TestSkillDao:
         # Cross-tenant isolation is enforced by the do_orm_execute listener
         # registered at app init (tenant_filter.py); the unit-level guarantee
         # is that linsight_skill is in the instrumented-model registry.
-        from bisheng.core.database import tenant_filter
+        from doberman_agent.core.database import tenant_filter
 
         registries = [
             value
             for name, value in vars(tenant_filter).items()
             if isinstance(value, (tuple, list, set, frozenset))
-            and "bisheng.linsight.domain.models.linsight_skill" in value
+            and "doberman_agent.linsight.domain.models.linsight_skill" in value
         ]
         assert registries, "linsight_skill must be registered in the tenant filter model registry"

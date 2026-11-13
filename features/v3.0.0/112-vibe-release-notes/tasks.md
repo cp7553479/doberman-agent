@@ -19,17 +19,17 @@
 ## 执行任务
 
 - [x] **T001**（基础设施）：两张模型增加可空 LargeText 字段
-  - 文件：`src/backend/bisheng/app_publish/domain/models/app_deployment.py`、`src/backend/bisheng/database/models/app_version.py`
+  - 文件：`src/backend/doberman_agent/app_publish/domain/models/app_deployment.py`、`src/backend/doberman_agent/database/models/app_version.py`
   - 内容：原有对象各增 release_notes；不新增表、索引、通用 UPDATE；代码回滚保留列。
   - 依赖：无
 
 - [x] **T002**（基础设施）：错误码
-  - 文件：`src/backend/bisheng/common/errcode/app_publish.py`
+  - 文件：`src/backend/doberman_agent/common/errcode/app_publish.py`
   - 内容：核对空闲 16233，增加 AppReleaseNotesInvalidError；不回显正文。
   - 依赖：无
 
 - [x] **T003**（基础设施）：幂等 DDL
-  - 文件：`src/backend/bisheng/core/database/alembic/versions/v3_0_0_f112_release_notes.py`
+  - 文件：`src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f112_release_notes.py`
   - 内容：当前 head=vibe_merge_release_20261025；再次以 alembic heads 核对后接入。共享 DDL guards 增加两列；downgrade 丢列，须备份。
   - 依赖：T001
 
@@ -40,7 +40,7 @@
   - 覆盖 AC: AC-03, AC-04, AC-07, AC-08, AC-11, AC-17
 
 - [x] **T005**（后端 Domain）：规范化及 receive 保存
-  - 文件：`src/backend/bisheng/app_publish/domain/release_notes.py`、`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`
+  - 文件：`src/backend/doberman_agent/app_publish/domain/release_notes.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`
   - 内容：normalize_release_notes(str|None)；accept 增可选 keyword 参数，创建草稿之前校验；只把 deployment_id 交 Celery，tenant headers→ContextVar 原合同不改。
   - 依赖：T004
 
@@ -51,7 +51,7 @@
   - 覆盖 AC: AC-01, AC-07, AC-16, AC-17, AC-18, AC-19
 
 - [x] **T007**（后端 API）：表单与能力声明
-  - 文件：`src/backend/bisheng/app_publish/api/endpoints/deploy.py`
+  - 文件：`src/backend/doberman_agent/app_publish/api/endpoints/deploy.py`
   - 内容：POST release_notes 可选；GET limits data 合并 features.release_notes(version=1,max_codepoints=2000)，不改 package_service 整数返回。
   - 依赖：T006
 
@@ -62,33 +62,33 @@
   - 覆盖 AC: AC-08, AC-09, AC-10, AC-11, AC-12, AC-13, AC-14, AC-16, AC-19
 
 - [x] **T009**（后端 Domain）：版本写入与查询
-  - 文件：`src/backend/bisheng/app_publish/domain/services/version_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`
+  - 文件：`src/backend/doberman_agent/app_publish/domain/services/version_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`
   - 内容：原 INSERT 复制字段；原授权后序列化版本增加 release_notes；保留先审批后版本与分页合同。
   - 依赖：T008
 
 - [x] **T010**（后端 Domain）：审批两个快照
-  - 文件：`src/backend/bisheng/app_publish/domain/services/publish_approval_service.py`、`src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`
+  - 文件：`src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py`、`src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`
   - 内容：payload 从 deployment 复制；build_detail 白名单透传；回调与审批引擎不变。
   - 依赖：T008
 
 - [x] **T011**（CLI 测试）：输入、兼容与重传测试
-  - 文件：`src/bisheng-cli/tests/test_release_notes.py`
+  - 文件：`src/doberman-agent-cli/tests/test_release_notes.py`
   - 内容：复用 PlatformMock 和 sample_project，校验来源/UTF8/长度/dry-run/旧平台/HTTP 失败/原文重传/空白兼容，先红后绿。
   - 依赖：T007
   - 覆盖 AC: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-17, AC-18
 
 - [x] **T012**（CLI）：解析与参数
-  - 文件：`src/bisheng-cli/bisheng_cli/release_notes.py`、`src/bisheng-cli/bisheng_cli/cli.py`
+  - 文件：`src/doberman-agent-cli/doberman_agent_cli/release_notes.py`、`src/doberman-agent-cli/doberman_agent_cli/cli.py`
   - 内容：互斥 flag；文件仅读一次，按 cwd；纯 Python 规范化及新增文案三语言字典。
   - 依赖：T011
 
 - [x] **T013**（CLI）：兼容检查及上传
-  - 文件：`src/bisheng-cli/bisheng_cli/packaging.py`、`src/bisheng-cli/bisheng_cli/commands/deploy.py`
+  - 文件：`src/doberman-agent-cli/doberman_agent_cli/packaging.py`、`src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py`
   - 内容：Limits 默认字段兼容；一次 GET；有说明严格支持，无说明软降级；相同规范化值重传。
   - 依赖：T012
 
 - [x] **T014**（CLI）：错误映射
-  - 文件：`src/bisheng-cli/bisheng_cli/errors.py`
+  - 文件：`src/doberman-agent-cli/doberman_agent_cli/errors.py`
   - 内容：16233 映射 exit 6、给出具体修正指引，不把原文写日志。
   - 依赖：T013、T002
 
@@ -150,7 +150,7 @@
   - 依赖：T024
 
 - [x] **T026**（CLI）：安装版本
-  - 文件：`src/bisheng-cli/pyproject.toml`、`src/bisheng-cli/bisheng_cli/__init__.py`
+  - 文件：`src/doberman-agent-cli/pyproject.toml`、`src/doberman-agent-cli/doberman_agent_cli/__init__.py`
   - 内容：同步 3.0.0.post1（若已占用用下一 post 并改 design），不升级依赖；uv.lock 项目版本是机械派生物。
   - 依赖：T014
 
@@ -160,7 +160,7 @@
   - 依赖：T026
 
 - [x] **T027**（CLI 测试）：安装件构建和 smoke
-  - 文件：`src/backend/bisheng/dev_toolkit/artifacts/manifest.json`
+  - 文件：`src/backend/doberman_agent/dev_toolkit/artifacts/manifest.json`
   - 内容：运行 pack_cli_wheel.sh，产物新 wheel 替换旧 CLI wheel（机械产物例外）；不变 sdk。fresh shell version/help/dry-run。
   - 依赖：T026、T030
   - 覆盖 AC: AC-20

@@ -1,5 +1,5 @@
 """Tests for new audit log events: link/promote/delete document version."""
-from bisheng.database.models.audit_log import EventType
+from doberman_agent.database.models.audit_log import EventType
 
 
 def test_event_type_link_version_exists():
@@ -15,14 +15,14 @@ def test_event_type_delete_version_exists():
 
 
 def test_audit_log_service_has_version_methods():
-    from bisheng.api.services.audit_log import AuditLogService
+    from doberman_agent.api.services.audit_log import AuditLogService
     assert hasattr(AuditLogService, "link_file_version")
     assert hasattr(AuditLogService, "set_primary_version")
     assert hasattr(AuditLogService, "delete_file_version")
 
 
 def test_telemetry_service_has_version_wrappers():
-    from bisheng.knowledge.domain.services.knowledge_audit_telemetry_service import (
+    from doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service import (
         KnowledgeAuditTelemetryService,
     )
     assert hasattr(KnowledgeAuditTelemetryService, "audit_link_file_version")
@@ -32,8 +32,8 @@ def test_telemetry_service_has_version_wrappers():
 
 from unittest.mock import patch, MagicMock
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.database.models.audit_log import EventType, ObjectType
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.database.models.audit_log import EventType, ObjectType
 
 
 def _fake_user():
@@ -46,7 +46,7 @@ def _fake_user():
 def test_link_file_version_calls_knowledge_log_with_correct_args():
     user = _fake_user()
     with patch.object(AuditLogService, "_knowledge_log") as mock_log, \
-         patch("bisheng.api.services.audit_log.UserGroupDao") as _:  # _knowledge_log isn't called now, but be safe
+         patch("doberman_agent.api.services.audit_log.UserGroupDao") as _:  # _knowledge_log isn't called now, but be safe
         AuditLogService.link_file_version(user, "1.2.3.4", 99, "doc_A#V2")
         mock_log.assert_called_once()
         args, _kwargs = mock_log.call_args

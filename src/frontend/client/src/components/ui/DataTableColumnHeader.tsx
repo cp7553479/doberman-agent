@@ -3,7 +3,7 @@ import { Column } from '@tanstack/react-table';
 
 import { cn } from '~/utils';
 import { Button } from './Button';
-import { Dropdown, DropdownItem, DropdownSeparator } from '@bisheng/ui';
+import { Dropdown, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
 
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;

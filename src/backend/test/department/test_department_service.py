@@ -16,11 +16,11 @@ from sqlalchemy import Column, Integer, Table, create_engine, text
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.department.domain.services.department_change_handler import (
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.department.domain.services.department_change_handler import (
     DepartmentChangeHandler,
 )
-from bisheng.permission.application import (
+from doberman_agent.permission.application import (
     PermissionObject,
     PermissionRelation,
     PermissionRelationChange,
@@ -311,8 +311,8 @@ class TestCreateDepartment:
     @pytest.mark.asyncio
     async def test_service_sets_local_external_id_to_dept_id(self):
         """Local department rows must have external_id for later org-sync match."""
-        from bisheng.department.domain.schemas.department_schema import DepartmentCreate
-        from bisheng.department.domain.services import department_service as m
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentCreate
+        from doberman_agent.department.domain.services import department_service as m
 
         parent = SimpleNamespace(id=1, path="/1/", status="active")
         added = []
@@ -423,7 +423,7 @@ class TestCreateDepartment:
 class TestGetTree:
     def test_get_tree(self, session):
         """AC-03: Build nested tree from flat departments."""
-        from bisheng.department.domain.schemas.department_schema import DepartmentTreeNode
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentTreeNode
 
         root = _create_root(session, dept_id="BS@tree_root")
         child_a = _create_child(session, root, "BS@tree_a", "Dept A", sort_order=2)
@@ -703,7 +703,7 @@ class TestMemberManagement:
 class TestPermission:
     def test_permission_denied(self):
         """AC-16: Non-admin user cannot access department operations."""
-        from bisheng.department.domain.services.department_service import _is_admin
+        from doberman_agent.department.domain.services.department_service import _is_admin
 
         admin = _MockLoginUser(user_role=[1])
         non_admin = _NonAdminUser()
@@ -715,7 +715,7 @@ class TestPermission:
 
     @pytest.mark.asyncio
     async def test_get_members_includes_private_groups_for_global_super(self):
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         dept = SimpleNamespace(id=10)
         user_row = SimpleNamespace(
@@ -768,11 +768,11 @@ class TestPermission:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 side_effect=lambda: _session_cm_factory(session_responses.pop(0)),
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -797,7 +797,7 @@ class TestPermission:
 
     @pytest.mark.asyncio
     async def test_get_members_includes_user_group_admin_rows_for_display(self):
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         dept = SimpleNamespace(id=10)
         user_row = SimpleNamespace(
@@ -850,11 +850,11 @@ class TestPermission:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 side_effect=lambda: _session_cm_factory(session_responses.pop(0)),
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -865,7 +865,7 @@ class TestPermission:
                 return_value=[],
             ),
             patch(
-                "bisheng.user_group.domain.services.user_group_service._can_view_all_groups",
+                "doberman_agent.user_group.domain.services.user_group_service._can_view_all_groups",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -892,16 +892,16 @@ class TestPermission:
         pyproject.toml) lets an ``async def test_*`` method run under
         the asyncio runner transparently.
         """
-        from bisheng.common.errcode.department import DepartmentPermissionDeniedError
-        from bisheng.department.domain.services.department_service import _check_permission
+        from doberman_agent.common.errcode.department import DepartmentPermissionDeniedError
+        from doberman_agent.department.domain.services.department_service import _check_permission
 
         with pytest.raises(DepartmentPermissionDeniedError):
             await _check_permission(_NonAdminUser())
 
     @pytest.mark.asyncio
     async def test_get_tree_allows_tenant_admin_full_tree(self):
-        from bisheng.database.models.department import DepartmentDao
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.database.models.department import DepartmentDao
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         login_user = _MockLoginUser(user_id=7, user_role=[2], tenant_id=1)
         root = SimpleNamespace(
@@ -936,7 +936,7 @@ class TestPermission:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch.object(
@@ -946,12 +946,12 @@ class TestPermission:
                 return_value=[],
             ),
             patch(
-                "bisheng.permission.application.is_tenant_admin",
+                "doberman_agent.permission.application.is_tenant_admin",
                 new_callable=AsyncMock,
                 return_value=True,
             ) as mock_perm_check,
             patch(
-                "bisheng.department.domain.services.department_service._is_registration_enabled",
+                "doberman_agent.department.domain.services.department_service._is_registration_enabled",
                 return_value=True,
             ),
         ):
@@ -967,7 +967,7 @@ class TestPermission:
 class TestLocalMemberCreate:
     @pytest.mark.asyncio
     async def test_assignable_roles_bypasses_tenant_filter_for_global_roles(self):
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         entered = {"value": False}
         dept = MagicMock()
@@ -1030,11 +1030,11 @@ class TestLocalMemberCreate:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -1045,23 +1045,23 @@ class TestLocalMemberCreate:
                 return_value=[10],
             ),
             patch(
-                "bisheng.core.context.tenant.bypass_tenant_filter",
+                "doberman_agent.core.context.tenant.bypass_tenant_filter",
                 return_value=_Bypass(),
             ),
             patch.dict(
                 "sys.modules",
-                {"bisheng.database.models.role": SimpleNamespace(Role=_Role)},
+                {"doberman_agent.database.models.role": SimpleNamespace(Role=_Role)},
             ),
             patch(
-                "bisheng.department.domain.services.department_service.select",
+                "doberman_agent.department.domain.services.department_service.select",
                 return_value=_Stmt(),
             ),
             patch(
-                "bisheng.department.domain.services.department_service.and_",
+                "doberman_agent.department.domain.services.department_service.and_",
                 return_value=object(),
             ),
             patch(
-                "bisheng.department.domain.services.department_service.or_",
+                "doberman_agent.department.domain.services.department_service.or_",
                 return_value=object(),
             ),
         ):
@@ -1079,10 +1079,10 @@ class TestLocalMemberCreate:
 
     @pytest.mark.asyncio
     async def test_create_local_member_rejects_archived_department_before_user_create(self):
-        from bisheng.common.errcode.department import DepartmentArchivedReadonlyError
-        from bisheng.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
-        from bisheng.department.domain.services.department_service import DepartmentService
-        from bisheng.user.domain.services import user as user_service_module
+        from doberman_agent.common.errcode.department import DepartmentArchivedReadonlyError
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
+        from doberman_agent.department.domain.services.department_service import DepartmentService
+        from doberman_agent.user.domain.services import user as user_service_module
 
         dept = MagicMock()
         dept.status = "archived"
@@ -1100,11 +1100,11 @@ class TestLocalMemberCreate:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -1121,11 +1121,11 @@ class TestLocalMemberCreate:
 
     @pytest.mark.asyncio
     async def test_create_local_member_rejects_deleted_person_id_with_restore_hint(self):
-        from bisheng.common.errcode.department import DepartmentPersonIdDeletedAccountError
-        from bisheng.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
-        from bisheng.department.domain.services.department_service import DepartmentService
-        from bisheng.user.domain.models import user as user_model_module
-        from bisheng.user.domain.services import user as user_service_module
+        from doberman_agent.common.errcode.department import DepartmentPersonIdDeletedAccountError
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
+        from doberman_agent.department.domain.services.department_service import DepartmentService
+        from doberman_agent.user.domain.models import user as user_model_module
+        from doberman_agent.user.domain.services import user as user_service_module
 
         dept = MagicMock()
         dept.default_role_ids = []
@@ -1143,11 +1143,11 @@ class TestLocalMemberCreate:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -1157,7 +1157,7 @@ class TestLocalMemberCreate:
                 return_value="Aa123456!",
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentService.aget_assignable_roles",
+                "doberman_agent.department.domain.services.department_service.DepartmentService.aget_assignable_roles",
                 new_callable=AsyncMock,
                 return_value=[],
             ) as assignable_roles,
@@ -1182,11 +1182,11 @@ class TestLocalMemberCreate:
 
     @pytest.mark.asyncio
     async def test_create_local_member_reports_duplicate_person_id_before_role_validation(self):
-        from bisheng.common.errcode.department import DepartmentPersonIdDuplicateError
-        from bisheng.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
-        from bisheng.department.domain.services.department_service import DepartmentService
-        from bisheng.user.domain.models import user as user_model_module
-        from bisheng.user.domain.services import user as user_service_module
+        from doberman_agent.common.errcode.department import DepartmentPersonIdDuplicateError
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentLocalMemberCreate
+        from doberman_agent.department.domain.services.department_service import DepartmentService
+        from doberman_agent.user.domain.models import user as user_model_module
+        from doberman_agent.user.domain.services import user as user_service_module
 
         dept = MagicMock()
         dept.default_role_ids = []
@@ -1204,11 +1204,11 @@ class TestLocalMemberCreate:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
@@ -1229,7 +1229,7 @@ class TestLocalMemberCreate:
                 new_callable=AsyncMock,
             ) as disabled_lookup,
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentService.aget_assignable_roles",
+                "doberman_agent.department.domain.services.department_service.DepartmentService.aget_assignable_roles",
                 new_callable=AsyncMock,
                 return_value=[],
             ) as assignable_roles,
@@ -1391,7 +1391,7 @@ class TestAdminDepartmentsBypassTenantFilter:
 
     @pytest.mark.asyncio
     async def test_aget_user_admin_departments_bypasses_tenant_filter(self):
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         entered = {"value": False}
 
@@ -1411,12 +1411,12 @@ class TestAdminDepartmentsBypassTenantFilter:
 
         with (
             patch(
-                "bisheng.permission.application.get_permission_relation_api",
+                "doberman_agent.permission.application.get_permission_relation_api",
                 new_callable=AsyncMock,
                 return_value=permissions,
             ),
             patch(
-                "bisheng.core.context.tenant.bypass_tenant_filter",
+                "doberman_agent.core.context.tenant.bypass_tenant_filter",
                 return_value=_Bypass(),
             ),
             patch.object(
@@ -1433,7 +1433,7 @@ class TestAdminDepartmentsBypassTenantFilter:
     @pytest.mark.asyncio
     async def test_aget_user_admin_departments_skips_bypass_when_permission_empty(self):
         """No permission result means no DB fetch or tenant bypass."""
-        from bisheng.database.models.department import DepartmentDao
+        from doberman_agent.database.models.department import DepartmentDao
 
         entered = {"value": False}
 
@@ -1449,12 +1449,12 @@ class TestAdminDepartmentsBypassTenantFilter:
 
         with (
             patch(
-                "bisheng.permission.application.get_permission_relation_api",
+                "doberman_agent.permission.application.get_permission_relation_api",
                 new_callable=AsyncMock,
                 return_value=permissions,
             ),
             patch(
-                "bisheng.core.context.tenant.bypass_tenant_filter",
+                "doberman_agent.core.context.tenant.bypass_tenant_filter",
                 return_value=_Bypass(),
             ),
         ):
@@ -1477,7 +1477,7 @@ class TestMoveDepartmentSubtreeSync:
     def _disable_projection_runtime(self, monkeypatch):
         """These tests isolate post-commit subtree synchronization."""
 
-        from bisheng.department.domain.services import department_service
+        from doberman_agent.department.domain.services import department_service
 
         monkeypatch.setattr(department_service, "_uses_f048_department_projection", lambda: False)
 
@@ -1488,7 +1488,7 @@ class TestMoveDepartmentSubtreeSync:
         Returns (session, fake_session, dept) so each test can override what
         comes back from the new-parent select.
         """
-        from bisheng.database.models.department import Department
+        from doberman_agent.database.models.department import Department
 
         dept = MagicMock(spec=Department)
         dept.id = 7
@@ -1520,9 +1520,9 @@ class TestMoveDepartmentSubtreeSync:
 
     @pytest.mark.asyncio
     async def test_move_to_different_parent_triggers_sync(self):
-        from bisheng.department.domain.schemas.department_schema import DepartmentMoveRequest
-        from bisheng.department.domain.services.department_service import DepartmentService
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentMoveRequest
+        from doberman_agent.department.domain.services.department_service import DepartmentService
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         session, fake_session, dept = self._move_test_setup()
 
@@ -1535,28 +1535,28 @@ class TestMoveDepartmentSubtreeSync:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new=_check_perm,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
                 return_value=[],
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
+                "doberman_agent.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
                 sync_mock,
             ),
         ):
@@ -1575,8 +1575,8 @@ class TestMoveDepartmentSubtreeSync:
     @pytest.mark.asyncio
     async def test_move_to_same_parent_skips_sync(self):
         """new_parent_id == old_parent_id → no leaf change, no sync needed."""
-        from bisheng.department.domain.schemas.department_schema import DepartmentMoveRequest
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentMoveRequest
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         # dept currently has parent_id=1; new parent will also be id=1.
         session, fake_session, dept = self._move_test_setup(
@@ -1592,28 +1592,28 @@ class TestMoveDepartmentSubtreeSync:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new=_check_perm,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
                 return_value=[],
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
+                "doberman_agent.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
                 sync_mock,
             ),
         ):
@@ -1627,8 +1627,8 @@ class TestMoveDepartmentSubtreeSync:
 
     @pytest.mark.asyncio
     async def test_sync_failure_does_not_propagate(self):
-        from bisheng.department.domain.schemas.department_schema import DepartmentMoveRequest
-        from bisheng.department.domain.services.department_service import DepartmentService
+        from doberman_agent.department.domain.schemas.department_schema import DepartmentMoveRequest
+        from doberman_agent.department.domain.services.department_service import DepartmentService
 
         session, fake_session, dept = self._move_test_setup()
 
@@ -1640,28 +1640,28 @@ class TestMoveDepartmentSubtreeSync:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new=_check_perm,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.on_moved",
                 return_value=[],
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
+                "doberman_agent.department.domain.services.department_service.DepartmentChangeHandler.execute_async",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
+                "doberman_agent.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
                 sync_mock,
             ),
         ):
@@ -1681,13 +1681,13 @@ class TestMoveDepartmentSubtreeSync:
         already inside another mount subtree must raise 22001 — symmetrical
         with the creation-time check in TenantMountService.mount_child.
         """
-        from bisheng.common.errcode.tenant_tree import (
+        from doberman_agent.common.errcode.tenant_tree import (
             TenantTreeNestingForbiddenError,
         )
-        from bisheng.department.domain.schemas.department_schema import (
+        from doberman_agent.department.domain.schemas.department_schema import (
             DepartmentMoveRequest,
         )
-        from bisheng.department.domain.services.department_service import (
+        from doberman_agent.department.domain.services.department_service import (
             DepartmentService,
         )
 
@@ -1705,19 +1705,19 @@ class TestMoveDepartmentSubtreeSync:
 
         with (
             patch(
-                "bisheng.department.domain.services.department_service.get_async_db_session",
+                "doberman_agent.department.domain.services.department_service.get_async_db_session",
                 fake_session,
             ),
             patch(
-                "bisheng.department.domain.services.department_service._get_dept_and_check_permission",
+                "doberman_agent.department.domain.services.department_service._get_dept_and_check_permission",
                 new=_check_perm,
             ),
             patch(
-                "bisheng.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
+                "doberman_agent.department.domain.services.department_service.DepartmentDao.aassert_reparent_legal",
                 new=_reject,
             ),
             patch(
-                "bisheng.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
+                "doberman_agent.tenant.domain.services.user_tenant_sync_service.UserTenantSyncService.sync_subtree_primary_users",
                 sync_mock,
             ),
         ):

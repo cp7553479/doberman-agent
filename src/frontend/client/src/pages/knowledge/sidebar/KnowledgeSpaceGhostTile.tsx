@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { cn } from "~/utils";
 import {
     FOLDER_BACK_PATH,

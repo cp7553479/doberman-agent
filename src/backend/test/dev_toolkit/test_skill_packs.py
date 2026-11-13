@@ -21,14 +21,14 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
+from doberman_agent.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
 
 PACKS = ("deploy-hosting", "platform-wiring")
 
 # F049's scan rule for a real service-account key. A pack must never carry one.
 _KEY_RE = re.compile(r"\bbs-sak-[A-Za-z0-9_-]{43}\b")
 
-# `bisheng dev` and app-proxy inject these; the pack must teach exactly these
+# `doberman-agent dev` and app-proxy inject these; the pack must teach exactly these
 # names. Read from app-proxy's source rather than imported: the backend does
 # not depend on app-proxy, and the names are literals in that file.
 _APP_PROXY_HEADERS = Path(__file__).resolve().parents[3] / "app-proxy" / "app_proxy" / "headers.py"
@@ -50,7 +50,7 @@ def test_pack_has_the_three_pieces(name: str):
     pack = _pack(name)
     assert (pack / "SKILL.md").is_file()
     assert (pack / "example" / "main.py").is_file()
-    assert (pack / "example" / "bisheng-app.yaml").is_file()
+    assert (pack / "example" / "doberman-agent-app.yaml").is_file()
     assert (pack / "selfcheck.py").is_file()
 
 
@@ -77,9 +77,9 @@ def test_example_manifest_is_valid_against_the_platform_schema(name: str):
     # the pure schema (no DB tier resolution needed).
     import yaml
 
-    from bisheng.app_publish.domain.schemas.app_manifest import SUPPORTED_RUNTIMES, AppManifest
+    from doberman_agent.app_publish.domain.schemas.app_manifest import SUPPORTED_RUNTIMES, AppManifest
 
-    raw = (_pack(name) / "example" / "bisheng-app.yaml").read_text(encoding="utf-8")
+    raw = (_pack(name) / "example" / "doberman-agent-app.yaml").read_text(encoding="utf-8")
     manifest = AppManifest(**yaml.safe_load(raw))  # raises on unknown/missing fields
     assert manifest.runtime in SUPPORTED_RUNTIMES
     assert manifest.name
@@ -144,8 +144,8 @@ def test_auth_chapter_teaches_exactly_app_proxys_header_names():
     source = _APP_PROXY_HEADERS.read_text(encoding="utf-8")
     block = re.search(r"INJECTED_HEADER_NAMES[^=]*=\s*\((.*?)\)", source, re.DOTALL)
     assert block, "app-proxy no longer declares INJECTED_HEADER_NAMES — the pack's header table must be re-checked"
-    injected = set(re.findall(r'"(X-BiSheng-[A-Za-z-]+)"', block.group(1)))
-    taught = set(re.findall(r"`(X-BiSheng-[A-Za-z-]+)`", (WIRING / "SKILL.md").read_text(encoding="utf-8")))
+    injected = set(re.findall(r'"(X-Doberman-Agent-[A-Za-z-]+)"', block.group(1)))
+    taught = set(re.findall(r"`(X-Doberman-Agent-[A-Za-z-]+)`", (WIRING / "SKILL.md").read_text(encoding="utf-8")))
     # Every taught name is a real one, and every real one is taught.
     assert taught == injected, f"pack/app-proxy header drift: {taught ^ injected}"
     # The access-token handle has two consumers — the SDK's retrieve, which
@@ -154,7 +154,7 @@ def test_auth_chapter_teaches_exactly_app_proxys_header_names():
     # with it itself (parsing it, storing it, treating it as a permission).
     # F057 and then F051 changed the contract; this guard changed with them.
     text = (WIRING / "SKILL.md").read_text(encoding="utf-8")
-    token_row = next(line for line in text.splitlines() if line.startswith("| `X-BiSheng-Access-Token`"))
+    token_row = next(line for line in text.splitlines() if line.startswith("| `X-Doberman-Agent-Access-Token`"))
     assert "不要自己解析" in token_row
 
 
@@ -171,16 +171,16 @@ def test_model_chapter_teaches_the_shipped_face_and_hardcodes_no_address():
     model = next((content for heading, content in _chapters(body) if "模型" in heading), None)
     assert model is not None
     assert "暂未提供" not in model, "F051 shipped the model face; that claim is stale"
-    # The three names F051 design D2 defined and `bisheng dev` / the hosted
+    # The three names F051 design D2 defined and `doberman-agent dev` / the hosted
     # runtime inject under the same spelling.
-    for env_name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "BISHENG_MODEL_BASE_URL"):
+    for env_name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "DOBERMAN_AGENT_MODEL_BASE_URL"):
         assert env_name in model, env_name
     # The official client, not a hand-rolled HTTP call.
     assert "openai" in model and "chat.completions.create" in model
     # No URL at all in that chapter: nothing to copy-paste into a client.
     assert not re.search(r"https?://", model)
     # And the composed-address trap is named with the variable that invites it.
-    assert "BISHENG_PLATFORM_API_BASE" in model
+    assert "DOBERMAN_AGENT_PLATFORM_API_BASE" in model
 
 
 def test_no_pack_file_hardcodes_the_model_face_path():
@@ -200,9 +200,9 @@ def test_no_pack_file_hardcodes_the_model_face_path():
 def test_app_db_chapter_uses_the_injected_env_names_and_stdlib_sqlite3():
     text = (WIRING / "SKILL.md").read_text(encoding="utf-8")
     example = (WIRING / "example" / "main.py").read_text(encoding="utf-8")
-    for name in ("BISHENG_APP_DB_PATH", "BISHENG_APP_DB_URL"):
+    for name in ("DOBERMAN_AGENT_APP_DB_PATH", "DOBERMAN_AGENT_APP_DB_URL"):
         assert name in text
-    assert "BISHENG_APP_DB_PATH" in example and "import sqlite3" in example
+    assert "DOBERMAN_AGENT_APP_DB_PATH" in example and "import sqlite3" in example
     assert "CREATE TABLE IF NOT EXISTS" in example and "ensure_column" in example
     # The schema-evolution policy as the code enforces it: a breaking change
     # without --confirm-schema-change is refused with 16229, and the platform
@@ -212,6 +212,6 @@ def test_app_db_chapter_uses_the_injected_env_names_and_stdlib_sqlite3():
 
 def test_example_reads_identity_from_headers_and_has_no_login():
     example = (WIRING / "example" / "main.py").read_text(encoding="utf-8")
-    assert "X-BiSheng-User-Id" in example and "unquote" in example
+    assert "X-Doberman-Agent-User-Id" in example and "unquote" in example
     for forbidden in ("password", "login", "jwt", "set-cookie"):
         assert forbidden not in example.lower(), f"the example must not roll its own auth ({forbidden})"

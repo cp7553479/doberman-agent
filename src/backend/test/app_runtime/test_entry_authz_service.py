@@ -14,7 +14,7 @@ from urllib.parse import unquote
 import jwt
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 pytestmark = pytest.mark.usefixtures("app_db")
 
@@ -23,7 +23,7 @@ OBO_SECRET = "f054-obo-secret-not-the-session-one"
 
 @pytest.fixture()
 def runtime_enabled(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True, raising=False)
     monkeypatch.setattr(settings.app_runtime, "obo_secret", OBO_SECRET, raising=False)
@@ -38,7 +38,7 @@ def visible(monkeypatch):
     The F048 runtime itself is covered by ``test_app_permission_registration``;
     what this module owns is what the entry path *does* with each answer.
     """
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     state = {"allow": True, "calls": []}
 
@@ -53,7 +53,7 @@ def visible(monkeypatch):
 @pytest.fixture()
 def no_tenant_blacklist(monkeypatch):
     """Redis is not available in a unit run; the blacklist answers "not disabled"."""
-    from bisheng.app_runtime.domain.services import entry_authz_service
+    from doberman_agent.app_runtime.domain.services import entry_authz_service
 
     disabled: set[int] = set()
 
@@ -73,8 +73,8 @@ def single_login(monkeypatch):
     """
     from types import SimpleNamespace
 
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.cache import redis_manager
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.cache import redis_manager
 
     state = {"current": None}
 
@@ -94,7 +94,7 @@ def single_login(monkeypatch):
 
 
 def _token(user_id: int, user_name: str = "u", tenant_id: int = 1, token_version: int = 0) -> str:
-    from bisheng.user.domain.services.auth import AuthJwt
+    from doberman_agent.user.domain.services.auth import AuthJwt
 
     return AuthJwt().create_access_token(
         {"user_id": user_id, "user_name": user_name, "tenant_id": tenant_id, "token_version": token_version}
@@ -102,7 +102,7 @@ def _token(user_id: int, user_name: str = "u", tenant_id: int = 1, token_version
 
 
 async def _verdict(slug, token, **kwargs):
-    from bisheng.app_runtime.domain.services.entry_authz_service import authorize_entry
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import authorize_entry
 
     return await authorize_entry(slug=slug, access_token=token, request_id="req-1", **kwargs)
 
@@ -111,7 +111,7 @@ class TestStepOrder:
     async def test_layer_not_deployed_short_circuits(self, app_db, app_factory, monkeypatch):
         """AC-30 — answered before the session check, so a visitor to an
         environment without the factory is never bounced through a login."""
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.common.services.config_service import settings
 
         monkeypatch.setattr(settings.app_runtime, "enabled", False, raising=False)
         _app, _ = await app_factory(slug="any-app", state=AppState.ONLINE.value)
@@ -138,7 +138,7 @@ class TestStepOrder:
 
     async def test_disabled_account_denied(self, app_db, app_factory, app_owner, runtime_enabled, no_tenant_blacklist):
         """A disabled account keeps a syntactically valid JWT until it expires."""
-        from bisheng.user.domain.models.user import User
+        from doberman_agent.user.domain.models.user import User
 
         _app, _ = await app_factory(slug="disabled-user-app", state=AppState.ONLINE.value)
         async with app_db() as session:
@@ -277,22 +277,22 @@ class TestInjectionMaterial:
 
         material = verdict["headers"]
         assert set(material) == {
-            "X-BiSheng-User-Id",
-            "X-BiSheng-User-Name",
-            "X-BiSheng-Tenant-Id",
-            "X-BiSheng-Dept-Id",
-            "X-BiSheng-Dept-Name",
-            "X-BiSheng-Dept-Path",
-            "X-BiSheng-Subject-Kind",
-            "X-BiSheng-App-Id",
-            "X-BiSheng-Access-Token",
-            "X-BiSheng-Request-Id",
+            "X-Doberman-Agent-User-Id",
+            "X-Doberman-Agent-User-Name",
+            "X-Doberman-Agent-Tenant-Id",
+            "X-Doberman-Agent-Dept-Id",
+            "X-Doberman-Agent-Dept-Name",
+            "X-Doberman-Agent-Dept-Path",
+            "X-Doberman-Agent-Subject-Kind",
+            "X-Doberman-Agent-App-Id",
+            "X-Doberman-Agent-Access-Token",
+            "X-Doberman-Agent-Request-Id",
         }
-        assert material["X-BiSheng-Subject-Kind"] == "human", "AC-31 requires the subject type"
+        assert material["X-Doberman-Agent-Subject-Kind"] == "human", "AC-31 requires the subject type"
         # The *business* key, not the autoincrement id: an app authorising on a
         # surrogate primary key would break the moment the row is re-seeded.
-        assert material["X-BiSheng-Dept-Id"] == chinese_name_user.department_business_key
-        assert material["X-BiSheng-App-Id"] == app.id
+        assert material["X-Doberman-Agent-Dept-Id"] == chinese_name_user.department_business_key
+        assert material["X-Doberman-Agent-App-Id"] == app.id
 
     async def test_chinese_name_percent_encoded_roundtrip(
         self, app_db, app_factory, chinese_name_user, runtime_enabled, no_tenant_blacklist, visible
@@ -303,19 +303,19 @@ class TestInjectionMaterial:
         material = (await _verdict("cjk-app", _token(chinese_name_user.user_id)))["headers"]
 
         for header, expected in (
-            ("X-BiSheng-User-Name", chinese_name_user.user_name),
-            ("X-BiSheng-Dept-Name", chinese_name_user.department_name),
+            ("X-Doberman-Agent-User-Name", chinese_name_user.user_name),
+            ("X-Doberman-Agent-Dept-Name", chinese_name_user.department_name),
         ):
             assert material[header].isascii(), f"{header} would be rejected or mangled by h11"
             assert unquote(material[header]) == expected
-        assert material["X-BiSheng-Dept-Path"].isascii()
+        assert material["X-Doberman-Agent-Dept-Path"].isascii()
 
     async def test_obo_token_signed_with_dedicated_secret(
         self, app_db, app_factory, app_owner, runtime_enabled, no_tenant_blacklist, visible
     ):
         """AC-34 — a separate key, or the token doubles as a session cookie."""
-        from bisheng.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
+        from doberman_agent.common.services.config_service import settings
 
         app, _ = await app_factory(slug="obo-app", state=AppState.ONLINE.value)
         verdict = await _verdict("obo-app", _token(app_owner.user_id))
@@ -340,7 +340,7 @@ class TestInjectionMaterial:
         ``min(OBO remaining, ws_max_lifetime_seconds)``. Both inputs are stated
         by the backend, so the cap is this process's config rather than a second
         copy in the proxy's environment, and the expiry needs no token decoding."""
-        from bisheng.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE
 
         monkeypatch.setattr(runtime_enabled.app_runtime, "ws_max_lifetime_seconds", 7200, raising=False)
         await app_factory(slug="ws-lifetime-app", state=AppState.ONLINE.value)
@@ -356,7 +356,7 @@ class TestInjectionMaterial:
     ):
         """AC-70, AC-73: a shared secret is a misconfiguration, and signing anyway would hand
         every hosted app a valid platform session."""
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.common.services.config_service import settings
 
         monkeypatch.setattr(
             settings.app_runtime,
@@ -364,7 +364,7 @@ class TestInjectionMaterial:
             settings.jwt_secret if bad_secret == "session" else bad_secret,
             raising=False,
         )
-        from bisheng.app_runtime.domain.services import entry_authz_service
+        from doberman_agent.app_runtime.domain.services import entry_authz_service
 
         recorded = []
         monkeypatch.setattr(entry_authz_service, "schedule_access_record", lambda **kw: recorded.append(kw))
@@ -383,7 +383,7 @@ class TestInjectionMaterial:
         not disagree. They can now, and the capability bus attributes every call
         to whatever this returns.
         """
-        from bisheng.app_runtime.domain.services.entry_authz_service import verify_obo_token
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import verify_obo_token
 
         app, _ = await app_factory(slug="verify-app", state=AppState.ONLINE.value)
         verdict = await _verdict("verify-app", _token(app_owner.user_id))
@@ -395,7 +395,7 @@ class TestInjectionMaterial:
     ):
         """An OBO token is minted per application; without this check app B could
         act as app A's visitor by replaying their token."""
-        from bisheng.app_runtime.domain.services.entry_authz_service import verify_obo_token
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import verify_obo_token
 
         app, _ = await app_factory(slug="scoped-app", state=AppState.ONLINE.value)
         token = (await _verdict("scoped-app", _token(app_owner.user_id)))["obo_token"]
@@ -406,21 +406,21 @@ class TestInjectionMaterial:
     async def test_a_forged_or_absent_token_names_nobody(self, runtime_enabled):
         """Every refusal answers the same way — a distinguishable one would turn
         the token into a probe for which applications exist."""
-        from bisheng.app_runtime.domain.services.entry_authz_service import verify_obo_token
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import verify_obo_token
 
         assert verify_obo_token("", app_id="app", tenant_id=1) is None
         assert verify_obo_token("not-a-jwt", app_id="app", tenant_id=1) is None
-        forged = jwt.encode({"sub": "{}", "aud": "bisheng-app-obo"}, "another-secret", algorithm="HS256")
+        forged = jwt.encode({"sub": "{}", "aud": "doberman-agent-app-obo"}, "another-secret", algorithm="HS256")
         assert verify_obo_token(forged, app_id="app", tenant_id=1) is None
 
     async def test_a_shared_secret_verifies_nothing(self, runtime_enabled, monkeypatch):
         """The issuer refuses to sign when the secrets are shared; the reader must
         refuse to trust too, or a platform session cookie would pass as an OBO."""
-        from bisheng.app_runtime.domain.services.entry_authz_service import verify_obo_token
-        from bisheng.common.services.config_service import settings
+        from doberman_agent.app_runtime.domain.services.entry_authz_service import verify_obo_token
+        from doberman_agent.common.services.config_service import settings
 
         token = jwt.encode(
-            {"sub": json.dumps({"app_id": "app", "user_id": 1, "tenant_id": 1}), "aud": "bisheng-app-obo"},
+            {"sub": json.dumps({"app_id": "app", "user_id": 1, "tenant_id": 1}), "aud": "doberman-agent-app-obo"},
             settings.jwt_secret,
             algorithm="HS256",
         )
@@ -431,8 +431,8 @@ class TestInjectionMaterial:
 
 def test_obo_startup_diagnosis_only_for_enabled_layer(monkeypatch):
     """覆盖 AC: AC-72. Startup diagnostics never interpolate key material."""
-    from bisheng.app_runtime.domain.services import entry_authz_service as module
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services import entry_authz_service as module
+    from doberman_agent.common.services.config_service import settings
 
     calls = []
     monkeypatch.setattr(module, "_warn_once", lambda reason, message: calls.append((reason, message)))
@@ -450,8 +450,8 @@ def test_whitespace_obo_key_never_authenticates_a_forged_visitor(monkeypatch):
     """覆盖 AC: AC-70, AC-73. Entry and capability consumers share the same invalid-key boundary."""
     import time
 
-    from bisheng.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE, verify_obo_token
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import OBO_AUDIENCE, verify_obo_token
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "obo_secret", "  ")
     forged = jwt.encode(
@@ -472,8 +472,8 @@ async def test_one_request_uses_captured_obo_configuration(
     app_factory, app_owner, runtime_enabled, no_tenant_blacklist, visible, monkeypatch
 ):
     """覆盖 AC: AC-73. A refresh during identity assembly cannot mix signing settings."""
-    from bisheng.app_runtime.domain.services import entry_authz_service as module
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services import entry_authz_service as module
+    from doberman_agent.common.services.config_service import settings
 
     original = module._identity_material
 

@@ -35,7 +35,7 @@ test/metric_log/  51 passed
   ├─ test_storage_metric.py  12  (存储分类/叶子方法)
   ├─ test_model_metric.py     3  (模型 TTFT/status)
   └─ test_eplus_metric.py     5  (E+ ok/error/skipped)
-回归: bisheng.main 导入干净 + 89 相关测试 + 7 s3error_thaw 全过
+回归: doberman_agent.main 导入干净 + 89 相关测试 + 7 s3error_thaw 全过
 ```
 
 ## 手动验证清单（真实部署，需 middleware）

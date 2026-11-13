@@ -6,8 +6,8 @@ import httpx
 import pytest
 from langchain_core.messages import HumanMessage
 
-from bisheng.llm.domain.llm.llm import BishengLLM
-from bisheng.llm.domain.models import LLMModel, LLMServer
+from doberman_agent.llm.domain.llm.llm import DobermanAgentLLM
+from doberman_agent.llm.domain.models import LLMModel, LLMServer
 
 
 @pytest.mark.parametrize("stream", [False, True])
@@ -36,7 +36,7 @@ async def test_workstation_selects_chat_wire_protocol_without_mutating_model(str
         )
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(upstream)) as http_client:
-        original_params = BishengLLM._get_llm_params
+        original_params = DobermanAgentLLM._get_llm_params
 
         def client_params(self, server, model):
             return {
@@ -46,11 +46,11 @@ async def test_workstation_selects_chat_wire_protocol_without_mutating_model(str
                 "streaming": stream,
             }
 
-        monkeypatch.setattr(BishengLLM, "_get_llm_params", client_params)
+        monkeypatch.setattr(DobermanAgentLLM, "_get_llm_params", client_params)
         config = {"user_kwargs": json.dumps({"use_responses_api": True})}
         model_info = LLMModel(id=42, server_id=7, model_name="test", model_type="llm", config=config)
         server = LLMServer(id=7, type="openai", config={"api_key": "test", "base_url": "https://supplier.invalid/v1"})
-        original = BishengLLM.get_class_instance_from_snapshot(
+        original = DobermanAgentLLM.get_class_instance_from_snapshot(
             model_info=model_info, server_info=server, app_id="test", app_type="dsh_desktop", app_name="test", user_id=1
         )
         model = original.llm

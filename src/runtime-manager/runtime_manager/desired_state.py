@@ -171,7 +171,7 @@ class InstanceRecord:
         is exactly why those facts are labelled in the first place.
 
         Returns ``None`` for anything not ours (foreign containers, probe
-        instances whose ``bisheng.managed`` is ``probe``): "not ours" must be a
+        instances whose ``doberman-agent.managed`` is ``probe``): "not ours" must be a
         cheap, total answer, because the caller's next step is reclaiming.
         """
         config_section = info.get("Config") or {}

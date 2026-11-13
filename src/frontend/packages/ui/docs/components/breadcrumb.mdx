@@ -5,7 +5,7 @@ component: Breadcrumb
 
 # 面包屑 Breadcrumb
 
-页面在结构里的位置——从根级一路到当前页，回答「我在哪一层、怎么往上走」。组件库 `@bisheng/ui` 导出名 **`Breadcrumb`**，实现取自 client 知识空间的下级文件夹页（原 `KnowledgeBreadcrumb`），规则按规范抽成通用件。规范全文见「文档 → 组件规范 → 面包屑 Breadcrumb」。
+页面在结构里的位置——从根级一路到当前页，回答「我在哪一层、怎么往上走」。组件库 `@doberman-agent/ui` 导出名 **`Breadcrumb`**，实现取自 client 知识空间的下级文件夹页（原 `KnowledgeBreadcrumb`），规则按规范抽成通用件。规范全文见「文档 → 组件规范 → 面包屑 Breadcrumb」。
 
 **业务页只传完整层级数组**，根级在前、当前页在末。截断、折叠、窄屏阈值、`nav` / `aria-current` 全在组件里，页面一句都不用重写：
 
@@ -16,10 +16,10 @@ component: Breadcrumb
 
 ## 默认状态
 
-四级及以内全部展开。父级第三档文字色、hover 转品牌色，分隔符是 bisheng-icons 的右向箭头（不是文本 `>`），当前页深一档且不可点。
+四级及以内全部展开。父级第三档文字色、hover 转品牌色，分隔符是 @doberman-agent/icons 的右向箭头（不是文本 `>`），当前页深一档且不可点。
 
 ```tsx
-import { Breadcrumb } from '@bisheng/ui';
+import { Breadcrumb } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ padding: '12px 0' }}>
@@ -42,7 +42,7 @@ export default () => (
 把鼠标停在被截断的那两级上看 Tooltip。
 
 ```tsx
-import { Breadcrumb } from '@bisheng/ui';
+import { Breadcrumb } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ padding: '12px 0', maxWidth: 420 }}>
@@ -65,7 +65,7 @@ export default () => (
 点 `…` 打开单列纵向菜单：一行一级，从上到下＝从上级到下级，整行可点，菜单里给**完整名称**（只受菜单 240px 上限约束）。点菜单外或按 Esc 关闭，方向键可在行间移动。
 
 ```tsx
-import { Breadcrumb } from '@bisheng/ui';
+import { Breadcrumb } from '@doberman-agent/ui';
 
 const chain = [
   '产品知识库', '研发中心', '平台组', '前端', '组件库', '设计规范', '面包屑',

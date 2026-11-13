@@ -28,7 +28,7 @@
 | F051 | model-protocol-gateway | A | ✅ 实现完成 27/30 · 余 T025 托管应用端到端、T027 本地引擎手动验证、T028 审计与账本核对（均需 114） | F049 | DEV-02 模型协议面 `/api/v2/model/v1`（仅 OpenAI 兼容）+ 模型调用逐条审计 |
 | F052 | mcp-server-face | A | ✅ 实现完成 33/35 · 余 T104 集合相等 + fail-closed 存储层断言、T302 真 MCP 客户端端到端（均需 CI 中间件） | F049 | DEV-02 MCP 六类工具 `/api/v2/mcp` + 统一检索门面（文件级 fail-closed） |
 | F053 | dev-cli-skills | A 尾 / B | ✅ 实现完成 52/53 · 余 T033 114 部署与手动验证清单 | F049, F051, F052 | DEV-03 两包 / DEV-04 CLI 四命令 / DEV-05 本地身份注入 / DEV-01 接入信息区 |
-| F057 | bisheng-sdk | A 尾 / B | ✅ 实现完成 42/45（新包 `src/bisheng-sdk`）· 余 T032 / T042 114 验证、T040 评测跑分（达标线 2026-10-09 定为 6/6） | F052, F053（storage 依赖 F054） | DEV-07 三件套 + 开发者指南 |
+| F057 | doberman-agent-sdk | A 尾 / B | ✅ 实现完成 42/45（新包 `src/doberman-agent-sdk`）· 余 T032 / T042 114 验证、T040 评测跑分（达标线 2026-10-09 定为 6/6） | F052, F053（storage 依赖 F054） | DEV-07 三件套 + 开发者指南 |
 | F058 | openapi-responses | A | ❌ 已取消（2026-10-09）· 用途已由 beta2 上线的 `/api/v2/workstation/chat/completions` 覆盖，spec 存档不实现 | F050 | 伴生 P1 日常模式会话开放（不在 PRD-1） |
 | F054 | app-domain-runtime | B | ✅ 实现完成 102/104 · 余 T074 compose 形态从未真机起过（配置面已交付并有机器守卫）、T096 E2E + 页面手动清单 | F049 | 托管应用领域模型 / compose 运行时 / app-proxy / RT-01 / RT-07 / RT-08 / GOV-01 类型注册 / 详情页壳 WB-13 · WB-06 / GOV-10 层开关 |
 | F055 | app-publish-pipeline | B | ✅ 实现完成 71/72 · 余 T049 114 部署与手动验证清单 | F054, F049, F051, F052 | RT-03 / RT-04 / RT-05 / deploy 管线 / GOV-02 预置审批流 / GOV-03 档位 / GOV-05 能力总线 / WB-14 · WB-15 |
@@ -71,7 +71,7 @@
 | 待拍板 · PRD 与实现不一致 | RT-04 / GOV-05 密钥引用：F055 spec 按 Discovery N4 划归 PRD-2，本册不做；PRD-1 正文仍把它列入 RT-04 定义与验收要点 | [055 spec.md](./055-app-publish-pipeline/spec.md) |
 | 待拍板 · PRD 与实现不一致 | GOV-03 轻量档：PRD 写 1C/2G，实现为 0.5C/1G（F055 spec 决议-10 于 2026-09-09 下调，PRD 未同步） | [055 spec.md](./055-app-publish-pipeline/spec.md) |
 | 开发已整合、验收待齐 | GOV-10 K8s 本版交付决策已确认，F059 已实现；旧顺延记录不代表当前实现状态 | F059 |
-| 待拍板 | F057 T040 评测达标线 5/5 还是 6/6 | [057 tasks.md](./057-bisheng-sdk/tasks.md) |
+| 待拍板 | F057 T040 评测达标线 5/5 还是 6/6 | [057 tasks.md](./057-doberman-agent-sdk/tasks.md) |
 | 114 验收 | F051 T025 / T027 / T028、F053 T033、F055 T049、F056 T021、F057 T032 / T042。114 上 37 个发布审批单全部 `executed`：驳回、撤回、删除致取消、审批期预览、托管应用检索这几条路径从未真跑过 | 各 tasks.md |
 | CI 中间件 | F052 T104 / T302 | [052 tasks.md](./052-mcp-server-face/tasks.md) |
 | 部署形态 | F054 T074 compose 形态真机启动 | [054 tasks.md](./054-app-domain-runtime/tasks.md) |
@@ -106,7 +106,7 @@
 | 2026-08-15 | F049 spec 对齐伴生 PRD v2.0（兼容窗口废止、服务账号不进选人场景、主体侧授权唯一入口）。 |
 | **2026-08-17** | **按 PRD-1 v2.0 + 伴生 v2.1 重做 spec 层地基**：Discovery 拆分 v2（11 个 Feature，新增 F058 / F059；F050–F057 范围重排）+ release-contract 表 1 / 表 2（INV-29 修正、INV-31 新登记、候选 INV-32~36）/ 表 3 重写 + F049 spec 整体重写（AC 47 → 65）。待第二次 ★。 |
 | **2026-09-10** | **open_api 底座整体改接 beta2 F053**：合并 `feat/3.0.0-beta2` 与 beta1 tip 到 `feat/3.0-vibe/openapi-beta2-base`，F049 实现归档、spec / design / tasks 存档；应用工场（F053–F056）改接 beta2 鉴权管线（端点 `open_api_scope` marker + `router_rpc` 的 `verify_open_api_access`）；release-contract INV-28 按伴生 D19 修订。方案与冲突解法见 [beta2-openapi-base-migration.md](./beta2-openapi-base-migration.md)。 |
-| 2026-09-16 | PRD-1 剩余功能一轮实现完毕并合入 `3.0-vibe`（`59607c4f4`）：F051 模型协议面、F052 检索门面 + MCP 面、F057 `bisheng-sdk` 由 spec 补 design + tasks 后实现；F053–F056 收尾。未勾任务只剩需 114 / CI 中间件 / 拍板的验收项。 |
+| 2026-09-16 | PRD-1 剩余功能一轮实现完毕并合入 `3.0-vibe`（`59607c4f4`）：F051 模型协议面、F052 检索门面 + MCP 面、F057 `doberman-agent-sdk` 由 spec 补 design + tasks 后实现；F053–F056 收尾。未勾任务只剩需 114 / CI 中间件 / 拍板的验收项。 |
 | 2026-09-18 | PRD-1 二十一项逐项验收：17 项完整、3 项 PRD 与实现不一致、1 项真缺口（GOV-04 只写不读）；修复免审配置绕过 INV-34、运行期凭据不计审计、v2 filelib 18 条断言失效三项（至 `a0770eb67`）。 |
 | 2026-10-08 | 本索引状态列按各 tasks.md 勾选重核；新增「当前状态」与「未结事项」两节。 |
 | 2026-10-09 | PRD-1 评审拍板：k8s 形态本版交付（F059 恢复）、应用密钥最小版本版交付、GOV-04 方案 A、轻量档 0.5C/1G、维持三档、F057 达标线 6/6、「应用工场」定名；F050 标为已由 beta2 交付、F058 取消；两项安全缺口定为合入前修。`docs/PRD/3.0-release/` 收敛为 PRD-1 / PRD-2 / 技术架构方案三篇。 |

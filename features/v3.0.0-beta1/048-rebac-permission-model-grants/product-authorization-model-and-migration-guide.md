@@ -1069,8 +1069,8 @@ ListObjects。正式 relation `visible`（即这里讨论的 `can_view` 语义�
 
 - [F048 Spec](./spec.md)
 - [v3.0.0-beta1 Release Contract](../release-contract.md)
-- [当前 F048 OpenFGA Authorization Model](../../../src/backend/bisheng/core/openfga/authorization_model_f048.py)
-- [当前资源 Grant/模式 API](../../../src/backend/bisheng/permission/api/endpoints/grant.py)
+- [当前 F048 OpenFGA Authorization Model](../../../src/backend/doberman_agent/core/openfga/authorization_model_f048.py)
+- [当前资源 Grant/模式 API](../../../src/backend/doberman_agent/permission/api/endpoints/grant.py)
 - [旧 Config binding 与第二 PDP 退役证据](../../../src/backend/test/permission/test_f048_legacy_runtime_retirement.py)
 - [OpenFGA：Immutable Authorization Models](https://openfga.dev/docs/getting-started/immutable-models)
 - [OpenFGA：Model Migrations](https://openfga.dev/docs/modeling/migrating/migrating-models)

@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 
 import { cn } from "@/util/utils";
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 import { SearchCheck } from "lucide-react";
 import { forwardRef,useEffect,useImperativeHandle,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

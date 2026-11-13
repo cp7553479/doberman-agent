@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.knowledge_rag import KnowledgeRag
+from doberman_agent.knowledge.domain.knowledge_rag import KnowledgeRag
 
 
 def _fake_settings(multi_tenant_enabled: bool):
@@ -27,10 +27,10 @@ def _fake_settings(multi_tenant_enabled: bool):
 async def test_expand_adds_root_shared_ids_for_child_leaf():
     """Child leaf → union with Root-shared, preserves caller order, dedups."""
     with patch(
-        'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+        'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
         AsyncMock(return_value=[7, 8]),
     ), patch(
-        'bisheng.common.services.config_service.settings', _fake_settings(True),
+        'doberman_agent.common.services.config_service.settings', _fake_settings(True),
     ):
         result = await KnowledgeRag.aexpand_with_root_shared(
             [1, 2, 3], leaf_tenant_id=5,
@@ -41,10 +41,10 @@ async def test_expand_adds_root_shared_ids_for_child_leaf():
 @pytest.mark.asyncio
 async def test_expand_dedups_when_caller_already_included_root_id():
     with patch(
-        'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+        'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
         AsyncMock(return_value=[3, 7]),
     ), patch(
-        'bisheng.common.services.config_service.settings', _fake_settings(True),
+        'doberman_agent.common.services.config_service.settings', _fake_settings(True),
     ):
         result = await KnowledgeRag.aexpand_with_root_shared(
             [1, 3], leaf_tenant_id=5,
@@ -56,7 +56,7 @@ async def test_expand_dedups_when_caller_already_included_root_id():
 async def test_expand_noop_for_root_leaf():
     """Root users already see every Root knowledge, no expansion needed."""
     with patch(
-        'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+        'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
     ) as fetch_mock:
         result = await KnowledgeRag.aexpand_with_root_shared(
             [1, 2, 3], leaf_tenant_id=1,  # Root
@@ -68,9 +68,9 @@ async def test_expand_noop_for_root_leaf():
 @pytest.mark.asyncio
 async def test_expand_noop_when_multi_tenant_disabled():
     with patch(
-        'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+        'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
     ) as fetch_mock, patch(
-        'bisheng.common.services.config_service.settings', _fake_settings(False),
+        'doberman_agent.common.services.config_service.settings', _fake_settings(False),
     ):
         result = await KnowledgeRag.aexpand_with_root_shared(
             [1, 2], leaf_tenant_id=5,
@@ -82,10 +82,10 @@ async def test_expand_noop_when_multi_tenant_disabled():
 @pytest.mark.asyncio
 async def test_expand_noop_when_no_root_shared_rows():
     with patch(
-        'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+        'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
         AsyncMock(return_value=[]),
     ), patch(
-        'bisheng.common.services.config_service.settings', _fake_settings(True),
+        'doberman_agent.common.services.config_service.settings', _fake_settings(True),
     ):
         result = await KnowledgeRag.aexpand_with_root_shared(
             [1, 2], leaf_tenant_id=5,
@@ -96,15 +96,15 @@ async def test_expand_noop_when_no_root_shared_rows():
 @pytest.mark.asyncio
 async def test_expand_reads_context_var_when_leaf_not_supplied():
     """Default leaf_tenant_id=None reads from ContextVar."""
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     token = current_tenant_id.set(5)
     try:
         with patch(
-            'bisheng.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
+            'doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag._afetch_root_shared_knowledge_ids',
             AsyncMock(return_value=[9]),
         ), patch(
-            'bisheng.common.services.config_service.settings', _fake_settings(True),
+            'doberman_agent.common.services.config_service.settings', _fake_settings(True),
         ):
             result = await KnowledgeRag.aexpand_with_root_shared([1])
     finally:

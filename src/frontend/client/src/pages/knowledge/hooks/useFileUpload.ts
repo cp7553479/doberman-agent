@@ -1,4 +1,4 @@
-import { isApiError, shouldRetryApiError, resolveErrorMessageTemplate } from "@bisheng/api-client";
+import { isApiError, shouldRetryApiError, resolveErrorMessageTemplate } from "@doberman-agent/api-client";
 import { showApiError } from "~/api/request";
 import { useState, useCallback, useRef } from "react";
 import i18next, { type TOptions } from "i18next";

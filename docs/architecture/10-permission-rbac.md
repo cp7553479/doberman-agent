@@ -4,7 +4,7 @@
 > 最后更新：2026-10-28
 > 规范来源：`features/v3.0.0-beta1/048-rebac-permission-model-grants/`
 
-BiSheng 的权限体系分为三个互不替代的层面：
+doberman-agent 的权限体系分为三个互不替代的层面：
 
 1. **认证与身份**：JWT、用户、角色、租户、部门、用户组；
 2. **菜单/API 能力**：传统 RBAC 控制平台功能入口；
@@ -91,7 +91,7 @@ ALLOW。
 
 ### 1.4 对外权限应用协议
 
-业务模块只能依赖 `bisheng.permission.application` 导出的应用协议：
+业务模块只能依赖 `doberman_agent.permission.application` 导出的应用协议：
 
 - 资源动作：`ResourceAuthorizationPort`、`PermissionDecisionApplication`；
 - 身份/平台关系查询：`PermissionRelationQueryPort`；
@@ -741,21 +741,21 @@ scan amplification、stream_completed、capacity 及 DB/FGA/total 耗时。无�
 
 | 能力 | 主要位置 |
 |---|---|
-| OpenFGA model | `bisheng/core/openfga/authorization_model_f048.py` |
-| 单 model 自动发现与生命周期 | `bisheng/core/openfga/discovery.py`, `bisheng/core/openfga/manager.py` |
-| action decision | `bisheng/permission/domain/services/permission_action_service.py` |
-| Catalog policy | `bisheng/permission/domain/services/catalog_policy.py` |
-| 标准/自定义 model | `bisheng/permission/domain/services/model_policy.py` |
-| Grant policy | `bisheng/permission/domain/services/grant_service.py` |
-| mode policy | `bisheng/permission/domain/services/mode_service.py` |
-| durable projection | `bisheng/permission/domain/services/projection_service.py` |
-| shallow visible 编译与对账 | `bisheng/permission/domain/services/visibility_projection_service.py` |
-| 业务 target registry | `bisheng/permission/application/resource_authorization.py` |
-| runtime facade | `bisheng/permission/application/runtime.py` |
-| API composition | `bisheng/api/services/f048_permission_runtime.py` |
-| Catalog/Grant/decision endpoints | `bisheng/permission/api/endpoints/` |
-| Alembic DDL | `bisheng/core/database/alembic/versions/f048_permission_model_grants.py` |
-| visible source DDL | `bisheng/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py` |
+| OpenFGA model | `doberman-agent/core/openfga/authorization_model_f048.py` |
+| 单 model 自动发现与生命周期 | `doberman-agent/core/openfga/discovery.py`, `doberman-agent/core/openfga/manager.py` |
+| action decision | `doberman-agent/permission/domain/services/permission_action_service.py` |
+| Catalog policy | `doberman-agent/permission/domain/services/catalog_policy.py` |
+| 标准/自定义 model | `doberman-agent/permission/domain/services/model_policy.py` |
+| Grant policy | `doberman-agent/permission/domain/services/grant_service.py` |
+| mode policy | `doberman-agent/permission/domain/services/mode_service.py` |
+| durable projection | `doberman-agent/permission/domain/services/projection_service.py` |
+| shallow visible 编译与对账 | `doberman-agent/permission/domain/services/visibility_projection_service.py` |
+| 业务 target registry | `doberman-agent/permission/application/resource_authorization.py` |
+| runtime facade | `doberman-agent/permission/application/runtime.py` |
+| API composition | `doberman-agent/api/services/f048_permission_runtime.py` |
+| Catalog/Grant/decision endpoints | `doberman-agent/permission/api/endpoints/` |
+| Alembic DDL | `doberman-agent/core/database/alembic/versions/f048_permission_model_grants.py` |
+| visible source DDL | `doberman-agent/core/database/alembic/versions/v3_0_0_f048_visible_source_projection.py` |
 | 数据迁移 CLI | `scripts/migrate_f048_permission_data.py` |
 | BENCH-01 | `scripts/benchmark_f048_permission_paths.py` |
 

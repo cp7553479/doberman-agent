@@ -10,7 +10,7 @@ and the cross-vendor content-filter signatures.
 import openai
 import pytest
 
-from bisheng.common.services.llm_error_classifier import (
+from doberman_agent.common.services.llm_error_classifier import (
     Behavior,
     ErrorType,
     classify_behavior,
@@ -441,10 +441,10 @@ _VLLM_OVERFLOW = (
 
 
 def _overflow_chain():
-    """What BishengLLM raises: the recognised overflow, chained to the SDK error."""
+    """What DobermanAgentLLM raises: the recognised overflow, chained to the SDK error."""
     import httpx
 
-    from bisheng.llm.domain.llm.context_overflow import as_context_overflow
+    from doberman_agent.llm.domain.llm.context_overflow import as_context_overflow
 
     request = httpx.Request("POST", "http://vllm.local/v1/chat/completions")
     original = openai.BadRequestError(
@@ -518,7 +518,7 @@ def test_other_errors_keep_the_umbrella_code():
 
 
 def test_platform_credit_rejection_is_its_own_label_and_fails_fast():
-    from bisheng.common.errcode.dsh import DshMonthlyTokenLimitExceededError
+    from doberman_agent.common.errcode.dsh import DshMonthlyTokenLimitExceededError
 
     exc = DshMonthlyTokenLimitExceededError()
     assert classify_behavior(exc) is Behavior.FAIL_FAST
@@ -527,7 +527,7 @@ def test_platform_credit_rejection_is_its_own_label_and_fails_fast():
 
 def test_task_mode_wrapper_unwraps_to_credit_exhausted():
     """task_exec raises TaskExecutionError(...) from the rejection; the card must not read 'unknown'."""
-    from bisheng.common.errcode.dsh import DshMonthlyTokenLimitExceededError
+    from doberman_agent.common.errcode.dsh import DshMonthlyTokenLimitExceededError
 
     try:
         try:

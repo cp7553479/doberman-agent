@@ -8,9 +8,9 @@ import pytest
 
 
 async def test_preview_draft_declaration_uses_bound_version_not_current(monkeypatch):
-    from bisheng.app_publish.domain.services import capability_bus_service as mod
-    from bisheng.open_api.application import access_context
-    from bisheng.open_api.domain.services import preview_context
+    from doberman_agent.app_publish.domain.services import capability_bus_service as mod
+    from doberman_agent.open_api.application import access_context
+    from doberman_agent.open_api.domain.services import preview_context
 
     app = SimpleNamespace(id="app", name="App", tenant_id=3, state="draft", current_version_id="old")
     version = SimpleNamespace(id="pending", capabilities={"models": [{"name": "preview-model"}]})
@@ -39,10 +39,10 @@ async def test_preview_draft_declaration_uses_bound_version_not_current(monkeypa
 
 
 async def test_terminal_preview_is_not_reinterpreted_as_production(monkeypatch):
-    from bisheng.app_publish.domain.services import capability_bus_service as mod
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.application import access_context
-    from bisheng.open_api.domain.services import preview_context
+    from doberman_agent.app_publish.domain.services import capability_bus_service as mod
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.application import access_context
+    from doberman_agent.open_api.domain.services import preview_context
 
     monkeypatch.setattr(
         access_context,

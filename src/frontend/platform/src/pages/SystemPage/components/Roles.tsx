@@ -1,5 +1,5 @@
-import { toast } from '@bisheng/ui';
-import { Switch } from "@bisheng/ui";
+import { toast } from '@doberman-agent/ui';
+import { Switch } from "@doberman-agent/ui";
 import { RolesView } from "./RolesView";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";

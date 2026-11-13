@@ -23,11 +23,11 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import ORJSONResponse
 from starlette import status
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode import BaseErrorCode
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode import BaseErrorCode
 
 
-# Mirror bisheng.main._EXCEPTION_HANDLERS without importing main (main has a
+# Mirror doberman_agent.main._EXCEPTION_HANDLERS without importing main (main has a
 # heavy import chain — assistant.py, langchain, etc. — that explodes in test
 # environments without the production initialization sequence).
 def _handle_http_exception(req, exc):
@@ -52,21 +52,21 @@ _EXCEPTION_HANDLERS = {
     RequestValidationError: _handle_validation_error,
     BaseErrorCode: _handle_http_exception,
 }
-from bisheng.common.errcode.workstation import (
+from doberman_agent.common.errcode.workstation import (
     ConversationExportRenderFailedError,
     ConversationImportSpaceNotFoundError,
     ConversationMessageBatchTooLargeError,
     ConversationMessageNotFoundError,
 )
-from bisheng.database.models.session import MessageSession
-from bisheng.knowledge.api.dependencies import get_knowledge_space_service
-from bisheng.workstation.api.endpoints.conversation_export import (
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.knowledge.api.dependencies import get_knowledge_space_service
+from doberman_agent.workstation.api.endpoints.conversation_export import (
     router as export_router,
 )
-from bisheng.workstation.domain.schemas.conversation_export import (
+from doberman_agent.workstation.domain.schemas.conversation_export import (
     ImportMessagesToKnowledgeResponse,
 )
-from bisheng.workstation.domain.services import conversation_export_service as svc_mod
+from doberman_agent.workstation.domain.services import conversation_export_service as svc_mod
 
 
 # --- App + client fixtures -------------------------------------------------
@@ -195,7 +195,7 @@ def test_export_docx_returns_zip_bytes(monkeypatch):
 def test_export_format_unsupported_returns_422_from_pydantic():
     """AC-31: format='xlsx' is not in the enum → Pydantic validation rejects.
 
-    bisheng signals validation errors as HTTP 200 with ``body.status_code=422``
+    doberman_agent signals validation errors as HTTP 200 with ``body.status_code=422``
     (matches production handle_request_validation_error)."""
     app = _make_app()
     with TestClient(app) as client:

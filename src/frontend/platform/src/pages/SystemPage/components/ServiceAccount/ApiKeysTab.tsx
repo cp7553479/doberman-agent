@@ -1,7 +1,7 @@
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Button, notification } from '@bisheng/ui';
-import { Tag } from "@bisheng/ui";
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Button, notification } from '@doberman-agent/ui';
+import { Tag } from "@doberman-agent/ui";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 

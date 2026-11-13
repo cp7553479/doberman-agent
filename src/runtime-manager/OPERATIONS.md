@@ -6,7 +6,7 @@
 
 | 组件 | 前置条件与职责 |
 | --- | --- |
-| backend / worker | 使用同一新版代码、SQL 结构和运行配置；MySQL 或 DM8、Redis、OpenFGA、平台原有 MinIO 可用。只有平台访问私有 `bisheng-apps` 桶 |
+| backend / worker | 使用同一新版代码、SQL 结构和运行配置；MySQL 或 DM8、Redis、OpenFGA、平台原有 MinIO 可用。只有平台访问私有 `doberman-agent-apps` 桶 |
 | runtime-manager | 独立进程和已发布镜像；能够访问 backend 与 Docker Engine API；有专属持久数据盘和执行资源。服务镜像不含 Docker CLI，不带 MinIO 凭据 |
 | docker-socket-proxy | 唯一挂载 docker.sock；只与 manager 加入 `runtime-control` 内部网络，不发布端口。Engine API 仍有创建/挂载容器的高权限 |
 | app-proxy / egress-proxy | 分别读取 backend 路由与短效出站策略；egress 使用 manager 镜像的另一入口。无 Engine 权限、MinIO 凭据或生产数据卷 |
@@ -25,27 +25,27 @@ backend 的现有 `config.yaml` 还须包含以下 `app_runtime` 子键（密钥
 app_runtime:
   enabled: true
   manager_base_url: http://runtime-manager:8091
-  proxy_hmac_secret: !env BISHENG_APP_PROXY_HMAC_SECRET
-  obo_secret: !env BISHENG_APP_OBO_SECRET
-  entry_base_url: https://bisheng.example
+  proxy_hmac_secret: !env DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET
+  obo_secret: !env DOBERMAN_AGENT_APP_OBO_SECRET
+  entry_base_url: https://doberman-agent.example
 ```
 
 OBO secret 必须独立于平台 JWT secret。manager/entry/egress/control 的 v2 服务身份由正式 Compose 的环境映射提供；为空会拒绝请求。backend `app_runtime.runtime_protocol_version`、manager/代理 `RTM_PROTOCOL_VERSION` 仅接受 2，省略时也默认 2；显式 1 或未知值在启动时拒绝。平台 `/api/v1`、`/api/v2` 和 manifest_version 不因此退役。
 
 | 要替换的内容 | 修改位置 |
 | --- | --- |
-| manager / egress 服务镜像 | `.env` 的 `BISHENG_RUNTIME_MANAGER_IMAGE`；两个进程共用该镜像。`RTM_DATA_HELPER_IMAGE` 也引用它 |
-| app-proxy 服务镜像 | `.env` 的 `BISHENG_APP_PROXY_IMAGE` |
+| manager / egress 服务镜像 | `.env` 的 `DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE`；两个进程共用该镜像。`RTM_DATA_HELPER_IMAGE` 也引用它 |
+| app-proxy 服务镜像 | `.env` 的 `DOBERMAN_AGENT_APP_PROXY_IMAGE` |
 | 新发布默认运行基础镜像 | 超管导入新的不可变 profile 修订，再通过默认映射 API CAS 切换；不修改 manager 镜像，也不修改 `RTM_IMAGE_PREFIX` |
-| 单个源码应用的环境 | `bisheng-app.yaml` 的 `delivery.profile: python311-standard@<revision>`，按正常发布审批冻结 |
+| 单个源码应用的环境 | `doberman-agent-app.yaml` 的 `delivery.profile: python311-standard@<revision>`，按正常发布审批冻结 |
 | 完整应用镜像 | `delivery.mode: image` 加仓库 digest 或本地 `sha256:<image-id>`；可指定 argv command，或沿用镜像 Entrypoint/Cmd。须满足非 root UID 10001、监听地址/端口、只读根和 `/data` 约定 |
-| 网络依赖来源 | manager 的 `RTM_BUILD_INDEX_URL`、`RTM_BUILD_EXTRA_INDEX_URL`、`RTM_BUILD_NPM_REGISTRY`；严格离线时 `BISHENG_RUNTIME_OFFLINE=true` |
+| 网络依赖来源 | manager 的 `RTM_BUILD_INDEX_URL`、`RTM_BUILD_EXTRA_INDEX_URL`、`RTM_BUILD_NPM_REGISTRY`；严格离线时 `DOBERMAN_AGENT_RUNTIME_OFFLINE=true` |
 
-正式 Compose 只有 `image:`。开发时可叠加 `scripts/dev/docker-compose.runtime-dev.yml` 的 `build:`；不将现场构建作为客户安装步骤。
+Community application images are built from this checkout using `docker/build.sh` and `docker/docker-compose.build.yml`. Deployments may instead supply their own published images through `.env`; immutable execution profiles still require real image inventories.
 
 ## 3. 镜像与目录发行
 
-`.github/workflows/runtime-images.yml` 在原生 amd64 和 arm64 分别构建、检查镜像内容并推送不可覆盖的版本标签到 Docker Hub 和 `cr.dataelem.com`；只有两侧成功才发布服务多架构索引及 `runtime-profiles.json`。已存在的标签不会被覆盖，发布失败后使用新 release 标识重试。
+`.github/workflows/runtime-images.yml` is manually dispatched. It builds and checks native amd64/arm64 images; publication to the fork owner's GHCR namespace is opt-in and uses `GITHUB_TOKEN`. No upstream registry credentials or prebuilt fork tags are assumed. Published inventories generate `runtime-profiles.json`; build-only runs retain local image inventories. Existing release tags remain immutable.
 
 目录包含 Python 3.11、Node 20、static 的 runtime/preparer child digest、配置 Image ID、ABI、工具链和 UID/GID。官方 SDK 固定为镜像内的 0.1.1 wheel。镜像发布流水线保留镜像自身的架构、依赖导入及打包内容检查，不执行应用离线部署、复用和 SQLite 集成测试。部署、离线运行及 backend/审批/权限的完整验收由 QA 收到镜像后执行。
 
@@ -53,10 +53,10 @@ OBO secret 必须独立于平台 JWT secret。manager/entry/egress/control 的 v
 
 ```bash
 python src/runtime-manager/tools/runtime_materials.py import-profile \
-  --base-url https://bisheng.example --file runtime-profiles.json --set-defaults
+  --base-url https://doberman-agent.example --file runtime-profiles.json --set-defaults
 ```
 
-工具从安全环境变量 `BISHENG_MANAGEMENT_TOKEN` 读取当前自然人会话；不接受 SAK 代替新增管理权限。`--set-defaults` 先 GET 当前 generation，再 CAS 更新；导入同一修订同一内容幂等，改内容必须增 revision。默认变化只影响后续未冻结版本。
+工具从安全环境变量 `DOBERMAN_AGENT_MANAGEMENT_TOKEN` 读取当前自然人会话；不接受 SAK 代替新增管理权限。`--set-defaults` 先 GET 当前 generation，再 CAS 更新；导入同一修订同一内容幂等，改内容必须增 revision。默认变化只影响后续未冻结版本。
 
 客户自定义目录沿用相同结构。后台校验的是身份、修订、摘要和平台元数据；自定义镜像是否真的满足运行契约，必须由该镜像的提供者完成原生安装/启动测试，发布预检仍会拒绝实际不兼容的组合。
 
@@ -89,7 +89,7 @@ Python 接受常规 PEP 508 requirements、`-r` / `-c` 和 sha256 hash；包含�
 
 ```bash
 python src/runtime-manager/tools/runtime_materials.py import-app-pack \
-  --base-url https://bisheng.example --app-id <app-id> \
+  --base-url https://doberman-agent.example --app-id <app-id> \
   --profile-reference python311-standard@<revision> --platform linux/arm64 \
   --file ./app-offline.tar.gz
 ```
@@ -100,7 +100,7 @@ python src/runtime-manager/tools/runtime_materials.py import-app-pack \
 
 ## 5. 数据与恢复
 
-`BISHENG_APP_DATA_ROOT` 必须为绝对宿主路径，并与 manager 的宿主 bind 路径完全相同。生产数据库为 `apps/{app_id}/db/app.db`；代码/环境目录只读；预览位于 `previews/{operation_id}/apps/{app_id}/db`。使用支持 SQLite 本地文件锁和原子 rename 的文件系统，不以普通 NFS 目录假定等价。
+`DOBERMAN_AGENT_APP_DATA_ROOT` 必须为绝对宿主路径，并与 manager 的宿主 bind 路径完全相同。生产数据库为 `apps/{app_id}/db/app.db`；代码/环境目录只读；预览位于 `previews/{operation_id}/apps/{app_id}/db`。使用支持 SQLite 本地文件锁和原子 rename 的文件系统，不以普通 NFS 目录假定等价。
 
 升级共享 SQLite 前：容量预占 → 平台维护路由确认 → 停止旧写入者 → SQLite Backup API → backend 内容/SQL 确认 → 受控 DDL → 启动探活 → 平台业务事务切换。迁移日志和 DDL 在同一 SQLite 事务内，重试不会重复执行破坏性计划。DDL 后启动失败保留维护状态；不会自动用旧快照覆盖新数据。
 
@@ -130,4 +130,4 @@ manager 重启不撤销平台已提交路由；入口/出口读取 backend，平
 协议2默认每5秒心跳/对账，平台节点新鲜度上限15秒；自定义调大interval时需给网络/处理延迟留余量。材料导入上限读取backend app_runtime.artifact_max_mb；代理默认2GiB，修改平台上限时同步评估代理限制。
 
 
-依赖失败的 diagnostic_tail 先在manager按包源/代理/密钥及URL参数脱敏，再由backend限制16KiB写入operation/fact；临时容器回收后仍可定位缺失包。backend app_runtime.runtime_diagnostic_days默认7天，过期终态在下一轮node plan按100条批量清除诊断尾部，保留阶段/归属/摘要等控制事实。manager离线时顺延至恢复对账；未声明固定日历时刻必定擦除SQL。任务deadline通过BISHENG_RUNTIME_TASK_TIMEOUT_SECONDS同时提供给backend和manager；nonce120秒及严格小于60秒窗口是协议常量，不另设无效配置副本。
+依赖失败的 diagnostic_tail 先在manager按包源/代理/密钥及URL参数脱敏，再由backend限制16KiB写入operation/fact；临时容器回收后仍可定位缺失包。backend app_runtime.runtime_diagnostic_days默认7天，过期终态在下一轮node plan按100条批量清除诊断尾部，保留阶段/归属/摘要等控制事实。manager离线时顺延至恢复对账；未声明固定日历时刻必定擦除SQL。任务deadline通过DOBERMAN_AGENT_RUNTIME_TASK_TIMEOUT_SECONDS同时提供给backend和manager；nonce120秒及严格小于60秒窗口是协议常量，不另设无效配置副本。

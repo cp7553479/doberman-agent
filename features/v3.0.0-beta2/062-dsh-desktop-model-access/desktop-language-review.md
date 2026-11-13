@@ -2,7 +2,7 @@
 
 **Feature**: 桌面嵌入页与独立网页语言隔离
 **Review scope**: 本次未提交的语言改动及新增文件；桌面原有主题与超时 WIP 保留，未归入本次实现
-**Base branch**: `feat/bisheng-work-120`（源码验证基线 `bc05600f1`；部署前快进到线上已用的 `5f601e7fd`，保留既有技能页修复，语言 WIP 完全一致）
+**Base branch**: `feat/doberman-agent-work-120`（源码验证基线 `bc05600f1`；部署前快进到线上已用的 `5f601e7fd`，保留既有技能页修复，语言 WIP 完全一致）
 **Changed files**: Web 14 个（含本报告与设计修订）；桌面语言实现、回归及文档另行核对
 
 ## Summary

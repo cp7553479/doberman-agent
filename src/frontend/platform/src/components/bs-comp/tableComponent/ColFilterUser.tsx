@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
-import { Button, SearchInput } from '@bisheng/ui';
+import { Outlined } from "@doberman-agent/icons";
+import { Button, SearchInput } from '@doberman-agent/ui';
 
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover";

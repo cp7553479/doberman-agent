@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { captureQaOperation, type QaOperation } from '@bisheng/chat/core';
-import { Button, Input, Textarea, toast } from '@bisheng/ui';
+import { captureQaOperation, type QaOperation } from '@doberman-agent/chat/core';
+import { Button, Input, Textarea, toast } from '@doberman-agent/ui';
 import { QaKnowledgeSelect } from "@/components/bs-comp/selectComponent/QaKnowledgeSelect";
 
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
@@ -169,7 +169,7 @@ const SaveQaLibForm = forwardRef<AnnotationFormHandle, AnnotationFormProps>(({ o
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-2">
                     <div>
-                        <label htmlFor="knowledgeLib" className="bisheng-label"><span className="text-red-500">*</span>{t('log.qaKnowledgeLib')}</label>
+                        <label htmlFor="knowledgeLib" className="doberman_agent-label"><span className="text-red-500">*</span>{t('log.qaKnowledgeLib')}</label>
                         <QaKnowledgeSelect
                             multiple={false}
                             label={t('log.qaKnowledgeLib')}
@@ -179,11 +179,11 @@ const SaveQaLibForm = forwardRef<AnnotationFormHandle, AnnotationFormProps>(({ o
                         />
                     </div>
                     <div>
-                        <label htmlFor="question" className="bisheng-label"><span className="text-red-500">*</span>{t('log.question')}</label>
+                        <label htmlFor="question" className="doberman_agent-label"><span className="text-red-500">*</span>{t('log.question')}</label>
                         <Input id="question" name="question" value={form.question} onChange={handleInputChange} className={`col-span-3 ${error.question && 'border-red-400'}`} />
                     </div>
                     <div>
-                        <label htmlFor="similarQuestions" className="bisheng-label">{t('log.similarQuestions')}</label>
+                        <label htmlFor="similarQuestions" className="doberman_agent-label">{t('log.similarQuestions')}</label>
                         <div className="max-h-52 overflow-y-auto">
                             <InputList
                                 value={form.similarQuestions}
@@ -195,7 +195,7 @@ const SaveQaLibForm = forwardRef<AnnotationFormHandle, AnnotationFormProps>(({ o
                         </Button>
                     </div>
                     <div>
-                        <label htmlFor="answer" className="bisheng-label"><span className="text-red-500">*</span>{t('log.answer')}</label>
+                        <label htmlFor="answer" className="doberman_agent-label"><span className="text-red-500">*</span>{t('log.answer')}</label>
                         <Textarea id="answer" name="answer" value={form.answer} onChange={handleInputChange} textareaClassName={`col-span-3 min-h-36 ${error.answer && 'border-red-400'}`} />
                     </div>
                 </div>

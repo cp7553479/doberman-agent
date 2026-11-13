@@ -8,8 +8,8 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def app_with_mocked_svc():
-    from bisheng.knowledge.api.endpoints.knowledge_version import router
-    from bisheng.knowledge.api.dependencies import get_knowledge_version_service
+    from doberman_agent.knowledge.api.endpoints.knowledge_version import router
+    from doberman_agent.knowledge.api.dependencies import get_knowledge_version_service
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")

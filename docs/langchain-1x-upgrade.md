@@ -17,7 +17,7 @@
 | **openai** | 1.x | **2.41.0** | 连带强升（SDK 大版本） |
 | **httpx** | 0.27.1 | **0.28.1** | 连带强升，移除 `proxies=` |
 | rsa | （传递依赖） | **4.9（显式）** | 新依赖图不再带入，需显式声明 |
-| bisheng_pyautogen / bisheng-ragas / datasets | 有 | **已移除** | 见 §4 |
+| doberman_agent_pyautogen / doberman-agent-ragas / datasets | 有 | **已移除** | 见 §4 |
 
 **核心库未变**：pydantic 2.12.x、sqlalchemy 2.0.44、fastapi 0.121、sqlmodel 0.0.27 —— 升级未触及这些，回归风险显著降低。
 
@@ -33,18 +33,18 @@
 
 | 类别 | 改动 | 触及 |
 |------|------|------|
-| import 迁移 | `langchain.{chains,agents,schema,memory,docstore,callbacks,chat_models,llms,embeddings,tools,prompts,…}` → `langchain_classic.*` | 主应用 + `bisheng_langchain` fork |
-| httpx 0.28 | `httpx.Client/AsyncClient(proxies=)` → `proxy=`（`requests` 库的 `proxies=` 保持不变） | bisheng_langchain ~10 文件 |
+| import 迁移 | `langchain.{chains,agents,schema,memory,docstore,callbacks,chat_models,llms,embeddings,tools,prompts,…}` → `langchain_classic.*` | 主应用 + `doberman_agent_langchain` fork |
+| httpx 0.28 | `httpx.Client/AsyncClient(proxies=)` → `proxy=`（`requests` 库的 `proxies=` 保持不变） | doberman_agent_langchain ~10 文件 |
 | langchain-core 移除符号 | `format_tool_to_openai_tool` 改从 `langchain_classic.tools.render` 导入 | assistant_agent.py |
 | langgraph 1.x | `langgraph.graph.graph.CompiledGraph` → `langgraph.graph.state.CompiledStateGraph` | gpts/sql_agent |
 | pydantic v2 严格化 | 非注解类属性 `pattern = re.compile(...)` → `pattern: ClassVar[...]` | chatglm output_parser |
-| **LLM 流式（重点）** | `BishengLLM._generate/_agenerate`：inner 流式时改用 `generate_from_stream(inner._stream)` 聚合，保留 `on_llm_new_token` 回调 | `bisheng/llm/domain/llm/llm.py` |
-| **Milvus ORM 连接（重点）** | langchain-milvus 0.3.x 用 MilvusClient 连接，但 `col` 属性仍走 ORM `Collection(using=alias)`；pymilvus 2.6 的 `MilvusClient._using='cm-<id>'` 不注册 ORM 连接 → `ConnectionNotExistException`。新增 `Milvus` 子类，首次访问 `col` 时按 (uri,db) 注册稳定可复用的 ORM 连接并重定向 `self.alias` | `bisheng/core/vectorstore/milvus.py` |
-| **Elasticsearch 构造参数** | langchain-elasticsearch 1.0 把 `ElasticsearchStore(es_connection=...)` 改名为 `client=...`（同步/异步均是） | `bisheng/knowledge/rag/elasticsearch_factory.py` |
+| **LLM 流式（重点）** | `DobermanAgentLLM._generate/_agenerate`：inner 流式时改用 `generate_from_stream(inner._stream)` 聚合，保留 `on_llm_new_token` 回调 | `doberman-agent/llm/domain/llm/llm.py` |
+| **Milvus ORM 连接（重点）** | langchain-milvus 0.3.x 用 MilvusClient 连接，但 `col` 属性仍走 ORM `Collection(using=alias)`；pymilvus 2.6 的 `MilvusClient._using='cm-<id>'` 不注册 ORM 连接 → `ConnectionNotExistException`。新增 `Milvus` 子类，首次访问 `col` 时按 (uri,db) 注册稳定可复用的 ORM 连接并重定向 `self.alias` | `doberman-agent/core/vectorstore/milvus.py` |
+| **Elasticsearch 构造参数** | langchain-elasticsearch 1.0 把 `ElasticsearchStore(es_connection=...)` 改名为 `client=...`（同步/异步均是） | `doberman-agent/knowledge/rag/elasticsearch_factory.py` |
 
-### 3.1 BishengLLM 流式聚合修复（务必理解）
+### 3.1 DobermanAgentLLM 流式聚合修复（务必理解）
 
-langchain-openai 1.x 在 `ChatOpenAI._generate` 内**不再聚合流式响应**（直接返回原始 `Stream`，改由 `_generate_with_cache` 分派到 `_stream`）。而 `BishengLLM` 直接委托 inner 的 `_generate`，导致 `streaming=True` 的 inner 返回无法解析的 `Stream`（`'Stream' object has no attribute 'model_dump'`）。
+langchain-openai 1.x 在 `ChatOpenAI._generate` 内**不再聚合流式响应**（直接返回原始 `Stream`，改由 `_generate_with_cache` 分派到 `_stream`）。而 `DobermanAgentLLM` 直接委托 inner 的 `_generate`，导致 `streaming=True` 的 inner 返回无法解析的 `Stream`（`'Stream' object has no attribute 'model_dump'`）。
 
 修复：inner 流式时在 `_generate/_agenerate` 内用 `generate_from_stream/agenerate_from_stream` 聚合 inner 的 `_stream/_astream`。这恢复了 0.3 时代行为，**并保持 `on_llm_new_token` 逐 token 回调**（workflow 大模型节点、对话 UI 的流式输出依赖它）。
 
@@ -52,11 +52,11 @@ langchain-openai 1.x 在 `ChatOpenAI._generate` 内**不再聚合流式响应**�
 
 ## 4. autogen / ragas 移除（独立子工作）
 
-- **bisheng_pyautogen（autogen）**：仅被遗留的动态 chain 加载引用，无 flow/模板/DB 使用 → 整体删除（`autogen_role/`、`chains/autogen/`、相关 loader 与配置）。
-- **bisheng-ragas**：评测功能唯一用到的是单个指标 `AnswerCorrectnessBisheng`（prompt → LLM → 解析 JSON → P/R/F1）。已用纯 langchain 重写为 `bisheng/evaluation/domain/services/answer_correctness.py`（**prompt 与评分公式字节级一致**，prompt 已用 `json-repair` 解析），并将评测重构为独立 DDD 模块 `bisheng/evaluation/`。
-- **datasets**（HF）：仅评测与已删除的 benchmark 脚本使用 → 一并移除；删除依赖 ragas 的死脚本（`rag/scoring/ragas_score.py`、`qa_generator.py`、`run_qa_gen_web.py`、`bisheng_rag_pipeline*.py`、`run_rag_evaluate_web.py`）。
+- **doberman_agent_pyautogen（autogen）**：仅被遗留的动态 chain 加载引用，无 flow/模板/DB 使用 → 整体删除（`autogen_role/`、`chains/autogen/`、相关 loader 与配置）。
+- **doberman-agent-ragas**：评测功能唯一用到的是单个指标 `AnswerCorrectnessdoberman-agent`（prompt → LLM → 解析 JSON → P/R/F1）。已用纯 langchain 重写为 `doberman-agent/evaluation/domain/services/answer_correctness.py`（**prompt 与评分公式字节级一致**，prompt 已用 `json-repair` 解析），并将评测重构为独立 DDD 模块 `doberman-agent/evaluation/`。
+- **datasets**（HF）：仅评测与已删除的 benchmark 脚本使用 → 一并移除；删除依赖 ragas 的死脚本（`rag/scoring/ragas_score.py`、`qa_generator.py`、`run_qa_gen_web.py`、`doberman_agent_rag_pipeline*.py`、`run_rag_evaluate_web.py`）。
 - **langchain_compat.py shim**：曾用 sys.modules 别名桥接上述两个第三方包对已删除 `langchain.*` 路径的引用；两包移除后**整体删除**。
-- 评测表 `Evaluation` 迁入 `bisheng/evaluation/domain/models/`（表名不变，**无 DB 迁移**）；多租户务必同步：`core/database/tenant_filter.py::_TENANT_AWARE_MODEL_MODULES` 已指向新路径（漏改会静默关闭该表租户隔离）。
+- 评测表 `Evaluation` 迁入 `doberman-agent/evaluation/domain/models/`（表名不变，**无 DB 迁移**）；多租户务必同步：`core/database/tenant_filter.py::_TENANT_AWARE_MODEL_MODULES` 已指向新路径（漏改会静默关闭该表租户隔离）。
 
 ## 5. 已知问题 / 待跟进
 
@@ -64,8 +64,8 @@ langchain-openai 1.x 在 `ChatOpenAI._generate` 内**不再聚合流式响应**�
 |--------|------|------|------|
 | 🟠 | `LLMUsageCallbackHandler` 未实现 `on_chat_model_start`（langchain 1.x 新调用点）→ 回调告警 | workflow 回调 | 待修，疑似 1.x 连带 |
 | 🟠 | Celery worker 内 token 计费/调用日志的异步 DB 写抛 `Event loop is closed` / `Future attached to a different loop` | `token_tracker.py:71`、`call_logger.py:70` | 待修，异步上下文问题 |
-| 🟡 | `BishengLLM.moonshot_generate/agenerate` 仍直接调用 inner `_generate`，对 streaming moonshot 模型存在同类 `Stream` 崩溃 | `bisheng/llm/domain/llm/llm.py` | 未改，moonshot 小众路径 |
-| 🟡 | `bisheng_langchain/rag/config/*.yaml` 残留 `type: 'bisheng-ragas'`，已无消费方 | — | 死配置，无害 |
+| 🟡 | `DobermanAgentLLM.moonshot_generate/agenerate` 仍直接调用 inner `_generate`，对 streaming moonshot 模型存在同类 `Stream` 崩溃 | `doberman-agent/llm/domain/llm/llm.py` | 未改，moonshot 小众路径 |
+| 🟡 | `doberman_agent_langchain/rag/config/*.yaml` 残留 `type: 'doberman-agent-ragas'`，已无消费方 | — | 死配置，无害 |
 | 🟡 | openai 2.x / pymilvus 2.6 运行时语义未全量实测 | 全局 | 需 P0 手测 |
 
 ## 6. 测试重点（按优先级）
@@ -78,7 +78,7 @@ langchain-openai 1.x 在 `ChatOpenAI._generate` 内**不再聚合流式响应**�
 5. **Workflow 中断/恢复** —— INPUT/OUTPUT 中断后 Celery 续跑（langgraph 1.x）。
 
 ### P1 — 重点回归
-6. **评测功能**（重写后）—— 实跑一次评测任务，核对 9 个字段/分数与历史口径一致；确认 `AnswerCorrectnessBisheng` 行为对齐。
+6. **评测功能**（重写后）—— 实跑一次评测任务，核对 9 个字段/分数与历史口径一致；确认 `AnswerCorrectnessdoberman-agent` 行为对齐。
 7. **RAG 节点问答** —— `create_stuff_documents_chain`（走 langchain_classic）。
 8. **httpx 代理为空** 场景下各 LLM client 构造（0.28 空 proxy 会报错）。
 9. **token 计费 / 调用日志** —— 验证 §5 的异步 DB 写问题是否影响计费准确性。

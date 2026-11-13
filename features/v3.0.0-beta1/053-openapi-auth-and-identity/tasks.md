@@ -42,7 +42,7 @@
 - 不新增 `open_api_call_log` 或任何逐调用专用表；逐调用数据只写现有 `audit_log.audit_metadata`（数据库列名 `metadata`）。
 - 不实现 IP 白名单、限流、日配额、幂等键，不增加相应字段、Redis key、错误码、请求头或响应头。
 - 不修改 `share_link` 表、模型、接口、前端分享参数，不实现 share-token 新通道。
-- 不接受 `X-Bisheng-On-Behalf-Of`、`X-Bisheng-End-User` 等旧品牌头；只接受 `X-On-Behalf-Of`、`X-End-User`。
+- 不接受 `X-doberman-agent-On-Behalf-Of`、`X-doberman-agent-End-User` 等旧品牌头；只接受 `X-On-Behalf-Of`、`X-End-User`。
 - v2 不回落 `default_operator`，不允许 JWT/cookie 代替 API Key；v3 不校验 API Key 或 JWT。
 - v2/v3 API 层不得互相 import，也不得 import v1 API endpoint；只能调用共享 domain service，禁止内部 HTTP 转调。
 - 日常模式对外模型不含 `use_knowledge_base`、`task_mode`，但必须保留 `files`；内部固定 `task_mode=False`、`use_knowledge_base=None`。
@@ -51,8 +51,8 @@
 
 ```bash
 rg -n "user_type|open_api_call_log|share_scope|share_token|Idempotency-Key|ip_allowlist|rate_limit_rpm|quota_daily_calls" \
-  src/backend/bisheng/open_api src/backend/bisheng/public_endpoints src/frontend/platform/src src/frontend/client/src
-rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
+  src/backend/doberman_agent/open_api src/backend/doberman_agent/public_endpoints src/frontend/platform/src src/frontend/client/src
+rg -n "X-doberman-agent-On-Behalf-Of|X-doberman-agent-End-User" src/backend src/frontend
 ```
 
 扫描命中既有无关代码时只记录；命中新增加的 F053 代码必须删除。
@@ -87,7 +87,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A01：测试基础设施、两张核心表和 ORM 模型**
   **设计依据**: design §5.A2、§6.4、§7.1
-  **文件**: `src/backend/test/open_api/conftest.py`、`test/open_api/test_database_contract.py`；`bisheng/core/database/alembic/versions/v3_0_0b1_f053_api_credential_tables.py`；`bisheng/open_api/domain/models/{api_credential,service_account}.py`
+  **文件**: `src/backend/test/open_api/conftest.py`、`test/open_api/test_database_contract.py`；`doberman-agent/core/database/alembic/versions/v3_0_0b1_f053_api_credential_tables.py`；`doberman-agent/open_api/domain/models/{api_credential,service_account}.py`
   **执行顺序**:
   1. 先写迁移契约测试：仅创建 `api_credential`、`service_account`，明确断言 `user`、`user_tenant` 没有新增列或服务账号外键。
   2. 建立 open_api 测试 fixture；允许参考 vibe fixture，但删除 `user_type` 与影子用户假设。
@@ -100,7 +100,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A02：错误码、配置、scope 注册表和 Principal 契约**
   **设计依据**: design §3.2、§3.4、§6.1、§6.3、§6.4
-  **文件**: `src/backend/bisheng/common/errcode/open_api.py`、`core/config/open_platform.py`、`open_api/domain/{scopes,context}.py`、`docs/constitution.md`、三语 `api_errors` 源文件；测试 `test/open_api/test_scopes.py`、`test_open_api_context.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/open_api.py`、`core/config/open_platform.py`、`open_api/domain/{scopes,context}.py`、`docs/constitution.md`、三语 `api_errors` 源文件；测试 `test/open_api/test_scopes.py`、`test_open_api_context.py`
   **执行顺序**:
   1. 先写 260 段错误码、scope 标记和不可变 Principal/Snapshot 序列化测试。
   2. 只登记 design §6.3 本期错误码；预留码和 P2 错误码不实现。
@@ -113,7 +113,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A03：凭据签发、哈希校验、缓存和失效服务**
   **设计依据**: design §3.2、§5.A1、§6.4
-  **文件**: `src/backend/bisheng/open_api/domain/services/{credential_service,credential_validator}.py`；测试 `test/open_api/test_credential_service.py`、`test_credential_validator.py`
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/{credential_service,credential_validator}.py`；测试 `test/open_api/test_credential_service.py`、`test_credential_validator.py`
   **执行顺序**:
   1. 先覆盖明文仅返回一次、SHA-256 存储、恒时比较、撤销、过期、最后使用时间节流和缓存失效测试。
   2. 实现 `bs-sak-` 与 `bs-pat-` 前缀；前缀与数据库 `subject_kind` 不匹配返回 `26002`。
@@ -125,7 +125,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A04：独立服务账号 Domain Service**
   **设计依据**: design §3.3、§5.A2
-  **文件**: `src/backend/bisheng/open_api/domain/services/service_account_service.py`、相关 schema；测试 `test/open_api/test_service_account_service.py`
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/service_account_service.py`、相关 schema；测试 `test/open_api/test_service_account_service.py`
   **执行顺序**:
   1. 先写创建、更新、停用、启用、软删除、同租户归属人校验、跨租户拒绝测试。
   2. 创建服务账号只插入 `service_account`；测试前后 `user`、`user_tenant` 行数不变。
@@ -137,7 +137,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A05：PermissionActor 扩为通用授权主体**
   **设计依据**: design §3.3、§5.A3、§6.1；constitution C4
-  **文件**: `src/backend/bisheng/permission/application/identity.py`、`permission/domain/services/permission_action_service.py` 及所有构造点；测试 `test/permission/test_f048_*actor*.py`、`test/open_api/test_permission_actor.py`
+  **文件**: `src/backend/doberman_agent/permission/application/identity.py`、`permission/domain/services/permission_action_service.py` 及所有构造点；测试 `test/permission/test_f048_*actor*.py`、`test/open_api/test_permission_actor.py`
   **执行顺序**:
   1. 先参数化现有 user actor 回归测试，再增加 service_account actor 测试。
   2. 将 actor 表达改为 `subject_type + subject_id + tenant_id + admin facts`；保留现有用户行为。
@@ -149,7 +149,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A06：OpenFGA 模型、授权投影和显示名支持 service_account**
   **设计依据**: design §5.A3、§7.2；constitution C4
-  **文件**: `src/backend/bisheng/core/openfga/authorization_model_f048.py`、`permission/application/{resource_api,initial_grant}.py`、grant subject/source 相关 service；测试 `test/permission/test_f048_schema_contract.py`、授权投影/反查/显示名测试
+  **文件**: `src/backend/doberman_agent/core/openfga/authorization_model_f048.py`、`permission/application/{resource_api,initial_grant}.py`、grant subject/source 相关 service；测试 `test/permission/test_f048_schema_contract.py`、授权投影/反查/显示名测试
   **执行顺序**:
   1. 先增加 schema contract：registry 中所有允许直接授权的资源关系都允许 `service_account`，owner/admin 关系一律不允许。
   2. 增加 OpenFGA `service_account` type，只做向后兼容添加，不改已有 user/department/group tuple。
@@ -161,7 +161,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A07：v2 唯一鉴权依赖和异常处理**
   **设计依据**: design §3.1、§3.2、§5.A4
-  **文件**: `src/backend/bisheng/open_api/api/{dependencies,exception_handlers}.py`、`open_api/domain/services/identity_service.py` 的接口占位、`src/backend/bisheng/main.py`；测试 `test/open_api/test_dependencies.py`、`test_http_status.py`
+  **文件**: `src/backend/doberman_agent/open_api/api/{dependencies,exception_handlers}.py`、`open_api/domain/services/identity_service.py` 的接口占位、`src/backend/doberman_agent/main.py`；测试 `test/open_api/test_dependencies.py`、`test_http_status.py`
   **执行顺序**:
   1. 先写无头、JWT、错误前缀、撤销、过期、租户停用、缺 scope、未标记端点和依赖故障测试。
   2. 实现固定管线前半段：提取凭据 → 校验主体 → 设置 tenant ContextVar → PAT 开关槽位 → scope/mode 标记 → permission actor。
@@ -173,7 +173,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A08：服务账号管理 API、密钥 API 和 whoami（M1 门禁）**
   **设计依据**: design §4 M1、§5.A2、§5.A4、§6.2
-  **文件**: `src/backend/bisheng/open_api/api/{router,dependencies,exception_handlers}.py`、`api/endpoints/{service_account,service_account_keys,auth}.py`、`src/backend/bisheng/api/router.py`；测试 `test/open_api/test_service_account_api.py`、`test_service_account_keys_api.py`、`test_open_api_auth_api.py`
+  **文件**: `src/backend/doberman_agent/open_api/api/{router,dependencies,exception_handlers}.py`、`api/endpoints/{service_account,service_account_keys,auth}.py`、`src/backend/doberman_agent/api/router.py`；测试 `test/open_api/test_service_account_api.py`、`test_service_account_keys_api.py`、`test_open_api_auth_api.py`
   **执行顺序**:
   1. 先写 v1 管理端点的登录/租户管理员门禁、跨租户、明文一次性返回和 whoami 测试。
   2. 挂载 `/api/v1/service-accounts/**` 管理面和 `GET /api/v2/auth/whoami`。
@@ -202,7 +202,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **A10：存量 v2 HTTP 路由接入 scope、权限和业务适配器**
   **设计依据**: design §5.A4、§6.2、§9
-  **文件**: `src/backend/bisheng/open_endpoints/api/router.py`、`api/endpoints/{knowledge,filelib,citation,llm,flow,assistant,workflow}.py`、`domain/utils.py`；测试 `test/open_api/test_route_completeness.py`、`test_endpoint_auth_matrix.py`
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/router.py`、`api/endpoints/{knowledge,filelib,citation,llm,flow,assistant,workflow}.py`、`domain/utils.py`；测试 `test/open_api/test_route_completeness.py`、`test_endpoint_auth_matrix.py`
   **执行顺序**:
   1. 先从实际 `app.routes` 生成路由集合测试，不把数量写死为主要断言。
   2. `router_rpc` 全局挂 `verify_open_api_access`；每个 HTTP/WS endpoint 都有 `@open_api_scope`。
@@ -377,7 +377,7 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **F02：public_endpoints 模块和 guest policy**
   **设计依据**: design §3.1、§5.F1、§5.F2
-  **文件**: `src/backend/bisheng/public_endpoints/api/{router,dependencies,exception_handlers}.py`、domain context/service；测试 `test/public_endpoints/test_guest_policy.py`
+  **文件**: `src/backend/doberman_agent/public_endpoints/api/{router,dependencies,exception_handlers}.py`、domain context/service；测试 `test/public_endpoints/test_guest_policy.py`
   **执行顺序**:
   1. 先写 guest 开关关、默认操作员不存在/停用、资源未发布、跨租户和身份头拒绝测试。
   2. 建立物理独立的 `/api/v3` router，不挂 v2 API Key 依赖，不读取 JWT。
@@ -519,11 +519,11 @@ rg -n "X-Bisheng-On-Behalf-Of|X-Bisheng-End-User" src/backend src/frontend
 
 - [ ] **D06：知识检索技能包和匿名分发**
   **设计依据**: design §5.D4；constitution C6/C8
-  **文件**: `open_api/skill_packs/bisheng-knowledge-search/**`、`open_api/domain/services/skill_pack_service.py`、`open_api/api/endpoints/skill_pack.py`；测试 `test/open_api/test_skill_pack.py`
+  **文件**: `open_api/skill_packs/doberman-agent-knowledge-search/**`、`open_api/domain/services/skill_pack_service.py`、`open_api/api/endpoints/skill_pack.py`；测试 `test/open_api/test_skill_pack.py`
   **执行顺序**:
   1. 先写 zip 内容、确定性打包、路径穿越、实例地址渲染和多 API 副本一致测试。
   2. 技能包只调用 v2 knowledge:read 接口，使用新身份头名称。
-  3. API Key 从 `BISHENG_API_KEY` 环境变量读取；仓库文件不得写任何真实地址或密钥。
+  3. API Key 从 `DOBERMAN_AGENT_API_KEY` 环境变量读取；仓库文件不得写任何真实地址或密钥。
   4. 分发端点沿用匿名 v1 路径，pack 名使用 allowlist；静态模板随应用镜像发布，多节点得到相同内容。
   **完成条件**: zip 可安装、可检索，且仓库 secret scan 无命中
   **依赖**: D04

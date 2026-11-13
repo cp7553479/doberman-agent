@@ -1,7 +1,7 @@
 import { useArticleList } from "./useArticleList";
 import { ApiRequestFailure } from "~/components/ApiRequestFailure";
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Tabs } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Tabs } from "@doberman-agent/ui";
 import { useLocalize, usePrefersMobileLayout } from "~/hooks";
 import { EmptyStateIllustration } from "~/components/illustrations";
 import { Article, Channel } from "~/api/channels";
@@ -14,7 +14,7 @@ import { MultiSourceSelect } from "./MultiSourceSelect";
 import { SearchInput } from "./SearchInput";
 
 import { CopyShareLinkButton } from "~/components/CopyShareLinkButton";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useNavigate } from "react-router-dom";
 import { cn } from "~/utils";
 import { useEffect, useRef, useState } from "react";
@@ -40,7 +40,7 @@ interface ArticleListProps {
 
 /**
  * Sub-channel tab label with a tooltip that only opens when the name is actually
- * truncated (max-w-[240px]). Rendered inside the @bisheng/ui Tabs items — the tab
+ * truncated (max-w-[240px]). Rendered inside the @doberman-agent/ui Tabs items — the tab
  * button chrome, indicator and count badge all come from the library component.
  */
 function TruncatedTabLabel({ name }: { name: string }) {
@@ -272,7 +272,7 @@ export function ArticleList({
               </div>
             </div>
             {/* Row 3: 子频道页签。无子频道时整行隐藏。横滚、两端渐隐、
-                            未读数徽标与底部通栏分隔线都由 @bisheng/ui Tabs 提供。 */}
+                            未读数徽标与底部通栏分隔线都由 @doberman-agent/ui Tabs 提供。 */}
             {subChannels.length > 0 ? (
               <div className="px-4 pb-2">
                 <Tabs
@@ -405,7 +405,7 @@ export function ArticleList({
                         the tab row when there are no sub-channels (a lone 全部 tab adds no value). */}
           <div className="flex flex-row items-center justify-between gap-3">
             {subChannels.length > 0 && (
-              // Controlled @bisheng/ui Tabs used as a bare tab strip (no children —
+              // Controlled @doberman-agent/ui Tabs used as a bare tab strip (no children —
               // the article list below is the content area). Overflow scroll +
               // edge fades and the count badges are built into the component.
               // divider off: this header row draws no full-width edge today.

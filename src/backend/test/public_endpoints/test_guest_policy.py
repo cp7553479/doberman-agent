@@ -2,18 +2,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.public_endpoints import (
+from doberman_agent.common.errcode.public_endpoints import (
     PublicGuestAccessDisabledError,
 )
-from bisheng.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids
-from bisheng.permission.application.identity import (
+from doberman_agent.core.context.tenant import get_current_tenant_id, get_visible_tenant_ids
+from doberman_agent.permission.application.identity import (
     get_current_permission_actor,
     reset_current_permission_actor,
     set_current_permission_actor,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.public_endpoints.domain.context import get_current_public_api_principal
-from bisheng.public_endpoints.domain.services import guest_policy
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.public_endpoints.domain.context import get_current_public_api_principal
+from doberman_agent.public_endpoints.domain.services import guest_policy
 
 
 @pytest.fixture
@@ -36,9 +36,9 @@ def operator_identity(monkeypatch):
     async def is_tenant_admin(_user_id, _tenant_id):
         return state.is_tenant_admin
 
-    monkeypatch.setattr("bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles", aget_user_roles)
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", check_is_global_super)
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
+    monkeypatch.setattr("doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles", aget_user_roles)
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", check_is_global_super)
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
     return state
 
 
@@ -91,7 +91,7 @@ async def test_public_execution_sets_and_resets_strict_identity(monkeypatch) -> 
 
     monkeypatch.setattr(guest_policy, "_load_published_resource", load_resource)
     monkeypatch.setattr(guest_policy, "_load_default_operator", load_operator)
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
 
     assert get_current_tenant_id() is None
     async with guest_policy.public_execution("workflow", "flow-1") as execution:
@@ -132,7 +132,7 @@ async def test_guest_actor_tracks_operator_privilege(
         calls.append((user_id, tenant_id))
         return tenant_admin
 
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
 
     actor = await guest_policy._resolve_guest_actor(operator)
 
@@ -162,7 +162,7 @@ async def test_guest_actor_never_inherits_an_ambient_actor(monkeypatch) -> None:
 
     monkeypatch.setattr(guest_policy, "_load_published_resource", load_resource)
     monkeypatch.setattr(guest_policy, "_load_default_operator", load_operator)
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", is_tenant_admin)
 
     outer = PermissionActor(subject_type="user", subject_id=999, tenant_id=7, super_admin=True)
     token = set_current_permission_actor(outer)
@@ -223,7 +223,7 @@ async def test_operator_liveness_fails_closed(guest_config, operator_identity, b
         return []
 
     # Privilege resolution must never run for a rejected operator.
-    import bisheng.user.domain.services.auth as auth_module
+    import doberman_agent.user.domain.services.auth as auth_module
 
     original = auth_module.UserRoleDao.aget_user_roles
     auth_module.UserRoleDao.aget_user_roles = staticmethod(aget_user_roles)

@@ -1,5 +1,5 @@
-import { Button } from "@bisheng/ui"
-import { notification } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
+import { notification } from "@doberman-agent/ui"
 import { locationContext } from "@/contexts/locationContext"
 import { getDevToolkitVersionsApi } from "@/controllers/API/devToolkit"
 import type { DevToolkitVersions } from "@/types/api/devToolkit"
@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next"
  *   backend resolved for this very request, falling back to the browser's own
  *   origin. Not the origin first: behind a gateway or a path prefix the origin
  *   is missing that prefix, and a block mixing the two sources would print a
- *   `bisheng login` command that 404s directly above an MCP address that works.
+ *   `doberman_agent login` command that 404s directly above an MCP address that works.
  *   Unconfigured, the backend resolves this request's forwarded Host — the
  *   browser's own address — so a plain deployment sees no difference.
  *
@@ -67,7 +67,7 @@ export function AccessInfoPanel() {
   const cliDownloadUrl = versions.cli
     ? `${platformAddress}${versions.cli.download_path}`
     : ""
-  const loginCommand = `bisheng login ${platformAddress} --api-key ${t(
+  const loginCommand = `doberman_agent login ${platformAddress} --api-key ${t(
     "openApiManagement.accessInfo.keyPlaceholder",
   )}`
 

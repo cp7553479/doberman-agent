@@ -43,7 +43,7 @@
   **依赖**: 无
 
 - [x] **T002**: `UserDepartmentDao.aget_users_by_tenant_subtree` 实现
-  **文件**: `src/backend/bisheng/database/models/department.py`
+  **文件**: `src/backend/doberman_agent/database/models/department.py`
   **逻辑**: 新增 classmethod，签名 `aget_users_by_tenant_subtree(tenant_id, page, page_size, keyword) -> tuple[list[dict], int]`
   - 解析 `tenant.root_dept_id` → 取得 root dept 的 path（若 tenant 无 root_dept 配置，回退到 `WHERE department.tenant_id == tenant_id` —— 兼容 v2.5.0 / v2.5.1 早期数据）
   - SQL 形态见 spec §7 伪代码：`User → UserDepartment(is_primary=1) → Department(path LIKE root_path || '%')`，UserTenant 仅 LEFT JOIN 取 last_access_time
@@ -56,7 +56,7 @@
 ### 后端：Service 层
 
 - [x] **T003**: `TenantService.aget_tenant_users` 切源 + `aadd_users`/`aremove_user` 加 deprecated
-  **文件**: `src/backend/bisheng/tenant/domain/services/tenant_service.py`
+  **文件**: `src/backend/doberman_agent/tenant/domain/services/tenant_service.py`
   **逻辑**:
   - `aget_tenant_users` 内部调用从 `UserTenantDao.aget_tenant_users` 改为 `UserDepartmentDao.aget_users_by_tenant_subtree`，参数 / 返回值不变
   - `aadd_users` 顶部加 `import warnings; warnings.warn("F024: aadd_users is deprecated...", DeprecationWarning)` + `logger.warning('F024 deprecated: aadd_users called for tenant %d, %d uids', ...)`；保留实现给内部脚本用
@@ -69,10 +69,10 @@
 
 - [x] **T004**: API 端点改 410 Gone + 端点测试
   **文件**:
-  - 实现: `src/backend/bisheng/tenant/api/endpoints/tenant_users.py`
+  - 实现: `src/backend/doberman_agent/tenant/api/endpoints/tenant_users.py`
   - 测试: `src/backend/test/test_tenant_membership_endpoints_deprecated.py`
   **逻辑**:
-  - `POST /tenants/{id}/users` 端点函数体替换为返回 `JSONResponse(status_code=410, content={...})`，参考 `bisheng/tenant/api/endpoints/user_tenant.py:30` `switch_tenant_deprecated` 的写法
+  - `POST /tenants/{id}/users` 端点函数体替换为返回 `JSONResponse(status_code=410, content={...})`，参考 `doberman-agent/tenant/api/endpoints/user_tenant.py:30` `switch_tenant_deprecated` 的写法
   - `DELETE /tenants/{id}/users/{user_id}` 同上
   - `GET /tenants/{id}/users` 不动（路径不变，service 内部数据源已切）
   - 测试用 FastAPI TestClient + httpx，验证两个端点都返 410 + 响应 body 含 `migration` 字段
@@ -131,7 +131,7 @@
 
 ## 实际偏差记录
 
-- **偏差 1（T001 测试策略）**：spec 起草时倾向 mock-based 测试（与 `test_tenant_resolver.py` / `test_user_department_service.py` 对齐），但 DAO 的 SQL JOIN + path LIKE 是核心逻辑，纯 mock 信号不足。最终选择 **aiosqlite 集成测试**：自带 5 表 DDL + `pytest_asyncio` 异步 fixture + `monkeypatch` 把 `get_async_db_session` 指到测试引擎。代价是要绕过 conftest premock 的 `bisheng.user.domain.models.user`：写一个真 SQLModel `_TestUser` 类 *augment*（不替换）conftest 已注入的 mock module，保留其他测试需要的 `UserDao` 等 attr 不变。
+- **偏差 1（T001 测试策略）**：spec 起草时倾向 mock-based 测试（与 `test_tenant_resolver.py` / `test_user_department_service.py` 对齐），但 DAO 的 SQL JOIN + path LIKE 是核心逻辑，纯 mock 信号不足。最终选择 **aiosqlite 集成测试**：自带 5 表 DDL + `pytest_asyncio` 异步 fixture + `monkeypatch` 把 `get_async_db_session` 指到测试引擎。代价是要绕过 conftest premock 的 `doberman_agent.user.domain.models.user`：写一个真 SQLModel `_TestUser` 类 *augment*（不替换）conftest 已注入的 mock module，保留其他测试需要的 `UserDao` 等 attr 不变。
 - **偏差 2（T005 跳转目标）**：spec 写 Banner CTA 跳转 `/admin/department`，实际项目里部门管理在 `/sys` 页的 `organization` tab 下（`SystemPage` 用 Radix Tabs，无 URL 参数），路由 `/admin/department` 不存在。改为跳转 `/sys`，超管/部门管理员/Child Admin 默认进入 organization tab，体验等价。
 - **偏差 3（T004 GET 端点测试覆盖）**：spec 写"测试不带 auth 也返 410"，实际靠 `Dependant.dependencies` 树检查 `name == 'login_user'` 来判定（`__qualname__` 不可靠，因为 `LoginUser.get_admin_user` 是 bound method 没含 `UserPayload`）。结果：3 个 410 端点确实没有 `login_user` dependency；GET 端点保留了 dependency。覆盖等价 spec 意图。
 - **偏差 4（T003 是否需要单独测试）**：tasks.md 里 T003 的「测试」字段写"现有 `test_tenant_users_query_source.py` 走完整 service 调用链路验证"。实际由于 T001/T002 直接打到 DAO 层，service 层只是薄封装（return shape 不变），没单独写 service 测试。Service 切源行为通过 T001 的 7 个用例间接覆盖（下层 DAO 通过 = service 上层透传通过）。AC-15（deprecation logger.warning）由人工 grep 确认，未写自动化用例。

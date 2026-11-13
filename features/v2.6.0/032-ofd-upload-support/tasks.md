@@ -30,7 +30,7 @@
 ### Wave 1 — 基础（无依赖，可并行）
 
 - [x] **T001**: 错误码 `OfdConvertError`
-  **文件**: `src/backend/bisheng/common/errcode/knowledge.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/knowledge.py`
   **逻辑**: 新增 `OfdConvertError(BaseErrorCode)`，`Code=10917`，`Msg='OFD file is corrupted or has an invalid format'`。release-contract 已登记（109 段，不与 10915/10916/10962 冲突）。
   **覆盖 AC**: AC-04
   **设计**: design §4.3 B0 / §2 Constitution C5
@@ -51,7 +51,7 @@
   **依赖**: T002
 
 - [x] **T004**: `convert_ofd_to_pdf` 实现
-  **文件**: `src/backend/bisheng/knowledge/rag/pipeline/loader/utils/ofd_converter.py`（新增）
+  **文件**: `src/backend/doberman_agent/knowledge/rag/pipeline/loader/utils/ofd_converter.py`（新增）
   **逻辑**: `convert_ofd_to_pdf(input_path, output_dir) -> str`：easyofd 进程内读 OFD → 生成 PDF 写入 `output_dir` 返回路径；捕获 easyofd 内部异常转 `raise OfdConvertError()`（不得让裸异常冒泡成 500）。不负责上传 / 预览路径。
   **测试**: T003 全绿
   **覆盖 AC**: AC-02, AC-04
@@ -67,8 +67,8 @@
   **依赖**: T001, T002
 
 - [x] **T006**: `OfdLoader` 实现 + pipeline 路由
-  **文件**: `src/backend/bisheng/knowledge/rag/pipeline/loader/ofd.py`（新增）、`src/backend/bisheng/knowledge/rag/base_file_pipeline.py`
-  **逻辑**: `OfdLoader(BaseBishengLoader)`：`load()` 调 T004 转 pdf → 设 `self.preview_file_path=pdf` → 委托 `_build_pdf_loader(pdf)` 回传 `documents`/`bbox_list`/`local_image_dir`（镜像 `XinChuangFormatterLoader`）。`base_file_pipeline.py`：`FileExtensionMap` 加 `"ofd"`→`_init_ofd_loader`；从 `_init_pdf_loader` 抽 `_build_pdf_loader(file_path)` 单一来源；确保走普通 PDF 路径、不误入 image 分支。
+  **文件**: `src/backend/doberman_agent/knowledge/rag/pipeline/loader/ofd.py`（新增）、`src/backend/doberman_agent/knowledge/rag/base_file_pipeline.py`
+  **逻辑**: `OfdLoader(Basedoberman-agentLoader)`：`load()` 调 T004 转 pdf → 设 `self.preview_file_path=pdf` → 委托 `_build_pdf_loader(pdf)` 回传 `documents`/`bbox_list`/`local_image_dir`（镜像 `XinChuangFormatterLoader`）。`base_file_pipeline.py`：`FileExtensionMap` 加 `"ofd"`→`_init_ofd_loader`；从 `_init_pdf_loader` 抽 `_build_pdf_loader(file_path)` 单一来源；确保走普通 PDF 路径、不误入 image 分支。
   **测试**: T005 全绿
   **覆盖 AC**: AC-02
   **设计**: design §4.3 B2/B3 / §3 决策5 / §5 坑 2
@@ -83,7 +83,7 @@
   **依赖**: T006
 
 - [x] **T008**: 预览对象路径 + 扩展名排序
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_utils.py`、`src/backend/bisheng/knowledge/domain/models/knowledge_space_file.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_utils.py`、`src/backend/doberman_agent/knowledge/domain/models/knowledge_space_file.py`
   **逻辑**: `get_knowledge_preview_file_object_name` / `get_tmp_preview_file_object_name` 把 `ofd` 归入 `preview/{id}.pdf` 分支（同 ppt）；排序元组加 `('ofd', N)`。
   **测试**: T007 相关断言转绿
   **覆盖 AC**: AC-03, AC-05
@@ -91,7 +91,7 @@
   **依赖**: T007
 
 - [x] **T009**: uns_support 广告格式（静态，无开关）
-  **文件**: `src/backend/bisheng/api/v1/endpoints.py`
+  **文件**: `src/backend/doberman_agent/api/v1/endpoints.py`
   **逻辑**: 把 `GET /env` 的支持格式抽成模块常量 `UNS_SUPPORT_FORMATS`（含 `'ofd'`），`get_env` 用它构建 `uns_support`。**偏差**：文档上传端点本就无扩展名白名单（门禁在 parse-time `FileExtensionMap`），`_upload_file.file_supports` 是图标上传，与 OFD 无关，不改（见偏差记录）。
   **测试**: T007 `test_ofd_advertised_without_gate` 转绿
   **覆盖 AC**: AC-01, AC-06

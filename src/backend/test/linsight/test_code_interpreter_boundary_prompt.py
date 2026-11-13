@@ -16,13 +16,13 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import (
+from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import (
     EXECUTION_BOUNDARY_RULES,
     WORKSPACE_ESCAPE_NOTICE,
 )
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LOCAL_DESCRIPTION
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LOCAL_DESCRIPTION
 
 PROMPT_BOUNDARY_HEADING = "# 执行环境边界"
 
@@ -71,7 +71,7 @@ def test_prompt_boundary_section_present_with_code_interpreter(has_kb):
 
 @pytest.mark.parametrize("has_kb", [True, False])
 def test_prompt_boundary_section_absent_without_code_interpreter(has_kb):
-    # lockstep: never name bisheng_code_interpreter when it is not bound
+    # lockstep: never name doberman_agent_code_interpreter when it is not bound
     prompt = _build_linsight_system_prompt(has_kb, has_code_interpreter=False)
     assert PROMPT_BOUNDARY_HEADING not in prompt
 

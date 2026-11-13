@@ -6,13 +6,13 @@
 
 `dialogOverlayStyle` 为三类 Client 弹窗统一生成桌面蒙层样式，并保留调用方传入的层级等布局属性。浏览器入口继续使用组件及调用方自身的展示规则。
 
-Desktop 的既有窗口级模态协议负责将 body portal 展示到整个原生窗口，页面根节点保持原内容区坐标。Client 负责蒙层颜色，最后一层弹窗关闭后由 Desktop 恢复内容区。知识空间使用的 `@bisheng/ui` Modal 已采用相同的 40% 蒙层。
+Desktop 的既有窗口级模态协议负责将 body portal 展示到整个原生窗口，页面根节点保持原内容区坐标。Client 负责蒙层颜色，最后一层弹窗关闭后由 Desktop 恢复内容区。知识空间使用的 `@doberman-agent/ui` Modal 已采用相同的 40% 蒙层。
 
 ## 基线
 
-- Client：`dataelement/bisheng:feat/bisheng-work-120-main@3120e714fa4ed492884cade11a128341d03eb105`。
+- Client：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@3120e714fa4ed492884cade11a128341d03eb105`。
 - 提交 PR 前同步目标 `780723543c408013d0011a2d8053fdc6bb712420`，保留同期应用附件下载和已删除会话读取修复及双方状态记录。
-- 原生组合验证：`dataelement/bisheng-desktop:V1.2.0@09c22fe34e5c89193c15387685810fbaa45e73fc`，Harness `0.2.1-rc.2`，Electron `43.0.0`，macOS arm64。
+- 原生组合验证：`cp7553479/doberman-agent-desktop:V1.2.0@09c22fe34e5c89193c15387685810fbaa45e73fc`，Harness `0.2.1-rc.2`，Electron `43.0.0`，macOS arm64。
 - Frontend 依赖使用相同锁文件及包清单的独立副本；命令使用仓库指定的 pnpm `9.15.9`。
 
 ## 验证结果
@@ -41,7 +41,7 @@ NODE_PATH=../node_modules/.pnpm/node_modules node node_modules/jest/bin/jest.js 
 原生组合验证需准备已安装依赖的 Desktop V1.2.0 目录，并先构建 Client。在仓库根目录运行：
 
 ```sh
-DESKTOP_SOURCE=/path/to/bisheng-desktop node scripts/verify-desktop-dialog-overlay.mjs /path/to/evidence
+DESKTOP_SOURCE=/path/to/doberman-agent-desktop node scripts/verify-desktop-dialog-overlay.mjs /path/to/evidence
 ```
 
 脚本使用临时 Profile，输出原生检查 JSON 与深浅主题子视图截图。

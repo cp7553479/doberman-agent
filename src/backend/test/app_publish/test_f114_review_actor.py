@@ -7,7 +7,7 @@ import pytest
 
 @pytest.fixture
 def candidates(monkeypatch):
-    from bisheng.approval.application import app_candidates as mod
+    from doberman_agent.approval.application import app_candidates as mod
 
     admins = {81, 42}
     monkeypatch.setattr(mod, "administrator_ids", AsyncMock(side_effect=lambda tenant: tuple(admins)))

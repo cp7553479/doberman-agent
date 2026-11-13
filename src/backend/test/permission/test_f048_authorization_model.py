@@ -11,16 +11,16 @@ from collections.abc import Iterable
 
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     DEFAULT_ACTION_CODES,
     authorization_model_checksum,
     build_authorization_model_f048,
 )
-from bisheng.permission.domain.models import ResourcePermissionMode
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.model_policy import derive_permission_models
-from bisheng.permission.domain.services.resource_lifecycle_policy import build_create_plan
-from bisheng.permission.migration.f048_model_mapper import build_initial_action_release
+from doberman_agent.permission.domain.models import ResourcePermissionMode
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.model_policy import derive_permission_models
+from doberman_agent.permission.domain.services.resource_lifecycle_policy import build_create_plan
+from doberman_agent.permission.migration.f048_model_mapper import build_initial_action_release
 from scripts.reconcile_f048_visible_projection import _compile_service_account_resource_markers
 
 TupleKey = tuple[str, str, str]

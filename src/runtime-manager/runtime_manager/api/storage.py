@@ -4,7 +4,7 @@
 callers and therefore two credentials:
 
 * **The hosted app itself**, with the per-app bearer token minted at deploy
-  (``BISHENG_APP_STORAGE_TOKEN``). It is the credential F057's SDK sends, and
+  (``DOBERMAN_AGENT_APP_STORAGE_TOKEN``). It is the credential F057's SDK sends, and
   it is bound to *this* ``app_id``: the token of app A on the URL of app B is a
   401, not a scoping decision. Compared in constant time against the desired
   state record — which is also why a destroyed app's token stops working the

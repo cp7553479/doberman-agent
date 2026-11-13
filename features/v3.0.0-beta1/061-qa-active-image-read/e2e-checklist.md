@@ -12,10 +12,10 @@
 ```bash
 # 后端（src/backend/）
 export config=config.yaml
-uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
+uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
 
 # Client（src/frontend/）
-pnpm --filter bishengchat start -- --host 0.0.0.0
+pnpm --filter doberman-agentchat start -- --host 0.0.0.0
 ```
 
 ---

@@ -17,7 +17,7 @@ import pytest
 # inside ``TenantService._revoke_active_jwts_for_tenant``. The real module
 # transitively imports ``minio`` which is not in the test venv, so we
 # inject a stub module before the lazy import has a chance to resolve.
-_USER_SERVICE_MODULE = 'bisheng.user.domain.services.user'
+_USER_SERVICE_MODULE = 'doberman_agent.user.domain.services.user'
 if _USER_SERVICE_MODULE not in sys.modules:
     _stub = MagicMock()
     _stub.UserService = MagicMock()
@@ -61,7 +61,7 @@ def patched_status_flow():
     Yields a dict of mocks so each test can drive ``prior``/``updated``
     tenant rows and assert against ``invalidate_jwt`` / ``audit_log`` calls.
     """
-    base = 'bisheng.tenant.domain.services.tenant_service'
+    base = 'doberman_agent.tenant.domain.services.tenant_service'
     invalidate = AsyncMock()
     sys.modules[_USER_SERVICE_MODULE].UserService.\
         ainvalidate_jwt_after_account_disabled = invalidate
@@ -88,8 +88,8 @@ class TestTenantDisableJwtRevocation:
         self, patched_status_flow, fake_super_admin,
     ):
         """TC1: prior=active, new=disabled → bump every active leaf user."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'active')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'disabled')
@@ -112,8 +112,8 @@ class TestTenantDisableJwtRevocation:
         self, patched_status_flow, fake_super_admin,
     ):
         """TC2: prior already disabled → no JWT bump on repeat call."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'disabled')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'disabled')
@@ -137,8 +137,8 @@ class TestTenantDisableJwtRevocation:
         token. Bumping again would be a no-op for new tokens but creates
         unnecessary cache churn.
         """
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'disabled')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'active')
@@ -156,9 +156,9 @@ class TestTenantDisableJwtRevocation:
         self, patched_status_flow, fake_super_admin,
     ):
         """TC4: audit_log entry carries the exact list of revoked user_ids."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
-        from bisheng.tenant.domain.constants import TenantAuditAction
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.constants import TenantAuditAction
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'active')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'disabled')
@@ -188,8 +188,8 @@ class TestTenantDisableJwtRevocation:
         self, patched_status_flow, fake_super_admin,
     ):
         """A failing bump for one user must not stop the rest or the audit log."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'active')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'disabled')

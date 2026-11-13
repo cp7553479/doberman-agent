@@ -2,7 +2,7 @@ import type { User } from "@/types/api/user"
 /** Hosted application cards share state badges and actions with the detail page. */
 import CardComponent from "@/components/bs-comp/cardComponent"
 import AppAvator from "@/components/bs-comp/cardComponent/avatar"
-import { Button, Tag } from "@bisheng/ui"
+import { Button, Tag } from "@doberman-agent/ui"
 import {
   getHostedAppVersionsApi,
   type HostedAppActionResult,

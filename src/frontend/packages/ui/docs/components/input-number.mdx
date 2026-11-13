@@ -5,7 +5,7 @@ component: InputNumber
 
 # 数字输入框 InputNumber
 
-录入**一个要拿来计算的数**——数量、比例、时长、阈值。组件库 `@bisheng/ui` 导出 **`InputNumber`**。规范全文见「文档 → 组件规范 → 数字输入框 InputNumber」。
+录入**一个要拿来计算的数**——数量、比例、时长、阈值。组件库 `@doberman-agent/ui` 导出 **`InputNumber`**。规范全文见「文档 → 组件规范 → 数字输入框 InputNumber」。
 
 **外壳就是输入框的外壳**：24 / 32 / 40 三档、灰色聚焦链、错误 / 警告 / 只读 / 禁用四种外壳、触屏 16px 防缩放，全部与 `Input` 一致。数字输入框只多一列 20px 宽的步进按钮：**悬停才显形、位置常驻预留**，数值不会跳。
 
@@ -18,7 +18,7 @@ component: InputNumber
 宽度按最大值的位数给（`className` 落在最外层），范围写进 placeholder，让用户在输入前就知道边界。鼠标移上来看步进按钮；键盘 ↑ / ↓ 加减一个步长，Shift + ↑ / ↓ 加减 10 个步长；按住按钮连续加减。
 
 ```tsx
-import { InputNumber } from '@bisheng/ui';
+import { InputNumber } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -33,7 +33,7 @@ export default () => (
 跟输入框同一套阶梯；步进列各档都是 20px 宽、图标固定 12px。
 
 ```tsx
-import { InputNumber } from '@bisheng/ui';
+import { InputNumber } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -49,7 +49,7 @@ export default () => (
 单位放 `suffix`，排在步进按钮右边、收住框的右端——**不写进数值本身**。步进列平时隐藏，单位若排在它左边，右侧就会空出一块。小数步长同时决定默认精度（`step={0.1}` → 1 位小数），显示时按精度补齐；也可以用 `precision` 单独指定。步进用十进制运算，0.1 + 0.2 就是 0.3。
 
 ```tsx
-import { InputNumber } from '@bisheng/ui';
+import { InputNumber } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -68,7 +68,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { InputNumber } from '@bisheng/ui';
+import { InputNumber } from '@doberman-agent/ui';
 
 const message = (error) =>
   error.type === 'range'
@@ -119,7 +119,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Button, InputNumber, Slider } from '@bisheng/ui';
+import { Button, InputNumber, Slider } from '@doberman-agent/ui';
 
 export default () => {
   const [value, setValue] = React.useState(5);
@@ -143,7 +143,7 @@ export default () => {
 外壳与输入框完全一致。**只读、禁用时步进按钮不出现**，悬停也不出；错误、警告态下照常可用，用户可以直接点着改回范围内。
 
 ```tsx
-import { InputNumber } from '@bisheng/ui';
+import { InputNumber } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>

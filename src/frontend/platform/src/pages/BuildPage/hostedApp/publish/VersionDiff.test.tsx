@@ -92,7 +92,7 @@ describe("VersionDiff", () => {
     render(<VersionDiff appId="app-1" />)
 
     await waitFor(() => expect(getHostedAppVersionDiffApi).toHaveBeenCalledWith("app-1", "ver-1", "ver-2"))
-    // The presentation is `@bisheng/file-viewers`' shared component — the same
+    // The presentation is `@doberman-agent/file-viewers`' shared component — the same
     // one the client's review view mounts (AC-41 "同一呈现").
     await screen.findByTestId("version-diff-view")
     expect(screen.getByText("v1 → v2")).toBeInTheDocument()

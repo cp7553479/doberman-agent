@@ -6,7 +6,7 @@
 **关联 PRD**: [`docs/PRD/2.6 灵思 deepagents 迁移 PRD/灵思 Linsight 迁移 deepagents 框架 PRD.md` §4.3.3「引用溯源」(L692) · FR-2.13 (L571)]
 **优先级**: P2
 **所属版本**: v3.0.0-beta1（原登记为 v2.6.0 F040；v2.6.0 该编号已被 F040-rebac-read-path-perf-rollout 占用，随版本线一并改编为 **F047**）
-**依赖**: F035（灵思任务模式，deepagents 内核）· F029（知识库检索权限过滤 / INV-7）—— 两者均为 v2.6.0 存量 Feature，已上线；现有 citation 子系统（`bisheng/citation/`，日常模式已在用）
+**依赖**: F035（灵思任务模式，deepagents 内核）· F029（知识库检索权限过滤 / INV-7）—— 两者均为 v2.6.0 存量 Feature，已上线；现有 citation 子系统（`doberman-agent/citation/`，日常模式已在用）
 
 > **范围边界**
 > - **本次纳入（Phase 1）**：

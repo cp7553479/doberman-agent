@@ -1,7 +1,7 @@
 """F087: a context overflow is compressed and retried, and fails cleanly when it persists.
 
 Drives a real deepagents graph with a scripted model. The model raises the error
-BishengLLM raises for a vLLM context-window rejection; the framework's
+DobermanAgentLLM raises for a vLLM context-window rejection; the framework's
 summarization middleware (outer) must see it, which only works because the
 resilience middleware (inner) re-raises it instead of degrading (design decision 9).
 """
@@ -24,15 +24,15 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 
-from bisheng.common.services.llm_error_classifier import classify_for_event
-from bisheng.core.config.settings import LinsightConf
-from bisheng.linsight.domain.services.context_budget import BishengSummarizationMiddleware, bisheng_summarization
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.common.services.llm_error_classifier import classify_for_event
+from doberman_agent.core.config.settings import LinsightConf
+from doberman_agent.linsight.domain.services.context_budget import DobermanAgentSummarizationMiddleware, doberman_agent_summarization
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _SUBAGENT_OVERFLOW_MESSAGE,
     SubagentContextOverflowMiddleware,
     build_resilience_middleware,
 )
-from bisheng.llm.domain.llm.context_overflow import as_context_overflow
+from doberman_agent.llm.domain.llm.context_overflow import as_context_overflow
 
 _VLLM_TEXT = (
     "This model's maximum context length is 32768 tokens. However, you requested 0 output tokens and "
@@ -63,7 +63,7 @@ class _ScriptedModel(BaseChatModel):
         return "scripted"
 
     def _get_ls_params(self, stop=None, **kwargs):
-        # A provider of its own: bisheng_summarization() registers a harness profile
+        # A provider of its own: doberman_agent_summarization() registers a harness profile
         # per provider for the whole process (design §5 gotcha 18), and other test
         # modules build deep agents from a same-named "_ScriptedModel" class.
         return {"ls_provider": "f087-overflow-flow", "ls_model_name": "scripted"}
@@ -94,17 +94,17 @@ def _fetch_calls(n: int) -> Iterator[AIMessage]:
 
 
 def _build(model: _ScriptedModel, conf: LinsightConf, context_window: dict):
-    """The production assembly (agent_factory): BishengSummarizationMiddleware FIRST,
+    """The production assembly (agent_factory): DobermanAgentSummarizationMiddleware FIRST,
     i.e. outside resilience, in the main graph and the researcher (design decision 7)."""
     backend = StateBackend()
     usable_input = model.profile["max_input_tokens"]
     researcher_resilience = build_resilience_middleware(conf, is_subagent=True)
-    with bisheng_summarization(model):
+    with doberman_agent_summarization(model):
         return create_deep_agent(
             model=model,
             tools=[fetch],
             middleware=[
-                BishengSummarizationMiddleware(model, backend, usable_input),
+                DobermanAgentSummarizationMiddleware(model, backend, usable_input),
                 build_resilience_middleware(conf, is_subagent=False),
                 SubagentContextOverflowMiddleware(researcher_resilience, context_window),
             ],
@@ -114,7 +114,7 @@ def _build(model: _ScriptedModel, conf: LinsightConf, context_window: dict):
                     "description": "researcher",
                     "system_prompt": "research",
                     "tools": [fetch],
-                    "middleware": [BishengSummarizationMiddleware(model, backend, usable_input), researcher_resilience],
+                    "middleware": [DobermanAgentSummarizationMiddleware(model, backend, usable_input), researcher_resilience],
                 }
             ],
             state_schema=DeepAgentState,
@@ -223,8 +223,8 @@ async def test_task_failure_records_type_code_and_window(monkeypatch):
 
     from loguru import logger
 
-    from bisheng.linsight.domain import task_exec as task_exec_module
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.linsight.domain import task_exec as task_exec_module
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     task = LinsightWorkflowTask()
     task._state_manager = SimpleNamespace(set_session_version_info=AsyncMock(), push_message=AsyncMock())

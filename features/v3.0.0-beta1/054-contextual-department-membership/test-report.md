@@ -62,7 +62,7 @@ FGA_CONTEXTUAL_TEST_URL=http://127.0.0.1:18089 python -m pytest \
 
 ## 4. 发布环境尚需验证
 
-本次为权限模块及 OpenFGA HTTP 集成验证，不是完整毕昇 API/UI E2E，也没有在 192.168.106.105 部署新代码/模型。发布时补充：
+本次为权限模块及 OpenFGA HTTP 集成验证，不是完整doberman-agent API/UI E2E，也没有在 192.168.106.105 部署新代码/模型。发布时补充：
 
 - 使用 MySQL/DM8 验证祖先查询耗时、超时和多租户组织挂载。
 - API、Celery、Linsight 启动并核对同一 model ID/checksum。

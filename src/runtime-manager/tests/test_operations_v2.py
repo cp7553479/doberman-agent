@@ -78,7 +78,7 @@ def test_stop_is_fenced_and_confirms_cleanup(tmp_path):
     executor.execute("operation-a")
     executor.close()
     assert platform.facts == [("completed", {"stopped": True, "cleanup_complete": True})]
-    assert all("bisheng.runtime.node=node-a" in call["filters"]["label"] for call in docker.calls)
+    assert all("doberman-agent.runtime.node=node-a" in call["filters"]["label"] for call in docker.calls)
 
 
 def test_checkpoint_refuses_stale_owner_and_expired_work(tmp_path):
@@ -259,7 +259,7 @@ def test_offline_legacy_build_does_not_ask_engine_to_pull_missing_base(tmp_path)
 
     source = tmp_path / "source"
     source.mkdir()
-    (source / "bisheng-app.yaml").write_text("manifest_version: 1")
+    (source / "doberman-agent-app.yaml").write_text("manifest_version: 1")
     (source / "main.py").write_text("print('app')")
     archive = archive_directory(source, tmp_path / "source.tar.gz").read_bytes()
 
@@ -309,7 +309,7 @@ def test_restart_cleans_orphan_exports_and_protects_active_helpers_and_database(
         list_containers=lambda **kwargs: [
             {
                 "Id": "active",
-                "Labels": {"bisheng.runtime.operation": active, "bisheng.runtime.deadline": str(int(time.time()) + 60)},
+                "Labels": {"doberman-agent.runtime.operation": active, "doberman-agent.runtime.deadline": str(int(time.time()) + 60)},
             }
         ]
     )

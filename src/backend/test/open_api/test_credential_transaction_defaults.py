@@ -3,9 +3,9 @@
 import pytest
 from sqlalchemy import inspect
 
-from bisheng.open_api.domain.models.api_credential import ApiCredential
-from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
-from bisheng.open_api.domain.schemas.credential import KeyItem
+from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
+from doberman_agent.open_api.domain.schemas.credential import KeyItem
 
 
 @pytest.mark.parametrize("insert_returning", [True, False])

@@ -14,13 +14,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import (
+from doberman_agent.common.errcode.knowledge_space import (
     SpaceGrantedNotJoinedError,
     SpacePermissionDeniedError,
 )
-from bisheng.common.models.space_channel_member import UserRoleEnum
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.common.models.space_channel_member import UserRoleEnum
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 _SPACE_ID = 156  # 部门编辑者
 _VIEWER = 150041  # granted through their department, never joined
@@ -45,15 +45,15 @@ async def test_exiting_a_granted_space_is_refused_with_its_own_code():
     delete_member = AsyncMock(return_value=0)
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             AsyncMock(return_value=_space()),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             AsyncMock(return_value=None),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
             delete_member,
         ),
         pytest.raises(SpaceGrantedNotJoinedError) as exc_info,
@@ -69,15 +69,15 @@ async def test_a_real_member_still_exits():
     revoke = AsyncMock(return_value=None)
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             AsyncMock(return_value=_space()),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             AsyncMock(return_value=SimpleNamespace(id=9, user_role=UserRoleEnum.MEMBER)),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
             AsyncMock(return_value=1),
         ),
         patch.object(KnowledgeSpaceService, "_revoke_direct_space_user_permissions", revoke),
@@ -91,11 +91,11 @@ async def test_the_creator_is_still_refused_for_being_the_creator():
     """The creator guard runs first and keeps its own, different reason."""
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             AsyncMock(return_value=_space(creator_id=_VIEWER)),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             AsyncMock(return_value=None),
         ),
         pytest.raises(SpacePermissionDeniedError),

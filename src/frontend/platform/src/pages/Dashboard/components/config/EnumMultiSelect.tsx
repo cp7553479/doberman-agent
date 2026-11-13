@@ -1,12 +1,12 @@
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { showApiError } from "@/controllers/request";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback,useEffect,useMemo,useRef,useState } from "react";
 
 
 
 import { getFieldEnums } from "@/controllers/API/dashboard";
-import { Checkbox,Tag } from "@bisheng/ui";
+import { Checkbox,Tag } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 interface EnumMultiSelectProps {
   fieldCode: string

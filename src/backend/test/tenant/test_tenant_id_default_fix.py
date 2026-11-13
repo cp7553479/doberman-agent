@@ -24,9 +24,9 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import Field, Session, select
 from typing import Optional
 
-from bisheng.common.models.base import SQLModelSerializable
-from bisheng.core.config.multi_tenant import MultiTenantConf
-from bisheng.core.context.tenant import (
+from doberman_agent.common.models.base import SQLModelSerializable
+from doberman_agent.core.config.multi_tenant import MultiTenantConf
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
@@ -36,15 +36,15 @@ from bisheng.core.context.tenant import (
 # Mirror the lightweight pre-mock used by test_tenant_filter.py so this
 # module can run independently of conftest.py side effects.
 _MOCK_MODULES = [
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services.telemetry.telemetry_service',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services.telemetry.telemetry_service',
 ]
 for _m in _MOCK_MODULES:
     if _m not in sys.modules:
         _mock = MagicMock()
-        if _m == 'bisheng.common.services.config_service':
+        if _m == 'doberman_agent.common.services.config_service':
             _mock.settings = MagicMock()
             _mock.settings.multi_tenant = MultiTenantConf(enabled=True)
         sys.modules[_m] = _mock
@@ -95,7 +95,7 @@ class _BuggyTenantItem(SQLModelSerializable, table=True):
 @pytest.fixture()
 def filter_engine():
     """Fresh SQLite engine with tenant filter events registered."""
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     tenant_filter._initialized = False
     tenant_filter._tenant_aware_tables = set()
@@ -196,7 +196,7 @@ class TestBuggyModelStillBuggy:
         token = set_current_tenant_id(7)
         try:
             with caplog.at_level(logging.WARNING,
-                                 logger='bisheng.core.database.tenant_filter'):
+                                 logger='doberman_agent.core.database.tenant_filter'):
                 item = _BuggyTenantItem(name='leak')
                 assert item.tenant_id == 1  # leaked default
                 session.add(item)

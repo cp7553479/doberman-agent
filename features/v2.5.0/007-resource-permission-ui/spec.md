@@ -40,7 +40,7 @@
 - 新建: `src/frontend/platform/src/controllers/API/permission.ts`
 - 新建: `src/frontend/platform/src/components/bs-comp/permission/`（10 个组件文件）
 - 新建: `src/frontend/platform/public/locales/{zh-Hans,en-US,ja}/permission.json`
-- 修改: `src/backend/bisheng/permission/domain/services/permission_service.py`（get_resource_permissions 富化）
+- 修改: `src/backend/doberman_agent/permission/domain/services/permission_service.py`（get_resource_permissions 富化）
 - 修改: 4 个资源列表页（KnowledgeFile, apps, tools, Dashboard）。channel 无前端列表页，暂不集成
 
 **关联不变量**: INV-3, INV-5, INV-7
@@ -536,7 +536,7 @@ namespace: `permission`
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/permission/domain/services/permission_service.py` | `get_resource_permissions()` 富化：解析 FGA 元组 + 批量查名字 |
+| `src/backend/doberman_agent/permission/domain/services/permission_service.py` | `get_resource_permissions()` 富化：解析 FGA 元组 + 批量查名字 |
 | `src/frontend/platform/src/pages/KnowledgePage/KnowledgeFile.tsx` | 集成 PermissionDialog + PermissionBadge |
 | `src/frontend/platform/src/pages/BuildPage/apps.tsx` | 集成 PermissionDialog + PermissionBadge |
 | `src/frontend/platform/src/pages/BuildPage/tools/` (具体文件待确认) | 集成 PermissionDialog + PermissionBadge |

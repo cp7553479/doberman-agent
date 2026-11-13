@@ -10,11 +10,11 @@ from hashlib import sha256
 import pytest
 from sqlalchemy import event
 
-from bisheng.dsh.domain.repositories.model_audit_queries import (
+from doberman_agent.dsh.domain.repositories.model_audit_queries import (
     DshModelAuditQueryRepository as Repository,
 )
-from bisheng.dsh.domain.schemas.model_audit_status import refresh_audit_status
-from bisheng.dsh.infrastructure.model_audit_codec import conversation_key
+from doberman_agent.dsh.domain.schemas.model_audit_status import refresh_audit_status
+from doberman_agent.dsh.infrastructure.model_audit_codec import conversation_key
 from test.dsh.model_audit_fixtures import audit_database
 from test.dsh.test_content_safety_repository import tenant_session
 

@@ -42,7 +42,7 @@
 ```bash
 # 确保 F011 已 merge，Tenant=2 存在 + Child A 挂到某部门
 ssh root@192.168.106.114
-cd /opt/bisheng/src/backend
+cd /opt/doberman-agent/src/backend
 ```
 
 1. **owner 本人发起交接成功**
@@ -97,15 +97,15 @@ cd /opt/bisheng/src/backend
 ## 执行日志
 
 ```bash
-# 在 worktree /Users/lilu/Projects/bisheng-f018 内运行：
+# 在 worktree /Users/lilu/Projects/doberman-agent-f018 内运行：
 # 本地 SQLite 单元测试（不依赖 MySQL/OpenFGA）
 .venv/bin/pytest test/test_resource_type_registry.py \
                  test/test_resource_ownership_service.py \
                  test/test_resource_owner_transfer_api.py -v
 
 # 远程 114 全量回归（rsync 同步后）
-./bisheng-sync.sh up
-ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && .venv/bin/pytest test/ -q"
+./doberman-agent-sync.sh up
+ssh root@192.168.106.114 "cd /opt/doberman-agent/src/backend && .venv/bin/pytest test/ -q"
 ```
 
 | 运行时间 | 命令 | 结果 |

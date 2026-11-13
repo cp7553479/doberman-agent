@@ -1,8 +1,8 @@
-# F062 毕昇 SQL 可移植性复核
+# F062 doberman-agent SQL 可移植性复核
 
 > 历史记录：2026-09-09 用户后续取消 UNKNOWN 冻结及部门同步/筛选；当前语义以 [0.3.0 修订](./usage-and-search-revision.md) 和 design.md 为准。本页旧测试结果不代表修订后的验证结果。
 
-日期：2026-09-09。范围为当前工作树的 F062 毕昇新增代码及旧文件增量，不包含 gateway，也不代表数据库实机验收。
+日期：2026-09-09。范围为当前工作树的 F062 doberman-agent新增代码及旧文件增量，不包含 gateway，也不代表数据库实机验收。
 
 ## 结论
 
@@ -12,8 +12,8 @@
 
 ## 检查范围与结果
 
-- `bisheng/dsh/domain/repositories/`：策略、操作历史、使用量投影、校正、管理查询与身份读取；业务入口未使用 `text()`、`exec_driver_sql()` 或字符串 SQL 执行。
-- `bisheng/user/domain/repositories/dsh_profile.py`：用户与租户成员行锁、资料批量查询、用户 ID 游标分页全部使用 ORM。
+- `doberman-agent/dsh/domain/repositories/`：策略、操作历史、使用量投影、校正、管理查询与身份读取；业务入口未使用 `text()`、`exec_driver_sql()` 或字符串 SQL 执行。
+- `doberman-agent/user/domain/repositories/dsh_profile.py`：用户与租户成员行锁、资料批量查询、用户 ID 游标分页全部使用 ORM。
 - 四个 DSH ORM 表：数值及关系字段使用通用 SQLAlchemy 类型；策略配置、操作载荷及审计快照通过共享 `JsonType` 存储。新 `ModelConfigsType` 外层负责配置对象与确定结构的载荷转换，内层仍委托 `JsonType`。
 - `v3_0_0_f062_profile_version.py`：仅以 `column_exists()` 守卫增加 `user.dsh_profile_version`，类型为 `BigInteger`，默认值为 `0`；没有 SELECT / UPDATE 数据迁移。既有表模型增加的相同字段与该迁移一致。
 - 旧文件增量：用户保存、用户部门变更、登录同步、租户切换均接入资料持久化服务；LLM 快照读取沿用既有 DAO。其余路由、worker、配置与租户模型注册增量没有新增 SQL 执行路径。
@@ -24,7 +24,7 @@
 
 测试文件：`src/backend/test/dsh/test_sql_portability.py`。
 
-1. AST 检查整个新增 `bisheng/dsh` Python 目录、资料 repository 和 F062 migration，检测原始 SQL 入口及 MySQL 方言直接导入；允许列默认表达式。使用包含导入别名、`exec_driver_sql`、直接字符串和 f-string 的反例校验守卫有效性。
+1. AST 检查整个新增 `doberman-agent/dsh` Python 目录、资料 repository 和 F062 migration，检测原始 SQL 入口及 MySQL 方言直接导入；允许列默认表达式。使用包含导入别名、`exec_driver_sql`、直接字符串和 f-string 的反例校验守卫有效性。
 2. 用真实可用 MySQL 方言编译四个 DSH 表、所有索引及用户新增列；从实际 repository 方法捕获策略/操作/用户行锁、操作分页、最后调用和用户游标查询，验证参数保留绑定、行锁仍存在。
 3. `JsonType` 和 `ModelConfigsType` 的绑定与结果处理器往返测试：MySQL 选择原生 JSON，按 `dm` 名称路由选择 CLOB；覆盖 Unicode、NULL、int64 和逐模型额度对象。`dm-type-routing-only` 使用明确命名的测试替身，仅验证共享类型适配器的分支与序列化，不能证明 DM SQL 编译、驱动 LOB 行为或数据库实际执行。
 4. 当环境安装真实 `dmSQLAlchemy.base.DMDialect` 后，同一 DDL 与 repository 查询编译测试将自动运行 DM 分支。
@@ -33,7 +33,7 @@
 
 ```sh
 config=/private/tmp/f062-backend-test.yaml MPLCONFIGDIR=/private/tmp \
-/Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m pytest \
+/Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m pytest \
 --confcutdir=test/dsh test/dsh/test_sql_portability.py -q -rs
 ```
 

@@ -14,7 +14,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './Dialog';
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 import { Button } from './Button';
 import { useLocalize } from '~/hooks';
 

@@ -12,12 +12,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode import open_api as errors
-from bisheng.common.errcode.knowledge import KnowledgeNotExistError, KnowledgeTypeNotSupportedError
-from bisheng.common.errcode.knowledge_space import SpaceNotFoundError, SpacePermissionDeniedError
-from bisheng.common.errcode.permission import PermissionDeniedError, PermissionServiceUnavailableError
-from bisheng.open_api.domain.services import task_mode_service
-from bisheng.open_api.domain.services.task_mode_service import OpenTaskModeService
+from doberman_agent.common.errcode import open_api as errors
+from doberman_agent.common.errcode.knowledge import KnowledgeNotExistError, KnowledgeTypeNotSupportedError
+from doberman_agent.common.errcode.knowledge_space import SpaceNotFoundError, SpacePermissionDeniedError
+from doberman_agent.common.errcode.permission import PermissionDeniedError, PermissionServiceUnavailableError
+from doberman_agent.open_api.domain.services import task_mode_service
+from doberman_agent.open_api.domain.services.task_mode_service import OpenTaskModeService
 from test.open_api.task_mode_support import LOGIN_USER, _knowledge, _req, delegated_principal, sa_principal
 
 
@@ -156,7 +156,7 @@ async def test_content_safety_blocks_before_anything_is_written(task_mode_seams,
 
 
 async def test_foreign_attachment_is_rejected_before_any_other_check(task_mode_seams, monkeypatch):
-    from bisheng.common.errcode.http_error import NotFoundError
+    from doberman_agent.common.errcode.http_error import NotFoundError
 
     monkeypatch.setattr(
         task_mode_service.TempUploadService,

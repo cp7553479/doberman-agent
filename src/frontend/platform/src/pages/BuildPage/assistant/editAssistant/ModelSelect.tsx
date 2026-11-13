@@ -2,7 +2,7 @@
 import { filterModelOption, toGroupedModelOptions, toModelSelectValue } from "@/components/bs-comp/formFields/modelOptions";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { useModel } from "@/pages/ModelPage/manage";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 

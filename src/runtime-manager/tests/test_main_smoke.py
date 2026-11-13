@@ -42,7 +42,7 @@ SIGNED_POST_PATHS = [
 
 def test_production_entrypoint_is_importable():
     """``uvicorn runtime_manager.main:app`` — the exact object systemd runs."""
-    assert app.title == "BiSheng runtime manager"
+    assert app.title == "DobermanAgent runtime manager"
     # No OpenAPI surface: this process is reachable only from localhost and has
     # no business publishing a schema of the orchestration API.
     assert app.openapi_url is None

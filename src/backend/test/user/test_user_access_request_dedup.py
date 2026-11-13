@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-import bisheng.user.domain.services.auth as auth_module
-import bisheng.user.domain.services.user as user_service_module
+import doberman_agent.user.domain.services.auth as auth_module
+import doberman_agent.user.domain.services.user as user_service_module
 
 
 async def test_user_entry_queries_each_access_source_once():
@@ -55,7 +55,7 @@ async def test_init_login_user_reuses_explicit_empty_role_snapshot():
         ) as mock_async_roles,
         patch.object(auth_module.UserRoleDao, "get_user_roles") as mock_sync_roles,
         patch(
-            "bisheng.utils.http_middleware._check_is_global_super",
+            "doberman_agent.utils.http_middleware._check_is_global_super",
             new_callable=AsyncMock,
             return_value=False,
         ) as mock_global_super,

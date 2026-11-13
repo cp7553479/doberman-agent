@@ -1,5 +1,5 @@
 #!/bin/bash
-# Probe a remote BiSheng: /mcp/test and /mcp/refresh must refuse STDIO (15025).
+# Probe a remote doberman-agent: /mcp/test and /mcp/refresh must refuse STDIO (15025).
 #
 # Usage (from src/backend/):
 #   bash scripts/verify_mcp_stdio_blocked.sh --base-url http://HOST:7860 \

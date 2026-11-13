@@ -2,13 +2,13 @@ import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.llm.domain.const import LLMModelType, LLMServerType
-from bisheng.llm.domain.llm.llm import BishengLLM, _get_zhipu_params
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.llm.domain.const import LLMModelType, LLMServerType
+from doberman_agent.llm.domain.llm.llm import DobermanAgentLLM, _get_zhipu_params
+from doberman_agent.llm.domain.services.llm import LLMService
 
 
-def _make_llm_wrapper(server_type: str) -> BishengLLM:
-    inst = BishengLLM.model_construct(streaming=None)
+def _make_llm_wrapper(server_type: str) -> DobermanAgentLLM:
+    inst = DobermanAgentLLM.model_construct(streaming=None)
     object.__setattr__(inst, "server_info", SimpleNamespace(type=server_type))
     object.__setattr__(inst, "model_info", SimpleNamespace(model_name="glm-4-plus"))
     return inst
@@ -50,15 +50,15 @@ def test_zhipu_params_keep_provider_advanced_kwargs():
 async def test_model_status_checks_llm_with_non_streaming(monkeypatch):
     seen_kwargs = {}
 
-    async def fake_get_bisheng_llm(**kwargs):
+    async def fake_get_doberman_agent_llm(**kwargs):
         seen_kwargs.update(kwargs)
         return SimpleNamespace(ainvoke=AsyncMock())
 
-    monkeypatch.setattr(LLMService, "get_bisheng_llm", fake_get_bisheng_llm)
+    monkeypatch.setattr(LLMService, "get_doberman_agent_llm", fake_get_doberman_agent_llm)
     # The probe records its verdict on success too (F044), so stub the write —
     # this test is only about how the model gets called.
     monkeypatch.setattr(
-        "bisheng.llm.domain.services.llm.LLMDao.update_model_status",
+        "doberman_agent.llm.domain.services.llm.LLMDao.update_model_status",
         lambda *args, **kwargs: None,
     )
 

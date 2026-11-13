@@ -2,13 +2,13 @@
 
 ## 交付范围与当前证据
 
-本次修复以 `feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6` 为基线，部署者在 `dsh.platform_public_url` 配置一次公开地址。服务端统一地址格式，登录授权和 MCP 地址校验共用该值，桌面 Chat 沿用同一连接入口。两套 Nginx 模板保留 Host 中的公开端口。测试环境地址只用于下列核对步骤，产品代码按配置处理任意合法 HTTP(S) origin。
+本次修复以 `feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6` 为基线，部署者在 `dsh.platform_public_url` 配置一次公开地址。服务端统一地址格式，登录授权和 MCP 地址校验共用该值，桌面 Chat 沿用同一连接入口。两套 Nginx 模板保留 Host 中的公开端口。测试环境地址只用于下列核对步骤，产品代码按配置处理任意合法 HTTP(S) origin。
 
 2026-10-27 现场证据：
 
 | 项目 | 已确认结果 | 证据范围 |
 | --- | --- | --- |
-| 本机客户端 | BISHENG `1.2.0-test.2`，Harness `0.2.1-rc.2` | 已安装应用 |
+| 本机客户端 | doberman-agent `1.2.0-test.2`，Harness `0.2.1-rc.2` | 已安装应用 |
 | 连接与技能 | 企业状态 connected，技能目录返回 3 项 | 当前登录账号 |
 | 工具初始化 | 认证代理请求 MCP 返回 HTTP 421；界面显示 `Enterprise login is not available yet.` | 原始状态与界面提示分别记录 |
 | 登录服务公开地址 | `http://192.168.106.109:13001` | 登录预请求返回的授权 URL |
@@ -21,8 +21,8 @@ MCP SDK 的 Host 校验失败返回 421，Origin 校验失败返回 403。原模
 
 - [ ] 记录当前发布 SHA、后端镜像 digest、API 实例列表、入口 Nginx 配置版本、客户端版本；保存当前部署清单和配置用于回退。
 - [ ] 逐个 API 实例确认实际加载的 `settings.dsh.enabled` 和 `settings.dsh.platform_public_url`。记录环境变量 `config` 指向的文件及容器挂载来源，只摘录上述两个字段。13001 的预期公开地址为 `http://192.168.106.109:13001`。
-- [ ] 逐个 API 实例核对运行中的 `bisheng/core/config/dsh.py`、`bisheng/dsh/work_mcp.py` 与候选发布内容一致；核对 MCP SDK 版本。登录接口和工具接口应转发至同一套候选 API 实例。
-- [ ] 从公开入口逐层检查负载均衡、Nginx、额外网关的实际生效配置及上游目标。普通入口和 WebSocket/API 入口均检查。每层转发 `Host $http_host`；最外层 TLS 代理写入公开协议，毕昇内层入口沿用该协议。
+- [ ] 逐个 API 实例核对运行中的 `doberman-agent/core/config/dsh.py`、`doberman-agent/dsh/work_mcp.py` 与候选发布内容一致；核对 MCP SDK 版本。登录接口和工具接口应转发至同一套候选 API 实例。
+- [ ] 从公开入口逐层检查负载均衡、Nginx、额外网关的实际生效配置及上游目标。普通入口和 WebSocket/API 入口均检查。每层转发 `Host $http_host`；最外层 TLS 代理写入公开协议，doberman-agent内层入口沿用该协议。
 - [ ] 在一次已登录的工具初始化请求中记录各跳实际 Host、Origin、X-Forwarded-Proto、请求路径、状态和上游状态，关联同一时间/请求 ID。13001 到达 MCP 的预期 Host 为 `192.168.106.109:13001`；请求携带 Origin 时预期为 `http://192.168.106.109:13001`。旧入口的去端口 hostname 仍由现有兼容逻辑接受。
 - [ ] 若存在代理重写至容器名、内部地址或另一域名，修正该跳以保留公开 Host；若 421 出现在到达 API 之前，定位返回它的代理。若 API 已收到正确 Host，继续核对该实例的实际 MCP 校验配置、进程启动时间和源码版本。
 

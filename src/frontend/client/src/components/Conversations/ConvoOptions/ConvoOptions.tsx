@@ -1,9 +1,9 @@
 import { useState, useRef, memo } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useLocalize, usePrefersMobileLayout } from "~/hooks";
 import { useChatContext } from "~/Providers";
-import { Dropdown, DropdownItem, DropdownSeparator, DropdownSub, Tooltip } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator, DropdownSub, Tooltip } from "@doberman-agent/ui";
 import {
   createMockProject,
   moveChatToProject,

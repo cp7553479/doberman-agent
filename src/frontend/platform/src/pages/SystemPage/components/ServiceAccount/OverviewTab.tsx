@@ -1,6 +1,6 @@
 import { useServiceAccountOwnerCandidates } from "./useServiceAccountOwnerCandidates";
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
 import DepartmentUsersSelect,{
 type DepartmentUserOption,
 } from "@/components/bs-comp/selectComponent/DepartmentUsersSelect";
@@ -26,7 +26,7 @@ ServiceAccountForm,
 ServiceAccountItem,
 } from "@/types/api/openApi";
 import { formatIsoDateTime } from "@/util/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { type ReactNode,useContext,useState } from "react";
 import { useTranslation } from "react-i18next";

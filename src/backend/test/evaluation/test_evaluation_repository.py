@@ -1,5 +1,5 @@
-from bisheng.evaluation.domain.models.evaluation import Evaluation, ExecType
-from bisheng.evaluation.domain.repositories.evaluation_repository import EvaluationRepository
+from doberman_agent.evaluation.domain.models.evaluation import Evaluation, ExecType
+from doberman_agent.evaluation.domain.repositories.evaluation_repository import EvaluationRepository
 
 
 def _make(session, user_id=1, exec_type=ExecType.ASSISTANT.value):

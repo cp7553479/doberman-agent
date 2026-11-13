@@ -6,7 +6,7 @@
 
 **Architecture:** 在两端请求适配层收紧用户文案选择；共享包继续只保留错误结构与无 UI 的模板处理。上传异步解析失败单独收口，因为其成功轮询响应不经过请求失败出口。不靠格式猜测把任意字符串认定为安全文案，也不把全部业务失败抹平成通用错误。
 
-**Tech Stack:** 现有 TypeScript、@bisheng/api-client、i18next、Vitest / Jest、React Testing Library；浏览器拦截接口验证，不新增依赖。
+**Tech Stack:** 现有 TypeScript、@doberman-agent/api-client、i18next、Vitest / Jest、React Testing Library；浏览器拦截接口验证，不新增依赖。
 
 **Spec:** `features/v3.0.0/088-request-error-contract/spec.md` AC-03、AC-14、AC-19 及 design.md 的“message 是本端翻译后可读消息”约定。本计划修复既有契约的遗漏，采用维护路径；如发现必须改变产品恢复行为，停止该项并找用户判断。用户于 2026-10-22 确认开发。已在隔离分支实现，验证状态见同目录 verification 文档。
 

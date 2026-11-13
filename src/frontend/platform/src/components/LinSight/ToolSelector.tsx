@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { SearchInput } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { SearchInput } from '@doberman-agent/ui';
 // components/ToolSelector.tsx
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { AlignJustify, Check, CpuIcon, Minus, Plus, Star, User, X } from 'lucide-react';

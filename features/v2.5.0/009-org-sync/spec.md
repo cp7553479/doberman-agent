@@ -36,11 +36,11 @@
 - 企微/钉钉完整 Provider 实现（留 stub）
 
 **关键文件（预判）**:
-- 新建: `src/backend/bisheng/org_sync/`（DDD 模块：api/ + domain/）
-- 新建: `src/backend/bisheng/common/errcode/org_sync.py`
-- 新建: `src/backend/bisheng/worker/org_sync/tasks.py`
-- 修改: `src/backend/bisheng/user/domain/models/user.py`（source/external_id）
-- 修改: `src/backend/bisheng/api/router.py`（路由注册）
+- 新建: `src/backend/doberman_agent/org_sync/`（DDD 模块：api/ + domain/）
+- 新建: `src/backend/doberman_agent/common/errcode/org_sync.py`
+- 新建: `src/backend/doberman_agent/worker/org_sync/tasks.py`
+- 修改: `src/backend/doberman_agent/user/domain/models/user.py`（source/external_id）
+- 修改: `src/backend/doberman_agent/api/router.py`（路由注册）
 
 **关联不变量**: INV-1, INV-4, INV-8, INV-12
 
@@ -48,27 +48,27 @@
 
 ## 1. 概述与用户故事
 
-F009 为 BiSheng 引入第三方组织架构同步能力。企业可将飞书/企微/钉钉等平台中的部门树和员工信息同步到 BiSheng，自动创建部门、用户、部门成员关系，并维护 OpenFGA 权限元组。支持手动触发和 Cron 定时同步。
+F009 为 doberman-agent 引入第三方组织架构同步能力。企业可将飞书/企微/钉钉等平台中的部门树和员工信息同步到 doberman-agent，自动创建部门、用户、部门成员关系，并维护 OpenFGA 权限元组。支持手动触发和 Cron 定时同步。
 
 同步引擎采用 **Provider + Reconciler** 架构：Provider 负责从第三方拉取标准化 DTO，Reconciler 负责与本地数据对比产出差异操作列表，OrgSyncService 编排整个流程。
 
 **用户故事 1**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **能配置飞书通讯录同步（填写应用凭证、选择同步范围、设置定时计划）**，
-以便 **企业现有组织架构自动同步到 BiSheng，无需手动逐个创建部门和用户**。
+以便 **企业现有组织架构自动同步到 doberman-agent，无需手动逐个创建部门和用户**。
 
 **用户故事 2**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **手动触发一次同步并查看同步结果（成功/部分失败/完全失败、具体统计）**，
 以便 **在首次配置或排查问题时能精确掌控同步过程**。
 
 **用户故事 3**:
-作为 **BiSheng 系统管理员**，
+作为 **doberman-agent 系统管理员**，
 我希望 **同步时自动处理人员调岗（主部门变更、附属部门增减）和离职（禁用账号、清理权限）**，
 以便 **组织变动后权限自动调整，无需手动干预**。
 
 **用户故事 4**:
-作为 **BiSheng 后续 Feature 开发者**，
+作为 **doberman-agent 后续 Feature 开发者**，
 我希望 **新增第三方 Provider 时只需实现 OrgSyncProvider 接口（4 个方法），无需修改同步引擎逻辑**，
 以便 **扩展新数据源成本低、风险小**。
 
@@ -178,7 +178,7 @@ F009 为 BiSheng 引入第三方组织架构同步能力。企业可将飞书/�
 - 当 **GenericAPI 返回不符合标准 DTO 格式的 JSON** 时，Provider 返回 OrgSyncFetchError 并附带原始响应摘要
 - 当 **multi_tenant.enabled=false** 时，所有配置和同步操作正常工作，tenant_id 自动填充为默认租户(id=1)
 - 当 **Celery Worker 未启动** 时，手动触发的任务进入队列等待，API 立即返回 log_id（异步）
-- **不支持**：双向同步（BiSheng → 第三方）、实时 Webhook 推送、OAuth 回调认证
+- **不支持**：双向同步（doberman-agent → 第三方）、实时 Webhook 推送、OAuth 回调认证
 
 ---
 
@@ -613,7 +613,7 @@ Auth: UserPayload (admin only)
     "status_message": "success",
     "data": {
         "connected": true,
-        "org_name": "毕昇科技",
+        "org_name": "doberman-agent科技",
         "total_depts": 25,
         "total_members": 150
     }
@@ -693,7 +693,7 @@ Auth: UserPayload (admin only)
     "data": [
         {
             "external_id": "od-root",
-            "name": "毕昇科技",
+            "name": "doberman-agent科技",
             "children": [
                 {
                     "external_id": "od-dev",
@@ -865,7 +865,7 @@ MemberOperation = CreateMember | UpdateMember | TransferMember | DisableMember |
 2. 获取互斥锁:
    a. check config.sync_status == 'idle'
    b. 原子 UPDATE sync_status='running' WHERE sync_status='idle'（返回 affected=0 则已被占用）
-   c. 获取 Redis 锁 bisheng:lock:org_sync:{config_id} (TTL=30min)
+   c. 获取 Redis 锁 doberman-agent:lock:org_sync:{config_id} (TTL=30min)
 3. 创建 OrgSyncLog(status='running', start_time=now)
 4. 实例化 Provider
 5. provider.authenticate()
@@ -912,18 +912,18 @@ MemberOperation = CreateMember | UpdateMember | TransferMember | DisableMember |
 ```python
 # worker/org_sync/tasks.py
 
-@bisheng_celery.task(acks_late=True, time_limit=1800, soft_time_limit=1500)
+@doberman_agent_celery.task(acks_late=True, time_limit=1800, soft_time_limit=1500)
 def execute_org_sync(config_id, trigger_type, trigger_user=None):
     """Async sync execution. Tenant context via INV-8."""
     ...
 
-@bisheng_celery.task(acks_late=True)
+@doberman_agent_celery.task(acks_late=True)
 def check_org_sync_schedules():
     """Beat task: check cron configs and dispatch if due. Runs every 60s."""
     ...
 ```
 
-task routing: `"bisheng.worker.org_sync.*": {"queue": "knowledge_celery"}`
+task routing: `"doberman_agent.worker.org_sync.*": {"queue": "knowledge_celery"}`
 
 Beat schedule 新增: `check_org_sync_schedules` 每 60 秒执行一次
 
@@ -941,31 +941,31 @@ N/A — F009 不涉及前端变更。配置管理 UI 归后续 Feature。
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/org_sync/__init__.py` | DDD 模块包 |
-| `src/backend/bisheng/org_sync/api/__init__.py` | API 子包 |
-| `src/backend/bisheng/org_sync/api/router.py` | 路由聚合，prefix `/org-sync` |
-| `src/backend/bisheng/org_sync/api/endpoints/__init__.py` | 端点子包 |
-| `src/backend/bisheng/org_sync/api/endpoints/sync_config.py` | 配置 CRUD 端点 (5 个) |
-| `src/backend/bisheng/org_sync/api/endpoints/sync_exec.py` | 执行/测试/历史/远程树端点 (4 个) |
-| `src/backend/bisheng/org_sync/domain/__init__.py` | 领域子包 |
-| `src/backend/bisheng/org_sync/domain/models/__init__.py` | 模型子包 |
-| `src/backend/bisheng/org_sync/domain/models/org_sync.py` | OrgSyncConfig + OrgSyncLog ORM + DAO |
-| `src/backend/bisheng/org_sync/domain/schemas/__init__.py` | DTO 子包 |
-| `src/backend/bisheng/org_sync/domain/schemas/org_sync_schema.py` | 请求/响应 Pydantic DTO |
-| `src/backend/bisheng/org_sync/domain/schemas/remote_dto.py` | RemoteDepartmentDTO + RemoteMemberDTO |
-| `src/backend/bisheng/org_sync/domain/services/__init__.py` | 服务子包 |
-| `src/backend/bisheng/org_sync/domain/services/org_sync_service.py` | 同步编排器 |
-| `src/backend/bisheng/org_sync/domain/services/reconciler.py` | 差异比较引擎 |
-| `src/backend/bisheng/org_sync/domain/providers/__init__.py` | Provider 子包 |
-| `src/backend/bisheng/org_sync/domain/providers/base.py` | OrgSyncProvider ABC + 工厂方法 |
-| `src/backend/bisheng/org_sync/domain/providers/feishu.py` | 飞书 Provider（完整） |
-| `src/backend/bisheng/org_sync/domain/providers/wecom.py` | 企微 Provider（stub） |
-| `src/backend/bisheng/org_sync/domain/providers/dingtalk.py` | 钉钉 Provider（stub） |
-| `src/backend/bisheng/org_sync/domain/providers/generic_api.py` | 通用 API Provider（完整） |
-| `src/backend/bisheng/common/errcode/org_sync.py` | 220xx 错误码 (10 个) |
-| `src/backend/bisheng/worker/org_sync/__init__.py` | Worker 子包 |
-| `src/backend/bisheng/worker/org_sync/tasks.py` | Celery 任务 |
-| `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f009_org_sync.py` | 数据库迁移 |
+| `src/backend/doberman_agent/org_sync/__init__.py` | DDD 模块包 |
+| `src/backend/doberman_agent/org_sync/api/__init__.py` | API 子包 |
+| `src/backend/doberman_agent/org_sync/api/router.py` | 路由聚合，prefix `/org-sync` |
+| `src/backend/doberman_agent/org_sync/api/endpoints/__init__.py` | 端点子包 |
+| `src/backend/doberman_agent/org_sync/api/endpoints/sync_config.py` | 配置 CRUD 端点 (5 个) |
+| `src/backend/doberman_agent/org_sync/api/endpoints/sync_exec.py` | 执行/测试/历史/远程树端点 (4 个) |
+| `src/backend/doberman_agent/org_sync/domain/__init__.py` | 领域子包 |
+| `src/backend/doberman_agent/org_sync/domain/models/__init__.py` | 模型子包 |
+| `src/backend/doberman_agent/org_sync/domain/models/org_sync.py` | OrgSyncConfig + OrgSyncLog ORM + DAO |
+| `src/backend/doberman_agent/org_sync/domain/schemas/__init__.py` | DTO 子包 |
+| `src/backend/doberman_agent/org_sync/domain/schemas/org_sync_schema.py` | 请求/响应 Pydantic DTO |
+| `src/backend/doberman_agent/org_sync/domain/schemas/remote_dto.py` | RemoteDepartmentDTO + RemoteMemberDTO |
+| `src/backend/doberman_agent/org_sync/domain/services/__init__.py` | 服务子包 |
+| `src/backend/doberman_agent/org_sync/domain/services/org_sync_service.py` | 同步编排器 |
+| `src/backend/doberman_agent/org_sync/domain/services/reconciler.py` | 差异比较引擎 |
+| `src/backend/doberman_agent/org_sync/domain/providers/__init__.py` | Provider 子包 |
+| `src/backend/doberman_agent/org_sync/domain/providers/base.py` | OrgSyncProvider ABC + 工厂方法 |
+| `src/backend/doberman_agent/org_sync/domain/providers/feishu.py` | 飞书 Provider（完整） |
+| `src/backend/doberman_agent/org_sync/domain/providers/wecom.py` | 企微 Provider（stub） |
+| `src/backend/doberman_agent/org_sync/domain/providers/dingtalk.py` | 钉钉 Provider（stub） |
+| `src/backend/doberman_agent/org_sync/domain/providers/generic_api.py` | 通用 API Provider（完整） |
+| `src/backend/doberman_agent/common/errcode/org_sync.py` | 220xx 错误码 (10 个) |
+| `src/backend/doberman_agent/worker/org_sync/__init__.py` | Worker 子包 |
+| `src/backend/doberman_agent/worker/org_sync/tasks.py` | Celery 任务 |
+| `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f009_org_sync.py` | 数据库迁移 |
 | `src/backend/test/test_org_sync_reconciler.py` | Reconciler 单元测试 |
 | `src/backend/test/test_org_sync_api.py` | API 集成测试 |
 | `src/backend/test/e2e/test_e2e_org_sync.py` | E2E 测试 |
@@ -974,10 +974,10 @@ N/A — F009 不涉及前端变更。配置管理 UI 归后续 Feature。
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/api/router.py` | 导入并注册 `org_sync_router` |
-| `src/backend/bisheng/user/domain/models/user.py` | User 类新增 source/external_id 字段 + UserDao 新增 aget_by_source_external_id/aget_by_source |
-| `src/backend/bisheng/worker/__init__.py` | 导入 org_sync tasks |
-| `src/backend/bisheng/core/config/settings.py` | CeleryConf.task_routes 增加 org_sync 路由，beat_schedule 增加 check_org_sync_schedules |
+| `src/backend/doberman_agent/api/router.py` | 导入并注册 `org_sync_router` |
+| `src/backend/doberman_agent/user/domain/models/user.py` | User 类新增 source/external_id 字段 + UserDao 新增 aget_by_source_external_id/aget_by_source |
+| `src/backend/doberman_agent/worker/__init__.py` | 导入 org_sync tasks |
+| `src/backend/doberman_agent/core/config/settings.py` | CeleryConf.task_routes 增加 org_sync 路由，beat_schedule 增加 check_org_sync_schedules |
 
 ---
 

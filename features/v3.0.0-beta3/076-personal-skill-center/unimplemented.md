@@ -1,6 +1,6 @@
 # 个人 Skill 上传与技能中心：未完成功能与实现方案
 
-对照《0930 中粮需求响应》「个人 Skill 上传与技能中心」，以及已合入当前分支的 [PR 2501](https://github.com/dataelement/bisheng/pull/2501) 前端预览。技能中心页面以这个预览为准，见 [design.md](./design.md) 决策 6。
+对照《0930 中粮需求响应》「个人 Skill 上传与技能中心」，以及已合入当前分支的 PR 2501 前端预览。技能中心页面以这个预览为准，见 [design.md](./design.md) 决策 6。
 
 需求口径见 [spec.md](./spec.md)，实现决策见 [design.md](./design.md)。本文只记录相对需求仍未落地的部分。
 

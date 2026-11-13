@@ -10,13 +10,13 @@ from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlmodel import Session, SQLModel
 
-from bisheng.common.errcode.dsh import DshInvalidRequestError
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.tenant import Tenant, UserTenant
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.services.admin import DshManagementService
-from bisheng.dsh.domain.services.profile import profile_scope
-from bisheng.user.domain.models.user import User
+from doberman_agent.common.errcode.dsh import DshInvalidRequestError
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.tenant import Tenant, UserTenant
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.services.admin import DshManagementService
+from doberman_agent.dsh.domain.services.profile import profile_scope
+from doberman_agent.user.domain.models.user import User
 from test.dsh.test_usage_repository import usage_db  # noqa: F401
 
 
@@ -79,7 +79,7 @@ def overview_db(tmp_path):
 
 
 def test_usage_overview_aggregates_department_scope_and_user_rows(overview_db):
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
 
     start = datetime(2026, 9, 9, tzinfo=UTC)
     end = start + timedelta(days=1)
@@ -145,7 +145,7 @@ def test_usage_summary_counts_only_platform_accounted_requests(usage_db):  # noq
                 )
             )
 
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
 
     start = datetime(2026, 9, 9, tzinfo=UTC)
     end = start + timedelta(hours=3)
@@ -194,7 +194,7 @@ def test_usage_summary_counts_only_platform_accounted_requests(usage_db):  # noq
 
 
 def test_department_time_series_covers_full_scope_and_deduplicates_members(overview_db):
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
 
     start = datetime(2026, 9, 9, tzinfo=UTC)
     end = start + timedelta(days=1)
@@ -337,7 +337,7 @@ async def test_usage_overview_service_authorizes_tenant_and_forwards_filters():
 
 
 async def test_usage_summary_route_passes_required_offset_timestamps():
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/v1")
@@ -368,7 +368,7 @@ async def test_usage_summary_route_passes_required_offset_timestamps():
 @pytest.mark.parametrize("include_summary", [False, True])
 @pytest.mark.parametrize("granularity", [None, "hour", "day"])
 async def test_usage_overview_route_passes_department_and_search_filters(include_summary, granularity):
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/v1")
@@ -406,7 +406,7 @@ async def test_usage_overview_route_passes_department_and_search_filters(include
 
 
 def test_weighted_summary_keeps_provider_tokens_separate(overview_db):
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
 
     start = datetime(2026, 9, 9, tzinfo=UTC)
     with Session(overview_db) as session, session.begin(), profile_scope(2):

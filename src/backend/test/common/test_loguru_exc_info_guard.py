@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
-PACKAGE_ROOT = BACKEND_ROOT / "bisheng"
+PACKAGE_ROOT = BACKEND_ROOT / "doberman_agent"
 
 
 def _loguru_modules() -> list[Path]:
@@ -59,7 +59,7 @@ def _exc_info_call_lines(path: Path) -> list[int]:
 
 def test_no_exc_info_passed_to_loguru():
     modules = _loguru_modules()
-    assert modules, "sanity: expected to find loguru modules under bisheng/"
+    assert modules, "sanity: expected to find loguru modules under doberman_agent/"
 
     offenders = []
     for path in modules:

@@ -1,7 +1,7 @@
 """What we take off the request, and what we put on it (AC-31 / AC-32).
 
 The strip is a **normalised prefix match**, never a name list. Normalise
-(``lower()`` + ``_`` → ``-``), then drop anything under ``x-bisheng-``. This is
+(``lower()`` + ``_`` → ``-``), then drop anything under ``x-doberman-agent-``. This is
 the CVE-2025-64484 lesson: oauth2-proxy stripped the exact hyphenated spellings
 it knew about, and ``X_Forwarded_User`` walked straight past it because
 WSGI-family frameworks fold underscores and hyphens onto one key. A list also
@@ -22,21 +22,21 @@ from app_proxy.config import ACCESS_TOKEN_COOKIE, DEFAULT_ENTRY_PREFIX
 
 #: Normalised prefix owned by the platform. Everything under it is ours to
 #: write and no one else's to send.
-PLATFORM_HEADER_PREFIX = "x-bisheng-"
+PLATFORM_HEADER_PREFIX = "x-doberman-agent-"
 
 #: The ten of design §4.2 ③, in the order they go on the wire. F053's
-#: ``bisheng dev`` mini-proxy injects the same set (INV-32).
+#: ``doberman-agent dev`` mini-proxy injects the same set (INV-32).
 INJECTED_HEADER_NAMES: tuple[str, ...] = (
-    "X-BiSheng-User-Id",
-    "X-BiSheng-User-Name",
-    "X-BiSheng-Tenant-Id",
-    "X-BiSheng-Dept-Id",
-    "X-BiSheng-Dept-Name",
-    "X-BiSheng-Dept-Path",
-    "X-BiSheng-Subject-Kind",
-    "X-BiSheng-App-Id",
-    "X-BiSheng-Access-Token",
-    "X-BiSheng-Request-Id",
+    "X-Doberman-Agent-User-Id",
+    "X-Doberman-Agent-User-Name",
+    "X-Doberman-Agent-Tenant-Id",
+    "X-Doberman-Agent-Dept-Id",
+    "X-Doberman-Agent-Dept-Name",
+    "X-Doberman-Agent-Dept-Path",
+    "X-Doberman-Agent-Subject-Kind",
+    "X-Doberman-Agent-App-Id",
+    "X-Doberman-Agent-Access-Token",
+    "X-Doberman-Agent-Request-Id",
 )
 
 _CANONICAL_BY_NORMALISED = {name.lower(): name for name in INJECTED_HEADER_NAMES}
@@ -76,7 +76,7 @@ _CONTROL_CHARS = frozenset(chr(i) for i in range(0x20)) | {chr(0x7F)}
 
 
 def normalize_header_name(name: str) -> str:
-    """``X_BiSheng_User_Id`` and ``X-BiSheng-User-Id`` are the same header."""
+    """``X_Doberman_Agent_User_Id`` and ``X-Doberman-Agent-User-Id`` are the same header."""
     return name.strip().lower().replace("_", "-")
 
 
@@ -160,7 +160,7 @@ def build_injected_headers(
     """The ten identity headers plus the three forwarding headers we own.
 
     Absent material is **omitted**, not emitted empty: an app doing
-    ``if request.headers.get("X-BiSheng-Dept-Id"):`` must be able to tell "no
+    ``if request.headers.get("X-Doberman-Agent-Dept-Id"):`` must be able to tell "no
     department" from "empty department".
     """
     values: dict[str, str] = {}
@@ -175,12 +175,12 @@ def build_injected_headers(
         values[canonical] = str(raw_value)
 
     if app_id:
-        values["X-BiSheng-App-Id"] = app_id
+        values["X-Doberman-Agent-App-Id"] = app_id
     if obo_token:
-        values["X-BiSheng-Access-Token"] = obo_token
+        values["X-Doberman-Agent-Access-Token"] = obo_token
     # Ours, always: correlation across app-proxy → app → platform logs only
     # works if exactly one hop mints the id (D14 / §7 log contract).
-    values["X-BiSheng-Request-Id"] = request_id
+    values["X-Doberman-Agent-Request-Id"] = request_id
 
     injected = [(name, encode_header_value(values[name])) for name in INJECTED_HEADER_NAMES if name in values]
 

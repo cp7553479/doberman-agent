@@ -1,11 +1,11 @@
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
 
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Checkbox,RadioGroup,Radio as RadioGroupItem,Select } from "@bisheng/ui";
+import { Checkbox,RadioGroup,Radio as RadioGroupItem,Select } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import type { DimensionItem,MetricFormat } from "./DimensionBlock";
 interface MetricFormatDialogProps {formatDialogOpen:boolean;setFormatDialogOpen:(open:boolean)=>void;editingMetric:DimensionItem|null;setEditingMetric:React.Dispatch<React.SetStateAction<DimensionItem|null>>;localFormat:MetricFormat|null;setLocalFormat:React.Dispatch<React.SetStateAction<MetricFormat|null>>;onFormatChange?:(id:string,format:MetricFormat)=>void}

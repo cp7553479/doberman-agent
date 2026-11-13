@@ -33,8 +33,8 @@
 ### Wave 1 — 基础设施
 
 - [x] **T001**: 错误码与配置 key
-  **文件**: `src/backend/bisheng/common/errcode/sandbox.py`,
-           `src/backend/bisheng/common/models/config.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/sandbox.py`,
+           `src/backend/doberman_agent/common/models/config.py`
   **逻辑**: 新增 `SandboxEndpointInvalidError`，`Code=28009`，`Msg` 用英文。`ConfigKeyEnum` 增加 `SANDBOX_ENDPOINT = "sandbox_endpoint"`。不建表。
   **依赖**: 无
 
@@ -47,8 +47,8 @@
   **依赖**: 无
 
 - [x] **T003**: 审计事件
-  **文件**: `src/backend/bisheng/database/models/audit_log.py`,
-           `src/backend/bisheng/api/services/audit_log.py`
+  **文件**: `src/backend/doberman_agent/database/models/audit_log.py`,
+           `src/backend/doberman_agent/api/services/audit_log.py`
   **逻辑**: `EventType` 增加 `UPDATE_SANDBOX_CONF = "update_sandbox_conf"`。`AuditLogService.update_sandbox_conf(user, ip, note)` 内部调用 `_system_log(user, ip, group_ids=[], event_type=UPDATE_SANDBOX_CONF, object_type=ObjectType.TOOL, object_id="sandbox_endpoint", object_name="sandbox_endpoint", note=note)`。`note` 由调用方传入，本方法不拼令牌。调用方不传 `group_ids`。
   **依赖**: 无
 
@@ -61,7 +61,7 @@
   **依赖**: T001
 
 - [x] **T005**: `ConfigService.get_sandbox_conf`
-  **文件**: `src/backend/bisheng/common/services/config_service.py`
+  **文件**: `src/backend/doberman_agent/common/services/config_service.py`
   **逻辑**: 同步方法。Redis key `config:sandbox_endpoint`，TTL 60 秒，客户端用 `get_redis_client_sync()`（db 跟 `redis_url`）。结构合法指 dict，且 `endpoints` 是字符串列表（可为空）、`token_enc` 是字符串（可为空串）。命中且结构合法则直接用，不读库。未命中、抛错或结构不合法都 `ConfigDao.get_config(ConfigKeyEnum.SANDBOX_ENDPOINT)`，对 `config.value` 做 `json.loads`。库结构合法则本次用这份 dict。只有最初未命中（key 不存在）时 `setNx` 回填（已有 key 不改值；`setNx` 在 key 已存在时仍会 `expire`，只刷新 TTL）。缓存结构不合法或 Redis 抛错时不再写入，坏 key 留到自身 TTL 结束。`setNx` 抛错仍返回这份库值，不回退部署配置。库结构不合法或 `json.loads` 失败则不回填，回退部署配置。解密只用于本次合并，结果不写入 Redis。`decrypt_token` 抛错视同读失败。合并只用 `settings.sandbox_conf.model_copy(update=...)`。同文件提供 `write_sandbox_endpoint_cache(payload)`，`payload` 是刚落库并确认结构后的 dict，用 `set(key, payload, expiration=60)` 覆盖写入；只有保存路径调用。不要自己 pickle，不要把 JSON 字符串或坏结构写入 Redis。库不可用、JSON 解析失败、库结构不合法与解密失败都记 `sandbox endpoint config unreadable; using deployment config`，日志不含令牌明文，异常不向外抛。
   **测试**: T004 全部通过
   **覆盖 AC**: AC-06, AC-07, AC-09, AC-10
@@ -76,15 +76,15 @@
   **依赖**: T005
 
 - [x] **T007**: factory 接入
-  **文件**: `src/backend/bisheng_langchain/gpts/tools/code_interpreter/factory.py`
+  **文件**: `src/backend/doberman_agent_langchain/gpts/tools/code_interpreter/factory.py`
   **逻辑**: container 分支改为 `kwargs["sandbox_conf"] = settings.get_sandbox_conf()`。`_CONTAINER_POOL_KEYS` 仍从调用方 kwargs 剥掉（含已退役的 `discover_*`）。不改 local / e2b。不扫描主机名。
   **测试**: T006 全部通过
   **覆盖 AC**: AC-06, AC-07, AC-11
   **依赖**: T006
 
 - [x] **T021**: 助手每轮刷新执行器
-  **文件**: `src/backend/test/sandbox/test_refresh_open_code_executors.py`，`src/backend/bisheng_langchain/gpts/tools/code_interpreter/factory.py`，`src/backend/bisheng/api/services/assistant_agent.py`
-  **逻辑**: `refresh_open_code_executors(tools)` 只处理名为 `bisheng_code_interpreter`、执行器是 `ContainerExecutor`、且 `keep_session` 为假的工具。若 `_bound_url` 与 `_session_id` 都在，先调用 `_release()`（它会 `DELETE` 远端会话，并清掉 `_bound_url`、`_session_id`、`_lease_token`）。不要自己把这两个字段置空。然后就地改这个执行器对象的 `endpoints` 与 `token` 为 `settings.get_sandbox_conf()` 的当前值，每个地址去掉末尾 `/`。不新建执行器对象。`keep_session` 为真、`local`、`e2b` 都不改。浅拷贝后共享同一执行器的工具，刷新后两边看到同一组新地址。`AssistantAgent.run` 在调用模型之前调用它，传入 `self.tools`。不重跑 `init_tools`。日常会话的 `_prepare_tools` 不调用它。
+  **文件**: `src/backend/test/sandbox/test_refresh_open_code_executors.py`，`src/backend/doberman_agent_langchain/gpts/tools/code_interpreter/factory.py`，`src/backend/doberman_agent/api/services/assistant_agent.py`
+  **逻辑**: `refresh_open_code_executors(tools)` 只处理名为 `doberman_agent_code_interpreter`、执行器是 `ContainerExecutor`、且 `keep_session` 为假的工具。若 `_bound_url` 与 `_session_id` 都在，先调用 `_release()`（它会 `DELETE` 远端会话，并清掉 `_bound_url`、`_session_id`、`_lease_token`）。不要自己把这两个字段置空。然后就地改这个执行器对象的 `endpoints` 与 `token` 为 `settings.get_sandbox_conf()` 的当前值，每个地址去掉末尾 `/`。不新建执行器对象。`keep_session` 为真、`local`、`e2b` 都不改。浅拷贝后共享同一执行器的工具，刷新后两边看到同一组新地址。`AssistantAgent.run` 在调用模型之前调用它，传入 `self.tools`。不重跑 `init_tools`。日常会话的 `_prepare_tools` 不调用它。
   **测试**: 先写测试再改实现。未粘滞且仍占会话的容器执行器会先 `_release()`，再被就地更新；带末尾 `/` 的地址更新后不带 `/`。粘滞的不变，也不调用 `_release()`。浅拷贝共享的执行器一起变。
   **覆盖 AC**: AC-06, AC-11
   **依赖**: T007
@@ -98,7 +98,7 @@
   **依赖**: T001, T003, T005
 
 - [x] **T009**: `SandboxConfService` 的读取与保存
-  **文件**: `src/backend/bisheng/tool/domain/services/sandbox_conf_service.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/services/sandbox_conf_service.py`
   **逻辑**: `get()` 返回 design §4.2 的读取结构。响应里的 `endpoints` 是页面存的列表，页面没填地址时为 `[]`，不填入部署地址。库里的 `value` 解析失败或结构不合法（不是 dict、`endpoints` 不是字符串列表、或 `token_enc` 不是字符串）时，按没有页面配置返回，不抛异常。`save` 是 async。`save(endpoints, token, user, ip)` 做 T008 的校验、去掉末尾 `/` 与令牌合并，必须 `await ConfigDao.insert_or_update_config("sandbox_endpoint", json.dumps(...))`（`value` 只能是字符串；只有异步版本；`get_config` 才是同步的），再 `write_sandbox_endpoint_cache(json.loads 后的 dict)`（dict 只含 `endpoints` 与 `token_enc`；失败只记 error 日志，不让保存失败；缓存 TTL 60 秒，与 AC-06 相同），再 `AuditLogService.update_sandbox_conf(user, ip, note)`。来源按字段分开：该项页面值非空为 `page`；否则该项部署值非空为 `deployment`；否则 `default`。地址只看页面 `endpoints`，令牌只看页面 `token_enc`。不读不写 `gpts_tools.extra`。不读取 `discover_*`。
   **测试**: T008 全部通过
   **覆盖 AC**: AC-03, AC-04, AC-08, AC-09, AC-12, AC-13, AC-17
@@ -113,7 +113,7 @@
   **依赖**: T009
 
 - [x] **T011**: `SandboxConfService.test`
-  **文件**: `src/backend/bisheng/tool/domain/services/sandbox_conf_service.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/services/sandbox_conf_service.py`
   **逻辑**: 只新增 async `test(endpoints, token)`，不改 T009 的 `get` / `save`。先按与保存相同的规则校验地址，不合法抛 `SandboxEndpointInvalidError` 且不发请求。通过后再去掉末尾 `/`，用 `httpx.AsyncClient` 按 T010 的分类探测，不在事件循环里调用同步 HTTP。每个地址 `GET {url}/health` 与 `POST {url}/v1/sessions`（`Authorization: Bearer`）各等待 5 秒，超时记为 `unreachable`；成功则 `DELETE`（`x-lease-token`）。写一条 info 日志，不含令牌与响应体。
   **测试**: T010 全部通过
   **覆盖 AC**: AC-12, AC-14, AC-16
@@ -128,7 +128,7 @@
   **依赖**: T009, T011
 
 - [x] **T013**: 挂到工具路由
-  **文件**: `src/backend/bisheng/tool/api/tool.py`
+  **文件**: `src/backend/doberman_agent/tool/api/tool.py`
   **逻辑**: 三个接口只做参数接收与 `is_global_super` 判断（否则 `UnAuthorizedError`），业务交给 `SandboxConfService`。不注册新 router，不调用 PermissionService。
   **测试**: T012 全部通过
   **覆盖 AC**: AC-02

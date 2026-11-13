@@ -5,40 +5,40 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.common.errcode.knowledge_space import DepartmentKnowledgeSpaceExistsError
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.common.errcode.knowledge_space import DepartmentKnowledgeSpaceExistsError
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.knowledge.domain.models.knowledge import (
     AuthTypeEnum,
     Knowledge,
     KnowledgeState,
     KnowledgeTypeEnum,
 )
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import (
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import (
     DepartmentKnowledgeSpaceBatchCreateReq,
     DepartmentKnowledgeSpaceBatchItem,
     DepartmentKnowledgeSpaceVisibilityReq,
 )
 
-_SERVICE_MODULE = "bisheng.knowledge.domain.services.department_knowledge_space_service"
+_SERVICE_MODULE = "doberman_agent.knowledge.domain.services.department_knowledge_space_service"
 
 
 def _install_service_stubs() -> None:
-    if "bisheng.api" not in sys.modules:
-        api_module = ModuleType("bisheng.api")
+    if "doberman_agent.api" not in sys.modules:
+        api_module = ModuleType("doberman_agent.api")
         api_module.__path__ = []
-        sys.modules["bisheng.api"] = api_module
-    if "bisheng.api.v1" not in sys.modules:
-        v1_module = ModuleType("bisheng.api.v1")
+        sys.modules["doberman_agent.api"] = api_module
+    if "doberman_agent.api.v1" not in sys.modules:
+        v1_module = ModuleType("doberman_agent.api.v1")
         v1_module.__path__ = []
-        sys.modules["bisheng.api.v1"] = v1_module
-    if "bisheng.api.v1.schemas" not in sys.modules:
-        schemas_module = ModuleType("bisheng.api.v1.schemas")
+        sys.modules["doberman_agent.api.v1"] = v1_module
+    if "doberman_agent.api.v1.schemas" not in sys.modules:
+        schemas_module = ModuleType("doberman_agent.api.v1.schemas")
 
         class _DummySchema:
             def __init__(self, *args, **kwargs):
@@ -50,14 +50,14 @@ def _install_service_stubs() -> None:
         schemas_module.KnowledgeFileOne = _DummySchema
         schemas_module.FileProcessBase = _DummySchema
         schemas_module.ExcelRule = _DummySchema
-        sys.modules["bisheng.api.v1.schemas"] = schemas_module
+        sys.modules["doberman_agent.api.v1.schemas"] = schemas_module
 
-    if "bisheng.api.services" not in sys.modules:
-        services_module = ModuleType("bisheng.api.services")
+    if "doberman_agent.api.services" not in sys.modules:
+        services_module = ModuleType("doberman_agent.api.services")
         services_module.__path__ = []
-        sys.modules["bisheng.api.services"] = services_module
-    if "bisheng.api.services.audit_log" not in sys.modules:
-        audit_log_module = ModuleType("bisheng.api.services.audit_log")
+        sys.modules["doberman_agent.api.services"] = services_module
+    if "doberman_agent.api.services.audit_log" not in sys.modules:
+        audit_log_module = ModuleType("doberman_agent.api.services.audit_log")
 
         class _DummyAuditLogService:
             @staticmethod
@@ -77,10 +77,10 @@ def _install_service_stubs() -> None:
                 return None
 
         audit_log_module.AuditLogService = _DummyAuditLogService
-        sys.modules["bisheng.api.services.audit_log"] = audit_log_module
+        sys.modules["doberman_agent.api.services.audit_log"] = audit_log_module
 
-    if "bisheng.knowledge.domain.services.knowledge_service" not in sys.modules:
-        knowledge_service_module = ModuleType("bisheng.knowledge.domain.services.knowledge_service")
+    if "doberman_agent.knowledge.domain.services.knowledge_service" not in sys.modules:
+        knowledge_service_module = ModuleType("doberman_agent.knowledge.domain.services.knowledge_service")
 
         class _DummyKnowledgeService:
             @staticmethod
@@ -100,10 +100,10 @@ def _install_service_stubs() -> None:
                 return ("original", "preview")
 
         knowledge_service_module.KnowledgeService = _DummyKnowledgeService
-        sys.modules["bisheng.knowledge.domain.services.knowledge_service"] = knowledge_service_module
+        sys.modules["doberman_agent.knowledge.domain.services.knowledge_service"] = knowledge_service_module
 
-    if "bisheng.knowledge.domain.services.knowledge_audit_telemetry_service" not in sys.modules:
-        telemetry_module = ModuleType("bisheng.knowledge.domain.services.knowledge_audit_telemetry_service")
+    if "doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service" not in sys.modules:
+        telemetry_module = ModuleType("doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service")
 
         class _DummyKnowledgeAuditTelemetryService:
             @staticmethod
@@ -119,10 +119,10 @@ def _install_service_stubs() -> None:
                 return None
 
         telemetry_module.KnowledgeAuditTelemetryService = _DummyKnowledgeAuditTelemetryService
-        sys.modules["bisheng.knowledge.domain.services.knowledge_audit_telemetry_service"] = telemetry_module
+        sys.modules["doberman_agent.knowledge.domain.services.knowledge_audit_telemetry_service"] = telemetry_module
 
-    if "bisheng.knowledge.domain.services.knowledge_utils" not in sys.modules:
-        knowledge_utils_module = ModuleType("bisheng.knowledge.domain.services.knowledge_utils")
+    if "doberman_agent.knowledge.domain.services.knowledge_utils" not in sys.modules:
+        knowledge_utils_module = ModuleType("doberman_agent.knowledge.domain.services.knowledge_utils")
 
         class _DummyKnowledgeUtils:
             async def update_folder_update_time(self, *args, **kwargs):
@@ -135,10 +135,10 @@ def _install_service_stubs() -> None:
                 return ([], set())
 
         knowledge_utils_module.KnowledgeUtils = _DummyKnowledgeUtils
-        sys.modules["bisheng.knowledge.domain.services.knowledge_utils"] = knowledge_utils_module
+        sys.modules["doberman_agent.knowledge.domain.services.knowledge_utils"] = knowledge_utils_module
 
-    if "bisheng.worker" not in sys.modules:
-        worker_module = ModuleType("bisheng.worker")
+    if "doberman_agent.worker" not in sys.modules:
+        worker_module = ModuleType("doberman_agent.worker")
 
         class _DummyCeleryTask:
             @staticmethod
@@ -147,15 +147,15 @@ def _install_service_stubs() -> None:
 
         worker_module.rebuild_knowledge_celery = _DummyCeleryTask()
         worker_module.__path__ = []
-        sys.modules["bisheng.worker"] = worker_module
+        sys.modules["doberman_agent.worker"] = worker_module
 
-    if "bisheng.worker.knowledge" not in sys.modules:
-        worker_knowledge_module = ModuleType("bisheng.worker.knowledge")
+    if "doberman_agent.worker.knowledge" not in sys.modules:
+        worker_knowledge_module = ModuleType("doberman_agent.worker.knowledge")
         worker_knowledge_module.__path__ = []
-        sys.modules["bisheng.worker.knowledge"] = worker_knowledge_module
+        sys.modules["doberman_agent.worker.knowledge"] = worker_knowledge_module
 
-    if "bisheng.worker.knowledge.file_worker" not in sys.modules:
-        file_worker_module = ModuleType("bisheng.worker.knowledge.file_worker")
+    if "doberman_agent.worker.knowledge.file_worker" not in sys.modules:
+        file_worker_module = ModuleType("doberman_agent.worker.knowledge.file_worker")
 
         class _DummyFileWorkerTask:
             @staticmethod
@@ -164,13 +164,13 @@ def _install_service_stubs() -> None:
 
         file_worker_module.delete_knowledge_file_celery = _DummyFileWorkerTask()
         file_worker_module.parse_knowledge_file_celery = _DummyFileWorkerTask()
-        sys.modules["bisheng.worker.knowledge.file_worker"] = file_worker_module
-        sys.modules["bisheng.worker.knowledge"].file_worker = file_worker_module
+        sys.modules["doberman_agent.worker.knowledge.file_worker"] = file_worker_module
+        sys.modules["doberman_agent.worker.knowledge"].file_worker = file_worker_module
 
 
 def _load_service_class():
     _install_service_stubs()
-    module = importlib.import_module("bisheng.knowledge.domain.services.department_knowledge_space_service")
+    module = importlib.import_module("doberman_agent.knowledge.domain.services.department_knowledge_space_service")
     return module.DepartmentKnowledgeSpaceService
 
 
@@ -208,39 +208,39 @@ async def test_batch_create_spaces_creates_binding_and_returns_infos():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
             new_callable=AsyncMock,
             return_value=[department],
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_department_ids",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_department_ids",
             new_callable=AsyncMock,
             return_value=[],
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.acreate",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.acreate",
             new_callable=AsyncMock,
         ) as mock_binding_create,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentService.aget_admins",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentService.aget_admins",
             new_callable=AsyncMock,
             return_value=[{"user_id": 2, "user_name": "dept-admin"}],
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceService._grant_default_department_admins",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceService._grant_default_department_admins",
             new_callable=AsyncMock,
         ) as mock_grant_admins,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceService._grant_department_members_viewer",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceService._grant_department_members_viewer",
             new_callable=AsyncMock,
         ) as mock_grant_department_viewer,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService.create_knowledge_space",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService.create_knowledge_space",
             new_callable=AsyncMock,
             return_value=created_space,
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService.get_space_info",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService.get_space_info",
             new_callable=AsyncMock,
             return_value=created_info,
         ),
@@ -276,12 +276,12 @@ async def test_batch_create_spaces_rejects_duplicate_department_binding():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
             new_callable=AsyncMock,
             return_value=[department],
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_department_ids",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_department_ids",
             new_callable=AsyncMock,
             return_value=[existing_binding],
         ),
@@ -321,16 +321,16 @@ async def test_grant_default_department_admins_promotes_manual_member_consistent
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             new_callable=AsyncMock,
             return_value=existing_member,
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.update",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.update",
             new_callable=AsyncMock,
         ) as mock_update,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service."
             "KnowledgeSpaceService.sync_direct_space_user_permissions",
             new_callable=AsyncMock,
         ) as mock_sync_permissions,
@@ -370,21 +370,21 @@ async def test_sync_removed_admin_restores_promoted_manual_member_role():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             new_callable=AsyncMock,
             return_value=existing_member,
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.update",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.SpaceChannelMemberDao.update",
             new_callable=AsyncMock,
         ) as mock_update,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=SimpleNamespace(user_id=1),
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service."
             "KnowledgeSpaceService.sync_direct_space_user_permissions",
             new_callable=AsyncMock,
         ) as mock_sync_permissions,
@@ -414,7 +414,7 @@ async def test_grant_department_members_viewer_writes_exact_department_tuple():
     adapter = SimpleNamespace(sync_department=AsyncMock())
 
     with patch(
-        "bisheng.knowledge.domain.services.department_knowledge_space_service.get_f048_resource_adapter",
+        "doberman_agent.knowledge.domain.services.department_knowledge_space_service.get_f048_resource_adapter",
         new=AsyncMock(return_value=adapter),
     ):
         await DepartmentKnowledgeSpaceService._grant_department_members_viewer(
@@ -450,7 +450,7 @@ async def test_get_all_department_spaces_returns_decorated_spaces():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
             new_callable=AsyncMock,
             return_value=[
                 SimpleNamespace(
@@ -463,7 +463,7 @@ async def test_get_all_department_spaces_returns_decorated_spaces():
             ],
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
+            "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
             new_callable=AsyncMock,
             return_value=[space],
         ),
@@ -472,12 +472,12 @@ async def test_get_all_department_spaces_returns_decorated_spaces():
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentDao.aget_by_ids",
             new_callable=AsyncMock,
             return_value=[department],
         ),
         patch(
-            "bisheng.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
+            "doberman_agent.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
             new_callable=AsyncMock,
             return_value=[
                 SimpleNamespace(
@@ -513,17 +513,17 @@ async def test_get_user_department_spaces_uses_department_binding_without_member
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
             new_callable=AsyncMock,
             return_value=[binding],
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.batch_check_business_actions",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.batch_check_business_actions",
             new_callable=AsyncMock,
             return_value={"101": frozenset({"visible"})},
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService._format_basic_spaces",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService._format_basic_spaces",
             new_callable=AsyncMock,
             return_value=expected,
         ) as mock_format,
@@ -557,12 +557,12 @@ async def test_get_user_department_spaces_super_admin_sees_all_departments():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_all",
             new_callable=AsyncMock,
             return_value=all_bindings,
         ),
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.batch_check_business_actions",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.batch_check_business_actions",
             new_callable=AsyncMock,
             return_value={
                 "101": frozenset({"visible"}),
@@ -570,7 +570,7 @@ async def test_get_user_department_spaces_super_admin_sees_all_departments():
             },
         ) as mock_batch_check,
         patch(
-            "bisheng.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService._format_basic_spaces",
+            "doberman_agent.knowledge.domain.services.department_knowledge_space_service.KnowledgeSpaceService._format_basic_spaces",
             new_callable=AsyncMock,
             return_value=expected,
         ) as mock_format,
@@ -630,7 +630,7 @@ async def test_get_all_department_spaces_excludes_hidden_by_default():
             return_value=bindings,
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
+            "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
             new_callable=AsyncMock,
             return_value=[_make_space(101, "可见部门的知识空间")],
         ) as mock_spaces,
@@ -644,7 +644,7 @@ async def test_get_all_department_spaces_excludes_hidden_by_default():
             return_value=[_make_department(dept_id=10)],
         ),
         patch(
-            "bisheng.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
+            "doberman_agent.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
             new_callable=AsyncMock,
             return_value=[_make_binding(101, 10)],
         ),
@@ -674,7 +674,7 @@ async def test_get_all_department_spaces_include_hidden_returns_all_with_flag():
             return_value=bindings,
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
+            "doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.async_get_spaces_by_ids",
             new_callable=AsyncMock,
             return_value=[
                 _make_space(101, "可见部门的知识空间"),
@@ -691,7 +691,7 @@ async def test_get_all_department_spaces_include_hidden_returns_all_with_flag():
             return_value=[_make_department(dept_id=10), _make_department(dept_id=20, name="法务部")],
         ),
         patch(
-            "bisheng.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
+            "doberman_agent.knowledge.domain.models.department_knowledge_space.DepartmentKnowledgeSpaceDao.aget_by_space_ids",
             new_callable=AsyncMock,
             return_value=bindings,
         ),

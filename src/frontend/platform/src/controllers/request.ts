@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { decodeErrorEnvelope, isApiError, isErrorEnvelope, normalizeApiError, resolveErrorMessageTemplate } from '@bisheng/api-client';
-import { notification } from '@bisheng/ui';
+import { decodeErrorEnvelope, isApiError, isErrorEnvelope, normalizeApiError, resolveErrorMessageTemplate } from '@doberman-agent/api-client';
+import { notification } from '@doberman-agent/ui';
 
 import axios from "axios";
 import i18next from "i18next";
@@ -9,7 +9,7 @@ import { managementRequestScope,requiresManagementScope,guardManagementResponse 
 window.addEventListener('storage', event => {
     if (event.key === 'bs:management-scope' && event.oldValue !== event.newValue) window.location.reload();
 });
-window.addEventListener('bisheng:management-scope-changed', () => window.location.reload());
+window.addEventListener('doberman_agent:management-scope-changed', () => window.location.reload());
 axios.defaults.withCredentials = true;
 const customAxios = axios.create({
     baseURL: import.meta.env.BASE_URL
@@ -263,5 +263,5 @@ export function handleUiRequest<Args extends unknown[]>(handler: (...args: Args)
 
 export function requestAuthHeaders(url: string): Record<string, string> {
     const token = localStorage.getItem("ws_token");
-    return token && !/^\/bisheng/.test(url) ? { Authorization: `Bearer ${token}` } : {};
+    return token && !/^\/doberman_agent/.test(url) ? { Authorization: `Bearer ${token}` } : {};
 }

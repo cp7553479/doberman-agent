@@ -118,25 +118,25 @@ def test_unsupported_runtime_rejected_lists_supported(rtm_config, fake_docker):
 
 def test_template_render_deterministic(rtm_config):
     """Same inputs, same bytes — and the baseline is present in those bytes."""
-    ctx = {"port": 8080, "app_user": "bisheng"}
+    ctx = {"port": 8080, "app_user": "doberman-agent"}
     first = render_build_context("python3.11", ctx)
     second = render_build_context("python3.11", ctx)
 
     assert first == second
     dockerfile = first["Dockerfile"]
     # Non-root: the app process must not be uid 0 even before no-new-privileges.
-    assert "USER bisheng" in dockerfile
+    assert "USER doberman-agent" in dockerfile
     assert dockerfile.rstrip().splitlines()[-1].startswith("ENTRYPOINT")
     # Read-only rootfs friendly: nothing is written under / at runtime; the two
     # writable paths are the /tmp tmpfs and the /data volume (AC-17).
     assert "/data" in dockerfile
     # D5.2 — the wrapper is what connects the platform's prefix to the framework.
-    assert "BISHENG_APP_BASE_PATH" in first["entrypoint.sh"]
+    assert "DOBERMAN_AGENT_APP_BASE_PATH" in first["entrypoint.sh"]
     assert "UVICORN_ROOT_PATH" in first["entrypoint.sh"]
     # exec, so SIGTERM reaches the app: docker stop and restart policy both
     # depend on the app being pid 1's actual process, not a shell's child.
     assert "exec " in first["entrypoint.sh"]
-    assert "BISHENG_APP_HEALTH_PATH" in first["healthcheck.py"]
+    assert "DOBERMAN_AGENT_APP_HEALTH_PATH" in first["healthcheck.py"]
 
 
 def test_build_args_inject_index_url(rtm_config, fake_docker):
@@ -150,7 +150,7 @@ def test_build_args_inject_index_url(rtm_config, fake_docker):
 
 
 def test_build_args_inject_extra_index_url_and_trusted_host(rtm_config, fake_docker):
-    """F057 AC-02: ``bisheng-sdk`` resolves from the platform's own simple index.
+    """F057 AC-02: ``doberman-agent-sdk`` resolves from the platform's own simple index.
 
     A *second* index, never a replacement for the deployment's mirror — the
     app's third-party dependencies keep coming from there, and only this one
@@ -179,7 +179,7 @@ def test_dockerfile_declares_and_uses_the_extra_index_args(rtm_config):
     the empty-string expansion (``${VAR:+…}``) is what keeps a deployment that
     ships no SDK building exactly as it did before.
     """
-    dockerfile = render_build_context("python3.11", {"port": 8080, "app_user": "bisheng"})["Dockerfile"]
+    dockerfile = render_build_context("python3.11", {"port": 8080, "app_user": "doberman-agent"})["Dockerfile"]
 
     assert 'ARG PIP_EXTRA_INDEX_URL=""' in dockerfile
     assert 'ARG PIP_EXTRA_TRUSTED_HOST=""' in dockerfile
@@ -214,7 +214,7 @@ def test_build_args_are_per_runtime(rtm_config, fake_docker):
     node_files = {"package.json": '{"dependencies": {"express": "^4"}}', "server.js": "// app\n"}
     record = _service(config, fake_docker, fetcher=_fetcher(node_files)).run(_request(runtime="node20"))
     assert record.status == "succeeded"
-    assert fake_docker.last_call("build_image")["buildargs"] == {"BISHENG_NPM_REGISTRY": "https://npm.example.com/"}
+    assert fake_docker.last_call("build_image")["buildargs"] == {"DOBERMAN_AGENT_NPM_REGISTRY": "https://npm.example.com/"}
 
     record = _service(config, fake_docker, fetcher=_fetcher({"index.html": "<html>"})).run(_request(runtime="static"))
     assert record.status == "succeeded"
@@ -235,7 +235,7 @@ def test_static_without_index_fails_at_render_stage_with_the_fix(rtm_config, fak
     assert record.status == "failed"
     assert record.stage == STAGE_RENDER_DOCKERFILE
     assert "index.html" in record.message
-    assert ".bishengignore" in record.message
+    assert ".doberman-agentignore" in record.message
     assert fake_docker.call_count("build_image") == 0
 
 
@@ -297,7 +297,7 @@ def test_image_tag_never_reused(rtm_config):
     v3 = image_tag(rtm_config, "sales-report", 3, "ver-0123456789abcdef")
     v4 = image_tag(rtm_config, "sales-report", 4, "ver-fedcba9876543210")
 
-    assert v3 == "bisheng-app/sales-report:3-ver-0123"
+    assert v3 == "doberman-agent-app/sales-report:3-ver-0123"
     assert v3 != v4
     assert "latest" not in v3
     # Stable for the same version — a retried build reuses its own tag rather

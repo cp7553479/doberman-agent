@@ -1,6 +1,6 @@
 """T062 — declared-table migration and the pre-migration snapshot (F055 AC-42).
 
-The platform declares tables in ``bisheng-app.yaml`` and the platform builds
+The platform declares tables in ``doberman-agent-app.yaml`` and the platform builds
 them (DEV-07 ②); this is the half that actually issues the DDL, and the half
 that has to keep a promise before it does: **a plan that can lose production
 rows takes a snapshot first, or it does not run at all.**
@@ -253,7 +253,7 @@ class TestPreMigrationSnapshot:
             [{"op": "rebuild_table", "table": "orders", "columns": [_column("id", "INTEGER", primary_key=True)]}],
         )
 
-        stored = fake_object_store.buckets["bisheng-apps"][result["snapshot_key"]]
+        stored = fake_object_store.buckets["doberman-agent-apps"][result["snapshot_key"]]
         with tarfile.open(fileobj=BytesIO(stored.data)) as tar:
             assert tar.getnames() == [SNAPSHOT_MEMBER]
             payload = tar.extractfile(SNAPSHOT_MEMBER).read()
@@ -268,7 +268,7 @@ class TestPreMigrationSnapshot:
         service.migrate(APP_ID, [{"op": "drop_table", "table": "orders"}])
 
         put = fake_object_store.calls_of("put_object")
-        assert [call["bucket"] for call in put] == ["bisheng-apps"]
+        assert [call["bucket"] for call in put] == ["doberman-agent-apps"]
         assert fake_object_store.policies == {}
 
     def test_a_snapshot_that_cannot_be_stored_refuses_the_migration(self, service, live_db, fake_object_store):

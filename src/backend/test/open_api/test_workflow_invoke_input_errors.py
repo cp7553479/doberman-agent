@@ -7,17 +7,17 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.flow import WorkFlowInvalidUserInputError
-from bisheng.main import app
-from bisheng.worker.workflow.redis_callback import RedisCallback
-from bisheng.workflow.common.workflow import WorkflowStatus
+from doberman_agent.common.errcode.flow import WorkFlowInvalidUserInputError
+from doberman_agent.main import app
+from doberman_agent.worker.workflow.redis_callback import RedisCallback
+from doberman_agent.workflow.common.workflow import WorkflowStatus
 from test.open_api.test_dependencies import service_account_principal
 
 WORKFLOW_ID = "00000000000000000000000000000001"
 CHAT_ID = "c" * 32
 SESSION_ID = f"{CHAT_ID}_async_task_id"
-SERVICE = "bisheng.workflow.domain.services.published_workflow_service"
-CALLBACK = "bisheng.worker.workflow.redis_callback"
+SERVICE = "doberman_agent.workflow.domain.services.published_workflow_service"
+CALLBACK = "doberman_agent.worker.workflow.redis_callback"
 
 FORM_MESSAGE = {
     "node_id": "input_1",
@@ -53,13 +53,13 @@ class _Callback:
 @pytest.fixture
 def waiting_workflow(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal(scopes=frozenset({"workflow:invoke"}))),
     )
     monkeypatch.setattr(
-        "bisheng.open_endpoints.api.endpoints.workflow.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
+        "doberman_agent.open_endpoints.api.endpoints.workflow.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
     )
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.workflow.require_business_action", AsyncMock())
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.workflow.require_business_action", AsyncMock())
     workflow = SimpleNamespace(id=WORKFLOW_ID, name="wf", data={})
     monkeypatch.setattr(f"{SERVICE}.PublishedWorkflowService.get_workflow", AsyncMock(return_value=workflow))
     monkeypatch.setattr(
@@ -135,7 +135,7 @@ async def test_valid_user_input_continues_the_workflow(waiting_workflow, monkeyp
         yield
 
     monkeypatch.setattr(f"{SERVICE}.PublishedWorkflowService.iter_events", no_events)
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.workflow.telemetry_service.log_event", AsyncMock())
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.workflow.telemetry_service.log_event", AsyncMock())
 
     response = await _invoke({"input": {"input_1": {"city": "Paris"}}, "message_id": 5})
 

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, Textarea } from '@bisheng/ui';
+import { Button, Input, Textarea } from '@doberman-agent/ui';
 
 import { DialogClose,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
@@ -67,16 +67,16 @@ export default function KnowledgeBaseSettingsDialog({
             </DialogHeader>
             <div className="flex flex-col gap-8 py-6">
                 <div className="">
-                    <label htmlFor="name" className="bisheng-label">
-                        {t('name')}<span className="bisheng-tip">*</span>
+                    <label htmlFor="name" className="doberman_agent-label">
+                        {t('name')}<span className="doberman_agent-tip">*</span>
                     </label>
                     <div className="flex items-center mt-2">
                         <Input id="name" name="name" placeholder={t('namePlaceholder')} maxLength={30} value={formData.name} onChange={handleChange} className={"flex-1"} showCount />
                     </div>
-                    {errors.name && <p className="bisheng-tip mt-1 text-red-500">{errors.name}</p>}
+                    {errors.name && <p className="doberman_agent-tip mt-1 text-red-500">{errors.name}</p>}
                 </div>
                 <div className="">
-                    <label htmlFor="desc" className="bisheng-label">{t('desc')}</label>
+                    <label htmlFor="desc" className="doberman_agent-label">{t('desc')}</label>
                     <div className="flex items-center mt-2">
                         <Textarea id="desc" name="desc" placeholder={t('descPlaceholder')} maxLength={200} value={formData.desc} onChange={handleChange} textareaClassName={"flex-1"} showCount />
                     </div>

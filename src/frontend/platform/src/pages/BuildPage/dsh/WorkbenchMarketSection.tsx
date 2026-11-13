@@ -1,8 +1,8 @@
-import { Button, Pagination } from "@bisheng/ui";
+import { Button, Pagination } from "@doberman-agent/ui";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
-import { Input } from "@bisheng/ui";
-import { notification } from "@bisheng/ui";
+import { Input } from "@doberman-agent/ui";
+import { notification } from "@doberman-agent/ui";
 import { getMarketContext } from "@/controllers/API/dshMarket";
 import {
     getMarketWorkbench, importWorkbenchBundle, listMarketWorkbenches, listWorkbenchImports,

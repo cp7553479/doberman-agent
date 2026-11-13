@@ -229,7 +229,7 @@ Go 主进程 →(os.Pipe fd3/fd4)→ Python 调度脚本 sandbox.py
 - **Dify 赌**：seccomp 白名单完整（代码线）+ Agent 决策层自律 + 网络拓扑（shell 线）
 - **Coze 赌**：Wasm 运行时无逃逸，用生态兼容性换"默认拒绝"的纯度
 
-### 选型启示（面向 bisheng 等平台）
+### 选型启示（面向 doberman-agent 等平台）
 
 1. **威胁模型先行**：单租户内部 Agent，轻量档位够用；多租户 SaaS 必须独立内核档位（gVisor/Kata/microVM）或云沙箱旁路
 2. **"大脑在普通容器、手脚进沙箱"的划分是对的**：只隔离不可信的执行面（生成代码 + shell 命令）

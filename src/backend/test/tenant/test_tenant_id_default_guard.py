@@ -1,6 +1,6 @@
 """Guard rail: every tenant-aware ORM table must declare ``tenant_id`` with
 ``default=None``. A non-None Python default (e.g. ``default=1``) bypasses the
-``before_flush`` hook in ``bisheng.core.database.tenant_filter`` because the
+``before_flush`` hook in ``doberman_agent.core.database.tenant_filter`` because the
 hook only auto-fills when ``current_val is None or current_val == 0``. The
 v2.5 rollout had 13 tables silently writing child-tenant resources to root
 because their models declared ``tenant_id: int = Field(default=1, ...)``.
@@ -14,9 +14,9 @@ import ast
 import os
 from typing import List, Tuple
 
-# Roots to walk. Limit to the bisheng package; skip test/scripts/migrations.
-_BISHENG_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', 'bisheng'),
+# Roots to walk. Limit to the doberman_agent package; skip test/scripts/migrations.
+_DOBERMAN_AGENT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', 'doberman_agent'),
 )
 _SKIP_DIR_FRAGMENTS = (
     f'{os.sep}test{os.sep}',
@@ -41,7 +41,7 @@ ALLOWLIST: List[Tuple[str, str]] = [
 
 
 def _is_allowlisted(file_path: str, class_name: str) -> bool:
-    rel = os.path.relpath(file_path, _BISHENG_ROOT).replace(os.sep, '/')
+    rel = os.path.relpath(file_path, _DOBERMAN_AGENT_ROOT).replace(os.sep, '/')
     for suffix, allowed_cls in ALLOWLIST:
         suffix_norm = suffix.replace(os.sep, '/')
         if rel.endswith(suffix_norm) and class_name == allowed_cls:
@@ -100,9 +100,9 @@ def _scan_file(path: str) -> List[str]:
                 continue
             if _is_allowlisted(path, cls.name):
                 continue
-            rel = os.path.relpath(path, _BISHENG_ROOT)
+            rel = os.path.relpath(path, _DOBERMAN_AGENT_ROOT)
             offenders.append(
-                f'  - bisheng/{rel}:{stmt.lineno} class {cls.name} '
+                f'  - doberman_agent/{rel}:{stmt.lineno} class {cls.name} '
                 f'tenant_id default={default_repr}'
             )
     return offenders
@@ -113,7 +113,7 @@ def test_tenant_id_default_must_be_none():
     for ``tenant_id``. Allowlisted DTOs are documented in ``ALLOWLIST``.
     """
     offenders: List[str] = []
-    for root, dirs, files in os.walk(_BISHENG_ROOT):
+    for root, dirs, files in os.walk(_DOBERMAN_AGENT_ROOT):
         if any(frag in (root + os.sep) for frag in _SKIP_DIR_FRAGMENTS):
             dirs[:] = []
             continue

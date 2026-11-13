@@ -94,7 +94,7 @@
 | # | Severity | Finding | Fix |
 |---|----------|---------|-----|
 | D1 | **High (real-env only)** | `endpoint.flush_log()` raised `NoTenantContextError` because service-internal `bypass_tenant_filter / set_current_tenant_id(ROOT)` was torn down in the service's `finally` before the endpoint called it. Every Gateway request warn-logged "flush failed"; org_sync_log table stayed empty. | Commit `74f434788` — wrap `flush_log`'s DAO write in `bypass_tenant_filter() + set_current_tenant_id(ROOT_TENANT_ID)` internally. Smallest possible change (log row is always tenant_id=1 by design). Deployed and re-verified — org_sync_log now writes one row per Gateway roundtrip. |
-| D2 | Low (documentation) | `BS_SSO_SYNC__GATEWAY_HMAC_SECRET` env var is **not** picked up by bisheng's `ConfigService` (it inherits `BaseModel`, not `BaseSettings`). Spec §5.1 documents env override but real load path is YAML only. | Workaround: added `sso_sync:` block to `config.yaml`. Follow-up: either switch `Settings` to `BaseSettings` for v2.6 env-override support, or correct spec §5.1 wording. |
+| D2 | Low (documentation) | `BS_SSO_SYNC__GATEWAY_HMAC_SECRET` env var is **not** picked up by doberman-agent's `ConfigService` (it inherits `BaseModel`, not `BaseSettings`). Spec §5.1 documents env override but real load path is YAML only. | Workaround: added `sso_sync:` block to `config.yaml`. Follow-up: either switch `Settings` to `BaseSettings` for v2.6 env-override support, or correct spec §5.1 wording. |
 
 ---
 
@@ -114,12 +114,12 @@
 ```bash
 # S1
 ssh root@192.168.106.114
-bash /opt/bisheng/deploy.sh
-cd /opt/bisheng/src/backend && /root/.local/bin/uv run alembic upgrade head
+bash /opt/doberman-agent/deploy.sh
+cd /opt/doberman-agent/src/backend && /root/.local/bin/uv run alembic upgrade head
 
 # Config fix (env var not read — YAML-only)
-# add `sso_sync:` block to /opt/bisheng/src/backend/bisheng/config.yaml
-# then restart backend via /tmp/start_bisheng_f014.sh
+# add `sso_sync:` block to /opt/doberman-agent/src/backend/doberman_agent/config.yaml
+# then restart backend via /tmp/start_doberman-agent_f014.sh
 
 # S2 + S3
 python3 /tmp/f014_s2_s5.py
@@ -128,11 +128,11 @@ python3 /tmp/f014_s2_s5.py
 python3 /tmp/f014_s4_s5.py
 
 # S5 verification
-mysql --defaults-extra-file=<(printf '[client]\nuser=bisheng\npassword=123456\n') bisheng \
+mysql --defaults-extra-file=<(printf '[client]\nuser=doberman-agent\npassword=123456\n') doberman-agent \
   -e 'SELECT action, target_type, target_id, tenant_id, metadata FROM auditlog \
       WHERE action IN ("tenant.mount","tenant.orphaned","user.source_migrated","user.tenant_relocated") \
       ORDER BY create_time DESC LIMIT 15'
-mysql --defaults-extra-file=<(…) bisheng \
+mysql --defaults-extra-file=<(…) doberman-agent \
   -e 'SELECT id, config_id, trigger_type, status, dept_updated, dept_archived FROM org_sync_log \
       WHERE config_id=9999 ORDER BY id DESC LIMIT 10'
 ```

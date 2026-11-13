@@ -1,7 +1,7 @@
-import { Button, RadioCard, RadioGroup } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, RadioCard, RadioGroup } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import type { ComponentType, ReactNode } from "react";
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 export type SettingsSectionKind = "basic" | "advanced" | "permission";
 

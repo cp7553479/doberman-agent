@@ -7,7 +7,7 @@ tenant-wide three-dimension behavior.
 
 Prerequisites:
 - Backend running on localhost:7860 (or E2E_API_BASE), real middleware.
-- Default admin account admin/Bisheng@top1 (super_admin) — used to prove the
+- Default admin account admin/doberman-agent@top1 (super_admin) — used to prove the
   scope restriction is NOT bypassed by super_admin (design B6 / AC-04).
 
 Covers (API-automatable ACs):
@@ -52,7 +52,7 @@ def _encrypt_password(client: httpx.Client, password: str) -> str:
 
 def _login(client: httpx.Client, username: str = "admin", password: str | None = None) -> str:
     if password is None:
-        password = os.environ.get("E2E_ADMIN_PASSWORD", "Bisheng@top1")
+        password = os.environ.get("E2E_ADMIN_PASSWORD", "doberman-agent@top1")
     resp = client.post(
         f"{API_BASE}/user/login",
         json={"user_name": username, "password": _encrypt_password(client, password)},

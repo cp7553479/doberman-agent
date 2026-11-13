@@ -1,5 +1,5 @@
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize } from "~/hooks";
 import { type TranslationKeys } from "~/hooks/useLocalize";
 import { cn } from "~/utils";

@@ -5,15 +5,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_runtime.domain.schemas.app_authorization import APP_ACTIONS, AppOperation, required_actions
-from bisheng.common.errcode.app_factory import AppNotFoundError
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.permission.application.identity import PermissionActor
+from doberman_agent.app_runtime.domain.schemas.app_authorization import APP_ACTIONS, AppOperation, required_actions
+from doberman_agent.common.errcode.app_factory import AppNotFoundError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.permission.application.identity import PermissionActor
 
 
 @pytest.fixture
 def authorization(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_authorization_service as mod
+    from doberman_agent.app_runtime.domain.services import app_authorization_service as mod
 
     app = SimpleNamespace(id="target", tenant_id=2, owner_user_id=81, state="stopped")
     actor = PermissionActor(subject_type="user", subject_id=42, tenant_id=2)
@@ -109,7 +109,7 @@ def test_restore_and_cancel_require_original_purpose():
 
 
 async def test_disabled_catalog_action_does_not_hide_other_management_actions(authorization):
-    from bisheng.common.errcode.permission import InvalidCatalogActionError
+    from doberman_agent.common.errcode.permission import InvalidCatalogActionError
 
     mod, app, actor, checker = authorization
 
@@ -130,7 +130,7 @@ async def test_permission_for_another_app_is_not_reused(authorization):
 
 
 async def test_missing_real_credential_actor_cannot_fall_back_to_owner(monkeypatch):
-    from bisheng.app_runtime.domain.services import app_authorization_service as mod
+    from doberman_agent.app_runtime.domain.services import app_authorization_service as mod
 
     monkeypatch.setattr(
         mod,

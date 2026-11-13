@@ -7,12 +7,12 @@ import pytest
 from sqlalchemy import CheckConstraint
 from sqlmodel import select
 
-from bisheng.common.errcode.dsh import DshOperationConflictError
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
-from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
-from bisheng.dsh.domain.services.model_audit_setting import DshModelAuditSettingService
+from doberman_agent.common.errcode.dsh import DshOperationConflictError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
+from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
+from doberman_agent.dsh.domain.services.model_audit_setting import DshModelAuditSettingService
 from test.dsh.model_audit_fixtures import AUDIT_MODELS, audit_database, audit_session
 
 
@@ -26,7 +26,7 @@ def test_tables_have_tenant_and_lifecycle_without_plaintext():
 
 
 def test_mode_and_change_history_rollback_together():
-    from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSettingChange
+    from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSettingChange
 
     with audit_database() as engine:
         with audit_session(engine) as session:
@@ -76,7 +76,7 @@ async def test_failed_and_timed_out_mode_reads_are_off_without_stale_cache():
 
 
 async def test_returned_mode_snapshot_is_independent_of_later_changes():
-    from bisheng.dsh.domain.schemas.model_audit import AuditModeSnapshot
+    from doberman_agent.dsh.domain.schemas.model_audit import AuditModeSnapshot
 
     current = ["CONTENT"]
 

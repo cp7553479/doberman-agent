@@ -8,16 +8,16 @@ are asserted here rather than at each consumer.
 
 import pytest
 
-from bisheng.common.errcode.model_face import (
+from doberman_agent.common.errcode.model_face import (
     ModelFaceCapabilityUndeclaredError,
     ModelFaceCatalogUnavailableError,
     ModelFaceModelAmbiguousError,
     ModelFaceModelNotFoundError,
     ModelFaceModelOfflineError,
 )
-from bisheng.common.services.config_service import settings
-from bisheng.llm.domain.services import model_catalog
-from bisheng.llm.domain.services.model_catalog import (
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.llm.domain.services import model_catalog
+from doberman_agent.llm.domain.services.model_catalog import (
     ModelRange,
     invalidate_catalog,
     list_callable_chat_models,

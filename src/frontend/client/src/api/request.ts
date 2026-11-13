@@ -7,7 +7,7 @@ import {
   normalizeApiError,
   resolveErrorMessageTemplate,
   type ErrorPresentation,
-} from "@bisheng/api-client";
+} from "@doberman-agent/api-client";
 import axios, { AxiosRequestConfig } from "axios";
 import i18next from "i18next";
 import { redirectToLogin } from "~/utils/loginRedirect";

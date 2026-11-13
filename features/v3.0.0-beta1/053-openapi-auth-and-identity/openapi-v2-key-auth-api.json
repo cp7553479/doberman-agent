@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "BiSheng API-key API",
+    "title": "doberman-agent API-key API",
     "version": "2.0",
     "description": "HTTP and WebSocket endpoints authenticated with a Bearer API key."
   },
@@ -105,7 +105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -153,7 +153,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -201,7 +201,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -250,7 +250,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -298,7 +298,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -346,7 +346,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -394,7 +394,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -442,7 +442,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2020,7 +2020,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2118,7 +2118,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2219,7 +2219,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2322,7 +2322,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2385,7 +2385,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2433,7 +2433,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -2584,7 +2584,7 @@
           "HostedAppPublish"
         ],
         "summary": "Recent application output",
-        "description": "``bisheng logs`` (F053).\n\nForwarded to the **same** service method the detail page's log tab uses, with\n``entry=\"cli\"`` — which narrows it to the credential's resource owner. A\ntenant administrator's key must not read every application's logs in the\ntenant: that would widen the open API past what the key holder was granted.",
+        "description": "``doberman-agent logs`` (F053).\n\nForwarded to the **same** service method the detail page's log tab uses, with\n``entry=\"cli\"`` — which narrows it to the credential's resource owner. A\ntenant administrator's key must not read every application's logs in the\ntenant: that would widen the open API past what the key holder was granted.",
         "operationId": "get_logs_api_v2_apps__app_id__logs_get",
         "parameters": [
           {
@@ -2954,7 +2954,7 @@
             "type": "string",
             "format": "binary",
             "title": "Package",
-            "description": "tar.gz built by `bisheng deploy`"
+            "description": "tar.gz built by `doberman-agent deploy`"
           },
           "app_id": {
             "anyOf": [
@@ -4324,14 +4324,14 @@
             "type": "string",
             "title": "Owned By"
           },
-          "bisheng_model_type": {
+          "doberman_agent_model_type": {
             "type": "string",
-            "title": "Bisheng Model Type",
+            "title": "doberman-agent Model Type",
             "default": "llm"
           },
-          "bisheng_qualified_name": {
+          "doberman_agent_qualified_name": {
             "type": "string",
-            "title": "Bisheng Qualified Name"
+            "title": "doberman-agent Qualified Name"
           }
         },
         "type": "object",
@@ -4339,7 +4339,7 @@
           "id",
           "created",
           "owned_by",
-          "bisheng_qualified_name"
+          "doberman_agent_qualified_name"
         ],
         "title": "ModelObject"
       },
@@ -5481,7 +5481,7 @@
         ],
         "title": "WhoamiResponse"
       },
-      "bisheng__api__v1__schemas__UnifiedResponseModel": {
+      "doberman_agent__api__v1__schemas__UnifiedResponseModel": {
         "properties": {
           "status_code": {
             "type": "integer",

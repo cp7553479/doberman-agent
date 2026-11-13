@@ -31,8 +31,8 @@ async def prepared(publish_db, tier_seed, app_factory, deployment_factory, fake_
     """An accepted deployment whose snapshot is stored — the state the async leg starts from."""
     from types import SimpleNamespace
 
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
-    from bisheng.app_publish.domain.services.package_service import store_package
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.app_publish.domain.services.package_service import store_package
 
     app_row, _ = await app_factory(with_version=False)
     package = tarball_factory()
@@ -53,13 +53,13 @@ def _manifest_yaml() -> str:
 
 
 async def _build(prepared, **kwargs):
-    from bisheng.app_publish.domain.services.precheck_service import precheck_build
+    from doberman_agent.app_publish.domain.services.precheck_service import precheck_build
 
     return await precheck_build(prepared.deployment, manifest=prepared.manifest, tier=prepared.tier, **kwargs)
 
 
 async def _probe(prepared, image_ref: str = "img:1"):
-    from bisheng.app_publish.domain.services.precheck_service import precheck_probe
+    from doberman_agent.app_publish.domain.services.precheck_service import precheck_probe
 
     return await precheck_probe(prepared.deployment, manifest=prepared.manifest, image_ref=image_ref)
 
@@ -71,7 +71,7 @@ async def _probe(prepared, image_ref: str = "img:1"):
 
 async def test_stage_order_manifest_build_probe_then_scan(prepared, fake_orchestrator):
     """manifest (sync) → build → probe; the secret scan is the pipeline's next step, not precheck's."""
-    from bisheng.app_publish.domain.services import precheck_service
+    from doberman_agent.app_publish.domain.services import precheck_service
 
     image_ref = await _build(prepared)
     await _probe(prepared, image_ref)
@@ -84,7 +84,7 @@ async def test_stage_order_manifest_build_probe_then_scan(prepared, fake_orchest
 
 async def test_manifest_stage_makes_no_rpc(tier_seed, fake_orchestrator):
     """The receive leg must stay local — see the module docstring."""
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
 
     await validate_manifest(_manifest_yaml())
     assert fake_orchestrator.calls == []
@@ -92,7 +92,7 @@ async def test_manifest_stage_makes_no_rpc(tier_seed, fake_orchestrator):
 
 async def test_runtime_rechecked_against_manager_in_async_stage_16222(prepared, fake_orchestrator):
     """The local enum is a copy; the manager's list is the truth, consulted at the start of the build."""
-    from bisheng.common.errcode.app_publish import AppRuntimeUnsupportedError
+    from doberman_agent.common.errcode.app_publish import AppRuntimeUnsupportedError
 
     fake_orchestrator.responses["runtime_status"] = {
         "backend_available": True,
@@ -126,8 +126,8 @@ async def test_build_intent_carries_presigned_code_url_and_tier(prepared, fake_o
 
 async def test_build_capacity_shortage_is_16226_not_16225(prepared, fake_orchestrator):
     """16225 is only "the approval scenario is not enabled" — a hard rule, already broken once upstream."""
-    from bisheng.common.errcode.app_factory import AppCapacityInsufficientError as UpstreamCapacity
-    from bisheng.common.errcode.app_publish import AppCapacityInsufficientError
+    from doberman_agent.common.errcode.app_factory import AppCapacityInsufficientError as UpstreamCapacity
+    from doberman_agent.common.errcode.app_publish import AppCapacityInsufficientError
 
     fake_orchestrator.responses["build"] = UpstreamCapacity(msg="not enough memory")
     with pytest.raises(AppCapacityInsufficientError) as excinfo:
@@ -138,7 +138,7 @@ async def test_build_capacity_shortage_is_16226_not_16225(prepared, fake_orchest
 
 async def test_build_failure_16227_carries_manager_stage_message_tail(prepared, fake_orchestrator):
     """The manager's own ``stage`` / ``message`` / ``tail`` is what makes a build failure actionable."""
-    from bisheng.common.errcode.app_publish import AppDependencyBuildFailedError
+    from doberman_agent.common.errcode.app_publish import AppDependencyBuildFailedError
 
     fake_orchestrator.responses["build_status"] = {
         "status": "failed",
@@ -162,7 +162,7 @@ async def test_unreachable_package_index_is_not_blamed_on_the_dependency_list(pr
     answered "fix your requirements.txt" — the one instruction guaranteed not
     to help. The code stays 16227; what changes is what it tells the owner.
     """
-    from bisheng.common.errcode.app_publish import AppDependencyBuildFailedError
+    from doberman_agent.common.errcode.app_publish import AppDependencyBuildFailedError
 
     fake_orchestrator.responses["build_status"] = {
         "status": "failed",
@@ -189,7 +189,7 @@ async def test_unreachable_package_index_is_not_blamed_on_the_dependency_list(pr
 
 async def test_an_ordinary_bad_dependency_still_points_at_the_dependency_list(prepared, fake_orchestrator):
     """The other half of the same decision: a real bad pin must not be excused as a network fault."""
-    from bisheng.common.errcode.app_publish import AppDependencyBuildFailedError
+    from doberman_agent.common.errcode.app_publish import AppDependencyBuildFailedError
 
     fake_orchestrator.responses["build_status"] = {
         "status": "failed",
@@ -207,8 +207,8 @@ async def test_an_ordinary_bad_dependency_still_points_at_the_dependency_list(pr
 
 async def test_manager_unreachable_during_build_is_16227_with_upstream_reason(prepared, fake_orchestrator):
     """The async leg is allowed to depend on the manager; it just has to say so in ``details``."""
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
-    from bisheng.common.errcode.app_publish import AppDependencyBuildFailedError
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.common.errcode.app_publish import AppDependencyBuildFailedError
 
     fake_orchestrator.responses["runtime_status"] = AppOrchestratorUnavailableError(msg="connection refused")
     with pytest.raises(AppDependencyBuildFailedError) as excinfo:
@@ -218,14 +218,14 @@ async def test_manager_unreachable_during_build_is_16227_with_upstream_reason(pr
 
 async def test_probe_failure_16228_with_hosting_contract_hints(prepared, fake_orchestrator):
     """AC-08's judgement is a failed start, not static dependency analysis (design D4)."""
-    from bisheng.common.errcode.app_publish import AppStartupProbeFailedError
+    from doberman_agent.common.errcode.app_publish import AppStartupProbeFailedError
 
     fake_orchestrator.responses["probe"] = {"ready": False, "reason": "connection refused on 8080"}
     with pytest.raises(AppStartupProbeFailedError) as excinfo:
         await _probe(prepared)
     assert excinfo.value.code == 16228
     hints = " ".join(excinfo.value.kwargs["hints"])
-    assert "BISHENG_APP_DB_URL" in hints
+    assert "DOBERMAN_AGENT_APP_DB_URL" in hints
     assert "数据库" in hints or "database" in hints.lower()
 
 
@@ -235,7 +235,7 @@ async def test_probe_failure_carries_the_instance_output(prepared, fake_orchestr
     Carried under ``details.tail``, the key a build failure uses, so the CLI
     prints both the same way.
     """
-    from bisheng.common.errcode.app_publish import AppStartupProbeFailedError
+    from doberman_agent.common.errcode.app_publish import AppStartupProbeFailedError
 
     output = ["Traceback (most recent call last):", "ModuleNotFoundError: No module named 'fastapi'"]
     fake_orchestrator.responses["probe"] = {"ready": False, "reason": "exited (code 1)", "log_tail": output}
@@ -248,7 +248,7 @@ async def test_probe_runs_with_the_base_path_the_instance_will_have(prepared, fa
     """The same ``/apps/{slug}`` the online instance gets, not an empty one."""
     await _probe(prepared)
     _, payload = next(call for call in fake_orchestrator.calls if call[0] == "probe")
-    base_path = payload["env"]["BISHENG_APP_BASE_PATH"]
+    base_path = payload["env"]["DOBERMAN_AGENT_APP_BASE_PATH"]
     assert base_path.startswith("/apps/") and len(base_path) > len("/apps/")
 
 
@@ -263,7 +263,7 @@ async def test_probe_is_temporary_and_takes_no_instance_slot(prepared, fake_orch
 
 async def test_egress_domains_format_only_this_round(tier_seed):
     """Enforcement is F054 D12's, deferred; this round only the format is checked (AC-08)."""
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
 
     outcome = await validate_manifest(_manifest_yaml() + "egress:\n  domains:\n    - api.example.com\n")
     assert outcome.manifest.egress.domains == ["api.example.com"]
@@ -271,10 +271,10 @@ async def test_egress_domains_format_only_this_round(tier_seed):
 
 async def test_failure_shape_is_five_tuple_in_all_stages(prepared, fake_orchestrator):
     """One shape, every stage — this is what AC-11 actually promises."""
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_BUILD, STAGE_PRECHECK_PROBE
-    from bisheng.app_publish.domain.schemas.failure import failure_from_error
-    from bisheng.common.errcode.app_factory import AppCapacityInsufficientError as UpstreamCapacity
-    from bisheng.common.errcode.base import BaseErrorCode
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_BUILD, STAGE_PRECHECK_PROBE
+    from doberman_agent.app_publish.domain.schemas.failure import failure_from_error
+    from doberman_agent.common.errcode.app_factory import AppCapacityInsufficientError as UpstreamCapacity
+    from doberman_agent.common.errcode.base import BaseErrorCode
 
     failures = []
     fake_orchestrator.responses["build"] = UpstreamCapacity(msg="no memory")
@@ -298,8 +298,8 @@ async def test_failure_shape_is_five_tuple_in_all_stages(prepared, fake_orchestr
 
 async def test_precheck_failure_produces_no_approval_and_no_version(publish_db, prepared, fake_orchestrator):
     """AC-07's hard promise, asserted at the storage layer rather than taken on trust."""
-    from bisheng.common.errcode.base import BaseErrorCode
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.common.errcode.base import BaseErrorCode
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     fake_orchestrator.responses["probe"] = {"ready": False, "reason": "timeout"}
     with pytest.raises(BaseErrorCode):

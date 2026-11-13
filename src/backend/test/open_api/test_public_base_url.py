@@ -10,12 +10,12 @@ from httpx import ASGITransport, AsyncClient
 from pydantic import ValidationError
 from starlette.requests import Request
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.services.config_service import settings
-from bisheng.core.config.open_platform import OpenApiConf
-from bisheng.open_api.api.endpoints import personal_token_self, skill_pack
-from bisheng.open_api.domain.services import public_base_url as resolver_module
-from bisheng.open_api.domain.services.public_base_url import resolve_public_base_url
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.core.config.open_platform import OpenApiConf
+from doberman_agent.open_api.api.endpoints import personal_token_self, skill_pack
+from doberman_agent.open_api.domain.services import public_base_url as resolver_module
+from doberman_agent.open_api.domain.services.public_base_url import resolve_public_base_url
 
 PACK_PATH = "/api/v1/open-api/skill-packs/knowledge-search"
 
@@ -100,16 +100,16 @@ def test_hosts_that_could_break_generated_files_are_rejected(bad):
 def test_ipv6_literals_and_root_path_are_preserved():
     assert resolve_public_base_url(_request({"Host": "[::1]:7860"})) == "http://[::1]:7860"
     assert (
-        resolve_public_base_url(_request({"Host": "kb.example.com"}, root_path="/bisheng/"))
-        == "http://kb.example.com/bisheng"
+        resolve_public_base_url(_request({"Host": "kb.example.com"}, root_path="/doberman_agent/"))
+        == "http://kb.example.com/doberman_agent"
     )
     assert resolve_public_base_url(_request(server=("::1", 7860))) == "http://[::1]:7860"
 
 
 def test_configured_public_base_url_beats_every_header(monkeypatch):
-    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/bisheng/")
+    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/doberman_agent/")
     request = _request({"Host": "backend:7860", "X-Forwarded-Proto": "https", "X-Forwarded-Host": "kb.example.com"})
-    assert resolve_public_base_url(request) == "https://portal.example.com/bisheng"
+    assert resolve_public_base_url(request) == "https://portal.example.com/doberman_agent"
 
 
 # ── the setting is validated at boot ─────────────────────────────────────────
@@ -119,8 +119,8 @@ def test_public_base_url_setting_is_normalised_and_validated():
     assert OpenApiConf().public_base_url == ""
     assert OpenApiConf(public_base_url=" https://kb.example.com/ ").public_base_url == "https://kb.example.com"
     assert (
-        OpenApiConf(public_base_url="https://portal.example.com/bisheng").public_base_url
-        == "https://portal.example.com/bisheng"
+        OpenApiConf(public_base_url="https://portal.example.com/doberman_agent").public_base_url
+        == "https://portal.example.com/doberman_agent"
     )
     for bad in ("kb.example.com", "ftp://kb.example.com", "https://", "https://kb.example.com/?x=1"):
         with pytest.raises(ValidationError):
@@ -168,9 +168,9 @@ async def test_pack_without_proxy_headers_still_uses_the_host_header():
 
 
 async def test_pack_uses_the_configured_address_when_set(monkeypatch):
-    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/bisheng")
+    monkeypatch.setattr(settings.open_api, "public_base_url", "https://portal.example.com/doberman_agent")
     files = _rendered(await _download(_app(), {"X-Forwarded-Host": "kb.example.com"}))
-    assert 'DEFAULT_BASE_URL = "https://portal.example.com/bisheng"' in files["search.py"]
+    assert 'DEFAULT_BASE_URL = "https://portal.example.com/doberman_agent"' in files["search.py"]
     assert "`https://portal.example.com`" in files["SECURITY.md"]  # origin only, path stripped
     assert "kb.example.com" not in "".join(files.values())
 

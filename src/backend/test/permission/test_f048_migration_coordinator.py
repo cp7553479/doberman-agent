@@ -6,11 +6,11 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionMigrationBlockedError,
     PermissionVersionConflictError,
 )
-from bisheng.permission.migration.f048_coordinator import (
+from doberman_agent.permission.migration.f048_coordinator import (
     FORMAL_PHASES,
     F048MigrationCoordinator,
     MigrationRunRequest,
@@ -18,7 +18,7 @@ from bisheng.permission.migration.f048_coordinator import (
     _failed_tuple_candidates,
     _legacy_models,
 )
-from bisheng.permission.migration.f048_source_inventory import (
+from doberman_agent.permission.migration.f048_source_inventory import (
     LegacyConfigSource,
     LegacyFailedTupleSource,
     LegacyTupleSource,

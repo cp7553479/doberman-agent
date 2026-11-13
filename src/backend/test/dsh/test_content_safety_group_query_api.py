@@ -10,8 +10,8 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import event
 
-from bisheng.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle
-from bisheng.dsh.infrastructure.model_audit_codec import conversation_key
+from doberman_agent.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle
+from doberman_agent.dsh.infrastructure.model_audit_codec import conversation_key
 from test.dsh.test_content_safety_query_api import data, get, invalid
 from test.dsh.test_content_safety_query_api import query_api as query_api
 from test.dsh.test_content_safety_query_api import query_engine as query_engine

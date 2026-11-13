@@ -12,11 +12,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.citation.domain.services import citation_handle_service as svc
-from bisheng.citation.domain.services import linsight_citation_scope as scope_mod
-from bisheng.citation.domain.services.citation_handle_service import assign_handles
-from bisheng.citation.domain.services.daily_citation_scope import DailyCitationScope
-from bisheng.citation.domain.services.linsight_citation_scope import LinsightCitationScope
+from doberman_agent.citation.domain.services import citation_handle_service as svc
+from doberman_agent.citation.domain.services import linsight_citation_scope as scope_mod
+from doberman_agent.citation.domain.services.citation_handle_service import assign_handles
+from doberman_agent.citation.domain.services.daily_citation_scope import DailyCitationScope
+from doberman_agent.citation.domain.services.linsight_citation_scope import LinsightCitationScope
 
 
 class FakeRedis:

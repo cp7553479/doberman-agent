@@ -24,7 +24,7 @@ def docker(*args):
 
 
 def run(name, image, env, extra=None):
-    args = ['run', '-d', '--name', name, '--label', 'bisheng.test=' + LABEL,
+    args = ['run', '-d', '--name', name, '--label', 'doberman_agent.test=' + LABEL,
             '--network', NETWORK, '--memory', '256m', '--cpus', '0.5']
     for key, value in env.items():
         args += ['-e', key + '=' + value]
@@ -53,11 +53,11 @@ def wait(name, port):
 
 
 try:
-    assert not docker('ps', '-a', '--filter', 'label=bisheng.test=' + LABEL, '--format', '{{.ID}}')
-    docker('network', 'create', '--internal', '--label', 'bisheng.test=' + LABEL, NETWORK)
+    assert not docker('ps', '-a', '--filter', 'label=doberman_agent.test=' + LABEL, '--format', '{{.ID}}')
+    docker('network', 'create', '--internal', '--label', 'doberman_agent.test=' + LABEL, NETWORK)
     created_network = True
-    manager = 'dataelement/bisheng-runtime-manager:v3.0.0-test-vibe-amd64'
-    proxy = 'dataelement/bisheng-app-proxy:v3.0.0-test-vibe-amd64'
+    manager = 'cp7553479/doberman-agent-runtime-manager:v3.0.0-test-vibe-amd64'
+    proxy = 'cp7553479/doberman-agent-app-proxy:v3.0.0-test-vibe-amd64'
     report['images'] = {}
     for short, image in [('runtime-manager', manager), ('app-proxy', proxy)]:
         meta = json.loads(docker('image', 'inspect', image))[0]
@@ -131,11 +131,11 @@ print(json.dumps({'engine_id':info['ID'],'ping':True,'container_listing_denied':
     report['passed'] = True
 finally:
     for name in reversed(names):
-        assert docker('inspect', '--format', '{{index .Config.Labels "bisheng.test"}}', name) == LABEL
+        assert docker('inspect', '--format', '{{index .Config.Labels "doberman_agent.test"}}', name) == LABEL
         docker('rm', '-f', name)
     if created_network:
         docker('network', 'rm', NETWORK)
-    report['test_containers_remaining'] = docker('ps', '-a', '--filter', 'label=bisheng.test=' + LABEL, '--format', '{{.ID}}').split()
+    report['test_containers_remaining'] = docker('ps', '-a', '--filter', 'label=doberman_agent.test=' + LABEL, '--format', '{{.ID}}').split()
     with open(RESULT, 'w') as stream:
         json.dump(report, stream, indent=2)
     print(json.dumps(report, indent=2))

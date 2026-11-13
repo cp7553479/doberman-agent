@@ -6,14 +6,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_runtime.domain.services.f048_app_permission import (
+from doberman_agent.app_runtime.domain.services.f048_app_permission import (
     AppDaoPermissionLoader,
     AppPermissionRecord,
     F048AppPermissionAdapter,
 )
-from bisheng.common.errcode.permission import PermissionInvalidResourceError
-from bisheng.open_api.domain.services import service_account_scope_service as scopes
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError
+from doberman_agent.open_api.domain.services import service_account_scope_service as scopes
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 async def test_service_account_view_reaches_app_target_without_changing_actor(monkeypatch):
@@ -33,8 +33,8 @@ async def test_service_account_view_reaches_app_target_without_changing_actor(mo
 
 @pytest.mark.parametrize("state", ["deleted", "draft"])
 async def test_deleted_app_has_no_permission_record_for_account_cleanup(monkeypatch, state):
-    import bisheng.core.database as database
-    from bisheng.database.models.app import AppDao
+    import doberman_agent.core.database as database
+    from doberman_agent.database.models.app import AppDao
 
     @asynccontextmanager
     async def session():

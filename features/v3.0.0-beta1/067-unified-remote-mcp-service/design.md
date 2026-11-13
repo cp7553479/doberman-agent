@@ -15,7 +15,7 @@
 
 ## 1. 目标与非目标
 
-- **目标**：在每个 BISHENG 部署内提供一个统一、远程、可发现的 MCP 服务，把[中粮 SeedMind Apifox 文档](https://s.apifox.cn/a0e36780-865a-4179-b7df-b51a01d5ebcc)当前列出的 10 项知识资源/文件 HTTP API 一对一转换为稳定工具；MCP 与开放 API 共用身份、权限、业务服务、业务结果语义和审计，协议形态差异只在 MCP 兼容层处理。
+- **目标**：在每个 doberman-agent 部署内提供一个统一、远程、可发现的 MCP 服务，把[中粮 SeedMind Apifox 文档](https://s.apifox.cn/a0e36780-865a-4179-b7df-b51a01d5ebcc)当前列出的 10 项知识资源/文件 HTTP API 一对一转换为稳定工具；MCP 与开放 API 共用身份、权限、业务服务、业务结果语义和审计，协议形态差异只在 MCP 兼容层处理。
 - **非目标**：不把现有 `mcp_manage` 客户端改造成服务端，不新增业务能力或密钥体系，不为每个工具复制一套业务实现，不依赖单机内存维持授权或业务会话，也不替换现有 `/api/v2`。
 
 ---
@@ -56,7 +56,7 @@
   - B. 挂载到现有 FastAPI 应用，采用有状态 Streamable HTTP——接入简单，但 MCP session 要求副本亲和或共享 session store。
   - C. 挂载到现有 FastAPI 应用，采用无状态 Streamable HTTP——复用部署入口且不要求副本亲和。
 - **选定**：C。对外地址固定为 `$BASE/api/v2/mcp`，与 `/api/v2` 共享后端端口和商业网关入口；每个 HTTP 请求重新认证，MCP transport session 不承载业务授权状态。
-- **原因**：当前业务能力、凭据 ContextVar、审计 flusher 与应用生命周期都在 `bisheng.main`；C 同时满足“一个服务地址”和 C8 多副本要求。A 会制造第二套运行面，B 会把进程内 session 变成隐式基础设施依赖。
+- **原因**：当前业务能力、凭据 ContextVar、审计 flusher 与应用生命周期都在 `doberman_agent.main`；C 同时满足“一个服务地址”和 C8 多副本要求。A 会制造第二套运行面，B 会把进程内 session 变成隐式基础设施依赖。
 - **何时该重新考虑**：MCP 流量需要独立 SLA/扩缩容，或 SDK 后续协议能力明确要求服务端持久 session 时，再拆独立进程；拆分前必须先提供共享 Redis/DB session 真相与同一身份上下文。
 
 ### 决策 2：业务能力复用方式
@@ -115,13 +115,13 @@
 
 ### 4.1 当前基线
 
-- `bisheng/api/router.py` 把正式开放路由挂在 `/api/v2`，统一依赖 `verify_open_api_access`。
+- `doberman-agent/api/router.py` 把正式开放路由挂在 `/api/v2`，统一依赖 `verify_open_api_access`。
 - 中粮 SeedMind Apifox 文档当前列出 10 个 `/api/v2` 知识资源/文件 API；这 10 项是 F067 唯一范围基线。
-- `bisheng/open_api/domain/scopes.py` 的 `OPEN_API_SCOPES` 登记了更多业务 route；F067 只从中取用 allowlist 对应路由的 scope，不把全量 registry 当作 MCP 覆盖集合。
-- `bisheng/open_api/api/dependencies.py:verify_open_api_access` 同时安装 tenant、visible tenant、`OpenApiPrincipal` 与 `PermissionActor`，并在请求结束恢复 ContextVar。
-- `bisheng/open_api/api/middleware.py` 按 HTTP/WS 请求写 `open_api.call` 审计；ContextVar 的 principal 也复制到 ASGI `scope`，避免外层中间件读不到子任务上下文。
-- `bisheng/open_endpoints/api/endpoints/` 的各 endpoint 目前直接编排业务 Service；它们的对外参数、响应与异常编码是 F067 的冻结基线。MCP facade 可以调用同一批既有业务 Service，但不要求先改造 endpoint。
-- `bisheng/mcp_manage/` 只负责 BISHENG 作为客户端连接第三方 MCP（stdio/SSE/Streamable HTTP）并转为 LangChain Tool；它不是服务端模块。
+- `doberman-agent/open_api/domain/scopes.py` 的 `OPEN_API_SCOPES` 登记了更多业务 route；F067 只从中取用 allowlist 对应路由的 scope，不把全量 registry 当作 MCP 覆盖集合。
+- `doberman-agent/open_api/api/dependencies.py:verify_open_api_access` 同时安装 tenant、visible tenant、`OpenApiPrincipal` 与 `PermissionActor`，并在请求结束恢复 ContextVar。
+- `doberman-agent/open_api/api/middleware.py` 按 HTTP/WS 请求写 `open_api.call` 审计；ContextVar 的 principal 也复制到 ASGI `scope`，避免外层中间件读不到子任务上下文。
+- `doberman-agent/open_endpoints/api/endpoints/` 的各 endpoint 目前直接编排业务 Service；它们的对外参数、响应与异常编码是 F067 的冻结基线。MCP facade 可以调用同一批既有业务 Service，但不要求先改造 endpoint。
+- `doberman-agent/mcp_manage/` 只负责 doberman-agent 作为客户端连接第三方 MCP（stdio/SSE/Streamable HTTP）并转为 LangChain Tool；它不是服务端模块。
 
 ### 4.2 目标数据流
 
@@ -143,23 +143,23 @@
 
 | # | 业务能力 | scope | modes | PAT | MCP 工具 | source route |
 |---:|---|---|---|---|---|---|
-| 1 | 查询知识资源列表 | `knowledge:read` | S/D | 是 | `bisheng_knowledge_list` | `GET /api/v2/filelib/` |
-| 2 | 创建知识资源 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_create` | `POST /api/v2/filelib/` |
-| 3 | 更新知识资源 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_update` | `PUT /api/v2/filelib/` |
-| 4 | 删除知识资源 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_delete` | `DELETE /api/v2/filelib/{knowledge_id}` |
-| 5 | 清空知识资源内容 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_clear` | `DELETE /api/v2/filelib/clear/{knowledge_id}` |
-| 6 | 检索知识资源分段 | `knowledge:read` | S/D | 是 | `bisheng_knowledge_retrieve` | `POST /api/v2/filelib/retrieve` |
-| 7 | 上传文件到知识资源 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_file_upload` | `POST /api/v2/filelib/file/{knowledge_id}` |
-| 8 | 查询文件列表 | `knowledge:read` | S/D | 是 | `bisheng_knowledge_file_list` | `GET /api/v2/filelib/file/list` |
-| 9 | 删除文件 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_file_delete` | `DELETE /api/v2/filelib/file/{file_id}` |
-| 10 | 批量删除文件 | `knowledge:write` | S/D | 否 | `bisheng_knowledge_files_delete` | `POST /api/v2/filelib/delete_file` |
+| 1 | 查询知识资源列表 | `knowledge:read` | S/D | 是 | `doberman_agent_knowledge_list` | `GET /api/v2/filelib/` |
+| 2 | 创建知识资源 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_create` | `POST /api/v2/filelib/` |
+| 3 | 更新知识资源 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_update` | `PUT /api/v2/filelib/` |
+| 4 | 删除知识资源 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_delete` | `DELETE /api/v2/filelib/{knowledge_id}` |
+| 5 | 清空知识资源内容 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_clear` | `DELETE /api/v2/filelib/clear/{knowledge_id}` |
+| 6 | 检索知识资源分段 | `knowledge:read` | S/D | 是 | `doberman_agent_knowledge_retrieve` | `POST /api/v2/filelib/retrieve` |
+| 7 | 上传文件到知识资源 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_file_upload` | `POST /api/v2/filelib/file/{knowledge_id}` |
+| 8 | 查询文件列表 | `knowledge:read` | S/D | 是 | `doberman_agent_knowledge_file_list` | `GET /api/v2/filelib/file/list` |
+| 9 | 删除文件 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_file_delete` | `DELETE /api/v2/filelib/file/{file_id}` |
+| 10 | 批量删除文件 | `knowledge:write` | S/D | 否 | `doberman_agent_knowledge_files_delete` | `POST /api/v2/filelib/delete_file` |
 
 ### 4.4 对外数据合同
 
 #### 请求头
 
 ```text
-Authorization: Bearer <BISHENG_API_KEY>      # 必填
+Authorization: Bearer <DOBERMAN_AGENT_API_KEY>      # 必填
 X-On-Behalf-Of: <external_user_id>           # D 模式传第三方用户唯一 ID；不进入 tool arguments
 X-End-User: <external_user_partition>        # 可选，仅沿用 F053 会话分区语义
 ```
@@ -171,8 +171,8 @@ MCP SDK 所需的协议头由 SDK 处理；服务端不从 MCP session id 推导
 - 每个 registry 项必须显式声明 `title / description / input_model / output_model / scope / modes / annotations`；`tools/list` 输出的 `inputSchema` 和 `outputSchema` 由这些模型生成，不返回无字段说明的空泛 schema。10 个工具的 `readOnlyHint / destructiveHint / idempotentHint / openWorldHint` 固定值见 [tool-contracts.md §2.3](./tool-contracts.md#23-工具行为-annotations)，annotations 只影响客户端风险提示，不替代服务端授权。
 - path/query/body 业务字段扁平为一个 JSON object，字段名、类型、必填项、默认值、枚举和上限以中粮 SeedMind Apifox 合同为对外基线，并由对应 Pydantic model 落地。
 - Apifox 中的 `X-On-Behalf-Of` / `X-End-User` 只作为 MCP HTTP 请求头，不进入 tool arguments。`user_id`、`tenant_id`、`on_behalf_of`、`authorization`、服务器 `file_path` 也不进入任何工具 schema；业务主体只由受信任认证上下文确定。
-- `bisheng_knowledge_files_delete` 将原 API 的顶层 `array<integer>` 包装为 MCP object `{"file_ids": integer[]}`，避免对输入字段产生多种实现。
-- `bisheng_knowledge_file_upload` 将 multipart `file` 转换为 `{"file_name": string, "mime_type": string|null, "content_base64": string}`；原 API 支持的 `file_url` 与 `file` 二选一。MCP 必须先校验目标资源/父目录的写权限与租户边界，通过后才允许解码 base64 或发起 URL 下载；下载结束后既有业务 Service 仍再次鉴权以关闭权限变化窗口。base64 与 URL 路径必须经过 [tool-contracts.md §2.2](./tool-contracts.md#22-上传入口限制) 的 body/编码长度、流式落盘、目标地址、重定向、下载大小与清理限制，再进入原 API 的文件类型、单文件大小、角色总配额和内容安全检查。
+- `doberman_agent_knowledge_files_delete` 将原 API 的顶层 `array<integer>` 包装为 MCP object `{"file_ids": integer[]}`，避免对输入字段产生多种实现。
+- `doberman_agent_knowledge_file_upload` 将 multipart `file` 转换为 `{"file_name": string, "mime_type": string|null, "content_base64": string}`；原 API 支持的 `file_url` 与 `file` 二选一。MCP 必须先校验目标资源/父目录的写权限与租户边界，通过后才允许解码 base64 或发起 URL 下载；下载结束后既有业务 Service 仍再次鉴权以关闭权限变化窗口。base64 与 URL 路径必须经过 [tool-contracts.md §2.2](./tool-contracts.md#22-上传入口限制) 的 body/编码长度、流式落盘、目标地址、重定向、下载大小与清理限制，再进入原 API 的文件类型、单文件大小、角色总配额和内容安全检查。
 - 实施时必须从 registry 生成并提交对外工具文档，每个工具包含用途、完整输入/输出 schema、成功示例与主要错误示例；生成结果必须与 [tool-contracts.md](./tool-contracts.md) 和 Apifox 合同一致并纳入契约测试。
 
 #### 工具结果
@@ -220,18 +220,18 @@ MCP 专有符号码只在没有既有业务码时使用，固定映射如下；�
 | `DEPENDENCY_UNAVAILABLE` | 可预期的下游依赖不可用或超时，且没有既有业务码 |
 | `TOOL_EXECUTION_FAILED` | 其它已预期、允许向调用方公开的工具执行失败 |
 
-所有 tool error result 均不设置 `structuredContent`；其 JSON `TextContent` 至少包含非空 `error.code` 与 `error.message`，可选在 `_meta["bisheng/error"]` 重复同一结构供客户端编程读取，但 `_meta` 不能替代模型可见内容。协议错误则使用标准 JSON-RPC `error.code/error.message`。支持既有 `HTTPException` 与 `BaseErrorCode` 是 MCP compatibility adapter 的责任；不得以 F067 为由要求既有 API 调用链先统一异常类型。契约测试冻结 API 错误行为，并分别断言 tool error 与 protocol error 的错误码、消息和信号字段，同时断言不存在 HTTP 信封字段。
+所有 tool error result 均不设置 `structuredContent`；其 JSON `TextContent` 至少包含非空 `error.code` 与 `error.message`，可选在 `_meta["doberman-agent/error"]` 重复同一结构供客户端编程读取，但 `_meta` 不能替代模型可见内容。协议错误则使用标准 JSON-RPC `error.code/error.message`。支持既有 `HTTPException` 与 `BaseErrorCode` 是 MCP compatibility adapter 的责任；不得以 F067 为由要求既有 API 调用链先统一异常类型。契约测试冻结 API 错误行为，并分别断言 tool error 与 protocol error 的错误码、消息和信号字段，同时断言不存在 HTTP 信封字段。
 
 #### 客户端配置示例
 
 ```json
 {
   "mcpServers": {
-    "bisheng": {
+    "doberman-agent": {
       "type": "streamable-http",
-      "url": "https://<BISHENG_HOST>/api/v2/mcp",
+      "url": "https://<DOBERMAN_AGENT_HOST>/api/v2/mcp",
       "headers": {
-        "Authorization": "Bearer <BISHENG_API_KEY>"
+        "Authorization": "Bearer <DOBERMAN_AGENT_API_KEY>"
       }
     }
   }
@@ -244,18 +244,18 @@ MCP 专有符号码只在没有既有业务码时使用，固定映射如下；�
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `bisheng/open_mcp/server.py` | 创建 MCP Server、注册 list/call handler、暴露无状态 Streamable HTTP ASGI app | 不认证业务主体，不调用 ORM |
-| `bisheng/open_mcp/registry.py` | 声明 10 个 allowlist 工具的名称、schema、source route、scope、modes、handler、结果类型 | 不从 URL 动态执行任意 endpoint，不自动注册 allowlist 之外的 API |
-| `bisheng/open_mcp/auth.py` | 把 MCP HTTP 请求接入共享 `OpenApiAccessContext`，保证每请求 set/reset | 不实现新 token verifier，不缓存永久授权 |
-| `bisheng/open_mcp/contracts.py` | 定义 MCP 专用输入/成功输出 DTO 与 `McpErrorPayload` | 不替换或反向复用为现有 API response model，不直接暴露 ORM/SQLModel |
-| `bisheng/open_mcp/compatibility.py` | 按 `tool-contracts.md` 重建既有调用参数，并把既有业务结果、`HTTPException` 与 `BaseErrorCode` 适配为 MCP 合同 | 不要求修改现有 API 接口逻辑、字段或异常类型，不以反射自动暴露新增字段 |
-| `bisheng/open_mcp/result.py` | 成功 DTO 转换为 `structuredContent`，错误 DTO 转换为 `isError` + JSON `TextContent` | 不把 HTTP 状态/信封带入 MCP，不捕获并吞掉未知异常，不改写业务成功/失败结论 |
-| `bisheng/open_mcp/upload.py` | 资源预检通过后的严格 base64 流式解码、受控文件 URL、业务兼容文件名和请求私有临时目录清理 | 不复用可读本地路径、长期 cache 或整响应入内存的通用下载入口；本版不暴露异步 `callback_url` |
-| `bisheng/open_mcp/tools/*` | 薄工具绑定与文件/顶层数组参数适配 | 不复制业务授权、错误映射或持久化逻辑 |
-| `bisheng/open_endpoints/domain/services/*` | MCP facade 复用的既有业务能力；确有重复时可在快照保护下抽取最小、传输无关的公共 capability | 不感知 MCP JSON-RPC；不承载 MCP 参数/输出/错误适配；F067 不改变现有 API 接口逻辑和对外合同 |
-| `bisheng/open_api/domain/services/access_context.py` | 从现有 dependency 抽出凭据、S/D/PAT、tenant、permission actor 生命周期 | 不根据 tool 参数确定身份 |
-| `bisheng/open_api/domain/services/call_audit_service.py` | 接收 HTTP/MCP 统一调用审计事件并批量写既有表 | 不记录请求正文、密钥或文件内容 |
-| `bisheng/main.py` | 把 `/api/v2/mcp` 与 SDK lifespan 纳入现有 app | 不创建第二端口或节点本地 session store |
+| `doberman-agent/open_mcp/server.py` | 创建 MCP Server、注册 list/call handler、暴露无状态 Streamable HTTP ASGI app | 不认证业务主体，不调用 ORM |
+| `doberman-agent/open_mcp/registry.py` | 声明 10 个 allowlist 工具的名称、schema、source route、scope、modes、handler、结果类型 | 不从 URL 动态执行任意 endpoint，不自动注册 allowlist 之外的 API |
+| `doberman-agent/open_mcp/auth.py` | 把 MCP HTTP 请求接入共享 `OpenApiAccessContext`，保证每请求 set/reset | 不实现新 token verifier，不缓存永久授权 |
+| `doberman-agent/open_mcp/contracts.py` | 定义 MCP 专用输入/成功输出 DTO 与 `McpErrorPayload` | 不替换或反向复用为现有 API response model，不直接暴露 ORM/SQLModel |
+| `doberman-agent/open_mcp/compatibility.py` | 按 `tool-contracts.md` 重建既有调用参数，并把既有业务结果、`HTTPException` 与 `BaseErrorCode` 适配为 MCP 合同 | 不要求修改现有 API 接口逻辑、字段或异常类型，不以反射自动暴露新增字段 |
+| `doberman-agent/open_mcp/result.py` | 成功 DTO 转换为 `structuredContent`，错误 DTO 转换为 `isError` + JSON `TextContent` | 不把 HTTP 状态/信封带入 MCP，不捕获并吞掉未知异常，不改写业务成功/失败结论 |
+| `doberman-agent/open_mcp/upload.py` | 资源预检通过后的严格 base64 流式解码、受控文件 URL、业务兼容文件名和请求私有临时目录清理 | 不复用可读本地路径、长期 cache 或整响应入内存的通用下载入口；本版不暴露异步 `callback_url` |
+| `doberman-agent/open_mcp/tools/*` | 薄工具绑定与文件/顶层数组参数适配 | 不复制业务授权、错误映射或持久化逻辑 |
+| `doberman-agent/open_endpoints/domain/services/*` | MCP facade 复用的既有业务能力；确有重复时可在快照保护下抽取最小、传输无关的公共 capability | 不感知 MCP JSON-RPC；不承载 MCP 参数/输出/错误适配；F067 不改变现有 API 接口逻辑和对外合同 |
+| `doberman-agent/open_api/domain/services/access_context.py` | 从现有 dependency 抽出凭据、S/D/PAT、tenant、permission actor 生命周期 | 不根据 tool 参数确定身份 |
+| `doberman-agent/open_api/domain/services/call_audit_service.py` | 接收 HTTP/MCP 统一调用审计事件并批量写既有表 | 不记录请求正文、密钥或文件内容 |
+| `doberman-agent/main.py` | 把 `/api/v2/mcp` 与 SDK lifespan 纳入现有 app | 不创建第二端口或节点本地 session store |
 
 ---
 
@@ -263,7 +263,7 @@ MCP 专有符号码只在没有既有业务码时使用，固定映射如下；�
 
 | # | 反直觉事实 | 如果不知道会怎样 | 在哪处理 |
 |---|---|---|---|
-| 1 | `mcp_manage` 名字像服务模块，实际只有出站客户端 | 在其中加入 server 会把内外两个方向的生命周期和依赖混在一起 | 新建 `bisheng/open_mcp/`；`mcp_manage/` 保持不变 |
+| 1 | `mcp_manage` 名字像服务模块，实际只有出站客户端 | 在其中加入 server 会把内外两个方向的生命周期和依赖混在一起 | 新建 `doberman-agent/open_mcp/`；`mcp_manage/` 保持不变 |
 | 2 | `verify_open_api_access` 通过 FastAPI endpoint 上的 marker 找 scope；MCP 的 10 个工具共用一个 HTTP endpoint | 直接复用 dependency 会得到“endpoint 未登记”，或只校验一次公共 scope | `open_api/domain/services/access_context.py` + `open_mcp/registry.py` |
 | 3 | ASGI 外层中间件读不到依赖子任务里仅写 ContextVar 的 principal | MCP 审计会丢 actor/subject，甚至串用后续请求身份 | auth context 显式传 principal；逐工具审计不依赖外层回读 ContextVar |
 | 4 | `/api/v2/mcp` 会命中现有 `OpenApiAuditMiddleware` 前缀 | 不排除会同时生成 transport 和 tool 两条成功审计，统计翻倍 | `open_api/api/middleware.py` 精确排除 MCP 路径，MCP handler 逐调用记账 |
@@ -323,9 +323,9 @@ MCP 专有符号码只在没有既有业务码时使用，固定映射如下；�
 实现后从 `src/backend/` 执行（token 只放环境变量，不出现在 shell history 或日志）：
 
 ```bash
-export BISHENG_MCP_URL='https://<BISHENG_HOST>/api/v2/mcp'
-export BISHENG_API_KEY='<BISHENG_API_KEY>'
-.venv/bin/python scripts/verify_open_mcp.py --url "$BISHENG_MCP_URL" --expected-profile full
+export DOBERMAN_AGENT_MCP_URL='https://<DOBERMAN_AGENT_HOST>/api/v2/mcp'
+export DOBERMAN_AGENT_API_KEY='<DOBERMAN_AGENT_API_KEY>'
+.venv/bin/python scripts/verify_open_mcp.py --url "$DOBERMAN_AGENT_MCP_URL" --expected-profile full
 ```
 
 脚本至少输出：协议初始化结果、可见工具数、缺失/多出 source route、选定只读工具结果、撤销后拒绝结果；任何凭据值必须掩码。

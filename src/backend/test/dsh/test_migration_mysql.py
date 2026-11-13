@@ -11,7 +11,7 @@ from sqlalchemy import create_engine, inspect, text
 def test_existing_user_additive_migration(dsh_database_url):
     engine = create_engine(dsh_database_url)
     assert engine.dialect.name == "mysql", "This test is the isolated MySQL migration gate"
-    path = Path(__file__).resolve().parents[2] / "bisheng/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
+    path = Path(__file__).resolve().parents[2] / "doberman_agent/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
     spec = importlib.util.spec_from_file_location("f062_mysql_migration", path)
     migration = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migration)

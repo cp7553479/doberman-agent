@@ -8,7 +8,7 @@ const mock = vi.hoisted(() => ({ scroll: vi.fn(), state: {
     historyEnd: false, questions: [], inputLocked: false, showGuideQuestion: false,
     setShowGuideQuestion: vi.fn(), eventTarget: new EventTarget(),
 } }));
-vi.mock('@bisheng/chat', () => ({ useConversationScroll: mock.scroll, SuggestedQuestions: () => null }));
+vi.mock('@doberman-agent/chat', () => ({ useConversationScroll: mock.scroll, SuggestedQuestions: () => null }));
 vi.mock('@/components/bs-comp/appChat/PlatformConversationMessages', () => ({ PlatformConversationMessages: () => null }));
 vi.mock('@/components/bs-comp/chatComponent/ChatInput', () => ({ default: () => null }));
 vi.mock('@/pages/BuildPage/flow/FlowChat/ChatInput', () => ({ default: () => null }));

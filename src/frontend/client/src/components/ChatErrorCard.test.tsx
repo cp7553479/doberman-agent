@@ -5,7 +5,7 @@ import { ChatErrorCard } from "./ChatErrorCard";
 
 const mockI18n = createInstance();
 jest.mock("~/hooks", () => ({ useLocalize: () => mockI18n.t.bind(mockI18n) }));
-jest.mock("bisheng-icons", () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
+jest.mock("@doberman-agent/icons", () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
 jest.mock("~/components/ServiceBusyNotice", () => ({ ServiceBusyNotice: () => null }));
 
 beforeAll(async () => {

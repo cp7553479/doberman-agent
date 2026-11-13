@@ -18,13 +18,13 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 
 async def _staged_second_version(app_db, app_factory, *, tables: list[dict] | None):
     """A stopped application whose approved-but-unstarted version declares ``tables``."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     app, _first = await app_factory(state=AppState.STOPPED.value)
     manifest: dict = {"name": "Orders", "runtime": "python3.11", "port": 8080}
@@ -56,7 +56,7 @@ class TestResumeBuildsTheStagedVersionsTables:
         """Order is the property, as it is on the publish path: a refusal must
         cost the application nothing, and an instance must never be handed a
         database that is a release behind its code."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await _staged_second_version(
             app_db, app_factory, tables=[{"name": "orders", "columns": [{"name": "id", "type": "INTEGER"}]}]
@@ -79,9 +79,9 @@ class TestResumeBuildsTheStagedVersionsTables:
         The owner pressed a button and gets told why it did not happen; the
         application stays where it was, on a database nobody touched.
         """
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-        from bisheng.common.errcode.app_publish import AppSchemaMigrationFailedError
-        from bisheng.database.models.app import AppDao
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.common.errcode.app_publish import AppSchemaMigrationFailedError
+        from doberman_agent.database.models.app import AppDao
 
         app, _ = await _staged_second_version(
             app_db,
@@ -105,7 +105,7 @@ class TestResumeBuildsTheStagedVersionsTables:
     async def test_a_resume_with_nothing_staged_costs_no_rpc(self, app_db, app_factory, app_owner, fake_orchestrator):
         """Restarting the version that is already current changed no declaration,
         so there is nothing to migrate and nothing to ask the manager about."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.STOPPED.value)
 

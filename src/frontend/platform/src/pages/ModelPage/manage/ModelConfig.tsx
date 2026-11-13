@@ -1,14 +1,14 @@
 // @ts-strict-ignore
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Alert, Button, Input, Select, toast } from '@bisheng/ui';
+import { Alert, Button, Input, Select, toast } from '@doberman-agent/ui';
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Button as SharedButton, Switch, Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button as SharedButton, Switch, Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { ModelFieldHint } from "./ModelFieldHint";
 import { generateUUID } from "@/components/bs-ui/utils";
@@ -48,7 +48,7 @@ export const modelProvider = [
     { "name": "vllm", "value": "vllm", "group": "local" },
     { "name": "MindIE", "value": "MindIE", "group": "local" },
 ]
-const bishengModelProvider = { "name": "bishengRT", "value": "bisheng_rt", "group": "local" }
+const dobermanAgentModelProvider = { "name": "dobermanAgentRT", "value": "doberman_agent_rt", "group": "local" }
 
 // Admins looking for a "custom" provider search for these words; they all lead to the OpenAI-compatible type.
 const OPENAI_COMPATIBLE_SEARCH_WORDS = ['custom', 'compatible', 'one api', 'oneapi', 'gateway', 'proxy']
@@ -253,7 +253,7 @@ export default function ModelConfig({ id, onGetName, onBack, onReload, onBerforS
     }, [t])
 
     const _modelProvider = useMemo(() => {
-        return id === -1 ? modelProvider : [...modelProvider, bishengModelProvider]
+        return id === -1 ? modelProvider : [...modelProvider, dobermanAgentModelProvider]
     }, [id])
 
     const providerInfo = useModelProviderInfo(formData.type)
@@ -279,7 +279,7 @@ export default function ModelConfig({ id, onGetName, onBack, onReload, onBerforS
         <div className="mx-auto mt-6 h-[calc(100vh-220px-var(--license-banner-h,0px))] w-full max-w-[720px] overflow-y-auto px-4 pb-10">
             <section className="space-y-4">
                 <div className="space-y-2">
-                    <Label className="bisheng-label inline-flex items-center">
+                    <Label className="doberman_agent-label inline-flex items-center">
                         <span>{t('model.providerType')}</span>
                         <ModelFieldHint className="ml-1" content={t('model.providerTypeTip')} />
                     </Label>
@@ -300,7 +300,7 @@ export default function ModelConfig({ id, onGetName, onBack, onReload, onBerforS
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label className="bisheng-label inline-flex items-center">
+                    <Label className="doberman_agent-label inline-flex items-center">
                         <span>{t('model.serviceProviderName')}</span>
                         <span className="text-red-500">*</span>
                         <ModelFieldHint className="ml-1" content={t('model.serviceProviderNameTooltip')} />
@@ -327,7 +327,7 @@ export default function ModelConfig({ id, onGetName, onBack, onReload, onBerforS
                     <h3 className="text-sm font-medium">{t('model.sectionUsage')}</h3>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between gap-4">
-                            <Label className="bisheng-label inline-flex items-center">
+                            <Label className="doberman_agent-label inline-flex items-center">
                                 <span>{t('model.dailyCallLimit')}</span>
                                 <ModelFieldHint className="ml-1" content={t('model.dailyCallLimitTip')} />
                             </Label>
@@ -344,7 +344,7 @@ export default function ModelConfig({ id, onGetName, onBack, onReload, onBerforS
                     </div>
                     {showShareToggle && (
                         <div className="flex items-center justify-between gap-4">
-                            <Label className="bisheng-label inline-flex items-center">
+                            <Label className="doberman_agent-label inline-flex items-center">
                                 <span>{t('model.shareToChildren')}</span>
                                 <ModelFieldHint className="ml-1" content={t('model.shareToChildrenTip')} />
                             </Label>

@@ -1,10 +1,10 @@
-# 毕昇后端代码
+# doberman-agent后端代码
 
 * Dockerfile 使用 uv 进行 Python 依赖管理
 
 ## 调试开关
 
-### `BISHENG_AGENT_DUMP` — 工作台 Agent 聊天 payload 落盘
+### `DOBERMAN_AGENT_AGENT_DUMP` — 工作台 Agent 聊天 payload 落盘
 
 用于排查"送给大模型的数据是否正确"类问题。开启后，`/api/v1/workstation/chat/completions` 每次调用都会把**完整、未截断**的 payload（system prompt + 工具列表 + 历史消息 + 当前消息）写一份 JSON 到本地磁盘，便于肉眼核对 / 发给协作方。
 
@@ -16,11 +16,11 @@
 
 ```bash
 # 方式一：当前 shell 临时导出后再启动服务
-export BISHENG_AGENT_DUMP=1
-PYTHONPATH="./" uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --reload
+export DOBERMAN_AGENT_AGENT_DUMP=1
+PYTHONPATH="./" uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --reload
 
 # 方式二：单次启动时带环境变量
-BISHENG_AGENT_DUMP=1 PYTHONPATH="./" uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --reload
+DOBERMAN_AGENT_AGENT_DUMP=1 PYTHONPATH="./" uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --reload
 ```
 
 接受的真值（大小写不敏感）：`1` / `true` / `yes` / `on`。其他值视为关闭。
@@ -28,17 +28,17 @@ BISHENG_AGENT_DUMP=1 PYTHONPATH="./" uv run uvicorn bisheng.main:app --host 0.0.
 #### 关闭方式
 
 ```bash
-unset BISHENG_AGENT_DUMP
+unset DOBERMAN_AGENT_AGENT_DUMP
 # 或重启服务不再带该变量
 ```
 
 #### 输出位置
 
 ```
-/tmp/bisheng_agent_dumps/<trace_id>.json
+/tmp/doberman_agent_agent_dumps/<trace_id>.json
 ```
 
-其中 `<trace_id>` 可以在后端日志 `[agent_chat][dump] wrote full payload -> /tmp/bisheng_agent_dumps/<trace_id>.json` 行中找到，也可以在请求响应头 / 前端 trace 工具里对应到同一次请求。
+其中 `<trace_id>` 可以在后端日志 `[agent_chat][dump] wrote full payload -> /tmp/doberman_agent_agent_dumps/<trace_id>.json` 行中找到，也可以在请求响应头 / 前端 trace 工具里对应到同一次请求。
 
 #### 文件结构
 
@@ -50,7 +50,7 @@ unset BISHENG_AGENT_DUMP
   "tool_count": 0,
   "tool_names": [],
   "kb_count": 0,
-  "system_prompt": "# 角色\n你是 BISHENG AI 助手...",
+  "system_prompt": "# 角色\n你是 DOBERMAN_AGENT AI 助手...",
   "messages": [
     { "role": "HumanMessage", "content": "..." },
     { "role": "AIMessage",    "content": "..." },
@@ -66,8 +66,8 @@ unset BISHENG_AGENT_DUMP
 
 #### 相关代码位置
 
-- 开关与 dump 逻辑：`src/backend/bisheng/workstation/domain/services/chat_service.py` 中搜索 `BISHENG_AGENT_DUMP`
-- 调试完毕可手动清理：`rm -rf /tmp/bisheng_agent_dumps`
+- 开关与 dump 逻辑：`src/backend/doberman_agent/workstation/domain/services/chat_service.py` 中搜索 `DOBERMAN_AGENT_AGENT_DUMP`
+- 调试完毕可手动清理：`rm -rf /tmp/doberman_agent_agent_dumps`
 
 #### 注意事项
 

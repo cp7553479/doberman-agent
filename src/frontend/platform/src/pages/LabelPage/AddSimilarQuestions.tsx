@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { captureQaOperation, type QaOperation } from '@bisheng/chat/core';
-import { Pagination, Button, Input, toast } from '@bisheng/ui';
+import { captureQaOperation, type QaOperation } from '@doberman-agent/chat/core';
+import { Pagination, Button, Input, toast } from '@doberman-agent/ui';
 import { QaKnowledgeSelect } from "@/components/bs-comp/selectComponent/QaKnowledgeSelect";
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
 import { Label } from "@/components/bs-ui/label";
@@ -123,7 +123,7 @@ const AddSimilarQuestions = forwardRef<AnnotationFormHandle, AnnotationFormProps
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-2">
                     <div className="flex items-center gap-4">
-                        <Label htmlFor="knowledgeLib" className="bisheng-label w-40 shrink-0 whitespace-nowrap">{t('log.qaKnowledgeLib')}</Label>
+                        <Label htmlFor="knowledgeLib" className="doberman_agent-label w-40 shrink-0 whitespace-nowrap">{t('log.qaKnowledgeLib')}</Label>
                         <QaKnowledgeSelect
                             multiple={false}
                             label={t('log.qaKnowledgeLib')}
@@ -174,7 +174,7 @@ const AddSimilarQuestions = forwardRef<AnnotationFormHandle, AnnotationFormProps
                                 </TableBody>
                             </Table>
                         </div>
-                        <div className="bisheng-table-footer px-6 bg-transparent">
+                        <div className="doberman_agent-table-footer px-6 bg-transparent">
                             <Pagination locale={paginationLocale} size="small" simple
                                 className="justify-end"
                                 current={page}

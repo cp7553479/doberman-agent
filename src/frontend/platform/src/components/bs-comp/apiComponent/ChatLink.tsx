@@ -1,17 +1,17 @@
 // @ts-strict-ignore
-import { Alert, Button, Select, notification } from '@bisheng/ui';
+import { Alert, Button, Select, notification } from '@doberman-agent/ui';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 
 import { Label } from '@/components/bs-ui/label';
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
 import Skeleton from '@/components/bs-ui/skeleton';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 import { getGuestLinkApi, GuestLinkKind, GuestLinkSettings, patchGuestLinkApi } from '@/controllers/API/guestLink';
 import { showApiError } from '@/controllers/request';
 import { copyText } from '@/utils';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';

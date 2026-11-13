@@ -30,7 +30,7 @@ def _safe(root, name):
 
 
 def _common():
-    spec = importlib.util.spec_from_file_location("bisheng_image_preparer", "/opt/bisheng/prepare.py")
+    spec = importlib.util.spec_from_file_location("doberman_agent_image_preparer", "/opt/doberman-agent/prepare.py")
     if spec is None or spec.loader is None:
         raise ValueError("prepare_image_tool_missing")
     module = importlib.util.module_from_spec(spec)
@@ -92,7 +92,7 @@ def prepare(
                 "PIP_DISABLE_PIP_VERSION_CHECK": "1",
                 "PIP_NO_CACHE_DIR": "1",
                 "npm_config_offline": "true",
-                "BISHENG_DEPENDENCY_LOCK": lock,
+                "DOBERMAN_AGENT_DEPENDENCY_LOCK": lock,
             }
         )
         if config["cached"]:
@@ -121,7 +121,7 @@ def prepare(
                 check=True,
             )
             subprocess.run(["/opt/venv/bin/python", "-I", "-m", "pip", "check"], check=True)
-            subprocess.run(["/opt/venv/bin/python", "-I", "-c", "import bisheng_sdk"], check=True)
+            subprocess.run(["/opt/venv/bin/python", "-I", "-c", "import doberman_agent_sdk"], check=True)
         if config.get("source_image") and language == "node20":
             subprocess.run(
                 ["npm", "prune", "--omit=dev", "--offline", "--ignore-scripts", "--no-audit", "--no-fund"],

@@ -11,8 +11,8 @@ jest.mock('~/api/channels', () => ({ getChannelSquareApi: jest.fn(), getChannelD
 jest.mock('~/common', () => ({ NotificationSeverity: { SUCCESS: 'success', WARNING: 'warning' } }));
 jest.mock('~/components/illustrations', () => ({ EmptyStateIllustration: () => <div /> }));
 jest.mock('~/components/ui/icon/Loading', () => ({ LoadingIcon: () => <div /> }));
-jest.mock('bisheng-icons', () => ({ Outlined: { Plus: () => <div />, SidebarMenu: () => <div /> } }));
-jest.mock('@bisheng/ui', () => ({ SearchInput: () => <input /> }));
+jest.mock('@doberman-agent/icons', () => ({ Outlined: { Plus: () => <div />, SidebarMenu: () => <div /> } }));
+jest.mock('@doberman-agent/ui', () => ({ SearchInput: () => <input /> }));
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
 jest.mock('./ChannelSquareCard', () => ({ ChannelSquareCard: ({ title, status }: { title: string; status: string }) => <div>{title}:{status}</div> }));
 

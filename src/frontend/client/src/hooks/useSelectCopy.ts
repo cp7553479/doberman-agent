@@ -1,7 +1,7 @@
 import { useLocalize } from '~/hooks';
 
 /**
- * Localized panel copy for the shared `@bisheng/ui` Select, which ships no
+ * Localized panel copy for the shared `@doberman-agent/ui` Select, which ships no
  * copy of its own (English fallbacks only). Spread it onto every Select:
  * `<Select {...selectCopy} … />`.
  */

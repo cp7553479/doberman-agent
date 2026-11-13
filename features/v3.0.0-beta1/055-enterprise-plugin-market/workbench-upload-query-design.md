@@ -2,7 +2,7 @@
 
 > 状态：服务端接口、静态校验和管理页已实现，尚未部署或与 Desktop 联调。交付范围为管理员上传 `.tgz`、管理页查看导入结果，以及 Desktop 按已验证身份查询本租户工作台元数据和下载原始包。安装、离线签名策略和运行验收仍需后续客户端联调，不能由“查询或下载成功”推定。
 >
-> 压缩包规则见 [工作台压缩包校验规则](workbench-package-validation.md)。外部协议依据：[DSH 工作台开发规范](https://dshdesktop.com/workbench/docs/development/) 与 [工作台市场验收规范](https://dshdesktop.com/workbench/docs/market-acceptance/)；BiSheng 当前插件市场实现见 [F055 设计](design.md)。
+> 压缩包规则见 [工作台压缩包校验规则](workbench-package-validation.md)。外部协议依据：[DSH 工作台开发规范](https://dshdesktop.com/workbench/docs/development/) 与 [工作台市场验收规范](https://dshdesktop.com/workbench/docs/market-acceptance/)；doberman-agent 当前插件市场实现见 [F055 设计](design.md)。
 
 ## 1. 目标与边界
 
@@ -16,7 +16,7 @@
 
 现有 `/api/v1/dsh/market` 插件市场使用 `market_admin` 校验租户管理员、`market_actor` 校验员工/Desktop 身份；`MarketService` 协调仓库与 MinIO，插件导入任务和版本通过 SQLModel 持久化。平台页已有上传预览、进度、列表与失败任务样式。工作台沿用此调用链、身份边界、统一响应信封与平台请求封装；校验器、表、MinIO key 和路由单独命名，不把 `.tgz` 塞进只支持 ZIP 的插件校验器或插件表。
 
-遵循 [BiSheng 架构约束](../../../docs/constitution.md)：Endpoint → Service → Repository → DB；MySQL/DM8 使用可移植列型与 `JsonType`；多节点共享字节放 MinIO，元数据放数据库；管理员与员工均仅访问登录租户。新表按 SQLModel 模型发现机制创建；若实现时存在依赖这些表的同版本迁移，再按当时 Alembic 单头决定是否补显式建表 revision。
+遵循 [doberman-agent 架构约束](../../../docs/constitution.md)：Endpoint → Service → Repository → DB；MySQL/DM8 使用可移植列型与 `JsonType`；多节点共享字节放 MinIO，元数据放数据库；管理员与员工均仅访问登录租户。新表按 SQLModel 模型发现机制创建；若实现时存在依赖这些表的同版本迁移，再按当时 Alembic 单头决定是否补显式建表 revision。
 
 ## 3. 数据结构与状态
 
@@ -109,7 +109,7 @@
 
 ## 6. 实施位置与验收
 
-- 后端：`bisheng/dsh_market` 增加独立的 tar 校验、工作台 Service/Repository/SQLModel 与路由；复用当前 `market_actor`/`market_admin`、MinIO 连接和统一响应。既有插件 ZIP 导入与 `/catalog` 行为不变。
+- 后端：`doberman-agent/dsh_market` 增加独立的 tar 校验、工作台 Service/Repository/SQLModel 与路由；复用当前 `market_actor`/`market_admin`、MinIO 连接和统一响应。既有插件 ZIP 导入与 `/catalog` 行为不变。
 - 前端：`controllers/API/dshWorkbenches.ts` 提供工作台请求类型与方法；市场页增加工作台内容区，遵守平台 AGENTS 与设计规范。
 - 文档：Desktop 并行开发依据[客户端工作台接入说明](desktop-workbench-api.md)；实现后更新本目录的 `spec.md`/`design.md`/`tasks.md` 与客户端说明中的实际交付状态，不得把本设计稿写成已上线能力。
 - 后端验收：两个原始样包、结构/身份/版本冲突、危险 tar、资源限制、幂等与任务恢复、租户隔离和管理员权限；单头 Alembic 检查及 MySQL/DM8 SQL 兼容复核。

@@ -37,9 +37,9 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlalchemy import text  # noqa: E402
 
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.knowledge.domain.models.knowledge import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.knowledge.domain.models.knowledge import (  # noqa: E402
     KnowledgeState,
     KnowledgeTypeEnum,
 )

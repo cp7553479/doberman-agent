@@ -14,15 +14,15 @@ import json
 
 import pytest
 
-from bisheng.common.errcode.workstation import (
+from doberman_agent.common.errcode.workstation import (
     ConversationMessageBatchTooLargeError,
     ConversationMessageNotFoundError,
     ConversationMessageNotOwnedError,
 )
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.workstation.domain.services.conversation_export_service import (
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.workstation.domain.services.conversation_export_service import (
     ConversationExportService,
 )
 

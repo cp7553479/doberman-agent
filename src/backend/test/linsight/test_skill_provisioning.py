@@ -26,9 +26,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.linsight.domain.services import skill_provisioning
-from bisheng.linsight.domain.services.skill_provisioning import WORKSPACE_SKILLS_DIR, materialize_session_skills
-from bisheng.linsight.domain.services.skill_store import SkillStore
+from doberman_agent.linsight.domain.services import skill_provisioning
+from doberman_agent.linsight.domain.services.skill_provisioning import WORKSPACE_SKILLS_DIR, materialize_session_skills
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 1
@@ -258,8 +258,8 @@ class TestEnumerationLoop:
     async def test_copied_skill_is_enumerated_and_path_resolves(self, monkeypatch, store, backend):
         """Full Fork X loop: copy → real SkillsMiddleware enumerates → path consistency."""
         from deepagents.backends.filesystem import FilesystemBackend
-        from bisheng.linsight.domain.services.skills_prompt import LinsightSkillsMiddleware
-        from bisheng.linsight.domain.services.workspace_backend import normalize_workspace_path
+        from doberman_agent.linsight.domain.services.skills_prompt import LinsightSkillsMiddleware
+        from doberman_agent.linsight.domain.services.workspace_backend import normalize_workspace_path
 
         _patch_enabled(monkeypatch, ENABLED, store)
         await materialize_session_skills(backend, TENANT, ["biao-shu-zhuan-xie"], store=store)

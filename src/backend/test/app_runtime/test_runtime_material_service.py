@@ -8,17 +8,17 @@ from uuid import uuid4
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RuntimeArtifact,
     RuntimeAssignment,
     RuntimeDelivery,
     RuntimeNode,
     RuntimeRoute,
 )
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_material_protocol import MaterialProtocolError, signed_headers
-from bisheng.app_runtime.domain.services.runtime_protocol import ServiceIdentity, canonical_json, content_digest
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_material_protocol import MaterialProtocolError, signed_headers
+from doberman_agent.app_runtime.domain.services.runtime_protocol import ServiceIdentity, canonical_json, content_digest
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import MANAGER, REF, document
@@ -30,7 +30,7 @@ KEY_ID = "material-pod-a"
 
 @pytest.fixture
 async def materials(control):
-    from bisheng.app_runtime.domain.services.runtime_material_service import RuntimeMaterialService
+    from doberman_agent.app_runtime.domain.services.runtime_material_service import RuntimeMaterialService
 
     control_svc, repository, op = control
     clock = {"now": NOW, "nonce_available": True}
@@ -422,7 +422,7 @@ async def test_preview_init_uses_the_live_session_after_the_start_operation_comp
 
 
 async def test_public_offline_material_requires_an_explicit_matching_profile(materials):
-    from bisheng.core.context.tenant import tenant_execution_scope
+    from doberman_agent.core.context.tenant import tenant_execution_scope
 
     await reframe(materials, "prepare", "prepare-download")
     with tenant_execution_scope(2):

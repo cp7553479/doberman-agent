@@ -20,8 +20,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.api.services.workflow import WorkFlowService
-from bisheng.database.models.flow import FlowType
+from doberman_agent.api.services.workflow import WorkFlowService
+from doberman_agent.database.models.flow import FlowType
 
 HOSTED = FlowType.HOSTED_APP.value
 WORKFLOW = FlowType.WORKFLOW.value
@@ -47,7 +47,7 @@ def _candidates() -> list[dict]:
 @pytest.fixture()
 def grant_everything(monkeypatch):
     """Every candidate passes every check, so an absence can only be the type gate."""
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True)
 
@@ -55,7 +55,7 @@ def grant_everything(monkeypatch):
         return {str(resource_id): frozenset(actions) for resource_id in resource_ids}
 
     monkeypatch.setattr(
-        "bisheng.api.services.workflow.batch_check_business_actions",
+        "doberman_agent.api.services.workflow.batch_check_business_actions",
         _batch_check,
     )
 
@@ -66,11 +66,11 @@ async def test_frequently_used_excludes_hosted(grant_everything):
 
     with (
         patch(
-            "bisheng.api.services.workflow.UserLinkDao.get_user_link",
+            "doberman_agent.api.services.workflow.UserLinkDao.get_user_link",
             return_value=links,
         ),
         patch(
-            "bisheng.api.services.workflow.FlowDao.get_all_apps",
+            "doberman_agent.api.services.workflow.FlowDao.get_all_apps",
             return_value=(_candidates(), 3),
         ),
         patch.object(WorkFlowService, "add_extra_field", side_effect=lambda _user, data, **_kw: data),
@@ -84,7 +84,7 @@ async def test_frequently_used_excludes_hosted(grant_everything):
 
 async def test_recommended_apps_exclude_hosted(grant_everything):
     """Workbench recommendation strip: an administrator may configure a hosted app anyway."""
-    from bisheng.workstation.api.endpoints import apps as apps_endpoint
+    from doberman_agent.workstation.api.endpoints import apps as apps_endpoint
 
     with (
         patch.object(

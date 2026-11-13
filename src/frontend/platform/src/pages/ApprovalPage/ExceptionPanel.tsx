@@ -1,7 +1,7 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { formatDateTime, HIDDEN_DETAIL_KEYS } from "./approvalMetadata";
 import { ActionBtn } from "./ApprovalPrimitives";
 import { ApprovalTimeline } from "./ApprovalTimeline";

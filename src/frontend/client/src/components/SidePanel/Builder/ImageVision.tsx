@@ -2,7 +2,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { Capabilities } from '~/types/chat';
 import type { AssistantForm } from '~/common';
 import { QuestionMark } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 
 export default function ImageVision() {

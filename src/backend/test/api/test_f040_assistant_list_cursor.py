@@ -13,9 +13,9 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.api.services.assistant import AssistantService
+from doberman_agent.api.services.assistant import AssistantService
 
-_AS = "bisheng.api.services.assistant"
+_AS = "doberman_agent.api.services.assistant"
 
 
 class _User:
@@ -221,7 +221,7 @@ async def test_has_more_probe_is_exact_at_page_boundary():
 
 
 async def test_envelope_rejects_bad_cursor_with_app_invalid_cursor_error():
-    from bisheng.common.errcode.flow import AppInvalidCursorError
+    from doberman_agent.common.errcode.flow import AppInvalidCursorError
 
     raised = False
     try:
@@ -236,7 +236,7 @@ async def test_envelope_rejects_bad_cursor_with_app_invalid_cursor_error():
 
 
 async def test_envelope_empty_tag_match_short_circuits():
-    from bisheng.common.schemas.api import PageInfiniteCursorData
+    from doberman_agent.common.schemas.api import PageInfiniteCursorData
 
     with patch(f"{_AS}.TagDao.get_resources_by_tags", return_value=[]):
         result = await AssistantService.aget_assistant_envelope(

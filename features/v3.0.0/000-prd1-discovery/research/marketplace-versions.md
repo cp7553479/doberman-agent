@@ -5,7 +5,7 @@
 
 ## current_state
 【应用卡片列表的两条后端链路（均已在代码验证）】
-1) 构建页链路：`GET /api/v1/workflow/list`（src/backend/bisheng/api/v1/workflow.py:331 `read_flows`）→ `WorkFlowService.get_all_flows_envelope`（src/backend/bisheng/api/services/workflow.py:565）。F027 cursor 分页（keyset (update_time,id)，cursor 已兼容 int 与 UUID 混合 id）。数据源是 `FlowDao.aget_all_apps`（database/models/flow.py:596）→ `_build_apps_subquery`（flow.py:748）：`select(Flow...) UNION ALL select(Assistant...)`，且 docstring 明示租户 auto-filter 对 subquery 失效、每个内层 SELECT 手工注入 `build_tenant_filter_clause`。助手固定以 `FlowType.ASSISTANT.value` 字面量并入。
+1) 构建页链路：`GET /api/v1/workflow/list`（src/backend/doberman_agent/api/v1/workflow.py:331 `read_flows`）→ `WorkFlowService.get_all_flows_envelope`（src/backend/doberman_agent/api/services/workflow.py:565）。F027 cursor 分页（keyset (update_time,id)，cursor 已兼容 int 与 UUID 混合 id）。数据源是 `FlowDao.aget_all_apps`（database/models/flow.py:596）→ `_build_apps_subquery`（flow.py:748）：`select(Flow...) UNION ALL select(Assistant...)`，且 docstring 明示租户 auto-filter 对 subquery 失效、每个内层 SELECT 手工注入 `build_tenant_filter_clause`。助手固定以 `FlowType.ASSISTANT.value` 字面量并入。
 2) 广场链路：`GET /api/v1/chat/online`（api/v1/chat.py:17 `get_online_chat`）→ `WorkFlowService.get_online_flows_page` / `get_all_flows`，status 固定 `FlowStatus.ONLINE`（flow.py:28，OFFLINE=1/ONLINE=2），支持 tag_id、常用应用置顶排序（ranking_user_id）。未分类默认区：`GET /api/v1/workstation/app/uncategorized`（workstation/api/endpoints/apps.py:80）→ `get_uncategorized_flows`（services/workflow.py:1031）= 全量应用标签取补集（id_list_not_in）。
 
 【可见范围过滤】非 admin 用户走两段：a) 预过滤 `_app_type_ids_for_permission`（services/workflow.py:699）对 targets 硬编码 [("workflow"), ("assistant")] 两个 OpenFGA object type 调 `PermissionService.list_accessible_ids`；b) 逐行细过滤 `ApplicationPermissionService.get_app_permission_map_async`（permission/domain/services/application_permission_service.py，其中 flow_type→FGA object type 映射在该文件 :35）。权限位→FGA relation 映射 `_APP_PERMISSION_TO_MIN_RELATION`（services/workflow.py:59，view/use→can_read、publish/unpublish→can_manage）。FGA 授权模型是代码定义：core/openfga/authorization_model.py:288 `_standard_resource_type('workflow')`。类型白名单 `SUPPORTED_APP_TYPES = {WORKFLOW, ASSISTANT}`（services/workflow.py:58）+ `filter_supported_apps`（:73）双重把关，其他 FlowType（WORKSTATION=15/LINSIGHT=20/CHANNEL_ARTICLE=25/KNOLEDGE_SPACE=30，flow.py:33）不会进入应用列表。
@@ -19,18 +19,18 @@
 【GOV-09 可克隆的管理表格模式（platform）】标准三件套 `useTable`（@/util/hook）+ bs-ui `Table` + `SearchInput` + `AutoPagination`：最典型是 `pages/SystemPage/components/Users.tsx`（:92 useTable、:196 搜索、:203 表格、含 useResizableColumns 列宽拖拽）与 `pages/LogPage/useAppLog/index.tsx`（:65 useTable + 多筛选 Select + :396 分页）——后者本身就是「按应用检索」的列表，最接近 GOV-09 形态。导航：`layout/MainLayout.tsx` 侧边栏按 `user.web_menu` key（'build'/'sys'/'model'…）+ `isMenu()`/`showAdminNav()` 控制入口（:93-113），路由注册在 `routes/index.tsx`（permission 字段同名）。全仓 grep「应用工场/appFactory」无任何既有代码。
 
 ## key_files
-- src/backend/bisheng/database/models/tag.py — Tag/TagLink 模型 + TagDao 全部打标/查询方法；business_type=APPLICATION 即应用标签命名空间
-- src/backend/bisheng/api/services/tag.py — TagService：标签 CRUD（admin）、打标权限 check_tag_link_permission（resource_type 只认 ASSISTANT/WORK_FLOW，owner 可自助打标——与 PRD 收口要求相悖处）、HOME_TAGS 首页标签配置
-- src/backend/bisheng/api/v1/tag.py — /api/v1/tag 路由：CRUD + /link 打标 + /home 广场分类配置
-- src/backend/bisheng/database/models/flow.py — FlowType/FlowStatus 枚举、FlowDao.aget_all_apps（F027 cursor）、_build_apps_subquery（flow+assistant UNION，租户条款手工注入的陷阱说明）
-- src/backend/bisheng/database/models/flow_version.py — 版本表：data JSON 快照 + is_current 指针；change_current_version=原地切换非前向新建（RT-05 语义缺口的核心证据）
-- src/backend/bisheng/api/services/workflow.py — SUPPORTED_APP_TYPES(:58)、权限位→relation 映射(:59)、get_all_flows_envelope(:565)、_app_type_ids_for_permission(:699 硬编码 workflow/assistant 两 FGA 类型)、add_extra_field(:87 附 user_name/version_list/tags)、get_uncategorized_flows(:1031)、update_flow_status(:829 上线不走审批)
-- src/backend/bisheng/api/v1/workflow.py — /workflow/list(:331) 与 /workflow/versions* + change_version(:214-271) 路由
-- src/backend/bisheng/api/v1/chat.py — /chat/online 广场列表端点（status=ONLINE + ReBAC + 常用排序）
-- src/backend/bisheng/workstation/api/endpoints/apps.py — 广场辅助端点：/app/uncategorized(未分类默认区)、/app/recommended、/app/used
-- src/backend/bisheng/permission/domain/services/application_permission_service.py — FlowType→OpenFGA object type 映射(:35)与应用细粒度权限图谱查询——第三类型接入 ReBAC 的改造点
-- src/backend/bisheng/core/openfga/authorization_model.py — FGA 授权模型代码定义，_standard_resource_type('workflow')(:288)——新增对象类型在此扩展并需模型迁移
-- src/backend/bisheng/database/models/group_resource.py — ResourceTypeEnum(:14)——打标/授权共用的资源类型枚举，工场应用需新增成员
+- src/backend/doberman_agent/database/models/tag.py — Tag/TagLink 模型 + TagDao 全部打标/查询方法；business_type=APPLICATION 即应用标签命名空间
+- src/backend/doberman_agent/api/services/tag.py — TagService：标签 CRUD（admin）、打标权限 check_tag_link_permission（resource_type 只认 ASSISTANT/WORK_FLOW，owner 可自助打标——与 PRD 收口要求相悖处）、HOME_TAGS 首页标签配置
+- src/backend/doberman_agent/api/v1/tag.py — /api/v1/tag 路由：CRUD + /link 打标 + /home 广场分类配置
+- src/backend/doberman_agent/database/models/flow.py — FlowType/FlowStatus 枚举、FlowDao.aget_all_apps（F027 cursor）、_build_apps_subquery（flow+assistant UNION，租户条款手工注入的陷阱说明）
+- src/backend/doberman_agent/database/models/flow_version.py — 版本表：data JSON 快照 + is_current 指针；change_current_version=原地切换非前向新建（RT-05 语义缺口的核心证据）
+- src/backend/doberman_agent/api/services/workflow.py — SUPPORTED_APP_TYPES(:58)、权限位→relation 映射(:59)、get_all_flows_envelope(:565)、_app_type_ids_for_permission(:699 硬编码 workflow/assistant 两 FGA 类型)、add_extra_field(:87 附 user_name/version_list/tags)、get_uncategorized_flows(:1031)、update_flow_status(:829 上线不走审批)
+- src/backend/doberman_agent/api/v1/workflow.py — /workflow/list(:331) 与 /workflow/versions* + change_version(:214-271) 路由
+- src/backend/doberman_agent/api/v1/chat.py — /chat/online 广场列表端点（status=ONLINE + ReBAC + 常用排序）
+- src/backend/doberman_agent/workstation/api/endpoints/apps.py — 广场辅助端点：/app/uncategorized(未分类默认区)、/app/recommended、/app/used
+- src/backend/doberman_agent/permission/domain/services/application_permission_service.py — FlowType→OpenFGA object type 映射(:35)与应用细粒度权限图谱查询——第三类型接入 ReBAC 的改造点
+- src/backend/doberman_agent/core/openfga/authorization_model.py — FGA 授权模型代码定义，_standard_resource_type('workflow')(:288)——新增对象类型在此扩展并需模型迁移
+- src/backend/doberman_agent/database/models/group_resource.py — ResourceTypeEnum(:14)——打标/授权共用的资源类型枚举，工场应用需新增成员
 - src/frontend/client/src/pages/apps/explore.tsx — client 应用广场页（ExplorePlaza）：home 标签 tab + 未分类 tab + 滚动加载
 - src/frontend/client/src/pages/apps/components/AgentCard.tsx — 广场卡片：logo/name/description/tags，当前不展示 owner（RT-02 卡片构成差一项）
 - src/frontend/client/src/api/apps.ts — client 应用 API 封装；getAppsApi 内 flow_type map hardcode {assistant:5,skill:1,flow:10}——第三类型需扩

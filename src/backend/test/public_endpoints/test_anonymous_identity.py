@@ -9,20 +9,20 @@ from fastapi import APIRouter, Depends, FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
-from bisheng.common.schemas.api import resp_200
-from bisheng.core.context.tenant import get_current_tenant_id
-from bisheng.database.models.assistant import AssistantStatus
-from bisheng.database.models.flow import FlowStatus, FlowType
-from bisheng.database.models.session import MessageSessionDao
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.scopes import open_api_scope
-from bisheng.permission.application.identity import get_current_permission_actor
-from bisheng.public_endpoints.api.endpoints import assistant, flow, workflow
-from bisheng.public_endpoints.api.exception_handlers import register_public_exception_handlers
-from bisheng.public_endpoints.api.router import router_public
-from bisheng.public_endpoints.domain.services import guest_policy
-from bisheng.utils import http_middleware
+from doberman_agent.common.schemas.api import resp_200
+from doberman_agent.core.context.tenant import get_current_tenant_id
+from doberman_agent.database.models.assistant import AssistantStatus
+from doberman_agent.database.models.flow import FlowStatus, FlowType
+from doberman_agent.database.models.session import MessageSessionDao
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.scopes import open_api_scope
+from doberman_agent.permission.application.identity import get_current_permission_actor
+from doberman_agent.public_endpoints.api.endpoints import assistant, flow, workflow
+from doberman_agent.public_endpoints.api.exception_handlers import register_public_exception_handlers
+from doberman_agent.public_endpoints.api.router import router_public
+from doberman_agent.public_endpoints.domain.services import guest_policy
+from doberman_agent.utils import http_middleware
 
 WORKFLOW_ID = UUID(int=301).hex
 ASSISTANT_ID = UUID(int=302).hex
@@ -82,7 +82,7 @@ def publication(monkeypatch):
         "_load_default_operator",
         AsyncMock(return_value=SimpleNamespace(user_id=41, user_name="operator", tenant_id=3, is_global_super=False)),
     )
-    monkeypatch.setattr("bisheng.permission.application.relation_api.is_tenant_admin", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.permission.application.relation_api.is_tenant_admin", AsyncMock(return_value=False))
     monkeypatch.setattr(MessageSessionDao, "async_get_one", AsyncMock(return_value=None))
 
     async def flow_info(operator, _resource_id):

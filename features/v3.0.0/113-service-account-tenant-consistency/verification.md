@@ -33,7 +33,7 @@
 - 修改Python文件Ruff check/format通过；无新表/列/Alembic迁移。DM8仅静态：有界SQLModel查询及SQLAlchemy相关子查询/COUNT，未做DM8真实执行。
 - arch-guard对本功能69个代码文件逐文件与HEAD基线比较，无新增消息。common/chat两文件各两条旧RULE-1及service_account endpoint一条旧RULE-5保持，不能称仓库绝对全绿。
 - 修改前端文件定向ESLint通过；错误码源生成`build.mjs --check`、`scripts/check-i18n.mjs`通过。
-- `pnpm --dir src/frontend/platform typecheck`受共享UI缺少图标导出、chat的`@bisheng/ui`解析及其他文件既有/依赖环境错误阻塞；报错清单不指向本次修改文件。没有更改依赖或抑制文件来掩盖；不记typecheck通过。直接tsc同样存在全项目错误，只用来定位，不作为门禁通过。
+- `pnpm --dir src/frontend/platform typecheck`受共享UI缺少图标导出、chat的`@doberman-agent/ui`解析及其他文件既有/依赖环境错误阻塞；报错清单不指向本次修改文件。没有更改依赖或抑制文件来掩盖；不记typecheck通过。直接tsc同样存在全项目错误，只用来定位，不作为门禁通过。
 - formatter现有配置在本机触发CommonJS require ESM/top-level-await错误；仅本次新增文件及API模块用无插件临时配置排版，未改仓库formatter或依赖。
 - E2E脚本 `test/e2e/test_e2e_service_account_tenant_consistency.py --collect-only`：1 test collected；**未执行真实HTTP测试，也不将默认skip记通过**。
 - 本轮未执行Docker/K8s、全量backend/frontend测试、DM8、arm64、离线安装或授权验证。

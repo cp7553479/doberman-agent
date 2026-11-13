@@ -2,7 +2,7 @@
 
 **测试环境**：
 - Client：http://localhost:4001/workspace
-- Backend：http://localhost:7860 (默认 admin 密码 `Bisheng@top1`)
+- Backend：http://localhost:7860 (默认 admin 密码 `doberman-agent@top1`)
 
 **前置条件**：
 - 工作台内已有至少 1 个含多轮 query/answer 的日常模式会话

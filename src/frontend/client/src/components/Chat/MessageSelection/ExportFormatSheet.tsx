@@ -8,9 +8,9 @@
  * to track open/close and the message list.
  */
 
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { useCallback, useState, type ComponentType } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import {
     type ExportFormat,
     exportMessagesApi,

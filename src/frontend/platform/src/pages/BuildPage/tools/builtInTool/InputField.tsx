@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Input, Select } from '@bisheng/ui';
+import { Input, Select } from '@doberman-agent/ui';
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { useTranslation } from "react-i18next";
@@ -22,15 +22,15 @@ export const InputField = ({
 
     return (
         <div key={id}>
-            <label htmlFor={id} className="bisheng-label flex items-center gap-1">
+            <label htmlFor={id} className="doberman_agent-label flex items-center gap-1">
                 {label}
                 {tooltip && <AppHint content={tooltip} />}
-                {required && <span className="bisheng-tip">*</span>}
+                {required && <span className="doberman_agent-tip">*</span>}
             </label>
 
             <Input type={type} id={id} name={name} placeholder={placeholder} value={value} autoComplete="off" onChange={onChange} min="0" {...prop} className={"mt-2"} />
             {error && (
-                <p className="bisheng-tip mt-1">
+                <p className="doberman_agent-tip mt-1">
                     {typeof error === "string"
                         ? error
                         : t("fieldCannotBeEmpty", { label })}
@@ -57,10 +57,10 @@ export const SelectField = ({
 
     return (
         <div key={id}>
-            <label htmlFor={id} className="bisheng-label flex items-center gap-1">
+            <label htmlFor={id} className="doberman_agent-label flex items-center gap-1">
                 {label}
                 {tooltip && <AppHint content={tooltip} />}
-                {required && <span className="bisheng-tip">*</span>}
+                {required && <span className="doberman_agent-tip">*</span>}
             </label>
 
             <Select
@@ -79,7 +79,7 @@ export const SelectField = ({
             />
 
             {error && (
-                <p className="bisheng-tip mt-1">
+                <p className="doberman_agent-tip mt-1">
                     {t("fieldCannotBeEmpty", { label })}
                 </p>
             )}

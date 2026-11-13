@@ -18,7 +18,7 @@ class FakeMinioStorage:
     """Minimal in-memory stand-in for ``MinioStorage`` (sync + async surface)."""
 
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         # store[(bucket, object_name)] = bytes
         self.store: dict[tuple[str, str], bytes] = {}

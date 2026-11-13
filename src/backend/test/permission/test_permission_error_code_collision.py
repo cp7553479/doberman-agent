@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode import channel, permission
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.permission.api.responses import permission_error_response
+from doberman_agent.common.errcode import channel, permission
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.permission.api.responses import permission_error_response
 
 
 def _codes(module):

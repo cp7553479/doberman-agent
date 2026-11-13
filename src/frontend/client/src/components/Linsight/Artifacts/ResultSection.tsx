@@ -4,8 +4,8 @@
  * completes: report link row → answer markdown → output files card.
  */
 import { useCallback } from 'react';
-import { Outlined } from 'bisheng-icons';
-import { Badge } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Badge } from '@doberman-agent/ui';
 import type { ChatCitation } from '~/api/chatApi';
 import Markdown from '~/components/Chat/Messages/Content/Markdown';
 import { useLocalize } from '~/hooks';

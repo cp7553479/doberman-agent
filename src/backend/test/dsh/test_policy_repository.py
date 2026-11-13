@@ -6,17 +6,17 @@ import pytest
 from sqlalchemy import create_engine, event
 from sqlmodel import Session
 
-from bisheng.common.errcode.dsh import DshOperationConflictError, DshOperationInProgressError
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.admin_operation import DshOperationRepository
-from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-from bisheng.dsh.domain.schemas.model_policy import DshModelQuotaConfig
+from doberman_agent.common.errcode.dsh import DshOperationConflictError, DshOperationInProgressError
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.admin_operation import DshOperationRepository
+from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+from doberman_agent.dsh.domain.schemas.model_policy import DshModelQuotaConfig
 
 NOW = datetime(2026, 9, 9, 2)
 
@@ -277,8 +277,8 @@ def test_external_sql_first_configuration_race(dsh_database_url, monkeypatch):
 
 
 def test_new_user_proof_requires_current_owner_fence_and_empty_history(sql_store):
-    from bisheng.dsh.domain.models.model_call import DshModelCall
-    from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
+    from doberman_agent.dsh.domain.models.model_call import DshModelCall
+    from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
 
     DshMonthlyUsage.__table__.create(sql_store, checkfirst=True)
     DshModelCall.__table__.create(sql_store, checkfirst=True)
@@ -333,7 +333,7 @@ def test_model_configuration_identity_is_preserved_in_sql_and_intent(sql_store):
 def test_model_configs_reject_ambiguous_or_unbounded_inputs():
     from pydantic import ValidationError
 
-    from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
+    from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
 
     for models in (
         [{"model_id": 2, "monthly_token_limit": 1}, {"model_id": 2, "monthly_token_limit": 2}],

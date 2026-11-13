@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Path
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
-mcp = FastMCP("Bisheng inventory demonstration", stateless_http=True, json_response=True,
+mcp = FastMCP("doberman-agent inventory demonstration", stateless_http=True, json_response=True,
               streamable_http_path="/mcp", host="0.0.0.0",
               transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=True,
                   allowed_hosts=["capability-demo:8790", "capability-demo"], allowed_origins=[]))

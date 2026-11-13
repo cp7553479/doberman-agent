@@ -15,7 +15,7 @@ jest.mock('~/api/request', () => ({ __esModule: true, default: { get: jest.fn(),
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/Providers', () => ({ useToastContext: () => ({ showToast: jest.fn() }) }));
 jest.mock('~/utils', () => ({ cn: (...names: string[]) => names.join(' ') }));
-jest.mock('bisheng-icons', () => ({ Outlined: { VolumeNotice: () => null, Loading: () => null, PlayerPause: () => null } }));
+jest.mock('@doberman-agent/icons', () => ({ Outlined: { VolumeNotice: () => null, Loading: () => null, PlayerPause: () => null } }));
 
 test('mount loads only public config; clicking reads speech and preserves the absolute media URL', async () => {
   __APP_ENV__.BASE_URL = '/deployment';

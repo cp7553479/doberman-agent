@@ -6,7 +6,7 @@ const STORE = 'skills';
 function openStore(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (!globalThis.indexedDB) { reject(new SkillError('storage')); return; }
-    const request = indexedDB.open('bisheng-skill-center-preview-v1', 1);
+    const request = indexedDB.open('doberman_agent-skill-center-preview-v1', 1);
     request.onupgradeneeded = () => request.result.createObjectStore(STORE, { keyPath: 'id' }).createIndex('scope', 'scope');
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(new SkillError('storage'));

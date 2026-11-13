@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
 import { WorkflowNode } from "@/types/flow";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import GroupInputFile from "./component/GroupInputFile";

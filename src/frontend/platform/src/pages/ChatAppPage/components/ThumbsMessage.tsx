@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Textarea, toast } from '@bisheng/ui';
+import { Button, Textarea, toast } from '@doberman-agent/ui';
 
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/bs-ui/dialog';

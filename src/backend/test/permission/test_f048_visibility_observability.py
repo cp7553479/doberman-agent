@@ -6,17 +6,17 @@ from dataclasses import dataclass
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionEnumerationIncompleteError
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.common.errcode.permission import PermissionEnumerationIncompleteError
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceRecord,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     F048PermissionService,
     PermissionActor,
 )
-from bisheng.permission.domain.services.visibility_projection_service import (
+from doberman_agent.permission.domain.services.visibility_projection_service import (
     VisibilityProjectionCompiler,
     VisibilityProjectionReconciler,
 )
@@ -69,7 +69,7 @@ def _service(fga: _FGA) -> F048PermissionService:
 async def test_visible_list_metric_reports_complete_stream_and_capacity_alert(monkeypatch):
     metrics = []
     monkeypatch.setattr(
-        "bisheng.permission.domain.services.permission_action_service.emit_metric",
+        "doberman_agent.permission.domain.services.permission_action_service.emit_metric",
         lambda domain, **fields: metrics.append((domain, fields)),
     )
 
@@ -97,7 +97,7 @@ async def test_visible_list_metric_reports_complete_stream_and_capacity_alert(mo
 async def test_visible_list_metric_marks_incomplete_stream(monkeypatch):
     metrics = []
     monkeypatch.setattr(
-        "bisheng.permission.domain.services.permission_action_service.emit_metric",
+        "doberman_agent.permission.domain.services.permission_action_service.emit_metric",
         lambda domain, **fields: metrics.append((domain, fields)),
     )
 
@@ -143,7 +143,7 @@ def _grant() -> GrantSnapshot:
 def test_projection_metrics_report_sources_checksums_and_orphan_alert(monkeypatch):
     metrics = []
     monkeypatch.setattr(
-        "bisheng.permission.domain.services.visibility_projection_service.emit_metric",
+        "doberman_agent.permission.domain.services.visibility_projection_service.emit_metric",
         lambda domain, **fields: metrics.append((domain, fields)),
     )
     compiled = VisibilityProjectionCompiler().compile(

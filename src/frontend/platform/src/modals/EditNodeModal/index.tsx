@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import { useContext, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CodeAreaComponent from "../../components/codeAreaComponent";
@@ -11,7 +11,7 @@ import InputListComponent from "../../components/inputListComponent";
 import IntComponent from "../../components/intComponent";
 import PromptAreaComponent from "../../components/promptComponent";
 import TextAreaComponent from "../../components/textAreaComponent";
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 import {
   Dialog,

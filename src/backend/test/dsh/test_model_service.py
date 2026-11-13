@@ -7,10 +7,10 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk
 
-from bisheng.common.errcode.dsh import DshModelNotAllowedError, DshUpstreamErrorError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
-from bisheng.dsh.domain.services.access import DshPrincipal
-from bisheng.dsh.domain.services.model import DshModelService
+from doberman_agent.common.errcode.dsh import DshModelNotAllowedError, DshUpstreamErrorError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
+from doberman_agent.dsh.domain.services.access import DshPrincipal
+from doberman_agent.dsh.domain.services.model import DshModelService
 from test.dsh.test_quota_admission import quota as real_quota  # noqa: F401
 from test.dsh.test_quota_admission import running
 
@@ -20,7 +20,7 @@ def principal():
 
 
 def request(stream=False):
-    return DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], stream=stream)
+    return DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], stream=stream)
 
 
 class LLM:
@@ -116,13 +116,13 @@ async def test_async_capabilities_are_awaited_for_catalog_and_chat(service_setup
     service.capabilities_for = capabilities
     assert (await service.list_models(principal()))["data"][0]["capabilities"]["vision"] is True
     await service.complete(
-        principal(), DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}])
+        principal(), DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}])
     )
 
 
 async def test_models_empty_policy_and_immediate_offline(service_setup):
     service, llm, _ledger, policy, state = service_setup
-    assert (await service.list_models(principal()))["data"][0]["id"] == "bisheng:42"
+    assert (await service.list_models(principal()))["data"][0]["id"] == "doberman_agent:42"
     state["online"] = False
     assert (await service.list_models(principal()))["data"] == []
     with pytest.raises(DshModelNotAllowedError):
@@ -134,7 +134,7 @@ async def test_models_empty_policy_and_immediate_offline(service_setup):
 
 
 async def test_catalog_refreshes_configured_label_without_changing_route_or_usage(service_setup):
-    from bisheng.core.context.tenant import get_current_tenant_id
+    from doberman_agent.core.context.tenant import get_current_tenant_id
 
     service, llm, ledger, _policy, _state = service_setup
     names = {"42": "Custom name"}
@@ -149,7 +149,7 @@ async def test_catalog_refreshes_configured_label_without_changing_route_or_usag
     names["42"] = "Updated name"
     after = (await service.list_models(principal()))["data"][0]
     assert after["display_name"] == "OpenAI / Updated name"
-    assert before["id"] == after["id"] == "bisheng:42"
+    assert before["id"] == after["id"] == "doberman_agent:42"
     assert llm.calls == 0 and ledger.events == []
 
 
@@ -169,7 +169,7 @@ async def test_catalog_refreshes_configured_label_without_changing_route_or_usag
 async def test_catalog_and_admin_share_provider_model_name_and_route_id(
     service_setup, provider_name, provider_type, model_name, alias, expected
 ):
-    from bisheng.dsh.admin_runtime import read_available_models
+    from doberman_agent.dsh.admin_runtime import read_available_models
 
     service, llm, ledger, _policy, _state = service_setup
     model = SimpleNamespace(
@@ -186,16 +186,16 @@ async def test_catalog_and_admin_share_provider_model_name_and_route_id(
         "object": "list",
         "data": [
             {
-                "id": "bisheng:42",
+                "id": "doberman_agent:42",
                 "object": "model",
                 "created": 1788912000,
-                "owned_by": "bisheng",
+                "owned_by": "doberman_agent",
                 "display_name": expected,
                 "capabilities": service.capabilities_for(model, server).client_fields(),
             }
         ],
     }
-    from bisheng.dsh.domain.services.access import principal_scope
+    from doberman_agent.dsh.domain.services.access import principal_scope
 
     with principal_scope(principal()):
         assert (await read_available_models([42], load_model))[0]["name"] == expected
@@ -316,8 +316,8 @@ async def test_provider_failure_without_usage_is_unknown_and_never_replayed(serv
 
 @pytest.mark.parametrize("lose_response", [False, True])
 async def test_real_redis_settlement_and_changed_model_keep_total(service_setup, real_quota, lose_response):  # noqa: F811
-    from bisheng.common.errcode.dsh import DshMonthlyTokenLimitExceededError
-    from bisheng.dsh.domain.services.usage import DshUsageService
+    from doberman_agent.common.errcode.dsh import DshMonthlyTokenLimitExceededError
+    from doberman_agent.dsh.domain.services.usage import DshUsageService
 
     service, llm, _ledger, policy, _state = service_setup
     policy.allowed_model_ids = [4, 5]
@@ -344,13 +344,13 @@ async def test_real_redis_settlement_and_changed_model_keep_total(service_setup,
         usage.record_usage = lost_response
     service.usage = usage
     llm.measured = lambda: {"input_tokens": 10, "output_tokens": 200, "total_tokens": 210}
-    response = await service.complete(principal(), request().model_copy(update={"model": "bisheng:4"}))
+    response = await service.complete(principal(), request().model_copy(update={"model": "doberman_agent:4"}))
     assert response["usage"]["total_tokens"] == 210
     assert await real_quota.redis.hget(real_quota.keys(running())[1], "used") == "1110"
     with pytest.raises(DshMonthlyTokenLimitExceededError):
-        await service.complete(principal(), request().model_copy(update={"model": "bisheng:4"}))
+        await service.complete(principal(), request().model_copy(update={"model": "doberman_agent:4"}))
     with pytest.raises(DshMonthlyTokenLimitExceededError):
-        await service.complete(principal(), request().model_copy(update={"model": "bisheng:5"}))
+        await service.complete(principal(), request().model_copy(update={"model": "doberman_agent:5"}))
     assert llm.calls == 1
 
 
@@ -358,7 +358,7 @@ async def test_context_length_refusal_preserves_client_error_without_freezing(se
     import httpx
     from openai import BadRequestError
 
-    from bisheng.common.errcode.dsh import DshContextLengthExceededError
+    from doberman_agent.common.errcode.dsh import DshContextLengthExceededError
 
     service, llm, ledger, *_ = service_setup
 
@@ -391,8 +391,8 @@ async def test_work_admission_snapshots_model_multiplier(service_setup):
 async def test_work_settlement_preserves_audit_boundary(service_setup, outcome):
     from unittest.mock import AsyncMock, Mock
 
-    from bisheng.common.errcode.dsh import DshUsageUnavailableError
-    from bisheng.dsh.domain.schemas.contracts import DshTokenUsage
+    from doberman_agent.common.errcode.dsh import DshUsageUnavailableError
+    from doberman_agent.dsh.domain.schemas.contracts import DshTokenUsage
 
     service, *_ = service_setup
     terminal = SimpleNamespace(total_tokens=12 if outcome == "known" else None)

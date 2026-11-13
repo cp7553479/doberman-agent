@@ -221,7 +221,7 @@ settings route
 | Knowledge create/settings | 居中单栏，最大约 648px | 基本信息、访问分享、自动标签、成员权限、固定操作区 |
 | Channel create/settings | 桌面双栏、窄屏单栏 | 左侧信息源/筛选/子频道/知识同步，右侧访问分享/成员权限 |
 
-使用 `@bisheng/ui`、语义字体/颜色 token 和主题类；禁止硬编码品牌/灰色、backdrop blur 和新 UI 库。
+使用 `@doberman-agent/ui`、语义字体/颜色 token 和主题类；禁止硬编码品牌/灰色、backdrop blur 和新 UI 库。
 
 ```ts
 interface PermissionDraftAdd {
@@ -387,9 +387,9 @@ idempotency key保证相同网络重试不重复。修改失败草稿必须在�
 | context/roster/grantable/mutate | HTTP/Python | resource/catalog/assignee version 不可丢 |
 | subject directory | application port | tenant 与 active 状态必须 canonicalize |
 | knowledge/channel create/update | business contract | 保留自动标签、信息源、筛选、同步、通知副作用 |
-| bisheng-information | 第三方 HTTP | 频道创建外部订阅失败不能伪报资源成功 |
+| doberman-agent-information | 第三方 HTTP | 频道创建外部订阅失败不能伪报资源成功 |
 | MySQL/DM8 | 数据库 | 组合唯一索引与 nullable 行为需双库验证 |
-| `@bisheng/ui`/i18n | frontend | 三语言同 PR，不新增库 |
+| `@doberman-agent/ui`/i18n | frontend | 三语言同 PR，不新增库 |
 
 ### 6.3 兼容性
 

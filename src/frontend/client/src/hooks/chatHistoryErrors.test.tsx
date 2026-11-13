@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import useFileChat from './useFileChat';
 import useChannelChat from './useChannelChat';
 import useFolderChat from './useFolderChat';

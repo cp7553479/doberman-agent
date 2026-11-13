@@ -1,4 +1,4 @@
-import { historyForHost, sourceId, type ChatMode, type RawMessage } from '@bisheng/chat/core';
+import { historyForHost, sourceId, type ChatMode, type RawMessage } from '@doberman-agent/chat/core';
 import { getChatHistory } from '@/controllers/API';
 import { generateUUID } from '@/components/bs-ui/utils';
 import { formatDate } from '@/util/utils';

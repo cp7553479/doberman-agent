@@ -4,9 +4,9 @@ from types import SimpleNamespace
 import pytest
 import yaml
 
-from bisheng.api.v1 import endpoints
-from bisheng.common.services.config_service import ConfigService
-from bisheng.core.config.settings import WorkflowConf
+from doberman_agent.api.v1 import endpoints
+from doberman_agent.common.services.config_service import ConfigService
+from doberman_agent.core.config.settings import WorkflowConf
 
 
 def test_workflow_auto_rerun_defaults_to_disabled():
@@ -24,7 +24,7 @@ def test_workflow_auto_rerun_invalid_values_fail_closed(value):
 
 
 def test_initdb_config_ships_disabled_workflow_auto_rerun():
-    config_path = Path(__file__).parents[2] / "bisheng" / "initdb_config.yaml"
+    config_path = Path(__file__).parents[2] / "doberman_agent" / "initdb_config.yaml"
     config = yaml.safe_load(config_path.read_text())
 
     assert config["workflow"]["auto_rerun_on_open"] is False
@@ -55,14 +55,14 @@ def test_env_exposes_only_normalized_workflow_auto_rerun_switch(monkeypatch):
         multi_tenant=SimpleNamespace(enabled=False),
         get_knowledge=lambda: SimpleNamespace(image_parser_enabled=False, version_management=None),
         get_from_db=lambda key: {} if key == "env" else "",
-        get_system_login_method=lambda: SimpleNamespace(bisheng_pro=False, dashboard_pro=False),
+        get_system_login_method=lambda: SimpleNamespace(doberman_agent_pro=False, dashboard_pro=False),
         # F049 / F054 switches ``get_env`` reads on this branch; the fake settings
         # object has to carry them or the endpoint raises before reaching workflow.
         open_platform=SimpleNamespace(enabled=False),
         app_runtime=SimpleNamespace(enabled=False),
         get_workflow_conf=lambda: WorkflowConf(auto_rerun_on_open=True),
     )
-    monkeypatch.setattr(endpoints, "bisheng_settings", fake_settings)
+    monkeypatch.setattr(endpoints, "doberman_agent_settings", fake_settings)
 
     response = endpoints.get_env()
 
@@ -78,14 +78,14 @@ def test_env_fails_closed_when_workflow_config_cannot_be_loaded(monkeypatch):
         multi_tenant=SimpleNamespace(enabled=False),
         get_knowledge=lambda: SimpleNamespace(image_parser_enabled=False, version_management=None),
         get_from_db=lambda key: {} if key == "env" else "",
-        get_system_login_method=lambda: SimpleNamespace(bisheng_pro=False, dashboard_pro=False),
+        get_system_login_method=lambda: SimpleNamespace(doberman_agent_pro=False, dashboard_pro=False),
         # F049 / F054 switches ``get_env`` reads on this branch; the fake settings
         # object has to carry them or the endpoint raises before reaching workflow.
         open_platform=SimpleNamespace(enabled=False),
         app_runtime=SimpleNamespace(enabled=False),
         get_workflow_conf=raise_invalid_config,
     )
-    monkeypatch.setattr(endpoints, "bisheng_settings", fake_settings)
+    monkeypatch.setattr(endpoints, "doberman_agent_settings", fake_settings)
 
     response = endpoints.get_env()
 

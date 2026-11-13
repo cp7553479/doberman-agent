@@ -6,8 +6,8 @@ import zipfile
 
 import pytest
 
-from bisheng.linsight.domain.services import skill_store as skill_store_module
-from bisheng.linsight.domain.services.skill_store import (
+from doberman_agent.linsight.domain.services import skill_store as skill_store_module
+from doberman_agent.linsight.domain.services.skill_store import (
     SKILL_MD,
     BundleTooLargeError,
     SkillStore,
@@ -356,7 +356,7 @@ class TestSkillStore:
         async def _tiny_setting(self):
             return type("Conf", (), {"skill_unpacked_max_size_mb": 1, "skill_upload_max_size_mb": 1})()
 
-        monkeypatch.setattr(type(skill_store_module.bisheng_settings), "aget_linsight_conf", _tiny_setting)
+        monkeypatch.setattr(type(skill_store_module.doberman_agent_settings), "aget_linsight_conf", _tiny_setting)
         big = {SKILL_MD: b"x", "assets/a.bin": b"y" * (2 * 1024 * 1024)}
         ref = store.write_bundle(1, "demo-skill", big)
         cold = SkillStore(root=tmp_path / "cold3", minio=store.minio)

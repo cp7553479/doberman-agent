@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { CardContent } from "@/components/bs-ui/card";
 import { Label } from "@/components/bs-ui/label";
@@ -178,7 +178,7 @@ export function DailyChatConfig({ scopeVersion = 0 }: DailyChatConfigProps) {
                             their values still round-trip through dataToSave below. */}
                         <div className="mb-6" ref={modelManagementContainerRef}>
                             <FormInput
-                                label={<Label className="bisheng-label block pt-2">{t("chatConfig.maxTokens")}</Label>}
+                                label={<Label className="doberman_agent-label block pt-2">{t("chatConfig.maxTokens")}</Label>}
                                 type="number"
                                 value={formData.maxTokens}
                                 error={""}
@@ -188,7 +188,7 @@ export function DailyChatConfig({ scopeVersion = 0 }: DailyChatConfigProps) {
                             />
                             <div ref={systemPromptRef}>
                                 <FormInput
-                                    label={<Label className="bisheng-label">{t("chatConfig.systemPrompt")}</Label>}
+                                    label={<Label className="doberman_agent-label">{t("chatConfig.systemPrompt")}</Label>}
                                     isTextarea
                                     value={formData.systemPrompt}
                                     error={errors.systemPrompt}
@@ -205,7 +205,7 @@ export function DailyChatConfig({ scopeVersion = 0 }: DailyChatConfigProps) {
                             enabled={formData.voiceInput.enabled}
                             onToggle={(enabled) => toggleFeature('voiceInput', enabled)}
                         >
-                            <Label className="bisheng-label">Voice Input Model Selection</Label>
+                            <Label className="doberman_agent-label">Voice Input Model Selection</Label>
                             <div className="mt-3">
                                 <Select value={""} onValueChange={(val) => { }}>
                                     <SelectTrigger>

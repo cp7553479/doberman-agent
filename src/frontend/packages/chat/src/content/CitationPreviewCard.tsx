@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useCitationPresentation } from './MarkdownServices';
 import type { ChatCitation, CitationPreview } from './types';
 function DefaultSourceIcon() { return <Outlined.FileWord size={16} />; }

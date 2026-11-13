@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 from langchain_core.documents import Document
 
-from bisheng.citation.domain.schemas.citation_schema import CitationType
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.schemas.citation_schema import CitationType
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     _is_citable_rag_document,
     _is_temp_file_document,
     annotate_rag_documents_with_citations,
@@ -13,7 +13,7 @@ from bisheng.citation.domain.services.citation_prompt_helper import (
     collect_rag_citation_registry_items,
     collect_temp_citation_registry_items,
 )
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
 
 
 def _temp_doc(document_id: str = "3f2a1c9e8b7d4f6a") -> Document:

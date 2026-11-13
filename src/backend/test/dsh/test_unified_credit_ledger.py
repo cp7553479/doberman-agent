@@ -1,9 +1,9 @@
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
-from bisheng.dsh.domain.schemas.unified_policy import CreditRuleInput, ModelVisibilityInput, PolicySubject
-from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+from doberman_agent.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
+from doberman_agent.dsh.domain.schemas.unified_policy import CreditRuleInput, ModelVisibilityInput, PolicySubject
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 from test.dsh.test_automatic_quota_recovery import connect, erase, persist
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running

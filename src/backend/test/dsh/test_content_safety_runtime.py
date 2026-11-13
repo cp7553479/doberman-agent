@@ -18,21 +18,21 @@ import pytest
 from sqlalchemy import event
 from starlette.datastructures import Headers
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.dsh import (
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.dsh import (
     DshContentSafetyAuthError,
     DshContentSafetyConflictError,
     DshContentSafetyInvalidEventError,
     DshContentSafetyTooLargeError,
     DshContentSafetyUnavailableError,
 )
-from bisheng.core.config.multi_tenant import MultiTenantConf
-from bisheng.core.config.settings import SystemLoginMethod
-from bisheng.core.config.sso_sync import SSOSyncConf
-from bisheng.core.context.tenant import DEFAULT_TENANT_ID
-from bisheng.dsh.domain.schemas.content_safety import MAX_EVENT_BYTES
-from bisheng.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
-from bisheng.sso_sync.domain.services.hmac_auth import compute_signature
+from doberman_agent.core.config.multi_tenant import MultiTenantConf
+from doberman_agent.core.config.settings import SystemLoginMethod
+from doberman_agent.core.config.sso_sync import SSOSyncConf
+from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID
+from doberman_agent.dsh.domain.schemas.content_safety import MAX_EVENT_BYTES
+from doberman_agent.dsh.domain.services.content_safety_ingest import ContentSafetyIngestService, VerifiedSource
+from doberman_agent.sso_sync.domain.services.hmac_auth import compute_signature
 from test.dsh.test_content_safety_ingest import SessionPort, rows
 from test.dsh.test_content_safety_repository import wire_hash
 
@@ -41,7 +41,7 @@ PATH = "/api/v1/internal/dsh/content-safety-events"
 
 
 def runtime_port():
-    return importlib.import_module("bisheng.dsh.content_safety_runtime")
+    return importlib.import_module("doberman_agent.dsh.content_safety_runtime")
 
 
 def configure(monkeypatch, runtime, *, key=SHARED_KEY, header="X-Signature", multi_tenant=True, login_settings=True):
@@ -50,7 +50,7 @@ def configure(monkeypatch, runtime, *, key=SHARED_KEY, header="X-Signature", mul
         multi_tenant=MultiTenantConf(enabled=multi_tenant),
     )
     if login_settings:
-        settings.system_login_method = SystemLoginMethod(bisheng_pro=False)
+        settings.system_login_method = SystemLoginMethod(doberman_agent_pro=False)
     monkeypatch.setattr(runtime, "get_settings", lambda: settings)
     return settings
 
@@ -127,7 +127,7 @@ def test_unconfigured_key_only_makes_receiver_unavailable_without_constructing_b
 def test_assembly_is_lazy_and_never_imports_model_admission_or_storage_runtime():
     # A real cold import belongs in its own process: restoring sys.modules alone
     # leaves parent-package attributes and already-imported endpoint aliases split.
-    before = sys.modules.get("bisheng.dsh.content_safety_runtime")
+    before = sys.modules.get("doberman_agent.dsh.content_safety_runtime")
     code = textwrap.dedent(
         """
         import builtins
@@ -135,15 +135,15 @@ def test_assembly_is_lazy_and_never_imports_model_admission_or_storage_runtime()
         import sys
 
         original_import = builtins.__import__
-        forbidden = ("bisheng.dsh.runtime", "bisheng.dsh.audit_runtime", "bisheng.dsh.tool_runtime")
-        assert "bisheng.dsh.content_safety_runtime" not in sys.modules
+        forbidden = ("doberman_agent.dsh.runtime", "doberman_agent.dsh.audit_runtime", "doberman_agent.dsh.tool_runtime")
+        assert "doberman_agent.dsh.content_safety_runtime" not in sys.modules
 
         def guarded_import(name, *args, **kwargs):
             assert not name.startswith(forbidden), "Safety receiver must compose independently of model runtime"
             return original_import(name, *args, **kwargs)
 
         builtins.__import__ = guarded_import
-        runtime = importlib.import_module("bisheng.dsh.content_safety_runtime")
+        runtime = importlib.import_module("doberman_agent.dsh.content_safety_runtime")
         sessions = []
 
         def session_factory():
@@ -160,7 +160,7 @@ def test_assembly_is_lazy_and_never_imports_model_admission_or_storage_runtime()
     completed = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=30)
     assert completed.returncode == 0, completed.stderr
     assert completed.stdout.strip() == "COLD_SAFETY_ASSEMBLY_PASS"
-    assert sys.modules.get("bisheng.dsh.content_safety_runtime") is before
+    assert sys.modules.get("doberman_agent.dsh.content_safety_runtime") is before
 
 
 @pytest.mark.parametrize("provided", [None, "", "0" * 64, "Bearer synthetic-user-token", "not-hex", "f" * 65])

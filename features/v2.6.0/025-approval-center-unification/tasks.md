@@ -53,14 +53,14 @@
   **依赖**: 无
 
 - [ ] **T002A**: 通用审批中心 ORM 模型 + Alembic 迁移
-  **文件**: `src/backend/bisheng/approval/domain/models/approval_scenario.py`, `src/backend/bisheng/approval/domain/models/approval_instance.py`, `src/backend/bisheng/approval/domain/models/user_menu_access.py`, `src/backend/bisheng/core/database/alembic/versions/<timestamp>_approval_center_init.py`
+  **文件**: `src/backend/doberman_agent/approval/domain/models/approval_scenario.py`, `src/backend/doberman_agent/approval/domain/models/approval_instance.py`, `src/backend/doberman_agent/approval/domain/models/user_menu_access.py`, `src/backend/doberman_agent/core/database/alembic/versions/<timestamp>_approval_center_init.py`
   **逻辑**: 按 spec §5 新建 11 张 SQLModel 表（`approval_scenario`、`approval_route_rule`、`approval_flow_definition`、`approval_flow_version`、`approval_node_definition`、`approval_instance`、`approval_task`、`approval_exception`、`approval_outbox`、`approval_action_log`、`user_menu_access`）；所有表带 `tenant_id`、`create_time`、`update_time`；JSON 字段使用 `JsonType`，时间戳使用 `UPDATE_TIME_SERVER_DEFAULT`，不写 MySQL 专属 DDL；同时提交 Alembic 迁移文件，迁移守卫使用 `inspect()` 不用 `information_schema`。注意 `approval_route_rule` 必须包含 `enabled BOOLEAN NOT NULL DEFAULT 1` 字段（见 spec §5.3），`_match_first_route` 依赖此字段跳过禁用分支
   **测试**: 无（基础设施任务，T001 在 T002B 完成后验证）
   **覆盖 AC**: —
   **依赖**: 无
 
 - [ ] **T002B**: 通用审批中心 Repository 实现
-  **文件**: `src/backend/bisheng/approval/domain/repositories/approval_scenario_repository.py`, `src/backend/bisheng/approval/domain/repositories/approval_instance_repository.py`, `src/backend/bisheng/approval/domain/repositories/approval_query_repository.py`, `src/backend/bisheng/approval/domain/repositories/user_menu_access_repository.py`
+  **文件**: `src/backend/doberman_agent/approval/domain/repositories/approval_scenario_repository.py`, `src/backend/doberman_agent/approval/domain/repositories/approval_instance_repository.py`, `src/backend/doberman_agent/approval/domain/repositories/approval_query_repository.py`, `src/backend/doberman_agent/approval/domain/repositories/user_menu_access_repository.py`
   **逻辑**: 实现 spec §7.1A 四个 repository；所有列表查询、待办检索、幂等判定字段都通过显式列查询，不依赖 JSON SQL；Service 后续统一通过 repository 访问数据
   **测试**: T001 全部通过
   **覆盖 AC**: AC-02, AC-03, AC-04, AC-05, AC-28, AC-29, AC-30
@@ -83,7 +83,7 @@
   **依赖**: T002B
 
 - [ ] **T004**: `ApprovalGate` + `ApprovalRegistry` 实现
-  **文件**: `src/backend/bisheng/approval/domain/services/approval_gate.py`, `src/backend/bisheng/approval/domain/services/approval_registry.py`, `src/backend/bisheng/approval/domain/schemas/approval_center_schema.py`
+  **文件**: `src/backend/doberman_agent/approval/domain/services/approval_gate.py`, `src/backend/doberman_agent/approval/domain/services/approval_registry.py`, `src/backend/doberman_agent/approval/domain/schemas/approval_center_schema.py`
   **逻辑**:
   - 实现 `request_or_pass()`：前置校验场景是否已配置且启用（否则直接抛 `ApprovalScenarioDisabledError`），再执行重复申请检查、分支匹配、实例创建
   - 注册三个主版本场景 preset：`menu_access_request`、`channel_subscribe_request`、`knowledge_space_subscribe_request`
@@ -109,7 +109,7 @@
   **依赖**: T002B
 
 - [ ] **T006**: `ApprovalCenterService`、`ApprovalExceptionService`、`ApprovalOutboxService` 实现
-  **文件**: `src/backend/bisheng/approval/domain/services/approval_center_service.py`, `src/backend/bisheng/approval/domain/services/approval_exception_service.py`, `src/backend/bisheng/approval/domain/services/approval_outbox_service.py`, `src/backend/bisheng/worker/approval/tasks.py`
+  **文件**: `src/backend/doberman_agent/approval/domain/services/approval_center_service.py`, `src/backend/doberman_agent/approval/domain/services/approval_exception_service.py`, `src/backend/doberman_agent/approval/domain/services/approval_outbox_service.py`, `src/backend/doberman_agent/worker/approval/tasks.py`
   **逻辑**:
   - 审批任务同意/拒绝
   - 申请撤回/重新提交
@@ -130,7 +130,7 @@
   **依赖**: T006
 
 - [ ] **T008**: 审批 API 实现与 router 注册
-  **文件**: `src/backend/bisheng/approval/api/endpoints/approval_user.py`, `src/backend/bisheng/approval/api/endpoints/approval_admin.py`, `src/backend/bisheng/approval/api/router.py`, `src/backend/bisheng/api/router.py`
+  **文件**: `src/backend/doberman_agent/approval/api/endpoints/approval_user.py`, `src/backend/doberman_agent/approval/api/endpoints/approval_admin.py`, `src/backend/doberman_agent/approval/api/router.py`, `src/backend/doberman_agent/api/router.py`
   **逻辑**:
   - 用户端与管理端接口分离
   - 使用 `UserPayload` 做认证与管理员校验
@@ -141,7 +141,7 @@
   **依赖**: T007
 
 - [ ] **T008A**: 审批中心 MySQL / 达梦双库兼容验证
-  **文件**: `src/backend/test/approval/test_approval_dialect_compat.py`, `src/backend/bisheng/core/database/dialect_helpers.py`
+  **文件**: `src/backend/test/approval/test_approval_dialect_compat.py`, `src/backend/doberman_agent/core/database/dialect_helpers.py`
   **逻辑**:
   - 为审批中心新增模型补方言级测试，验证 `JsonType`、`UPDATE_TIME_SERVER_DEFAULT`、主键自增、索引与迁移守卫在 MySQL / 达梦下都成立
   - 若审批中心迁移新增任何元数据检查或 DDL 分支，统一复用 `dialect_helpers` / `inspect()`，不得写 MySQL 专属 `information_schema`
@@ -169,7 +169,7 @@
   **依赖**: T006
 
 - [ ] **T010**: 菜单权限申请后端实现
-  **文件**: `src/backend/bisheng/approval/domain/services/menu_access_handler.py`, `src/backend/bisheng/approval/domain/services/user_menu_access_service.py`, `src/backend/bisheng/common/errcode/approval.py`
+  **文件**: `src/backend/doberman_agent/approval/domain/services/menu_access_handler.py`, `src/backend/doberman_agent/approval/domain/services/user_menu_access_service.py`, `src/backend/doberman_agent/common/errcode/approval.py`
   **逻辑**:
   - 新建菜单申请 handler（validate / build_title / build_detail / on_approved / on_rejected / on_withdrawn / revoke_grant）
   - 新增用户菜单授权 service 与授权撤回逻辑
@@ -191,7 +191,7 @@
   **依赖**: T002B
 
 - [ ] **T010B**: 部门知识空间文件上传审批下线实现
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`, `src/backend/bisheng/approval/domain/models/approval_request.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`, `src/backend/doberman_agent/approval/domain/models/approval_request.py`
   **逻辑**:
   - 移除部门知识空间文件上传对 `approval_request` 和旧审批消息链路的依赖
   - 部门知识空间上传与普通知识空间上传一致，只校验现有 ReBAC 上传权限
@@ -209,7 +209,7 @@
   **依赖**: T006, T010B
 
 - [ ] **T012**: 频道订阅审批迁移实现
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_service.py`, `src/backend/bisheng/approval/domain/services/channel_subscribe_scenario_handler.py`, `src/backend/bisheng/message/domain/services/approval_handler.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_service.py`, `src/backend/doberman_agent/approval/domain/services/channel_subscribe_scenario_handler.py`, `src/backend/doberman_agent/message/domain/services/approval_handler.py`
   **逻辑**:
   - `subscribe_channel()` 切到 `ApprovalGate`
   - 旧 `ChannelSubscribeApprovalHandler` 逻辑抽到新 scenario handler
@@ -225,7 +225,7 @@
   **依赖**: T006, T010B
 
 - [ ] **T014**: 知识空间加入/订阅审批迁移实现
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`, `src/backend/bisheng/approval/domain/services/knowledge_space_subscribe_scenario_handler.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`, `src/backend/doberman_agent/approval/domain/services/knowledge_space_subscribe_scenario_handler.py`
   **逻辑**:
   - 加入/订阅入口切到 `ApprovalGate`
   - 新 handler 复用现有成员激活与 ReBAC 同步逻辑
@@ -316,7 +316,7 @@
   - `src/frontend/platform/src/pages/ApprovalPage/components/ExceptionList.tsx`
   - `src/frontend/platform/src/pages/ApprovalPage/components/ExceptionActionDialog.tsx`
   - `src/frontend/platform/src/controllers/API/approval.ts`（异常接口）
-  - `src/backend/bisheng/database/models/audit_log.py`
+  - `src/backend/doberman_agent/database/models/audit_log.py`
   - `src/frontend/platform/public/locales/{zh-Hans,en-US,ja}/bs.json`（异常 + 审计文案）
   **逻辑**: 异常列表支持 `route_missing` / `approver_empty` / `execute_failed` 三类处理动作；审计页加入 `approval` 模块筛选和 `approval.*` 动作文案；备注列兼容结构化日志 reason + metadata 摘要
   **覆盖 AC**: AC-15, AC-16, AC-18, AC-19, AC-28

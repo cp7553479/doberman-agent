@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.group_resource import ResourceTypeEnum
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.group_resource import ResourceTypeEnum
 
 from .conftest import NORMAL_USER_ID, OWNER_USER_ID, ROOT_TENANT_ID, SUB_TENANT_ID
 
@@ -33,13 +33,13 @@ ASSISTANT = FlowType.ASSISTANT.value
 
 
 def _payload(user_id: int = OWNER_USER_ID, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name=f"user-{user_id}", user_role=[], tenant_id=tenant_id)
 
 
 async def _list(env, *, flow_type=None, app_state=None, tag_id=None, user=None, page_size=20, cursor=None):
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     return await WorkFlowService.get_all_flows_envelope(
         user or _payload(),
@@ -190,13 +190,13 @@ def test_third_branch_emits_its_own_tenant_predicate():
     """
     from sqlmodel import select
 
-    from bisheng.core.context.tenant import (
+    from doberman_agent.core.context.tenant import (
         current_tenant_id,
         set_current_tenant_id,
         set_visible_tenant_ids,
         visible_tenant_ids,
     )
-    from bisheng.database.models.flow import FlowDao
+    from doberman_agent.database.models.flow import FlowDao
 
     tenant_token = set_current_tenant_id(5)
     visible_token = set_visible_tenant_ids(frozenset({5, 1}))
@@ -213,8 +213,8 @@ def test_third_branch_emits_its_own_tenant_predicate():
 
 def test_app_state_literals_match_the_enum():
     """``flow.py`` cannot import ``AppState`` (RULE-2); this keeps the copy honest."""
-    from bisheng.app_runtime.domain.constants import AppState
-    from bisheng.database.models.app import APP_STATE_DELETED, APP_STATE_ONLINE
+    from doberman_agent.app_runtime.domain.constants import AppState
+    from doberman_agent.database.models.app import APP_STATE_DELETED, APP_STATE_ONLINE
 
     assert APP_STATE_ONLINE == AppState.ONLINE.value
     assert APP_STATE_DELETED == AppState.DELETED.value
@@ -277,8 +277,8 @@ async def test_cursor_keyset_predicate_spans_the_merged_subquery(build_list_env,
 
     Compiled-SQL rather than a round trip, for the SQLite reason above.
     """
-    from bisheng.database.models.flow import FlowDao
-    from bisheng.database.utils.keyset import build_keyset_where
+    from doberman_agent.database.models.flow import FlowDao
+    from doberman_agent.database.utils.keyset import build_keyset_where
 
     tenant_scope(ROOT_TENANT_ID)
     build_list_env.enable_runtime_layer()
@@ -324,7 +324,7 @@ def test_check_tag_link_permission_accepts_hosted_app(monkeypatch):
     import asyncio
     from types import SimpleNamespace
 
-    from bisheng.api.services import tag as tag_module
+    from doberman_agent.api.services import tag as tag_module
 
     asked: list[dict] = []
 
@@ -346,8 +346,8 @@ def test_check_tag_link_permission_accepts_hosted_app(monkeypatch):
 def test_check_tag_link_permission_rejects_missing_hosted_app(monkeypatch):
     import asyncio
 
-    from bisheng.api.services import tag as tag_module
-    from bisheng.common.errcode.http_error import NotFoundError
+    from doberman_agent.api.services import tag as tag_module
+    from doberman_agent.common.errcode.http_error import NotFoundError
 
     async def _absent(resource_id: str):
         return None
@@ -365,7 +365,7 @@ async def test_permission_bucket_populated(build_list_env, tenant_scope):
     Without it hosted rows are dropped from the permission query and come back
     with no actions: the cards render and nothing on them can be clicked.
     """
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     tenant_scope(ROOT_TENANT_ID)
     build_list_env.enable_runtime_layer()
@@ -382,7 +382,7 @@ async def test_permission_bucket_populated(build_list_env, tenant_scope):
 
 async def test_hosted_rows_are_not_bucketed_as_workflows(build_list_env, tenant_scope):
     """The type→resource-type map must be exact, not "anything that is not an assistant"."""
-    from bisheng.api.services.workflow import WorkFlowService
+    from doberman_agent.api.services.workflow import WorkFlowService
 
     tenant_scope(ROOT_TENANT_ID)
     build_list_env.enable_runtime_layer()

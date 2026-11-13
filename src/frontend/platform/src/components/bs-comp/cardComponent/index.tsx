@@ -2,7 +2,7 @@
 import { cname } from "@/components/bs-ui/utils";
 import { showApiError } from "@/controllers/request";
 import { AppNumType,AppType } from "@/types/app";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 
 
-import { Dropdown, DropdownItem, DropdownSeparator, Switch, Tooltip, TooltipProvider } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator, Switch, Tooltip, TooltipProvider } from "@doberman-agent/ui";
 import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from "../../bs-ui/card";
 
 interface IProps<T> {

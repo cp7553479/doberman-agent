@@ -1,15 +1,15 @@
 // @ts-strict-ignore
-import { asRecord, displayText, captureQaOperation, isCurrentQaOperation, type QaOperation } from '@bisheng/chat/core';
+import { asRecord, displayText, captureQaOperation, isCurrentQaOperation, type QaOperation } from '@doberman-agent/chat/core';
 import { showApiError } from '@/controllers/request';
 import type { AnnotationFormHandle } from './annotationTypes';
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import { getDeleteFlowApi } from "@/controllers/API/flow";
 import MessagePanne from "@/components/bs-comp/chatComponent/MessagePanne";
 import { MessageStoreProvider as AssistantMessageStoreProvider, useMessageStore } from "@/components/bs-comp/chatComponent/messageStore";
 
-import { RadioGroup, Radio, Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { RadioGroup, Radio, Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { getMarkPermissionApi, getMarkStatusApi, getNextMarkChatApi, updateMarkStatusApi } from "@/controllers/API/log";
 import { MessageStoreProvider as WorkflowMessageStoreProvider, useMessageStore as useFlowMessageStore } from "@/pages/BuildPage/flow/FlowChat/messageStore";
 import { AppNumType } from "@/types/app";

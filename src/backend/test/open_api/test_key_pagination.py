@@ -8,13 +8,13 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.open_api.api.dependencies import get_service_account_admin
-from bisheng.open_api.api.endpoints.service_account_keys import router
-from bisheng.open_api.domain.models.api_credential import ApiCredential
-from bisheng.open_api.domain.models.service_account import ServiceAccount
-from bisheng.user.domain.services.auth import AuthJwt
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.open_api.api.dependencies import get_service_account_admin
+from doberman_agent.open_api.api.endpoints.service_account_keys import router
+from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+from doberman_agent.user.domain.services.auth import AuthJwt
 
 
 @pytest.fixture

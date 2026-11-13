@@ -1,11 +1,11 @@
-import { Dropdown, DropdownItem, DropdownSeparator, Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator, Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { Download, MoreVertical, GitBranch, History, FileSearch } from "lucide-react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useState, type MouseEvent } from "react";
 import { FileStatus, FileType, KnowledgeFile, SpaceRole } from "~/api/knowledge";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import { Button } from "~/components";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { RoundCheckbox } from "~/components/ui/RoundCheckbox";
 import { SELECTION_CHECKBOX_CLASS } from "./selectionCheckboxStyles";
 import { Card, CardContent } from "~/components/ui/Card";

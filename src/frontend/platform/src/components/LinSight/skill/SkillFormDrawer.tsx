@@ -1,4 +1,4 @@
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
 // F035: create / edit a tenant custom skill (form path — SKILL.md only).
 // Rendered as a right-side drawer on the same rail as the detail sheet, so
 // opening edit from the detail reads as the panel turning over into its form
@@ -10,7 +10,7 @@ import { Label } from "@/components/bs-ui/label";
 import { Sheet, SheetContent } from "@/components/bs-ui/sheet";
 
 import { SkillDetail, skillApi } from "@/controllers/API/linsight";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { showSkillError } from "./skillErrors";
@@ -145,7 +145,7 @@ export function SkillFormDrawer({ open, editing, onOpenChange, onSaved }: SkillF
 
     const fieldLabel = (label: string, desc: string) => (
         <div className="flex items-baseline gap-2 mb-1.5">
-            <Label className="bisheng-label">
+            <Label className="doberman_agent-label">
                 <span className="text-red-500 mr-0.5">*</span>
                 {label}
             </Label>

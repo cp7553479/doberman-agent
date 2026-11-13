@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { cn } from "~/utils";
 import useFinePointer from "~/hooks/useFinePointer";
 import useLocalize from "~/hooks/useLocalize";

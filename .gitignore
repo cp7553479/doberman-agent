@@ -143,9 +143,9 @@ build/
 ./third_party
 develop-eggs/
 config.dev.yaml
-src/backend/bisheng/config.yaml
+src/backend/doberman_agent/config.yaml
 # Local per-environment configs (contain connection strings / encrypted creds)
-src/backend/bisheng/config.*.yaml
+src/backend/doberman_agent/config.*.yaml
 src/backend/data/
 downloads/
 eggs/
@@ -281,9 +281,9 @@ sftp-config.json
 docker/.generated/
 docker/data/*
 docker/mysql/data/*
-docker/office/bisheng/*.gz
+docker/office/doberman-agent/*.gz
 
-bisheng-sync.sh
+doberman-agent-sync.sh
 /deploy.sh
 .omx/
 
@@ -291,7 +291,7 @@ bisheng-sync.sh
 *.msi
 
 # Permission migration checkpoint (per-deployment local state)
-src/backend/bisheng/permission/migration/migration_f006_checkpoint.json
+src/backend/doberman_agent/permission/migration/migration_f006_checkpoint.json
 
 # MySQL -> DM migration local config (may contain DB passwords; never commit)
 src/backend/scripts/migrate_dm.yaml
@@ -328,3 +328,6 @@ src/backend/migration_reports
 .cursor/
 config-106120.yaml
 values-106120.yaml
+
+# macOS metadata on external volumes
+._*

@@ -183,9 +183,9 @@ def write_layer(document, source, environment, destination):
                         archive.addfile(info, content)
                 else:
                     raise ExecutorError("oci_special_or_hardlink_refused")
-        files = {"usr/local/bin/bisheng-app-entrypoint": (templates["entrypoint.sh"], 0o755)}
+        files = {"usr/local/bin/doberman-agent-app-entrypoint": (templates["entrypoint.sh"], 0o755)}
         if language == "static":
-            files["etc/bisheng/nginx.conf.tmpl"] = (templates["nginx.conf"], 0o644)
+            files["etc/doberman-agent/nginx.conf.tmpl"] = (templates["nginx.conf"], 0o644)
         for name, (content, mode) in files.items():
             raw = content.encode()
             info = tarfile.TarInfo(name)
@@ -236,7 +236,7 @@ def assemble_image(document, source, environment, target, *, work, run=subproces
             "--append",
             str(layer),
             "--entrypoint",
-            "/usr/local/bin/bisheng-app-entrypoint",
+            "/usr/local/bin/doberman-agent-app-entrypoint",
             "--user",
             f"{document['profile'].get('uid', 10001)}:{document['profile'].get('gid', 10001)}",
             "--workdir",
@@ -304,7 +304,7 @@ class KubernetesAssembler:
             endpoints=runtime.document.get("image_registry_endpoints", []),
             insecure=runtime.document.get("insecure_registry") is True,
         )
-        reference = str(uuid5(NAMESPACE_URL, "bisheng-assemble:" + operation["operation_id"]))
+        reference = str(uuid5(NAMESPACE_URL, "doberman-agent-assemble:" + operation["operation_id"]))
         document = {
             "profile": operation["payload"]["profile"],
             "platform": runtime.descriptor.platform,
@@ -346,7 +346,7 @@ def main():
     result = assemble_image(
         document, Path("/work/source"), Path("/work/environment"), document["target"], work=Path("/tmp")
     )
-    print("BISHENG_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
+    print("DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
 
 
 if __name__ == "__main__":

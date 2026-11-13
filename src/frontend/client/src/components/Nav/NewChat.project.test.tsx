@@ -11,7 +11,7 @@ jest.mock('~/store', () => ({ __esModule: true, default: { useCreateConversation
 jest.mock('@tanstack/react-query', () => ({ useQueryClient: () => ({ setQueryData: jest.fn() }) }));
 jest.mock('~/types/chat', () => ({ Constants: { NEW_CONVO: 'new' }, QueryKeys: { messages: 'messages' } }));
 jest.mock('../ui', () => ({ Button: () => null }));
-jest.mock('bisheng-icons', () => ({ Outlined: {} }));
+jest.mock('@doberman-agent/icons', () => ({ Outlined: {} }));
 
 function setup() {
   return renderHook(() => ({ start: useStartNewChat(), location: useLocation(), navigate: useNavigate() }), {

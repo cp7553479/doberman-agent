@@ -36,12 +36,12 @@ from typing import Iterable
 
 from sqlalchemy import text as sa_text  # noqa: E402
 
-from bisheng.core.context.manager import close_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.core.openfga.manager import aget_fga_client  # noqa: E402
-from bisheng.database.models.tenant import ROOT_TENANT_ID, TenantDao  # noqa: E402
-from bisheng.tenant.domain.services.resource_share_service import (  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.openfga.manager import aget_fga_client  # noqa: E402
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID, TenantDao  # noqa: E402
+from doberman_agent.tenant.domain.services.resource_share_service import (  # noqa: E402
     LEGACY_SHAREABLE_TYPES,
     SUPPORTED_SHAREABLE_TYPES,
     ResourceShareService,

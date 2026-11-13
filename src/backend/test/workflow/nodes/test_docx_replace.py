@@ -2,7 +2,7 @@ import unittest
 
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-from bisheng.workflow.nodes.report.docx_replace import DocxReplacer
+from doberman_agent.workflow.nodes.report.docx_replace import DocxReplacer
 
 
 class TestDocxReplacer(unittest.TestCase):

@@ -2,10 +2,10 @@
 
 import pytest
 
-from bisheng.common.errcode.open_api import OpenApiModelUnavailableError, OpenApiToolUnavailableError
-from bisheng.open_api.api.exception_handlers import open_api_http_status
-from bisheng.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
-from bisheng.open_api.domain.services.daily_chat_service import OpenDailyChatService
+from doberman_agent.common.errcode.open_api import OpenApiModelUnavailableError, OpenApiToolUnavailableError
+from doberman_agent.open_api.api.exception_handlers import open_api_http_status
+from doberman_agent.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
+from doberman_agent.open_api.domain.services.daily_chat_service import OpenDailyChatService
 
 CONFIG = {"models": [{"id": "7"}], "tools": [{"id": 3, "children": [{"id": 30, "tool_key": "web"}]}]}
 

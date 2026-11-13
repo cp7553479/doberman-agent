@@ -4,7 +4,7 @@ import pytest
 from fastapi import UploadFile
 from starlette.datastructures import Headers
 
-from bisheng.evaluation.domain.services import evaluation_service
+from doberman_agent.evaluation.domain.services import evaluation_service
 
 
 @pytest.mark.parametrize("content_type", ["text/html", "image/svg+xml", "text/csv", None])

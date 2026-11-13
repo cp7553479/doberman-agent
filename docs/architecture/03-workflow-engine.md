@@ -1,6 +1,6 @@
 # 工作流引擎架构
 
-BiSheng 工作流引擎是一个基于 LangGraph 的 DAG（有向无环图）执行引擎，负责将用户在前端画布上编排的工作流 JSON 编译为 LangGraph 状态机并驱动执行。引擎支持 14 种可执行节点类型（另有 1 种仅用于画布标注的 NOTE 节点），内置中断/恢复机制以支持人机交互场景，并通过 Celery 异步任务队列实现后台执行与横向扩展。
+doberman-agent 工作流引擎是一个基于 LangGraph 的 DAG（有向无环图）执行引擎，负责将用户在前端画布上编排的工作流 JSON 编译为 LangGraph 状态机并驱动执行。引擎支持 14 种可执行节点类型（另有 1 种仅用于画布标注的 NOTE 节点），内置中断/恢复机制以支持人机交互场景，并通过 Celery 异步任务队列实现后台执行与横向扩展。
 
 ## 架构总览
 
@@ -80,7 +80,7 @@ graph TB
 | REPORT | `report` | `ReportNode` | `nodes/report/report.py` | 报告生成节点 |
 | NOTE | `note` | -- | -- | 画布标注节点，仅用于显示注释，不参与执行 |
 
-所有路径前缀为 `src/backend/bisheng/workflow/`。
+所有路径前缀为 `src/backend/doberman_agent/workflow/`。
 
 ## 图引擎核心流程
 
@@ -467,7 +467,7 @@ workflow/nodes/my_node/
 节点类需继承 `BaseNode` 并实现 `_run` 方法：
 
 ```python
-from bisheng.workflow.nodes.base import BaseNode
+from doberman_agent.workflow.nodes.base import BaseNode
 
 class MyNode(BaseNode):
 
@@ -491,7 +491,7 @@ class MyNode(BaseNode):
 在 `workflow/nodes/node_manage.py` 中添加映射：
 
 ```python
-from bisheng.workflow.nodes.my_node.my_node import MyNode
+from doberman_agent.workflow.nodes.my_node.my_node import MyNode
 
 NODE_CLASS_MAP = {
     # ... 已有映射
@@ -509,15 +509,15 @@ NODE_CLASS_MAP = {
 ## 相关文档
 
 - 项目总体架构: `docs/architecture/README.md`
-- 知识库/RAG 架构: 参见 `src/backend/bisheng/knowledge/`
-- Celery Worker 配置: `src/backend/bisheng/worker/`
+- 知识库/RAG 架构: 参见 `src/backend/doberman_agent/knowledge/`
+- Celery Worker 配置: `src/backend/doberman_agent/worker/`
 - 前端工作流画布: `src/frontend/platform/src/pages/BuildPage/flow/`
-- 工作流 API 接口: `src/backend/bisheng/api/v1/workflow.py`
+- 工作流 API 接口: `src/backend/doberman_agent/api/v1/workflow.py`
 
 ## 源码目录结构
 
 ```
-src/backend/bisheng/workflow/
+src/backend/doberman_agent/workflow/
     common/
         node.py             # NodeType 枚举、BaseNodeData、NodeParams 数据模型
         workflow.py          # WorkflowStatus 枚举
@@ -549,7 +549,7 @@ src/backend/bisheng/workflow/
         event.py             # 事件数据结构
         llm_callback.py      # LLM 流式回调适配器
 
-src/backend/bisheng/worker/workflow/
+src/backend/doberman_agent/worker/workflow/
     tasks.py                 # Celery 任务定义
     redis_callback.py        # RedisCallback 异步回调实现
 ```

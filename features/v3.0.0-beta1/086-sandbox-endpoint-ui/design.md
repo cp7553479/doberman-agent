@@ -27,7 +27,7 @@
 
 - 遵循 `docs/constitution.md` C1–C8，版本契约见 `release-contract.md`（F086 行、280 错误码段）。本功能特有的约束：
 - **生效链路必须覆盖三类进程**：执行器在 backend（日常会话、助手、编辑器「运行一次」）、Celery worker（工作流运行）、Linsight（任务模式）里各自构建。只在 backend 内存里改值不算生效。
-- **新建执行器都经过 `build_code_executor`**（`bisheng_langchain/gpts/tools/code_interpreter/factory.py`）。日常会话每条消息在 `_prepare_tools` 里新建；工作流每次运行新建。助手的 WebSocket 在连接期间复用同一个执行器，每轮对话开始时就地改地址与令牌（坑 8），不再次调用 `build_code_executor`。任务模式在任务开始时构建一次并粘滞到本轮结束（AC-11）。
+- **新建执行器都经过 `build_code_executor`**（`doberman_agent_langchain/gpts/tools/code_interpreter/factory.py`）。日常会话每条消息在 `_prepare_tools` 里新建；工作流每次运行新建。助手的 WebSocket 在连接期间复用同一个执行器，每轮对话开始时就地改地址与令牌（坑 8），不再次调用 `build_code_executor`。任务模式在任务开始时构建一次并粘滞到本轮结束（AC-11）。
 - **`build_code_executor` 是同步函数**，会在 Celery 线程、Linsight 的 asyncio 任务里被调用。读配置只能用同步客户端，且要足够便宜（一次 Redis GET）。
 - **工具配置按租户分行**：`t_gpts_tools_type` 有 `tenant_id`，而沙箱副本池是部署级的。spec AC-03 要求全局一份。
 - **runner 只在创建会话时校验 token**（`src/sandbox-runner/app.py` 的 `create_session`），`/health` 不校验。验证 token 必须真的建一个会话再删掉。
@@ -56,14 +56,14 @@
 - **选定**：B。读取逻辑放在 `ConfigService.get_sandbox_conf()`（`common/services/config_service.py`），`factory.py` 在新建执行器时调用它。助手不在每轮重建执行器：`refresh_open_code_executors` 再调一次 `get_sandbox_conf()`，就地改已有 `ContainerExecutor` 的 `endpoints` 与 `token`（坑 8）。
 - **原因**：
   - 执行器构建频率远低于 Redis 承受能力（新建时一次，助手每轮对话再读一次）。缓存 TTL 是 60 秒，与 AC-06 的时限相同：保存时把新值写入缓存，写入失败不让保存失败。未命中后的回填只在 key 不存在时写入，避免一次还在进行的旧读取盖掉刚保存的新值。写失败后若 key 里仍是旧值，过期后下一次执行仍会读到库里的新值。
-  - 放在 `ConfigService` 与既有的热加载读法同处（`get_workflow_conf`、`get_cofco_forwarding_conf`），`factory.py` 原本就只依赖这个模块，不新增 `bisheng_langchain` 对领域模块的依赖。
+  - 放在 `ConfigService` 与既有的热加载读法同处（`get_workflow_conf`、`get_cofco_forwarding_conf`），`factory.py` 原本就只依赖这个模块，不新增 `doberman_agent_langchain` 对领域模块的依赖。
   - 合并规则：两项分别判定。页面 `endpoints` 非空则覆盖；页面 `token` 非空则覆盖；否则沿用部署值。用 `settings.sandbox_conf.model_copy(update=...)` 生成新对象（原因见 §5 坑 1）。
 - **何时该重新考虑**：执行器构建进入高频热路径（例如每个 token 流式片段都构建），或 Redis 成为瓶颈时，改为带版本号的进程内缓存（参考 `ConfigDao.aget_config_version`）。
 
 ### 决策 3：读写接口放在哪个模块、页面怎么保存
 
 - **备选**：
-  - A. 新建顶层模块 `bisheng/sandbox/`（api + domain） — 归属最清楚，但只有三个接口，还要注册新路由。
+  - A. 新建顶层模块 `doberman-agent/sandbox/`（api + domain） — 归属最清楚，但只有三个接口，还要注册新路由。
   - B. 放进 `tool` 模块，挂在 `/api/v1/tool/sandbox_conf` 下 — 入口本来就是工具页的代码执行器弹窗，权限判定与 `update_tool_config` 一致（`is_global_super`）。
   - C. 复用 `/api/v1/tool/config`：前端把地址和令牌塞进 `extra`，后端识别代码执行器后拆出来存全局 — 一次请求；但工具配置是租户维度的写操作，混入全局写会让一个接口同时有两种作用域，且违背决策 1 不进 `extra` 的约定。
 - **选定**：B。弹窗保存时前端先调沙箱配置保存接口，成功后再调原有的工具配置保存。
@@ -123,7 +123,7 @@
 | `common/services/config_service.py` `get_sandbox_conf()` | 同步读取页面配置。Redis 命中且结构合法则直接用。未命中、抛错或结构不合法都改读库并 `json.loads`。结构合法指 dict，`endpoints` 为字符串列表（可为空），`token_enc` 为字符串（可为空串）。库合法则本次用库的值。只有 key 不存在时 `setNx` 回填。坏缓存与 Redis 抛错都不在读取路径上写入。库也不合法、解析失败或解密失败则回退部署配置并记 error 日志。回填失败仍用已经读到的合法库值。解密只用于本次合并。另提供 `write_sandbox_endpoint_cache(payload)`，`payload` 是刚落库的合法 dict，仅保存路径调用 | 不写业务配置、不做地址校验；读取路径不得用 `set` 覆盖缓存；未命中回填不得用 `set` 覆盖已有 key；不得把明文令牌、JSON 字符串或坏结构写入 Redis |
 | `tool/domain/services/sandbox_conf_service.py`（新） | 读取（脱敏 + 按字段判来源）、保存（校验、去掉地址末尾 `/`、令牌合并、加密、`json.dumps` 后写入、再把 dict 写入缓存、审计）、测试连接。`get()` 遇到坏结构时按没有页面配置返回。`save` 与 `test` 均为 async。`test` 用 `httpx.AsyncClient` | 不碰 `gpts_tools.extra`；不在事件循环里做同步 HTTP；`get()` 不因坏结构抛异常 |
 | `tool/api/tool.py` | 三个接口，`is_global_super` 判定 | 不含业务逻辑 |
-| `bisheng_langchain/.../factory.py` | container 分支改为 `settings.get_sandbox_conf()`。另提供 `refresh_open_code_executors(tools)`：未粘滞的 `ContainerExecutor` 若仍占会话则先 `_release()`，再就地改 `endpoints`（去掉末尾 `/`）与 `token` | 不读库、不读 Redis 以外的配置；不扫描主机名；不替换执行器对象；不手清 `_bound_url` / `_session_id` |
+| `doberman_agent_langchain/.../factory.py` | container 分支改为 `settings.get_sandbox_conf()`。另提供 `refresh_open_code_executors(tools)`：未粘滞的 `ContainerExecutor` 若仍占会话则先 `_release()`，再就地改 `endpoints`（去掉末尾 `/`）与 `token` | 不读库、不读 Redis 以外的配置；不扫描主机名；不替换执行器对象；不手清 `_bound_url` / `_session_id` |
 | `api/services/assistant_agent.py` `run` | 每轮对话开始时调用 `refresh_open_code_executors(self.tools)` | 不重建整份工具列表，不刷新 `keep_session` 的执行器 |
 | `common/errcode/sandbox.py` | 新增 `28009` | — |
 | `api/services/audit_log.py` | 新增 `update_sandbox_conf(user, ip, note)`，内部走 `_system_log(..., group_ids=[], ..., object_id="sandbox_endpoint", object_name="sandbox_endpoint", note=note)` | 不记令牌值；不让调用方填 `group_ids` |
@@ -189,7 +189,7 @@
 - **手动验证**（Compose）：
   1. 部署说明 2.1 起两台 runner，确认任务模式正常。
   2. 超级管理员打开「构建 → 工具 → 内置工具 → 代码执行器」，选「沙箱运行」，地址填 `http://code-runner-1:8080`，点测试连接，应显示可用；保存。
-  3. 跑一个工作流代码节点、一次日常会话代码执行，并在一条已经连着的助手里再发一条会跑代码的消息。`docker logs bisheng-code-runner-1` 有 `/exec`、`code-runner-2` 没有。
+  3. 跑一个工作流代码节点、一次日常会话代码执行，并在一条已经连着的助手里再发一条会跑代码的消息。`docker logs doberman-agent-code-runner-1` 有 `/exec`、`code-runner-2` 没有。
   4. 令牌改成错的再测试，应显示「令牌不被接受」；清空地址与令牌保存，两台 runner 都重新有流量。
 - **可观测**：保存与测试各写一条 info 日志（不含令牌）；`get_sandbox_conf` 降级时写 error 日志 `sandbox endpoint config unreadable; using deployment config`。
 

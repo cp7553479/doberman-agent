@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import {
   CARD_DESCRIPTION,

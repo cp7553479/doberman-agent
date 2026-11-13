@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { TitleIconBg } from "@/components/bs-comp/cardComponent";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import {
@@ -10,7 +10,7 @@ AccordionItem,
 AccordionTrigger,
 } from "@/components/bs-ui/accordion";
 
-import { Tag,Tooltip } from "@bisheng/ui";
+import { Tag,Tooltip } from "@doberman-agent/ui";
 import { Shield } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";

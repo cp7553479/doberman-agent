@@ -1,6 +1,6 @@
 import { useServiceAccountOwnerCandidates } from "./useServiceAccountOwnerCandidates";
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
 import DepartmentUsersSelect,{
 type DepartmentUserOption,
 } from "@/components/bs-comp/selectComponent/DepartmentUsersSelect";
@@ -18,7 +18,7 @@ import { Label } from "@/components/bs-ui/label";
 
 import { createServiceAccountApi } from "@/controllers/API/serviceAccount";
 import { showApiError } from "@/controllers/request";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 

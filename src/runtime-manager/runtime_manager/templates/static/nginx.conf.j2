@@ -1,6 +1,6 @@
-# BiSheng hosted-app nginx config — static runtime.
+# DobermanAgent hosted-app nginx config — static runtime.
 #
-# Rendered at build time into /etc/bisheng/nginx.conf.tmpl; the entrypoint
+# Rendered at build time into /etc/doberman-agent/nginx.conf.tmpl; the entrypoint
 # substitutes __PORT__ at start and runs nginx from the /tmp copy. Everything
 # nginx writes (pid, temp files) is pinned under /tmp because the root
 # filesystem is read-only (AC-17). No `user` directive: the master already
@@ -50,7 +50,7 @@ http {
         location ~ /\. {
             return 404;
         }
-        location ~ ^/(Dockerfile|entrypoint\.sh|nginx\.conf|healthcheck\.sh|bisheng-app\.yaml)$ {
+        location ~ ^/(Dockerfile|entrypoint\.sh|nginx\.conf|healthcheck\.sh|doberman-agent-app\.yaml)$ {
             return 404;
         }
 

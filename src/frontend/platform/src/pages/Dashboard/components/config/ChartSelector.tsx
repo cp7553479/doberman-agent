@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button, notification, Select } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, notification, Select } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { useComponentEditorStore,useEditorDashboardStore } from "@/store/dashboardStore";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { useEffect,useState } from "react";
 import { AdvancedDatePicker } from "../AdvancedDatePicker";
 

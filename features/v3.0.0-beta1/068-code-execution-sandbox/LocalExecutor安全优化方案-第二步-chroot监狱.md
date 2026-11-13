@@ -42,7 +42,7 @@
 - 构建时预编译好的 `__pycache__`。
 - `/etc/ld.so.cache`（`ldconfig -r` 生成，不设 `LD_LIBRARY_PATH`）、`/etc/passwd` 和 `/etc/group`（只有 root 和 nobody）、`/etc/localtime`、`/usr/share/zoneinfo`。
 - `/usr/share/fonts`、`/usr/local/share/fonts`、`/etc/fonts`。`insert_set_font_code` 会设置 `WenQuanYi Zen Hei`，没有字体中文图表会变方块。
-- 预生成的 matplotlib 字体缓存：`/usr/share/bisheng/mplcache/`。
+- 预生成的 matplotlib 字体缓存：`/usr/share/doberman-agent/mplcache/`。
 - `/dev/null`、`/dev/zero`、`/dev/urandom`（`mknod`，`0666`）。
 - `/work`：属主 root，`0711`，运行时在里面建 R，不打进镜像。
 
@@ -75,7 +75,7 @@ RUN sh build-local-root.sh          # 新增
 
 ### 为什么复制，不用硬链接
 
-原始设想用硬链接让镜像"只存一份"。对当前 Dockerfile 不成立：`FROM dataelement/bisheng-backend:base.v10`，venv 的大头在 base 镜像的层里，这个 Dockerfile 里的 `uv sync` 只补差异。在后面的 `RUN` 里对 base 层文件做硬链接，overlayfs 会先 copy-up，等于还是多存一份，而且还留下两个隐患：
+原始设想用硬链接让镜像"只存一份"。对当前 Dockerfile 不成立：`FROM cp7553479/doberman-agent-backend:base.v10`，venv 的大头在 base 镜像的层里，这个 Dockerfile 里的 `uv sync` 只补差异。在后面的 `RUN` 里对 base 层文件做硬链接，overlayfs 会先 copy-up，等于还是多存一份，而且还留下两个隐患：
 
 - 之后任何一次 `uv sync` 替换了某个包，监狱里的硬链接指向旧 inode，监狱和 `/app/.venv` 静默地版本不一致。
 - 硬链接共享 inode，对监狱文件做 `chmod` / `chown` 会同时改动真实 venv。
@@ -93,14 +93,14 @@ RUN sh build-local-root.sh          # 新增
 ### 其他构建步骤
 
 1. 复制前先对 `/app/.venv` 跑 `python -m compileall -q`，让监狱带着 `.pyc`。监狱只读且运行时用 `-B`，没有它每次调用都会重新编译 pandas、matplotlib 这类大库。
-2. 用 `MPLCONFIGDIR=/opt/local-root/usr/share/bisheng/mplcache` 导入一次 `matplotlib.font_manager`，生成字体缓存，并检查其中含 `WenQuanYi Zen Hei`。
+2. 用 `MPLCONFIGDIR=/opt/local-root/usr/share/doberman-agent/mplcache` 导入一次 `matplotlib.font_manager`，生成字体缓存，并检查其中含 `WenQuanYi Zen Hei`。
 3. 建 `/dev` 节点、`/work`，规范权限，检查没有 `setuid` / `setgid` 文件。
 4. 把 `sha256(uv.lock)` 写进 `/opt/local-root/.lock-hash`。
 5. 构建期自检，用 uid 65534、与运行时相同的 `chroot` 参数：
    - 导入允许列表里的每个模块；
    - 在一个临时目录里各生成一份 xlsx、docx、pptx、pdf 和一张含中文的 PNG；
    - `/`、`/app/.venv`、解释器目录都不可写；
-   - `/proc`、`/bin/sh`、`/etc/shadow`、`/app/bisheng` 都不存在；
+   - `/proc`、`/bin/sh`、`/etc/shadow`、`/app/doberman-agent` 都不存在；
    - `os.listdir('/')` 恰好等于预期集合；
    - 从 cwd 出发 `os.listdir('..')` 仍在监狱内（防 `--skip-chdir` 误用）；
    - `getpass.getuser()` 在设置 `USER` 时可用。
@@ -158,7 +158,7 @@ subprocess.Popen(
 
 | 影响 | 谁会碰到 |
 |---|---|
-| 内置 skills 的 `bisheng-xlsx/scripts/recalc_check.py`、`bisheng-pptx/scripts/render_deck.py`、`bisheng-docx/scripts/render_docx.py` 依赖 `soffice`（它们用 `shutil.which` 找，找不到会自己报错） | 灵思选了 `type=local` 并用这几个 skill 的用户 |
+| 内置 skills 的 `doberman-agent-xlsx/scripts/recalc_check.py`、`doberman-agent-pptx/scripts/render_deck.py`、`doberman-agent-docx/scripts/render_docx.py` 依赖 `soffice`（它们用 `shutil.which` 找，找不到会自己报错） | 灵思选了 `type=local` 并用这几个 skill 的用户 |
 | `sh` / `bash` / `pip` 不再可用 | 依赖它们的模型输出 |
 | 允许列表之外的库不可导入 | 以前碰巧能用的库 |
 | `multiprocessing`、`ProcessPoolExecutor`、硬编码 `/tmp` 的库 | 少数脚本 |
@@ -178,13 +178,13 @@ subprocess.Popen(
 - `/opt/local-root/.lock-hash` 与 `/app/uv.lock` 的哈希不一致（有人在派生镜像里又跑了 `uv sync`，监狱已过期）
 - 预检失败
 
-预检沿用第一步的做法，改为在监狱里跑：uid 非 0、`/proc` 不存在、`/app/bisheng` 不存在、能导入允许列表里的模块、能在 R 里写文件。失败抛 `LocalIsolationUnavailable`，处理方式同第一步。
+预检沿用第一步的做法，改为在监狱里跑：uid 非 0、`/proc` 不存在、`/app/doberman-agent` 不存在、能导入允许列表里的模块、能在 R 里写文件。失败抛 `LocalIsolationUnavailable`，处理方式同第一步。
 
 ## 部署要求
 
 - 后端、各 Celery worker、灵思 worker 的容器以 root 运行（现在的镜像没有 `USER`）。
 - 保留 Docker 默认能力集里的 `CAP_SYS_CHROOT`、`CAP_SETUID`、`CAP_SETGID`；不要 `cap_drop: ALL`，不要 `runAsNonRoot`。不需要 `CAP_SYS_ADMIN`。
-- 根文件系统不能是只读的：`/opt/local-root/work` 和 `/var/run/bisheng-local-uids` 要可写（只读根的部署用 `emptyDir` 挂这两处）。
+- 根文件系统不能是只读的：`/opt/local-root/work` 和 `/var/run/doberman-agent-local-uids` 要可写（只读根的部署用 `emptyDir` 挂这两处）。
 - seccomp 保持默认即可。现有 `docker/docker-compose.yml` 的后端用 `seccomp:unconfined`，也能工作。
 - 这些要求写进 `沙箱部署说明.md`。
 
@@ -204,7 +204,7 @@ subprocess.Popen(
 构建期自检见上。运行期，在 root、Linux 且存在 `/opt/local-root` 时才跑：
 
 - 一次成功执行：生成 xlsx、docx、pptx、pdf、含中文的 PNG，都能收回 W，字体缓存没有被重建。
-- 在脚本里读 `/app/bisheng/config.yaml`、`/proc/self/environ`、`/etc/shadow`：都是 `FileNotFoundError`，不是 `PermissionError`。
+- 在脚本里读 `/app/doberman-agent/config.yaml`、`/proc/self/environ`、`/etc/shadow`：都是 `FileNotFoundError`，不是 `PermissionError`。
 - `os.listdir('/')` 只有监狱里的内容；`os.listdir('/work')` 被拒；打不开别的 R。
 - `subprocess.run(['soffice'])`、`os.system('ls')` 失败；`import pymysql`、`import redis` 报 `ImportError`。
 - 提交 ` ```bash` 和以 `pip install` 开头的输入，得到"只运行 Python"的说明，没有进程被启动。

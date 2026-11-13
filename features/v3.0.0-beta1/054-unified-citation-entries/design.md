@@ -200,7 +200,7 @@
   - 临时文件：工作流 Agent 检索临时文件 → 断言不产生来源；同轮的真实知识库来源仍正常。
 - **前端**：文章来源类型识别与点击行为；「来源已失效」与「暂无权限」两态可区分；三语文案齐。
 - **手动验证一遍**（本地起前后端 + 连 test 环境中间件，不改 test 部署）：
-  1. 后端：`cd src/backend && export config=config.yaml && uv run uvicorn bisheng.main:app --port 7860`
+  1. 后端：`cd src/backend && export config=config.yaml && uv run uvicorn doberman_agent.main:app --port 7860`
   2. 前端：`cd src/frontend && pnpm dev:client`（`:4001`，base 路径 `/workspace`）
   3. 打开 `http://localhost:4001/workspace/channel/<channelId>/article/<articleId>`，在文章页侧边问答里提一个能命中文章内容的问题 → 答案出角标 → 悬浮看标题 / 摘录 → 点击开原文链接（新标签）。
   4. 追问一个与文章无关的问题 → 答案**无角标**，且 `message_citation` 不新增行（决策 4 的回归点）。

@@ -8,7 +8,7 @@
 > ⚠️ 该需求文档尚未落入仓库。落地前请将其拷入 `docs/PRD/`，并回填本字段的仓库内路径，否则 AC 无法逐条对照原文核验。
 **优先级**: P1
 **所属版本**: v3.0.0-beta1
-**依赖**: F029（知识库检索权限过滤 / INV-7）· F041（`shared` / `per_user` 来源权限双档）· 现有 citation 子系统（`bisheng/citation/`）
+**依赖**: F029（知识库检索权限过滤 / INV-7）· F041（`shared` / `per_user` 来源权限双档）· 现有 citation 子系统（`doberman-agent/citation/`）
 
 > **范围边界**
 > - **本次纳入**：

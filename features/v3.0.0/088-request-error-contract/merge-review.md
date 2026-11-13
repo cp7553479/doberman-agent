@@ -2,7 +2,7 @@
 
 **结论：PASS。** 在指定冲突范围内，未发现阻断合并的语义丢失。此结论是冲突解决内容审查，不替代父任务正在执行的全量与双端构建。
 
-工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/bisheng`。逐项对照当前source、incoming `origin/feat/3.0.0`（`4bb923a43`）及原F088 `12be71949`。仅执行只读Git/文件检查，写此临时报告；未改产品、未运行测试/全量、未执行Git写入或发其他线程消息。
+工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/doberman-agent`。逐项对照当前source、incoming `origin/feat/3.0.0`（`4bb923a43`）及原F088 `12be71949`。仅执行只读Git/文件检查，写此临时报告；未改产品、未运行测试/全量、未执行Git写入或发其他线程消息。
 
 | 项目 | 核实结果 |
 | --- | --- |

@@ -2,8 +2,8 @@
 
 import pytest
 
-from bisheng.llm.domain.services.context_window import ContextWindowService, ModelSnapshot
-from bisheng.llm.domain.services.context_window_probes import ProbeResult
+from doberman_agent.llm.domain.services.context_window import ContextWindowService, ModelSnapshot
+from doberman_agent.llm.domain.services.context_window_probes import ProbeResult
 
 
 class _FakeRedis:
@@ -52,7 +52,7 @@ def probe(monkeypatch):
         state["calls"] += 1
         return state["result"]
 
-    monkeypatch.setattr("bisheng.llm.domain.services.context_window.probe_context_window", fake_probe)
+    monkeypatch.setattr("doberman_agent.llm.domain.services.context_window.probe_context_window", fake_probe)
     return state
 
 
@@ -110,7 +110,7 @@ def test_saving_or_verifying_a_model_drops_its_cached_window():
     """
     import inspect
 
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     assert "ContextWindowService.invalidate" in inspect.getsource(LLMService.update_llm_server)
     assert "ContextWindowService.invalidate" in inspect.getsource(LLMService.verify_model_status)

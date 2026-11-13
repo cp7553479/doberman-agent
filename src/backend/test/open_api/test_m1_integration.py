@@ -3,17 +3,17 @@ from types import SimpleNamespace
 from sqlmodel import select
 from starlette.requests import Request
 
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.api.endpoints.auth import whoami
-from bisheng.open_api.domain.models import ServiceAccount
-from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT
-from bisheng.open_api.domain.schemas.credential import KeyIssueRequest
-from bisheng.open_api.domain.schemas.service_account import ServiceAccountCreate
-from bisheng.open_api.domain.services.credential_service import CredentialService
-from bisheng.open_api.domain.services.credential_validator import validate_bearer
-from bisheng.open_api.domain.services.service_account_service import ServiceAccountService
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.user.domain.models.user import User
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.api.endpoints.auth import whoami
+from doberman_agent.open_api.domain.models import ServiceAccount
+from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT
+from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest
+from doberman_agent.open_api.domain.schemas.service_account import ServiceAccountCreate
+from doberman_agent.open_api.domain.services.credential_service import CredentialService
+from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
+from doberman_agent.open_api.domain.services.service_account_service import ServiceAccountService
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.user.domain.models.user import User
 
 
 async def test_independent_service_account_round_trip_keeps_user_tables_unchanged(

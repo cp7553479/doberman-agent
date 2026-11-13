@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import get_current_tenant_id
+from doberman_agent.core.context.tenant import get_current_tenant_id
 from scripts import reconcile_f048_projection_operations as cli
 
 

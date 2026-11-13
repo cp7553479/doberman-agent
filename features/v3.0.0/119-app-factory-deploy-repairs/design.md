@@ -64,7 +64,7 @@
 
 - **备选**：A. 只修改 `errors.py`；B. 源码、版本、wheel、平台分发 manifest 同步。
 - **选定**：B。以当前 `3.0.0.post1` 为基线递增 CLI 修订版本，使用 `scripts/pack_cli_wheel.sh` 重新构建，安装到空 venv 验证，再保留脚本生成的 CLI wheel 和 manifest；SDK 产物不动。实施时若上游已占用下一版本，使用大于上游的修订版本。
-- **原因**：backend 镜像没有 `src/bisheng-cli/` 源码树，只分发 `dev_toolkit/artifacts`；不重打 wheel，用户安装后仍遇到旧行为。
+- **原因**：backend 镜像没有 `src/doberman-agent-cli/` 源码树，只分发 `dev_toolkit/artifacts`；不重打 wheel，用户安装后仍遇到旧行为。
 - **重新考虑**：分发改成 CI 原生制品流水线时再移除仓库 wheel；本轮不改发行体系。
 
 ## 4. 系统现状与修改落点
@@ -85,7 +85,7 @@
 | `operations.py::_failure` | 先清理；未知 `BundleInputError` 被转 `execution_failed` | 保留已知输入原因、在清理前收集可用输出，维持终态清理守卫 |
 | `runtime_delivery_coordinator.py::wait/prepare` | 非成功统一 16124；公开 details 不含日志 | 按操作和失败阶段分类，形成安全摘要 |
 | `failure.py::failure_from_error`、`PublishStatusService` | 五元组保存/透传，后者不是日志丢失源头 | 保持结构；存储安全元数据，合法读取时追加仍有效的日志 |
-| `bisheng_cli/errors.py`、平台 CLI wheel | 只读取 `details.tail`；旧 16124 未登记 | 原始错误不丢，原因和提示一致；安装件同步 |
+| `doberman_agent_cli/errors.py`、平台 CLI wheel | 只读取 `details.tail`；旧 16124 未登记 | 原始错误不丢，原因和提示一致；安装件同步 |
 
 ### 4.2 模块职责
 
@@ -109,11 +109,11 @@
 
 | 变量 | 约定 |
 | --- | --- |
-| `BISHENG_APP_DB_URL` / `BISHENG_APP_DB_PATH` | `sqlite:////data/app.db` / `/data/app.db`；预检/预览挂载独立 `/data`，正式挂原持久数据 |
-| `BISHENG_APP_ID` / `BISHENG_APP_SLUG` | 当前应用真实 ID / slug |
-| `BISHENG_APP_VERSION_ID` / `BISHENG_APP_VERSION` | 固定版本 ID / 已存在的版本序号字符串；预检尚未分配序号时后者为空，不冒充 v1 |
-| `PORT` / `BISHENG_APP_PORT` | 固定 port 的字符串 |
-| `BISHENG_APP_BASE_PATH` / `BISHENG_APP_HEALTH_PATH` | 本次运行访问前缀 / 健康路径；预览使用其独立前缀 |
+| `DOBERMAN_AGENT_APP_DB_URL` / `DOBERMAN_AGENT_APP_DB_PATH` | `sqlite:////data/app.db` / `/data/app.db`；预检/预览挂载独立 `/data`，正式挂原持久数据 |
+| `DOBERMAN_AGENT_APP_ID` / `DOBERMAN_AGENT_APP_SLUG` | 当前应用真实 ID / slug |
+| `DOBERMAN_AGENT_APP_VERSION_ID` / `DOBERMAN_AGENT_APP_VERSION` | 固定版本 ID / 已存在的版本序号字符串；预检尚未分配序号时后者为空，不冒充 v1 |
+| `PORT` / `DOBERMAN_AGENT_APP_PORT` | 固定 port 的字符串 |
+| `DOBERMAN_AGENT_APP_BASE_PATH` / `DOBERMAN_AGENT_APP_HEALTH_PATH` | 本次运行访问前缀 / 健康路径；预览使用其独立前缀 |
 | Python 框架别名 | `UVICORN_ROOT_PATH`、`GRADIO_ROOT_PATH` 等于 base path；`STREAMLIT_SERVER_BASE_URL_PATH` 去掉前导 `/` |
 | Node 别名 | `BASE_PATH` 等于 base path |
 
@@ -136,7 +136,7 @@ backend 对新 operation 补固定 `runtime`、`health` 等已知值；preview/s
 
 有构建步骤时不在输出生成前误判缺 index；没有构建步骤时尽早检查。两条路径在上传 compiled 产物前均做最终检查，将选定目录规范化成产物根；恢复后不再次在源码根选择，防止 Vite 根入口遮盖 dist。source-image 的既有预编译静态包沿用根优先；K8s source-image 已执行构建时采用同一 built 判定，OCI assembler 消费已选定产物。
 
-不改变 CLI 默认排除 dist/build 的打包规则；技能包明确现成产物须通过 `.bishengignore` 的 `!dist/` 或 `!build/` 纳入。
+不改变 CLI 默认排除 dist/build 的打包规则；技能包明确现成产物须通过 `.doberman-agentignore` 的 `!dist/` 或 `!build/` 纳入。
 
 ### 4.6 具体失败原因、输出与权限
 
@@ -269,8 +269,8 @@ backend 在 F086 失败到 F055 公开失败的转换处形成白名单，不改
 
 验收顺序：
 
-1. 在临时目录建立空 venv，安装平台下载的 CLI wheel，核对 `bisheng --version` 及版本 manifest；`bisheng login http://192.168.106.116:3001 --api-key <内存中的专用密钥>`。
-2. `bisheng skills sync`，复制官方 Python 示例，运行 `bisheng deploy <示例目录> --json`；通过真实审批后从返回的 `/apps/{slug}/` 访问，写入并读取一条数据库记录。只对该临时应用停止/上线一次，再读同一记录。
+1. 在临时目录建立空 venv，安装平台下载的 CLI wheel，核对 `doberman-agent --version` 及版本 manifest；`doberman-agent login http://192.168.106.116:3001 --api-key <内存中的专用密钥>`。
+2. `doberman-agent skills sync`，复制官方 Python 示例，运行 `doberman-agent deploy <示例目录> --json`；通过真实审批后从返回的 `/apps/{slug}/` 访问，写入并读取一条数据库记录。只对该临时应用停止/上线一次，再读同一记录。
 3. Node 用 `index.js` 或 package.main 的最小程序，依赖材料完整时发布一次；static 用 public/index.html 及一个有效 build 产物的定向验证。必要失败分支主要由本地测试覆盖；不得为制造失败删除共用 runtime 镜像或修改其它正式应用。
 4. 核对部署失败的 CLI 与管理状态可读，publish-only 不能读取 tail；检查镜像/平台版本。删除临时资源，检查原应用和策略未变。
 

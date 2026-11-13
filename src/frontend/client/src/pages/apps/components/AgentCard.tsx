@@ -3,7 +3,7 @@ import {
   DropdownItem,
   Tooltip as SharedTooltip,
   TooltipProvider as SharedTooltipProvider,
-} from "@bisheng/ui";
+} from "@doberman-agent/ui";
 import { DemoTag } from "~/mock/demo/DemoTag";
 import type { AppItem } from "~/@types/app";
 import { Button } from "~/components";
@@ -11,7 +11,7 @@ import AppAvator from "~/components/Avator";
 
 import { useLocalize, useMediaQuery } from "~/hooks";
 import { cn } from "~/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { MoreVertical } from "lucide-react";
 import { useLazyAppSharePermission } from "../hooks/useLazyAppSharePermission";
 

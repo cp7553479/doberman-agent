@@ -2,12 +2,12 @@ import pytest
 
 
 def test_default_mode_listens_all_queues(monkeypatch):
-    from bisheng import run_celery as r
+    from doberman_agent import run_celery as r
 
     captured = []
-    monkeypatch.setattr(r.bisheng_celery, "start", lambda argv: captured.append(argv))
-    monkeypatch.delenv("BISHENG_CELERY_MODE", raising=False)
-    monkeypatch.delenv("BISHENG_CELERY_CONCURRENCY", raising=False)
+    monkeypatch.setattr(r.doberman_agent_celery, "start", lambda argv: captured.append(argv))
+    monkeypatch.delenv("DOBERMAN_AGENT_CELERY_MODE", raising=False)
+    monkeypatch.delenv("DOBERMAN_AGENT_CELERY_CONCURRENCY", raising=False)
 
     r.main()
 
@@ -27,12 +27,12 @@ def test_default_mode_listens_all_queues(monkeypatch):
 
 
 def test_ocr_mode_listens_ocr_queue_only(monkeypatch):
-    from bisheng import run_celery as r
+    from doberman_agent import run_celery as r
 
     captured = []
-    monkeypatch.setattr(r.bisheng_celery, "start", lambda argv: captured.append(argv))
-    monkeypatch.setenv("BISHENG_CELERY_MODE", "ocr")
-    monkeypatch.setenv("BISHENG_CELERY_CONCURRENCY", "5")
+    monkeypatch.setattr(r.doberman_agent_celery, "start", lambda argv: captured.append(argv))
+    monkeypatch.setenv("DOBERMAN_AGENT_CELERY_MODE", "ocr")
+    monkeypatch.setenv("DOBERMAN_AGENT_CELERY_CONCURRENCY", "5")
 
     r.main()
 
@@ -52,12 +52,12 @@ def test_ocr_mode_listens_ocr_queue_only(monkeypatch):
 
 
 def test_file_mode_excludes_ocr_queue(monkeypatch):
-    from bisheng import run_celery as r
+    from doberman_agent import run_celery as r
 
     captured = []
-    monkeypatch.setattr(r.bisheng_celery, "start", lambda argv: captured.append(argv))
-    monkeypatch.setenv("BISHENG_CELERY_MODE", "file")
-    monkeypatch.setenv("BISHENG_CELERY_CONCURRENCY", "15")
+    monkeypatch.setattr(r.doberman_agent_celery, "start", lambda argv: captured.append(argv))
+    monkeypatch.setenv("DOBERMAN_AGENT_CELERY_MODE", "file")
+    monkeypatch.setenv("DOBERMAN_AGENT_CELERY_CONCURRENCY", "15")
 
     r.main()
 
@@ -77,8 +77,8 @@ def test_file_mode_excludes_ocr_queue(monkeypatch):
 
 
 def test_invalid_mode_raises(monkeypatch):
-    from bisheng import run_celery as r
+    from doberman_agent import run_celery as r
 
-    monkeypatch.setenv("BISHENG_CELERY_MODE", "bogus")
+    monkeypatch.setenv("DOBERMAN_AGENT_CELERY_MODE", "bogus")
     with pytest.raises(ValueError):
         r.main()

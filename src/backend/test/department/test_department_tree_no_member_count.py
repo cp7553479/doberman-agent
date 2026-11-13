@@ -21,7 +21,7 @@ from pathlib import Path
 
 
 def _read(rel: str) -> str:
-    return (Path(__file__).resolve().parents[2] / "bisheng" / rel).read_text(encoding="utf-8")
+    return (Path(__file__).resolve().parents[2] / "doberman_agent" / rel).read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -90,6 +90,6 @@ def test_aget_department_still_populates_member_count():
 
 
 def test_legacy_resource_permission_endpoint_is_retired():
-    endpoint = Path(__file__).resolve().parents[2] / "bisheng" / "permission/api/endpoints/resource_permission.py"
+    endpoint = Path(__file__).resolve().parents[2] / "doberman_agent" / "permission/api/endpoints/resource_permission.py"
     assert not endpoint.exists()
     assert "member_count" not in _read("permission/api/endpoints/grant.py")

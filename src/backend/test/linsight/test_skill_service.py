@@ -9,18 +9,18 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.linsight import (
+from doberman_agent.common.errcode.linsight import (
     SkillBundleTooLargeError,
     SkillFileTooLargeError,
     SkillNameDuplicateError,
     SkillNotFoundError,
     SkillValidationError,
 )
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill
-from bisheng.linsight.domain.schemas.skill_schema import SkillCreateForm
-from bisheng.linsight.domain.services import skill_service as service_module
-from bisheng.linsight.domain.services.skill_service import SkillService
-from bisheng.linsight.domain.services.skill_store import (
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill
+from doberman_agent.linsight.domain.schemas.skill_schema import SkillCreateForm
+from doberman_agent.linsight.domain.services import skill_service as service_module
+from doberman_agent.linsight.domain.services.skill_service import SkillService
+from doberman_agent.linsight.domain.services.skill_store import (
     MAX_BUNDLE_SIZE,
     SKILL_MD,
     SkillStore,

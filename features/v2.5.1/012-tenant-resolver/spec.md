@@ -122,7 +122,7 @@ class UserTenantSyncService:
         await redis.delete(f'user:{user_id}:leaf_tenant')
 ```
 
-**配置示例**（`src/backend/bisheng/config.yaml`）：
+**配置示例**（`src/backend/doberman_agent/config.yaml`）：
 
 ```yaml
 user_tenant_sync:
@@ -145,10 +145,10 @@ class JWTPayload:
 
 ### 5.4 ContextVar 扩展与 get_current_tenant_id() 优先级
 
-**背景**：v2.5.0/F001 已在 `src/backend/bisheng/core/context/tenant.py` 定义 `current_tenant_id` ContextVar + `get_current_tenant_id()` getter + `bypass_tenant_filter()` context manager。v2.5.1 在此基础上扩展 4 个新 ContextVar 以支撑 IN 列表过滤、严格匹配、admin-scope、管理类 API 标识：
+**背景**：v2.5.0/F001 已在 `src/backend/doberman_agent/core/context/tenant.py` 定义 `current_tenant_id` ContextVar + `get_current_tenant_id()` getter + `bypass_tenant_filter()` context manager。v2.5.1 在此基础上扩展 4 个新 ContextVar 以支撑 IN 列表过滤、严格匹配、admin-scope、管理类 API 标识：
 
 ```python
-# src/backend/bisheng/core/context/tenant.py（本 Feature 扩展）
+# src/backend/doberman_agent/core/context/tenant.py（本 Feature 扩展）
 
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -221,7 +221,7 @@ def get_current_tenant_id() -> Optional[int]:
 ### 5.5 Middleware 注册顺序（F012 / F019 / 业务路由依赖）
 
 ```python
-# src/backend/bisheng/main.py 中间件注册顺序（按 FastAPI 执行从下到上）：
+# src/backend/doberman_agent/main.py 中间件注册顺序（按 FastAPI 执行从下到上）：
 #
 # 1. AuthenticationMiddleware（v2.5.0 既有）
 #    - 解析 JWT Cookie / Header
@@ -319,4 +319,4 @@ def get_current_tenant_id() -> Optional[int]:
 - 所有者交接 API → F018
 - SSO 实时同步协议 → F014
 - Celery 定时校对具体实现 → F015
-- Gateway 域名路由 → 由 Gateway 侧配置，不在 bisheng 范围
+- Gateway 域名路由 → 由 Gateway 侧配置，不在 doberman-agent 范围

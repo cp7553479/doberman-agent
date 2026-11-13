@@ -1,5 +1,5 @@
 import { KnowledgeSpaceAccessMode } from "./KnowledgeSpaceAccessMode";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { VisibilityType } from "~/api/knowledge";
@@ -24,8 +24,8 @@ import {
 import type { PermissionDraftRow } from "~/components/permission/usePermissionDraft";
 import { Input } from "~/components/ui/Input";
 import { Label } from "~/components/ui/Label";
-import { Select, Tabs } from "@bisheng/ui";
-import { Textarea } from "@bisheng/ui";
+import { Select, Tabs } from "@doberman-agent/ui";
+import { Textarea } from "@doberman-agent/ui";
 import { useAuthContext, useLocalize } from "~/hooks";
 import useSelectCopy from "~/hooks/useSelectCopy";
 import { useToastContext } from "~/Providers";

@@ -31,7 +31,7 @@
 - [x] **T001**: 模板生成脚本与 5 套模板（共用版式）
   - **文件**：
     - `src/backend/scripts/pptx_templates/{themes.py, layouts.py, build_templates.py}`
-    - 产物：`src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/templates/{catalog.json, <id>/template.pptx, <id>/layouts.json}`
+    - 产物：`src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-pptx/templates/{catalog.json, <id>/template.pptx, <id>/layouts.json}`
   - **逻辑**：
     - 5 套主题令牌，包含配色、中西文字体、`gov-red` 的标题字体。
     - 14 个共用版式的几何，版式清单见 design §4.4；专属版式由 T017 补充。
@@ -56,7 +56,7 @@
 
 - [x] **T002**: 错误码 11025 与三语文案
   - **文件**：
-    - `src/backend/bisheng/common/errcode/linsight.py`
+    - `src/backend/doberman_agent/common/errcode/linsight.py`
     - `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`
     - 重新生成 `api_errors` 产物，不手改生成文件
   - **逻辑**：新增 `LinsightArtifactPreviewError`（Code 11025），文案为"PPT 预览生成失败，请下载后查看"及对应的英文、日文。
@@ -64,7 +64,7 @@
   - **依赖**：无
 
 - [x] **T003**: `convert_ppt_to_pdf` 增加可选 `timeout` 参数
-  - **文件**：`src/backend/bisheng/knowledge/rag/pipeline/loader/utils/libreoffice_converter.py`
+  - **文件**：`src/backend/doberman_agent/knowledge/rag/pipeline/loader/utils/libreoffice_converter.py`
   - **逻辑**：增加可选参数 `timeout`，默认值保持 180，并透传给 `_convert_file_extension`。既有调用方的行为不变。
   - **覆盖 AC**：AC-21（为其提供条件）
   - **依赖**：无
@@ -81,7 +81,7 @@
   - **依赖**：T001
 
 - [x] **T005**: `deck_template.py` 实现
-  - **文件**：`src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/scripts/deck_template.py`
+  - **文件**：`src/backend/doberman_agent/linsight/builtin_skills/doberman-agent-pptx/scripts/deck_template.py`
   - **逻辑**：
     - 实现 `Deck.open/add/fill/drop/table/chart/image/save`。
     - 克隆页面时改写 rId（design §5 第 1 条）；图表按 `chart_area` 现放（design 决策 4）；删页同时处理 `drop_rel` 和 `sldId`（design §5 第 3 条）。
@@ -92,7 +92,7 @@
   - **依赖**：T004
 
 - [x] **T006**: `list_templates.py`
-  - **文件**：`.../bisheng-pptx/scripts/list_templates.py`，测试并入 `test_pptx_templates.py`
+  - **文件**：`.../doberman-agent-pptx/scripts/list_templates.py`，测试并入 `test_pptx_templates.py`
   - **逻辑**：
     - 无参数时，以纯文本列出模板：id、名称、适用场景、配色说明、版式数。
     - 传 `<id>` 时，列出该模板的版式表：`layout_id`、适用内容、插槽及容量。
@@ -134,8 +134,8 @@
 
 - [x] **T010**: 预览服务与接口实现
   - **文件**：
-    - `src/backend/bisheng/linsight/domain/services/artifact_preview_service.py`
-    - `src/backend/bisheng/linsight/api/endpoints/linsight.py`
+    - `src/backend/doberman_agent/linsight/domain/services/artifact_preview_service.py`
+    - `src/backend/doberman_agent/linsight/api/endpoints/linsight.py`
   - **逻辑**：
     - 实现 `load_accessible_version` 和 `get_pptx_preview`，细节见 design §4.2、§4.3、决策 6、决策 7。
     - 新增 `POST /workbench/file_preview`。
@@ -147,7 +147,7 @@
 ## Wave 3：技能指引、前端、分发
 
 - [x] **T011**: 重写 SKILL.md 与 references
-  - **文件**：`.../bisheng-pptx/{SKILL.md, references/design-zh.md, references/environment.md(新), references/pptx-cookbook.md}`
+  - **文件**：`.../doberman-agent-pptx/{SKILL.md, references/design-zh.md, references/environment.md(新), references/pptx-cookbook.md}`
   - **逻辑**：
     - 正文流程：先写大纲（首读结论、`layout_id`、证据），再用 `list_templates` 选模板，再用 `Deck` 构建，最后用 `inspect` 检查。
     - 路线选择：用户模板优先；其次是内置模板；用户要求自由设计、或模板都不贴合时，才从零生成。
@@ -189,7 +189,7 @@
 - [x] **T013**: 种子化回归测试
   - **文件**：`src/backend/test/linsight/test_builtin_skill_seeder.py`
   - **测试**：
-    - `discover_builtin_bundles()["bisheng-pptx"]` 包含 `templates/**`，字节与磁盘一致。（AC-13）
+    - `discover_builtin_bundles()["doberman-agent-pptx"]` 包含 `templates/**`，字节与磁盘一致。（AC-13）
     - 已被 fork 的内置技能不会被覆盖（复用既有用例并断言）。（AC-14）
   - **覆盖 AC**：AC-13、AC-14
   - **依赖**：T001、T017
@@ -257,6 +257,6 @@
 - T017：`bridge` 用瀑布图实现，`deck_render` 增加 `waterfall` 图表类型。
 - T010：不属于该会话版本、含 `..`、非 ppt/pptx 的 `file_url` 一律按 `UnAuthorizedError` 拒绝（与下载接口的拒绝方式一致）；源对象在 MinIO 不存在时返回 11025（而非 404）。
 - T011：SKILL.md 正文改为「内容先行 + 内置模板默认」；原「从零创建」与排版底线移到 `references/freeform.md`，环境事实移到 `references/environment.md`；inspect/probe/cookbook 中引用旧章节号的提示语同步更新。
-- T012：本地 client 依赖安装落后于 workspace（缺 `@bisheng/chat`、`@bisheng/api-client`），tsc-strict 用临时 paths 映射验证：改动文件零错误；全量结论以 CI 为准。
+- T012：本地 client 依赖安装落后于 workspace（缺 `@doberman-agent/chat`、`@doberman-agent/api-client`），tsc-strict 用临时 paths 映射验证：改动文件零错误；全量结论以 CI 为准。
 - T016（部分）：`arch-guard` 对改动文件 exit 0；ruff 只剩全角中文标点类（RUF001–003，与既有技能脚本同类、后端 CI 不跑 ruff）；`test/linsight/` 全量 1627 passed / 6 failed，6 条失败（`test_citation_handles_switch.py` ×5、`test_personal_skill_api.py` ×1）在未改动的 `origin/feat/3.0.0` 上同样失败，属既有问题。
 - T008：为让模板自身通过既有检查（不依赖基线扣除），调整了模板：封面标题 44pt、页脚上移并改 10pt、装饰圆环与光晕收进画布内、页码字段声明段落字号 → design §5 第 13 条。

@@ -1,14 +1,14 @@
 // @ts-strict-ignore
-import { Pagination, Button, SearchInput, notification } from '@bisheng/ui';
+import { Pagination, Button, SearchInput, notification } from '@doberman-agent/ui';
 import { checkSassUrl } from "@/components/bs-comp/FileView";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { EditQa } from "./components/EditQa";
 import { KnowledgeTooltip } from "./components/KnowledgeTooltip";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { downloadFile,formatDate } from "@/util/utils";
-import { Checkbox,Switch } from "@bisheng/ui";
+import { Checkbox,Switch } from "@doberman-agent/ui";
 
 import { useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -419,7 +419,7 @@ export default function QasPage() {
                     </Table>
                 </div>
             </div>
-            <div className="bisheng-table-footer px-6 justify-end">
+            <div className="doberman_agent-table-footer px-6 justify-end">
                 <div>
                     <Pagination locale={paginationLocale}
                         current={page}

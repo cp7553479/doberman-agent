@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { Article } from "~/api/channels";
 import { NotificationSeverity } from "~/common";
 import { AiChatIcon } from "~/components/icons";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useToastContext } from "~/Providers";
 import { formatTime } from "~/utils";
 import { useArticleShare } from "../hooks/useArticleShare";

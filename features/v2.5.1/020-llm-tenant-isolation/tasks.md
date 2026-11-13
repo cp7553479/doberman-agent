@@ -3,7 +3,7 @@
 **关联规格**: [spec.md](./spec.md)
 **版本**: v2.5.1
 **分支**: `feat/v2.5.1/020-llm-tenant-isolation`（base=`2.5.0-PM`，commit `ee6d24e61`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/020-llm-tenant-isolation`
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/020-llm-tenant-isolation`
 **前置**: F011 / F012 / F013 / F017 / F019 已合入 `2.5.0-PM`
 
 ---
@@ -78,10 +78,10 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T01**: 错误码 `llm_tenant.py`
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/llm_tenant.py`
+  - `src/backend/doberman_agent/common/errcode/llm_tenant.py`
   **逻辑**（参照 `common/errcode/admin_scope.py` 模式）:
   ```python
-  from bisheng.common.errcode.base import BaseErrorCode
+  from doberman_agent.common.errcode.base import BaseErrorCode
 
   class LLMModelSharedReadonlyError(BaseErrorCode):
       Code: int = 19801
@@ -107,7 +107,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T02a**: `LLMConf` 新建 + `Settings` 注册
   **文件（新建 + 修改）**:
-  - 新建 `src/backend/bisheng/core/config/llm.py`:
+  - 新建 `src/backend/doberman_agent/core/config/llm.py`:
     ```python
     from pydantic import BaseModel, Field
 
@@ -117,7 +117,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
             description='F020: Child Admin 注册 LLM Server 时 endpoint 前缀白名单；空=不限制',
         )
     ```
-  - 修改 `src/backend/bisheng/core/config/settings.py` —— 导入 `LLMConf` 并在 `Settings` 注册 `llm: LLMConf = LLMConf()`
+  - 修改 `src/backend/doberman_agent/core/config/settings.py` —— 导入 `LLMConf` 并在 `Settings` 注册 `llm: LLMConf = LLMConf()`
   **测试**: 无（Pydantic 字段扩展；在 T05/T09 集成测试中验证 `settings.llm.endpoint_whitelist` 可达）
   **覆盖 AC**: — （基础任务；边界 "endpoint 白名单" 由 T05 `test_endpoint_whitelist_enforced_for_child_admin` 覆盖）
   **依赖**: 无
@@ -126,7 +126,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T02b**: `TenantAuditAction` 扩展 + `SUPPORTED_SHAREABLE_TYPES` 加 `llm_server` + CLAUDE.md 模块编码核对
   **文件（修改）**:
-  - `src/backend/bisheng/tenant/domain/constants.py` `TenantAuditAction` enum 追加 6 行（放在 ADMIN_SCOPE_SWITCH 之后，沿 F019 T02 pure-additive 扩展模式）:
+  - `src/backend/doberman_agent/tenant/domain/constants.py` `TenantAuditAction` enum 追加 6 行（放在 ADMIN_SCOPE_SWITCH 之后，沿 F019 T02 pure-additive 扩展模式）:
     ```python
     # v2.5.1 F020 — LLM server/model lifecycle (Child-scoped CRUD).
     LLM_SERVER_CREATE = 'llm.server.create'
@@ -136,7 +136,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
     LLM_MODEL_UPDATE_ONLINE = 'llm.model.update_online'
     LLM_MODEL_UPDATE_STATUS = 'llm.model.update_status'
     ```
-  - `src/backend/bisheng/tenant/domain/services/resource_share_service.py` `SUPPORTED_SHAREABLE_TYPES` 集合增加 `'llm_server'`（`llm_model` 随 Server 共享，不单独列）
+  - `src/backend/doberman_agent/tenant/domain/services/resource_share_service.py` `SUPPORTED_SHAREABLE_TYPES` 集合增加 `'llm_server'`（`llm_model` 随 Server 共享，不单独列）
   - `CLAUDE.md` —— 验证「模块编码」表含 `198=llm_tenant (F020)`；若缺则补
   **跨 Feature 说明**：`TenantAuditAction` 归 F011 owner，F017 `ResourceShareService` 归 F017 owner；两处改动均为 **F020 pure-additive 扩展**，不修改既有 action 值/既有类型语义，沿 F019 T02 前例
   **测试**: 无（枚举 + 常量集合扩展；行为由 T05 FGA 元组写入、T09 audit_log 写入集成测试覆盖）
@@ -147,7 +147,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T03**: `UserPayload.get_tenant_admin_user` classmethod 新增
   **文件（修改）**:
-  - `src/backend/bisheng/common/dependencies/user_deps.py` —— 在 `UserPayload` 类末尾追加（风格参照 `get_admin_user` / `get_login_user`）:
+  - `src/backend/doberman_agent/common/dependencies/user_deps.py` —— 在 `UserPayload` 类末尾追加（风格参照 `get_admin_user` / `get_login_user`）:
     ```python
     @classmethod
     async def get_tenant_admin_user(cls, request: Request = ...) -> 'UserPayload':
@@ -155,11 +155,11 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
         user: UserPayload = await cls.get_login_user(request)  # 复用既有 JWT 解析链路
         if await user.is_global_super():
             return user
-        from bisheng.core.context.tenant import get_current_tenant_id
+        from doberman_agent.core.context.tenant import get_current_tenant_id
         tid = get_current_tenant_id()
         if tid is not None and tid != 1 and await user.has_tenant_admin(tid):
             return user
-        from bisheng.common.errcode.llm_tenant import LLMModelSharedReadonlyError
+        from doberman_agent.common.errcode.llm_tenant import LLMModelSharedReadonlyError
         raise LLMModelSharedReadonlyError.http_exception()
     ```
   **注意**:
@@ -176,13 +176,13 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T04**: Alembic 迁移 `UNIQUE(name) → UNIQUE(tenant_id, name)` + ORM 模型 `__table_args__` 修正
   **文件（新建 + 修改）**:
-  - 新建 `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f020_llm_tenant.py`（基于最近的 revision）
+  - 新建 `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f020_llm_tenant.py`（基于最近的 revision）
     - `upgrade()`:
       1. 前置校验 `SELECT tenant_id, name, COUNT(*) FROM llm_server GROUP BY tenant_id, name HAVING COUNT(*)>1`，有结果即抛 `RuntimeError(f'llm_server (tenant_id,name) 重复: {conflicts}')` 中止
       2. `op.drop_index('name', table_name='llm_server')`（v2.4 的 UNIQUE name 索引）
       3. `op.create_index('uk_llm_server_tenant_name', 'llm_server', ['tenant_id', 'name'], unique=True)`
     - `downgrade()`: 反向（drop uk_llm_server_tenant_name + create UNIQUE(name)）
-  - 修改 `src/backend/bisheng/llm/domain/models/llm_server.py`:
+  - 修改 `src/backend/doberman_agent/llm/domain/models/llm_server.py`:
     - `LLMServerBase.name`: 去掉 `unique=True`（仅保留 `index=True`）
     - `LLMServer.__table_args__ = (UniqueConstraint('tenant_id', 'name', name='uk_llm_server_tenant_name'),)`
     - **注意**：`LLMServerBase` 当前**没有 `tenant_id` 字段**。v2.5.0/F001 通过 Alembic 加了数据库列（默认 1），但 ORM 模型缺失。T04 顺便补齐：
@@ -206,17 +206,17 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T05**: `LLMDao` 写方法改造（ainsert / aupdate_server_with_models / adelete_server_by_id + aupdate_server_share 新方法）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/domain/models/llm_server.py` `LLMDao` 类
+  - `src/backend/doberman_agent/llm/domain/models/llm_server.py` `LLMDao` 类
   **逻辑**:
 
   **`ainsert_server_with_models`**（L90-100）改造：
   ```python
   @classmethod
   async def ainsert_server_with_models(cls, server, models, *, share_to_children: bool = True, operator=None):
-      from bisheng.core.context.tenant import get_current_tenant_id
-      from bisheng.database.models.tenant import TenantDao
-      from bisheng.common.services.config_service import settings
-      from bisheng.common.errcode.llm_tenant import LLMEndpointNotWhitelistedError
+      from doberman_agent.core.context.tenant import get_current_tenant_id
+      from doberman_agent.database.models.tenant import TenantDao
+      from doberman_agent.common.services.config_service import settings
+      from doberman_agent.common.errcode.llm_tenant import LLMEndpointNotWhitelistedError
 
       tid = get_current_tenant_id() or 1
       server.tenant_id = tid
@@ -244,15 +244,15 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
       tenant = await TenantDao.aget(tid)
       if (tenant is not None and tenant.parent_tenant_id is None
               and tenant.share_default_to_children and share_to_children):
-          from bisheng.tenant.domain.services.resource_share_service import ResourceShareService
+          from doberman_agent.tenant.domain.services.resource_share_service import ResourceShareService
           await ResourceShareService.enable_sharing('llm_server', str(server.id))
       return server
   ```
 
   **新增 `aupdate_server_share(server_id, share_to_children, operator)`**：
   ```python
-  from bisheng.tenant.domain.services.resource_share_service import ResourceShareService
-  from bisheng.common.errcode.llm_tenant import LLMModelNotAccessibleError, LLMModelSharedReadonlyError
+  from doberman_agent.tenant.domain.services.resource_share_service import ResourceShareService
+  from doberman_agent.common.errcode.llm_tenant import LLMModelNotAccessibleError, LLMModelSharedReadonlyError
 
   @classmethod
   async def aupdate_server_share(cls, server_id: int, share_to_children: bool, operator):
@@ -294,7 +294,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T06**: `LLMDao.aget_shared_server_ids_for_leaf(leaf_id)` 新方法（Root→Child 共享 id 查询）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/domain/models/llm_server.py` LLMDao 类末尾新增:
+  - `src/backend/doberman_agent/llm/domain/models/llm_server.py` LLMDao 类末尾新增:
   ```python
   @classmethod
   async def aget_shared_server_ids_for_leaf(cls, leaf_id: int) -> list[int]:
@@ -303,10 +303,10 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
       Reads ``{llm_server}#shared_with → tenant:{leaf}`` tuples. Returns []
       when OpenFGA disabled or leaf is Root (no shares point to Root itself).
       """
-      from bisheng.database.models.tenant import ROOT_TENANT_ID
+      from doberman_agent.database.models.tenant import ROOT_TENANT_ID
       if leaf_id == ROOT_TENANT_ID:
           return []
-      from bisheng.core.openfga.manager import aget_fga_client
+      from doberman_agent.core.openfga.manager import aget_fga_client
       fga = await aget_fga_client()
       if fga is None:
           return []
@@ -329,8 +329,8 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T07**: `LLMService` 改造（add / update / delete / get_model_for_call + 查询合并 + share_to_children 分发）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/domain/services/llm.py`
-  - `src/backend/bisheng/llm/domain/schemas.py`（DTO 扩展）
+  - `src/backend/doberman_agent/llm/domain/services/llm.py`
+  - `src/backend/doberman_agent/llm/domain/schemas.py`（DTO 扩展）
   **逻辑**:
   - **`get_all_llm()`**（L35-）改为双查询合并：
     ```python
@@ -338,7 +338,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
     leaf_id = get_current_tenant_id() or 1
     shared_ids = await LLMDao.aget_shared_server_ids_for_leaf(leaf_id)
     if shared_ids:
-        from bisheng.core.context.tenant import bypass_tenant_filter
+        from doberman_agent.core.context.tenant import bypass_tenant_filter
         with bypass_tenant_filter():
             shared_servers = await LLMDao.aget_server_by_ids(shared_ids)
         # 去重（leaf_id == 1 时 leaf_servers 已含 Root 模型）
@@ -364,7 +364,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
         model = await LLMDao.aget_model_by_id(model_id)  # event 自动 tenant 过滤
         if model is None:
             # bypass 再查一次确认是"跨 Tenant 不可见"而非"ID 无效"（日志区分）
-            from bisheng.core.context.tenant import bypass_tenant_filter
+            from doberman_agent.core.context.tenant import bypass_tenant_filter
             with bypass_tenant_filter():
                 raw = await LLMDao.aget_model_by_id(model_id)
             if raw is not None:
@@ -373,7 +373,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
                     shared_ids = await LLMDao.aget_shared_server_ids_for_leaf(get_current_tenant_id() or 1)
                     if raw.server_id in shared_ids:
                         return raw
-            from bisheng.common.errcode.llm_tenant import LLMModelNotAccessibleError
+            from doberman_agent.common.errcode.llm_tenant import LLMModelNotAccessibleError
             raise LLMModelNotAccessibleError.http_exception()
         return model
     ```
@@ -393,7 +393,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T08**: Router 权限降级（CRUD → `get_tenant_admin_user`；workbench 等保留 `get_admin_user`）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/api/router.py`
+  - `src/backend/doberman_agent/llm/api/router.py`
   **改动清单**（逐行替换 `UserPayload.get_admin_user` → `UserPayload.get_tenant_admin_user`）:
   - L19 `add_llm_server` ✅ 改
   - L26 `delete_llm_server` ✅ 改
@@ -421,12 +421,12 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T09**: Router / Service 审计日志写入（`llm.server.{create,update,delete,toggle_share}` + sha256 api_key）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/domain/services/llm.py` —— add/update/delete/aupdate_server_share 后统一写 audit:
+  - `src/backend/doberman_agent/llm/domain/services/llm.py` —— add/update/delete/aupdate_server_share 后统一写 audit:
   ```python
   import hashlib
-  from bisheng.database.models.audit_log import AuditLogDao
-  from bisheng.database.models.tenant import ROOT_TENANT_ID
-  from bisheng.tenant.domain.constants import TenantAuditAction
+  from doberman_agent.database.models.audit_log import AuditLogDao
+  from doberman_agent.database.models.tenant import ROOT_TENANT_ID
+  from doberman_agent.tenant.domain.constants import TenantAuditAction
 
   def _hash_api_key(config: dict) -> str | None:
       key = (config or {}).get('openai_api_key') or (config or {}).get('api_key')
@@ -460,7 +460,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T10**: `GET /llm` 支持 `?only_shared=true` 过滤（挂载弹窗预览 - AC-17 数据侧）
   **文件（修改）**:
-  - `src/backend/bisheng/llm/api/router.py` L12-15：
+  - `src/backend/doberman_agent/llm/api/router.py` L12-15：
     ```python
     @router.get('')
     async def get_all_llm(
@@ -484,12 +484,12 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T11a**: 知识库调用链统一走 `get_model_for_call` + PUT 选型校验
   **文件（修改）**:
-  - `src/backend/bisheng/knowledge/api/` 下 PUT 知识库 endpoint（具体文件实施首行 grep `PUT.*knowledge` 定位；spec §8 指向 `/knowledge/{id}` 配置入口）—— 接收 `model_id` 处加校验:
+  - `src/backend/doberman_agent/knowledge/api/` 下 PUT 知识库 endpoint（具体文件实施首行 grep `PUT.*knowledge` 定位；spec §8 指向 `/knowledge/{id}` 配置入口）—— 接收 `model_id` 处加校验:
     ```python
     model = await LLMService.get_model_for_call(body.model_id)
     # 抛 19802 时前端 toast "该知识库引用的模型不可用"
     ```
-  - `src/backend/bisheng/knowledge/` 下检索/RAG 调用 `get_bisheng_llm` / `get_bisheng_llm_sync` 的位置前置 `get_model_for_call` 校验（集中点约 1~2 处）
+  - `src/backend/doberman_agent/knowledge/` 下检索/RAG 调用 `get_doberman-agent_llm` / `get_doberman-agent_llm_sync` 的位置前置 `get_model_for_call` 校验（集中点约 1~2 处）
   **测试（集成）** `src/backend/test/test_llm_cross_ref_knowledge.py`:
   - `test_knowledge_using_root_model_works_for_child` → AC-20
   - `test_knowledge_model_inaccessible_raises_19802` → AC-21, AC-23
@@ -502,11 +502,11 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T11b**: Workflow 节点 + Assistant 调用链接入 `get_model_for_call`（见偏差记录：实际由 tenant_filter event 自动承担）
   **文件（修改）** —— 每文件薄改动（≤ 2 行前置校验）:
-  - `src/backend/bisheng/workflow/nodes/llm/llm.py` —— `get_bisheng_llm_sync(model_id)` 调用前先 `await LLMService.get_model_for_call(model_id)`
-  - `src/backend/bisheng/workflow/nodes/agent/agent.py` —— 同上
-  - `src/backend/bisheng/workflow/nodes/rag/rag.py` —— 同上
-  - `src/backend/bisheng/assistant/` 下 `llm_list[].model_id` 引用处同上（实施首行 grep `assistant.*model_id` 定位集中点）
-  - 可选重构：若 3 个 workflow 节点改动一致，改 `LLMService.get_bisheng_llm_sync / get_bisheng_llm` 内部统一加校验，消除 3 处重复；此为加分项，首个实施策略以"不改 get_bisheng_llm 签名、仅在节点调用前校验"为准
+  - `src/backend/doberman_agent/workflow/nodes/llm/llm.py` —— `get_doberman-agent_llm_sync(model_id)` 调用前先 `await LLMService.get_model_for_call(model_id)`
+  - `src/backend/doberman_agent/workflow/nodes/agent/agent.py` —— 同上
+  - `src/backend/doberman_agent/workflow/nodes/rag/rag.py` —— 同上
+  - `src/backend/doberman_agent/assistant/` 下 `llm_list[].model_id` 引用处同上（实施首行 grep `assistant.*model_id` 定位集中点）
+  - 可选重构：若 3 个 workflow 节点改动一致，改 `LLMService.get_doberman-agent_llm_sync / get_doberman-agent_llm` 内部统一加校验，消除 3 处重复；此为加分项，首个实施策略以"不改 get_doberman-agent_llm 签名、仅在节点调用前校验"为准
   **测试（集成）** `src/backend/test/test_llm_cross_ref_workflow.py`:
   - `test_workflow_llm_node_blocked_on_cross_tenant_model` → 沿 AC-22/23 语义（workflow 节点执行时引用不可见模型报 19802）
   - `test_workflow_llm_node_uses_root_shared_model_in_child_context` → 沿 AC-20 语义
@@ -596,9 +596,9 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T15a**: 后端 `/user/info` 响应扩展（4 个字段 pure-additive）
   **文件（修改）**:
-  - `src/backend/bisheng/user/api/user.py`（具体 endpoint 位置实施首行 grep `/user/info` 或 `/user/me` 定位；沿 F012 既有响应 DTO 扩展）—— 响应体内补 4 字段:
+  - `src/backend/doberman_agent/user/api/user.py`（具体 endpoint 位置实施首行 grep `/user/info` 或 `/user/me` 定位；沿 F012 既有响应 DTO 扩展）—— 响应体内补 4 字段:
     ```python
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.database.models.tenant import TenantDao
 
     leaf_id = (await user.get_visible_tenants())[0] if login_user else 1
     is_super = await login_user.is_global_super()
@@ -642,7 +642,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 - [x] **T16**: 本地回归 + AC 对照表 + 114 pytest + UI 手动验证（本地仅产出 ac-verification.md；真 pytest + UI 验证待 114）
   **执行**:
-  - 本地 `cd /Users/lilu/Projects/bisheng-worktrees/020-llm-tenant-isolation/src/backend && .venv/bin/pytest test/test_llm_tenant_isolation_*.py test/test_llm_cross_ref_*.py test/test_user_info_tenant_fields.py test/test_f020_migration.py -v`
+  - 本地 `cd /Users/lilu/Projects/doberman-agent-worktrees/020-llm-tenant-isolation/src/backend && .venv/bin/pytest test/test_llm_tenant_isolation_*.py test/test_llm_cross_ref_*.py test/test_user_info_tenant_fields.py test/test_f020_migration.py -v`
   - F012/F013/F017/F019 回归（防止 F020 改 DAO/Service 造成破坏）:
     `.venv/bin/pytest test/test_tenant_context_vars.py test/test_user_payload_tenant.py test/test_admin_tenant_scope_api.py test/test_resource_share_service.py -v`
   - 114 远程 worktree 同步 + Alembic 演练（参考 F019 T13 的 deploy.sh 调用方式；注意 memory `feedback_114_dual_role` 避免 `--delete`）
@@ -661,8 +661,8 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 
 > 完成后，记录实现与 spec.md 的偏差，供 `/code-review` 与后续 Feature 参考。
 
-- **T03 依赖 is_global_super 路径调整**：spec §5.2 代码骨架调用 `user.is_global_super()` 公共方法，但 F013 并未 shipped 该方法；沿 F019 `admin/api/endpoints/tenant_scope.py` 已建立的 precedent，改调 `bisheng.utils.http_middleware._check_is_global_super(user_id)`（同 FGA 查询 + 同 Redis `user:{id}:is_super` 缓存键）保证整栈决策一致。
-- **T11b 节点调用链接入方式**：实际未改动 workflow nodes / assistant 的每个 model_id 引用点。原因：v2.5.1 `tenant_filter.py` 的 SQLAlchemy event 已在 `do_orm_execute` 层注入 `WHERE tenant_id = current`，`LLMDao.get_model_by_id` / `aget_model_by_id` 被跨 tenant 引用时自动返 None，节点构造 BishengLLM 时即触发"model not found" 保护。F020 的 `LLMService.get_model_for_call` 仍然提供给未来需要"Root-shared 回退 + 19802 细化错误码"的统一入口（T11a knowledge endpoint 已是首个消费方）。此选择避免广泛触及 3 个 workflow 节点 + assistant 层的副作用，降低 F020 blast radius；后续 Feature 如需按 19802 统一报错，只需在节点前补 `await LLMService.get_model_for_call(model_id)` 一行。
+- **T03 依赖 is_global_super 路径调整**：spec §5.2 代码骨架调用 `user.is_global_super()` 公共方法，但 F013 并未 shipped 该方法；沿 F019 `admin/api/endpoints/tenant_scope.py` 已建立的 precedent，改调 `doberman_agent.utils.http_middleware._check_is_global_super(user_id)`（同 FGA 查询 + 同 Redis `user:{id}:is_super` 缓存键）保证整栈决策一致。
+- **T11b 节点调用链接入方式**：实际未改动 workflow nodes / assistant 的每个 model_id 引用点。原因：v2.5.1 `tenant_filter.py` 的 SQLAlchemy event 已在 `do_orm_execute` 层注入 `WHERE tenant_id = current`，`LLMDao.get_model_by_id` / `aget_model_by_id` 被跨 tenant 引用时自动返 None，节点构造 DobermanAgentLLM 时即触发"model not found" 保护。F020 的 `LLMService.get_model_for_call` 仍然提供给未来需要"Root-shared 回退 + 19802 细化错误码"的统一入口（T11a knowledge endpoint 已是首个消费方）。此选择避免广泛触及 3 个 workflow 节点 + assistant 层的副作用，降低 F020 blast radius；后续 Feature 如需按 19802 统一报错，只需在节点前补 `await LLMService.get_model_for_call(model_id)` 一行。
 - **T15a /user/info 字段补字段路径待 T15a 实施时确认**：tasks.md 假设 endpoint 在 `user/api/user.py`；实际路径以 grep 结果为准（未影响当前任务）。
 
 ---
@@ -670,7 +670,7 @@ T04 (Alembic 迁移 + ORM 补 tenant_id)                              ──┤ 
 ## 本地命令速查
 
 ```bash
-WT=/Users/lilu/Projects/bisheng-worktrees/020-llm-tenant-isolation
+WT=/Users/lilu/Projects/doberman-agent-worktrees/020-llm-tenant-isolation
 
 # 单项 pytest
 cd $WT/src/backend && .venv/bin/pytest test/test_llm_tenant_isolation_api.py::test_child_admin_cannot_edit_root_shared_llm -v
@@ -680,7 +680,7 @@ cd $WT/src/backend && .venv/bin/alembic history --verbose | head -20
 cd $WT/src/backend && .venv/bin/alembic upgrade head
 
 # black + ruff
-cd $WT/src/backend && .venv/bin/black . && .venv/bin/ruff check --fix bisheng/llm/ bisheng/common/errcode/llm_tenant.py bisheng/core/config/llm.py
+cd $WT/src/backend && .venv/bin/black . && .venv/bin/ruff check --fix doberman-agent/llm/ doberman-agent/common/errcode/llm_tenant.py doberman-agent/core/config/llm.py
 
 # 前端 TS 检查
 cd $WT/src/frontend/platform && npm run build

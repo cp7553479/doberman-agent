@@ -4,15 +4,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.open_mcp.contracts import (
+from doberman_agent.open_mcp.contracts import (
     KnowledgeCreateInput,
     KnowledgeIdInput,
     KnowledgeListInput,
     KnowledgeRetrieveInput,
     KnowledgeUpdateInput,
 )
-from bisheng.open_mcp.tools import knowledge as knowledge_tools
-from bisheng.open_mcp.tools.knowledge import (
+from doberman_agent.open_mcp.tools import knowledge as knowledge_tools
+from doberman_agent.open_mcp.tools.knowledge import (
     knowledge_clear,
     knowledge_create,
     knowledge_delete,
@@ -28,7 +28,7 @@ async def _repositories():
 
 
 def _install_repositories(monkeypatch):
-    monkeypatch.setattr("bisheng.open_mcp.application.knowledge_repositories", _repositories)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.knowledge_repositories", _repositories)
 
 
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_knowledge_list_calls_application_facade_and_maps_explicit_output(
             "next_cursor": None,
         }
     )
-    monkeypatch.setattr("bisheng.open_mcp.application.list_knowledge", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.list_knowledge", facade)
 
     result = await knowledge_list(KnowledgeListInput(type=0, name="f067", page_size=5))
 
@@ -93,7 +93,7 @@ async def test_knowledge_write_handlers_return_explicit_resource(monkeypatch, ha
             "actions": ["read"],
         }
     )
-    monkeypatch.setattr(f"bisheng.open_mcp.application.{facade_name}", facade)
+    monkeypatch.setattr(f"doberman_agent.open_mcp.application.{facade_name}", facade)
 
     result = await handler(arguments)
 
@@ -113,7 +113,7 @@ async def test_knowledge_write_handlers_return_explicit_resource(monkeypatch, ha
 async def test_destructive_knowledge_handlers_return_operation_result(monkeypatch, handler, facade_name):
     _install_repositories(monkeypatch)
     facade = AsyncMock()
-    monkeypatch.setattr(f"bisheng.open_mcp.application.{facade_name}", facade)
+    monkeypatch.setattr(f"doberman_agent.open_mcp.application.{facade_name}", facade)
 
     result = await handler(KnowledgeIdInput(knowledge_id=67))
 
@@ -139,7 +139,7 @@ async def test_retrieve_handler_maps_business_chunks(monkeypatch):
             "total": 1,
         }
     )
-    monkeypatch.setattr("bisheng.open_mcp.application.retrieve_knowledge", facade)
+    monkeypatch.setattr("doberman_agent.open_mcp.application.retrieve_knowledge", facade)
 
     result = await knowledge_retrieve(
         KnowledgeRetrieveInput(query="answer", knowledge_base_ids=[67])

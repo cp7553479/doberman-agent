@@ -13,7 +13,7 @@
  * move and is kept — renaming ~20 keys across three locales would change nothing
  * a user sees.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import { useLocalize } from '~/hooks';
 import { ServiceBusyNotice } from '~/components/ServiceBusyNotice';

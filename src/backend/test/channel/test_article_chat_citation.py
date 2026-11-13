@@ -33,9 +33,9 @@ RED until T010 lands.
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.channel.domain.services.channel_chat_service import ChannelChatService
-from bisheng.citation.domain.schemas.citation_schema import CitationType
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.channel.domain.services.channel_chat_service import ChannelChatService
+from doberman_agent.citation.domain.schemas.citation_schema import CitationType
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_PROMPT_RULES,
     CITATION_START_MARKER,
@@ -68,7 +68,7 @@ async def test_registers_one_source_carrying_the_real_article_locator():
     article = _article()
 
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         citation_key, items = await ChannelChatService.register_article_citation(article)
@@ -86,7 +86,7 @@ async def test_registers_one_source_carrying_the_real_article_locator():
 async def test_registration_never_synthesises_a_knowledge_chunk_id():
     """AC-02: the locator is the article's own doc id, not a fabricated chunk."""
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         citation_key, items = await ChannelChatService.register_article_citation(_article())
@@ -97,7 +97,7 @@ async def test_registration_never_synthesises_a_knowledge_chunk_id():
 
 async def test_registration_caches_the_item_for_later_resolve():
     cache = AsyncMock()
-    with patch("bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items", new=cache):
+    with patch("doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items", new=cache):
         _, items = await ChannelChatService.register_article_citation(_article())
 
     cache.assert_awaited_once()
@@ -151,7 +151,7 @@ def test_article_context_prompt_carries_the_citation_key():
 
 async def test_only_a_cited_source_is_kept():
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         citation_key, items = await ChannelChatService.register_article_citation(_article())
@@ -167,7 +167,7 @@ async def test_an_uncited_turn_keeps_nothing():
     """The shared helper would fall back to keeping everything here; the article
     path must not, or every turn leaves a source with no badge behind it."""
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         _, items = await ChannelChatService.register_article_citation(_article())
@@ -181,7 +181,7 @@ async def test_an_uncited_turn_keeps_nothing():
 async def test_nothing_is_written_when_no_source_was_cited():
     save = AsyncMock()
 
-    with patch("bisheng.channel.domain.services.channel_chat_service.save_message_citations", new=save):
+    with patch("doberman_agent.channel.domain.services.channel_chat_service.save_message_citations", new=save):
         await ChannelChatService.save_article_citations([], message_id=77, chat_id="chat-1", flow_id="doc-9")
 
     save.assert_not_awaited()
@@ -189,13 +189,13 @@ async def test_nothing_is_written_when_no_source_was_cited():
 
 async def test_cited_sources_bind_to_the_stored_answer_row():
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         _, items = await ChannelChatService.register_article_citation(_article())
     save = AsyncMock()
 
-    with patch("bisheng.channel.domain.services.channel_chat_service.save_message_citations", new=save):
+    with patch("doberman_agent.channel.domain.services.channel_chat_service.save_message_citations", new=save):
         await ChannelChatService.save_article_citations(items, message_id=77, chat_id="chat-1", flow_id="doc-9")
 
     save.assert_awaited_once()
@@ -208,7 +208,7 @@ async def test_a_marker_the_registry_cannot_back_is_scrubbed_before_storage():
     whose lookup 404s, reading as a system fault rather than the model inventing
     an id. Scrubbing happens before the insert, so it never reaches the row."""
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         citation_key, items = await ChannelChatService.register_article_citation(_article())
@@ -223,13 +223,13 @@ async def test_a_marker_the_registry_cannot_back_is_scrubbed_before_storage():
 
 async def test_repeating_the_same_turn_is_idempotent():
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         _, items = await ChannelChatService.register_article_citation(_article())
     save = AsyncMock()
 
-    with patch("bisheng.channel.domain.services.channel_chat_service.save_message_citations", new=save):
+    with patch("doberman_agent.channel.domain.services.channel_chat_service.save_message_citations", new=save):
         for _ in range(2):
             await ChannelChatService.save_article_citations(items, message_id=77, chat_id="chat-1", flow_id="doc-9")
 
@@ -248,7 +248,7 @@ async def test_registration_failure_degrades_to_no_citation():
     """Tracing is an add-on. If registering the source throws, the turn still
     answers — just without a badge."""
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(side_effect=RuntimeError("redis down")),
     ):
         citation_key, items = await ChannelChatService.register_article_citation(_article())
@@ -261,13 +261,13 @@ async def test_persist_failure_does_not_raise():
     """The answer is already stored by this point; losing its citations must not
     turn a delivered answer into an error."""
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.cache_citation_registry_items",
+        "doberman_agent.channel.domain.services.channel_chat_service.cache_citation_registry_items",
         new=AsyncMock(),
     ):
         _, items = await ChannelChatService.register_article_citation(_article())
 
     with patch(
-        "bisheng.channel.domain.services.channel_chat_service.save_message_citations",
+        "doberman_agent.channel.domain.services.channel_chat_service.save_message_citations",
         new=AsyncMock(side_effect=RuntimeError("db down")),
     ):
         await ChannelChatService.save_article_citations(items, message_id=77, chat_id="chat-1", flow_id="doc-9")

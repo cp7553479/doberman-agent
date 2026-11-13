@@ -15,10 +15,10 @@ import time
 
 import pytest
 
-from bisheng.core.config.settings import SandboxConf
-from bisheng_langchain.gpts.tools.code_interpreter import local_executor as local_executor_module
-from bisheng_langchain.gpts.tools.code_interpreter import local_isolation, local_run_registry, local_uid_pool
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import TASK_ENDED_MSG, LocalExecutor
+from doberman_agent.core.config.settings import SandboxConf
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_executor as local_executor_module
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_isolation, local_run_registry, local_uid_pool
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import TASK_ENDED_MSG, LocalExecutor
 
 pytestmark = pytest.mark.skipif(
     not (os.uname().sysname == "Linux" and os.geteuid() == 0), reason="needs Linux and root"
@@ -29,7 +29,7 @@ pytestmark = pytest.mark.skipif(
 def conf(monkeypatch: pytest.MonkeyPatch):
     # Directly under /tmp: pytest's own tmp dirs are 0700 and the pool uid has
     # to traverse every ancestor of its run dir.
-    run_root = tempfile.mkdtemp(prefix="bisheng-local-run-test-", dir="/tmp")
+    run_root = tempfile.mkdtemp(prefix="doberman-agent-local-run-test-", dir="/tmp")
     value = SandboxConf(local_isolation="uid", local_run_root=run_root)
     monkeypatch.setattr(local_isolation, "_conf", lambda: value)
     yield value

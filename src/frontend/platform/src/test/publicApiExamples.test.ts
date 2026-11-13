@@ -15,8 +15,8 @@ vi.mock("react-syntax-highlighter", () => ({
   Prism: ({ children }: { children: ReactNode }) => createElement("pre", {}, children),
 }))
 vi.mock("@/utils", () => ({ copyText: vi.fn().mockResolvedValue(undefined) }))
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   useToast: () => ({ message: vi.fn() }),
 }))();

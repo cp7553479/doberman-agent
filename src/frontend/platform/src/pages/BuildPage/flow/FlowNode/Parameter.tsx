@@ -124,7 +124,7 @@ export default function Parameter({
                 onVarEvent={bindVarValidate}
                 i18nPrefix={i18nPrefix}
             />
-        case 'bisheng_model':
+        case 'doberman_agent_model':
             return <ModelItem data={item} onChange={handleOnNewValue} onValidate={bindValidate} i18nPrefix={i18nPrefix}
             />
         case 'agent_model':

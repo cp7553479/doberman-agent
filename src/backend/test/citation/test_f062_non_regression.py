@@ -21,18 +21,18 @@ target and T013 rewrites it.
 
 from langchain_core.documents import Document
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_START_MARKER,
     _is_citable_rag_document,
     strip_unregistered_citation_markers,
 )
-from bisheng.citation.domain.services.citation_resolve_service import CitationResolveService
+from doberman_agent.citation.domain.services.citation_resolve_service import CitationResolveService
 
 
 def _uuid_doc() -> Document:

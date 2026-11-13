@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Select } from '@bisheng/ui';
+import { Alert, Button, Input, Select } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 
@@ -9,7 +9,7 @@ PermissionCatalogChange,
 PermissionCatalogDraft,
 PermissionCatalogModel,
 } from "@/controllers/API/permission";
-import { Checkbox,Switch } from "@bisheng/ui";
+import { Checkbox,Switch } from "@doberman-agent/ui";
 import { useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";
 import { actionLabel } from "./actionLabels";

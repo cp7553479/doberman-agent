@@ -12,7 +12,7 @@
 
 ## 本地复现
 
-从 `src/backend` 执行。共享测试 fixture 会预先替换 `bisheng.common.services` 包，因此单独运行这一组用例时先加载实际的 `metric_log.py`，再启动 pytest。测试环境包含项目所需的 pytest、pytest-asyncio、SQLModel、LangChain Core 和 OpenAI 依赖。
+从 `src/backend` 执行。共享测试 fixture 会预先替换 `doberman_agent.common.services` 包，因此单独运行这一组用例时先加载实际的 `metric_log.py`，再启动 pytest。测试环境包含项目所需的 pytest、pytest-asyncio、SQLModel、LangChain Core 和 OpenAI 依赖。
 
 ```python
 import importlib.util
@@ -21,8 +21,8 @@ from pathlib import Path
 
 import pytest
 
-name = "bisheng.common.services.metric_log"
-spec = importlib.util.spec_from_file_location(name, Path("bisheng/common/services/metric_log.py"))
+name = "doberman_agent.common.services.metric_log"
+spec = importlib.util.spec_from_file_location(name, Path("doberman-agent/common/services/metric_log.py"))
 module = importlib.util.module_from_spec(spec)
 sys.modules[name] = module
 spec.loader.exec_module(module)

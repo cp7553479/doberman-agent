@@ -212,7 +212,7 @@
 
 - **后端单测**（`test/knowledge/`）：AC-10/11/12（循环/超层/**文件夹重名**同空间+跨空间均拒、**文件**不查重名）、AC-08（不校验子项）、AC-13（各状态可移）、AC-09（继承随新父、直绑不变）、级联路径重写、**版本链整链迁移**（主+历史 knowledge_id 一致）、批量两步（skip_invalid）、迁移任务幂等（重复执行不重复写/删错）。
 - **集成**：跨空间移动后——目标空间检索能命中、源空间检索不再命中、版本管理页关系完整、迁移失败置 FAILED 可重试。
-- **手动验证**：本地起后端（:7860,`config=config.yaml uv run uvicorn bisheng.main:app`）+ client（:4001,`npm run dev`）,或用 120 测试环境（`http://192.168.106.120:8901/workspace/`,admin 账号）;准备两个空间（可配不同 embedding 模型）,互移文件/文件夹/多版本文件,观察 REBUILDING→SUCCESS 流转与两侧检索结果。
+- **手动验证**：本地起后端（:7860,`config=config.yaml uv run uvicorn doberman_agent.main:app`）+ client（:4001,`npm run dev`）,或用 120 测试环境（`http://192.168.106.120:8901/workspace/`,admin 账号）;准备两个空间（可配不同 embedding 模型）,互移文件/文件夹/多版本文件,观察 REBUILDING→SUCCESS 流转与两侧检索结果。
 - 关键日志：move_items 每项 reason;migrate 任务 file_id+源/目标空间+chunk 数;失败必须 raise 不可静默。
 
 ---
@@ -243,7 +243,7 @@
 | 目录读取 | webkitdirectory 选择器 / `webkitGetAsEntry` 递归 | `index.tsx:961` / `useFileDragDrop.ts:174` |
 | 相对路径 | `file.webkitRelativePath`（`getRootFolderName`） | `knowledgeUtils.ts:208` |
 | 格式白名单 | `ALLOWED_EXTENSIONS` / `getAllowedExtensions(etl4lm)`（后端 `FileExtensionMap`，`base_file_pipeline.py:25`） | `knowledgeUtils.ts:56` |
-| 单文件大小 | `DEFAULT_MAX_FILE_SIZE_MB=200` ← `bishengConfig.uploaded_files_maximum_size` | `knowledgeUtils.ts:111` / `index.tsx:540` |
+| 单文件大小 | `DEFAULT_MAX_FILE_SIZE_MB=200` ← `dobermanAgentConfig.uploaded_files_maximum_size` | `knowledgeUtils.ts:111` / `index.tsx:540` |
 | 文件本体上传 | `uploadFileToServerApi` → `file_path` | `api/knowledge.ts:1405` |
 | 建文件夹 | `add_folder`（深度/重名已校验） | `service:2772` |
 | 注册文件 + 派发解析 | `add_file`（权限/容量/MinIO/celery） | `service:2940` |

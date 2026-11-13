@@ -15,7 +15,7 @@ def _task(history, status="success"):
 
 def _code(call_id, amounts):
     return {
-        "name": "bisheng_code_interpreter",
+        "name": "doberman_agent_code_interpreter",
         "status": "end",
         "call_id": call_id,
         "output": {"exitcode": 0, "log": "ok", "file_list": [amounts]},

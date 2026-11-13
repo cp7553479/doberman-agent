@@ -13,7 +13,7 @@ import {
 import { useLocalize } from "~/hooks";
 import { useEffectiveQuota } from "~/hooks/useEffectiveQuota";
 import { useConfirm } from "~/Providers";
-import { isApiError } from "@bisheng/api-client";
+import { isApiError } from "@doberman-agent/api-client";
 import { normalizeUrlForSearch } from "../urlNormalize";
 
 const PAGE_SIZE = 20;

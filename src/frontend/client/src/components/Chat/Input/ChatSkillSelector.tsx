@@ -1,5 +1,5 @@
 import { ComposerSubmenu } from './ComposerSubmenu';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { SkillSelector } from '~/components/Linsight/Input/SkillSelector';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '~/components/ui';
 import { useLocalize } from '~/hooks';

@@ -3,9 +3,9 @@
 import argparse
 import json
 
-from bisheng.core.database import get_sync_db_session
-from bisheng.dsh.domain.services.legacy_credit_migration import migrate_legacy_credits
-from bisheng.dsh.domain.services.profile import profile_scope
+from doberman_agent.core.database import get_sync_db_session
+from doberman_agent.dsh.domain.services.legacy_credit_migration import migrate_legacy_credits
+from doberman_agent.dsh.domain.services.profile import profile_scope
 
 
 def main():

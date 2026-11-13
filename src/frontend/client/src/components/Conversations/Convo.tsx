@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

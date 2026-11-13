@@ -62,7 +62,7 @@ jest.mock('~/pages/appChat/components/AppSwitcherDropdown', () => ({ AppSwitcher
 jest.mock('~/pages/appChat/components/AppSidebarConvoItem', () => ({
   AppSidebarConvoItem: ({ conv, onClick }: { conv: { title: string }; onClick: () => void }) => <button onClick={onClick}>{conv.title}</button>,
 }));
-jest.mock('bisheng-icons', () => ({ ...jest.requireActual('bisheng-icons'), Outlined: { ...jest.requireActual('bisheng-icons').Outlined, SidebarMenu: () => null, Plus: () => null, Down: () => null } }));
+jest.mock('@doberman-agent/icons', () => ({ ...jest.requireActual('@doberman-agent/icons'), Outlined: { ...jest.requireActual('@doberman-agent/icons').Outlined, SidebarMenu: () => null, Plus: () => null, Down: () => null } }));
 
 beforeEach(() => {
   mockMobile = false; mockCompact = true; mockNarrow = false; mockSidebarVisible = true; mockMerged = true;

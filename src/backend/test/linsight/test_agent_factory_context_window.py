@@ -14,8 +14,8 @@ import pytest
 from deepagents.middleware.summarization import compute_summarization_defaults
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.llm.domain.services.context_window import ContextWindowResult
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.llm.domain.services.context_window import ContextWindowResult
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def factory_env(monkeypatch: pytest.MonkeyPatch):
         captured.update(kwargs)
         return SimpleNamespace(name="agent")
 
-    from bisheng.core.config.settings import LinsightConf
+    from doberman_agent.core.config.settings import LinsightConf
 
     monkeypatch.setattr("deepagents.create_deep_agent", fake_create_deep_agent)
     monkeypatch.setattr(agent_factory, "_resolve_model", AsyncMock(return_value=(model, False)))
@@ -38,7 +38,7 @@ def factory_env(monkeypatch: pytest.MonkeyPatch):
             captured["resolve_calls"] += 1
             return result
 
-        monkeypatch.setattr("bisheng.llm.domain.services.context_window.ContextWindowService.resolve", fake_resolve)
+        monkeypatch.setattr("doberman_agent.llm.domain.services.context_window.ContextWindowService.resolve", fake_resolve)
 
     captured["set_result"] = set_result
     captured["model"] = model
@@ -113,8 +113,8 @@ async def test_window_is_logged(factory_env, caplog):
 
 async def test_summarization_wraps_resilience_in_both_graphs(factory_env):
     """Outermost: a resilience retry must not re-run compression (design decision 7)."""
-    from bisheng.linsight.domain.services.context_budget import BishengSummarizationMiddleware
-    from bisheng.linsight.domain.services.resilience_middleware import LinsightModelResilienceMiddleware
+    from doberman_agent.linsight.domain.services.context_budget import DobermanAgentSummarizationMiddleware
+    from doberman_agent.linsight.domain.services.resilience_middleware import LinsightModelResilienceMiddleware
 
     factory_env["set_result"](ContextWindowResult(window=32768, kind="total", usable_input=32768, source="deployed"))
 
@@ -123,6 +123,6 @@ async def test_summarization_wraps_resilience_in_both_graphs(factory_env):
     main = factory_env["middleware"]
     researcher = factory_env["subagents"][0]["middleware"]
     for stack in (main, researcher):
-        assert isinstance(stack[0], BishengSummarizationMiddleware)
+        assert isinstance(stack[0], DobermanAgentSummarizationMiddleware)
         assert isinstance(stack[1], LinsightModelResilienceMiddleware)
     assert main[0] is not researcher[0]  # one instance per graph

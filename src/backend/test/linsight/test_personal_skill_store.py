@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.linsight import (
+from doberman_agent.common.errcode.linsight import (
     SkillArchiveDamagedError,
     SkillArchiveEncryptedError,
     SkillBundleTooLargeError,
@@ -21,8 +21,8 @@ from bisheng.common.errcode.linsight import (
     SkillTypeMismatchError,
     SkillValidationError,
 )
-from bisheng.linsight.domain.services import skill_store
-from bisheng.linsight.domain.services.skill_store import (
+from doberman_agent.linsight.domain.services import skill_store
+from doberman_agent.linsight.domain.services.skill_store import (
     PERSONAL_ARCHIVE_MAX_BYTES,
     PERSONAL_ENTRY_MAX_COUNT,
     PERSONAL_FILE_MAX_BYTES,
@@ -71,7 +71,7 @@ def _conf(monkeypatch, upload_mb: int, unpacked_mb: int) -> None:
     async def _aget(self):
         return SimpleNamespace(skill_upload_max_size_mb=upload_mb, skill_unpacked_max_size_mb=unpacked_mb)
 
-    monkeypatch.setattr(type(skill_store.bisheng_settings), "aget_linsight_conf", _aget)
+    monkeypatch.setattr(type(skill_store.doberman_agent_settings), "aget_linsight_conf", _aget)
 
 
 def _code(exc: BaseException) -> int:

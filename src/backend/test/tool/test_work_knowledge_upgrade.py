@@ -12,10 +12,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.api.services import f048_system_resource_bootstrap as inventory_module
-from bisheng.permission.application import system_resource_reconcile as permission_module
-from bisheng.permission.application.system_resource_reconcile import SystemOwnedResourceState
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsType
+from doberman_agent.api.services import f048_system_resource_bootstrap as inventory_module
+from doberman_agent.permission.application import system_resource_reconcile as permission_module
+from doberman_agent.permission.application.system_resource_reconcile import SystemOwnedResourceState
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsType
 from scripts import register_work_knowledge_tool as upgrade
 
 
@@ -163,7 +163,7 @@ async def test_pending_existing_projection_blocks_tool_insert(environment):
             session.add(GptsToolsType(**{k: v for k, v in category_seed.items() if k != "id"}, id=81, tenant_id=1))
             await session.commit()
     environment.projections["81"] = "NON_CURRENT"
-    from bisheng.common.errcode.permission import PermissionPublishNotReadyError
+    from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
 
     with pytest.raises(PermissionPublishNotReadyError):
         await apply_upgrade()
@@ -187,7 +187,7 @@ def test_apply_requires_explicit_target_and_audit_operator(arguments):
     assert failure.value.code == 2
 
 
-@pytest.mark.parametrize("entrypoint", ["src/backend/entrypoint.sh", "docker/bisheng/entrypoint.sh"])
+@pytest.mark.parametrize("entrypoint", ["src/backend/entrypoint.sh", "docker/doberman_agent/entrypoint.sh"])
 @pytest.mark.parametrize("exit_code", [0, 7])
 def test_container_upgrade_dispatch_forwards_arguments_and_exit_status(tmp_path, entrypoint, exit_code):
     root = Path(__file__).resolve().parents[4]

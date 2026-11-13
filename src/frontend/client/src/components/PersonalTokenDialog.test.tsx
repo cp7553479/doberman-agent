@@ -19,7 +19,7 @@ jest.mock("~/hooks", () => ({ useLocalize: () => mockI18n.t.bind(mockI18n) }));
 jest.mock("~/Providers/ToastContext", () => ({ useToastContext: () => ({ showToast: mockToast }) }));
 jest.mock("~/Providers/ConfirmContext", () => ({ useConfirm: () => mockConfirm }));
 jest.mock("~/utils", () => ({ copyText: jest.fn(), cn: (...parts: string[]) => parts.filter(Boolean).join(" ") }));
-jest.mock("bisheng-icons", () => ({ Outlined: { Send: () => null, Close: () => null, Copy: () => null } }));
+jest.mock("@doberman-agent/icons", () => ({ Outlined: { Send: () => null, Close: () => null, Copy: () => null } }));
 jest.mock("~/api/personalToken", () => ({
   ...jest.requireActual("~/api/personalToken"),
   getPersonalTokenStatusApi: jest.fn(), issuePersonalTokenApi: jest.fn(), deletePersonalTokenApi: jest.fn(),
@@ -59,8 +59,8 @@ function findRevealDialog() {
 beforeAll(async () => {
   await mockI18n.init({
     lng: "en", fallbackLng: "en",
-    // Mirror the app's brand interpolation so $t(bisheng) resolves in copy.
-    interpolation: { escapeValue: false, defaultVariables: { bisheng: "BISHENG", bishengZh: "BISHENG" } },
+    // Mirror the app's brand interpolation so $t(doberman_agent) resolves in copy.
+    interpolation: { escapeValue: false, defaultVariables: { doberman_agent: "doberman-agent", dobermanAgentZh: "doberman-agent" } },
     resources: { en: { translation: en }, "zh-Hans": { translation: zh }, ja: { translation: ja } },
   });
 });

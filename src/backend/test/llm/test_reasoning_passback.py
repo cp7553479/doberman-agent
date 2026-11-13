@@ -10,9 +10,9 @@ from __future__ import annotations
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, ToolMessage
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
-from bisheng.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
-from bisheng.core.ai.llm.chat_openai_reasoning import ChatOpenAIReasoning
-from bisheng.core.ai.llm.custom_chat_deepseek import CustomChatDeepSeek
+from doberman_agent.core.ai.llm.chat_openai_compatible import ChatOpenAICompatible
+from doberman_agent.core.ai.llm.chat_openai_reasoning import ChatOpenAIReasoning
+from doberman_agent.core.ai.llm.custom_chat_deepseek import CustomChatDeepSeek
 
 TOOLS = [
     {

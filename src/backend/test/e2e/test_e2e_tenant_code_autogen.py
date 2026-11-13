@@ -9,7 +9,7 @@ Validates the new behavior end-to-end against a live backend on 114:
   5. Mount with invalid tenant_code -> 422 (pattern still enforced)
 
 Run on 114:
-  cd /opt/bisheng/src/backend
+  cd /opt/doberman_agent/src/backend
   /root/.local/bin/uv run pytest test/e2e/test_e2e_tenant_code_autogen.py -v -s
 """
 
@@ -31,7 +31,7 @@ def _login(client: httpx.Client) -> str:
     assert pubkey_resp.status_code == 200
     public_key_pem = pubkey_resp.json()["data"]["public_key"]
 
-    admin_password = os.environ.get("E2E_ADMIN_PASSWORD", "Bisheng@top1")
+    admin_password = os.environ.get("E2E_ADMIN_PASSWORD", "doberman-agent@top1")
     public_key = serialization.load_pem_public_key(public_key_pem.encode())
     encrypted = public_key.encrypt(admin_password.encode(), padding.PKCS1v15())
     encrypted_password = base64.b64encode(encrypted).decode()

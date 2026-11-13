@@ -15,9 +15,9 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.permission.application import business_authorization
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.application import business_authorization
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 class _CountingRegistry:

@@ -44,7 +44,7 @@ def isolated_user_table():
 
 def test_real_mysql_profile_upgrade_is_idempotent_and_downgrade_retains_counter(isolated_user_table):
     migration_file = (
-        Path(__file__).resolve().parents[2] / "bisheng/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
+        Path(__file__).resolve().parents[2] / "doberman_agent/core/database/alembic/versions/v3_0_0_f062_profile_version.py"
     )
     spec = importlib.util.spec_from_file_location("dsh_profile_migration_mysql_acceptance", migration_file)
     migration = importlib.util.module_from_spec(spec)

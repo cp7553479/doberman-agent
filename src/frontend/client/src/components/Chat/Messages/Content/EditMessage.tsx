@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useRef, useEffect, useCallback } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useForm } from 'react-hook-form';

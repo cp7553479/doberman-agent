@@ -6,10 +6,10 @@ import os
 
 import pytest
 
-from bisheng_langchain.gpts.tools.code_interpreter import local_executor, local_isolation
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_isolation import ensure_work_subdirs
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_executor, local_isolation
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_isolation import ensure_work_subdirs
 
 
 def test_creates_both_dirs_and_hands_them_to_the_uid(tmp_path) -> None:

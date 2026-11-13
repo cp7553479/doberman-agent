@@ -19,8 +19,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from bisheng.citation.domain.services.linsight_citation_scope import LinsightCitationScope
-from bisheng.linsight.domain.services.workspace_backend import WORKSPACE_PREFIX, WorkspaceBackend
+from doberman_agent.citation.domain.services.linsight_citation_scope import LinsightCitationScope
+from doberman_agent.linsight.domain.services.workspace_backend import WORKSPACE_PREFIX, WorkspaceBackend
 from test.linsight.fixtures.fake_minio import fake_minio  # noqa: F401
 
 KEY = "knowledgesearch_aaaa1111:3"
@@ -211,7 +211,7 @@ def test_real_scope_accumulates_counts(fake_minio, file_dir):
 
 def test_conversion_failure_never_raises(fake_minio, file_dir, monkeypatch):
     """A converter bug must not kill the task: the unescaped text is written as-is."""
-    from bisheng.citation.domain.services import citation_handle_service
+    from doberman_agent.citation.domain.services import citation_handle_service
 
     def _boom(text, handles):
         raise RuntimeError("converter exploded")

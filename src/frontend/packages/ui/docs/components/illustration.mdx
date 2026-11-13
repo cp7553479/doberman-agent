@@ -5,7 +5,7 @@ component: Illustration
 
 # 插画 Illustration
 
-空状态 / 状态反馈用的主题化插画（`@bisheng/ui` → `src/components/Illustration/`，内联 SVG；client 经 `~/components/illustrations` re-export 同一实现），颜色走独立的插画调色板（比 UI 品牌色更亮），随蓝⇄绿主题自动切换，另有主题无关的灰稿模式。规范见「文档 → 设计规范 → 插画 Illustration」与「色彩 Color」§5。
+空状态 / 状态反馈用的主题化插画（`@doberman-agent/ui` → `src/components/Illustration/`，内联 SVG；client 经 `~/components/illustrations` re-export 同一实现），颜色走独立的插画调色板（比 UI 品牌色更亮），随蓝⇄绿主题自动切换，另有主题无关的灰稿模式。规范见「文档 → 设计规范 → 插画 Illustration」与「色彩 Color」§5。
 
 ## 调色板三态
 
@@ -31,7 +31,7 @@ import {
   SuccessIllustration,
   SystemErrorIllustration,
   SystemMaintenanceIllustration,
-} from '@bisheng/ui';
+} from '@doberman-agent/ui';
 
 const MODES = [
   { id: 'blue', label: '蓝主题', hint: '默认主题。' },

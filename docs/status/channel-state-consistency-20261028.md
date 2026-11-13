@@ -2,9 +2,9 @@
 
 ## Scope and source
 
-The reported macOS/13100 symptoms originate in the shared BISHENG platform client and channel services. The Desktop shell displays the embedded platform UI.
+The reported macOS/13100 symptoms originate in the shared doberman-agent platform client and channel services. The Desktop shell displays the embedded platform UI.
 
-Initial analysis baseline: `dataelement/bisheng:feat/bisheng-work-120-main@1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`. Build-verified integration baseline: `c8ae351ee`. The subsequent `8821e490d` assistant-description change was retained before delivery and the channel regressions, client lint and strict types were rechecked. Repair branch: `codex/channel-state-consistency`.
+Initial analysis baseline: `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@1a8ac45e1d58a6f0bde7f0fe13552f2beb7b46a1`. Build-verified integration baseline: `c8ae351ee`. The subsequent `8821e490d` assistant-description change was retained before delivery and the channel regressions, client lint and strict types were rechecked. Repair branch: `codex/channel-state-consistency`.
 
 ## Behavior
 
@@ -24,6 +24,6 @@ Initial analysis baseline: `dataelement/bisheng:feat/bisheng-work-120-main@1a8ac
 
 ## Delivery and acceptance
 
-The user authorized direct integration into `dataelement/bisheng:feat/bisheng-work-120-main`. Release requires the matching backend, approval worker and client assets. Deployment to 13100, real-account approval history/permission data inspection, and native macOS acceptance remain pending.
+The user authorized direct integration into `cp7553479/doberman-agent:feat/doberman-agent-work-120-main`. Release requires the matching backend, approval worker and client assets. Deployment to 13100, real-account approval history/permission data inspection, and native macOS acceptance remain pending.
 
 A deployment smoke should use a regular account and cover pending→approved, approval projection failure→retry, access revoke→regrant, organization grant, and a channel changing from review to public. Compare detail status/actions, followed-list membership and article availability after each transition.

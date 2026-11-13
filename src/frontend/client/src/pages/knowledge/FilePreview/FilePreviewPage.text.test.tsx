@@ -23,7 +23,7 @@ jest.mock("./index", () => {
     };
 });
 
-const objectPath = "/bisheng/original/6.txt";
+const objectPath = "/doberman_agent/original/6.txt";
 const signature = "?X-Amz-Credential=test%2Fdate%2Fs3&X-Amz-Signature=abc%2B123";
 // eslint-disable-next-line no-restricted-syntax -- Multilingual file-content fixture, rendered verbatim rather than localized UI copy.
 const body = "TXT preview acceptance\n中文正文与第二行\n<html>literal markup in a text file</html>";
@@ -56,7 +56,7 @@ describe("TXT preview content loaded from a search-result route", () => {
         [`/workspace${objectPath}`, ""],
         [`/workspace/workspace${objectPath}`, ""],
         [`http://storage.internal:9000${objectPath}`, ""],
-        ["/bisheng/original/source.txt", objectPath],
+        ["/doberman_agent/original/source.txt", objectPath],
     ])("renders the TXT body for original=%s and preview=%s", async (original, preview) => {
         jest.mocked(getFilePreviewApi).mockResolvedValue({
             original_url: original + signature,

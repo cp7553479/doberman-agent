@@ -1,11 +1,11 @@
 import pytest
 from fastapi import HTTPException
 
-from bisheng.chat_session.domain.chat import ChatSessionService
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.database.models.session import MessageSession
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.services.session_subject_service import session_subject_from_principal
+from doberman_agent.chat_session.domain.chat import ChatSessionService
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.services.session_subject_service import session_subject_from_principal
 
 
 def principal(
@@ -124,7 +124,7 @@ async def test_info_and_continuation_use_same_subject_matcher(monkeypatch):
         return row
 
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+        "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
         get_one,
     )
     own = session_subject_from_principal(principal(end_user_id="customer-1"))
@@ -144,7 +144,7 @@ async def test_missing_and_cross_subject_both_return_404(monkeypatch):
         return next(values)
 
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+        "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
         get_one,
     )
     subject = SessionSubject.natural_person(tenant_id=3, user_id=21)

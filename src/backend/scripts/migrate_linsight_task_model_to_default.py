@@ -3,7 +3,7 @@
 ``linsight_executor_mode`` to the new single ``linsight_default_model_id``.
 
 The actual transform lives in
-``bisheng.llm.domain.services.linsight_default_model_backfill`` (shared with the
+``doberman_agent.llm.domain.services.linsight_default_model_backfill`` (shared with the
 startup auto-backfill in ``main.lifespan``); this script is a dry-run/apply CLI over it.
 
 Context
@@ -33,8 +33,8 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.core.context.manager import close_app_context  # noqa: E402
-from bisheng.llm.domain.services.linsight_default_model_backfill import (  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context  # noqa: E402
+from doberman_agent.llm.domain.services.linsight_default_model_backfill import (  # noqa: E402
     backfill_linsight_default_model,
 )
 

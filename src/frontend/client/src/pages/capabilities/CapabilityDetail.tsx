@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Input, Switch } from '@bisheng/ui';
+import { Button, Input, Switch } from '@doberman-agent/ui';
 import { CheckCircle2, Play } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '~/components/ui/Dialog';
 import { useLocalize } from '~/hooks';

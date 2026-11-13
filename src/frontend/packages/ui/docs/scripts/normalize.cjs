@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * @bisheng/ui docs punctuation normalizer (all passes in one).
+ * @doberman-agent/ui docs punctuation normalizer (all passes in one).
  *
  * Applies the 文案规范 / 文档撰写规范 rules to a doc's PROSE, leaving code,
  * JSX, links and URLs untouched:

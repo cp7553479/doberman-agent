@@ -26,9 +26,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
 from test.audit.conftest import insert_audit, make_app, make_user_payload
 
 APP_ID = "app-scope-1"
@@ -42,7 +42,7 @@ def no_log_menu(monkeypatch):
 
 @pytest.fixture()
 def no_group_admin(monkeypatch):
-    monkeypatch.setattr("bisheng.api.services.audit_log.UserGroupDao.aget_user_admin_group", AsyncMock(return_value=[]))
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.UserGroupDao.aget_user_admin_group", AsyncMock(return_value=[]))
 
 
 def _owner():
@@ -56,8 +56,8 @@ def _tenant_admin():
 
 async def _list(user, **kwargs):
     with (
-        patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-        patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=2),
+        patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+        patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=2),
     ):
         return await AuditLogService.get_audit_log(
             user,
@@ -75,8 +75,8 @@ async def _list(user, **kwargs):
 
 async def _export(user, **kwargs):
     with (
-        patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-        patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=2),
+        patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+        patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=2),
     ):
         return await AuditLogService.export_audit_log(
             user,
@@ -163,7 +163,7 @@ class TestRoleBoundary:
         from types import SimpleNamespace
 
         monkeypatch.setattr(
-            "bisheng.api.services.audit_log.UserGroupDao.aget_user_admin_group",
+            "doberman_agent.api.services.audit_log.UserGroupDao.aget_user_admin_group",
             AsyncMock(return_value=[SimpleNamespace(group_id=5)]),
         )
         audit_lookups.group_users = [SimpleNamespace(group_id=5, user_id=42)]
@@ -206,8 +206,8 @@ class TestSingleQueryEntry:
     def test_every_hosted_app_action_is_selectable_on_that_one_face(self):
         """An action that writes but is not on the whitelist is invisible on the
         page — 「写了查不到」, which AC-27 forbids and AC-34 depends on."""
-        from bisheng.app_publish.domain.constants import AppReleaseAuditAction
-        from bisheng.app_runtime.domain.constants import AppAuditAction
+        from doberman_agent.app_publish.domain.constants import AppReleaseAuditAction
+        from doberman_agent.app_runtime.domain.constants import AppAuditAction
 
         missing = [
             action.value
@@ -219,15 +219,15 @@ class TestSingleQueryEntry:
     # The other half of AC-34 — "there is only one such route family" — is a
     # census over the whole app, and it lives in
     # ``test/api/test_audit_query_entry_surface.py``: the modules in this
-    # package stub ``bisheng.api.router`` and friends into ``sys.modules`` to
-    # run the DAO without the app, which makes ``bisheng.main`` unimportable
+    # package stub ``doberman_agent.api.router`` and friends into ``sys.modules`` to
+    # run the DAO without the app, which makes ``doberman_agent.main`` unimportable
     # from here for the rest of the session.
 
 
 async def _list_with_event(user, event_type: str):
     with (
-        patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-        patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=2),
+        patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+        patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=2),
     ):
         return await AuditLogService.get_audit_log(
             user,

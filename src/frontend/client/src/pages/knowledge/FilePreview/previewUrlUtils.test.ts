@@ -8,15 +8,15 @@ describe("knowledge object-storage routing", () => {
     });
 
     it.each([
-        "/bisheng/original/4.pdf",
-        "/bisheng/preview/5.pdf",
-        "/bisheng/original/test.docx",
-        "/bisheng/original/test.xlsx",
-        "/bisheng/preview/test.md",
-        "/bisheng/preview/test.html",
-        "/bisheng/original/test.png",
-        "/bisheng/original/test.txt",
-        "/bisheng/original/test.mp4",
+        "/doberman_agent/original/4.pdf",
+        "/doberman_agent/preview/5.pdf",
+        "/doberman_agent/original/test.docx",
+        "/doberman_agent/original/test.xlsx",
+        "/doberman_agent/preview/test.md",
+        "/doberman_agent/preview/test.html",
+        "/doberman_agent/original/test.png",
+        "/doberman_agent/original/test.txt",
+        "/doberman_agent/original/test.mp4",
         "/tmp-dir/test.csv",
     ])("routes %s through the origin bucket proxy and preserves the signature", (path) => {
         const expected = path + signature;
@@ -42,7 +42,7 @@ describe("knowledge object-storage routing", () => {
 
     it.each(["/workspace/", "/chat", ""])('supports application base "%s"', (base) => {
         __APP_ENV__.BASE_URL = base;
-        expect(resolveKnowledgePreviewUrl("/bisheng/original/4.pdf")).toBe("/bisheng/original/4.pdf");
+        expect(resolveKnowledgePreviewUrl("/doberman_agent/original/4.pdf")).toBe("/doberman_agent/original/4.pdf");
         if (base) {
             expect(resolveKnowledgePreviewUrl(`${base.replace(/\/$/, "")}/tmp-dir/file.pdf`))
                 .toBe("/tmp-dir/file.pdf");

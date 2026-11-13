@@ -1,4 +1,4 @@
-import { Input, type InputProps, Button } from '@bisheng/ui';
+import { Input, type InputProps, Button } from '@doberman-agent/ui';
 import * as React from 'react';
 import { CircleMinus, CirclePlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

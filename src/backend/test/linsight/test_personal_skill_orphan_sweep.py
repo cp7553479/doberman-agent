@@ -4,9 +4,9 @@ A hash still named by a skill row stays. ``linsight/skills/`` is never part of
 the sweep, and a child task only removes keys under its own tenant prefix.
 """
 
-from bisheng.core.config.settings import CeleryConf
-from bisheng.core.context.tenant import current_tenant_id, get_current_tenant_id, set_current_tenant_id
-from bisheng.worker.linsight import personal_skill_sweep as sweep
+from doberman_agent.core.config.settings import CeleryConf
+from doberman_agent.core.context.tenant import current_tenant_id, get_current_tenant_id, set_current_tenant_id
+from doberman_agent.worker.linsight import personal_skill_sweep as sweep
 
 LIVE = "a" * 64
 ORPHAN = "b" * 64
@@ -144,4 +144,4 @@ def test_sweep_task_logs_and_returns_when_the_run_fails(monkeypatch):
 
 def test_default_beat_schedule_dispatches_the_sweep():
     entry = CeleryConf().beat_schedule["dispatch_personal_skill_orphan_sweep"]
-    assert entry["task"] == "bisheng.worker.linsight.personal_skill_sweep.dispatch_personal_skill_orphan_sweep"
+    assert entry["task"] == "doberman_agent.worker.linsight.personal_skill_sweep.dispatch_personal_skill_orphan_sweep"

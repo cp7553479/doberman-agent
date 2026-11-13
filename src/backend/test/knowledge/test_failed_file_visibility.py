@@ -8,8 +8,8 @@ filter — agree.
 
 from types import SimpleNamespace
 
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 SPACE_ID = 137
 OWNER = 150025

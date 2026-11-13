@@ -6,14 +6,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.context.tenant import get_current_tenant_id, set_current_tenant_id
-from bisheng.dsh.config import DshSettings
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditEvidence
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.schemas.model_audit_events import AuditEvent
-from bisheng.dsh.domain.services.model_audit_states import DshModelAuditStateService
-from bisheng.dsh.infrastructure.model_audit_blocking import run_audit_blocking
-from bisheng.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
+from doberman_agent.core.context.tenant import get_current_tenant_id, set_current_tenant_id
+from doberman_agent.dsh.config import DshSettings
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditEvidence
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.schemas.model_audit_events import AuditEvent
+from doberman_agent.dsh.domain.services.model_audit_states import DshModelAuditStateService
+from doberman_agent.dsh.infrastructure.model_audit_blocking import run_audit_blocking
+from doberman_agent.dsh.infrastructure.model_audit_queue import BoundedAuditQueue
 from test.dsh.model_audit_fixtures import NOW, AuditTestClock, audit_session
 from test.dsh.test_model_audit_flow import ADMIN, BASE, call, fixture
 
@@ -65,13 +65,13 @@ async def test_queue_is_bounded_including_inflight_and_shutdown_has_deadline():
 
 @pytest.mark.parametrize("native", [False, True])
 async def test_production_mode_failure_creates_only_minimal_diagnostic(monkeypatch, native):
-    from bisheng.dsh.audit_runtime import ModelAuditRuntime
-    from bisheng.dsh.domain.schemas.chat import DshChatRequest
-    from bisheng.dsh.domain.schemas.responses import DshResponsesRequest
-    from bisheng.dsh.domain.services.access import DshPrincipal, principal_scope
+    from doberman_agent.dsh.audit_runtime import ModelAuditRuntime
+    from doberman_agent.dsh.domain.schemas.chat import DshChatRequest
+    from doberman_agent.dsh.domain.schemas.responses import DshResponsesRequest
+    from doberman_agent.dsh.domain.services.access import DshPrincipal, principal_scope
 
     async with fixture() as (harness, _client, _objects):
-        import bisheng.dsh.audit_runtime as composition
+        import doberman_agent.dsh.audit_runtime as composition
 
         monkeypatch.setattr(composition, "repository_scope", harness.scope)
         runtime = ModelAuditRuntime(DshSettings(), AsyncMock())
@@ -84,9 +84,9 @@ async def test_production_mode_failure_creates_only_minimal_diagnostic(monkeypat
         with principal_scope(principal):
             capture = await runtime.capture(
                 principal,
-                DshResponsesRequest(model="bisheng:42", input=[{"role": "user", "content": "must-not-retain"}])
+                DshResponsesRequest(model="doberman_agent:42", input=[{"role": "user", "content": "must-not-retain"}])
                 if native
-                else DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "must-not-retain"}]),
+                else DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "must-not-retain"}]),
                 "mode-failed",
                 NOW,
                 harness.model,
@@ -162,7 +162,7 @@ async def test_activity_and_late_observations_restore_unknown_state():
 
 
 async def test_missing_digest_key_is_partial_without_plaintext_fallback():
-    from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
+    from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
     from test.dsh.model_audit_fixtures import ControlledAuditQueue
 
     queue = ControlledAuditQueue()

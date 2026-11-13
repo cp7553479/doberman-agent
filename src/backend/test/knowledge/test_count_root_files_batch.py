@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.dialects import sqlite
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFileDao
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFileDao
 
 
 class _FakeListResult:
@@ -50,7 +50,7 @@ async def test_count_root_files_batch_filters_root_files_only_all_statuses():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         return_value=session,
     ):
         await KnowledgeFileDao.async_count_root_files_batch([1, 2, 3])
@@ -73,7 +73,7 @@ async def test_count_root_files_batch_maps_rows_to_counts():
     session = _FakeAsyncSession(rows=[(1, 5), (3, 0)])
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_file.get_async_db_session",
         return_value=session,
     ):
         result = await KnowledgeFileDao.async_count_root_files_batch([1, 2, 3])

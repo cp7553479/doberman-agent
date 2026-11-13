@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.context.tenant import get_current_tenant_id
-from bisheng.tenant.domain.services.tenant_service import TenantService
+from doberman_agent.core.context.tenant import get_current_tenant_id
+from doberman_agent.tenant.domain.services.tenant_service import TenantService
 from test.dsh.test_model_audit_flow import ADMIN, BASE, LOCAL_ADMIN, USER, fixture
 
 

@@ -9,9 +9,9 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from starlette.testclient import TestClient
 
-from bisheng.common.middleware import admin_scope
-from bisheng.core.context import tenant
-from bisheng.core.database import tenant_filter
+from doberman_agent.common.middleware import admin_scope
+from doberman_agent.core.context import tenant
+from doberman_agent.core.database import tenant_filter
 
 
 class ManagementViewProbe(SQLModel, table=True):

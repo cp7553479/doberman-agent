@@ -45,13 +45,13 @@
   **逻辑**: 覆盖初始 render 零请求、显式 load 后单请求、请求中去重、60 秒缓存、不同资源隔离、用户隔离、
   服务端失败状态，以及管理员不走前端全动作伪造分支。
   **覆盖 AC**: AC-05, AC-06, AC-09, AC-10, AC-12
-  **验证**: `cd src/frontend && pnpm --filter bisheng test -- f051LazyResourceActions`
+  **验证**: `cd src/frontend && pnpm --filter doberman-agent test -- f051LazyResourceActions`
   **依赖**: 无
 
 ### Wave 2：最小后端响应与共享懒加载能力
 
 - [x] **T003**: 知识库列表只装饰 visible
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`
   **逻辑**: 保留 visible IDs 枚举和请求 action 的候选过滤；删除返回页 `_KNOWLEDGE_LIST_ACTIONS` 查询，
   为最终返回行显式传入只含 `visible` 的 action map；管理员返回相同最小形态；不全局改变转换函数默认语义。
   **测试**: T001 全部通过；`test/permission/test_f048_list_action_cost.py` 保持通过。

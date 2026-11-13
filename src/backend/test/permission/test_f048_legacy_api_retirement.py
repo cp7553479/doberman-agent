@@ -6,13 +6,13 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
-from bisheng.permission.api.router import router as permission_router
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.api.router import router as permission_router
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.tenant.api.router import router as tenant_router
+from doberman_agent.tenant.api.router import router as tenant_router
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
@@ -31,8 +31,8 @@ def test_transfer_owner_and_legacy_permission_mutations_are_unreachable() -> Non
 
 
 def test_f018_runtime_modules_are_removed_from_the_startup_build() -> None:
-    assert not (BACKEND_ROOT / "bisheng/tenant/api/endpoints/resource_owner_transfer.py").exists()
-    assert not (BACKEND_ROOT / "bisheng/tenant/domain/services/resource_ownership_service.py").exists()
+    assert not (BACKEND_ROOT / "doberman_agent/tenant/api/endpoints/resource_owner_transfer.py").exists()
+    assert not (BACKEND_ROOT / "doberman_agent/tenant/domain/services/resource_ownership_service.py").exists()
 
 
 def test_multiple_ordinary_owners_do_not_replace_protected_creator() -> None:

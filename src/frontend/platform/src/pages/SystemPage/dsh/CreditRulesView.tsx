@@ -1,12 +1,12 @@
-import { Tooltip, TooltipProvider } from '@bisheng/ui'
+import { Tooltip, TooltipProvider } from '@doberman-agent/ui'
 import { Info } from 'lucide-react'
 import UsersSelect from '@/components/bs-comp/selectComponent/Users'
 import type { DepartmentUserOption } from '@/components/bs-comp/selectComponent/DepartmentUsersSelect'
-import { Button } from "@bisheng/ui";
-import { Checkbox } from "@bisheng/ui";
-import { Input } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
+import { Checkbox } from "@doberman-agent/ui";
+import { Input } from "@doberman-agent/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/bs-ui/select'
-import { Segmented } from "@bisheng/ui"
+import { Segmented } from "@doberman-agent/ui"
 import { getCreditRules, getPolicySubjects, saveCreditRule, type CreditRule, type PolicySubject, type PolicySubjectOption } from '@/controllers/API/dshUnified'
 import { getDshRequestErrorKey } from '@/utils/dshRequestError'
 import { MAX_MONTHLY_CREDITS, isValidMonthlyCredits } from '@/utils/dshCreditAmount'

@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.worker.dsh.model_audit import register_model_audit_tasks
+from doberman_agent.worker.dsh.model_audit import register_model_audit_tasks
 
 
 class Tasks:
@@ -33,8 +33,8 @@ def test_inspection_rejects_untrusted_scope_before_runtime(headers, tenant):
 
 
 async def test_scanner_limits_dispatch_and_passes_trusted_headers_with_continuation(monkeypatch):
-    import bisheng.dsh.operations_runtime as composition
-    import bisheng.worker._asyncio_utils as bridge
+    import doberman_agent.dsh.operations_runtime as composition
+    import doberman_agent.worker._asyncio_utils as bridge
 
     @contextmanager
     def scope(_repository):

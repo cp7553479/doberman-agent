@@ -9,12 +9,12 @@ import pytest
 from fastapi import FastAPI
 from starlette.requests import ClientDisconnect
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import tools
-from bisheng.dsh.domain.schemas.tool_invocation import ToolLimits
-from bisheng.dsh.domain.services.access import DshPrincipal
-from bisheng.dsh.tool_runtime import get_tool_service
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import tools
+from doberman_agent.dsh.domain.schemas.tool_invocation import ToolLimits
+from doberman_agent.dsh.domain.services.access import DshPrincipal
+from doberman_agent.dsh.tool_runtime import get_tool_service
 
 
 def principal():
@@ -51,7 +51,7 @@ async def test_top_level_contract(http_setup):
 
 async def test_full_saved_tool_key_and_no_management_api(http_setup):
     """AC-01, AC-07: accept existing keys without a registration or management step."""
-    from bisheng.utils.http_middleware import owns_dsh_credential
+    from doberman_agent.utils.http_middleware import owns_dsh_credential
 
     app, _, service = http_setup
     key = "Tool_" + "x" * 119 + "1"
@@ -62,7 +62,7 @@ async def test_full_saved_tool_key_and_no_management_api(http_setup):
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://test") as client:
         response = await client.post(path, headers={"Authorization": "Bearer verified"}, json={"arguments": {}})
     assert response.status_code == 200 and service.invoke.await_args.args[1] == key
-    from bisheng.dsh.api.router import router
+    from doberman_agent.dsh.api.router import router
 
     assert not any("tool-publications" in route.path for route in router.routes)
 

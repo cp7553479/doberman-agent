@@ -25,7 +25,7 @@ from themes import Theme
 
 _SKILL_SCRIPTS = os.path.abspath(
     os.path.join(
-        os.path.dirname(__file__), "..", "..", "bisheng", "linsight", "builtin_skills", "bisheng-pptx", "scripts"
+        os.path.dirname(__file__), "..", "..", "doberman_agent", "linsight", "builtin_skills", "doberman-agent-pptx", "scripts"
     )
 )
 if _SKILL_SCRIPTS not in sys.path:

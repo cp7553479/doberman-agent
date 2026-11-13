@@ -51,8 +51,8 @@ def sync_subject_db(monkeypatch):
     from sqlalchemy.pool import StaticPool
     from sqlmodel import Session, SQLModel, create_engine
 
-    from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubject
-    from bisheng.database.models.app import App
+    from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubject
+    from doberman_agent.database.models.app import App
 
     engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     SQLModel.metadata.create_all(engine, tables=[App.__table__, HostedAppSubject.__table__])
@@ -62,7 +62,7 @@ def sync_subject_db(monkeypatch):
         with Session(engine) as session:
             yield session
 
-    module = importlib.import_module("bisheng.app_publish.domain.services.app_credential_service")
+    module = importlib.import_module("doberman_agent.app_publish.domain.services.app_credential_service")
     monkeypatch.setattr(module, "get_sync_db_session", _session)
 
     def _seed(*, app_id: str = "app-sync", state: str = "online", tenant_id: int = ROOT_TENANT_ID) -> int:
@@ -86,7 +86,7 @@ def sync_subject_db(monkeypatch):
 
 
 def _hosted_credential(*, subject_id: int, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP, ApiCredential
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP, ApiCredential
 
     return ApiCredential(
         id=901,
@@ -102,7 +102,7 @@ def _hosted_credential(*, subject_id: int, tenant_id: int = ROOT_TENANT_ID):
 
 
 def _hosted_snapshot(*, subject_id: int, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.open_api.domain.context import OpenApiExecutionSnapshot
+    from doberman_agent.open_api.domain.context import OpenApiExecutionSnapshot
 
     return OpenApiExecutionSnapshot(
         tenant_id=tenant_id,
@@ -125,7 +125,7 @@ async def _set_state(publish_db, app_id: str, state: str) -> None:
     These tests are about the credential, not about the transition table, and
     the service needs a live orchestrator to reach ``online``.
     """
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with publish_db() as session:
         app = await AppDao.aget(session, app_id)
@@ -135,16 +135,16 @@ async def _set_state(publish_db, app_id: str, state: str) -> None:
 
 
 async def _live_credentials(subject_id: int):
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
 
     rows = await CredentialRepository.list_by_subject(SUBJECT_KIND_HOSTED_APP, subject_id)
     return [row for row in rows if row.revoked_at is None]
 
 
 async def _subject_id(app_id: str) -> int:
-    from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubjectDao
-    from bisheng.core.database import get_async_db_session
+    from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubjectDao
+    from doberman_agent.core.database import get_async_db_session
 
     async with get_async_db_session() as session:
         row = await HostedAppSubjectDao.aget_by_app(session, app_id)
@@ -167,8 +167,8 @@ async def _audit_rows(publish_db, action: str | None = None) -> list:
     """
     from sqlmodel import select
 
-    from bisheng.core.context.tenant import bypass_tenant_filter
-    from bisheng.database.models.audit_log import AuditLog
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.database.models.audit_log import AuditLog
 
     with bypass_tenant_filter():
         async with publish_db() as session:
@@ -183,8 +183,8 @@ async def _audit_rows(publish_db, action: str | None = None) -> list:
 
 async def test_issued_plaintext_carries_the_hosted_app_prefix(publish_db, credential_redis, app_factory):
     """The third prefix is what pins a plaintext to its subject kind."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.models.api_credential import HOSTED_APP_TOKEN_PREFIX, KEY_SECRET_LENGTH
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.models.api_credential import HOSTED_APP_TOKEN_PREFIX, KEY_SECRET_LENGTH
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -197,9 +197,9 @@ async def test_issue_authenticates_and_reports_the_application_identity(
     publish_db, credential_redis, app_factory, owner_user, hosted_app_resolver
 ):
     """The principal a hosted application authenticates as (F051 design D7 consumes this)."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -226,11 +226,11 @@ async def test_issue_authenticates_and_reports_the_application_identity(
 async def test_reissue_revokes_the_previous_key_and_keeps_one_live(
     publish_db, credential_redis, app_factory, hosted_app_resolver
 ):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.models.api_credential import REVOKE_REASON_REISSUED
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.models.api_credential import REVOKE_REASON_REISSUED
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     first = await AppRuntimeCredentialService.issue(app.id)
@@ -240,7 +240,7 @@ async def test_reissue_revokes_the_previous_key_and_keeps_one_live(
     subject_id = await _subject_id(app.id)
     assert len(await _live_credentials(subject_id)) == 1
 
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
 
     rows = await CredentialRepository.list_by_subject(SUBJECT_KIND_HOSTED_APP, subject_id)
     revoked = [row for row in rows if row.revoked_at is not None]
@@ -253,9 +253,9 @@ async def test_reissue_revokes_the_previous_key_and_keeps_one_live(
 
 async def test_reissue_evicts_the_previous_cache_entry(publish_db, credential_redis, app_factory, hosted_app_resolver):
     """ "The row says revoked" is not the fact INV-28 needs — the cache entry is."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.services.credential_service import CREDENTIAL_CACHE_KEY, hash_token
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.services.credential_service import CREDENTIAL_CACHE_KEY, hash_token
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     first = await AppRuntimeCredentialService.issue(app.id)
@@ -269,12 +269,12 @@ async def test_reissue_evicts_the_previous_cache_entry(publish_db, credential_re
 
 async def test_revocation_bound_is_five_seconds(monkeypatch):
     """INV-28 has no poller behind it — the clamped cache TTL is the mechanism."""
-    from bisheng.app_publish.domain.services.app_credential_service import (
+    from doberman_agent.app_publish.domain.services.app_credential_service import (
         REVOCATION_BOUND_SECONDS,
         assert_revocation_bound,
     )
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.config.open_platform import OpenApiConf
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.config.open_platform import OpenApiConf
 
     assert assert_revocation_bound() <= REVOCATION_BOUND_SECONDS
     # A deployment that configures a longer TTL is clamped by the settings
@@ -287,8 +287,8 @@ async def test_revocation_bound_is_five_seconds(monkeypatch):
 
 
 async def test_issue_for_a_missing_application_is_16291(publish_db, credential_redis):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.app_publish import AppRuntimeSubjectUnavailableError
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.app_publish import AppRuntimeSubjectUnavailableError
 
     with pytest.raises(AppRuntimeSubjectUnavailableError) as excinfo:
         await AppRuntimeCredentialService.issue("no-such-app")
@@ -296,8 +296,8 @@ async def test_issue_for_a_missing_application_is_16291(publish_db, credential_r
 
 
 async def test_issue_for_a_deleted_application_is_16291(publish_db, credential_redis, app_factory):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.app_publish import AppRuntimeSubjectUnavailableError
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.app_publish import AppRuntimeSubjectUnavailableError
 
     app, _ = await app_factory(state="online")
     await _set_state(publish_db, app.id, "deleted")
@@ -308,8 +308,8 @@ async def test_issue_for_a_deleted_application_is_16291(publish_db, credential_r
 
 async def test_delegate_can_never_be_issued_to_an_application(publish_db, credential_redis, app_factory):
     """``delegate`` is a service-account-only shape; an application acting for a human is not a thing."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
 
     app, _ = await app_factory(state="online")
     with pytest.raises(OpenApiDelegateConfigurationInvalidError):
@@ -333,9 +333,9 @@ async def test_a_refused_reissue_leaves_the_running_key_alive(
     derives a scope this deployment does not offer would leave a running
     application unauthenticated until somebody published again.
     """
-    import bisheng.common.errcode.open_api as open_api_errors
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    import doberman_agent.common.errcode.open_api as open_api_errors
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     live = await AppRuntimeCredentialService.issue(app.id)
@@ -357,9 +357,9 @@ async def test_a_refused_reissue_leaves_the_running_key_alive(
 async def test_a_not_online_application_cannot_authenticate(
     publish_db, credential_redis, app_factory, hosted_app_resolver, state
 ):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -374,9 +374,9 @@ async def test_a_not_online_application_cannot_authenticate(
 
 async def test_the_same_key_works_again_after_a_resume(publish_db, credential_redis, app_factory, hosted_app_resolver):
     """Offline is subject deactivation, not revocation (AC-58): no re-publish to come back."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -398,13 +398,13 @@ async def test_the_same_key_works_again_after_a_resume(publish_db, credential_re
 async def test_delete_hook_revokes_the_runtime_credential(
     publish_db, credential_redis, app_factory, hosted_app_resolver, owner_user
 ):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.app_runtime.domain.services import lifecycle_hooks
-    from bisheng.open_api.domain.models.api_credential import (
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks
+    from doberman_agent.open_api.domain.models.api_credential import (
         REVOKE_REASON_SUBJECT_DELETED,
         SUBJECT_KIND_HOSTED_APP,
     )
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
 
     app, _ = await app_factory(state="stopped")
     await AppRuntimeCredentialService.issue(app.id)
@@ -424,7 +424,7 @@ async def test_delete_hook_revokes_the_runtime_credential(
 
 async def test_revoking_an_application_that_never_had_a_credential_is_silent(publish_db, credential_redis, app_factory):
     """The deletion hook must not turn a completed deletion into a failure."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
 
     app, _ = await app_factory(state="stopped")
     assert await AppRuntimeCredentialService.revoke(app.id) == 0
@@ -435,8 +435,8 @@ async def test_revoking_one_application_leaves_a_sibling_of_the_same_owner_alive
     publish_db, credential_redis, app_factory, hosted_app_resolver, owner_user
 ):
     """The reason ``hosted_app_subject`` exists instead of reusing ``owner_user_id``."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     first, _ = await app_factory(state="online", owner_user_id=owner_user.user_id)
     second, _ = await app_factory(state="online", owner_user_id=owner_user.user_id)
@@ -453,7 +453,7 @@ async def test_revoking_one_application_leaves_a_sibling_of_the_same_owner_alive
 
 async def test_the_subject_surrogate_is_stable_across_reissues(publish_db, credential_redis, app_factory):
     """A surrogate that moved would orphan the audit rows that point at it."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
 
     app, _ = await app_factory(state="online")
     await AppRuntimeCredentialService.issue(app.id)
@@ -486,7 +486,7 @@ def test_the_audit_actions_are_ones_the_audit_page_can_show():
     all four at once or become an event that writes and can never be found —
     this test is what stops somebody "clarifying" the names later.
     """
-    from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
+    from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
 
     assert ISSUE_ACTION in _UI_VISIBLE_V2_ACTIONS
     assert REVOKE_ACTION in _UI_VISIBLE_V2_ACTIONS
@@ -494,7 +494,7 @@ def test_the_audit_actions_are_ones_the_audit_page_can_show():
 
 async def test_issuing_the_runtime_credential_writes_one_audit_row(publish_db, credential_redis, app_factory):
     """AC-58 / GOV-08: the signing event is on the record, attributed to the platform."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
 
     app, _ = await app_factory(state="online")
     await AppRuntimeCredentialService.issue(app.id, scopes=["knowledge:read"])
@@ -527,8 +527,8 @@ async def test_the_delete_hook_audits_the_revocation(
     That test asserts the credential's *state*, which was already correct. The
     revocation event was the part nobody could see.
     """
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.app_runtime.domain.services import lifecycle_hooks
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks
 
     app, _ = await app_factory(state="stopped")
     await AppRuntimeCredentialService.issue(app.id)
@@ -552,7 +552,7 @@ async def test_a_reissue_audits_both_the_revocation_and_the_new_key(publish_db, 
     A publish that only recorded the mint would leave "which key was live at
     which moment" unanswerable — precisely the question an incident asks.
     """
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
 
     app, _ = await app_factory(state="online")
     await AppRuntimeCredentialService.issue(app.id)
@@ -566,7 +566,7 @@ async def test_a_reissue_audits_both_the_revocation_and_the_new_key(publish_db, 
 
 async def test_revoking_an_application_without_a_credential_writes_nothing(publish_db, credential_redis, app_factory):
     """No credential, no event — an empty revocation is not an occurrence."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
 
     app, _ = await app_factory(state="stopped")
     assert await AppRuntimeCredentialService.revoke(app.id) == 0
@@ -583,9 +583,9 @@ async def test_an_unwritable_audit_row_never_fails_the_publish(
     returned exactly once and stored nowhere — an application left permanently
     unable to authenticate because a log row could not be written.
     """
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.database.models.audit_log import AuditLogDao
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.database.models.audit_log import AuditLogDao
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     async def _boom(cls, *args, **kwargs):
         raise RuntimeError("auditlog is unreachable")
@@ -608,12 +608,12 @@ async def test_an_unwritable_audit_row_never_fails_the_publish(
 async def test_hosted_app_credentials_are_invisible_to_the_service_account_console(
     publish_db, credential_redis, app_factory
 ):
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.models.api_credential import (
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.models.api_credential import (
         SUBJECT_KIND_HOSTED_APP,
         SUBJECT_KIND_SERVICE_ACCOUNT,
     )
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
 
     app, _ = await app_factory(state="online")
     await AppRuntimeCredentialService.issue(app.id)
@@ -649,9 +649,9 @@ def test_no_api_endpoint_mentions_the_hosted_app_subject_kind():
     credential is issued from the publish pipeline's service layer and nowhere
     else.
     """
-    import bisheng
+    import doberman_agent
 
-    root = pathlib.Path(bisheng.__file__).parent
+    root = pathlib.Path(doberman_agent.__file__).parent
     offenders = []
     for api_dir in (root / "open_api" / "api", root / "app_publish" / "api", root / "app_runtime" / "api"):
         for path in api_dir.rglob("*.py"):
@@ -667,9 +667,9 @@ def test_no_api_endpoint_mentions_the_hosted_app_subject_kind():
 
 def test_the_only_issuer_is_the_publish_pipeline_service():
     """One writer, so "who can mint an application token" stays answerable."""
-    import bisheng
+    import doberman_agent
 
-    root = pathlib.Path(bisheng.__file__).parent
+    root = pathlib.Path(doberman_agent.__file__).parent
     issuer = "app_publish/domain/services/app_credential_service.py"
     callers = []
     for path in root.rglob("*.py"):
@@ -692,9 +692,9 @@ async def test_a_disabled_owner_account_does_not_break_the_application(
 ):
     from sqlmodel import select
 
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.user.domain.models.user import User
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -717,10 +717,10 @@ def test_resolution_never_reads_the_user_table():
     only until somebody disabled an owner in production, so the import surface
     is pinned instead.
     """
-    import bisheng
+    import doberman_agent
 
     source = (
-        pathlib.Path(bisheng.__file__).parent / "app_publish" / "domain" / "services" / "app_credential_service.py"
+        pathlib.Path(doberman_agent.__file__).parent / "app_publish" / "domain" / "services" / "app_credential_service.py"
     ).read_text()
     tree = ast.parse(source)
     imported = set()
@@ -741,10 +741,10 @@ def test_resolution_never_reads_the_user_table():
 
 async def test_without_the_resolver_a_hosted_app_key_is_refused(publish_db, credential_redis, app_factory):
     """F049 design D2: an unregistered subject kind is refused on ``/api/v2``."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS, validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS, validate_bearer
 
     assert SUBJECT_KIND_HOSTED_APP not in SUBJECT_RESOLVERS
     app, _ = await app_factory(state="online")
@@ -758,13 +758,13 @@ async def test_a_service_account_prefix_cannot_present_a_hosted_app_row(
     publish_db, credential_redis, app_factory, hosted_app_resolver
 ):
     """The prefix pin, exercised against a real row rather than the helper."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.models.api_credential import (
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.models.api_credential import (
         HOSTED_APP_TOKEN_PREFIX,
         SERVICE_ACCOUNT_KEY_PREFIX,
     )
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -778,10 +778,10 @@ async def test_a_credential_whose_application_moved_tenant_is_refused(
     publish_db, credential_redis, app_factory, hosted_app_resolver
 ):
     """``app.tenant_id`` and the credential's tenant must agree, as for service accounts."""
-    from bisheng.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.database.models.app import AppDao
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.app_publish.domain.services.app_credential_service import AppRuntimeCredentialService
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.database.models.app import AppDao
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     app, _ = await app_factory(state="online")
     plaintext = await AppRuntimeCredentialService.issue(app.id)
@@ -799,7 +799,7 @@ async def test_a_credential_whose_application_moved_tenant_is_refused(
 
 def test_the_check_constraint_lists_every_subject_kind():
     """Model constant and DB constraint are one lockstep; drift rejects inserts at runtime."""
-    from bisheng.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS, ApiCredential
+    from doberman_agent.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS, ApiCredential
 
     constraint = next(
         arg for arg in ApiCredential.__table_args__ if getattr(arg, "name", None) == "ck_api_credential_subject_kind"
@@ -811,9 +811,9 @@ def test_the_check_constraint_lists_every_subject_kind():
 
 def test_every_subject_kind_has_a_prefix():
     """A kind without a prefix authenticates against nothing — assert that stays intentional."""
-    from bisheng.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS
-    from bisheng.open_api.domain.services.credential_service import credential_prefix
-    from bisheng.open_api.domain.services.credential_validator import _SUBJECT_KIND_PREFIXES
+    from doberman_agent.open_api.domain.models.api_credential import CREDENTIAL_SUBJECT_KINDS
+    from doberman_agent.open_api.domain.services.credential_service import credential_prefix
+    from doberman_agent.open_api.domain.services.credential_validator import _SUBJECT_KIND_PREFIXES
 
     assert set(_SUBJECT_KIND_PREFIXES) == set(CREDENTIAL_SUBJECT_KINDS)
     for kind, prefix in _SUBJECT_KIND_PREFIXES.items():
@@ -822,10 +822,10 @@ def test_every_subject_kind_has_a_prefix():
 
 
 async def test_composition_registers_the_resolver_idempotently(hosted_app_resolver):
-    from bisheng.app_publish.composition import on_app_deleted_revoke_credential, register
-    from bisheng.app_publish.domain.services.app_credential_service import resolve_hosted_app
-    from bisheng.app_runtime.domain.services import lifecycle_hooks
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.app_publish.composition import on_app_deleted_revoke_credential, register
+    from doberman_agent.app_publish.domain.services.app_credential_service import resolve_hosted_app
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
 
     register()
     assert hosted_app_resolver[SUBJECT_KIND_HOSTED_APP] is resolve_hosted_app
@@ -845,8 +845,8 @@ def test_a_queued_task_of_a_stopped_application_is_refused(sync_subject_db, stat
     minutes later. Without this check "the application is offline" would be
     true only of requests that had not been accepted yet.
     """
-    from bisheng.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
 
     subject_id = sync_subject_db(state=state)
     with pytest.raises(OpenApiCredentialInvalidError):
@@ -854,15 +854,15 @@ def test_a_queued_task_of_a_stopped_application_is_refused(sync_subject_db, stat
 
 
 def test_a_queued_task_of_an_online_application_is_allowed(sync_subject_db):
-    from bisheng.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
+    from doberman_agent.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
 
     subject_id = sync_subject_db(state="online")
     assert_hosted_app_executable(_hosted_credential(subject_id=subject_id), _hosted_snapshot(subject_id=subject_id))
 
 
 def test_a_queued_task_whose_application_moved_tenant_is_refused(sync_subject_db):
-    from bisheng.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
 
     subject_id = sync_subject_db(state="online", tenant_id=SUB_TENANT_ID)
     with pytest.raises(OpenApiCredentialInvalidError):
@@ -873,8 +873,8 @@ def test_a_queued_task_whose_application_moved_tenant_is_refused(sync_subject_db
 
 
 def test_a_queued_task_with_no_surrogate_row_is_refused(sync_subject_db):
-    from bisheng.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
 
     sync_subject_db(state="online")
     with pytest.raises(OpenApiCredentialInvalidError):
@@ -888,8 +888,8 @@ def test_a_subject_kind_without_an_execution_guard_cannot_execute(monkeypatch):
     no ``else``, so a third kind would have restored its identity on the worker
     with nothing checked at all.
     """
-    from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-    from bisheng.open_api.domain.services import execution_context
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+    from doberman_agent.open_api.domain.services import execution_context
 
     subject_id = 11
     monkeypatch.setattr(
@@ -906,15 +906,15 @@ def test_a_subject_kind_without_an_execution_guard_cannot_execute(monkeypatch):
 def test_composition_registers_the_execution_guard(hosted_app_resolver):
     """Resolver and guard are one registration — a process with only the first
     would admit a hosted application and then never re-check it."""
-    from bisheng.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
+    from doberman_agent.app_publish.domain.services.app_credential_service import assert_hosted_app_executable
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
 
     assert SUBJECT_EXECUTION_GUARDS[SUBJECT_KIND_HOSTED_APP] is assert_hosted_app_executable
 
 
 def test_the_injection_variable_name_is_the_one_the_contract_names():
     """F051 / F053 / F054 all reference this literal; it is a cross-feature contract."""
-    from bisheng.app_publish.domain.services.app_credential_service import HOSTED_APP_TOKEN_ENV
+    from doberman_agent.app_publish.domain.services.app_credential_service import HOSTED_APP_TOKEN_ENV
 
-    assert HOSTED_APP_TOKEN_ENV == "BISHENG_APP_TOKEN"
+    assert HOSTED_APP_TOKEN_ENV == "DOBERMAN_AGENT_APP_TOKEN"

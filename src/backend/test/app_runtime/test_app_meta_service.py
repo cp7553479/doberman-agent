@@ -6,14 +6,14 @@ import inspect
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppAuditAction, AppState
-from bisheng.common.errcode.app_factory import AppManageForbiddenError
+from doberman_agent.app_runtime.domain.constants import AppAuditAction, AppState
+from doberman_agent.common.errcode.app_factory import AppManageForbiddenError
 
 pytestmark = pytest.mark.usefixtures("app_db")
 
 
 async def _row(app_db, app_id):
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with app_db() as session:
         return await AppDao.aget(session, app_id)
@@ -22,7 +22,7 @@ async def _row(app_db, app_id):
 class TestUpdateMeta:
     async def test_update_meta_does_not_change_state(self, app_db, app_factory, app_owner):
         """AC-06 — renaming an online app leaves it online (and running)."""
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
 
@@ -41,8 +41,8 @@ class TestUpdateMeta:
 
     async def test_update_meta_creates_no_version_record(self, app_db, app_factory, app_owner):
         """AC-06 — metadata is not a capability declaration, so it produces no version."""
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
-        from bisheng.database.models.app_version import AppVersionDao
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.database.models.app_version import AppVersionDao
 
         app, _ = await app_factory()
         async with app_db() as session:
@@ -56,7 +56,7 @@ class TestUpdateMeta:
 
     async def test_update_meta_audited(self, app_db, app_factory, app_owner, audit_sink):
         """AC-06 — ``app.meta_update``, naming which fields moved."""
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
         app, _ = await app_factory()
         await AppMetaService.update_meta(app_id=app.id, name="Renamed", logo="apps/x/logo.png", actor=app_owner.payload)
@@ -69,7 +69,7 @@ class TestUpdateMeta:
     async def test_no_op_patch_writes_nothing(self, app_db, app_factory, app_owner, audit_sink):
         """An unchanged patch is not an event: a "系统操作" page full of no-op
         renames is how a real change gets missed."""
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
         app, _ = await app_factory(name="Stable")
         await AppMetaService.update_meta(app_id=app.id, name="Stable", actor=app_owner.payload)
@@ -77,7 +77,7 @@ class TestUpdateMeta:
 
     async def test_slug_not_updatable(self, app_db, app_factory, app_owner):
         """AC-08 — the entry identity is already printed on links and QR codes."""
-        from bisheng.app_runtime.domain.services.app_meta_service import EDITABLE_FIELDS, AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import EDITABLE_FIELDS, AppMetaService
 
         assert "slug" not in EDITABLE_FIELDS
         assert "slug" not in inspect.signature(AppMetaService.update_meta).parameters
@@ -87,7 +87,7 @@ class TestUpdateMeta:
         assert (await _row(app_db, app.id)).slug == "fixed-slug"
 
     async def test_non_owner_non_admin_rejected(self, app_db, app_factory, normal_user, tenant_admins):
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
         app, _ = await app_factory()
         with pytest.raises(AppManageForbiddenError):
@@ -103,8 +103,8 @@ class TestSingleImplementation:
         service must accept exactly the keyword set the pipeline passes (a
         signature drift would only surface at runtime, on a worker).
         """
-        from bisheng.app_publish.domain.services import publish_pipeline_service
-        from bisheng.app_runtime.domain.services.app_meta_service import AppMetaService
+        from doberman_agent.app_publish.domain.services import publish_pipeline_service
+        from doberman_agent.app_runtime.domain.services.app_meta_service import AppMetaService
 
         source = inspect.getsource(publish_pipeline_service.PublishPipelineService._update_meta)
         assert "AppMetaService.update_meta(" in source

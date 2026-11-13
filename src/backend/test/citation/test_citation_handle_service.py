@@ -15,9 +15,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.citation.domain.services import citation_handle_service as svc
-from bisheng.citation.domain.services import linsight_citation_scope as scope_mod
-from bisheng.citation.domain.services.citation_handle_service import (
+from doberman_agent.citation.domain.services import citation_handle_service as svc
+from doberman_agent.citation.domain.services import linsight_citation_scope as scope_mod
+from doberman_agent.citation.domain.services.citation_handle_service import (
     assign_handles,
     attach_web_url_markers,
     convert_handles_to_markers,
@@ -25,7 +25,7 @@ from bisheng.citation.domain.services.citation_handle_service import (
     remember_web_surface_url,
     strip_citation_handles,
 )
-from bisheng.citation.domain.services.linsight_citation_scope import LinsightCitationScope
+from doberman_agent.citation.domain.services.linsight_citation_scope import LinsightCitationScope
 
 S, SEP, E = "", "", ""
 
@@ -278,7 +278,7 @@ def test_strip_and_count_handles():
 # --------------------------------------------------------------------------
 # F069 P2: export baking (AC-20 / AC-21 / AC-22 / AC-24)
 # --------------------------------------------------------------------------
-from bisheng.citation.domain.schemas.citation_schema import (  # noqa: E402
+from doberman_agent.citation.domain.schemas.citation_schema import (  # noqa: E402
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
@@ -286,7 +286,7 @@ from bisheng.citation.domain.schemas.citation_schema import (  # noqa: E402
     WebCitationItemSchema,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_handle_service import (  # noqa: E402
+from doberman_agent.citation.domain.services.citation_handle_service import (  # noqa: E402
     export_heading_for,
     render_citations_for_export,
 )
@@ -362,7 +362,7 @@ def test_export_drops_unresolved_keys_and_whole_spans():
 
 
 def test_export_with_nothing_resolvable_equals_strip():
-    from bisheng.citation.domain.services.citation_prompt_helper import strip_citation_markers
+    from doberman_agent.citation.domain.services.citation_prompt_helper import strip_citation_markers
 
     text = f"正文。{_m('knowledgesearch_aaaa1111:3')} 还有 [S99] 与 `code {_m('x:1')}`"
 

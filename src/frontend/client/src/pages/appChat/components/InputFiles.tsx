@@ -40,7 +40,7 @@ function createUploadPayload(file: File): File | Blob {
     return file;
 }
 
-/** Unwrap BiSheng API envelope `{ status_code, data }` to the upload payload. */
+/** Unwrap DobermanAgent API envelope `{ status_code, data }` to the upload payload. */
 const unwrapUploadPayload = (response: any) => {
     if (response?.status_code != null && response?.data != null) {
         return response.data;

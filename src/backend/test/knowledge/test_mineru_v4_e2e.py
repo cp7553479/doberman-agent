@@ -1,6 +1,6 @@
 """Offline protocol-to-document coverage for the MinerU V4 integration.
 
-The target MinerU service and BiSheng middleware are not available in this
+The target MinerU service and doberman-agent middleware are not available in this
 checkout. Live API and UI acceptance steps are recorded in e2e-checklist.md.
 """
 
@@ -15,9 +15,9 @@ import httpx
 import pytest
 from PIL import Image
 
-from bisheng.core.config.settings import KnowledgeConf
-from bisheng.knowledge.rag.base_file_pipeline import BaseFilePipeline
-from bisheng.knowledge.rag.pipeline.loader.mineru_v4 import MineruV4Loader
+from doberman_agent.core.config.settings import KnowledgeConf
+from doberman_agent.knowledge.rag.base_file_pipeline import BaseFilePipeline
+from doberman_agent.knowledge.rag.pipeline.loader.mineru_v4 import MineruV4Loader
 
 
 class OfflinePipeline(BaseFilePipeline):
@@ -76,7 +76,7 @@ def test_ac01_ac04_v1_protocol_through_pipeline_to_document(tmp_path, extension,
     pipeline.tmp_dir = str(tmp_path)
     pipeline.db_file = SimpleNamespace(parse_type=None)
     config = KnowledgeConf(loader_provider="mineru_v4", mineru_v4={"api_url": "https://mineru.example"})
-    with patch("bisheng.knowledge.rag.base_file_pipeline.settings", SimpleNamespace(get_knowledge=lambda: config)):
+    with patch("doberman_agent.knowledge.rag.base_file_pipeline.settings", SimpleNamespace(get_knowledge=lambda: config)):
         loader = pipeline._init_pdf_loader() if extension == "pdf" else pipeline._init_image_loader()
     assert isinstance(loader, MineruV4Loader)
 

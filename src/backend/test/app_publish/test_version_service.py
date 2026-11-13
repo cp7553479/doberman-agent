@@ -43,7 +43,7 @@ class _FakeApproval:
     """
 
     def __init__(self, *, decision=None, instance_id: int = 501, raises: Exception | None = None):
-        from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
+        from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
 
         self.decision = decision or ApprovalGateDecision.PENDING
         self.instance_id = instance_id
@@ -52,7 +52,7 @@ class _FakeApproval:
         self.cancelled: list[tuple[int, str]] = []
 
     async def submit(self, deployment, **_):
-        from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateResult
+        from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateResult
 
         self.submitted.append(deployment.id)
         if self.raises is not None:
@@ -64,13 +64,13 @@ class _FakeApproval:
 
 
 async def _service():
-    from bisheng.app_publish.domain.services.version_service import VersionService
+    from doberman_agent.app_publish.domain.services.version_service import VersionService
 
     return VersionService
 
 
 async def _versions(publish_db, app_id: str):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async with publish_db() as session:
         return await AppVersionDao.alist_by_app(session, app_id)
@@ -85,7 +85,7 @@ async def test_version_row_only_created_after_precheck_and_scan_pass(
     publish_db, app_factory, deployment_factory, audit_sink
 ):
     """A failed attempt never reaches the version list — guarded here, not left to the caller (决议-9)."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -116,7 +116,7 @@ async def test_version_row_created_after_gate_not_before(publish_db, app_factory
 
 async def test_gate_exception_approver_empty_still_inserts_version(publish_db, app_factory, deployment_factory, audit_sink):
     """AC-18: no approver is an administrator's problem, not a reason to have nothing to publish."""
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -132,8 +132,8 @@ async def test_gate_raises_scenario_disabled_marks_deployment_failed_16225_no_ve
     publish_db, app_factory, deployment_factory, audit_sink
 ):
     """16225 is only ever "the approval scenario is not enabled" — and it leaves no version behind."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeploymentDao
-    from bisheng.common.errcode.app_publish import AppApprovalScenarioDisabledError
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeploymentDao
+    from doberman_agent.common.errcode.app_publish import AppApprovalScenarioDisabledError
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -156,8 +156,8 @@ async def test_compensation_cancels_approval_when_insert_fails(
     publish_db, app_factory, deployment_factory, audit_sink, monkeypatch
 ):
     """Two explicit phases, not a pretend transaction: the gate committed, so it has to be undone (design D6)."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeploymentDao
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeploymentDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -188,7 +188,7 @@ async def test_compensation_cancels_approval_when_insert_fails(
 async def test_version_no_is_max_plus_one_with_unique_constraint(publish_db, app_factory, deployment_factory, audit_sink):
     from sqlalchemy.exc import IntegrityError
 
-    from bisheng.database.models.app_version import AppVersion, AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersion, AppVersionDao
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -218,7 +218,7 @@ async def test_version_no_is_max_plus_one_with_unique_constraint(publish_db, app
 
 
 async def test_kind_initial_vs_iteration(publish_db, app_factory, deployment_factory, audit_sink):
-    from bisheng.database.models.app_version import VERSION_KIND_INITIAL, VERSION_KIND_ITERATION
+    from doberman_agent.database.models.app_version import VERSION_KIND_INITIAL, VERSION_KIND_ITERATION
 
     service = await _service()
     app_row, _ = await app_factory(with_version=False)
@@ -238,7 +238,7 @@ async def test_kind_initial_vs_iteration(publish_db, app_factory, deployment_fac
 
 async def test_terminal_state_only_four_values():
     """F055 does not get to add a process value to this column."""
-    from bisheng.app_publish.domain.services.version_service import TERMINAL_STATES
+    from doberman_agent.app_publish.domain.services.version_service import TERMINAL_STATES
 
     assert set(TERMINAL_STATES) == {"online", "rejected", "withdrawn"}, (
         "the fourth value is NULL (undecided) and is not a member"
@@ -262,7 +262,7 @@ async def test_pending_online_is_derived_display_not_column(publish_db, app_fact
 
 async def test_manual_publish_flips_null_to_online_without_new_row(publish_db, app_factory):
     """决议-6: manual publish latches the existing row; it does not mint a version."""
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     service = await _service()
     app_row, version = await app_factory()
@@ -286,15 +286,15 @@ async def test_app_deleted_cancel_keeps_terminal_state_null(publish_db, app_fact
 
 async def test_mark_terminal_state_is_the_only_update_writer():
     """One writer for the one column that may be updated (F054 D8's single exception)."""
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     writers = [name for name in dir(AppVersionDao) if name.startswith("a") and name not in {"aget", "alist_by_app", "amax_version_no", "ainsert"}]
     assert writers == ["amark_terminal"], f"app_version gained another writer: {writers}"
 
 
 async def test_version_row_never_deleted():
-    from bisheng.app_publish.domain.services import version_service
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.services import version_service
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     assert [name for name in dir(AppVersionDao) if "delete" in name.lower()] == []
     assert [name for name in dir(version_service.VersionService) if "delete" in name.lower()] == []
@@ -302,7 +302,7 @@ async def test_version_row_never_deleted():
 
 async def test_read_by_version_id_requires_app_scope():
     """``app_version`` has no ``tenant_id``: the ``app_id`` argument *is* the isolation (design 坑 19)."""
-    from bisheng.app_publish.domain.services.version_service import VersionService
+    from doberman_agent.app_publish.domain.services.version_service import VersionService
 
     offenders = []
     for name, member in inspect.getmembers(VersionService, predicate=inspect.iscoroutinefunction):
@@ -316,7 +316,7 @@ async def test_read_by_version_id_requires_app_scope():
 
 async def test_snapshot_retrievable_and_immutable_for_any_version(publish_db, app_factory, fake_minio, tarball_factory):
     """AC-43 — the snapshot of any version comes back whole, through the version record's key."""
-    from bisheng.app_publish.domain.services.package_service import store_package
+    from doberman_agent.app_publish.domain.services.package_service import store_package
 
     service = await _service()
     app_row, version = await app_factory()
@@ -324,7 +324,7 @@ async def test_snapshot_retrievable_and_immutable_for_any_version(publish_db, ap
     key = await store_package(package, app_id=app_row.id, version_id=version.id)
 
     async with publish_db() as session:
-        from bisheng.database.models.app_version import AppVersion
+        from doberman_agent.database.models.app_version import AppVersion
 
         stored = await session.get(AppVersion, version.id)
         stored.code_object_key = key

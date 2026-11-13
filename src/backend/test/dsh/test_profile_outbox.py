@@ -5,15 +5,15 @@ from contextlib import contextmanager
 import pytest
 from sqlmodel import Session, select
 
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
 from test.dsh.test_policy_repository import sql_store  # noqa: F401
 
 
 @pytest.fixture
 def user_store(sql_store):  # noqa: F811
-    from bisheng.database.models.department import Department, UserDepartment
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.database.models.department import Department, UserDepartment
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.user.domain.models.user import User
 
     for model in (UserDepartment, UserTenant, User, Department):
         model.__table__.drop(sql_store, checkfirst=True)
@@ -26,8 +26,8 @@ def user_store(sql_store):  # noqa: F811
 
 
 async def test_user_update_version_and_outbox_commit_together(user_store, monkeypatch):
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.services.user import UserService
 
     @contextmanager
     def scope():
@@ -48,8 +48,8 @@ async def test_user_update_version_and_outbox_commit_together(user_store, monkey
 
 
 async def test_rollback_leaves_neither_profile_version_nor_intent(user_store, monkeypatch):
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.services.user import UserService
 
     @contextmanager
     def scope():
@@ -72,8 +72,8 @@ async def test_rollback_leaves_neither_profile_version_nor_intent(user_store, mo
 async def test_profile_sweep_uses_bounded_cursor_without_incrementing_versions(user_store, monkeypatch):
     from contextlib import asynccontextmanager
 
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.services import user as module
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.services import user as module
 
     class Facade:
         def __init__(self, session):
@@ -109,10 +109,10 @@ async def test_profile_sweep_uses_bounded_cursor_without_incrementing_versions(u
 async def test_membership_jwt_version_and_profile_intent_are_atomic(user_store, monkeypatch, rollback):
     from contextlib import asynccontextmanager
 
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.dsh.domain.services.profile import profile_scope
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.services import user as module
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.dsh.domain.services.profile import profile_scope
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.services import user as module
 
     class Facade:
         def __init__(self, session):

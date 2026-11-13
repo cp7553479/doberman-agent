@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Toaster, Notifier, notification } from '@bisheng/ui';
+import { Toaster, Notifier, notification } from '@doberman-agent/ui';
 import cloneDeep from "lodash-es/cloneDeep";
 import uniqueId from "lodash-es/uniqueId";
 import { Suspense, useContext, useEffect, useMemo, useState } from "react";

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownSub } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownSub } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { useEffect,useState } from "react";

@@ -7,10 +7,10 @@ import pytest
 
 
 async def test_web_entry_fixes_scope_to_identity_and_passes_context(monkeypatch):
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.knowledge.api.endpoints import knowledge as api
-    from bisheng.knowledge.domain.schemas.knowledge_create_schema import KnowledgeWebCreate
-    from bisheng.knowledge.domain.services.knowledge_creation_policy import KnowledgeCreationPolicy
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.knowledge.api.endpoints import knowledge as api
+    from doberman_agent.knowledge.domain.schemas.knowledge_create_schema import KnowledgeWebCreate
+    from doberman_agent.knowledge.domain.services.knowledge_creation_policy import KnowledgeCreationPolicy
 
     context = SimpleNamespace(user_id=9, tenant_id=60)
     monkeypatch.setattr(KnowledgeCreationPolicy, "prepare", AsyncMock(return_value=context))
@@ -30,11 +30,11 @@ async def test_web_entry_fixes_scope_to_identity_and_passes_context(monkeypatch)
 
 
 async def test_revocation_during_model_lookup_prevents_all_creation_writes(monkeypatch):
-    from bisheng.common.errcode.permission import PermissionDeniedError
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeCreate
-    from bisheng.knowledge.domain.services.knowledge_creation_policy import KnowledgeCreationPolicy
-    from bisheng.knowledge.domain.services.knowledge_service import KnowledgeDao, KnowledgeService, LLMModelType
-    from bisheng.llm.domain import share_fallback
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeCreate
+    from doberman_agent.knowledge.domain.services.knowledge_creation_policy import KnowledgeCreationPolicy
+    from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeDao, KnowledgeService, LLMModelType
+    from doberman_agent.llm.domain import share_fallback
 
     monkeypatch.setattr(KnowledgeDao, "aget_knowledge_by_name", AsyncMock(return_value=None))
     monkeypatch.setattr(

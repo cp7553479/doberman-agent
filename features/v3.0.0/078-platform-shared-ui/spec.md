@@ -1,8 +1,8 @@
 # Platform shared UI — first migration batch
 
 User-approved scope (2026-10-16): develop on `feat/3.0.0`, integrate
-`@bisheng/ui`, and fully replace buttons, notices, and input fields. As updated by the user on2026-10-20, primitive imports now go directly to
-`@bisheng/ui`; the temporary platform compatibility entry points are deleted.
+`@doberman-agent/ui`, and fully replace buttons, notices, and input fields. As updated by the user on2026-10-20, primitive imports now go directly to
+`@doberman-agent/ui`; the temporary platform compatibility entry points are deleted.
 Other component families are outside this batch.
 
 - AC-01: Platform compiles shared source and uses the existing semantic tokens
@@ -38,6 +38,6 @@ shared components retain their existing implementations and are listed explicitl
 in the page acceptance checklist.
 
 During this migration, also replace business-owned page icons with suitable
-`bisheng-icons` equivalents. When the new library has no suitable equivalent,
+`doberman-agent-icons` equivalents. When the new library has no suitable equivalent,
 retain the existing icon; no additional approval is required for that fallback.
 This applies to the current model-list slice as well as subsequent pages.

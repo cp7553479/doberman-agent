@@ -11,7 +11,7 @@ while the offload notice told the model to page through it with offset/limit.
 ``asyncio_mode = auto`` — async tests need no decorator.
 """
 
-from bisheng.linsight.domain.services.workspace_backend import (
+from doberman_agent.linsight.domain.services.workspace_backend import (
     _CHAR_PAGE_MIN_CHARS,
     _CHAR_PAGE_SIZE,
     _slice_workspace_text,

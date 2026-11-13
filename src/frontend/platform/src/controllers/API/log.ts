@@ -185,7 +185,7 @@ const legacyActions = [
  * Structured v2 actions, in dropdown order.
  *
  * **This list is one half of a lockstep pair** — its twin is
- * `_UI_VISIBLE_V2_ACTIONS` in `bisheng/database/models/audit_log.py`. An action
+ * `_UI_VISIBLE_V2_ACTIONS` in `doberman_agent/database/models/audit_log.py`. An action
  * registered on the backend only is written to the database and can never be
  * found on the audit page; registered here only, the filter returns nothing
  * forever. `src/test/logActions.test.ts` reads the Python tuple and asserts the

@@ -1,6 +1,6 @@
 # 系统架构总览
 
-BiSheng 是一个面向企业的 LLM 应用 DevOps 平台，采用**前后端分离 + 异步任务处理**的分层架构。系统由 7 个运行时进程组和 5 个基础设施服务构成，通过 Nginx 反向代理统一入口，FastAPI 后端承载核心业务逻辑，Celery Worker 集群处理耗时任务（知识库解析、工作流执行、遥测统计），Linsight Worker 独立运行智能体推理。后端代码遵循领域驱动设计（DDD）模式，每个业务模块按 `api/ -> domain/` 分层组织。
+doberman-agent 是一个面向企业的 LLM 应用 DevOps 平台，采用**前后端分离 + 异步任务处理**的分层架构。系统由 7 个运行时进程组和 5 个基础设施服务构成，通过 Nginx 反向代理统一入口，FastAPI 后端承载核心业务逻辑，Celery Worker 集群处理耗时任务（知识库解析、工作流执行、遥测统计），Linsight Worker 独立运行智能体推理。后端代码遵循领域驱动设计（DDD）模式，每个业务模块按 `api/ -> domain/` 分层组织。
 
 ## 系统组件图
 
@@ -20,12 +20,12 @@ flowchart TB
     end
 
     subgraph Backend["后端应用层"]
-        API["FastAPI 后端<br/>uvicorn :7860<br/>src/backend/bisheng/main.py"]
+        API["FastAPI 后端<br/>uvicorn :7860<br/>src/backend/doberman_agent/main.py"]
         KnowledgeWorker["Celery Worker<br/>knowledge_celery 队列"]
         WorkflowWorker["Celery Worker<br/>workflow_celery 队列"]
         DefaultWorker["Celery Worker<br/>celery 默认队列"]
         Beat["Celery Beat<br/>定时任务调度"]
-        LinsightWorker["Linsight Worker<br/>智能体推理进程<br/>bisheng/linsight/worker.py"]
+        LinsightWorker["Linsight Worker<br/>智能体推理进程<br/>doberman-agent/linsight/worker.py"]
     end
 
     subgraph Storage["基础设施存储层"]
@@ -41,7 +41,7 @@ flowchart TB
     Nginx --> ClientFE
     Platform -- "/api/ 代理" --> API
     ClientFE -- "/api/ 代理" --> API
-    Platform -- "/bisheng, /tmp-dir" --> MinIO
+    Platform -- "/doberman-agent, /tmp-dir" --> MinIO
 
     API --> MySQL
     API --> Redis
@@ -116,7 +116,7 @@ FastAPI (:7860)           -- 后端 API，JWT 认证，路由分派
 
 ## API 路由架构
 
-后端提供两套 API 路由，定义在 `src/backend/bisheng/api/router.py`：
+后端提供两套 API 路由，定义在 `src/backend/doberman_agent/api/router.py`：
 
 ### v1 路由 (`/api/v1`) -- 面向前端
 
@@ -169,7 +169,7 @@ v2 路由采用 RPC 风格，面向外部系统集成，提供简化的编程接
 
 ## 应用启动生命周期
 
-FastAPI 应用的启动和关闭由 `lifespan` 上下文管理器编排（`src/backend/bisheng/main.py` 第 51-58 行）：
+FastAPI 应用的启动和关闭由 `lifespan` 上下文管理器编排（`src/backend/doberman_agent/main.py` 第 51-58 行）：
 
 ```python
 @asynccontextmanager
@@ -183,7 +183,7 @@ async def lifespan(app: FastAPI):
 
 ### 阶段 1：基础设施初始化
 
-`ApplicationContextManager`（`src/backend/bisheng/core/context/manager.py`）按依赖顺序逐一初始化 7 个基础设施上下文：
+`ApplicationContextManager`（`src/backend/doberman_agent/core/context/manager.py`）按依赖顺序逐一初始化 7 个基础设施上下文：
 
 ```
  序号   上下文管理器           依赖资源            职责
@@ -201,7 +201,7 @@ async def lifespan(app: FastAPI):
 
 ### 阶段 2：默认数据初始化
 
-`init_default_data()`（`src/backend/bisheng/common/init_data.py`）负责：
+`init_default_data()`（`src/backend/doberman_agent/common/init_data.py`）负责：
 - 数据库 Schema 迁移
 - 创建管理员账号（首个注册用户自动获得管理员权限）
 - 初始化默认角色和用户组
@@ -219,7 +219,7 @@ CORSMiddleware          -- 跨域资源共享，允许所有来源
   |
   v
 CustomMiddleware        -- 请求日志记录 + X-Trace-ID 链路追踪
-  |                        (src/backend/bisheng/utils/http_middleware.py)
+  |                        (src/backend/doberman_agent/utils/http_middleware.py)
   v
 WebSocketLoggingMiddleware -- WebSocket 连接日志 + TraceID 注入
   |
@@ -232,7 +232,7 @@ WebSocketLoggingMiddleware -- WebSocket 连接日志 + TraceID 注入
 后端业务模块遵循领域驱动设计的分层约定。以 `knowledge` 模块为例：
 
 ```
-src/backend/bisheng/knowledge/
+src/backend/doberman_agent/knowledge/
 ├── api/                              # API 层：路由定义与请求处理
 │   ├── router.py                     #   路由注册
 │   ├── dependencies.py               #   依赖注入（认证、权限）
@@ -273,22 +273,22 @@ src/backend/bisheng/knowledge/
 
 ## Celery 异步任务架构
 
-Celery 应用定义在 `src/backend/bisheng/worker/main.py`，使用 Redis 作为消息 Broker。
+Celery 应用定义在 `src/backend/doberman_agent/worker/main.py`，使用 Redis 作为消息 Broker。
 
 ### 任务队列
 
 | 队列 | Worker 启动命令 | 职责 |
 |------|----------------|------|
-| `knowledge_celery` | `celery -A bisheng.worker.main worker -Q knowledge_celery` | 文档解析、Embedding 生成、向量写入 |
-| `workflow_celery` | `celery -A bisheng.worker.main worker -Q workflow_celery` | 工作流 DAG 执行 |
-| `celery` (默认) | `celery -A bisheng.worker.main worker` | 遥测统计收集 |
+| `knowledge_celery` | `celery -A doberman_agent.worker.main worker -Q knowledge_celery` | 文档解析、Embedding 生成、向量写入 |
+| `workflow_celery` | `celery -A doberman_agent.worker.main worker -Q workflow_celery` | 工作流 DAG 执行 |
+| `celery` (默认) | `celery -A doberman_agent.worker.main worker` | 遥测统计收集 |
 
-任务路由配置（`src/backend/bisheng/core/config/settings.py`）：
+任务路由配置（`src/backend/doberman_agent/core/config/settings.py`）：
 
 ```python
 task_routers = {
-    "bisheng.worker.knowledge.*": {"queue": "knowledge_celery"},
-    "bisheng.worker.workflow.*": {"queue": "workflow_celery"},
+    "doberman_agent.worker.knowledge.*": {"queue": "knowledge_celery"},
+    "doberman_agent.worker.workflow.*": {"queue": "workflow_celery"},
 }
 ```
 

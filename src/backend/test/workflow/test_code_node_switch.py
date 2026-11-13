@@ -9,9 +9,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.core.config.settings import WorkflowConf
-from bisheng.utils.exceptions import IgnoreException
-from bisheng.workflow.nodes.code import code as code_node
+from doberman_agent.core.config.settings import WorkflowConf
+from doberman_agent.utils.exceptions import IgnoreException
+from doberman_agent.workflow.nodes.code import code as code_node
 
 
 def _conf(**kwargs) -> WorkflowConf:
@@ -35,7 +35,7 @@ def test_an_explicit_true_turns_it_on():
 def _with_conf(enabled: bool):
     settings = MagicMock()
     settings.get_workflow_conf.return_value = _conf(code_node_enabled=enabled)
-    return patch.object(code_node, "bisheng_settings", settings)
+    return patch.object(code_node, "doberman_agent_settings", settings)
 
 
 def test_a_disabled_node_refuses_before_reading_any_code():

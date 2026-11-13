@@ -1,12 +1,12 @@
 # Open MCP 接入指南
 
-F067 在每个 BISHENG 部署上提供一个统一的远程 MCP 服务，本期仅暴露
+F067 在每个 DOBERMAN_AGENT 部署上提供一个统一的远程 MCP 服务，本期仅暴露
 10 个知识资源和知识文件工具。MCP 的 JSON 合同由 MCP 层适配，不会修改
 对应的 `/api/v2/filelib/` HTTP API 入参、出参、错误信封或业务逻辑。
 
 ## Endpoint 与协议
 
-- Endpoint：`https://<BISHENG_HOST>/api/v2/mcp`
+- Endpoint：`https://<DOBERMAN_AGENT_HOST>/api/v2/mcp`
 - Transport：MCP Streamable HTTP，无状态模式
 - 请求认证：每个 HTTP 请求都必须带 `Authorization: Bearer <credential>`
 - 工具发现：客户端先完成 `initialize`，再调用 `tools/list`
@@ -25,7 +25,7 @@ scope、租户、数据范围和资源权限判定。`tools/list` 只返回当�
 | 凭据模式 | HTTP headers | 可用范围 |
 |---|---|---|
 | 服务账号自身身份（S） | `Authorization: Bearer <API_KEY>` | 由 API Key 的 `knowledge:read` / `knowledge:write` scope 决定 |
-| 服务账号委托身份（D） | 上述 header + `X-On-Behalf-Of: <BISHENG_PLATFORM_USER_ID>` | 另需凭据允许委托，按被代表用户执行 |
+| 服务账号委托身份（D） | 上述 header + `X-On-Behalf-Of: <DOBERMAN_AGENT_PLATFORM_USER_ID>` | 另需凭据允许委托，按被代表用户执行 |
 | PAT | `Authorization: Bearer <PAT>` | 仅可发现和调用 3 个 `knowledge:read` 工具 |
 
 `X-End-User: <external_user_partition>` 只用于已有 F053 终端用户分区语义，不能与
@@ -36,16 +36,16 @@ scope、租户、数据范围和资源权限判定。`tools/list` 只返回当�
 
 | 工具 | scope | PAT | 主要输入 | 成功输出 |
 |---|---|---:|---|---|
-| `bisheng_knowledge_list` | `knowledge:read` | 是 | `type?`, `name?`, `sort_by?`, `page_size?`, `cursor?` | `ResourceListData` |
-| `bisheng_knowledge_create` | `knowledge:write` | 否 | `name`, `type?`, `description?`, `model?`, `auth_type?`, `is_released?` | `KnowledgeResource` |
-| `bisheng_knowledge_update` | `knowledge:write` | 否 | `knowledge_id`, `name?`, `description?` | `KnowledgeResource` |
-| `bisheng_knowledge_delete` | `knowledge:write` | 否 | `knowledge_id` | `{"success":true}` |
-| `bisheng_knowledge_clear` | `knowledge:write` | 否 | `knowledge_id` | `{"success":true}` |
-| `bisheng_knowledge_retrieve` | `knowledge:read` | 是 | `query`, `knowledge_base_ids`, `filters?`, `top_k?`, `max_content?` | `RetrieveData` |
-| `bisheng_knowledge_file_upload` | `knowledge:write` | 否 | `knowledge_id` + base64 或受控 URL，以及解析参数 | `FileRecord` |
-| `bisheng_knowledge_file_list` | `knowledge:read` | 是 | `knowledge_id`, `parent_id?`, `keyword?`, `status?`, `page_size?`, `cursor?` | `FileListData` |
-| `bisheng_knowledge_file_delete` | `knowledge:write` | 否 | `file_id` | `{"success":true}` |
-| `bisheng_knowledge_files_delete` | `knowledge:write` | 否 | `file_ids` | `{"success":true}` |
+| `doberman_agent_knowledge_list` | `knowledge:read` | 是 | `type?`, `name?`, `sort_by?`, `page_size?`, `cursor?` | `ResourceListData` |
+| `doberman_agent_knowledge_create` | `knowledge:write` | 否 | `name`, `type?`, `description?`, `model?`, `auth_type?`, `is_released?` | `KnowledgeResource` |
+| `doberman_agent_knowledge_update` | `knowledge:write` | 否 | `knowledge_id`, `name?`, `description?` | `KnowledgeResource` |
+| `doberman_agent_knowledge_delete` | `knowledge:write` | 否 | `knowledge_id` | `{"success":true}` |
+| `doberman_agent_knowledge_clear` | `knowledge:write` | 否 | `knowledge_id` | `{"success":true}` |
+| `doberman_agent_knowledge_retrieve` | `knowledge:read` | 是 | `query`, `knowledge_base_ids`, `filters?`, `top_k?`, `max_content?` | `RetrieveData` |
+| `doberman_agent_knowledge_file_upload` | `knowledge:write` | 否 | `knowledge_id` + base64 或受控 URL，以及解析参数 | `FileRecord` |
+| `doberman_agent_knowledge_file_list` | `knowledge:read` | 是 | `knowledge_id`, `parent_id?`, `keyword?`, `status?`, `page_size?`, `cursor?` | `FileListData` |
+| `doberman_agent_knowledge_file_delete` | `knowledge:write` | 否 | `file_id` | `{"success":true}` |
+| `doberman_agent_knowledge_files_delete` | `knowledge:write` | 否 | `file_ids` | `{"success":true}` |
 
 完整的字段类型、枚举、默认值、上限和 `inputSchema` / `outputSchema` 由
 `tools/list` 返回。下列约束容易被客户端忽略：
@@ -64,15 +64,15 @@ coding agent 查组织信息、查看和维护自己的托管应用。它们没�
 
 | 工具 | scope | 依赖工场运行时层 | 主要输入 | 成功输出 |
 |---|---|---|---|---|
-| `bisheng_identity_get_user` | `identity:read` | 否 | `target_user_id` | `{user_id, user_name, status, departments, roles}` |
-| `bisheng_org_tree` | `identity:read` | 否 | — | `{departments:[…树形…]}` |
-| `bisheng_dept_members` | `identity:read` | 否 | `dept_id`, `page?`, `size?`（≤200）, `keyword?` | `{members, total}` |
-| `bisheng_app_status` | `app:manage` | 是 | `app_id` | `{app_id, app_state, instance, publish}`，含审批终态与驳回理由全文 |
-| `bisheng_app_logs` | `app:manage` | 是 | `app_id`, `tail?`（≤2000）, `since?`, `keyword?` | `{lines, app_state, pending_reason}` |
-| `bisheng_app_db_tables` | `app:manage` | 是 | `app_id` | `{result}` |
-| `bisheng_app_db_schema` | `app:manage` | 是 | `app_id`, `table` | `{result}` |
-| `bisheng_app_db_rows` | `app:manage` | 是 | `app_id`, `table`, `page?`, `size?`（≤200）, `order?` | `{result}` |
-| `bisheng_app_db_row_update` | `app:manage` | 是 | `app_id`, `table`, `key`, `values` | `{result}` |
+| `doberman_agent_identity_get_user` | `identity:read` | 否 | `target_user_id` | `{user_id, user_name, status, departments, roles}` |
+| `doberman_agent_org_tree` | `identity:read` | 否 | — | `{departments:[…树形…]}` |
+| `doberman_agent_dept_members` | `identity:read` | 否 | `dept_id`, `page?`, `size?`（≤200）, `keyword?` | `{members, total}` |
+| `doberman_agent_app_status` | `app:manage` | 是 | `app_id` | `{app_id, app_state, instance, publish}`，含审批终态与驳回理由全文 |
+| `doberman_agent_app_logs` | `app:manage` | 是 | `app_id`, `tail?`（≤2000）, `since?`, `keyword?` | `{lines, app_state, pending_reason}` |
+| `doberman_agent_app_db_tables` | `app:manage` | 是 | `app_id` | `{result}` |
+| `doberman_agent_app_db_schema` | `app:manage` | 是 | `app_id`, `table` | `{result}` |
+| `doberman_agent_app_db_rows` | `app:manage` | 是 | `app_id`, `table`, `page?`, `size?`（≤200）, `order?` | `{result}` |
+| `doberman_agent_app_db_row_update` | `app:manage` | 是 | `app_id`, `table`, `key`, `values` | `{result}` |
 
 这 9 个工具的使用规则如下：
 
@@ -83,7 +83,7 @@ coding agent 查组织信息、查看和维护自己的托管应用。它们没�
   都返回同一个 `26305`，载荷只含 `app_id`。
 - `identity:read` 是高危 scope：授予后本租户组织架构全量可读，没有按部门收窄的机制。
   其他租户的用户与不存在的用户返回同一个 `26306`。结果只含自然人，不含服务账号。
-- 应用数据工具不做 DDL。表结构在 `bisheng-app.yaml` 中声明，变更走发布流程；每次写操作都审计修改前后的值。
+- 应用数据工具不做 DDL。表结构在 `doberman-agent-app.yaml` 中声明，变更走发布流程；每次写操作都审计修改前后的值。
 - 查询可调用的模型名请直接调用模型协议面的 `GET /api/v2/model/v1/models`，MCP 不提供模型清单工具。
 
 ## 成功与错误输出
@@ -146,9 +146,9 @@ open_mcp:
     - files.example.com
   enable_dns_rebinding_protection: false
   transport_allowed_hosts:
-    - bisheng.example.com
+    - doberman-agent.example.com
   transport_allowed_origins:
-    - https://bisheng.example.com
+    - https://doberman-agent.example.com
   connect_timeout_seconds: 5
   read_timeout_seconds: 60
   max_redirects: 3
@@ -166,18 +166,18 @@ allowlist 只写 host，不带 scheme、路径、userinfo 或主机名通配符�
 ## 客户端配置
 
 常见 IDE、编码助手和智能体平台的逐项配置、支持边界及排障方法见
-[第三方客户端接入 BISHENG MCP 指南](./open-mcp-third-party-clients.md)。
+[第三方客户端接入 DOBERMAN_AGENT MCP 指南](./open-mcp-third-party-clients.md)。
 
 Streamable HTTP 客户端可使用如下配置：
 
 ```json
 {
   "mcpServers": {
-    "bisheng": {
+    "doberman_agent": {
       "type": "streamable-http",
-      "url": "https://bisheng.example.com/api/v2/mcp",
+      "url": "https://doberman-agent.example.com/api/v2/mcp",
       "headers": {
-        "Authorization": "Bearer <BISHENG_API_KEY>"
+        "Authorization": "Bearer <DOBERMAN_AGENT_API_KEY>"
       }
     }
   }
@@ -185,8 +185,8 @@ Streamable HTTP 客户端可使用如下配置：
 ```
 
 D 模式只在受信任的客户端配置中增加
-`"X-On-Behalf-Of":"<BISHENG_PLATFORM_USER_ID>"`。该值必须是已配置到 Key 委托范围的
-BISHENG 平台用户 ID；不要直接填第三方系统用户 ID。不要把真实凭据写进仓库、讨论区、
+`"X-On-Behalf-Of":"<DOBERMAN_AGENT_PLATFORM_USER_ID>"`。该值必须是已配置到 Key 委托范围的
+DOBERMAN_AGENT 平台用户 ID；不要直接填第三方系统用户 ID。不要把真实凭据写进仓库、讨论区、
 命令行参数或验证输出。
 
 ## 连通性验证
@@ -194,8 +194,8 @@ BISHENG 平台用户 ID；不要直接填第三方系统用户 ID。不要把真
 从 `src/backend/` 运行官方 MCP Python client 验证脚本：
 
 ```bash
-export BISHENG_MCP_URL=https://bisheng.example.com/api/v2/mcp
-export BISHENG_API_KEY='<full-scope-api-key>'
+export DOBERMAN_AGENT_MCP_URL=https://doberman-agent.example.com/api/v2/mcp
+export DOBERMAN_AGENT_API_KEY='<full-scope-api-key>'
 .venv/bin/python scripts/verify_open_mcp.py --expected-profile full
 ```
 
@@ -208,11 +208,11 @@ export BISHENG_API_KEY='<full-scope-api-key>'
 ```bash
 .venv/bin/python scripts/verify_open_mcp.py \
   --expected-profile full \
-  --call-tool bisheng_knowledge_list \
+  --call-tool doberman_agent_knowledge_list \
   --arguments-json '{"type":0,"page_size":1}'
 ```
 
-PAT 预期只看到 `bisheng_knowledge_list`、`bisheng_knowledge_retrieve` 和
-`bisheng_knowledge_file_list`，验证时显式传 `--expected-profile pat`。对于有意收窄 scope
+PAT 预期只看到 `doberman_agent_knowledge_list`、`doberman_agent_knowledge_retrieve` 和
+`doberman_agent_knowledge_file_list`，验证时显式传 `--expected-profile pat`。对于有意收窄 scope
 的 API Key，可使用 `--expected-profile scope-filtered` 仅做诊断；该模式不构成 10 工具
 发布验收证据。验收写入工具时必须使用专用测试租户和可清理数据，不要用本脚本扩展写操作。

@@ -6,7 +6,7 @@ config.yaml; ``LinsightConf`` ignores unknown keys, so they must keep loading.
 
 import pytest
 
-from bisheng.core.config.settings import LinsightConf
+from doberman_agent.core.config.settings import LinsightConf
 
 RETIRED = (
     "tool_buffer",
@@ -45,7 +45,7 @@ LEGACY_DB_CONFIG = {"linsight": {"tool_buffer": 100000, "max_file_num": 5, "max_
 
 def test_db_config_with_retired_keys_loads_through_the_sync_loader(monkeypatch):
     """The real loader copies DB keys with setattr, which pydantic rejects for unknown fields."""
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(type(settings), "get_all_config", lambda self: LEGACY_DB_CONFIG)
 
@@ -56,7 +56,7 @@ def test_db_config_with_retired_keys_loads_through_the_sync_loader(monkeypatch):
 
 
 async def test_db_config_with_retired_keys_loads_through_the_async_loader(monkeypatch):
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     async def fake_all_config(self):
         return LEGACY_DB_CONFIG
@@ -74,5 +74,5 @@ def test_shipped_initdb_config_has_no_retired_keys():
 
     import yaml
 
-    shipped = yaml.safe_load((Path(__file__).parents[2] / "bisheng" / "initdb_config.yaml").read_text(encoding="utf-8"))
+    shipped = yaml.safe_load((Path(__file__).parents[2] / "doberman_agent" / "initdb_config.yaml").read_text(encoding="utf-8"))
     assert not set(RETIRED) & set(shipped.get("linsight") or {})

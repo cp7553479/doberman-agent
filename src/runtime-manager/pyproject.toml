@@ -1,7 +1,7 @@
 [project]
-name = "bisheng-runtime-manager"
+name = "doberman-agent-runtime-manager"
 version = "3.0.0"
-description = "BiSheng hosted-app runtime manager — build / lifecycle / probe / routing / capacity admission for the compose form"
+description = "DobermanAgent hosted-app runtime manager — build / lifecycle / probe / routing / capacity admission for the compose form"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 dependencies = [

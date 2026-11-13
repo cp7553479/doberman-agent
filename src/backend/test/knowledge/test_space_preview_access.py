@@ -5,15 +5,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceFileNotFoundError, SpacePermissionDeniedError
-from bisheng.common.errcode.permission import PermissionFGAUnavailableError
-from bisheng.common.models.space_channel_member import UserRoleEnum
-from bisheng.knowledge.api.endpoints.knowledge_space import get_file_preview
-from bisheng.knowledge.domain.models.knowledge_file import FileType
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.common.errcode.knowledge_space import SpaceFileNotFoundError, SpacePermissionDeniedError
+from doberman_agent.common.errcode.permission import PermissionFGAUnavailableError
+from doberman_agent.common.models.space_channel_member import UserRoleEnum
+from doberman_agent.knowledge.api.endpoints.knowledge_space import get_file_preview
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 from test.knowledge.test_knowledge_space_service import _make_file, _make_login_user, _make_space
 
-MODULE = "bisheng.knowledge.domain.services.knowledge_space_service"
+MODULE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 @pytest.fixture

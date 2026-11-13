@@ -38,8 +38,8 @@ def headers(codec, signer):
 
 def test_fixed_eleven_line_encoding_vector(codec):
     raw = codec.canonical_message("GET", TARGET, b"", **IDENTITY)
-    assert len(raw) == 414 and len(raw.split(b"\n")) == 11 and not raw.endswith(b"\n")
-    assert hashlib.sha256(raw).hexdigest() == "206cf7e08bc12e23245980c45989fe8165233183e18bed03b99a8c17c6050167"
+    assert len(raw) == 421 and len(raw.split(b"\n")) == 11 and not raw.endswith(b"\n")
+    assert hashlib.sha256(raw).hexdigest() == "0f6eb0b2f3351cc03df188725e12b53609df2db1e3a352700c1a1a89dd552221"
 
 
 def test_real_ed25519_signature_and_public_key(codec, signer, headers):
@@ -217,7 +217,7 @@ def test_backend_and_helper_really_verify_each_others_signatures(codec, signer):
     from pathlib import Path
 
     source = (
-        Path(__file__).resolve().parents[2] / "backend/bisheng/app_runtime/domain/services/runtime_material_protocol.py"
+        Path(__file__).resolve().parents[2] / "backend/doberman_agent/app_runtime/domain/services/runtime_material_protocol.py"
     )
     name = "f059_test_backend_material_codec"
     spec = importlib.util.spec_from_file_location(name, source)

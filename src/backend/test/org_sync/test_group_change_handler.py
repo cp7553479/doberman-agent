@@ -3,13 +3,13 @@
 Pure Python tests — no database or async needed.
 """
 
-from bisheng.permission.application import (
+from doberman_agent.permission.application import (
     PermissionObject,
     PermissionRelation,
     PermissionRelationChange,
     PermissionSubject,
 )
-from bisheng.user_group.domain.services.group_change_handler import GroupChangeHandler
+from doberman_agent.user_group.domain.services.group_change_handler import GroupChangeHandler
 
 
 def _change(action: str, *, user_id: int, relation: str) -> PermissionRelationChange:

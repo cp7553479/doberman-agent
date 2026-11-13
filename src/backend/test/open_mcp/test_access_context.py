@@ -2,15 +2,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.open_api import OpenApiScopeMissingError, PersonalTokenDisabledError
-from bisheng.core.context.tenant import current_tenant_id, visible_tenant_ids
-from bisheng.open_api.domain.context import OpenApiPrincipal, get_current_open_api_principal
-from bisheng.open_api.domain.scopes import OpenApiScopeMarker
-from bisheng.open_api.domain.services.access_context import (
+from doberman_agent.common.errcode.open_api import OpenApiScopeMissingError, PersonalTokenDisabledError
+from doberman_agent.core.context.tenant import current_tenant_id, visible_tenant_ids
+from doberman_agent.open_api.domain.context import OpenApiPrincipal, get_current_open_api_principal
+from doberman_agent.open_api.domain.scopes import OpenApiScopeMarker
+from doberman_agent.open_api.domain.services.access_context import (
     OPEN_API_PRINCIPAL_SCOPE_KEY,
     open_api_access_context,
 )
-from bisheng.permission.application.identity import get_current_permission_actor
+from doberman_agent.permission.application.identity import get_current_permission_actor
 
 
 def _principal(*, actor_kind="service_account", scopes=frozenset({"knowledge:read"})):
@@ -43,7 +43,7 @@ async def test_access_context_installs_and_resets_shared_identity_context(monkey
         return value
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.access_context.resolve_request_identity",
+        "doberman_agent.open_api.domain.services.access_context.resolve_request_identity",
         _resolve,
     )
     marker = OpenApiScopeMarker(scope="knowledge:read", modes=frozenset({"S"}), session=False)

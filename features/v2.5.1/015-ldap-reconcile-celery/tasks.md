@@ -3,7 +3,7 @@
 **关联规格**: [spec.md](./spec.md)
 **版本**: v2.5.1
 **分支**: `feat/v2.5.1/015-ldap-reconcile-celery`（base=`2.5.0-PM`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile`
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/015-ldap-reconcile`
 **前置**: F011/F012/F014 已合入 `2.5.0-PM`
 - `OrgSyncTsGuard`（F014 T04）/ `DeptUpsertService`（F014 T07）/ `_OrgSyncLogBuffer+flush_log`（F014 T12）/ `verify_hmac`（F014 T05）
 - `DepartmentDeletionHandler.on_deleted(dept_id, deletion_source)`（F011）
@@ -35,13 +35,13 @@
 - 冲突告警复用 F011 `send_inbox_notice` + `list_global_super_admin_ids`
 
 **决策锁定**（plan 阶段确认）：
-- D1: Service 放 `bisheng/org_sync/domain/services/`；API endpoint 放 `bisheng/org_sync/api/endpoints/relink.py`（F009 扩展）
+- D1: Service 放 `doberman-agent/org_sync/domain/services/`；API endpoint 放 `doberman-agent/org_sync/api/endpoints/relink.py`（F009 扩展）
 - D2: 6h Beat 独立 `reconcile_all_organizations`，不复用 F009 `check_org_sync_schedules`（后者响应用户 cron；F015 是系统强制）
 - D3: `org_sync_log` 表加 4 列 + 复合索引（不拆事件表，摘要行 `event_type=''`，事件行非空）
 - D4: relink 多候选冲突存 Redis Hash `relink_conflict:{dept_id}`，TTL 7 天
 - D5: 前端 UI 不纳入；归 F019 admin-scope console
 - D6: 细粒度 15 任务（对齐 F014）
-- D7: 独立 worktree `/Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile`
+- D7: 独立 worktree `/Users/lilu/Projects/doberman-agent-worktrees/015-ldap-reconcile`
 - D8: 错误码 19314-19318 继续写入 `errcode/sso_sync.py`（MMM=193 与 F014 共享）
 
 ---
@@ -93,11 +93,11 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T01**: 错误码 `sso_sync.py` 追加 + `ReconcileConf` + Settings 注册
 
   **文件（修改）**:
-  - `src/backend/bisheng/common/errcode/sso_sync.py` — 追加 5 个 `BaseErrorCode` 子类
-  - `src/backend/bisheng/core/config/settings.py` — 注册 `reconcile: ReconcileConf`
+  - `src/backend/doberman_agent/common/errcode/sso_sync.py` — 追加 5 个 `BaseErrorCode` 子类
+  - `src/backend/doberman_agent/core/config/settings.py` — 注册 `reconcile: ReconcileConf`
 
   **文件（新建）**:
-  - `src/backend/bisheng/core/config/reconcile.py` — `ReconcileConf`
+  - `src/backend/doberman_agent/core/config/reconcile.py` — `ReconcileConf`
 
   **错误码清单**（19310-19313 已被 F014 占用）:
   ```python
@@ -124,7 +124,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 
   **Settings 注册** (`core/config/settings.py`):
   ```python
-  from bisheng.core.config.reconcile import ReconcileConf
+  from doberman_agent.core.config.reconcile import ReconcileConf
   class Settings(BaseSettings):
       reconcile: ReconcileConf = Field(default_factory=ReconcileConf)
   ```
@@ -140,7 +140,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T02**: Alembic 迁移 + SQLite `table_definitions.py` 同步
 
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f015_reconcile_log_fields.py`
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f015_reconcile_log_fields.py`
 
   **文件（修改）**:
   - `src/backend/test/fixtures/table_definitions.py` — `TABLE_ORG_SYNC_LOG` 追加 4 列 + 索引
@@ -176,7 +176,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T03**: `OrgSyncLog` 加字段 + `OrgSyncLogDao` 扩展 3 方法 + DAO 测试
 
   **文件（修改）**:
-  - `src/backend/bisheng/org_sync/domain/models/org_sync.py` — `OrgSyncLog` ORM 追加 4 列；`OrgSyncLogDao` 追加 3 classmethods
+  - `src/backend/doberman_agent/org_sync/domain/models/org_sync.py` — `OrgSyncLog` ORM 追加 4 列；`OrgSyncLogDao` 追加 3 classmethods
 
   **文件（新建）**:
   - `src/backend/test/test_org_sync_log_dao_f015.py`
@@ -226,7 +226,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T04**: `OrgSyncConfigDao.aget_all_active` + 测试
 
   **文件（修改）**:
-  - `src/backend/bisheng/org_sync/domain/models/org_sync.py` — `OrgSyncConfigDao` 追加 `aget_all_active`
+  - `src/backend/doberman_agent/org_sync/domain/models/org_sync.py` — `OrgSyncConfigDao` 追加 `aget_all_active`
   - `src/backend/test/test_org_sync_log_dao_f015.py` — 复用文件追加 3 条用例
 
   **逻辑**:
@@ -261,7 +261,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T05**: `RemoteDeptDiffer` 纯函数 diff + 单测
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/services/remote_dept_differ.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/remote_dept_differ.py`
   - `src/backend/test/test_remote_dept_differ.py`
 
   **输出 DTO**:
@@ -320,7 +320,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T06**: `OrgReconcileService.reconcile_config` + 集成测试
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/services/reconcile_service.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/reconcile_service.py`
   - `src/backend/test/test_org_reconcile_service.py`
 
   **主流程（11 步）**:
@@ -487,8 +487,8 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T07**: Pydantic Relink schemas + `DepartmentRelinkService` + 单测
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/schemas/relink.py`
-  - `src/backend/bisheng/org_sync/domain/services/relink_service.py`
+  - `src/backend/doberman_agent/org_sync/domain/schemas/relink.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/relink_service.py`
   - `src/backend/test/test_department_relink_service.py`
 
   **Schemas**:
@@ -554,12 +554,12 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T08**: Relink API endpoints + router 挂载 + `TENANT_CHECK_EXEMPT_PATHS`
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/api/endpoints/relink.py`
+  - `src/backend/doberman_agent/org_sync/api/endpoints/relink.py`
   - `src/backend/test/test_relink_api_integration.py`
 
   **文件（修改）**:
-  - `src/backend/bisheng/org_sync/api/router.py` — `router.include_router(relink_router)`
-  - `src/backend/bisheng/utils/http_middleware.py` — `TENANT_CHECK_EXEMPT_PATHS` 追加:
+  - `src/backend/doberman_agent/org_sync/api/router.py` — `router.include_router(relink_router)`
+  - `src/backend/doberman_agent/utils/http_middleware.py` — `TENANT_CHECK_EXEMPT_PATHS` 追加:
     - `/api/v1/internal/departments/relink`
     - `/api/v1/internal/departments/relink/resolve-conflict`
 
@@ -604,20 +604,20 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T09**: Celery `reconcile_all_organizations` + `reconcile_single_config` + beat 注册
 
   **文件（新建）**:
-  - `src/backend/bisheng/worker/org_sync/reconcile_tasks.py`
+  - `src/backend/doberman_agent/worker/org_sync/reconcile_tasks.py`
   - `src/backend/test/test_reconcile_celery_tasks.py`
 
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — `CeleryConf.validate` 追加 `reconcile_all_organizations` beat 注册
+  - `src/backend/doberman_agent/core/config/settings.py` — `CeleryConf.validate` 追加 `reconcile_all_organizations` beat 注册
 
   **逻辑**:
   ```python
   import asyncio
   from loguru import logger
-  from bisheng.worker.main import bisheng_celery
-  from bisheng.common.errcode.sso_sync import SsoReconcileLockBusyError
+  from doberman_agent.worker.main import doberman_agent_celery
+  from doberman_agent.common.errcode.sso_sync import SsoReconcileLockBusyError
 
-  @bisheng_celery.task(acks_late=True)
+  @doberman_agent_celery.task(acks_late=True)
   def reconcile_all_organizations():
       """6h Beat entry: fan out reconcile per active OrgSyncConfig."""
       loop = asyncio.new_event_loop()
@@ -627,19 +627,19 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
           loop.close()
 
   async def _fan_out_all() -> None:
-      from bisheng.org_sync.domain.models.org_sync import OrgSyncConfigDao
+      from doberman_agent.org_sync.domain.models.org_sync import OrgSyncConfigDao
       configs = await OrgSyncConfigDao.aget_all_active()
       for c in configs:
           if c.provider == 'sso_realtime':
               continue
           reconcile_single_config.apply_async(args=[c.id], queue='knowledge_celery')
 
-  @bisheng_celery.task(acks_late=True, time_limit=1800, soft_time_limit=1500)
+  @doberman_agent_celery.task(acks_late=True, time_limit=1800, soft_time_limit=1500)
   def reconcile_single_config(config_id: int):
       """Execute one reconcile run; swallow lock-busy without retry."""
       loop = asyncio.new_event_loop()
       try:
-          from bisheng.org_sync.domain.services.reconcile_service import OrgReconcileService
+          from doberman_agent.org_sync.domain.services.reconcile_service import OrgReconcileService
           loop.run_until_complete(OrgReconcileService.reconcile_config(config_id))
       except SsoReconcileLockBusyError:
           logger.warning(f'reconcile_single_config {config_id} skipped: lock busy')
@@ -653,7 +653,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
   ```python
   if 'reconcile_all_organizations' not in self.beat_schedule:
       self.beat_schedule['reconcile_all_organizations'] = {
-          'task': 'bisheng.worker.org_sync.reconcile_tasks.reconcile_all_organizations',
+          'task': 'doberman_agent.worker.org_sync.reconcile_tasks.reconcile_all_organizations',
           'schedule': crontab.from_string('0 */6 * * *'),  # every 6h
       }
   ```
@@ -674,7 +674,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T10**: `TsConflictReporter` + 单测
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/services/ts_conflict_reporter.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/ts_conflict_reporter.py`
   - `src/backend/test/test_ts_conflict_reporter.py`
 
   **逻辑**:
@@ -789,7 +789,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T12**: `RelinkConflictStore` Redis Hash + 集成测
 
   **文件（新建）**:
-  - `src/backend/bisheng/org_sync/domain/services/relink_conflict_store.py`
+  - `src/backend/doberman_agent/org_sync/domain/services/relink_conflict_store.py`
   - `src/backend/test/test_relink_conflict_store.py`
 
   **逻辑**:
@@ -842,28 +842,28 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 - [ ] **T13**: Celery `report_ts_conflicts_weekly` + `report_ts_conflicts_daily_escalation` + 注册
 
   **文件（修改）**:
-  - `src/backend/bisheng/worker/org_sync/reconcile_tasks.py` — 追加两 task
-  - `src/backend/bisheng/core/config/settings.py` — 两条 beat 注册
+  - `src/backend/doberman_agent/worker/org_sync/reconcile_tasks.py` — 追加两 task
+  - `src/backend/doberman_agent/core/config/settings.py` — 两条 beat 注册
   - `src/backend/test/test_reconcile_celery_tasks.py` — 追加 3 条测试
 
   **逻辑**:
   ```python
-  @bisheng_celery.task(acks_late=True)
+  @doberman_agent_celery.task(acks_late=True)
   def report_ts_conflicts_weekly():
       loop = asyncio.new_event_loop()
       try:
-          from bisheng.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
+          from doberman_agent.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
           loop.run_until_complete(TsConflictReporter.weekly_report())
       except Exception:
           logger.exception('report_ts_conflicts_weekly failed')
       finally:
           loop.close()
 
-  @bisheng_celery.task(acks_late=True)
+  @doberman_agent_celery.task(acks_late=True)
   def report_ts_conflicts_daily_escalation():
       loop = asyncio.new_event_loop()
       try:
-          from bisheng.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
+          from doberman_agent.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
           loop.run_until_complete(TsConflictReporter.daily_escalation_report())
       except Exception:
           logger.exception('report_ts_conflicts_daily_escalation failed')
@@ -875,12 +875,12 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
   ```python
   if 'report_ts_conflicts_weekly' not in self.beat_schedule:
       self.beat_schedule['report_ts_conflicts_weekly'] = {
-          'task': 'bisheng.worker.org_sync.reconcile_tasks.report_ts_conflicts_weekly',
+          'task': 'doberman_agent.worker.org_sync.reconcile_tasks.report_ts_conflicts_weekly',
           'schedule': crontab.from_string('0 9 * * MON'),
       }
   if 'report_ts_conflicts_daily_escalation' not in self.beat_schedule:
       self.beat_schedule['report_ts_conflicts_daily_escalation'] = {
-          'task': 'bisheng.worker.org_sync.reconcile_tasks.report_ts_conflicts_daily_escalation',
+          'task': 'doberman_agent.worker.org_sync.reconcile_tasks.report_ts_conflicts_daily_escalation',
           'schedule': crontab.from_string('0 9 * * *'),
       }
   ```
@@ -967,7 +967,7 @@ T01-T14 ──→ T15 (AC 对照 + /e2e-test + 压测占位)
 
 ```bash
 # 进入 worktree
-cd /Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile/src/backend
+cd /Users/lilu/Projects/doberman-agent-worktrees/015-ldap-reconcile/src/backend
 
 # 单任务跑测
 .venv/bin/pytest test/test_org_reconcile_service.py -v
@@ -985,11 +985,11 @@ cd /Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile/src/backend
 .venv/bin/pytest test/ -k "org_sync or tenant or sso or reconcile or relink" -v
 
 # Worker + Beat 手工 QA
-.venv/bin/celery -A bisheng.worker.main:bisheng_celery worker -Q knowledge_celery -l info &
-.venv/bin/celery -A bisheng.worker.main:bisheng_celery beat -l info &
+.venv/bin/celery -A doberman_agent.worker.main:doberman_agent_celery worker -Q knowledge_celery -l info &
+.venv/bin/celery -A doberman_agent.worker.main:doberman_agent_celery beat -l info &
 
 # 手动触发 6h 校对
-.venv/bin/python -c "from bisheng.worker.org_sync.reconcile_tasks import reconcile_all_organizations; reconcile_all_organizations.delay()"
+.venv/bin/python -c "from doberman_agent.worker.org_sync.reconcile_tasks import reconcile_all_organizations; reconcile_all_organizations.delay()"
 
 # relink HTTP 调用（HMAC 签名）
 # python -c "import hmac,hashlib; print(hmac.new(b'<secret>', b'POST\n/api/v1/internal/departments/relink\n<body>', hashlib.sha256).hexdigest())"

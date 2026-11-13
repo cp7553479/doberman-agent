@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Input, notification, Select } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, notification, Select } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback,useEffect,useMemo,useState } from "react";
 import { EnumMultiSelect } from "./EnumMultiSelect";
 
@@ -16,7 +16,7 @@ DialogTitle
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 
 import { generateUUID } from "@/components/bs-ui/utils";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 /* ================== 类型定义 ================== */
 export type LogicOperator = "and" | "or"

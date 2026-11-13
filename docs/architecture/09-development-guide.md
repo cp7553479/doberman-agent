@@ -1,6 +1,6 @@
 # 开发指南
 
-本文档面向 BiSheng 项目的开发者，涵盖环境搭建、服务启动、新模块开发约定、工作流节点扩展、API 端点添加、测试和代码风格规范。后端使用 Python 3.11（pyproject `requires-python >=3.11`）+ uv 管理依赖（2.4.0 版本已从 Poetry 迁移到 uv），前端使用 React + TypeScript + Vite。
+本文档面向 doberman-agent 项目的开发者，涵盖环境搭建、服务启动、新模块开发约定、工作流节点扩展、API 端点添加、测试和代码风格规范。后端使用 Python 3.11（pyproject `requires-python >=3.11`）+ uv 管理依赖（2.4.0 版本已从 Poetry 迁移到 uv），前端使用 React + TypeScript + Vite。
 
 ## 环境搭建
 
@@ -8,8 +8,8 @@
 
 ```bash
 # 1. 创建 Python 3.11 虚拟环境（pyproject 要求 requires-python >=3.11）
-conda create --name BiShengVENV python==3.11
-conda activate BiShengVENV
+conda create --name DobermanAgentVENV python==3.11
+conda activate DobermanAgentVENV
 
 # 2. 安装后端依赖（使用 uv，lockfile 为 uv.lock）
 cd src/backend
@@ -32,8 +32,8 @@ pnpm install
 存储服务通过 Docker Compose 启动，然后停止与本地开发冲突的容器：
 
 ```bash
-cd docker && docker compose -p bisheng up -d
-docker stop bisheng-backend bisheng-backend-worker bisheng-frontend
+cd docker && docker compose -p doberman-agent up -d
+docker stop doberman-agent-backend doberman-agent-backend-worker doberman-agent-frontend
 ```
 
 ## 服务启动
@@ -42,7 +42,7 @@ docker stop bisheng-backend bisheng-backend-worker bisheng-frontend
 
 ```bash
 cd src/backend
-.venv/bin/uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
+.venv/bin/uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
 ```
 
 本地开发建议使用 `--workers 1` 以便调试。生产环境的 Docker 容器默认使用 `--workers 8`。
@@ -53,13 +53,13 @@ cd src/backend
 
 ```bash
 # 知识库任务 Worker（文档解析、Embedding 生成、向量写入）
-.venv/bin/celery -A bisheng.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
+.venv/bin/celery -A doberman_agent.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
 
 # 工作流任务 Worker（工作流 DAG 执行）
-.venv/bin/celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
+.venv/bin/celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
 
 # 定时任务调度器（遥测统计、情报同步）
-.venv/bin/celery -A bisheng.worker.main beat -l info
+.venv/bin/celery -A doberman_agent.worker.main beat -l info
 ```
 
 ### Linsight Worker（可选）
@@ -67,7 +67,7 @@ cd src/backend
 灵思 Agent 框架使用独立的 Python 进程，不走 Celery 队列：
 
 ```bash
-.venv/bin/python bisheng/linsight/worker.py --worker_num 4 --max_concurrency 5
+.venv/bin/python doberman-agent/linsight/worker.py --worker_num 4 --max_concurrency 5
 ```
 
 ### 前端开发服务器
@@ -77,7 +77,7 @@ cd src/frontend/platform
 pnpm start -- --host 0.0.0.0
 ```
 
-Vite 开发服务器运行在 3001 端口，自动将 `/api/` 和 `/health` 请求代理到后端 `localhost:7860`。文件服务路由（`/bisheng`、`/tmp-dir`）代理到 MinIO。
+Vite 开发服务器运行在 3001 端口，自动将 `/api/` 和 `/health` 请求代理到后端 `localhost:7860`。文件服务路由（`/doberman-agent`、`/tmp-dir`）代理到 MinIO。
 
 ## 新模块开发约定
 
@@ -86,7 +86,7 @@ Vite 开发服务器运行在 3001 端口，自动将 `/api/` 和 `/health` 请�
 ### 目录结构
 
 ```
-src/backend/bisheng/<module_name>/
+src/backend/doberman_agent/<module_name>/
 ├── api/                              # API 层
 │   ├── router.py                     #   路由注册（创建 APIRouter）
 │   ├── dependencies.py               #   依赖注入（可选）
@@ -104,22 +104,22 @@ src/backend/bisheng/<module_name>/
 
 ### 步骤
 
-1. **创建模块目录**：在 `src/backend/bisheng/` 下创建模块目录，包含 `api/` 和 `domain/` 子目录。
+1. **创建模块目录**：在 `src/backend/doberman_agent/` 下创建模块目录，包含 `api/` 和 `domain/` 子目录。
 
 2. **定义路由**：在 `api/router.py` 中创建 `APIRouter`，设置路由前缀和标签：
 
 ```python
 from fastapi import APIRouter
-from bisheng.<module_name>.api.endpoints.<module_name> import router as module_router
+from doberman_agent.<module_name>.api.endpoints.<module_name> import router as module_router
 
 router = APIRouter(prefix='/<module_name>', tags=['<ModuleName>'])
 router.include_router(module_router)
 ```
 
-3. **注册到全局路由**：在 `src/backend/bisheng/api/router.py` 中导入并注册路由：
+3. **注册到全局路由**：在 `src/backend/doberman_agent/api/router.py` 中导入并注册路由：
 
 ```python
-from bisheng.<module_name>.api.router import router as module_router
+from doberman_agent.<module_name>.api.router import router as module_router
 
 router.include_router(module_router)  # 注册到 v1 路由
 ```
@@ -147,18 +147,18 @@ database/models/<model>.py        ← SQLModel ORM，DAO 方法（sync get_xxx /
 
 ### 步骤
 
-1. **创建节点目录**：在 `src/backend/bisheng/workflow/nodes/` 下创建节点子目录：
+1. **创建节点目录**：在 `src/backend/doberman_agent/workflow/nodes/` 下创建节点子目录：
 
 ```
-src/backend/bisheng/workflow/nodes/my_node/
+src/backend/doberman_agent/workflow/nodes/my_node/
 ├── __init__.py
 └── my_node.py
 ```
 
-2. **实现节点类**：继承 `BaseNode`（`src/backend/bisheng/workflow/nodes/base.py`），实现 `_run` 抽象方法：
+2. **实现节点类**：继承 `BaseNode`（`src/backend/doberman_agent/workflow/nodes/base.py`），实现 `_run` 抽象方法：
 
 ```python
-from bisheng.workflow.nodes.base import BaseNode
+from doberman_agent.workflow.nodes.base import BaseNode
 
 class MyNode(BaseNode):
 
@@ -192,7 +192,7 @@ class MyNode(BaseNode):
 - `max_steps: int` -- 最大执行步数（默认 50）
 - `callback: BaseCallback` -- 回调管理器，支持流式输出
 
-3. **注册节点类型枚举**：在 `src/backend/bisheng/workflow/common/node.py` 的 `NodeType` 枚举中添加新类型：
+3. **注册节点类型枚举**：在 `src/backend/doberman_agent/workflow/common/node.py` 的 `NodeType` 枚举中添加新类型：
 
 ```python
 class NodeType(Enum):
@@ -200,10 +200,10 @@ class NodeType(Enum):
     MY_NODE = "my_node"
 ```
 
-4. **注册节点工厂映射**：在 `src/backend/bisheng/workflow/nodes/node_manage.py` 的 `NODE_CLASS_MAP` 中添加映射：
+4. **注册节点工厂映射**：在 `src/backend/doberman_agent/workflow/nodes/node_manage.py` 的 `NODE_CLASS_MAP` 中添加映射：
 
 ```python
-from bisheng.workflow.nodes.my_node.my_node import MyNode
+from doberman_agent.workflow.nodes.my_node.my_node import MyNode
 
 NODE_CLASS_MAP = {
     # ... 现有映射
@@ -239,8 +239,8 @@ NODE_CLASS_MAP = {
 ```python
 from fastapi import APIRouter, Depends
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.schemas.api import UnifiedResponseModel, resp_200
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.schemas.api import UnifiedResponseModel, resp_200
 
 router = APIRouter(prefix='/my-resource', tags=['MyResource'])
 
@@ -270,7 +270,7 @@ WebSocket 端点使用 `UserPayload.get_login_user_from_ws` 变体。
 3. **统一响应格式**：所有 API 返回 `UnifiedResponseModel`，通过辅助函数构造：
 
 ```python
-from bisheng.common.schemas.api import resp_200, resp_500
+from doberman_agent.common.schemas.api import resp_200, resp_500
 
 # 成功响应
 return resp_200(data={"id": 1, "name": "test"})
@@ -281,11 +281,11 @@ return resp_500(code=500, message="操作失败")
 # 返回: {"status_code": 500, "status_message": "操作失败", "data": null}
 ```
 
-4. **注册路由**：在模块的 `api/router.py` 中包含端点路由，然后在 `src/backend/bisheng/api/router.py` 全局路由中注册。
+4. **注册路由**：在模块的 `api/router.py` 中包含端点路由，然后在 `src/backend/doberman_agent/api/router.py` 全局路由中注册。
 
 ### 错误码规范
 
-错误码体系定义在 `src/backend/bisheng/common/errcode/` 和 `src/backend/bisheng/api/errcode/` 中。错误码为 5 位整数，前 3 位标识模块，后 2 位标识具体错误。继承 `BaseErrorCode` 可定义模块专属错误码，支持三种输出格式：
+错误码体系定义在 `src/backend/doberman_agent/common/errcode/` 和 `src/backend/doberman_agent/api/errcode/` 中。错误码为 5 位整数，前 3 位标识模块，后 2 位标识具体错误。继承 `BaseErrorCode` 可定义模块专属错误码，支持三种输出格式：
 
 - `return_resp()` -- HTTP JSON 响应
 - `to_sse_event()` -- SSE 事件流

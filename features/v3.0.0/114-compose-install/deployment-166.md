@@ -6,14 +6,14 @@
 ## 环境与隔离
 
 - 主机：192.168.106.166，AMD64，Docker 26.1.4、Compose 2.27.1。
-- 全新目录：`/root/bisheng-compose-install-test-20261029`。没有使用原
-  `/root/bisheng` 的 MySQL、Redis、MinIO、Milvus 或 ES 数据。
+- 全新目录：`/root/doberman-agent-compose-install-test-20261029`。没有使用原
+  `/root/doberman-agent` 的 MySQL、Redis、MinIO、Milvus 或 ES 数据。
 - 首次启动前明确检查 `docker/mysql/data` 和 `docker/data` 不存在；15 个部署
   文件与 worktree 逐文件 SHA 一致，清单见 `evidence/deploy-config-sha256.json`。
-- 主机原先没有运行中的业务容器，只有已停止的 bisheng-office。前后对比完整
+- 主机原先没有运行中的业务容器，只有已停止的 doberman-agent-office。前后对比完整
   container ID、状态、FinishedAt，均保持一致。
-- 新网络实际名 `bisheng-network`、`bisheng-sandbox`，由 Compose 创建。原
-  `bisheng_default` 没有删除。没有修改 Docker daemon 或主机 sysctl。
+- 新网络实际名 `doberman-agent-network`、`doberman-agent-sandbox`，由 Compose 创建。原
+  `doberman_agent_default` 没有删除。没有修改 Docker daemon 或主机 sysctl。
 
 ## 镜像获取与版本边界
 
@@ -40,7 +40,7 @@ SHA 和 uncompressed diffID，再 docker load；没有替换版本、重新构�
 | Compose 服务 | 13 个：12 个常驻容器运行，OpenFGA migrate 退出码 0；有健康检查的常驻服务均 healthy |
 | 两套 SPA | `/`、`/workspace/` HTTP 200；浏览器登录页正常显示 v3.0.0-beta6 |
 | 后端与 Nginx | `/health` 返回 OK；经 frontend `/api/v1/env` HTTP 200、业务状态 200 |
-| MySQL | 首次初始化完成，bisheng 库 143 张表 |
+| MySQL | 首次初始化完成，doberman-agent 库 143 张表 |
 | Redis / OpenFGA | PONG；OpenFGA 一个 store |
 | MinIO / Milvus | 实际 health 端点均 200 |
 | Elasticsearch | 单节点 cluster health 为 yellow；没有将其表述为 green 或 HA 验收 |
@@ -52,7 +52,7 @@ SHA 和 uncompressed diffID，再 docker load；没有替换版本、重新构�
 
 原始结构化结果见 `evidence/runtime-checks.json`。验收账号为
 `deploy_test_admin`；密码仅在测试机
-`/root/bisheng-compose-install-test-20261029/test-admin.json`，权限 0600，未复制到
+`/root/doberman-agent-compose-install-test-20261029/test-admin.json`，权限 0600，未复制到
 本地或写入仓库。实例保留，访问地址为 `http://192.168.106.166:3001`。
 
 ## 保留问题与未覆盖范围

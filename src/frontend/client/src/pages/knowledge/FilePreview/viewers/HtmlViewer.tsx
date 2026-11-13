@@ -1,5 +1,5 @@
-import { HtmlViewer as SharedHtmlViewer } from '@bisheng/file-viewers/html-viewer';
-import { usePreviewLocale } from '@bisheng/file-viewers/locale';
+import { HtmlViewer as SharedHtmlViewer } from '@doberman-agent/file-viewers/html-viewer';
+import { usePreviewLocale } from '@doberman-agent/file-viewers/locale';
 import { resolveKnowledgePreviewUrl } from '../previewUrlUtils';
 interface HtmlViewerProps { fileUrl: string; zoomLevel: number }
 export function HtmlViewer({ fileUrl, zoomLevel }: HtmlViewerProps) {

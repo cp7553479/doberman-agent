@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.openfga.client import FGAClient
-from bisheng.core.openfga.exceptions import FGAClientError
-from bisheng.permission.application.department_context import ActorDepartmentContext, configure_department_context
+from doberman_agent.core.openfga.client import FGAClient
+from doberman_agent.core.openfga.exceptions import FGAClientError
+from doberman_agent.permission.application.department_context import ActorDepartmentContext, configure_department_context
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ async def test_unrelated_identity_relations_do_not_load_organization(client):
 
 
 async def test_nested_operations_reuse_only_until_scope_closes(client):
-    from bisheng.core.openfga.contextual import contextual_tuple_scope
+    from doberman_agent.core.openfga.contextual import contextual_tuple_scope
 
     source = provider()
     configure_department_context(client, source)
@@ -133,8 +133,8 @@ async def test_nested_operations_reuse_only_until_scope_closes(client):
 
 
 async def test_contextual_legacy_results_never_use_persistent_cache(client, monkeypatch):
-    from bisheng.permission.domain.services.permission_cache import PermissionCache
-    from bisheng.permission.domain.services.permission_service import PermissionService
+    from doberman_agent.permission.domain.services.permission_cache import PermissionCache
+    from doberman_agent.permission.domain.services.permission_service import PermissionService
 
     configure_department_context(client, provider())
     client._post = AsyncMock(return_value={"allowed": False, "objects": []})

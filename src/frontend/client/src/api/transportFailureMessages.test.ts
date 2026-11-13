@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { ApiError } from '@bisheng/api-client';
+import { ApiError } from '@doberman-agent/api-client';
 import messages from '../locales/en/api_errors.gen.json';
 import request, { showApiError } from './request';
 

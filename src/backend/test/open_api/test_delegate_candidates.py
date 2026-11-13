@@ -6,15 +6,15 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
-from bisheng.database.models.department import Department
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.api.dependencies import get_service_account_admin
-from bisheng.open_api.api.endpoints.service_account_keys import router
-from bisheng.open_api.domain.models.service_account import ServiceAccount
-from bisheng.open_api.domain.schemas.credential import DelegateScopeInput
-from bisheng.open_api.domain.services.delegate_scope_service import DelegateScopeService
-from bisheng.user.domain.models.user import User
+from doberman_agent.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
+from doberman_agent.database.models.department import Department
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.api.dependencies import get_service_account_admin
+from doberman_agent.open_api.api.endpoints.service_account_keys import router
+from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+from doberman_agent.open_api.domain.schemas.credential import DelegateScopeInput
+from doberman_agent.open_api.domain.services.delegate_scope_service import DelegateScopeService
+from doberman_agent.user.domain.models.user import User
 
 
 @pytest.fixture

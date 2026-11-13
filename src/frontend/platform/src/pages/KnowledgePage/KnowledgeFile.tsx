@@ -1,7 +1,7 @@
-import { Button, Dropdown, DropdownItem, DropdownSeparator, SearchInput, Select, toast, notification } from '@bisheng/ui';
+import { Button, Dropdown, DropdownItem, DropdownSeparator, SearchInput, Select, toast, notification } from '@doberman-agent/ui';
 import { KnowledgeLibraryDialog } from "./components/KnowledgeLibraryDialog";
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

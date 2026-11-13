@@ -7,7 +7,7 @@
 - 新登录会话展示发起登录时 DSH Desktop 的应用版本。
 - 版本缺省时保存 NULL，历史会话继续显示 —；不补造数据、不影响登录。
 - 版本不参与 License、席位、额度、身份判断或版本准入；Token 刷新保留登录时记录的版本。
-- 不改会话管理界面和毕昇 Python API；复用已有 client_version 字段，不新增表结构或迁移。
+- 不改会话管理界面和doberman-agent Python API；复用已有 client_version 字段，不新增表结构或迁移。
 
 ## 实现与契约
 

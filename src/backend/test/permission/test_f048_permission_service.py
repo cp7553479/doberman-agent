@@ -9,18 +9,18 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionEnumerationIncompleteError,
     PermissionFGAUnavailableError,
     PermissionProjectionFailedError,
     PermissionPublishNotReadyError,
 )
-from bisheng.permission.domain.schemas import (
+from doberman_agent.permission.domain.schemas import (
     VerifiedPermissionTarget,
     VisibilityEnumerationStatus,
 )
-from bisheng.permission.domain.services.permission_service import (
+from doberman_agent.permission.domain.services.permission_service import (
     F048PermissionService,
     PermissionActor,
 )
@@ -322,7 +322,7 @@ async def test_batch_check_is_bounded_and_preserves_short_circuits() -> None:
 async def test_visible_batch_uses_one_openfga_batch_without_action_alias(monkeypatch) -> None:
     metrics: list[tuple[str, dict]] = []
     monkeypatch.setattr(
-        "bisheng.permission.domain.services.permission_action_service.emit_metric",
+        "doberman_agent.permission.domain.services.permission_action_service.emit_metric",
         lambda domain, **fields: metrics.append((domain, fields)),
     )
     service, catalog, fence, _, fga, _, _ = _service()

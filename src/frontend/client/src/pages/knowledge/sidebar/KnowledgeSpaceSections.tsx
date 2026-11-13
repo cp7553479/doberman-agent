@@ -1,5 +1,5 @@
-import { Button, Segmented, Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, Segmented, Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import type { ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getKnowledgeListTab } from "../knowledgeListNavigation";

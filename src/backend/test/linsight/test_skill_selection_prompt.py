@@ -9,14 +9,14 @@ from unittest.mock import MagicMock
 from deepagents.backends.filesystem import FilesystemBackend
 from langchain_core.messages import SystemMessage
 
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services.agent_factory import (
     SKILL_SELECTED_NOTE,
     SKILL_TOOL_UNAVAILABLE_NOTE,
     SkillSelectionMiddleware,
     create_linsight_agent,
     task_tool_names,
 )
-from bisheng.linsight.domain.services.skills_prompt import LinsightSkillsMiddleware
+from doberman_agent.linsight.domain.services.skills_prompt import LinsightSkillsMiddleware
 
 
 def _skill_md(name: str, description: str, allowed: str | None = None) -> str:

@@ -79,7 +79,7 @@ BASE_IMAGES = {
     "static": "nginx:1.27-alpine",
 }
 
-DEFAULT_APP_USER = "bisheng"
+DEFAULT_APP_USER = "doberman-agent"
 DEFAULT_APP_UID = 10001
 DEFAULT_APP_GID = 10001
 
@@ -161,14 +161,14 @@ def build_args_for(config: Config, runtime: str) -> dict[str, str]:
         return {
             "PIP_INDEX_URL": config.build_index_url,
             "PIP_TRUSTED_HOST": config.build_trusted_host,
-            # The platform's own simple index, carrying bisheng-sdk (F057 AC-02).
+            # The platform's own simple index, carrying doberman-agent-sdk (F057 AC-02).
             # Passed as a second index, not a replacement: everything else the
             # app depends on still comes from the deployment's mirror.
             "PIP_EXTRA_INDEX_URL": config.build_extra_index_url,
             "PIP_EXTRA_TRUSTED_HOST": config.build_extra_trusted_host,
         }
     if runtime == "node20":
-        return {"BISHENG_NPM_REGISTRY": config.build_npm_registry}
+        return {"DOBERMAN_AGENT_NPM_REGISTRY": config.build_npm_registry}
     return {}
 
 

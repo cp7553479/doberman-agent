@@ -4,9 +4,9 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.dsh.infrastructure.model_audit_codec import AuditScope
-from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-from bisheng.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
+from doberman_agent.dsh.infrastructure.model_audit_codec import AuditScope
+from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+from doberman_agent.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage
 
 
 class MemoryObjects:

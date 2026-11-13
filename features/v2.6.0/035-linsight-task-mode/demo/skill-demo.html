@@ -471,7 +471,7 @@ body.show-api .i18n{display:inline-block}
       <div class="cfg-block">
         <h3>可用工具 <span class="from" style="background:var(--jade-wash);color:var(--jade);border-color:#c4ddd0">日常 tab 既有配置 · 任务模式直接共用</span></h3>
         <div class="body tool-chips">
-          <span class="tool-chip">≡ BISHENG_MCP <i class="x">×</i></span>
+          <span class="tool-chip">≡ DOBERMAN_AGENT_MCP <i class="x">×</i></span>
           <span class="tool-chip">≡ antvis/mcp-server-chart <i class="x">×</i></span>
           <span class="tool-chip">≡ 代码执行器 <i class="x">×</i></span>
           <span class="tool-chip">≡ 联网搜索 <i class="x">×</i></span>
@@ -588,7 +588,7 @@ body.show-api .i18n{display:inline-block}
     <div class="term">
       <div class="term-bar">
         <span class="dot2" style="background:#e8836a"></span><span class="dot2" style="background:#f0b35e"></span><span class="dot2" style="background:#8fb573"></span>
-        <span class="title">bisheng-backend · scripts/migrate_sop_to_skill.py</span>
+        <span class="title">doberman-agent-backend · scripts/migrate_sop_to_skill.py</span>
         <div class="term-actions">
           <button onclick="runMigration(false)">▶ dry-run（默认）</button>
           <button onclick="runMigration(true)">▶▶ --apply</button>
@@ -814,7 +814,7 @@ let skills=[
    {path:'SKILL.md'},
    {path:'reference/checklist.md',content:'# 尽调资料清单\n\n- [ ] 营业执照 / 统一社会信用代码\n- [ ] 近三年财务报表\n- [ ] 重大诉讼与行政处罚记录\n- [ ] 主要股东与实际控制人结构\n- [ ] 核心资质证书有效期\n'},
    {path:'scripts/collect_data.py',content:'"""Collect public registry data for due diligence."""\nimport httpx\n\nAPI = "https://registry.example.com/search"\n\n\ndef collect(company: str) -> dict:\n    resp = httpx.get(API, params={"q": company}, timeout=30)\n    resp.raise_for_status()\n    return resp.json()\n'},
-   {path:'LICENSE.txt',content:'MIT License\n\nCopyright (c) 2026 BiSheng\n\nPermission is hereby granted, free of charge, ...'}
+   {path:'LICENSE.txt',content:'MIT License\n\nCopyright (c) 2026 doberman-agent\n\nPermission is hereby granted, free of charge, ...'}
  ]},
  {id:2,name:'ji-du-cai-bao-fen-xi',display_name:'季度财报分析',description:'抽取营收/净利润/同比环比等核心指标，输出结构化 Markdown 分析报告。',enabled:true,source:'manual',content:'# 季度财报分析\n\n1. read_file 读取财报 PDF 解析稿\n2. 抽取核心指标（营收 / 净利 / 毛利率 / 现金流）\n3. 用代码解释器算同比环比\n4. 输出结构化分析报告',sop_id:null},
  {id:3,name:'he-tong-tiao-kuan-shen-yue',display_name:'合同条款审阅',description:'逐条审阅合同风险条款，标注风险等级并给出修订建议。',enabled:false,source:'sop_migrated',content:'# 合同条款审阅\n\n1. 解析合同正文\n2. 对照风险条款清单逐条核对\n3. 输出风险标注 + 修订建议',sop_id:'23'},

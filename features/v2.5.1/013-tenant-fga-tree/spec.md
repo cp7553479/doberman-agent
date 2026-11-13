@@ -199,12 +199,12 @@ async def _is_shared_to(self, user_id: int, target_tenant_id: int) -> bool:
 
 | 文件 | 改造点 |
 |------|--------|
-| `src/backend/bisheng/core/openfga/authorization_model.yaml` | 新增 tenant 类型（admin / member / shared_to 三关系）；资源类型 viewer 补 `tenant#shared_to#member`（manager/editor 不补 tenant# 任何关系；2026-04-21 收窄） |
-| `src/backend/bisheng/core/openfga/client.py` | 升级 SDK 到 v1.8+；支持 model_id 显式指定 |
-| `src/backend/bisheng/permission/domain/services/permission_service.py` | check 方法重写五级短路 ② ③ |
-| `src/backend/bisheng/permission/domain/services/tenant_admin_service.py` | 新增：Child admin 管理（增删改查） |
-| `src/backend/bisheng/common/dependencies/user_deps.py` | UserPayload 新增 `get_visible_tenants()` / `has_tenant_admin()` |
-| `src/backend/bisheng/core/config/settings.py` | 新增 `openfga.model_id` / `openfga.dual_model_mode` |
+| `src/backend/doberman_agent/core/openfga/authorization_model.yaml` | 新增 tenant 类型（admin / member / shared_to 三关系）；资源类型 viewer 补 `tenant#shared_to#member`（manager/editor 不补 tenant# 任何关系；2026-04-21 收窄） |
+| `src/backend/doberman_agent/core/openfga/client.py` | 升级 SDK 到 v1.8+；支持 model_id 显式指定 |
+| `src/backend/doberman_agent/permission/domain/services/permission_service.py` | check 方法重写五级短路 ② ③ |
+| `src/backend/doberman_agent/permission/domain/services/tenant_admin_service.py` | 新增：Child admin 管理（增删改查） |
+| `src/backend/doberman_agent/common/dependencies/user_deps.py` | UserPayload 新增 `get_visible_tenants()` / `has_tenant_admin()` |
+| `src/backend/doberman_agent/core/config/settings.py` | 新增 `openfga.model_id` / `openfga.dual_model_mode` |
 
 ---
 

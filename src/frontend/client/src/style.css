@@ -116,7 +116,7 @@ html {
 }
 
 /* Green brand theme, client-only half — the brand ramp itself lives in
-   @bisheng/ui tokens.css (with the derivation history); what stays here are the
+   @doberman-agent/ui tokens.css (with the derivation history); what stays here are the
    shadcn / LibreChat surfaces that have their own vars rather than reading
    --brand-*, and so have to be re-pointed by hand for the green theme. */
 .theme-green {
@@ -1800,15 +1800,15 @@ html {
    Keep text-like form controls at >=16px on H5 to avoid sticky page zoom
    after blur (covers create channel/knowledge and filter/search inputs). */
 @media (max-width: 767px) {
-  :root:not([data-bisheng-surface="desktop"]) input[type='text'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='search'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='email'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='url'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='tel'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='password'],
-  :root:not([data-bisheng-surface="desktop"]) input[type='number'],
-  :root:not([data-bisheng-surface="desktop"]) textarea,
-  :root:not([data-bisheng-surface="desktop"]) select {
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='text'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='search'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='email'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='url'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='tel'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='password'],
+  :root:not([data-doberman-agent-surface="desktop"]) input[type='number'],
+  :root:not([data-doberman-agent-surface="desktop"]) textarea,
+  :root:not([data-doberman-agent-surface="desktop"]) select {
     font-size: 16px !important;
   }
 }

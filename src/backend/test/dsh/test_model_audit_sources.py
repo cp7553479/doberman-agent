@@ -2,8 +2,8 @@
 
 import sqlalchemy as sa
 
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.schemas.model_audit_context import parse_audit_context
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.schemas.model_audit_context import parse_audit_context
 
 
 def test_child_compaction_and_sources_are_independent():

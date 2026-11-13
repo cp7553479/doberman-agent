@@ -1,4 +1,4 @@
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
 // src/features/chat-config/ChatConfig.tsx
 import { QuestionHint as QuestionTooltip } from "@/components/bs-comp/QuestionHint";
 
@@ -136,7 +136,7 @@ export default function Subscribe({ scopeVersion = 0 }: { scopeVersion?: number 
                             </div>
                             {}
                             <>
-                                <Label className="bisheng-label">{t("chatConfig.aiAssistantName")}</Label>
+                                <Label className="doberman_agent-label">{t("chatConfig.aiAssistantName")}</Label>
                                 <div className="mt-3 mb-4">
                                     <Input value={formData.assistantName} placeholder={t("chatConfig.aiAssistantNamePlaceholder")} maxLength={50} onChange={(e) => {
                                             const val = e.target.value;
@@ -145,7 +145,7 @@ export default function Subscribe({ scopeVersion = 0 }: { scopeVersion?: number 
                                 </div>
                             </>
                             <>
-                                <Label className="bisheng-label">{t("chatConfig.sysPrompts")}</Label>
+                                <Label className="doberman_agent-label">{t("chatConfig.sysPrompts")}</Label>
                                 <div className="mt-3">
                                     <Textarea value={formData.systemPrompt} placeholder={t("chatConfig.aiPrompt")} maxLength={30000} onChange={(e) => {
                                             const val = e.target.value;
@@ -164,7 +164,7 @@ export default function Subscribe({ scopeVersion = 0 }: { scopeVersion?: number 
                                 </div>
                             </>
                             <>
-                                <Label className="bisheng-label">{t("chatConfig.userPrompts")}</Label>
+                                <Label className="doberman_agent-label">{t("chatConfig.userPrompts")}</Label>
                                 <div className="mt-3">
                                     <Textarea value={formData.userPrompt} placeholder={t("chatConfig.referenceAndQuestion")} maxLength={30000} onChange={(e) => {
                                             const val = e.target.value;
@@ -183,7 +183,7 @@ export default function Subscribe({ scopeVersion = 0 }: { scopeVersion?: number 
                                 </div>
                             </>
                             <>
-                                <Label className="bisheng-label">{t("chatConfig.articleMax")}</Label>
+                                <Label className="doberman_agent-label">{t("chatConfig.articleMax")}</Label>
                                 <QuestionTooltip
                                     className="relative top-0.5 ml-1"
                                     content={t("chatConfig.knowledgeArticleMaxLengthTooltip")}

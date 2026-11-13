@@ -19,7 +19,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
+from doberman_agent.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
 
 
 async def test_rejects_knowledge_id_outside_whitelist(monkeypatch: pytest.MonkeyPatch):
@@ -93,8 +93,8 @@ async def test_no_whitelist_is_unrestricted(monkeypatch: pytest.MonkeyPatch):
 # org KBs because the resolver fell back to ``aget_user_knowledge``.
 # ---------------------------------------------------------------------------
 def test_to_linsight_submit_threads_exact_kb_ids():
-    from bisheng.api.v1.schema.chat_schema import APIChatCompletion, UseKnowledgeBaseParam
-    from bisheng.workstation.domain.services.chat_service import _to_linsight_submit
+    from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion, UseKnowledgeBaseParam
+    from doberman_agent.workstation.domain.services.chat_service import _to_linsight_submit
 
     data = APIChatCompletion(
         clientTimestamp="0",
@@ -120,8 +120,8 @@ async def test_resolve_kbs_uses_exact_ids_not_coarse_all(monkeypatch: pytest.Mon
     coarse type via ``aget_user_knowledge`` (the 20+ KB bug)."""
     from types import SimpleNamespace
 
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     sv = SimpleNamespace(
         organization_knowledge_ids=[2745],
@@ -148,8 +148,8 @@ async def test_resolve_kbs_empty_selection_returns_none(monkeypatch: pytest.Monk
     """No id selection => no KBs (booleans no longer force a coarse fallback)."""
     from types import SimpleNamespace
 
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-    from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+    from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
     sv = SimpleNamespace(
         organization_knowledge_ids=None,

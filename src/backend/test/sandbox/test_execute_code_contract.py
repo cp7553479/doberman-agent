@@ -16,7 +16,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import BaseExecutor
 
 
 class _FakeHarvestExecutor(BaseExecutor):
@@ -49,7 +49,7 @@ def test_success_relocates_root_file_and_lists_only_this_run(tmp_path, monkeypat
     _write(work, "uploads/source.txt", "preexisting")
     _write(work, "output/old.txt", "orig")
 
-    exe = _FakeHarvestExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/s1")
+    exe = _FakeHarvestExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/s1")
     exe._work_dir = work
 
     def _handler(work_dir, code):
@@ -83,7 +83,7 @@ def test_success_relocates_root_file_and_lists_only_this_run(tmp_path, monkeypat
 
 
 def test_nonzero_exit_keeps_stdout_and_empty_file_list(tmp_path, monkeypatch):
-    exe = _FakeHarvestExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/s1")
+    exe = _FakeHarvestExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/s1")
     exe._work_dir = str(tmp_path)
 
     def _handler(work_dir, code):

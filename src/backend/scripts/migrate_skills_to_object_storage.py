@@ -10,7 +10,7 @@ bundle under the legacy on-disk layout and publishes it.
 Run it **on each host that ever served the API**. A host whose disk is empty
 reports the rows it could not resolve — those bundles are on a different host, so
 run it there too. (The API's startup self-heal covers the same ground but only
-for what its own disk holds; see ``bisheng/main.py``.)
+for what its own disk holds; see ``doberman_agent/main.py``.)
 
 Idempotent: a row that already resolves is skipped, and publishing the same
 bundle twice writes the same content-addressed object.
@@ -39,19 +39,19 @@ if _BACKEND_ROOT not in sys.path:
 
 from loguru import logger  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import (  # noqa: E402
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkillDao  # noqa: E402
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkillDao  # noqa: E402
 
 # Same reader the startup self-heal uses — two copies of "what a legacy bundle
 # looks like on disk" would drift.
-from bisheng.linsight.domain.services.skill_bundle_backfill import read_legacy_bundle  # noqa: E402
-from bisheng.linsight.domain.services.skill_store import SkillStore  # noqa: E402
+from doberman_agent.linsight.domain.services.skill_bundle_backfill import read_legacy_bundle  # noqa: E402
+from doberman_agent.linsight.domain.services.skill_store import SkillStore  # noqa: E402
 
 
 async def migrate(tenant_id: int | None, apply: bool, legacy_root: Path, store: SkillStore) -> dict:

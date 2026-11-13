@@ -1,6 +1,6 @@
-"""表单问卷 —— BiSheng 托管应用示例（零第三方依赖）。
+"""表单问卷 —— doberman-agent 托管应用示例（零第三方依赖）。
 
-这个示例存在的理由是验证一条最小闭环：本地写的应用 → `bisheng deploy` →
+这个示例存在的理由是验证一条最小闭环：本地写的应用 → `doberman-agent deploy` →
 平台托管上线 → 所有人在应用广场里访问它。它刻意只用标准库，因为演示要验的是
 部署链路本身，不是依赖解析——「构建卡在 pip 拉不到包」在 114 和信创基线上是
 最常见、也最容易被误判成平台故障的失败。
@@ -8,16 +8,16 @@
 它同时是托管运行契约（PRD-1 DEV-04）的一份可执行说明。四条约定，缺一条就会在
 平台上出问题，而每一条在本地直接 `python main.py` 时都恰好是无害的默认值：
 
-* **监听 PORT**。平台按 manifest 的 `port` 注入 `PORT` 与 `BISHENG_APP_PORT`。
+* **监听 PORT**。平台按 manifest 的 `port` 注入 `PORT` 与 `DOBERMAN_AGENT_APP_PORT`。
   硬编码端口的应用探活必失败。
 * **绑 0.0.0.0**。绑 127.0.0.1 的进程在容器里只有自己能连上，健康探针会一直
   失败，而日志里什么错都没有——这是最难查的一种"应用起来了但不健康"。
-* **外链带 BISHENG_APP_BASE_PATH**。平台把应用挂在 `/apps/{slug}` 下，
+* **外链带 DOBERMAN_AGENT_APP_BASE_PATH**。平台把应用挂在 `/apps/{slug}` 下，
   app-proxy 会把前缀剥掉再转发，所以应用**收到的**是根路径；但应用**发出的**
   链接（form action、跳转、静态资源）必须自己带上前缀，否则点一下就跳到平台
   根路径上去了。本地跑时这个变量为空，拼出来就是原来的根路径。
 * **只往 /data 写**。容器根文件系统是只读的（AC-17），/data 是唯一的可写卷，
-  平台通过 BISHENG_APP_DB_URL / BISHENG_APP_DB_PATH 告诉应用它在哪。往别处写
+  平台通过 DOBERMAN_AGENT_APP_DB_URL / DOBERMAN_AGENT_APP_DB_PATH 告诉应用它在哪。往别处写
   会在运行期才炸，而不是在构建期。
 
 本地跑：``python main.py`` 然后开 http://127.0.0.1:8080
@@ -34,9 +34,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 # 平台注入的四个变量，每个都给了本地可用的默认值。这不是"兜底"——本地与平台
 # 跑的是同一份代码同一条路径，差别只在变量取值，所以本地验过的行为在平台上成立。
-PORT = int(os.environ.get("PORT") or os.environ.get("BISHENG_APP_PORT") or 8080)
-BASE_PATH = (os.environ.get("BISHENG_APP_BASE_PATH") or "").rstrip("/")
-DB_PATH = os.environ.get("BISHENG_APP_DB_PATH") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "survey.db")
+PORT = int(os.environ.get("PORT") or os.environ.get("DOBERMAN_AGENT_APP_PORT") or 8080)
+BASE_PATH = (os.environ.get("DOBERMAN_AGENT_APP_BASE_PATH") or "").rstrip("/")
+DB_PATH = os.environ.get("DOBERMAN_AGENT_APP_DB_PATH") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "survey.db")
 
 QUESTIONS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("role", "你的角色是？", ("业务人员", "开发者", "管理员")),
@@ -115,7 +115,7 @@ def form_page() -> bytes:
         "表单问卷",
         f"""
         <h1>表单问卷</h1>
-        <p class="sub">一个跑在 BiSheng 托管运行时上的示例应用。</p>
+        <p class="sub">一个跑在 doberman-agent 托管运行时上的示例应用。</p>
         <form method="post" action="{url("/submit")}">
           {"".join(blocks)}
           <fieldset><legend>还想说点什么？（选填）</legend>
@@ -177,7 +177,7 @@ def results_page() -> bytes:
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "bisheng-form-survey/1.0"
+    server_version = "doberman-agent-form-survey/1.0"
 
     def _send(self, status: int, body: bytes, content_type: str = "text/html; charset=utf-8") -> None:
         self.send_response(status)
@@ -224,7 +224,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def log_message(self, fmt: str, *args) -> None:
-        # 平台按容器 stdout 收日志，`bisheng logs` 读的就是这里。
+        # 平台按容器 stdout 收日志，`doberman-agent logs` 读的就是这里。
         print(f"{self.address_string()} {fmt % args}", flush=True)
 
 

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from bisheng.workstation.domain.services.kb_image_stage import KbImageStage
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent.workstation.domain.services.kb_image_stage import KbImageStage
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import E2bCodeExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
-URL = "/bisheng/knowledge/images/1/27/img_1.png"
+URL = "/doberman_agent/knowledge/images/1/27/img_1.png"
 REL = "uploads/kb/1/27/img_1.png"
 
 
@@ -37,9 +37,9 @@ class _Client:
 
 
 def _executor(objects, monkeypatch) -> LocalExecutor:
-    stage = KbImageStage("bisheng", max_files=100, max_file_bytes=1024, max_total_bytes=4096)
+    stage = KbImageStage("doberman_agent", max_files=100, max_file_bytes=1024, max_total_bytes=4096)
     stage.annotate(f"![a]({URL})")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"})
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"})
     monkeypatch.setattr(exe, "_minio_client", lambda: _Client(objects))
     exe.attach_stage(stage)
     return exe
@@ -79,7 +79,7 @@ def test_hint_only_when_stage_attached():
     exe = LocalExecutor(minio={})
     plain = exe.description
     assert "KNOWLEDGE-BASE IMAGES" not in plain
-    exe.attach_stage(KbImageStage("bisheng", max_files=1, max_file_bytes=1, max_total_bytes=1))
+    exe.attach_stage(KbImageStage("doberman_agent", max_files=1, max_file_bytes=1, max_total_bytes=1))
     assert "KNOWLEDGE-BASE IMAGES" in exe.description
 
 

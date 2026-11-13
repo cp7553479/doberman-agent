@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Select, type SelectOption } from '@bisheng/ui';
+import { Button, Select, type SelectOption } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { Label } from "@/components/bs-ui/label";

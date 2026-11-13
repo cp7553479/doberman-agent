@@ -37,7 +37,7 @@ def _make_user(user_id=10, tenant_id=1, is_admin=False):
 
 
 def test_default_quota_is_100():
-    from bisheng.role.domain.services.quota_service import (
+    from doberman_agent.role.domain.services.quota_service import (
         DEFAULT_ROLE_QUOTA,
         QuotaResourceType,
     )
@@ -48,7 +48,7 @@ def test_default_quota_is_100():
 
 def test_resource_is_countable_dimension():
     """Template must be registered (scoped to SPACE) so /me/quotas usage != silent 0."""
-    from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+    from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
     sql = _RESOURCE_COUNT_TEMPLATES["knowledge_space_subscribe"]
     assert "business_type='SPACE'" in sql
@@ -62,7 +62,7 @@ def test_subscribe_count_joins_knowledge_to_skip_orphans():
     join one slot early. The enforcement path (subscribe_space) routes through
     get_user_resource_count, which uses this template — so the join here is what guarantees
     orphan rows are excluded."""
-    from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+    from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
     sql = _RESOURCE_COUNT_TEMPLATES["knowledge_space_subscribe"]
     assert "INNER JOIN knowledge" in sql
@@ -70,7 +70,7 @@ def test_subscribe_count_joins_knowledge_to_skip_orphans():
 
 
 async def test_no_roles_falls_back_to_default_100():
-    from bisheng.role.domain.services.quota_service import (
+    from doberman_agent.role.domain.services.quota_service import (
         QuotaResourceType,
         QuotaService,
     )
@@ -78,8 +78,8 @@ async def test_no_roles_falls_back_to_default_100():
     user = _make_user()
     tenant = _make_tenant(quota_config=None)  # tenant unlimited
     with (
-        patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-        patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+        patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+        patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
     ):
         mock_ur_dao.aget_user_roles = AsyncMock(return_value=[])
         mock_tenant_dao.aget_by_id = AsyncMock(return_value=tenant)
@@ -94,7 +94,7 @@ async def test_no_roles_falls_back_to_default_100():
 
 
 async def test_multi_role_takes_max():
-    from bisheng.role.domain.services.quota_service import (
+    from doberman_agent.role.domain.services.quota_service import (
         QuotaResourceType,
         QuotaService,
     )
@@ -107,9 +107,9 @@ async def test_multi_role_takes_max():
     ]
     tenant = _make_tenant(quota_config=None)
     with (
-        patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-        patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
-        patch("bisheng.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
+        patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+        patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+        patch("doberman_agent.role.domain.services.quota_service.TenantDao") as mock_tenant_dao,
     ):
         mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
         mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)
@@ -125,7 +125,7 @@ async def test_multi_role_takes_max():
 
 
 async def test_admin_is_unlimited():
-    from bisheng.role.domain.services.quota_service import (
+    from doberman_agent.role.domain.services.quota_service import (
         QuotaResourceType,
         QuotaService,
     )
@@ -141,7 +141,7 @@ async def test_admin_is_unlimited():
 
 
 async def test_role_unlimited_returns_unlimited():
-    from bisheng.role.domain.services.quota_service import (
+    from doberman_agent.role.domain.services.quota_service import (
         QuotaResourceType,
         QuotaService,
     )
@@ -150,8 +150,8 @@ async def test_role_unlimited_returns_unlimited():
     user_roles = [_make_user_role(3)]
     roles = [_make_role(3, {"knowledge_space_subscribe": -1})]
     with (
-        patch("bisheng.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
-        patch("bisheng.role.domain.services.quota_service.RoleDao") as mock_role_dao,
+        patch("doberman_agent.role.domain.services.quota_service.UserRoleDao") as mock_ur_dao,
+        patch("doberman_agent.role.domain.services.quota_service.RoleDao") as mock_role_dao,
     ):
         mock_ur_dao.aget_user_roles = AsyncMock(return_value=user_roles)
         mock_role_dao.aget_role_by_ids = AsyncMock(return_value=roles)

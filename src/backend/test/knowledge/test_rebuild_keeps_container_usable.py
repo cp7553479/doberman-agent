@@ -15,9 +15,9 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeState
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeState
 
-_WORKER = "bisheng.worker.knowledge.rebuild_knowledge_worker"
+_WORKER = "doberman_agent.worker.knowledge.rebuild_knowledge_worker"
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def _run(knowledge, *, success, failed, raise_on_rebuild=None):
         dao.update_one.side_effect = lambda row: saved.append(row)
         file_dao.get_files_by_multiple_status.return_value = files
 
-        from bisheng.worker.knowledge import rebuild_knowledge_worker
+        from doberman_agent.worker.knowledge import rebuild_knowledge_worker
 
         try:
             rebuild_knowledge_worker.rebuild_knowledge_celery.run(knowledge.id, 9, 1)
@@ -80,5 +80,5 @@ def test_the_worker_no_longer_writes_a_container_failed_state() -> None:
 
     from pathlib import Path
 
-    source = Path(f"bisheng/worker/knowledge/{'rebuild_knowledge_worker'}.py").read_text(encoding="utf-8")
+    source = Path(f"doberman_agent/worker/knowledge/{'rebuild_knowledge_worker'}.py").read_text(encoding="utf-8")
     assert "KnowledgeState.FAILED" not in source

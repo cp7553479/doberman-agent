@@ -1,4 +1,4 @@
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import type { ApprovalInstanceDetail, ApprovalTaskDetail } from "~/api/approval";
 import { useLocalize } from "~/hooks";
 import { type TranslationKeys } from "~/hooks/useLocalize";

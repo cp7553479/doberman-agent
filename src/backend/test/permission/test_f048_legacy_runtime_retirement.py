@@ -11,17 +11,17 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     LEGACY_RESOURCE_TYPES,
     MIGRATED_RESOURCE_TYPES,
 )
-from bisheng.permission.domain.schemas.tuple_operation import TupleOperation
-from bisheng.permission.domain.services.permission_service import (
+from doberman_agent.permission.domain.schemas.tuple_operation import TupleOperation
+from doberman_agent.permission.domain.services.permission_service import (
     PermissionService,
 )
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
-BISHENG_ROOT = BACKEND_ROOT / "bisheng"
+DOBERMAN_AGENT_ROOT = BACKEND_ROOT / "doberman_agent"
 REPO_ROOT = BACKEND_ROOT.parents[1]
 PLATFORM_SOURCE = REPO_ROOT / "src/frontend/platform/src"
 CLIENT_SOURCE = REPO_ROOT / "src/frontend/client/src"
@@ -71,19 +71,19 @@ MIGRATED_RESOURCE_ROOTS = (
 
 FORBIDDEN_IMPORTS = frozenset(
     {
-        "bisheng.permission.domain.services.fine_grained_permission_service",
-        "bisheng.permission.domain.services.application_permission_service",
-        "bisheng.permission.domain.services.tool_permission_service",
-        "bisheng.permission.domain.services.relation_roster_cache",
-        "bisheng.permission.domain.knowledge_space_permission_template",
-        "bisheng.permission.domain.knowledge_library_permission_template",
-        "bisheng.permission.domain.application_permission_template",
-        "bisheng.permission.domain.tool_permission_template",
-        "bisheng.permission.domain.channel_permission_template",
-        "bisheng.permission.domain.workflow_app_permission",
-        "bisheng.permission.domain.relation_model_backfill",
-        "bisheng.permission.api.endpoints.permission_check",
-        "bisheng.permission.api.endpoints.resource_permission",
+        "doberman_agent.permission.domain.services.fine_grained_permission_service",
+        "doberman_agent.permission.domain.services.application_permission_service",
+        "doberman_agent.permission.domain.services.tool_permission_service",
+        "doberman_agent.permission.domain.services.relation_roster_cache",
+        "doberman_agent.permission.domain.knowledge_space_permission_template",
+        "doberman_agent.permission.domain.knowledge_library_permission_template",
+        "doberman_agent.permission.domain.application_permission_template",
+        "doberman_agent.permission.domain.tool_permission_template",
+        "doberman_agent.permission.domain.channel_permission_template",
+        "doberman_agent.permission.domain.workflow_app_permission",
+        "doberman_agent.permission.domain.relation_model_backfill",
+        "doberman_agent.permission.api.endpoints.permission_check",
+        "doberman_agent.permission.api.endpoints.resource_permission",
     }
 )
 
@@ -110,7 +110,7 @@ def _imports(path: Path) -> set[str]:
 
 
 def test_pre_f048_runtime_modules_are_deleted() -> None:
-    existing = [relative for relative in RETIRED_RUNTIME_FILES if (BISHENG_ROOT / relative).exists()]
+    existing = [relative for relative in RETIRED_RUNTIME_FILES if (DOBERMAN_AGENT_ROOT / relative).exists()]
     assert existing == []
 
 
@@ -124,7 +124,7 @@ def test_pre_f048_data_and_backfill_scripts_are_deleted() -> None:
 def test_migrated_business_modules_do_not_import_retired_runtime() -> None:
     violations: list[str] = []
     for relative_root in MIGRATED_RESOURCE_ROOTS:
-        for path in (BISHENG_ROOT / relative_root).rglob("*.py"):
+        for path in (DOBERMAN_AGENT_ROOT / relative_root).rglob("*.py"):
             for imported in _imports(path):
                 if imported in FORBIDDEN_IMPORTS:
                     violations.append(f"{path.relative_to(BACKEND_ROOT)}: {imported}")
@@ -163,10 +163,10 @@ def test_legacy_department_subject_uses_userset_without_business_query() -> None
 
 
 def test_role_access_and_owner_compatibility_are_identity_only() -> None:
-    role_sync_source = (BISHENG_ROOT / "permission/domain/services/legacy_rbac_sync_service.py").read_text(
+    role_sync_source = (DOBERMAN_AGENT_ROOT / "permission/domain/services/legacy_rbac_sync_service.py").read_text(
         encoding="utf-8"
     )
-    owner_source = (BISHENG_ROOT / "permission/domain/services/owner_service.py").read_text(encoding="utf-8")
+    owner_source = (DOBERMAN_AGENT_ROOT / "permission/domain/services/owner_service.py").read_text(encoding="utf-8")
 
     assert "ACCESS_TYPE_TO_FGA: dict[int, tuple[str, str]] = {}" in role_sync_source
     assert "_role_access_rows" not in role_sync_source
@@ -179,9 +179,9 @@ def test_role_access_and_owner_compatibility_are_identity_only() -> None:
 
 
 def test_legacy_role_resource_routes_are_retired() -> None:
-    user_api_source = (BISHENG_ROOT / "user/api/user.py").read_text(encoding="utf-8")
-    group_api_source = (BISHENG_ROOT / "api/v1/usergroup.py").read_text(encoding="utf-8")
-    group_service_source = (BISHENG_ROOT / "api/services/role_group_service.py").read_text(encoding="utf-8")
+    user_api_source = (DOBERMAN_AGENT_ROOT / "user/api/user.py").read_text(encoding="utf-8")
+    group_api_source = (DOBERMAN_AGENT_ROOT / "api/v1/usergroup.py").read_text(encoding="utf-8")
+    group_service_source = (DOBERMAN_AGENT_ROOT / "api/services/role_group_service.py").read_text(encoding="utf-8")
 
     assert '"/role_access/refresh"' not in user_api_source
     assert '"/role_access/list"' not in user_api_source
@@ -204,8 +204,8 @@ def test_frontends_do_not_expose_retired_permission_contracts() -> None:
 
 
 def test_openfga_runtime_rejects_dual_or_legacy_clients() -> None:
-    manager_source = (BISHENG_ROOT / "core/openfga/manager.py").read_text(encoding="utf-8")
-    config_source = (BISHENG_ROOT / "core/config/openfga.py").read_text(encoding="utf-8")
+    manager_source = (DOBERMAN_AGENT_ROOT / "core/openfga/manager.py").read_text(encoding="utf-8")
+    config_source = (DOBERMAN_AGENT_ROOT / "core/config/openfga.py").read_text(encoding="utf-8")
     assert "does not support legacy or dual-model clients" in manager_source
     assert "F048 requires false" in config_source
     assert "F048 requires an empty value" in config_source

@@ -4,7 +4,7 @@ import httpx
 import pytest
 from fastapi import FastAPI, Request
 
-from bisheng.utils import http_middleware as middleware
+from doberman_agent.utils import http_middleware as middleware
 from test.app_runtime.test_runtime_material_service import P
 
 
@@ -17,7 +17,7 @@ def test_material_channel_is_tenant_exempt_and_does_not_decode_browser_credentia
 
 
 async def test_stale_browser_cookie_cannot_select_material_request_identity(monkeypatch):
-    from bisheng.core.context import tenant
+    from doberman_agent.core.context import tenant
 
     def no_decode(_):
         pytest.fail("Material channel must not decode browser credentials")

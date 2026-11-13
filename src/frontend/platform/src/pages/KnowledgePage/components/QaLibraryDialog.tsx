@@ -1,5 +1,5 @@
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
@@ -167,26 +167,26 @@ export function QaLibraryDialog({ datalist, open, onOpenChange, onLoadEnd, mode 
                     {mode === 'edit' && currentLib && (
                         <div className="space-y-4">
                             <div className="flex items-center gap-48">
-                                <label className="bisheng-label text-sm text-gray-500">{t('lib.knowledgeBaseId', { ns: 'bs' })}</label>
+                                <label className="doberman_agent-label text-sm text-gray-500">{t('lib.knowledgeBaseId', { ns: 'bs' })}</label>
                                 <div className="text-sm">{currentLib.id}</div>
                             </div>
                             <div className="flex items-center gap-48">
-                                <label className="bisheng-label text-sm text-gray-500">{t('createTime', { ns: 'bs' })}</label>
+                                <label className="doberman_agent-label text-sm text-gray-500">{t('createTime', { ns: 'bs' })}</label>
                                 <div className="text-sm">{(currentLib.create_time || '').replace('T', ' ')}</div>
                             </div>
                         </div>
                     )}
                     <div className="">
-                        <label htmlFor="name" className="bisheng-label">{t('system.libraryName', { ns: 'bs' })}</label>
+                        <label htmlFor="name" className="doberman_agent-label">{t('system.libraryName', { ns: 'bs' })}</label>
                         <span className="text-red-500">*</span>
                         <Input name="name" ref={nameRef} placeholder={t('lib.enterLibraryName', { ns: 'bs' })} className={"col-span-3"} />
                     </div>
                     <div className="">
-                        <label htmlFor="desc" className="bisheng-label">{t('knowledgeDesc')}</label>
+                        <label htmlFor="desc" className="doberman_agent-label">{t('knowledgeDesc')}</label>
                         <Textarea id="desc" ref={descRef} placeholder={t('pleaseEnterDesc')} rows={8} textareaClassName={"col-span-3"} />
                     </div>
                     <div className="">
-                        <label htmlFor="model" className="bisheng-label">{t('embeddingModel')}</label>
+                        <label htmlFor="model" className="doberman_agent-label">{t('embeddingModel')}</label>
                         {isLoading ? (
                             <div className="flex items-center gap-2 p-3 border rounded-md bg-gray-50">
                                 <Outlined.Loading className="animate-spin w-4 h-4 animate-spin" />

@@ -1,5 +1,5 @@
-import { Button, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { Label } from "@/components/bs-ui/label";
@@ -49,7 +49,7 @@ export default function WorkflowModel({ llmOptions, onBack }) {
         <div className="max-w-[520px] mx-auto">
             <FallbackBlockedBanner visible={fallbackBlocked} />
             <div className="mt-10">
-                <Label className="bisheng-label">
+                <Label className="doberman_agent-label">
                     {t('model.modelsAndRAGNodes')}<span className="text-red-500 text-xs">*</span>
                     <InheritedBadge visible={inheritedFromRoot} />
                 </Label>

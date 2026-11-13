@@ -25,13 +25,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionServiceUnavailableError
-from bisheng.permission.application import (
+from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
+from doberman_agent.permission.application import (
     PermissionObject,
     PermissionRelation,
     PermissionSubject,
 )
-from bisheng.tenant.domain.services.resource_share_service import (
+from doberman_agent.tenant.domain.services.resource_share_service import (
     LEGACY_SHAREABLE_TYPES,
     SUPPORTED_SHAREABLE_TYPES,
     ResourceShareService,
@@ -50,14 +50,14 @@ def _make_permissions(subject_ids: tuple[str, ...] = ()):
 
 def _patch_permissions(permissions):
     return patch(
-        "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+        "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
         AsyncMock(return_value=permissions),
     )
 
 
 def _patch_children(child_ids: List[int]):
     return patch(
-        "bisheng.tenant.domain.services.resource_share_service.TenantDao.aget_children_ids_active",
+        "doberman_agent.tenant.domain.services.resource_share_service.TenantDao.aget_children_ids_active",
         AsyncMock(return_value=child_ids),
     )
 
@@ -262,7 +262,7 @@ async def test_disable_sharing_accepts_retired_types_for_cleanup(retired_type):
 async def test_enable_sharing_fails_when_permission_service_is_unavailable():
     with (
         patch(
-            "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
             AsyncMock(side_effect=PermissionServiceUnavailableError()),
         ),
         pytest.raises(PermissionServiceUnavailableError),
@@ -274,7 +274,7 @@ async def test_enable_sharing_fails_when_permission_service_is_unavailable():
 async def test_distribute_to_child_fails_when_permission_service_is_unavailable():
     with (
         patch(
-            "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
             AsyncMock(side_effect=PermissionServiceUnavailableError()),
         ),
         pytest.raises(PermissionServiceUnavailableError),

@@ -39,7 +39,7 @@
   **依赖**: 无
 
 - [x] **T002**: 实现 persist_linsight_report_citations
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_prompt_helper.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_prompt_helper.py`
   **逻辑**: 新增 `persist_linsight_report_citations(message_id, chat_id, report_texts)`：拼接文本 → `extract_citation_ids_from_text` → Redis `get_citations_by_ids` → `filter_registry_items_by_text` → `save_message_citations`。无标记 / 无 message_id / 无 items 直接 return。异常由调用方吞（本函数可让异常冒泡给 task_exec 的窄 try）。论证见 design 决策 4 / 坑 10。
   **测试**: T001 全部通过。
   **覆盖 AC**: AC-05, AC-06, AC-14
@@ -53,7 +53,7 @@
   **依赖**: 无
 
 - [x] **T004**: 改 SearchKnowledgeBase.base_search
-  **文件**: `src/backend/bisheng/tool/domain/langchain/linsight_knowledge.py`
+  **文件**: `src/backend/doberman_agent/tool/domain/langchain/linsight_knowledge.py`
   **逻辑**: 保留 Document；`setdefault knowledge_id/knowledge_name/access_scope=per_user`；`annotate_rag_documents_with_citations` → `collect_rag_citation_registry_items` → `cache_citation_registry_items`；输出 `KnowledgeUtils.format_retrieved_chunk`。注解包窄 try/except，失败回退裸结果。不改白名单 / `_arun` 软错误契约。论证见 design 决策 2 / 坑 1、2、9、12。
   **测试**: T003 全部通过；既有 `test_linsight_knowledge.py` 保持通过。
   **覆盖 AC**: AC-01, AC-13
@@ -69,7 +69,7 @@
   **依赖**: 无
 
 - [x] **T006**: agent_factory 包装 web_search 并注入 citation.yaml
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: `create_linsight_agent` 入口 `_wrap_linsight_web_citation_tools`（name/`tool_name`==`web_search`）。主 prompt / researcher prompt 在 has_kb 或 has_web 时追加 `CITATION_PROMPT_RULES`；researcher 另加末条带回标记。不改 `init_linsight_config_tools`。论证见 design 决策 3、7 / 坑 3、4。
   **测试**: T005 全部通过；既有 `test_subagent_reintroduction.py` / `test_skill_prompt_priority.py` 保持通过。
   **覆盖 AC**: AC-02, AC-03, AC-04, AC-13
@@ -85,7 +85,7 @@
   **依赖**: T002
 
 - [x] **T008**: task_exec 三处完成路径落引用
-  **文件**: `src/backend/bisheng/linsight/domain/task_exec.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/task_exec.py`
   **逻辑**: 新增 `_persist_report_citations`；在 `_handle_task_success` / `_handle_direct_answer_completion` / `_handle_task_partial` 捕获 `persist_task_turn_message` 返回值后调用。启动占位与 `_handle_task_failure` 不调用。窄 try/except，失败只打 warning。不写 history、不 push 新事件。论证见 design 决策 4 / 坑 5、11。
   **测试**: T007 全部通过；既有 `test_unified_task_turn_write.py` 保持通过。
   **覆盖 AC**: AC-05, AC-15

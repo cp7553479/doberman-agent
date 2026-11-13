@@ -11,9 +11,9 @@ from unittest.mock import AsyncMock
 import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 
-from bisheng.channel.domain.services.channel_chat_service import ChannelChatService
+from doberman_agent.channel.domain.services.channel_chat_service import ChannelChatService
 
-_ENDPOINT = Path(__file__).resolve().parents[2] / "bisheng" / "channel" / "api" / "endpoints" / "channel_chat.py"
+_ENDPOINT = Path(__file__).resolve().parents[2] / "doberman_agent" / "channel" / "api" / "endpoints" / "channel_chat.py"
 _IMG = "![chart](https://intel.example/chart.png)"
 _DEFAULT_USER_PROMPT = "{article_content}\n{question}"
 
@@ -24,7 +24,7 @@ def test_endpoint_does_not_orchestrate_vision_or_llm_stream():
     assert "run_react_vision_stream" not in text
     assert "create_react_agent" not in text
     assert "ImageRegistry" not in text
-    assert "bishengllm.astream" not in text
+    assert "doberman_agentllm.astream" not in text
     assert "ensure_article_sensitive_view_allowed" in text
 
 
@@ -52,7 +52,7 @@ def test_apply_image_anchors_noop_without_markdown_image():
 @pytest.mark.asyncio
 async def test_resolve_workbench_visual_follows_image_view_tool(monkeypatch):
     configured = AsyncMock(return_value=True)
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", configured)
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", configured)
     assert await ChannelChatService._resolve_workbench_visual(11, tenant_id=3) is True
     configured.assert_awaited_with(tenant_id=3)
     configured.return_value = False
@@ -69,7 +69,7 @@ async def test_stream_uses_vision_loop_when_visual_and_images(monkeypatch):
         yield AIMessage(content="answer with ![chart](https://intel.example/chart.png)")
 
     monkeypatch.setattr(
-        "bisheng.channel.domain.services.channel_chat_service.run_react_vision_stream",
+        "doberman_agent.channel.domain.services.channel_chat_service.run_react_vision_stream",
         fake_loop,
     )
     monkeypatch.setattr(ChannelChatService, "_resolve_workbench_visual", AsyncMock(return_value=True))
@@ -105,7 +105,7 @@ async def test_stream_does_not_annotate_when_visual_false(monkeypatch):
         yield AIMessage(content="ok")
 
     monkeypatch.setattr(
-        "bisheng.channel.domain.services.channel_chat_service.run_react_vision_stream",
+        "doberman_agent.channel.domain.services.channel_chat_service.run_react_vision_stream",
         fake_loop,
     )
     monkeypatch.setattr(ChannelChatService, "_resolve_workbench_visual", AsyncMock(return_value=False))
@@ -137,7 +137,7 @@ async def test_stream_does_not_annotate_without_markdown_image(monkeypatch):
         yield AIMessage(content="ok")
 
     monkeypatch.setattr(
-        "bisheng.channel.domain.services.channel_chat_service.run_react_vision_stream",
+        "doberman_agent.channel.domain.services.channel_chat_service.run_react_vision_stream",
         fake_loop,
     )
     monkeypatch.setattr(ChannelChatService, "_resolve_workbench_visual", AsyncMock(return_value=True))
@@ -184,7 +184,7 @@ async def test_stream_does_not_yield_first_round_tool_tokens(monkeypatch):
             "R", (), {"ok": True, "data_uri": "data:image/png;base64,aaa", "error": None, "reason": None}
         )()
     )
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
     monkeypatch.setattr(ChannelChatService, "_resolve_workbench_visual", AsyncMock(return_value=True))
 
     class _Vision:
@@ -195,7 +195,7 @@ async def test_stream_does_not_yield_first_round_tool_tokens(monkeypatch):
         del args, kwargs
         return _Vision()
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.resolve_image_view_llm", _resolve)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.resolve_image_view_llm", _resolve)
 
     llm = _FakeLLM(
         first=AIMessage(content="calling tool"),

@@ -9,7 +9,7 @@ import { showApiError } from "@/controllers/request"
 import { PersonalToken } from "@/pages/SystemPage/components/PersonalToken"
 import { render, screen, waitFor } from "@/test/test-utils"
 import type { PersonalTokenSetting } from "@/types/api/openApi"
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm"
 import { revokePersonalTokenApi } from "@/controllers/API/personalToken"
 
@@ -35,8 +35,8 @@ vi.mock("@/components/bs-icons", () => ({
 
 
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   message: vi.fn(),
 }))();

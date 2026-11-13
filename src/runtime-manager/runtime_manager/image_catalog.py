@@ -51,7 +51,7 @@ def create_inventory(metadata, *, platform, release, source_revision, published,
         ):
             raise ValueError("image source revision or release mismatch")
         tags = [value for value in item.get("RepoTags", []) if value.endswith(f":{release}-{native_arch}")]
-        if len(tags) != 1 or not tags[0].rsplit(":", 1)[0].endswith("bisheng-" + name):
+        if len(tags) != 1 or not tags[0].rsplit(":", 1)[0].endswith("doberman-agent-" + name):
             raise ValueError("image release tag missing or ambiguous")
         tag = tags[0]
         repository = tag.rsplit(":", 1)[0]
@@ -66,7 +66,7 @@ def create_inventory(metadata, *, platform, release, source_revision, published,
             {
                 "python-abi": "3.11",
                 "runtime-package": "3.0.0",
-                "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+                "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
             }
             if name in {"runtime-helper", "runtime-assembler"}
             else {}
@@ -117,7 +117,7 @@ def merge_inventories(inventories):
             address = image.get("image") or ""
             if "@" not in address or not DIGEST.fullmatch(address.split("@", 1)[1]):
                 raise ValueError("published digest required")
-            if not address.split("@", 1)[0].endswith("bisheng-" + name):
+            if not address.split("@", 1)[0].endswith("doberman-agent-" + name):
                 raise ValueError("image repository mismatch")
         platforms[item["platform"]] = item["images"]
     return {

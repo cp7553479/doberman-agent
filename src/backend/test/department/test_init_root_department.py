@@ -11,8 +11,8 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, select
 
-from bisheng.database.models.department import Department
-from bisheng.database.models.tenant import Tenant
+from doberman_agent.database.models.department import Department
+from doberman_agent.database.models.tenant import Tenant
 
 
 @pytest.fixture(scope="module")
@@ -219,7 +219,7 @@ class _FakeAsyncSession:
 
 
 async def test_default_departments_use_distinct_external_ids():
-    from bisheng.common.init_data import _init_default_root_department
+    from doberman_agent.common.init_data import _init_default_root_department
 
     tenant = Tenant(
         id=1,
@@ -237,7 +237,7 @@ async def test_default_departments_use_distinct_external_ids():
 
 
 async def test_existing_null_root_identity_is_committed_before_guest_insert():
-    from bisheng.common.init_data import _init_default_root_department
+    from doberman_agent.common.init_data import _init_default_root_department
 
     tenant = Tenant(
         id=1,
@@ -267,7 +267,7 @@ async def test_existing_null_root_identity_is_committed_before_guest_insert():
 
 
 async def test_existing_null_guest_identity_is_repaired():
-    from bisheng.common.init_data import _init_default_root_department
+    from doberman_agent.common.init_data import _init_default_root_department
 
     tenant = Tenant(
         id=1,

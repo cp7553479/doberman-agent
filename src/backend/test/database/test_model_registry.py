@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.core.database import model_discovery
-from bisheng.core.database.model_discovery import discover_sqlmodel_module_names, import_all_sqlmodel_models
+from doberman_agent.core.database import model_discovery
+from doberman_agent.core.database.model_discovery import discover_sqlmodel_module_names, import_all_sqlmodel_models
 
-_BISHENG_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_DOBERMAN_AGENT_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _declares_sqlmodel_table(path: Path) -> bool:
@@ -26,14 +26,14 @@ def _declares_sqlmodel_table(path: Path) -> bool:
 
 
 def _module_name(path: Path) -> str:
-    module_parts = list(path.relative_to(_BISHENG_ROOT.parent).with_suffix("").parts)
+    module_parts = list(path.relative_to(_DOBERMAN_AGENT_ROOT.parent).with_suffix("").parts)
     if module_parts[-1] == "__init__":
         module_parts.pop()
     return ".".join(module_parts)
 
 
 def test_discovery_covers_every_literal_sqlmodel_table_module():
-    discovered_modules = {_module_name(path) for path in _BISHENG_ROOT.rglob("*.py") if _declares_sqlmodel_table(path)}
+    discovered_modules = {_module_name(path) for path in _DOBERMAN_AGENT_ROOT.rglob("*.py") if _declares_sqlmodel_table(path)}
     convention_modules = set(discover_sqlmodel_module_names())
 
     missing_modules = discovered_modules - convention_modules
@@ -49,7 +49,7 @@ def test_strict_model_loading_registers_space_channel_member():
             sys.executable,
             "-c",
             "from sqlmodel import SQLModel; "
-            "from bisheng.core.database.model_discovery import import_all_sqlmodel_models; "
+            "from doberman_agent.core.database.model_discovery import import_all_sqlmodel_models; "
             "import_all_sqlmodel_models(); "
             "assert 'space_channel_member' in SQLModel.metadata.tables",
         ],
@@ -62,7 +62,7 @@ def test_strict_model_loading_registers_space_channel_member():
 
 
 def test_strict_model_loading_raises_when_a_discovered_module_cannot_import(monkeypatch):
-    missing_module = "bisheng.common.models.does_not_exist"
+    missing_module = "doberman_agent.common.models.does_not_exist"
     monkeypatch.setattr(model_discovery, "discover_sqlmodel_module_names", lambda: (missing_module,))
 
     with pytest.raises(RuntimeError, match=missing_module):

@@ -12,8 +12,8 @@ import ast
 
 import pytest
 
-from bisheng_langchain.gpts.tools.code_interpreter import local_executor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter import local_executor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 FONT_LINE = 'matplotlib.rc("font", family="WenQuanYi Zen Hei")'
 

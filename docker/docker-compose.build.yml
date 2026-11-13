@@ -1,0 +1,31 @@
+# Source builds for the application images; infrastructure uses published images.
+services:
+  backend:
+    pull_policy: never
+    build:
+      context: ../src/backend
+      args:
+        BACKEND_BASE_IMAGE: ${DOBERMAN_AGENT_BACKEND_BASE_IMAGE:-doberman-agent-backend-base:local}
+  backend_worker:
+    pull_policy: never
+  frontend:
+    pull_policy: never
+    build:
+      context: ../src/frontend
+  code-runner-1:
+    pull_policy: never
+    build:
+      context: ..
+      dockerfile: docker/doberman-agent-sandbox/Dockerfile
+  code-runner-2:
+    pull_policy: never
+  runtime-manager:
+    pull_policy: never
+    build:
+      context: ../src/runtime-manager
+  egress-proxy:
+    pull_policy: never
+  app-proxy:
+    pull_policy: never
+    build:
+      context: ../src/app-proxy

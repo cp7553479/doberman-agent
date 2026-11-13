@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 from pydantic import ValidationError
 
-from bisheng.dsh.config import DshSettings
+from doberman_agent.dsh.config import DshSettings
 
 
 def test_disabled_defaults_and_invalid_capacity_bounds():
@@ -26,12 +26,12 @@ def test_disabled_defaults_and_invalid_capacity_bounds():
 
 
 async def _construct_enabled_factories():
-    from bisheng.dsh.operations_runtime import OperationsRuntime
-    from bisheng.dsh.runtime import get_model_runtime
+    from doberman_agent.dsh.operations_runtime import OperationsRuntime
+    from doberman_agent.dsh.runtime import get_model_runtime
 
     settings = DshSettings(
         enabled=True,
-        platform_public_url="https://bisheng.example.com",
+        platform_public_url="https://doberman-agent.example.com",
         gateway_internal_url="https://gateway.example.com",
         quota_memory_budget_bytes=256 * 1024 * 1024,
         quota_memory_headroom_bytes=32 * 1024 * 1024,
@@ -86,7 +86,7 @@ def test_enabled_api_and_worker_factories_use_identical_capacity(tmp_path):
 def test_application_settings_load_optional_typed_dsh(document):
     import yaml
 
-    from bisheng.core.config.settings import Settings
+    from doberman_agent.core.config.settings import Settings
 
     settings = Settings.model_validate(yaml.safe_load(document))
     assert isinstance(settings.dsh, DshSettings)
@@ -94,7 +94,7 @@ def test_application_settings_load_optional_typed_dsh(document):
 
 
 def test_application_settings_reject_duplicate_deployment_configuration():
-    from bisheng.core.config.settings import Settings
+    from doberman_agent.core.config.settings import Settings
 
     settings = Settings(dsh={"billing_timezone": "Asia/Shanghai"})
     assert settings.dsh.billing_timezone == "Asia/Shanghai"
@@ -121,7 +121,7 @@ def test_application_schema_has_no_duplicate_trust_or_model_settings():
 
 
 def test_settings_serialization_preserves_typed_configuration():
-    from bisheng.core.config.settings import Settings
+    from doberman_agent.core.config.settings import Settings
 
     settings = Settings(dsh={"billing_timezone": "Asia/Shanghai"})
     payload = settings.model_dump(mode="json", include={"dsh"})

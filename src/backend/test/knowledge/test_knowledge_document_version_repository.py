@@ -2,8 +2,8 @@
 import pytest
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
     KnowledgeDocumentVersionRepositoryImpl,
 )
 
@@ -97,8 +97,8 @@ async def test_find_non_primary_by_knowledge_ids_empty_input(async_db_session: A
 @pytest.mark.asyncio
 async def test_find_non_primary_by_knowledge_ids_no_versions(async_db_session: AsyncSession):
     """A knowledge space with a document but no version rows -> []."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
         KnowledgeDocumentRepositoryImpl,
     )
 
@@ -113,8 +113,8 @@ async def test_find_non_primary_by_knowledge_ids_no_versions(async_db_session: A
 @pytest.mark.asyncio
 async def test_find_non_primary_by_knowledge_ids_single_space(async_db_session: AsyncSession):
     """1 primary + 2 non-primary versions in one space -> returns the 2 non-primary file ids."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
         KnowledgeDocumentRepositoryImpl,
     )
 
@@ -135,8 +135,8 @@ async def test_find_non_primary_by_knowledge_ids_single_space(async_db_session: 
 @pytest.mark.asyncio
 async def test_find_non_primary_by_knowledge_ids_multiple_spaces(async_db_session: AsyncSession):
     """Non-primary file ids are aggregated across multiple knowledge spaces."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
         KnowledgeDocumentRepositoryImpl,
     )
 
@@ -160,8 +160,8 @@ async def test_find_non_primary_by_knowledge_ids_multiple_spaces(async_db_sessio
 @pytest.mark.asyncio
 async def test_find_non_primary_by_knowledge_ids_isolation(async_db_session: AsyncSession):
     """Non-primary rows in a different knowledge space are NOT included."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
         KnowledgeDocumentRepositoryImpl,
     )
 

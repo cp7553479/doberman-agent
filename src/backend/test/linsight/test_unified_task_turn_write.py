@@ -17,10 +17,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 
 @pytest.fixture

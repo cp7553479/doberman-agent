@@ -1,4 +1,4 @@
-"""Run user code inside a lease working directory. Must not import bisheng."""
+"""Run user code inside a lease working directory. Must not import doberman_agent."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ _ENV_ALLOW = (
     "TEMP",
     "XDG_CACHE_HOME",
     "XDG_CONFIG_HOME",
-    # Image-wide matplotlib defaults (CJK font); see docker/bisheng-sandbox.
+    # Image-wide matplotlib defaults (CJK font); see docker/doberman-agent-sandbox.
     "MATPLOTLIBRC",
 )
 

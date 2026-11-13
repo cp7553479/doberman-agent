@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil"
-import type { BishengConfig, Chat, RunningStatus, SubmitData, WebSocketStatus } from "~/@types/chat"
+import type { DobermanAgentConfig, Chat, RunningStatus, SubmitData, WebSocketStatus } from "~/@types/chat"
 
 // Conversation data keyed by chatId.
 /**
@@ -72,8 +72,8 @@ export const chatApiVersionState = atom<'v1' | 'v2' | 'v3'>({
 })
 
 // Runtime application configuration.
-export const bishengConfState = atom<BishengConfig | null>({
-    key: "bishengConfState",
+export const dobermanAgentConfState = atom<DobermanAgentConfig | null>({
+    key: "dobermanAgentConfState",
     default: null,
 })
 

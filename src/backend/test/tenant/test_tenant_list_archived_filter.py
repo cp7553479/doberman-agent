@@ -54,11 +54,11 @@ def _compiled_where(stmts) -> str:
 
 @pytest.mark.asyncio
 async def test_alist_tenants_excludes_archived_by_default():
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.database.models.tenant import TenantDao
 
     session, captured = _make_session(total=0)
     with patch(
-        'bisheng.database.models.tenant.get_async_db_session',
+        'doberman_agent.database.models.tenant.get_async_db_session',
         _session_context(session),
     ):
         rows, total = await TenantDao.alist_tenants()
@@ -77,11 +77,11 @@ async def test_alist_tenants_excludes_archived_by_default():
 async def test_alist_tenants_explicit_archived_status_returns_archived_rows():
     """Audit / debug callers can still list archived rows by passing the
     status filter explicitly. The default exclusion must NOT win in that case."""
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.database.models.tenant import TenantDao
 
     session, captured = _make_session(total=0)
     with patch(
-        'bisheng.database.models.tenant.get_async_db_session',
+        'doberman_agent.database.models.tenant.get_async_db_session',
         _session_context(session),
     ):
         await TenantDao.alist_tenants(status='archived')
@@ -99,11 +99,11 @@ async def test_alist_tenants_explicit_archived_status_returns_archived_rows():
 async def test_alist_tenants_active_status_filter_unchanged():
     """A status='active' filter must keep behaving as a single equality
     predicate — the default-exclude branch should not stack onto it."""
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.database.models.tenant import TenantDao
 
     session, captured = _make_session(total=0)
     with patch(
-        'bisheng.database.models.tenant.get_async_db_session',
+        'doberman_agent.database.models.tenant.get_async_db_session',
         _session_context(session),
     ):
         await TenantDao.alist_tenants(status='active')

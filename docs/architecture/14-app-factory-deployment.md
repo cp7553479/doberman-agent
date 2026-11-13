@@ -11,7 +11,7 @@
 ## 这一层是什么
 
 「应用工场」让开发者把本地写好的应用（Web 页面、表单、看板、小工具、后端服务）
-用命令行一条 `bisheng deploy` 发布到平台上，成为与工作流、助手并列的第三种应用类型
+用命令行一条 `doberman-agent deploy` 发布到平台上，成为与工作流、助手并列的第三种应用类型
 ——**托管应用**。发布后它跑在平台管的容器里，用户从 `/apps/{slug}` 访问，
 登录态与可见范围由平台统一管，应用自己不做登录。
 
@@ -55,12 +55,12 @@
              └─ /apps/{slug}/…   → app-proxy :8090
                                       │  ① 问判定 ──► backend :7860 （内部授权端点，HMAC）
                                       │  ② 问地址 ──► runtime-manager :8091 （HMAC）
-                                      └──► 应用容器（bisheng-apps 网络内，不映射宿主端口）
+                                      └──► 应用容器（doberman-agent-apps 网络内，不映射宿主端口）
 
 backend :7860 ──（下发编排意图，HMAC）──► runtime-manager :8091 ──► dockerd
 ```
 
-托管应用容器接在一个名为 `bisheng-apps` 的 bridge 网络上，**不映射任何宿主端口**
+托管应用容器接在一个名为 `doberman-agent-apps` 的 bridge 网络上，**不映射任何宿主端口**
 ——它们只能被 app-proxy 访问到，这是「不绕过权限直连应用」的物理保证。
 
 ## 形态一：docker compose 单机
@@ -68,32 +68,32 @@ backend :7860 ──（下发编排意图，HMAC）──► runtime-manager :80
 ### 1. 准备数据目录
 
 ```bash
-mkdir -p /opt/bisheng/app-data && chmod 755 /opt/bisheng/app-data
+mkdir -p /opt/doberman-agent/app-data && chmod 755 /opt/doberman-agent/app-data
 ```
 
 数据目录必须是**本机磁盘**。托管应用的内置数据库用 SQLite（WAL 模式），
-放在 NFS / CIFS 等网络存储上会损坏。想换位置就设 `BISHENG_APP_DATA_ROOT`
+放在 NFS / CIFS 等网络存储上会损坏。想换位置就设 `DOBERMAN_AGENT_APP_DATA_ROOT`
 （compose 用它同时决定卷的宿主侧路径和 `RTM_HOST_DATA_ROOT`，两者不会漂移）。
 
-`bisheng-apps` 网络**由部署方创建，runtime-manager 不会自己建**——一个会偷偷建网的
+`doberman-agent-apps` 网络**由部署方创建，runtime-manager 不会自己建**——一个会偷偷建网的
 编排器会把"新机器上第一次发布必挂"这件事藏起来。compose 形态下这个"部署方"就是
-`docker-compose.yml`（文件末尾已声明该网络并显式写死 `name: bisheng-apps`），
+`docker-compose.yml`（文件末尾已声明该网络并显式写死 `name: doberman-agent-apps`），
 **不需要手工建**；只有不用 compose 的形态才要自己跑一次：
 
 ```bash
-docker network create bisheng-apps        # 仅 systemd / 非 compose 形态需要
+docker network create doberman-agent-apps        # 仅 systemd / 非 compose 形态需要
 ```
 
 ### 2. 生成三个密钥
 
 ```bash
-export BISHENG_RTM_HMAC_SECRET=$(openssl rand -hex 32)
-export BISHENG_APP_PROXY_HMAC_SECRET=$(openssl rand -hex 32)
-export BISHENG_APP_OBO_SECRET=$(openssl rand -hex 32)
+export DOBERMAN_AGENT_RTM_HMAC_SECRET=$(openssl rand -hex 32)
+export DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET=$(openssl rand -hex 32)
+export DOBERMAN_AGENT_APP_OBO_SECRET=$(openssl rand -hex 32)
 ```
 
 写进部署机的环境文件（compose 的 `.env` 或 systemd 的 `EnvironmentFile`），
-**三个必须互不相同**，且 `BISHENG_APP_OBO_SECRET` 必须不同于平台的 `jwt_secret`
+**三个必须互不相同**，且 `DOBERMAN_AGENT_APP_OBO_SECRET` 必须不同于平台的 `jwt_secret`
 （相同时后端会拒绝签发身份令牌并打印告警——共用会让注入应用的临时令牌
 能被当平台会话 cookie 用）。
 
@@ -147,19 +147,19 @@ docker compose --profile app-runtime up -d runtime-manager app-proxy
 | `RTM_HOST` / `RTM_PORT` | | | 容器内监听 `0.0.0.0:8091`；宿主 systemd 形态用 `127.0.0.1:8091` |
 | `RTM_HMAC_SECRET` | ✅ | `app_runtime.manager_hmac_secret` | 不一致 = 所有编排请求被回 401 |
 | `RTM_DATA_ROOT` | ✅ | — | **本进程看到的**数据目录路径 |
-| `RTM_HOST_DATA_ROOT` | compose 必填 | — | **宿主 dockerd 看到的**同一个目录。容器化跑时两者不同（容器内 `/app-data`，宿主 `/opt/bisheng/app-data`），不设会让应用数据落到一个没人看的地方且**不报错** |
-| `RTM_NETWORK` | | — | 默认 `bisheng-apps` |
+| `RTM_HOST_DATA_ROOT` | compose 必填 | — | **宿主 dockerd 看到的**同一个目录。容器化跑时两者不同（容器内 `/app-data`，宿主 `/opt/doberman-agent/app-data`），不设会让应用数据落到一个没人看的地方且**不报错** |
+| `RTM_NETWORK` | | — | 默认 `doberman-agent-apps` |
 | `RTM_RESERVE_MB` / `RTM_OVERCOMMIT_RATIO` / `RTM_BUILD_RESERVE_MB` | | — | 容量准入，见下。**改这里，不是改 config.yaml** |
 | `RTM_BUILD_INDEX_URL` | | — | 内网 pip 源（`python3.11` 模板）。不设 = 走镜像内默认源（公网 PyPI） |
-| `RTM_BUILD_EXTRA_INDEX_URL` | 用 SDK 时必填 | — | 平台自身的 pip 简单索引 `http://<平台宿主地址>:7860/api/v1/dev-toolkit/simple/`，应用 `requirements.txt` 里的 `bisheng-sdk` 从这里装（第三方依赖仍走上面那个主源）。⚠️ **值必须是构建容器可达的地址**：bridge 网络里 `localhost` 指向容器自己，写成 `localhost` 构建必失败，日志读起来像"平台的 pip 源挂了" |
+| `RTM_BUILD_EXTRA_INDEX_URL` | 用 SDK 时必填 | — | 平台自身的 pip 简单索引 `http://<平台宿主地址>:7860/api/v1/dev-toolkit/simple/`，应用 `requirements.txt` 里的 `doberman-agent-sdk` 从这里装（第三方依赖仍走上面那个主源）。⚠️ **值必须是构建容器可达的地址**：bridge 网络里 `localhost` 指向容器自己，写成 `localhost` 构建必失败，日志读起来像"平台的 pip 源挂了" |
 | `RTM_BUILD_EXTRA_TRUSTED_HOST` | 同上（http 时） | — | 上一行地址的主机部分；明文 http 索引不加它 pip 直接拒绝 |
 | ↑ 配这两项时**同时配 `RTM_BUILD_INDEX_URL`** | | | pip 在主源与附加源里**都找**同一个包名、取版本高的那个。主源若是公网 PyPI，外部同名包只要版本更高就会顶掉平台这份。指到内网镜像即可关掉这条路 |
 | `RTM_BUILD_NPM_REGISTRY` | | — | 内网 npm 源（`node20` 模板）。不设 = 走镜像内默认源（公网 registry）；`static` 模板不拉任何包 |
 | `RTM_DOCKER_HOST` | | — | 留空 = 本机 `/var/run/docker.sock` |
 | `RTM_MINIO_ENDPOINT` / `RTM_MINIO_ACCESS_KEY` / `RTM_MINIO_SECRET_KEY` / `RTM_MINIO_SECURE` | | 可与 `minio.*` 同值 | 托管应用**附件存储**（AC-45）。不设 = 句柄仍注入，应用的存储调用答 503，`runtime-status` 的 `attachment_storage` 会指出来 |
-| `RTM_STORAGE_BUCKET` | | — | 缺省 `bisheng-apps`，**独立于平台的 `bisheng` 桶**（nginx `location /bisheng/` 会把任意 key 转给 MinIO，附件不能进那个桶）。首次使用自动建桶、不设匿名策略、不挂 nginx location |
-| `RTM_STORAGE_MAX_FILE_MB` | | — | 单文件上限，缺省 20；同值注入应用为 `BISHENG_APP_STORAGE_MAX_FILE_MB` |
-| `RTM_APP_FACING_BASE_URL` | systemd 必填 | — | **应用容器**访问 runtime-manager 的地址（注入为 `BISHENG_APP_STORAGE_ENDPOINT` 前缀）。compose 下 `http://runtime-manager:8091`；systemd 下写 `bisheng-apps` 网桥网关，见形态二 |
+| `RTM_STORAGE_BUCKET` | | — | 缺省 `doberman-agent-apps`，**独立于平台的 `doberman-agent` 桶**（nginx `location /doberman-agent/` 会把任意 key 转给 MinIO，附件不能进那个桶）。首次使用自动建桶、不设匿名策略、不挂 nginx location |
+| `RTM_STORAGE_MAX_FILE_MB` | | — | 单文件上限，缺省 20；同值注入应用为 `DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB` |
+| `RTM_APP_FACING_BASE_URL` | systemd 必填 | — | **应用容器**访问 runtime-manager 的地址（注入为 `DOBERMAN_AGENT_APP_STORAGE_ENDPOINT` 前缀）。compose 下 `http://runtime-manager:8091`；systemd 下写 `doberman-agent-apps` 网桥网关，见形态二 |
 
 **app-proxy**：
 
@@ -179,10 +179,10 @@ docker compose --profile app-runtime up -d runtime-manager app-proxy
 `127.0.0.1` 指的是容器自己，空密钥是 fail-closed——进程照样启动、健康检查照样通过、
 每一个请求都渲染兜底页。所以它们**必须显式设置**，不能靠默认值。
 
-**两个服务都必须同时接在 `default` 与 `bisheng-apps` 两张网上**（compose 文件里已配好）：
+**两个服务都必须同时接在 `default` 与 `doberman-agent-apps` 两张网上**（compose 文件里已配好）：
 
 - `default` —— nginx 靠服务名 `app-proxy` 解析上游，backend 靠服务名找 runtime-manager；
-- `bisheng-apps` —— app-proxy 拿到的上游是应用容器在该网络上的 bridge IP，跨 bridge
+- `doberman-agent-apps` —— app-proxy 拿到的上游是应用容器在该网络上的 bridge IP，跨 bridge
   网络会被 docker 的隔离规则丢包；runtime-manager 的启动探活也是直接 HTTP 访问同一个 IP。
 
 ⚠️ compose 里只要给某个 service 写了 `networks:`，它就**不再自动接 default**，
@@ -207,8 +207,8 @@ docker compose --profile app-runtime up -d runtime-manager app-proxy
 
 | 单元 | 监听 | 依赖 | 运行身份 |
 |------|------|------|---------|
-| `bisheng-runtime-manager.service` | `127.0.0.1:8091` | `After=docker.service` | root 或 docker 组（需访问 docker socket） |
-| `bisheng-app-proxy.service` | `127.0.0.1:8090` | `After=bisheng-api.service` | 普通用户即可，**不要**给 docker 权限 |
+| `doberman-agent-runtime-manager.service` | `127.0.0.1:8091` | `After=docker.service` | root 或 docker 组（需访问 docker socket） |
+| `doberman-agent-app-proxy.service` | `127.0.0.1:8090` | `After=doberman-agent-api.service` | 普通用户即可，**不要**给 docker 权限 |
 
 与 compose 形态的差异只有三点：
 
@@ -221,31 +221,31 @@ docker compose --profile app-runtime up -d runtime-manager app-proxy
 密钥经 `EnvironmentFile` 注入、不落配置文件：
 
 ```
-/etc/bisheng/runtime-manager.env     # RTM_HMAC_SECRET / RTM_DATA_ROOT / RTM_NETWORK …
-/etc/bisheng/app-proxy.env           # APP_PROXY_BACKEND_BASE / …_MANAGER_BASE / 两个 SECRET
+/etc/doberman-agent/runtime-manager.env     # RTM_HMAC_SECRET / RTM_DATA_ROOT / RTM_NETWORK …
+/etc/doberman-agent/app-proxy.env           # APP_PROXY_BACKEND_BASE / …_MANAGER_BASE / 两个 SECRET
 ```
 
 单元文件模板在 `features/v3.0.0/054-app-domain-runtime/deploy/`
-（`bisheng-runtime-manager.service` / `bisheng-app-proxy.service`），真身由各环境的
-部署仓维护。装好后把两者加进平台 `bisheng.target` 的 `Wants=` 与部署脚本的服务清单。
+（`doberman-agent-runtime-manager.service` / `doberman-agent-app-proxy.service`），真身由各环境的
+部署仓维护。装好后把两者加进平台 `doberman_agent.target` 的 `Wants=` 与部署脚本的服务清单。
 
 两个单元都只监听 `127.0.0.1`：前面永远有 nginx，HMAC 是防篡改不是防暴露，
 把编排端口挂到 `0.0.0.0` 等于把编排能力挂到网上。
 
 **附件存储句柄的例外**（AC-45）：托管应用要从容器里回调 runtime-manager 存取附件，
 而 `127.0.0.1` 在容器里是容器自己。systemd 形态把 runtime-manager 绑到
-`bisheng-apps` 网桥的**网关地址**（宿主本地、外网不可达，仍不是 `0.0.0.0`）：
+`doberman-agent-apps` 网桥的**网关地址**（宿主本地、外网不可达，仍不是 `0.0.0.0`）：
 
 ```bash
-GW=$(docker network inspect bisheng-apps -f '{{(index .IPAM.Config 0).Gateway}}')   # 形如 172.18.0.1
-# /etc/bisheng/runtime-manager.env
+GW=$(docker network inspect doberman-agent-apps -f '{{(index .IPAM.Config 0).Gateway}}')   # 形如 172.18.0.1
+# /etc/doberman-agent/runtime-manager.env
 RTM_HOST=$GW
 RTM_APP_FACING_BASE_URL=http://$GW:8091
 # 同步改 backend config.yaml 的 app_runtime.manager_base_url 与 app-proxy 的 APP_PROXY_MANAGER_BASE
 ```
 
 ⚠️ **`RTM_HOST` 只有在单元的 `ExecStart` 从它取值时才生效。** 老版本的
-`bisheng-runtime-manager.service` 把 `--host 127.0.0.1` 写死在 `ExecStart` 里，
+`doberman-agent-runtime-manager.service` 把 `--host 127.0.0.1` 写死在 `ExecStart` 里，
 EnvironmentFile 里设了也不生效——而**只设 `RTM_APP_FACING_BASE_URL`、没换绑定地址
 是比忘记设更常见的半配置**：知道有这个变量的人会先设它。2026-09-16 在 114 上实测：
 `attachment_storage` 答 `ok=true`、写着「apps dial http://172.22.0.1:8091」，
@@ -264,8 +264,8 @@ EnvironmentFile 里设了也不生效——而**只设 `RTM_APP_FACING_BASE_URL`
 location /apps/ {
     # ① compose 形态必须用「变量 + resolver 延迟解析」
     resolver 127.0.0.11 valid=10s ipv6=off;
-    set $bisheng_app_proxy http://app-proxy:8090;
-    proxy_pass $bisheng_app_proxy$request_uri;
+    set $doberman_agent_app_proxy http://app-proxy:8090;
+    proxy_pass $doberman_agent_app_proxy$request_uri;
 
     proxy_http_version 1.1;
     proxy_set_header Host $host;
@@ -307,7 +307,7 @@ location @apps_unavailable {
 
 ## 配置项详解
 
-模板见 `docker/bisheng/config/config.yaml` 文件末尾的「应用工场」段。
+模板见 `docker/doberman-agent/config/config.yaml` 文件末尾的「应用工场」段。
 **所有键都是进程级配置，改完必须重启后端**（不是数据库里的热配置，界面上改不了）。
 **没有 `BS_*` 环境变量覆盖机制**——`app_runtime` / `open_platform` 只能写在
 config.yaml 里；要避免明文密钥，用 `!env ${VAR}` 语法从环境变量取值。
@@ -337,7 +337,7 @@ config.yaml 里；要避免明文密钥，用 `!env ${VAR}` 语法从环境变�
 | `proxy_hmac_secret` | `""` | `openssl rand -hex 32`，与 `APP_PROXY_BACKEND_SECRET` 一致 |
 | `obo_secret` | `""` | `openssl rand -hex 32`，**必须不等于 `jwt_secret`** |
 | `obo_ttl_seconds` | `900` | 注入应用的身份令牌寿命（秒），最小 60 |
-| `entry_base_url` | `""` | 用户实际访问平台的对外基地址，如 `https://bisheng.example.com`（不带结尾斜杠）。**强烈建议配**：留空时应用地址只能给出相对路径 `/apps/{slug}`，浏览器里能用，但二维码、CLI 回显、外发链接都是残缺的 |
+| `entry_base_url` | `""` | 用户实际访问平台的对外基地址，如 `https://platform.example.com.com`（不带结尾斜杠）。**强烈建议配**：留空时应用地址只能给出相对路径 `/apps/{slug}`，浏览器里能用，但二维码、CLI 回显、外发链接都是残缺的 |
 | `ws_max_lifetime_seconds` | `28800` | 单条被反代 WebSocket 的授权寿命上限（秒）。能力后置，当前占位 |
 | `access_log_merge_window_seconds` | `1800` | 托管应用访问记录的合并窗口（秒）：同一用户在窗口内反复进入同一应用只记一条（Redis 键 `app_access:{app_id}:{user_id}` 的 TTL）。30 分钟对齐会话粒度，刷新页面不会多出一条；Redis 不可达时照常记录、只是不去重 |
 | `max_package_mb` | `50` | 上传包体积上限（MB） |
@@ -387,7 +387,7 @@ app_runtime:
 
 > **这几个数只在 runtime-manager 的环境变量里生效**：`RTM_RESERVE_MB` /
 > `RTM_OVERCOMMIT_RATIO` / `RTM_BUILD_RESERVE_MB`。compose 形态改
-> `docker-compose.yml` 的 runtime-manager 服务（或对应的 `BISHENG_RTM_*`），
+> `docker-compose.yml` 的 runtime-manager 服务（或对应的 `DOBERMAN_AGENT_RTM_*`），
 > systemd 形态写进它的 `EnvironmentFile`，**改完要重启该进程**（配置只在启动时读一次）。
 > 判定发生在这个进程里，后端的 `config.yaml` 既看不到也改不动它。
 
@@ -423,7 +423,7 @@ app_runtime:
 **先发代码 → 再往 config.yaml 加键 → 再全量重启。**
 
 后端加载 config.yaml 时，对**不认识的顶层键直接抛 `KeyError` 拒绝启动**
-（`bisheng/common/services/config_service.py` 的 `load_settings_from_yaml`）。
+（`doberman-agent/common/services/config_service.py` 的 `load_settings_from_yaml`）。
 所以把 `app_runtime:` / `open_platform:` 加到还没升级到 v3.0 的镜像上，
 后端**起不来**——症状是容器反复重启，日志里一行 `Key app_runtime not found in settings`，
 看起来像"升级把平台搞坏了"，实际只是顺序反了。
@@ -438,12 +438,12 @@ cd docker/ && ./deploy.sh update
 docker compose logs backend | tail -20        # 起来了、健康检查过了
 
 # 3. 加键（app_runtime / open_platform；open_api 各键已默认开，按需覆盖）
-vi bisheng/config/config.yaml
+vi doberman-agent/config/config.yaml
 
 # 4. 全量重启：API、三个 celery worker、beat、灵思 worker 一个都不能漏
 ./deploy.sh restart backend backend_worker
 
-# 5. 起运行时层（compose 会自己建 bisheng-apps 网络）
+# 5. 起运行时层（compose 会自己建 doberman-agent-apps 网络）
 docker compose --profile app-runtime up -d runtime-manager app-proxy
 ```
 
@@ -502,12 +502,12 @@ curl -s -b "access_token_cookie=<token>" http://<host>:3001/api/v1/apps/runtime-
 | 检查项 | 不过的含义 |
 |--------|-----------|
 | `orchestration_backend` | 连不上 dockerd。检查 socket 挂载 / 运行身份 |
-| `application_network` | `bisheng-apps` 网络不存在 → `docker network create bisheng-apps` |
+| `application_network` | `doberman-agent-apps` 网络不存在 → `docker network create doberman-agent-apps` |
 | `data_root_writable` | 数据目录不可写 → 检查 `data_root` / `RTM_DATA_ROOT` 与目录权限 |
 | `host_data_root_mapping` | compose 形态 `RTM_HOST_DATA_ROOT` 不是绝对路径 |
 | `runtime_templates` | 一个运行时模板都没装（镜像不完整） |
 | `base_images` | 基础镜像不在本地，`detail` 里逐个列出缺哪些。离线环境要**先手动 pull**（三个模板各一个，见下节），否则第一次构建会挂很久然后失败 |
-| `attachment_storage` | 附件存储没配（`RTM_MINIO_*`）、桶配成了公共桶 `bisheng`、应用容器够不到本进程（systemd 形态没给 `RTM_APP_FACING_BASE_URL`），或**给了 `RTM_APP_FACING_BASE_URL` 却仍绑在回环上**（广播的地址没人应答）。detail 里写明改哪个变量 |
+| `attachment_storage` | 附件存储没配（`RTM_MINIO_*`）、桶配成了公共桶 `doberman-agent`、应用容器够不到本进程（systemd 形态没给 `RTM_APP_FACING_BASE_URL`），或**给了 `RTM_APP_FACING_BASE_URL` 却仍绑在回环上**（广播的地址没人应答）。detail 里写明改哪个变量 |
 
 再走一遍端到端：用**非管理员账号**访问一个已上线应用的 `/apps/{slug}`
 （管理员会短路权限判定，用管理员验等于没验）。
@@ -520,8 +520,8 @@ curl -s -b "access_token_cookie=<token>" http://<host>:3001/api/v1/apps/runtime-
 
 | `runtime` | 基础镜像 | 构建时做什么 | 启动命令 |
 |-----------|---------|-------------|---------|
-| `python3.11` | `python:3.11-slim` | `requirements.txt` 非空才 `pip install`（走 `RTM_BUILD_INDEX_URL`，`bisheng-sdk` 走 `RTM_BUILD_EXTRA_INDEX_URL` 指向的平台简单索引） | `BISHENG_APP_START` → `Procfile` `web:` → `main.py` → `app.py` |
-| `node20` | `node:20-slim` | `package.json` 有依赖才装：有 `package-lock.json` / `npm-shrinkwrap.json` 用 `npm ci`，否则 `npm install`（走 `RTM_BUILD_NPM_REGISTRY`）；有 `scripts.build` 先 `npm run build` 再裁掉 devDependencies | `BISHENG_APP_START` → `Procfile` `web:` → `package.json` `scripts.start` → `main` → `server.js` / `index.js` / `app.js` / `main.js` |
+| `python3.11` | `python:3.11-slim` | `requirements.txt` 非空才 `pip install`（走 `RTM_BUILD_INDEX_URL`，`doberman-agent-sdk` 走 `RTM_BUILD_EXTRA_INDEX_URL` 指向的平台简单索引） | `DOBERMAN_AGENT_APP_START` → `Procfile` `web:` → `main.py` → `app.py` |
+| `node20` | `node:20-slim` | `package.json` 有依赖才装：有 `package-lock.json` / `npm-shrinkwrap.json` 用 `npm ci`，否则 `npm install`（走 `RTM_BUILD_NPM_REGISTRY`）；有 `scripts.build` 先 `npm run build` 再裁掉 devDependencies | `DOBERMAN_AGENT_APP_START` → `Procfile` `web:` → `package.json` `scripts.start` → `main` → `server.js` / `index.js` / `app.js` / `main.js` |
 | `static` | `nginx:1.27-alpine` | 不装任何包。找 `index.html`：包根目录 → `dist/` → `build/` → `public/`，取第一个命中的目录 | 无应用进程；nginx 以非 root 跑，配置、pid、临时文件全在 `/tmp` |
 
 这些决定在**渲染 Dockerfile 时**就从源码树里读定（`source_facts`），渲染出的 Dockerfile 写明做了什么；
@@ -538,15 +538,15 @@ docker pull python:3.11-slim node:20-slim nginx:1.27-alpine
 
 **装完新模板后的一次性验证**（单元测试只覆盖渲染结果，镜像能不能起来只有真 dockerd 能回答）。在部署机上，
 分别拿一个最小 `node20` 项目（`server.js` 监听 `PORT`，无 `package.json`）和一个最小 `static` 项目（一个 `index.html`）
-走一遍 `bisheng deploy`，然后：
+走一遍 `doberman-agent deploy`，然后：
 
 ```bash
 # 1. 三个镜像都在本地、预检全绿
 curl -s -b "access_token_cookie=<token>" http://<host>:3001/api/v1/apps/runtime-status | python3 -m json.tool | grep -A2 base_images
 
 # 2. 构建成功、容器以 uid 10001 跑、根文件系统只读
-docker ps --filter name=bisheng-app- --format '{{.Names}} {{.Image}} {{.Status}}'
-docker inspect <容器名> --format '{{.Config.User}} {{.HostConfig.ReadonlyRootfs}} {{.State.Health.Status}}'   # 期望：bisheng true healthy
+docker ps --filter name=doberman-agent-app- --format '{{.Names}} {{.Image}} {{.Status}}'
+docker inspect <容器名> --format '{{.Config.User}} {{.HostConfig.ReadonlyRootfs}} {{.State.Health.Status}}'   # 期望：doberman-agent true healthy
 
 # 3. 入口能开、静态包的子路径与前端路由都回落到 index.html
 curl -s -o /dev/null -w '%{http_code}\n' http://<host>:3001/apps/<slug>/
@@ -569,11 +569,11 @@ time docker stop <容器名>
 | 所有上线 / 下线动作返回 16121「应用运行时不可用」 | `manager_hmac_secret` 与 `RTM_HMAC_SECRET` 不一致（**不是** dockerd 挂了，先查这个） |
 | 上线卡在「待上线（资源不足）」 | 容量准入没过。看 `runtime-status` 的 `capacity`：先比 `committed_cpu` 与 `cpu × overcommit_ratio`（CPU 常常先于内存撞顶），再看内存。调 runtime-manager 的 `RTM_RESERVE_MB` / `RTM_OVERCOMMIT_RATIO`（**不是 config.yaml**，改完重启该进程），或改用更小的档位 |
 | 构建一直失败在拉包 | 内网无外网出口 → `RTM_BUILD_INDEX_URL` 指向私有 pip 源（`python3.11`）/ `RTM_BUILD_NPM_REGISTRY` 指向私有 npm 源（`node20`）。没有依赖的应用不会拉包，先确认它是不是真的需要 |
-| 构建失败只在 `bisheng-sdk` 这一行 | ①`RTM_BUILD_EXTRA_INDEX_URL` 没配；②配成了 `localhost`（构建容器里那是它自己）；③平台没发布 SDK 安装件——`curl <平台>/api/v1/dev-toolkit/versions` 看 `data.sdk` 是不是 null，是就补 `bash scripts/pack_sdk_wheel.sh` 并提交 |
-| `static` 应用预检失败在 `render_dockerfile`，提示找不到 `index.html` | 构建产物在 `dist/` / `build/` 下，而 CLI 打包默认不带这两个目录 → 项目里加 `.bishengignore` 写一行 `!dist/`，或把 `index.html` 放到包根目录 |
+| 构建失败只在 `doberman-agent-sdk` 这一行 | ①`RTM_BUILD_EXTRA_INDEX_URL` 没配；②配成了 `localhost`（构建容器里那是它自己）；③平台没发布 SDK 安装件——`curl <平台>/api/v1/dev-toolkit/versions` 看 `data.sdk` 是不是 null，是就补 `bash scripts/pack_sdk_wheel.sh` 并提交 |
+| `static` 应用预检失败在 `render_dockerfile`，提示找不到 `index.html` | 构建产物在 `dist/` / `build/` 下，而 CLI 打包默认不带这两个目录 → 项目里加 `.doberman-agentignore` 写一行 `!dist/`，或把 `index.html` 放到包根目录 |
 | `node20` 应用起来了但一直不健康 | 应用没监听 `PORT` / 绑了 `127.0.0.1`（与 python 一样），或 `scripts.start` 里的命令依赖 `npm start` 才有的行为——启动命令是直接执行的，不经过 npm |
 | 应用能跑，但重启后数据没了 | compose 形态漏配 `RTM_HOST_DATA_ROOT`，数据落在了容器内路径对应的宿主目录之外 |
-| CLI `bisheng deploy` 报 16207 | 该环境没装运行时层（或 `enabled` 是 false） |
+| CLI `doberman-agent deploy` 报 16207 | 该环境没装运行时层（或 `enabled` 是 false） |
 | CLI 拿不到 `app:manage` 能力位 | `open_platform.enabled` 是 `false` |
 | 管理后台「系统管理」里没有「服务账号」tab | `open_api.management_ui_enabled` 被显式配成了 `false`，或后端没重启 |
 | 升级后后端起不来，迁移日志提示 `service_account` / `api_credential` 表已存在或列不匹配 | 这台机器跑过 vibe 版 open_api，不能原地升级——见上文「已跑过 vibe 版 open_api 的库不能原地升级」 |
@@ -584,8 +584,8 @@ time docker stop <容器名>
 ```bash
 ./deploy.sh logs runtime-manager              # 等价于 docker compose --profile app-runtime logs -f
 ./deploy.sh logs app-proxy
-journalctl -u bisheng-runtime-manager -f      # systemd 形态
-tail -f /tmp/bisheng-app-proxy.log            # systemd 形态（单元模板里的落盘位置）
+journalctl -u doberman-agent-runtime-manager -f      # systemd 形态
+tail -f /tmp/doberman-agent-app-proxy.log            # systemd 形态（单元模板里的落盘位置）
 ```
 
 托管应用自身的日志经平台界面（应用详情 → 日志）与 CLI 查看，保留窗口 =
@@ -608,8 +608,8 @@ tail -f /tmp/bisheng-app-proxy.log            # systemd 形态（单元模板里
 | `app.state_transition` | backend | `app_id` `from_state` `to_state` `reason` `actor` `result` | 应用态每一次变更尝试。`result=lost_race`（并发抢跑）与 `result=refused`（非法跃迁）**不进审计表**，只有这里看得到——「状态卡住不动」先查这两个 |
 
 ```bash
-journalctl -u bisheng-app-proxy | grep app_proxy.header_strip        # 伪造头
-journalctl -u bisheng-runtime-manager | grep rtm.rebuild             # 谁在反复重建
+journalctl -u doberman-agent-app-proxy | grep app_proxy.header_strip        # 伪造头
+journalctl -u doberman-agent-runtime-manager | grep rtm.rebuild             # 谁在反复重建
 ./deploy.sh logs backend | grep app.state_transition | grep lost_race
 ```
 
@@ -621,14 +621,14 @@ journalctl -u bisheng-runtime-manager | grep rtm.rebuild             # 谁在反
 
 | 内容 | 位置 | 要不要备份 |
 |------|------|-----------|
-| 应用数据（SQLite） | `{data_root}/apps/{app_id}/db/app.db`（默认 `data_root` 为 `/opt/bisheng/app-data`；compose 形态是宿主侧 `BISHENG_APP_DATA_ROOT`） | **要**，且不能裸拷，见下 |
-| 代码快照 | MinIO 独立 bucket **`bisheng-apps`**，键 `apps/{app_id}/versions/{version_id}/code.tar.gz`（只增不改，每个已发布版本一份） | 随 MinIO 备份，**整桶备**——同桶下的附件前缀（`apps/{app_id}/attachments/`）一并覆盖 |
+| 应用数据（SQLite） | `{data_root}/apps/{app_id}/db/app.db`（默认 `data_root` 为 `/opt/doberman-agent/app-data`；compose 形态是宿主侧 `DOBERMAN_AGENT_APP_DATA_ROOT`） | **要**，且不能裸拷，见下 |
+| 代码快照 | MinIO 独立 bucket **`doberman-agent-apps`**，键 `apps/{app_id}/versions/{version_id}/code.tar.gz`（只增不改，每个已发布版本一份） | 随 MinIO 备份，**整桶备**——同桶下的附件前缀（`apps/{app_id}/attachments/`）一并覆盖 |
 | 应用元数据（应用、版本、实例、审批单） | 平台 MySQL / DM8 的 `app*` 表 | 随平台库备份 |
 | 期望态文件 | `{data_root}/state/desired-state.json` | 可丢：进程启动时会从容器标签重建 |
-| 应用附件 | 同一个 `bisheng-apps` 桶，前缀 `apps/{app_id}/attachments/` | 随整桶备份；**owner 显式删除应用时随之清空** |
-| 构建上下文 / 镜像 | `{data_root}/builds/`、dockerd 里的 `bisheng-app/*` 镜像 | 可丢：重新上线会从代码快照重建 |
+| 应用附件 | 同一个 `doberman-agent-apps` 桶，前缀 `apps/{app_id}/attachments/` | 随整桶备份；**owner 显式删除应用时随之清空** |
+| 构建上下文 / 镜像 | `{data_root}/builds/`、dockerd 里的 `doberman-agent-app/*` 镜像 | 可丢：重新上线会从代码快照重建 |
 
-`bisheng-apps` 桶**不挂 nginx location、不设匿名策略**，与公共 `bisheng` 桶隔离；备份时用 MinIO 自己的
+`doberman-agent-apps` 桶**不挂 nginx location、不设匿名策略**，与公共 `doberman-agent` 桶隔离；备份时用 MinIO 自己的
 工具（`mc mirror` / 站点复制）而不是走 HTTP 入口。
 
 ### SQLite 快照：绝不裸 tar 一个 WAL 库
@@ -638,18 +638,18 @@ journalctl -u bisheng-runtime-manager | grep rtm.rebuild             # 谁在反
 必须先用 SQLite 的在线备份 API 生成一致快照，再归档快照文件——应用**不用停**，备份过程不阻塞它的读写：
 
 ```bash
-DATA_ROOT=/opt/bisheng/app-data          # RTM_DATA_ROOT（systemd）/ BISHENG_APP_DATA_ROOT（compose）
+DATA_ROOT=/opt/doberman-agent/app-data          # RTM_DATA_ROOT（systemd）/ DOBERMAN_AGENT_APP_DATA_ROOT（compose）
 STAMP=$(date +%Y%m%dT%H%M%S)
-mkdir -p /var/backups/bisheng-apps/$STAMP
+mkdir -p /var/backups/doberman-agent-apps/$STAMP
 
 for db in "$DATA_ROOT"/apps/*/db/app.db; do
     app_id=$(basename "$(dirname "$(dirname "$db")")")
     # 有 sqlite3 命令行就用它；没有就用 python3 标准库（平台机器上一定有）
-    sqlite3 "$db" ".backup '/var/backups/bisheng-apps/$STAMP/$app_id.db'" \
+    sqlite3 "$db" ".backup '/var/backups/doberman-agent-apps/$STAMP/$app_id.db'" \
     || python3 -c "import sqlite3,sys; s=sqlite3.connect(sys.argv[1]); d=sqlite3.connect(sys.argv[2]); s.backup(d); d.close(); s.close()" \
-         "$db" "/var/backups/bisheng-apps/$STAMP/$app_id.db"
+         "$db" "/var/backups/doberman-agent-apps/$STAMP/$app_id.db"
 done
-tar -C /var/backups/bisheng-apps -czf "/var/backups/bisheng-apps/$STAMP.tar.gz" "$STAMP"
+tar -C /var/backups/doberman-agent-apps -czf "/var/backups/doberman-agent-apps/$STAMP.tar.gz" "$STAMP"
 ```
 
 得到的 `{app_id}.db` 是自包含的单文件（不带 `-wal` / `-shm`），可以放心归档、异地存放。
@@ -660,7 +660,7 @@ tar -C /var/backups/bisheng-apps -czf "/var/backups/bisheng-apps/$STAMP.tar.gz" 
 
 按这个顺序，每一步都可以独立核对：
 
-1. **先恢复平台库与 MinIO**（`app*` 表 + `bisheng-apps` 桶）。应用的存在、版本号、审批状态都在库里，
+1. **先恢复平台库与 MinIO**（`app*` 表 + `doberman-agent-apps` 桶）。应用的存在、版本号、审批状态都在库里，
    代码在桶里；两者对不上时，上线会失败在「取不到代码快照」。
 2. **停掉要恢复数据的应用**：在应用详情页「下线」，或让它保持未上线状态。容器还在跑时替换库文件，
    跑着的连接会写回旧页，恢复等于没做。
@@ -683,5 +683,5 @@ tar -C /var/backups/bisheng-apps -czf "/var/backups/bisheng-apps/$STAMP.tar.gz" 
 - 系统架构总览 -- [`01-architecture-overview.md`](01-architecture-overview.md)
 - 权限体系（谁能看到 / 进入一个托管应用）-- [`10-permission-rbac.md`](10-permission-rbac.md)
 - 商业版网关（它只认 `/api`，`/apps` 必须在它前面的 nginx 层直达）-- [`11-gateway.md`](11-gateway.md)
-- 配置模板 -- `docker/bisheng/config/config.yaml`
-- 配置模型定义 -- `src/backend/bisheng/core/config/app_runtime.py` · `open_platform.py`
+- 配置模板 -- `docker/doberman-agent/config/config.yaml`
+- 配置模型定义 -- `src/backend/doberman_agent/core/config/app_runtime.py` · `open_platform.py`

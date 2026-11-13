@@ -55,7 +55,7 @@ const versions = (overrides: Partial<DevToolkitVersions> = {}): DevToolkitVersio
   cli: {
     version: "3.0.0",
     min_compatible: "3.0.0",
-    filename: "bisheng_cli-3.0.0-py3-none-any.whl",
+    filename: "doberman_agent_cli-3.0.0-py3-none-any.whl",
     sha256: "abc",
     download_path: DOWNLOAD_PATH,
   },
@@ -106,16 +106,16 @@ describe("service-account access information (AC-44)", () => {
     // The login guidance names the platform and marks where the key goes.
     expect(
       screen.getByText(
-        `bisheng login ${window.location.origin} --api-key openApiManagement.accessInfo.keyPlaceholder`,
+        `doberman_agent login ${window.location.origin} --api-key openApiManagement.accessInfo.keyPlaceholder`,
       ),
     ).toBeInTheDocument()
   })
 
   it("builds the login command and the installer link on the address the backend resolved", async () => {
     // A gateway or path-prefix deployment: the browser's origin has no
-    // `/bisheng` prefix, so composing these two rows from it would print a
+    // `/doberman_agent` prefix, so composing these two rows from it would print a
     // login command that 404s right under an MCP address that works.
-    const base = "https://portal.example.com/bisheng"
+    const base = "https://portal.example.com/doberman_agent"
     vi.mocked(getDevToolkitVersionsApi).mockResolvedValue(
       versions({
         platform: {
@@ -130,7 +130,7 @@ describe("service-account access information (AC-44)", () => {
 
     expect(
       await screen.findByText(
-        `bisheng login ${base} --api-key openApiManagement.accessInfo.keyPlaceholder`,
+        `doberman_agent login ${base} --api-key openApiManagement.accessInfo.keyPlaceholder`,
       ),
     ).toBeInTheDocument()
     expect(screen.getByRole("link")).toHaveAttribute("href", `${base}${DOWNLOAD_PATH}`)
@@ -193,7 +193,7 @@ describe("one-click copy (AC-45)", () => {
     expect(copied).toContain(MCP_URL)
     expect(copied).toContain(MODEL_BASE_URL)
     expect(copied).toContain(`${window.location.origin}${DOWNLOAD_PATH}`)
-    expect(copied).toContain("bisheng login")
+    expect(copied).toContain("doberman_agent login")
     expect(copied).toContain("openApiManagement.accessInfo.keyPlaceholder")
 
     // Nothing in the text is a credential or can be exchanged for one: no key

@@ -1,6 +1,6 @@
-import { Pagination, notification } from '@bisheng/ui';
+import { Pagination, notification } from '@doberman-agent/ui';
 // @ts-strict-ignore
-import { Button, SearchInput } from '@bisheng/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 import { FileIcon } from "@/components/bs-icons/file";
 
 import { Dialog,DialogContent } from '@/components/bs-ui/dialog';
@@ -10,7 +10,7 @@ import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import { delChunkApi,getFileBboxApi,getFilePathApi,getKnowledgeChunkApi,readFileByLibDatabase,updateChunkApi } from '@/controllers/API';
 import { showApiError } from '@/controllers/request';
 import { useTable } from '@/util/hook';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback,useEffect,useMemo,useRef,useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation,useNavigate,useParams } from 'react-router-dom';
@@ -491,7 +491,7 @@ export default function Paragraphs({ fileId, onBack, canEditKb = false, canDelet
                 )}
             </div>
             {/* Pagination */}
-            <div className="bisheng-table-footer px-6">
+            <div className="doberman_agent-table-footer px-6">
                 <Pagination locale={paginationLocale}
                     className="justify-end"
                     current={page}

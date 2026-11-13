@@ -6,7 +6,7 @@ existed a stream killed mid-flight (client navigated away, gateway read timeout,
 worker restart) skipped the insert entirely — the conversation reloaded showing
 only the question, even though the user had watched a full answer stream in.
 
-These tests drive the no-tools branch (`bisheng_llm.astream`) because it is the
+These tests drive the no-tools branch (`doberman_agent_llm.astream`) because it is the
 shortest path through the generator; the persistence code under test is shared
 with the tool-calling branch.
 """
@@ -20,8 +20,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.workstation.domain.services import chat_service
 
 
 class _Chunk:
@@ -71,7 +71,7 @@ def stream_env(monkeypatch: pytest.MonkeyPatch):
     )
     monkeypatch.setattr(chat_service, "_resolve_user_kb_selection", AsyncMock(return_value=[]))
     # Image viewing reads its model config from the DB; off for these tests.
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
     # The citation handle table lives in Redis; start each turn with an empty one.
     monkeypatch.setattr(chat_service.DailyCitationScope, "load", AsyncMock(return_value=None))
     monkeypatch.setattr(chat_service, "_prepare_tools", AsyncMock(return_value=([], [])))
@@ -184,7 +184,7 @@ async def test_interrupt_after_completion_does_not_double_insert(stream_env):
 
 @pytest.mark.parametrize("error_type", ["file_parse_failed", "file_parse_busy"])
 async def test_attachment_parse_failure_ends_stream_without_calling_model(stream_env, monkeypatch, error_type):
-    from bisheng.common.errcode.workstation import ChatFileParseError
+    from doberman_agent.common.errcode.workstation import ChatFileParseError
 
     monkeypatch.setattr(
         chat_service,

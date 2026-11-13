@@ -11,7 +11,7 @@ const notices = vi.hoisted(() => vi.fn());
 const captureRow = vi.hoisted(() => vi.fn());
 const stableTranslation = vi.hoisted(() => (key: string) => key);
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: stableTranslation }) }));
-vi.mock('@bisheng/ui', async (load) => ({ ...await load<typeof import('@bisheng/ui')>(), toast: { show: notices } }));
+vi.mock('@doberman-agent/ui', async (load) => ({ ...await load<typeof import('@doberman-agent/ui')>(), toast: { show: notices } }));
 vi.mock('@/controllers/API', () => ({ getKnowledgeDetailApi: vi.fn(), readFileByLibDatabase: vi.fn() }));
 vi.mock('@/controllers/API/finetune', () => ({ getLlmDefaultModel: vi.fn().mockResolvedValue({ model_id: 1 }) }));
 vi.mock('@/controllers/API/workflow', () => ({ createWorkflowApi: vi.fn().mockResolvedValue({ id: 'flow' }), getWorkflowNodeTemplate: vi.fn().mockResolvedValue([]) }));

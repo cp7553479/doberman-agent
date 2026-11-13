@@ -7,17 +7,17 @@ from unittest.mock import patch
 import pytest
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-from bisheng.common.errcode.knowledge import KnowledgeMediaNoRecognizableAudioError, KnowledgeMediaTranscriptionError
-from bisheng.common.errcode.server import AsrModelTypeError, NoAsrModelConfigError
-from bisheng.core.ai.base import ASRSegment, ASRTranscript
-from bisheng.knowledge.domain.services.media_transcription_service import (
+from doberman_agent.common.errcode.knowledge import KnowledgeMediaNoRecognizableAudioError, KnowledgeMediaTranscriptionError
+from doberman_agent.common.errcode.server import AsrModelTypeError, NoAsrModelConfigError
+from doberman_agent.core.ai.base import ASRSegment, ASRTranscript
+from doberman_agent.knowledge.domain.services.media_transcription_service import (
     CHUNK_SECONDS,
     AudioChunk,
     KnowledgeMediaTranscriptionService,
     TranscriptSegment,
 )
-from bisheng.llm.domain.const import LLMModelType, LLMServerType
-from bisheng.llm.domain.schemas import KnowledgeLLMConfig
+from doberman_agent.llm.domain.const import LLMModelType, LLMServerType
+from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
 
 
 def test_normalize_segments_keeps_aliyun_millisecond_timestamps_consistent() -> None:
@@ -133,15 +133,15 @@ def test_resolve_asr_model_reads_knowledge_config(monkeypatch) -> None:
     server_info = SimpleNamespace(name="Aliyun", type=LLMServerType.QWEN.value, config={"api_key": "sk-test"})
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
         lambda tenant_id=None: KnowledgeLLMConfig(asr_model_id=42),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMDao.get_model_by_id",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMDao.get_model_by_id",
         lambda model_id: model_info if model_id == 42 else None,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMDao.get_server_by_id",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMDao.get_server_by_id",
         lambda server_id: server_info if server_id == 7 else None,
     )
 
@@ -153,7 +153,7 @@ def test_resolve_asr_model_reads_knowledge_config(monkeypatch) -> None:
 
 def test_resolve_asr_model_requires_knowledge_config() -> None:
     with patch(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
         return_value=KnowledgeLLMConfig(asr_model_id=None),
     ):
         with pytest.raises(NoAsrModelConfigError):
@@ -232,15 +232,15 @@ def test_resolve_asr_model_rejects_provider_without_asr_client(monkeypatch) -> N
 
 def _patch_model_lookup(monkeypatch, model_info, server_info) -> None:
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMService.get_knowledge_llm",
         lambda tenant_id=None: KnowledgeLLMConfig(asr_model_id=model_info.id),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMDao.get_model_by_id",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMDao.get_model_by_id",
         lambda model_id: model_info if model_id == model_info.id else None,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.LLMDao.get_server_by_id",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.LLMDao.get_server_by_id",
         lambda server_id: server_info if server_id == model_info.server_id else None,
     )
 
@@ -272,7 +272,7 @@ def _run_chunks(monkeypatch, client, chunks) -> list[TranscriptSegment]:
         return client
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.media_transcription_service.BishengASR.init_asr_client",
+        "doberman_agent.knowledge.domain.services.media_transcription_service.DobermanAgentASR.init_asr_client",
         fake_init,
     )
     model_info = SimpleNamespace(model_name="whisper-large-v3")
@@ -372,7 +372,7 @@ class _FakeRedis:
         self.expirations[key] = expiration
 
 
-_SERVICE = "bisheng.knowledge.domain.services.media_transcription_service"
+_SERVICE = "doberman_agent.knowledge.domain.services.media_transcription_service"
 
 
 def _prepare_cached_run(monkeypatch, tmp_path, redis, model_update_time=datetime(2026, 9, 1, 8, 0, 0)):

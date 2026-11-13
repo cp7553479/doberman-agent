@@ -14,8 +14,8 @@
 
 ## 基线与验证
 
-- 基线：`upstream/feat/bisheng-work-120-main@ac625c821396dcc628a8c71845e7a808f7b95b9b`，包含已合并的发送端分享入口修复 #2586。
-- 分支：`codex/shared-chat-empty-state`；工作区：`.worktrees/bisheng-shared-chat-empty-20261102`。
+- 基线：`upstream/feat/doberman-agent-work-120-main@ac625c821396dcc628a8c71845e7a808f7b95b9b`，包含已合并的发送端分享入口修复 #2586。
+- 分支：`codex/shared-chat-empty-state`；工作区：`.worktrees/doberman-agent-shared-chat-empty-20261102`。
 - 原代码对照：新增场景中 8 项失败；修复后分享、工作流状态、路由及应用入口共 5 文件 / 61 项回归通过。
 - 新增覆盖：助手/工作流 × 有/无个人历史 × 有/无开场白共 8 种空分享；普通应用新建跳转；已有分享历史只读展示。
 - 路由回归使用真实 Share、AppChat、ChatView、ChatEmptyState、StateView 与 Recoil 状态；分享 API、消息渲染、网络及插画使用夹具。断言空分享文案、操作入口、输入框与路由，以及普通页面新建后的目标 URL。

@@ -3,7 +3,7 @@ import { useToastContext } from "~/Providers";
 import { getShareLinkApi } from "~/api";
 import { useLocalize } from "~/hooks";
 import { copyText } from "~/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from "../ui";
 
 interface ShareDialogProps {

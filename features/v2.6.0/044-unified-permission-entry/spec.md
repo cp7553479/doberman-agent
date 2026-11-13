@@ -127,4 +127,4 @@
 - 版本契约: [../release-contract.md](../release-contract.md)
 - 架构宪法: [../../../docs/constitution.md](../../../docs/constitution.md)
 - PRD: [0811 中粮需求响应 §1.1 统一权限设置入口](https://dataelem.feishu.cn/wiki/MWHZwS0mbihH7NkbBvpckvSRnwc)
-- 界面参考: [Figma · BISHENG · node 13051:92477](https://www.figma.com/design/FNt6RR3OZtaJQH6x8enmaZ/BISHENG?node-id=13051-92477&m=dev)（布局与交互基准；具体实现决策写入 design.md）
+- 界面参考: Figma · doberman-agent · node 13051:92477（布局与交互基准；具体实现决策写入 design.md）

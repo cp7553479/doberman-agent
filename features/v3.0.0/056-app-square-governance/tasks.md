@@ -5,7 +5,7 @@
 **关联规格**: [spec.md](./spec.md)（61 条 AC；已确认）· [design.md](./design.md)（D1–D15；本轮设计已确认；新接口合同 §4.4）
 **版本**: v3.0.0
 **纵切**: [mvp-114-path.md](../mvp-114-path.md) **§6 MVP-核心 F056 行**是本轮裁剪基准——Wave 1–2 全部为 `[MVP-核心]`（广场接入 + 两入口授权与「仅 owner 可见」提示 + 三类审计事件可查），Wave 3–4 为顺延项（release 仍必做，只列标题 / 文件 / 覆盖 AC，不展开）
-**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe` HEAD `11e1b211d`，2026-08-17 核实）。路径以 `src/backend/bisheng/` 为根；前端另注 `client/` = `src/frontend/client/src/`、`platform/` = `src/frontend/platform/src/`。**行号会漂、符号名不会**——落地前一律以符号名重定位（F054 Wave 3 落地后 platform 前端行号必漂）。
+**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe` HEAD `11e1b211d`，2026-08-17 核实）。路径以 `src/backend/doberman_agent/` 为根；前端另注 `client/` = `src/frontend/client/src/`、`platform/` = `src/frontend/platform/src/`。**行号会漂、符号名不会**——落地前一律以符号名重定位（F054 Wave 3 落地后 platform 前端行号必漂）。
 
 ---
 
@@ -79,7 +79,7 @@
 ### Wave 1 · `[MVP-核心]` 基础设施（无测试配对，排最前）
 
 - [x] **T001**: `[MVP-核心]` 审计 action 后端两处 lockstep 登记
-  **文件**: `src/backend/bisheng/app_runtime/domain/constants.py`（`AppAuditAction` 枚举加成员）, `src/backend/bisheng/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS:193` 加同一字符串）
+  **文件**: `src/backend/doberman_agent/app_runtime/domain/constants.py`（`AppAuditAction` 枚举加成员）, `src/backend/doberman_agent/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS:193` 加同一字符串）
   **逻辑**: 加 `VISIBILITY_CHANGE = "app.visibility_change"`（本 Feature 唯一自写的事件类型，design D6）。`_UI_VISIBLE_V2_ACTIONS` 是 `_ui_visible_predicate:272-282` 的 `OR(system_id IS NOT NULL, action IN (...))` 白名单，被 `get_audit_logs:329` 与 `get_all_operators:408` 应用——**不在白名单 = 写库但审计页查不到，且无任何报错**（design K3，AC-27 的实现锚点）。命名空间前缀 `_V2_NAMESPACE_TO_ACTION_PREFIX:261` 的 `"app": "app."` 与模块下拉 **F054 已落，本任务不动**。
   **⚠️ 并发**: `constants.py` 正被 F054 实现 agent 编辑（design 坑 19）——改前先 `git pull` / 与 owner 对一次；若不便共改，可在 `app_runtime` 自己的常量位置定义该 action，但 `_UI_VISIBLE_V2_ACTIONS` 白名单**仍必须加**。
   **回滚**: 纯常量增补，无 DDL；回滚 = 删两处成员（历史事件行仍在库，只是页面查不到）。
@@ -115,7 +115,7 @@
   **依赖**: 无（跨 Feature 前置：F054 T059 / T060）
 
 - [x] **T005**: `[MVP-核心]` `_application_action_map` 第一层实现 + 按桶覆盖扩展点
-  **文件**: `src/backend/bisheng/api/services/workflow.py`（只改 `_application_action_map:146-178` 一个函数）
+  **文件**: `src/backend/doberman_agent/api/services/workflow.py`（只改 `_application_action_map:146-178` 一个函数）
   **逻辑**: 分桶（`grouped:152-155`，F054 T060 已加第三桶 `35: "app"`）之后、发 `batch_check_business_actions` 之前，**每个桶只请求对该 `resource_type` 合法的 action**（判据 `catalog_policy.ACTION_RESOURCE_SCOPES`），并**显式豁免 `visible`**。同时加可选参数 `actions_by_type: dict[str, tuple[str, ...]] | None = None` 做按桶覆盖，缺省 `None` = 全桶用 `actions` —— **另 6 个调用方一行不改**（design D3 爆炸半径表）。请求集为空的桶不发起 check（→ `can_share` 落回 `False`，`_apply_page_can_share:485` 与 `aenrich_apps_can_share:139` 都是「命中才 true」，AC-07 后半句零改组件达成）。
   **⚠️ 不要顺手给 `app` 加 `share`**：托管应用没有 share-token 免登录通道（spec 决议-6），加 `share` 就是造一个不存在的能力（design K6）。
   **⚠️ 第一层把「抛 25001」换成了「静默滤掉」**——这恰好是坑 10 想要的效果，但**坑 10 的显式排除（T011）仍要做，不得依赖这个副作用**（`use` 对 app 合法，应用中心传的正是 `use`）。
@@ -135,7 +135,7 @@
   **依赖**: 无（跨 Feature 前置：F054 T059 第三支）
 
 - [x] **T007**: `[MVP-核心]` `FlowDao.aget_all_apps` / `_build_apps_subquery` 两个内部参数实现
-  **文件**: `src/backend/bisheng/database/models/flow.py`（`aget_all_apps:508` + `_build_apps_subquery:660-702`）
+  **文件**: `src/backend/doberman_agent/database/models/flow.py`（`aget_all_apps:508` + `_build_apps_subquery:660-702`）
   **逻辑**: 加 `status_exempt_flow_types: set[int] | None = None`（外层 status 条件由 `sub_query.c.status == status` 改为「`status == :status` **或** `flow_type ∈ 豁免集合`」）与 `app_state_in: set[str] | None = None`（第三支子查询侧的 `App.state` 收窄）。**两个参数缺省 `None` = 行为逐字节不变**，构建页与另 3 个调用方不传（design D9）。
   **⚠️ 为什么不改 F054 的 status 投影**：把「已下线」也投成 2 会**打坏构建页**（`platform/controllers/API/flow.ts:204` 按 `status ∈ {1,2}` 筛「已上线 / 已下线」），且是修改 F054 已定稿的契约（design D9 备选 A 已否）。
   **⚠️ 同文件并发**: `flow.py` 正被 F054 T059 编辑——落地前先完成 T003 ③；**合并时 rebase 而非覆盖**；第三支的手工 `build_tenant_filter_clause`（`:695` / `:698` 形态，docstring `:661-671` 明写「`.subquery()` 一包租户自动过滤即失效」）**归 F054 T059**，本任务不得删改（漏写 = 四条路径一起跨租户泄漏，design K1 / 坑 4）。
@@ -158,7 +158,7 @@
   **依赖**: T005, T007
 
 - [x] **T009**: `[MVP-核心]` `_scan_visible_apps_page` 与广场两入口实现
-  **文件**: `src/backend/bisheng/api/services/workflow.py`（`_scan_visible_apps_page:401-478` + 两个入口函数 `get_online_flows_page:500` / `get_uncategorized_flows:977` 的调用处）
+  **文件**: `src/backend/doberman_agent/api/services/workflow.py`（`_scan_visible_apps_page:401-478` + 两个入口函数 `get_online_flows_page:500` / `get_uncategorized_flows:977` 的调用处）
   **逻辑**: 三件事一次改完（同一函数 + 其两个调用处，避免与 T005 重复修改同一段）：
   1. **口径切换**：`requested_actions:425` 由「一个全局元组」改为「按桶取值」，经 T005 的 `actions_by_type` 传 `{"app": ("use","edit")}`；`kept:450-455` 按行 `flow_type` 取该桶的可见性 action。
   2. **载荷补字段**：返回整页之前，对 `flow_type==35` 的行批量一次回查 `app.slug` / `app.state` 补成 `slug` / `app_state` 两个载荷字段（**不能放 `add_extra_field:87-127`**——未分类 tab 不经过它，现象是点击落 `/apps/undefined`、没有「已下线」角标且不报错，坑 21）。
@@ -175,7 +175,7 @@
   **依赖**: T005
 
 - [x] **T011**: `[MVP-核心]` 应用中心 / 最近使用路径显式排除 `flow_type=35`
-  **文件**: `src/backend/bisheng/api/services/workflow.py`（`get_frequently_used_flows:924-965` 一处过滤）, `src/backend/bisheng/workstation/api/endpoints/apps.py`（推荐位 `:41` / 常用 `:119` 两处调用的类型入参）
+  **文件**: `src/backend/doberman_agent/api/services/workflow.py`（`get_frequently_used_flows:924-965` 一处过滤）, `src/backend/doberman_agent/workstation/api/endpoints/apps.py`（推荐位 `:41` / 常用 `:119` 两处调用的类型入参）
   **逻辑**: 在这两条「进对话页」的路径上显式排除托管应用（**不要依赖 T005 第一层的静默滤除副作用**——`use` 对 app 合法，托管应用照样会流进去）。排除位置取「类型闸」而非前端，保证工作台 / 应用中心两个消费者一次到位。
   **测试**: T010 全部通过。
   **覆盖 AC**: AC-01, AC-07
@@ -198,7 +198,7 @@
   **依赖**: T001
 
 - [x] **T013**: `[MVP-核心]` 授权变更回调注册表 + 名册预读（permission 侧扩展点）
-  **文件**: `src/backend/bisheng/permission/application/resource_api.py`（`ResourcePermissionApi.mutate_grants:290-372`）
+  **文件**: `src/backend/doberman_agent/permission/application/resource_api.py`（`ResourcePermissionApi.mutate_grants:290-372`）
   **逻辑**: 加模块级注册表 `{resource_type: async callback}`，`mutate_grants` 成功返回前按 `resource_type` 查表并调用（有则调、无则跳过），回调入参 `actor / target / changes / result`。**前置的名册预读**（坑 11）：仅当 ① 该 `resource_type` 注册了回调、且 ② 本次 `changes` 里存在 `REMOVE` / `MOVE` 时，在 `self._runtime.mutate_grants(...):337` **之前**用既有读法 `list_permission_sources_page(actor, target, after_id=0, limit=…)`（`:190` 同款）取一页名册，建 `source_id → (subject_type, subject_id)` 索引供回调反查；名册 `has_more` 为真时对超出部分只写 `{assignee_id}` 并在 `metadata` 打 `roster_truncated: true`，**宁可标注不完整也不做多页扫描**。
   **⚠️ 为什么必须预读**：`remove_source` 把被撤销的 source **整行丢弃**（`permission/domain/services/grant_source_service.py:279` / `:305-311` 的 `remaining` + `replace(...)`），不是标 `active=False` 保留 → `GrantMutationResult.grants`（`grant_service.py:232`）里**查无此人**；而请求体侧 `REMOVE` / `MOVE` 只带 `assignee_id` + 版本（`domain/schemas/f048.py:242-262 validate_operation_shape`）。两头都拿不到主体身份，「从结果快照反解」已被证伪（design D6 审查修订）。
   **⚠️ 依赖方向**: 本文件**不认识 `app.*` 命名空间**——写入器由 `app_runtime` 侧提供（T014）。不得在此按 `resource_type == "app"` 直接写审计（那会让权限模块知道应用工场的命名空间，且将来变成一串 if/elif，design D6 备选 B 已否，C1）。
@@ -208,7 +208,7 @@
   **依赖**: T012
 
 - [x] **T014**: `[MVP-核心]` `app_runtime` 审计写入器 + 组合根显式注册
-  **文件**: `src/backend/bisheng/app_runtime/domain/services/visibility_audit.py`（新）, `src/backend/bisheng/main.py`（`lifespan:82-84` 加一次显式注册调用，照 `_register_permission_runtime_contexts:55-77` 先例）
+  **文件**: `src/backend/doberman_agent/app_runtime/domain/services/visibility_audit.py`（新）, `src/backend/doberman_agent/main.py`（`lifespan:82-84` 加一次显式注册调用，照 `_register_permission_runtime_contexts:55-77` 先例）
   **逻辑**: 写入器组装并调 `AuditLogDao.ainsert_v2`（`database/models/audit_log.py:428`）写 `action='app.visibility_change'`，字段口径见 T012。三条硬规：① `if outcome.idempotent: return`（坑 12）；② **不要再包事务**——`ainsert_v2` 自带 `bypass_tenant_filter()` + 独立 async session + commit（`:494-500`）；③ 整个写入用 try/except 包住、失败只打 **warning**（照 `approval/domain/services/approval_outbox_service.py:105-121` 的「审计失败不影响主流程」包法），日志字段 `resource_type / resource_id / operator_id / reason`——**这条 warning 是「审计静默丢失」的唯一信号**。
   **⚠️ 注册落点 = 组合根显式注册，不得依赖模块 import 副作用**（否则注册与否取决于 router 加载顺序，一次 import 图重排就静默失效）。注册成功打一条 info（`registered visibility-change audit hook for resource_type=app`）——114 查不到事件时**先 grep 这条启动日志**，再怀疑写入逻辑。
   **⚠️ 进程边界**: `mutate_grants` 的唯一触发源是 `permission/api/endpoints/grant.py:113`，只跑在 **API 进程**，注册挂 API `lifespan` 即充分；celery / linsight worker 内不注册**不是缺陷**（无触发源）。将来若有 worker 内调用方改授权，注册必须跟着搬。
@@ -292,7 +292,7 @@
 ### Wave 2 · `[MVP-核心]` 114 部署与手动验证
 
 - [ ] **T021**: `[MVP-核心]` 114 部署与 MVP-核心闭环手动验证清单（演示剧本步 5–6）
-  **文件**: 无代码产出（验证记录回填本任务表格；`/apps/` location 由 F054 交付于 `/etc/nginx/conf.d/bisheng-lilu.conf`）
+  **文件**: 无代码产出（验证记录回填本任务表格；`/apps/` location 由 F054 交付于 `/etc/nginx/conf.d/doberman-agent-lilu.conf`）
   **前置**: `curl -s http://127.0.0.1:7860/api/v1/env | jq .app_runtime_enabled` → `true`；`curl -I http://127.0.0.1:4101/apps/<slug>` 非 404 的 SPA 页；后端启动日志里有 `registered visibility-change audit hook for resource_type=app`（T014，**查不到审计事件时先 grep 这条**）。⚠️ 外网 13000 是静态 build 快照，需手动重建。
   **验证清单**:
 
@@ -321,13 +321,13 @@
 > 顺延依据 `mvp-114-path.md` §6 F056 行「审计查询面扩展、导出、超管租户筛选」；**属本 Feature 范围、不得被裁掉**。做的顺序是「对象应用筛选 → 租户筛选 → 导出」——没有第一件，「按应用追溯」这句产品语言不成立（design §8）。落点方向：`api/v1/audit.py:13-27` 与 `AuditLogDao.get_audit_logs`（`database/models/audit_log.py:288-374`）**今天完全没有 `target_type` / `target_id` 维度**，是从零新增而非改配置。
 
 - [x] **T022**: 审计查询「对象应用」筛选（后端查询参数 + DAO 过滤 + 已删除应用的名称快照）
-  **文件**: `src/backend/bisheng/api/v1/audit.py`, `src/backend/bisheng/database/models/audit_log.py`, `src/backend/bisheng/api/services/audit_log.py`
+  **文件**: `src/backend/doberman_agent/api/v1/audit.py`, `src/backend/doberman_agent/database/models/audit_log.py`, `src/backend/doberman_agent/api/services/audit_log.py`
   **覆盖 AC**: AC-21, AC-28
   **证据**（分支 `wt/audit-query`）：`GET /api/v1/audit?target_app_id=` → `AuditLogDao._object_app_predicate`（`target_type='app'+target_id` **或** `metadata.app_id`，两种写入形态都命中；新增 `dialect_helpers.json_object_field_equals` 兼容 MySQL / DM8）；名称快照 = 行自身 `object_name`，应用行已删也不丢。测试 `test/audit/test_audit_log_object_app_filter.py`。
   **偏差**：顺手修了 design 坑 15——v2 行 `group_ids` 恒 NULL，用户组筛选按「所选组当前成员 = operator_id」补配（`group_member_ids`），仅在传了组筛选时多一次成员查询；列表排序补 `id DESC` 次级键（backend AGENTS.md）。
 
 - [x] **T023**: 按应用名 / 标识检索的选择器端点 + Platform 审计页筛选控件（含已删除应用可选中）
-  **文件**: `src/backend/bisheng/api/v1/audit.py`, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`, `src/frontend/platform/src/controllers/API/log.ts`
+  **文件**: `src/backend/doberman_agent/api/v1/audit.py`, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`, `src/frontend/platform/src/controllers/API/log.ts`
   **覆盖 AC**: AC-28
   **证据**：`GET /api/v1/audit/apps?keyword=&limit=`（`AppDao.asearch_for_audit`，含 `state='deleted'`，租户管理员只搜本租户）；页面「选择对象应用」控件走后端检索（`getAuditAppsApi`），已删除应用带「已删除」标记。测试 `test/audit/test_audit_app_search.py`、`platform/src/test/auditRowRendering.test.ts`。
 
@@ -340,27 +340,27 @@
   **偏差（保留上方 ⚠️ 的两件事，本任务不解）**：审批通过 / 上线 / 失败三条无名 `operator_id=0` 行仍显示「system」——那是写入侧缺列，不在本任务造假补名。
 
 - [x] **T025**: 系统操作审计导出端点 + Platform 导出按钮（导出当前筛选条件下的全部记录，受与查询完全相同的租户与角色边界；内容不含密钥明文）
-  **文件**: `src/backend/bisheng/api/v1/audit.py`, `src/frontend/platform/src/controllers/API/log.ts`, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`
+  **文件**: `src/backend/doberman_agent/api/v1/audit.py`, `src/frontend/platform/src/controllers/API/log.ts`, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`
   **覆盖 AC**: AC-26, AC-32
   **证据**：`GET /api/v1/audit/export/data`（与列表同一组查询参数，走同一个 `_prepare_audit_query` 门与投影，单次上限 `AUDIT_EXPORT_MAX_ROWS=10000`，响应带未截断 `total`）；前端「导出」按钮按**当前已应用**的筛选导出 CSV（`buildAuditCsv`，列与表格一致；超上限 toast 提示缩小范围）。测试 `test/audit/test_audit_export.py`（含「密钥明文绝不出现在导出」用例）。
 
 - [x] **T026**: 平台超管租户筛选与租户列 + 租户管理员边界拒绝（「对象应用」筛选不得穿透到其它租户）
-  **文件**: `src/backend/bisheng/database/models/audit_log.py`（`_visible_for_tenant`）, `src/backend/bisheng/api/services/audit_log.py`（`_get_audit_tenant_scope`）, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`
+  **文件**: `src/backend/doberman_agent/database/models/audit_log.py`（`_visible_for_tenant`）, `src/backend/doberman_agent/api/services/audit_log.py`（`_get_audit_tenant_scope`）, `src/frontend/platform/src/pages/LogPage/systemLog/index.tsx`
   **覆盖 AC**: AC-30, AC-31
   **证据**：查询 / 导出 / 应用检索共用 `tenant_id` 参数：全局超管（且无 F019 admin-scope）可指定；其他人指定非本租户 → `UnAuthorizedError`（不是静默缩窄）；`target_app_id` 指向他租户应用同样拒绝（`_assert_app_in_scope`，绕过自动租户过滤查应用行，否则会退化成空列表而非拒绝）。前端租户筛选与租户列仅在 `multiTenantEnabled && is_global_super && 无 admin-scope` 时出现。测试 `test/audit/test_audit_log_object_app_filter.py::TestServiceTenantBoundary`、`test_audit_log_tenant_scope.py`（新增三条 tenant_id 用例）、`test_audit_export.py::TestExportBoundary`。
 
 - [x] **T027**: 审计查询面角色边界与「单一查询入口」回归（仅租户管理员及以上；owner / 普通用户调查询与导出接口被拒；高频三类事件与低频事件同面经事件类型筛选可达）
-  **文件**: `src/backend/test/audit/test_audit_scope_and_roles.py`（新）, `src/backend/bisheng/api/services/audit_log.py`
+  **文件**: `src/backend/test/audit/test_audit_scope_and_roles.py`（新）, `src/backend/doberman_agent/api/services/audit_log.py`
   **覆盖 AC**: AC-33, AC-34
   **证据**（分支 `wt/f056-verification`）：`test/audit/test_audit_scope_and_roles.py` 8 例——owner / 普通用户调 `get_audit_log` / `export_audit_log` / `search_audit_apps` 三处一律拒（AC-33，导出与列表共用 `_prepare_audit_query` 由「同一个拒绝」证明，不是读源码推断）；租户管理员与持 `log` 菜单的角色可读；用户组管理员维持既有口径（v2 行按 `group_member_ids` 命中，不越出本组）。AC-34 behavioural 半边同文件（`app.visibility_change` 低频事件与 `app.release.capability_declared` 运行期事件只靠 `event_type` 区分、同一次调用、对象应用筛选一次取回两条）+ `AppAuditAction` / `AppReleaseAuditAction` 全员在白名单上；structural 半边落 `test/api/test_audit_query_entry_surface.py`（路由普查：`/api/v1/audit` 家族恰好六条 GET，且不存在 `access-log` / `call-record` 之类按事件族另开的查询页）。
-  **偏差**：路由普查**不能**放在 `test/audit/`——该目录在模块级把 `bisheng.api.router` / `bisheng.telemetry_search` 塞进 `sys.modules` 以便脱离 App 跑 DAO，普查需要真 App，落 `test/api/`（与同目录 `test_route_path_naming.py` 同款）。
+  **偏差**：路由普查**不能**放在 `test/audit/`——该目录在模块级把 `doberman_agent.api.router` / `doberman_agent.telemetry_search` 塞进 `sys.modules` 以便脱离 App 跑 DAO，普查需要真 App，落 `test/api/`（与同目录 `test_route_path_naming.py` 同款）。
   **评审订正（2026-09-16）**：原偏差还写了「顺带把 `test_audit_log_tenant_scope.py` 的桩改成导完即摘，修好了 `test/api/test_route_path_naming.py` 的 collection error」——**这两句都不成立，且那次改动带进了回归**。① 「导完即摘」3.0-vibe 上**本来就有**（发版线自己的提交），本切片是在合并时把发版线那一侧覆盖掉又写了一遍；② 覆盖的同时丢掉了发版线同一次提交里的另一半——`_insert_audit` 的 `system_id="system"` 默认值与末尾那处显式 `system_id`，没有它种子行过不了 `AuditLogDao._ui_visible_predicate()`，于是 `test_audit_log_tenant_scope.py` **33 例挂 14 例**（`assert 0 == 5`）；③ 所谓 collection error 在正确环境下复现不出来（发版线 `pytest test/audit test/api` = 109 passed，零 error）——当初大概率是没清 SOCKS 代理变量、`premock_import_chain` 预加载失败造出来的假象（`src/backend/AGENTS.md` 记过这个坑）。处置：`git checkout 3.0-vibe -- src/backend/test/audit/test_audit_log_tenant_scope.py` 原样取回发版线版本（本切片在该文件上没有任何需要保留的改动）。复核后 `test/audit` = **131 passed / 2 xfailed / 0 failed**（发版线 71 passed / 0 failed）。**教训按仓库 AGENTS.md §7**：合并时对双方各自新增内容的文件，不能整份取一侧——要么逐 hunk 解，要么解完与来源分支逐文件 `git diff` 复核。
 
 - [x] **T028**: 各写入方事件的可查性验收（CLI 首发导入 / 发布类含审批单四终态 / 下线 · 重新上线 / 删除后仍可查 / 元信息修改 / 访问记录 / 密钥事件 / 运行期凭据与能力声明 / 生产数据行编辑 / 模型调用逐条；并验证记录与响应不含密钥明文）
   **文件**: `src/backend/test/audit/test_hosted_app_event_queryability.py`（新）
   **覆盖 AC**: AC-18, AC-19, AC-20, AC-21, AC-23, AC-24, AC-25, AC-26
   **证据**：54 例。20 类托管应用事件 + 3 类密钥事件按**写入方实际落的行形状**逐族三断言（在 `_UI_VISIBLE_V2_ACTIONS` 上 / 被「对象应用」筛出 / 被「事件类型」筛出，且他应用同类行不混入）；已删除应用三条历史仍可查且对象列回落 `object_name` 名称快照（AC-21）；发布族（`metadata.app_id`）与状态族（`target_type='app'`）在一次对象应用查询里合成同一条时间线（AC-19）；AC-26 = 响应不含原始 `metadata`（往 metadata 里塞明文也取不出来）+ 服务账号行只出 `key_mask`；分页与 total 一致。
-  **顺带修的实缺陷**：密钥签发事件写的是 `open_api.api_key.create`，而白名单 / `platform log.ts` / 三语 `bs.json` 登记的都是 `open_api.api_key.issue` —— 行落了库、审计页一条都筛不出来（AC-25 / AC-27 的「写了查不到」）。改**写入方**对齐登记名（`bisheng/open_api/domain/services/credential_service.py`，登记侧三处不动），并补 `test_the_issue_writer_uses_the_registered_name` 守住写入方本身（既有 lockstep 测试只守登记侧）。
+  **顺带修的实缺陷**：密钥签发事件写的是 `open_api.api_key.create`，而白名单 / `platform log.ts` / 三语 `bs.json` 登记的都是 `open_api.api_key.issue` —— 行落了库、审计页一条都筛不出来（AC-25 / AC-27 的「写了查不到」）。改**写入方**对齐登记名（`doberman-agent/open_api/domain/services/credential_service.py`，登记侧三处不动），并补 `test_the_issue_writer_uses_the_registered_name` 守住写入方本身（既有 lockstep 测试只守登记侧）。
   **三处真实缺口（xfail(strict=True) 哨兵，不写成散文）**：① **AC-24 访问记录**——F054 已把访问记录写进 `app_access_log` 表，但全仓**没有任何端点读它**，白名单上也没有 `app.access*`，所以「在审计查询面按对象应用 / 操作人 / 时间范围查到」今天不成立；② **AC-25 模型调用逐条**——F051 的 `model_call_record` 未落到本分支；③ **AC-25 / AC-34 运行期能力调用**（评审新增）——`OpenApiAuditMiddleware` 每次 v2 调用都按双归属口径入队一条 `open_api.call`，**行落了库**，但 `open_api.call` 既不在 `_UI_VISIBLE_V2_ACTIONS` 也不在 `platform log.ts`，页面自己的谓词在任何用户筛选之前就把它滤掉了——与本任务顺带修的 `api_key.create` 同一种失效，只是这次错在登记侧。**没有直接补登记**：它是全表里频次最高的动作，而白名单同时也是**未加筛选**时列表展示的范围，登记等于把审计页默认视图淹掉；这属 design §5「高频事件承载」要先拍的板，不是评审能顺手定的。缺口一 / 三补上哨兵即 XPASS 报错、强制删待办。
   **顺带发现（不在本 Feature §2.3 表内，未动）**：`open_api.pat.regenerate` / `.delete` / `.revoke_holder` / `.tenant_migrate` 四个动作同样写了但两侧都没登记——同一失效，归 PAT / F049 一侧。
 
@@ -386,7 +386,7 @@
   **偏差**：把 `DEFAULT_ENABLED_MENU_IDS` 从 `Roles.tsx`（600 行级页面组件，测试里导入会拖进整张依赖图）移到同目录的纯模块 `roleMenuSelection.ts`——它本来就与该模块的清单是同一件事，AC-37 的两半断言现在读同一个真相源。零行为变化。
 
 - [x] **T032**: 事件触达接线——租户管理员（或超管代行）下线 / 重新上线 → owner 站内消息（owner 本人执行时不发；挂 F054 `AppStateService.stop/resume` 后置钩子，复用平台既有消息通知能力；**发送失败只记日志、不回滚业务动作**）
-  **文件**: `src/backend/bisheng/app_runtime/domain/services/`（新增触达钩子）, `src/backend/test/app_runtime/test_state_change_notify.py`（新）
+  **文件**: `src/backend/doberman_agent/app_runtime/domain/services/`（新增触达钩子）, `src/backend/test/app_runtime/test_state_change_notify.py`（新）
   **覆盖 AC**: AC-43, AC-45
   **跨 Feature**: 挂在 F054 交付的状态动作上；审批类 / 待上线 / 因删除取消的触达归 F055 AC-31 / AC-35 / AC-64，**不得重复接线**（会产生双份消息）
   **完成记录（2026-09-16，分支 `wt/owner-notify-and-qr`）**: 新增 `app_runtime/domain/services/state_change_notify.py`（`notify_owner_of_admin_state_change`，action code `app_stopped_by_admin` / `app_resumed_by_admin`，经 `ApprovalNotificationService.notify_users` 发 NOTIFY 型站内信，`instance_id=0`），`AppStateService.stop` 审计后调用、`_start` 仅当 `audit_action == RESUME` 时调用（publish / manual_publish 归 F055，不发）；owner 本人执行不发、发送失败 `logger.exception` 后返回 `False`、`ActionResult` 不变。client 侧 `messageApproval/notificationContent.ts` 的 `NOTIFICATION_ACTION_TEXT_KEYS` 登记两码（不进 `APPROVAL_CENTER_ACTION_CODES`）+ `com_notifications_action_app_{stopped,resumed}_by_admin` 三语文案 + `notificationContent.test.ts`。测试：`test/app_runtime/test_state_change_notify.py` 13 例（owner 自停不发 / 租户管理员停发一条 / 超管恢复发一条 / 恢复因容量留在 stopped 不发 / publish·manual_publish 不发 / 发送方抛异常时 stop·resume 仍成功且审计照写 / 钩子契约 / **评审补**：stop·resume 各一例跑真实 `notify_users → send_generic_notify → send_message` 链，断言落库消息是 `NOTIFY` + `APPROVED`、action_code 与收件人正确、内容块无 `agree_reject_button` / `button_action_code`），`test/app_runtime` 全量 327 passed / 13 skipped，`test/app_publish` 366 passed。**偏差**：未按 `lifecycle_hooks` 的订阅式接线，而是直接在状态动作内调用——接收方与文案都是 F054 状态动作自己的语义、无跨 Feature 反向依赖，订阅式只会多一层无人复用的注册。
@@ -397,7 +397,7 @@
   **证据**：三份，各答一个只有跨 Feature 视角才看得见的问题。
   ① **后端普查（12 例）**——F055 / 审批引擎 / F054 / F049 / F048 各测各的行，没人测这张表。`test_notification_table_acceptance.py` 一次遍历 `app_publish` / `app_runtime` / `open_api` 三个包，把发信调用点**按名字**钉死（app_publish 三处、app_runtime 两处、open_api **零处**）；AC-44 的四类静默行分别由「open_api 零调用点」（密钥）、「`visibility_audit` 源码里没有 notify」（新获可见权限）、「没有任何 `ACTION_*` 常量带 capabilit / revoke / resource」（能力被收回、资源释放后可手动上线）守住；两个发信模块声明的 action code 之并集恰为 6 个，多一个就是表上多一行。
   ② **AC-45 行为验证（同文件 4 例）**——把消息链最底层弄坏（`get_message_service` 直接抛），断言 `notify_approvers_of_new_task` / `notify_pending_online`（三种 reason_kind）/ `notify_owner_of_admin_state_change` 一律正常返回；另补一例：待上线通知的管理员名单解析失败时**owner 仍然收得到**（要动手的是 owner）。**评审补**：fixture 改为返回「是否真的打到了那个爆炸点」的计数器，每例断言它非空——「没抛异常」这种断言在发信方提前 return（收件人空、换了依赖）时同样成立，加了计数器这几例才不会某天变成空跑。
-  ②b **评审补 · AC-40 / AC-41 的正向半边**——原普查只证「F055 不重复发」，而「谁都不发」同样满足它：审批四个终态（通过 / 驳回 / 撤回 / 因删除取消）的发送方在审批引擎里，一次重构把它删掉，owner 永远收不到「你的发布通过了」而所有断言照绿。新增 `test_the_approval_engine_still_sends_rows_one_to_four`，AST 普查 `bisheng.approval`（命名空间包，`__file__` 为 None，须走 `__path__`）里所有发信调用的 `action_code=` 字面量，断言五个码都还在。
+  ②b **评审补 · AC-40 / AC-41 的正向半边**——原普查只证「F055 不重复发」，而「谁都不发」同样满足它：审批四个终态（通过 / 驳回 / 撤回 / 因删除取消）的发送方在审批引擎里，一次重构把它删掉，owner 永远收不到「你的发布通过了」而所有断言照绿。新增 `test_the_approval_engine_still_sends_rows_one_to_four`，AST 普查 `doberman_agent.approval`（命名空间包，`__file__` 为 None，须走 `__path__`）里所有发信调用的 `action_code=` 字面量，断言五个码都还在。
   ③ **client 收件端（16 例）**——后端那半边不保证收件人**读得懂**。把 F055 / F056 发的 5 个码 + 审批引擎的 5 个码（含 AC-41 的 `approval_instance_cancelled`）逐个过三语 bundle（走 `NotificationRow` 真实的 `映射 || 派生 key` 回退逻辑），并断言每条文案都带 `{{target}}`（owner 可能有多个应用）；statement 不得进 `APPROVAL_CENTER_ACTION_CODES`（消息类型一错就长出按不动的审批按钮），而审批待办必须仍在里面；AC-44 的四类在文案侧也不留残句。
   ④ **AC-39 管理后台无消息面**——`adminBackendNoInboxFace.test.ts` 普查 platform **整个 `src/`**（排除 `test/` 自身），断言五个 inbox 端点（`/api/v1/message/{list,unread_count,mark_read,mark_all_read,approve}`）一个都没被调用，并自带「`controllers/` 与 `pages/` 各扫到 > 5 个文件」防止路径写错导致空扫通过。**评审补**：原来只扫 `controllers/`——「HTTP 只走 API 层」是约定不是机制，而第二个收件箱恰恰最可能先在组件里直连试出来。
   **发现但不在本任务修**：`app_publish_iteration_failed` 没登记进 client 的 `NOTIFICATION_ACTION_TEXT_KEYS`，靠 `NotificationRow` 的派生 key 回退才有文案（三语都在，用户无感）。属 F055 登记侧的一致性问题，已由上述 ③ 覆盖住「有文案」这条底线。
@@ -475,7 +475,7 @@
 | T011 | 连带修 `test/workstation/test_workstation_apps_rebac.py`（2 处断言）与 `test_f040_workbench_cursor.py`（1 处 mock 签名） | 无（tasks 跨 Feature 副作用表已认账该文件） | `filter_apps_by_action` 增参数是有意的签名变更，桩与断言须同步 |
 | T018 | 第 3 件「未部署形态文案闸」未实现 | D8 / §6.2 F054 T071 行 | 上游 `client/src/hooks/useAppRuntimeEnabled.ts`（F054 T071）尚未落地；且广场今天**没有**任何托管应用专属文案可隐藏（唯一的托管 UI 是按行数据驱动的「已下线」角标），开关关时后端天然无 `app` 行 → AC-10 由数据侧独立成立 |
 | T003 | 勘误 ② 已由 F054 落实（`get_online_flows_page` 的 tag 预过滤第 4 处已含 `ResourceTypeEnum.HOSTED_APP`）；③ 经核查 F054 未加等价参数，故由 T007 新增并沿用本文命名；① TTL 300s→1800s **仍未回写**（F054 访问记录尚未实现，`app_access` 全仓仅一处 TODO 注释） | 无 | 三条勘误逐条落地确认，①待上游 |
-| 测试基建 | `test/app_runtime/conftest.py` 增两个 session patch 目标（`bisheng.api.services.workflow`、`bisheng.app_runtime.domain.services.visibility_audit`） | 无 | 二者各自按名字绑定 `get_async_db_session`；不加则测试打到真 MySQL |
+| 测试基建 | `test/app_runtime/conftest.py` 增两个 session patch 目标（`doberman_agent.api.services.workflow`、`doberman_agent.app_runtime.domain.services.visibility_audit`） | 无 | 二者各自按名字绑定 `get_async_db_session`；不加则测试打到真 MySQL |
 
 ## 2026-08-18 · 主 agent 裁决与顺带修复
 
@@ -515,46 +515,46 @@
 本节优先于历史裁剪/阶段描述。用户确认原文：确认 F054/F056 修订设计，继续完成剩余开发并提测。只运行本功能必要的定向验证；真实部署证据与模拟测试分开登记，未执行不记通过。
 
 - [x] **T034**（基础设施）：快照与导出任务持久模型、163 错误码；新表保留回滚；不建事实副本
-  - 文件：`src/backend/bisheng/app_governance/domain/models/runtime_audit.py`、`src/backend/bisheng/common/errcode/app_governance.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/domain/models/runtime_audit.py`、`src/backend/doberman_agent/common/errcode/app_governance.py`。
   - 依赖：无（已确认设计）；配对：无（基础设施/交付）。
 - [x] **T035**（基础设施）：既有访问表新增可空历史名称快照；迁移仅 DDL，可回滚列；无历史回填
-  - 文件：`src/backend/bisheng/database/models/app_access_log.py`、`src/backend/bisheng/core/database/alembic/versions/f056_access_name_snapshot.py`。
+  - 文件：`src/backend/doberman_agent/database/models/app_access_log.py`、`src/backend/doberman_agent/core/database/alembic/versions/f056_access_name_snapshot.py`。
   - 依赖：T034；配对：无（基础设施/交付）。
 - [x] **T036**（测试）：凭据签发可信 app 关联、真实撤销一次审计、幂等、伪造归属拒绝、审计失败整事务回滚
   - 文件：`src/backend/test/open_api/test_runtime_credential_audit.py`。
   - 依赖：无（已确认设计）；配对：T037、T038。覆盖 AC: AC-59, AC-58。
 - [x] **T037**（后端 Domain）：可信 subject 映射与同 session revoke_runtime_binding；普通凭据审计补可信关联
-  - 文件：`src/backend/bisheng/open_api/domain/repositories/credential_repository.py`、`src/backend/bisheng/open_api/domain/services/credential_service.py`。
+  - 文件：`src/backend/doberman_agent/open_api/domain/repositories/credential_repository.py`、`src/backend/doberman_agent/open_api/domain/services/credential_service.py`。
   - 依赖：T036；配对：T036。
 - [x] **T038**（后端 Domain）：公开撤销协议接真实切换/终结/停止/删除绑定状态转移；复用调用者事务
-  - 文件：`src/backend/bisheng/open_api/application/runtime_credentials.py`、`src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py`。
+  - 文件：`src/backend/doberman_agent/open_api/application/runtime_credentials.py`、`src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py`。
   - 依赖：T037；配对：T036。
 - [x] **T039**（测试）：三源真实 SQLite 查询白名单、租户/角色拒绝、NULL/同秒稳定分页、筛选/候选、坏/过期游标
   - 文件：`src/backend/test/app_governance/test_runtime_audit_query.py`（测试夹具内置在该测试文件）。
   - 依赖：T034；配对：T040、T041、T042。覆盖 AC: AC-47, AC-48, AC-49, AC-50, AC-51, AC-52, AC-53, AC-54, AC-58, AC-61。
 - [x] **T040**（后端 Domain）：三个事实适配，显式授权范围、白名单、keyset 与 streaming source session 协议
-  - 文件：`src/backend/bisheng/app_governance/domain/repositories/runtime_audit_repository.py`、`src/backend/bisheng/app_governance/domain/schemas/runtime_audit.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/domain/repositories/runtime_audit_repository.py`、`src/backend/doberman_agent/app_governance/domain/schemas/runtime_audit.py`。
   - 依赖：T039；配对：T039。
 - [x] **T041**（后端 Domain）：当前自然人管理员范围、合法筛选、快照及严格签名 cursor；候选从历史事实
-  - 文件：`src/backend/bisheng/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/bisheng/app_governance/domain/services/runtime_audit_query_service.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_scope.py`、`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_query_service.py`。
   - 依赖：T040；配对：T039。
 - [x] **T042**（后端 API）：v1 session 注册三类查询/候选 API，拒绝开放凭据及禁用状态
-  - 文件：`src/backend/bisheng/app_governance/api/router.py`、`src/backend/bisheng/api/router.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/api/router.py`、`src/backend/doberman_agent/api/router.py`。
   - 依赖：T041；配对：T039。
 - [x] **T043**（测试）：CSV 公式/Unicode/空值、完整多批扫描、私有分块 EOF manifest、租约/重试及当前权限拒绝
   - 文件：`src/backend/test/app_governance/test_runtime_audit_export.py`。
   - 依赖：T040；配对：T044、T045、T046。覆盖 AC: AC-51, AC-52, AC-53, AC-56, AC-57, AC-58, AC-60。
 - [x] **T044**（后端 Domain）：异步导出任务与幂等/租约/CAS，冻结条件，一次 source 读视图，私有分块及认证下载
-  - 文件：`src/backend/bisheng/app_governance/domain/repositories/runtime_audit_export_repository.py`、`src/backend/bisheng/app_governance/domain/services/runtime_audit_export_service.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/domain/repositories/runtime_audit_export_repository.py`、`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_export_service.py`。
   - 依赖：T043；配对：T043。
 - [x] **T045**（Worker）：后台扫描调度/恢复/GC，Celery headers 传 tenant_id 并恢复 ContextVar；每批当前授权
-  - 文件：`src/backend/bisheng/worker/runtime_audit/tasks.py`、`src/backend/bisheng/worker/main.py`。
+  - 文件：`src/backend/doberman_agent/worker/runtime_audit/tasks.py`、`src/backend/doberman_agent/worker/main.py`。
   - 依赖：T044；配对：T043。
 - [x] **T046**（后端 API）：导出提交/状态/认证下载，私有 MinIO 不公开 URL，当前权限/ready TTL 核验
-  - 文件：`src/backend/bisheng/app_governance/api/router.py`、`src/backend/bisheng/app_governance/domain/services/runtime_audit_storage.py`。
+  - 文件：`src/backend/doberman_agent/app_governance/api/router.py`、`src/backend/doberman_agent/app_governance/domain/services/runtime_audit_storage.py`。
   - 依赖：T044、T045；配对：T043。
 - [x] **T047**（后端 Domain）：新 allow 写 app_name_snapshot，保留历史未知及合并窗口
-  - 文件：`src/backend/bisheng/app_runtime/domain/services/app_access_log_service.py`、`src/backend/bisheng/app_runtime/domain/services/entry_authz_service.py`。
+  - 文件：`src/backend/doberman_agent/app_runtime/domain/services/app_access_log_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/entry_authz_service.py`。
   - 依赖：T035；配对：T039。
 - [x] **T048**（前端 Platform）：包裹 request API 与 query hook，筛选 key 包含视图/范围，不保留旧租户内容
   - 文件：`src/frontend/platform/src/controllers/API/runtimeAudit.ts`、`src/frontend/platform/src/pages/LogPage/runtime/useRuntimeAudit.ts`。
@@ -579,10 +579,10 @@
   - 文件：`src/frontend/platform/public/locales/ja/bs.json`、`src/frontend/packages/locales/src/api_errors/ja.json`。
   - 依赖：T050a；配对：无（纯文案）。
 - [x] **T053**（基础设施）：新读模型在租户过滤/发现注册；现有修复不改租户默认和双库约束。
-  - 文件：`src/backend/bisheng/core/database/tenant_filter.py`、`src/backend/bisheng/app_governance/domain/models/__init__.py`。
+  - 文件：`src/backend/doberman_agent/core/database/tenant_filter.py`、`src/backend/doberman_agent/app_governance/domain/models/__init__.py`。
   - 依赖：T034；配对：T039。
 - [x] **T054**（Worker）：注册任务及 30 秒恢复扫描；逐任务重新进入可信 tenant execution scope。
-  - 文件：`src/backend/bisheng/worker/__init__.py`、`src/backend/bisheng/core/config/settings.py`。
+  - 文件：`src/backend/doberman_agent/worker/__init__.py`、`src/backend/doberman_agent/core/config/settings.py`。
   - 依赖：T045；配对：T043。
 
 增量任务审查：2026-10-24 `/sdd-review tasks` 第 1 轮发现三语任务粒度过大；已拆成每语两文件并补共享注册落点。第 2 轮 21 项检查 LGTM，证据见 `closeout-task-review.md`。后端按测试先行逐批落地，不把定向验证当部署验收。
@@ -592,7 +592,7 @@
 下列任务补齐共享配置、命名导出和测试夹具的文件归属；执行以依赖为准，配置/ORM 基础先于消费方。未引入新的业务需求。
 
 - [x] **T055**（后端 Domain）：提供当前管理视图的公开只读协议；失败不回退成全局；供读/worker/下载重新核验
-  - 文件：`src/backend/bisheng/admin/application/tenant_scope.py`、`src/backend/bisheng/admin/application/__init__.py`。依赖：T039；配对：定向用例见本功能 closeout-validation.md。
+  - 文件：`src/backend/doberman_agent/admin/application/tenant_scope.py`、`src/backend/doberman_agent/admin/application/__init__.py`。依赖：T039；配对：定向用例见本功能 closeout-validation.md。
 - [x] **T056**（前端 Platform）：命名导出惰性接线及部署开关/管理员门禁测试，保留原两页签
   - 文件：`src/frontend/platform/src/routes/index.tsx`、`src/frontend/platform/src/pages/LogPage/index.test.tsx`。依赖：T049；配对：T102、T103、T116（F054）或 T049（F056）。覆盖 AC: AC-46, AC-53, AC-61。
 

@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_publish.domain.schemas.app_manifest import egress_domains_of
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_publish.domain.schemas.app_manifest import egress_domains_of
+from doberman_agent.app_runtime.domain.constants import AppState
 
 # No module-level ``pytest.mark.asyncio``: this file mixes sync and async tests
 # and ``asyncio_mode=auto`` already covers the async half. Marking the sync ones
@@ -69,8 +69,8 @@ def test_non_string_entries_are_dropped_not_stringified():
 
 
 async def test_the_start_path_sends_the_declared_domains(app_db, app_factory, app_owner, fake_orchestrator):
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app, version = await app_factory(state=AppState.PENDING_CAPACITY.value)
     async with app_db() as session:
@@ -87,7 +87,7 @@ async def test_the_start_path_sends_the_declared_domains(app_db, app_factory, ap
 async def test_a_version_that_declares_nothing_still_sends_the_key(app_factory, app_owner, fake_orchestrator):
     """An absent key would read to the manager as "an older backend" rather than
     as "this application declared nothing", and the two must not be the same."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, _version = await app_factory(state=AppState.PENDING_CAPACITY.value)
 

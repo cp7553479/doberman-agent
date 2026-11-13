@@ -382,7 +382,7 @@ export function importFlow() {
                                 if (['rag', 'llm', 'agent', 'qa_retriever'].includes(node.data.type)) {
                                     node.data.group_params.forEach(group =>
                                         group.params.forEach(param => {
-                                            if (param.type === 'bisheng_model') {
+                                            if (param.type === 'doberman_agent_model') {
                                                 param.value = workflowModelId
                                             } else if (param.type === 'agent_model') {
                                                 param.value = assistantModelId

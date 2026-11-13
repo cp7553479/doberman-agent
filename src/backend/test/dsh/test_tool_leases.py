@@ -9,8 +9,8 @@ import pytest
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-from bisheng.common.errcode.dsh import DshToolConcurrencyExceededError, DshToolServiceUnavailableError
-from bisheng.dsh.infrastructure.tool_leases import ToolLeases
+from doberman_agent.common.errcode.dsh import DshToolConcurrencyExceededError, DshToolServiceUnavailableError
+from doberman_agent.dsh.infrastructure.tool_leases import ToolLeases
 
 
 @pytest.fixture

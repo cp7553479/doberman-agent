@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { notification, toast } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { notification, toast } from '@doberman-agent/ui';
 import { SettingIcon } from "@/components/bs-icons";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/bs-ui/sheet";
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 
 import { getSensitiveApi, sensitiveSaveApi } from "@/controllers/API/pro";

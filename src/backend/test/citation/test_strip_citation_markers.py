@@ -9,7 +9,7 @@ deliverable. ``strip_citation_markers`` is the one helper the export paths share
 
 from __future__ import annotations
 
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_SEPARATOR_MARKER,
     CITATION_START_MARKER,

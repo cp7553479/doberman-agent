@@ -37,7 +37,7 @@
 三个 Jest 套件共 17 项通过。运行命令：
 
 ```bash
-NODE_OPTIONS=--require=/tmp/bisheng-project-new-chat-jest.cjs pnpm --filter bishengchat exec jest --runInBand --coverage=false --silent --runTestsByPath src/components/Nav/NewChat.project.test.tsx src/hooks/useAiChatSSE.project.test.ts src/layouts/WorkbenchSidebar/WorkbenchSidebar.mobile.test.tsx
+NODE_OPTIONS=--require=/tmp/doberman-agent-project-new-chat-jest.cjs pnpm --filter doberman-agentchat exec jest --runInBand --coverage=false --silent --runTestsByPath src/components/Nav/NewChat.project.test.tsx src/hooks/useAiChatSSE.project.test.ts src/layouts/WorkbenchSidebar/WorkbenchSidebar.mobile.test.tsx
 ```
 
 客户端 lint、全仓 typecheck、架构守卫及 diff 空白检查通过。全仓 lint 在未修改的 platform 文件先行失败：`controllers/API/linsight.ts` 5 处 any，`test/speechForm.test.tsx` 1 处未使用变量；已用 `git diff HEAD -- <path>` 确认这两个文件无本次改动。

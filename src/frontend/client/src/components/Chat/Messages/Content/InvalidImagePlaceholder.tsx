@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

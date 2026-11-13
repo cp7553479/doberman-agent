@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useTranslation } from "react-i18next";
-import { SearchInput } from '@bisheng/ui';
+import { SearchInput } from '@doberman-agent/ui';
 import { Check, X } from "lucide-react"
 import React, { useEffect, useRef, useState } from "react"
 import { Select, SelectContent, SelectTrigger } from "."
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 
 import { cname, useDebounce } from "../utils"
 

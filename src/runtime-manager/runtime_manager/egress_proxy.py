@@ -258,7 +258,7 @@ class EgressProxy:
                     "Proxy Authentication Required",
                     decision.reason,
                     decision.detail,
-                    extra='Proxy-Authenticate: Basic realm="bisheng-egress"\r\n',
+                    extra='Proxy-Authenticate: Basic realm="doberman-agent-egress"\r\n',
                 )
             else:
                 await self._refuse(writer, 403, "Forbidden", decision.reason, decision.detail)

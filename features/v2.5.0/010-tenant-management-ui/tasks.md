@@ -30,14 +30,14 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/tenant/__init__.py`
-- 新建: `src/backend/bisheng/tenant/api/__init__.py`
-- 新建: `src/backend/bisheng/tenant/api/endpoints/__init__.py`
-- 新建: `src/backend/bisheng/tenant/domain/__init__.py`
-- 新建: `src/backend/bisheng/tenant/domain/schemas/__init__.py`
-- 新建: `src/backend/bisheng/tenant/domain/schemas/tenant_schema.py`
-- 新建: `src/backend/bisheng/tenant/domain/services/__init__.py`
-- 修改: `src/backend/bisheng/common/errcode/tenant.py`
+- 新建: `src/backend/doberman_agent/tenant/__init__.py`
+- 新建: `src/backend/doberman_agent/tenant/api/__init__.py`
+- 新建: `src/backend/doberman_agent/tenant/api/endpoints/__init__.py`
+- 新建: `src/backend/doberman_agent/tenant/domain/__init__.py`
+- 新建: `src/backend/doberman_agent/tenant/domain/schemas/__init__.py`
+- 新建: `src/backend/doberman_agent/tenant/domain/schemas/tenant_schema.py`
+- 新建: `src/backend/doberman_agent/tenant/domain/services/__init__.py`
+- 修改: `src/backend/doberman_agent/common/errcode/tenant.py`
 
 **内容**:
 - 模块骨架：创建 `tenant/` DDD 目录结构（api/ + domain/），所有 `__init__.py`
@@ -71,7 +71,7 @@
 - [x] 完成
 
 **文件**:
-- 修改: `src/backend/bisheng/database/models/tenant.py`
+- 修改: `src/backend/doberman_agent/database/models/tenant.py`
 
 **内容**:
 - TenantDao 新增方法:
@@ -100,7 +100,7 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/tenant/domain/services/tenant_service.py`
+- 新建: `src/backend/doberman_agent/tenant/domain/services/tenant_service.py`
 
 **依赖**: T-01, T-02
 
@@ -153,11 +153,11 @@
 - [x] 完成
 
 **文件**:
-- 新建: `src/backend/bisheng/tenant/api/router.py`
-- 新建: `src/backend/bisheng/tenant/api/endpoints/tenant_crud.py`
-- 新建: `src/backend/bisheng/tenant/api/endpoints/tenant_users.py`
-- 新建: `src/backend/bisheng/tenant/api/endpoints/user_tenant.py`
-- 修改: `src/backend/bisheng/api/router.py` — 增加 `from bisheng.tenant.api.router import router as tenant_router` + `router.include_router(tenant_router)`
+- 新建: `src/backend/doberman_agent/tenant/api/router.py`
+- 新建: `src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py`
+- 新建: `src/backend/doberman_agent/tenant/api/endpoints/tenant_users.py`
+- 新建: `src/backend/doberman_agent/tenant/api/endpoints/user_tenant.py`
+- 修改: `src/backend/doberman_agent/api/router.py` — 增加 `from doberman_agent.tenant.api.router import router as tenant_router` + `router.include_router(tenant_router)`
 
 **依赖**: T-03
 
@@ -192,10 +192,10 @@
 - [x] 完成
 
 **文件**:
-- 修改: `src/backend/bisheng/user/domain/services/user.py` — `user_login()` 方法
-- 修改: `src/backend/bisheng/user/domain/models/user.py` — `UserRead` 增加字段
-- 修改: `src/backend/bisheng/utils/http_middleware.py` — `CustomMiddleware.__call__`
-- 修改: `src/backend/bisheng/api/v1/endpoints.py` — `get_env()` 增加 multi_tenant_enabled
+- 修改: `src/backend/doberman_agent/user/domain/services/user.py` — `user_login()` 方法
+- 修改: `src/backend/doberman_agent/user/domain/models/user.py` — `UserRead` 增加字段
+- 修改: `src/backend/doberman_agent/utils/http_middleware.py` — `CustomMiddleware.__call__`
+- 修改: `src/backend/doberman_agent/api/v1/endpoints.py` — `get_env()` 增加 multi_tenant_enabled
 
 **依赖**: T-02（DAO 方法）, T-01（NoTenantsAvailableError）
 

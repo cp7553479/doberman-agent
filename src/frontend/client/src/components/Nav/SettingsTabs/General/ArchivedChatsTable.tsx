@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useState, useCallback, useMemo } from 'react';
 import {
   TrashIcon,
@@ -11,7 +11,7 @@ import {
   ArchiveRestore,
 } from 'lucide-react';
 import type { TConversation } from '~/types/chat';
-import { SearchInput } from '@bisheng/ui';
+import { SearchInput } from '@doberman-agent/ui';
 import { Table, Button, TableRow, Skeleton, Separator, TableCell, TableBody, TableHead, TableHeader } from '~/components';
 import { useConversationsInfiniteQuery, useArchiveConvoMutation } from '~/hooks/queries/data-provider';
 import { useDeleteConversationConfirm } from '~/components/Conversations/ConvoOptions';

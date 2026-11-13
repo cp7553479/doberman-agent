@@ -1,4 +1,4 @@
-import { resolveErrorMessageTemplate } from '@bisheng/api-client';
+import { resolveErrorMessageTemplate } from '@doberman-agent/api-client';
 import i18next from "i18next";
 
 const ASR_ERROR_CODES = new Set([10014, 10015, 10016, 10017, 10018, 10019]);

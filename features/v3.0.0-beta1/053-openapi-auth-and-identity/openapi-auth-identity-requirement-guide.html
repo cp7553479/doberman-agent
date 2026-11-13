@@ -352,7 +352,7 @@
     <main>
       <header class="hero">
         <div class="hero-inner">
-          <div class="eyebrow">BiSheng 3.0 · F053 · Test-first Guide</div>
+          <div class="eyebrow">doberman-agent 3.0 · F053 · Test-first Guide</div>
           <h1>开放 API 鉴权与身份传递<br>需求拆解与测试地图</h1>
           <p class="lede">一句话：把原先可能“匿名借默认操作员权限”的 <code>/api/v2/**</code> 改造成<strong>每次都能回答“哪把钥匙、代表谁、在哪个租户、允许调什么、能操作哪个资源”</strong>的密钥开放面；公开发布能力另迁到 <code>/api/v3/**</code>。</p>
           <div class="badges">
@@ -499,11 +499,11 @@
                     <tr><td>管理员</td><td><code>GET .../{id}/grantable-resources</code>；<code>GET .../{id}/resource-grants</code>；<code>POST .../{id}/resource-grants:mutate</code></td><td>资源候选、当前授权、F048 mutation</td></tr>
                     <tr><td>管理员</td><td><code>GET/PUT /personal-tokens/settings</code>；<code>GET /personal-tokens</code>；<code>POST /personal-tokens/{credential_id}/revoke</code>；<code>POST /personal-tokens/holders/{user_id}/revoke</code></td><td>租户双闸门的 DB 侧配置、台账、强制吊销</td></tr>
                     <tr><td>登录员工</td><td><code>GET/POST/DELETE /me/api-token</code>；<code>GET /me/api-token/install-prompt</code></td><td>查看状态、获取/重签、删除、生成 Agent 安装提示</td></tr>
-                    <tr><td>匿名下载</td><td><code>GET /open-api/skill-packs/bisheng-knowledge-search</code></td><td>下载确定性 ZIP；模板注入当前实例 base URL / outbound origin，不含 PAT</td></tr>
+                    <tr><td>匿名下载</td><td><code>GET /open-api/skill-packs/doberman-agent-knowledge-search</code></td><td>下载确定性 ZIP；模板注入当前实例 base URL / outbound origin，不含 PAT</td></tr>
                   </tbody>
                 </table>
               </div>
-              <p>以上均位于 <code>/api/v1</code> 管理面前缀。知识检索技能包只有 <code>SKILL.md</code>、<code>SECURITY.md</code> 与 <code>scripts/search.py</code>，读取环境变量 <code>BISHENG_API_KEY</code>，只调用 <code>POST /api/v2/filelib/retrieve</code>；打包固定文件顺序/时间戳并拒绝绝对路径或 <code>..</code> 路径，保证多 API 副本产物一致且不可路径穿越。</p>
+              <p>以上均位于 <code>/api/v1</code> 管理面前缀。知识检索技能包只有 <code>SKILL.md</code>、<code>SECURITY.md</code> 与 <code>scripts/search.py</code>，读取环境变量 <code>DOBERMAN_AGENT_API_KEY</code>，只调用 <code>POST /api/v2/filelib/retrieve</code>；打包固定文件顺序/时间戳并拒绝绝对路径或 <code>..</code> 路径，保证多 API 副本产物一致且不可路径穿越。</p>
             </div>
           </details>
 
@@ -1067,7 +1067,7 @@ export PYTHONPATH=./
             <div class="card">
               <span class="tag red">发布阻断</span>
               <h3>商业 Gateway 未源码复核</h3>
-              <p>目标私有仓 <code>dataelement/bisheng-gateway</code> 不在当前工作区；v3 HTTP/WS route 和 login/API-key filters 尚不能以源码确认，目标 tag/负责人也未记录。</p>
+              <p>目标私有仓 <code>cp7553479/doberman-agent-gateway</code> 不在当前工作区；v3 HTTP/WS route 和 login/API-key filters 尚不能以源码确认，目标 tag/负责人也未记录。</p>
             </div>
             <div class="card">
               <span class="tag amber">环境待验</span>
@@ -1093,7 +1093,7 @@ export PYTHONPATH=./
             <li><strong>技术决策：</strong><code>features/v3.0.0-beta1/053-openapi-auth-and-identity/design.md</code></li>
             <li><strong>部署事实：</strong><code>release-and-deployment.md</code>、<code>e2e-checklist.md</code></li>
             <li><strong>接口契约：</strong><code>openapi-v2-key-auth-api.md</code> / <code>.json</code>、<code>public-v3-publishing-api.md</code></li>
-            <li><strong>当前实现：</strong><code>bisheng/open_api/**</code>、<code>bisheng/permission/**</code>、会话/工作流/助手/知识服务、三条 F053 migrations、Platform/Client 管理页面。</li>
+            <li><strong>当前实现：</strong><code>doberman-agent/open_api/**</code>、<code>doberman-agent/permission/**</code>、会话/工作流/助手/知识服务、三条 F053 migrations、Platform/Client 管理页面。</li>
           </ol>
           <div class="callout">
             <strong>判定规则：</strong>本文用 PRD 解释“为什么”，用 design 解释“计划怎么做”，用当前代码与迁移解释“现在实际上怎么运行”。三者不一致时明确列为风险，不把任何一边静默覆盖。
@@ -1112,7 +1112,7 @@ export PYTHONPATH=./
       const sidebar = document.getElementById('sidebar');
       const details = [...document.querySelectorAll('details')];
       const checkboxes = [...document.querySelectorAll('.check-item input[type="checkbox"]')];
-      const storageKey = 'bisheng-f053-test-checklist-v1';
+      const storageKey = 'doberman-agent-f053-test-checklist-v1';
 
       search.addEventListener('input', () => {
         const query = search.value.trim().toLocaleLowerCase('zh-CN');

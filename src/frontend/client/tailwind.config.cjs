@@ -6,13 +6,13 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
   // The design system (type scale, semantic colors, radius/shadow/z tiers, the
   // motion keyframes, `darkMode`, `hoverOnlyWhenSupported` and the pointer
-  // variants) comes from @bisheng/ui — ONE definition shared with the library's
+  // variants) comes from @doberman-agent/ui — ONE definition shared with the library's
   // own components, so a token can no longer mean two things in two configs.
   // Anything below is client-only: keep app-specific keys here, and add a
   // cross-app one to the preset instead of re-declaring it here.
-  presets: [require('@bisheng/ui/tailwind-preset')],
+  presets: [require('@doberman-agent/ui/tailwind-preset')],
   // packages/ui is source-shipped: its classes must be scanned here too,
-  // or shared components (e.g. @bisheng/ui Button) lose their styles.
+  // or shared components (e.g. @doberman-agent/ui Button) lose their styles.
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     '../packages/ui/src/**/*.{ts,tsx}',

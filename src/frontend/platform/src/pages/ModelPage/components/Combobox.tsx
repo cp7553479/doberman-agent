@@ -1,5 +1,5 @@
-import { Button } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/bs-ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover"

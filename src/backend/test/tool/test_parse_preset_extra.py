@@ -2,7 +2,7 @@
 
 from types import SimpleNamespace
 
-from bisheng.tool.domain.services.executor import ToolExecutor
+from doberman_agent.tool.domain.services.executor import ToolExecutor
 
 
 def test_parse_preset_extra_uses_tool_row_when_present():

@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
-from bisheng.app_publish.domain.services.snapshot_browse_service import ReviewAccess, SnapshotBrowseService
-from bisheng.app_publish.domain.services.version_diff_service import VersionDiffService
-from bisheng.common.errcode.app_factory import AppNotFoundError
-from bisheng.common.errcode.app_publish import AppVersionReviewForbiddenError
+from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
+from doberman_agent.app_publish.domain.services.snapshot_browse_service import ReviewAccess, SnapshotBrowseService
+from doberman_agent.app_publish.domain.services.version_diff_service import VersionDiffService
+from doberman_agent.common.errcode.app_factory import AppNotFoundError
+from doberman_agent.common.errcode.app_publish import AppVersionReviewForbiddenError
 
 
 def caller(tenant=1, user_id=21, is_super=False):
@@ -51,7 +51,7 @@ async def test_old_version_references_refuse_before_snapshot_or_version_read(mon
 
 @pytest.mark.parametrize("role", ["owner", "approver", "stranger", "super", "moved_approver"])
 async def test_review_roles_do_not_gain_or_lose_same_tenant_permissions(monkeypatch, role):
-    from bisheng.app_publish.domain.services import snapshot_browse_service as module
+    from doberman_agent.app_publish.domain.services import snapshot_browse_service as module
 
     monkeypatch.setattr(module, "check_tenant_admin", AsyncMock(return_value=False))
     holds = AsyncMock(return_value=role in {"approver", "moved_approver"})

@@ -1,6 +1,6 @@
-import { Dropdown, DropdownItem } from "@bisheng/ui";
-import { Tooltip } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Dropdown, DropdownItem } from "@doberman-agent/ui";
+import { Tooltip } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import type { MouseEvent, ReactElement, ReactNode } from 'react';
 import { cloneElement } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ import { SidebarProjects } from './SidebarProjects';
 import { splitSidebarEntries, useSidebarEntries } from './useSidebarEntries';
 
 /** Shown next to the logo when the admin has not configured a 首页 display name. */
-const DEFAULT_BRAND_NAME = 'BISHENG';
+const DEFAULT_BRAND_NAME = 'doberman-agent';
 
 const BRAND_LINK = 'flex h-8 min-w-0 items-center gap-2.5';
 

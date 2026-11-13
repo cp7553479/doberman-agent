@@ -27,8 +27,8 @@
  * model. Two buttons doing one thing on one screen is worse than either.
  */
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm"
-import { Button } from "@bisheng/ui"
-import { notification } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
+import { notification } from "@doberman-agent/ui"
 import {
   getHostedAppErrorMessage,
   withdrawApprovalApi,

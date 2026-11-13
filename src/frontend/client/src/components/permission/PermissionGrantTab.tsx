@@ -1,7 +1,7 @@
 import { SubjectSelectionSummary } from "./SubjectSelectionSummary";
 import { permissionModelLabel } from "./permissionModelLabel";
-import { Outlined } from "bisheng-icons";
-// `LockKeyhole` stays on lucide: bisheng-icons has no lock glyph.
+import { Outlined } from "@doberman-agent/icons";
+// `LockKeyhole` stays on lucide: @doberman-agent/icons has no lock glyph.
 import { LockKeyhole } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -19,7 +19,7 @@ import type {
   SubjectType,
 } from "~/api/permission";
 import { Button } from "~/components/ui";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useLocalize } from "~/hooks";
 import { canMutatePermissionAssignee } from "./assigneePolicy";
 import { SourceBadge } from "./SourceBadge";

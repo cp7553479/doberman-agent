@@ -7,20 +7,20 @@ import pytest
 @pytest.fixture(autouse=True)
 def no_business_subscription_by_default(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.channel.domain.services.channel_service.batch_check_business_visible",
+        "doberman_agent.channel.domain.services.channel_service.batch_check_business_visible",
         AsyncMock(return_value={"channel-1": False}),
     )
 
 
 @pytest.mark.asyncio
 async def test_review_channel_subscription_uses_approval_gate_pending():
-    from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-    from bisheng.channel.domain.schemas.channel_manager_schema import (
+    from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+    from doberman_agent.channel.domain.schemas.channel_manager_schema import (
         SubscribeChannelRequest,
         SubscriptionStatusEnum,
     )
-    from bisheng.channel.domain.services.channel_service import ChannelService
-    from bisheng.common.models.space_channel_member import (
+    from doberman_agent.channel.domain.services.channel_service import ChannelService
+    from doberman_agent.common.models.space_channel_member import (
         BusinessTypeEnum,
         MembershipStatusEnum,
         UserRoleEnum,
@@ -49,11 +49,11 @@ async def test_review_channel_subscription_uses_approval_gate_pending():
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.QuotaService.check_quota",
+            "doberman_agent.channel.domain.services.channel_service.QuotaService.check_quota",
             new=AsyncMock(return_value=True),
         ),
         patch(
-            "bisheng.database.models.department.UserDepartmentDao.aget_user_primary_department",
+            "doberman_agent.database.models.department.UserDepartmentDao.aget_user_primary_department",
             new=AsyncMock(return_value=None),
         ),
     ):
@@ -76,13 +76,13 @@ async def test_review_channel_subscription_uses_approval_gate_pending():
 
 @pytest.mark.asyncio
 async def test_review_channel_subscription_direct_pass_waits_for_outbox_activation():
-    from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-    from bisheng.channel.domain.schemas.channel_manager_schema import (
+    from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+    from doberman_agent.channel.domain.schemas.channel_manager_schema import (
         SubscribeChannelRequest,
         SubscriptionStatusEnum,
     )
-    from bisheng.channel.domain.services.channel_service import ChannelService
-    from bisheng.common.models.space_channel_member import MembershipStatusEnum
+    from doberman_agent.channel.domain.services.channel_service import ChannelService
+    from doberman_agent.common.models.space_channel_member import MembershipStatusEnum
 
     channel = SimpleNamespace(id="channel-1", name="资讯频道", visibility=ChannelVisibilityEnum.REVIEW)
     membership = SimpleNamespace(id=99, status=MembershipStatusEnum.REJECTED, user_role="member")
@@ -107,11 +107,11 @@ async def test_review_channel_subscription_direct_pass_waits_for_outbox_activati
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.QuotaService.check_quota",
+            "doberman_agent.channel.domain.services.channel_service.QuotaService.check_quota",
             new=AsyncMock(return_value=True),
         ),
         patch(
-            "bisheng.database.models.department.UserDepartmentDao.aget_user_primary_department",
+            "doberman_agent.database.models.department.UserDepartmentDao.aget_user_primary_department",
             new=AsyncMock(return_value=None),
         ),
         patch.object(
@@ -133,10 +133,10 @@ async def test_review_channel_subscription_direct_pass_waits_for_outbox_activati
 
 @pytest.mark.asyncio
 async def test_channel_subscribe_scenario_handler_updates_membership_states():
-    from bisheng.approval.domain.services.channel_subscribe_scenario_handler import (
+    from doberman_agent.approval.domain.services.channel_subscribe_scenario_handler import (
         ChannelSubscribeScenarioHandler,
     )
-    from bisheng.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
+    from doberman_agent.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
 
     membership = SimpleNamespace(id=1, status=MembershipStatusEnum.PENDING, user_id=42, user_role=UserRoleEnum.MEMBER)
     member_repository = SimpleNamespace(
@@ -174,7 +174,7 @@ async def test_channel_subscribe_scenario_handler_updates_membership_states():
 async def test_channel_subscribe_on_approved_raises_when_membership_missing():
     """A missing membership must fail loudly so the outbox is marked FAILED and an
     execute_failed exception is raised — never silently reported as success."""
-    from bisheng.approval.domain.services.channel_subscribe_scenario_handler import (
+    from doberman_agent.approval.domain.services.channel_subscribe_scenario_handler import (
         ChannelSubscribeScenarioHandler,
     )
 
@@ -196,7 +196,7 @@ async def test_channel_subscribe_on_approved_raises_when_membership_missing():
 
 @pytest.mark.asyncio
 async def test_channel_approver_sources_keep_owner_and_manager_distinct():
-    from bisheng.approval.domain.services.channel_subscribe_scenario_handler import (
+    from doberman_agent.approval.domain.services.channel_subscribe_scenario_handler import (
         ChannelSubscribeScenarioHandler,
     )
 
@@ -210,7 +210,7 @@ async def test_channel_approver_sources_keep_owner_and_manager_distinct():
     )
 
     with patch(
-        "bisheng.approval.domain.services.channel_subscribe_scenario_handler._resolve_channel_permission_roles",
+        "doberman_agent.approval.domain.services.channel_subscribe_scenario_handler._resolve_channel_permission_roles",
         new=AsyncMock(return_value=([11], [22])),
     ):
         owners = await handler.resolve_approvers(

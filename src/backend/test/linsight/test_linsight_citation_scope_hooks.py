@@ -18,15 +18,15 @@ from langchain_core.documents import Document
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import (
     _LinsightWebCitationWrapper,
     _subagent_tools,
     _wrap_linsight_web_citation_tools,
 )
-from bisheng.tool.domain.langchain import linsight_knowledge as knowledge_tool
-from bisheng.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
+from doberman_agent.tool.domain.langchain import linsight_knowledge as knowledge_tool
+from doberman_agent.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
 
 
 class _RecordingScope:
@@ -142,7 +142,7 @@ def cache_web(monkeypatch: pytest.MonkeyPatch):
         return items
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache
     )
     return cached
 
@@ -223,7 +223,7 @@ async def test_create_linsight_agent_binds_scope_to_tools(monkeypatch: pytest.Mo
     monkeypatch.setattr("deepagents.create_deep_agent", fake_create_deep_agent)
     monkeypatch.setattr(agent_factory, "_resolve_model", AsyncMock(return_value=(SimpleNamespace(), False)))
     # keep the factory off the DB-backed system config
-    from bisheng.core.config.settings import LinsightConf
+    from doberman_agent.core.config.settings import LinsightConf
 
     monkeypatch.setattr(agent_factory, "settings", SimpleNamespace(get_linsight_conf=lambda: LinsightConf()))
     scope = _RecordingScope()

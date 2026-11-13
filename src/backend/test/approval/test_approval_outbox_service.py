@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalException,
     ApprovalInstance,
     ApprovalInstanceStatus,
     ApprovalOutbox,
     ApprovalOutboxStatus,
 )
-from bisheng.approval.domain.services.approval_outbox_service import ApprovalOutboxService
+from doberman_agent.approval.domain.services.approval_outbox_service import ApprovalOutboxService
 
 
 class FakeOutboxRepo:

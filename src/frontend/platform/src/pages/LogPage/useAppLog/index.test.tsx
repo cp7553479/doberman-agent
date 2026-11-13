@@ -7,8 +7,8 @@ const mock = vi.hoisted(() => ({ filter: vi.fn(), page: vi.fn(), exportApi: vi.f
 vi.mock('@/contexts/locationContext', async () => ({ locationContext: (await import('react')).createContext({ appConfig: { isPro: true } }) }))
 vi.mock('@/contexts/userContext', async () => ({ userContext: (await import('react')).createContext({ user: { user_name: 'Admin' } }) }))
 vi.mock('@/controllers/API/log', () => ({ getAuditAppListApi: vi.fn(), exportCsvDataApi: mock.exportApi }))
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({ useToast: () => ({ message: mock.message }) }))();
 const hooks = Reflect.get(previous, 'useToast')?.() ?? {};
 return { ...actual, notification: { ...actual.notification, open: Reflect.get(previous, 'toast') ?? Reflect.get(hooks, 'toast') ?? actual.notification.open }, toast: { ...actual.toast, show: Reflect.get(previous, 'message') ?? Reflect.get(hooks, 'message') ?? actual.toast.show } };

@@ -45,7 +45,7 @@ def lifecycle(monkeypatch):
             return_value=[SimpleNamespace(id=41, user_id=7, message="APP_DELETE_TEST")]
         )
     )
-    schema = ModuleType("bisheng.api.v1.schema.chat_schema")
+    schema = ModuleType("doberman_agent.api.v1.schema.chat_schema")
     schema.ChatMessageHistoryResponse = SimpleNamespace(from_chat_message_objs=lambda rows, *args: rows)
     monkeypatch.setitem(sys.modules, schema.__name__, schema)
     namespace = {
@@ -65,7 +65,7 @@ def lifecycle(monkeypatch):
     }
     # Postponed annotations let the isolated body retain production type hints.
     namespace["__builtins__"] = __builtins__
-    source = ast.parse((BACKEND / "bisheng/chat_session/domain/chat.py").read_text())
+    source = ast.parse((BACKEND / "doberman_agent/chat_session/domain/chat.py").read_text())
     cls = next(node for node in source.body if isinstance(node, ast.ClassDef) and node.name == "ChatSessionService")
     cls.body = [
         node
@@ -115,7 +115,7 @@ async def client(lifecycle):
         "resp_200": lambda data: {"status_code": 200, "data": data},
         "UnAuthorizedError": SimpleNamespace(return_resp=lambda: {"status_code": 403}),
     }
-    _load_nodes("bisheng/chat_session/api/endpoints/chat.py", {"get_chat_message", "get_chat_info"}, namespace)
+    _load_nodes("doberman_agent/chat_session/api/endpoints/chat.py", {"get_chat_message", "get_chat_info"}, namespace)
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as client:

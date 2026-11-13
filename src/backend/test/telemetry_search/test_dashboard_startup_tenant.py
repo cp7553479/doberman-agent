@@ -5,13 +5,13 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     get_current_tenant_id,
     set_current_tenant_id,
     visible_tenant_ids,
 )
-from bisheng.telemetry_search.domain import init_dataset
+from doberman_agent.telemetry_search.domain import init_dataset
 
 
 class _DatabaseManager:

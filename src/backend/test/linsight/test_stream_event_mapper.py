@@ -35,11 +35,11 @@ from pathlib import Path
 import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk, ToolMessage
 
-from bisheng.linsight.domain.services.stream_event_mapper import (
+from doberman_agent.linsight.domain.services.stream_event_mapper import (
     StreamContext,
     StreamEventMapper,
 )
-from bisheng_langchain.linsight.event import (
+from doberman_agent_langchain.linsight.event import (
     ExecStep,
     GenerateSubTask,
     NeedUserInput,

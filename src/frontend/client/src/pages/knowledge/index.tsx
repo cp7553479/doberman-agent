@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Plus } from "lucide-react";
 import { EmptyStateIllustration } from "~/components/illustrations";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { useQueryClient } from "@tanstack/react-query";
 import store from "~/store";
@@ -43,7 +43,7 @@ import { useEffectiveQuota } from "~/hooks/useEffectiveQuota";
 import { useAuthContext } from "~/hooks/AuthContext";
 import { cn } from "~/utils";
 import { LoadingIcon } from "~/components/ui/icon/Loading";
-import { bishengConfState } from "~/pages/appChat/store/atoms";
+import { dobermanAgentConfState } from "~/pages/appChat/store/atoms";
 import {
   SETTINGS_RETURN_STATE_KEY,
   canOpenSharedSpace,
@@ -55,8 +55,8 @@ export default function Knowledge() {
   const localize = useLocalize();
   // 模块标题跟随后台配置的菜单显示名称
   const menuNames = useWorkbenchMenuNames();
-  const bishengConfig = useRecoilValue(bishengConfState);
-  const uploadSizeLimits = useMemo(() => resolveUploadSizeLimits(bishengConfig), [bishengConfig]);
+  const dobermanAgentConfig = useRecoilValue(dobermanAgentConfState);
+  const uploadSizeLimits = useMemo(() => resolveUploadSizeLimits(dobermanAgentConfig), [dobermanAgentConfig]);
   const isH5 = usePrefersMobileLayout();
   const { isOverQuota } = useEffectiveQuota();
   const previewNavTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -736,7 +736,7 @@ export default function Knowledge() {
               <p>{localize("com_knowledge.format_list")}</p>
               <p>
                 {localize(
-                  bishengConfig?.enable_media_upload
+                  dobermanAgentConfig?.enable_media_upload
                     ? "com_knowledge.upload_size_limits_hint"
                     : "com_knowledge.upload_size_limit_hint_without_media",
                   {

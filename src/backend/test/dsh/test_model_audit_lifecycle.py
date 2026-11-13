@@ -3,7 +3,7 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
-from bisheng.dsh.runtime import ModelRuntime
+from doberman_agent.dsh.runtime import ModelRuntime
 
 
 async def test_model_runtime_closes_audit_before_redis_and_handles_absent_audit():

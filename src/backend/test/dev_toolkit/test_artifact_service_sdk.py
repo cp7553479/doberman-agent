@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 
-from bisheng.dev_toolkit.domain.services import artifact_service
+from doberman_agent.dev_toolkit.domain.services import artifact_service
 from test.dev_toolkit.conftest import (
     CLI_VERSION,
     MANIFEST_PLATFORM_VERSION,

@@ -13,40 +13,40 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
     PermissionVersionConflictError,
 )
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.permission.application import sql_runtime
-from bisheng.permission.application.control_state import (
+from doberman_agent.permission.application import sql_runtime
+from doberman_agent.permission.application.control_state import (
     SqlPermissionControlState,
 )
-from bisheng.permission.application.sql_runtime import (
+from doberman_agent.permission.application.sql_runtime import (
     SqlProjectionFinalizer,
     SqlProjectionScopeGuard,
 )
-from bisheng.permission.domain.models import (
+from doberman_agent.permission.domain.models import (
     PermissionGrant,
     PermissionGrantAssignee,
     PermissionProjectionOperation,
     PermissionVisibleSourceProjection,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.projection_plan import (
+from doberman_agent.permission.domain.services.projection_plan import (
     ProjectionPlan,
     ProjectionTupleDelta,
 )
-from bisheng.permission.domain.services.visibility_projection_service import (
+from doberman_agent.permission.domain.services.visibility_projection_service import (
     VisibilityProjectionCompiler,
 )
 

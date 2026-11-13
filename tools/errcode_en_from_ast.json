@@ -670,8 +670,8 @@
     "file": "linsight.py"
   },
   "11090": {
-    "en": "InspirationBisheng LLMRelated Errors",
-    "class": "LinsightBishengLLMError",
+    "en": "InspirationDobermanAgent LLMRelated Errors",
+    "class": "LinsightDobermanAgentLLMError",
     "file": "linsight.py"
   },
   "11100": {
@@ -1120,7 +1120,7 @@
     "file": "sso_sync.py"
   },
   "19312": {
-    "en": "Department parent chain missing in bisheng; Gateway must push parents via /api/v1/departments/sync before login-sync",
+    "en": "Department parent chain missing in doberman-agent; Gateway must push parents via /api/v1/departments/sync before login-sync",
     "class": "SsoDeptParentMissingError",
     "file": "sso_sync.py"
   },

@@ -15,7 +15,7 @@ survive, the advisory survives, and ordinary output is untouched.
 
 import json
 
-from bisheng_langchain.gpts.tools.code_interpreter.base_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.base_executor import (
     MAX_SUCCESS_LOG_CHARS,
     clip_middle,
 )
@@ -81,7 +81,7 @@ def test_capped_result_stays_below_the_deepagents_eviction_threshold():
         "exitcode": 0,
         "log": clip_middle(_oversized()),
         # file_list is never clipped, so budget for realistic MinIO URLs too.
-        "file_list": [f"http://minio.local/bisheng/workspace/{'a' * 32}/output/chart{i}.png" for i in range(20)],
+        "file_list": [f"http://minio.local/doberman_agent/workspace/{'a' * 32}/output/chart{i}.png" for i in range(20)],
     }
     serialized = json.dumps(result, ensure_ascii=False)
     assert len(serialized) < NUM_CHARS_PER_TOKEN * eviction_default

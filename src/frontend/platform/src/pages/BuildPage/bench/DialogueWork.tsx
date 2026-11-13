@@ -1,5 +1,5 @@
 // DialogueWork.tsx
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppCenter } from "./AppCenter";

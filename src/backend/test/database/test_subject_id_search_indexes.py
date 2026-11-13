@@ -11,7 +11,7 @@ from alembic.operations import Operations
 def test_subject_search_indexes_are_reversible_and_idempotent(monkeypatch):
     path = (
         Path(__file__).resolve().parents[2]
-        / "bisheng/core/database/alembic/versions"
+        / "doberman_agent/core/database/alembic/versions"
         / "v3_0_0_f077_subject_id_search_indexes.py"
     )
     spec = importlib.util.spec_from_file_location("f077_indexes", path)

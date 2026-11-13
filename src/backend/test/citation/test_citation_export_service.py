@@ -8,13 +8,13 @@ from unittest.mock import AsyncMock
 import pytest
 from loguru import logger
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
 )
-from bisheng.citation.domain.services import citation_export_service as svc
+from doberman_agent.citation.domain.services import citation_export_service as svc
 
 S, SEP, E = "", "", ""
 
@@ -104,12 +104,12 @@ async def test_resolve_items_uses_the_resolve_service_with_the_user(monkeypatch)
         async def __aexit__(self, *a):
             return False
 
-    monkeypatch.setattr("bisheng.citation.domain.services.citation_resolve_service.CitationResolveService", _Service)
+    monkeypatch.setattr("doberman_agent.citation.domain.services.citation_resolve_service.CitationResolveService", _Service)
     monkeypatch.setattr(
-        "bisheng.citation.domain.repositories.implementations.message_citation_repository_impl.MessageCitationRepositoryImpl",
+        "doberman_agent.citation.domain.repositories.implementations.message_citation_repository_impl.MessageCitationRepositoryImpl",
         lambda session: f"repo({session})",
     )
-    monkeypatch.setattr("bisheng.core.database.get_async_db_session", lambda: _Session())
+    monkeypatch.setattr("doberman_agent.core.database.get_async_db_session", lambda: _Session())
     user = SimpleNamespace(user_id=7)
 
     items = await svc.resolve_items_for_export(["knowledgesearch_aaaa1111"], user)
@@ -120,7 +120,7 @@ async def test_resolve_items_uses_the_resolve_service_with_the_user(monkeypatch)
 
 
 async def test_build_export_user(monkeypatch):
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
 
     user = await svc.build_export_user(7, 1)
     assert user.user_id == 7 and user.tenant_id == 1 and user.is_global_super is False

@@ -1,5 +1,5 @@
 import { showApiError } from "~/api/request";
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Link2, Loader2, Search, FileSearch } from "lucide-react";

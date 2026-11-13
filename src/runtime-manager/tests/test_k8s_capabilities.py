@@ -111,7 +111,7 @@ def test_volume_guard_refuses_unmounted_directory_and_accepts_owned_bounded_moun
         initialize_data_layout(tmp_path, guard=guard)
     import json
 
-    (tmp_path / ".bisheng-volume.json").write_text(
+    (tmp_path / ".doberman-agent-volume.json").write_text(
         json.dumps({"namespace": "runtime-apps", "installation_id": "e2e-f059"})
     )
     assert initialize_data_layout(tmp_path, guard=guard) == {"layout": 1}

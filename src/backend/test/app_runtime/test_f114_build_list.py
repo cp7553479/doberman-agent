@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock
 
 
 async def test_hosted_management_summary_is_or_not_edit_only(monkeypatch):
-    from bisheng.api.services.workflow import WorkFlowService
-    from bisheng.app_runtime.application import authorization
-    from bisheng.database.models.flow import FlowType
+    from doberman_agent.api.services.workflow import WorkFlowService
+    from doberman_agent.app_runtime.application import authorization
+    from doberman_agent.database.models.flow import FlowType
 
     rows = [
         {"id": "publish-only", "flow_type": FlowType.HOSTED_APP.value},

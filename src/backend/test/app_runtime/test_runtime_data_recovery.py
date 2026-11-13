@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from bisheng.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError
+from doberman_agent.common.errcode.app_factory import AppDataBusyError, AppDataForbiddenError
 from test.app_runtime.test_runtime_data_sessions import repo as repo
 from test.app_runtime.test_runtime_data_sessions import session as session
 
@@ -53,7 +53,7 @@ async def test_recovery_cannot_drop_an_unknown_writer_mutex_or_widen_owner(sessi
 
 @pytest.mark.parametrize("wrong_digest", [False, True])
 async def test_export_uses_bounded_stream_and_removes_incomplete_files(tmp_path, monkeypatch, wrong_digest):
-    from bisheng.app_runtime.domain.services import runtime_data_session_service as mod
+    from doberman_agent.app_runtime.domain.services import runtime_data_session_service as mod
 
     data = b"id,name\n" + b"1,fixture\n" * 10000
 

@@ -2,7 +2,7 @@
 
 > 历史记录：2026-09-09 用户后续取消 UNKNOWN 冻结及部门同步/筛选；当前语义以 [0.3.0 修订](./usage-and-search-revision.md) 和 design.md 为准。本页旧测试结果不代表修订后的验证结果。
 
-日期：2026-09-09。用户已明确授权本轮暂不执行 DM8 真库；本轮条件改为毕昇新增业务无手写 SQL、无 MySQL 专用写法，以及 Gateway SQL 兼容性审查。原实机结果保留为历史证据，不声称已跑达梦。
+日期：2026-09-09。用户已明确授权本轮暂不执行 DM8 真库；本轮条件改为doberman-agent新增业务无手写 SQL、无 MySQL 专用写法，以及 Gateway SQL 兼容性审查。原实机结果保留为历史证据，不声称已跑达梦。
 
 ## 本轮 MySQL 独立库复跑
 
@@ -14,11 +14,11 @@
 
 | 测试文件 | 通过项 | 验证范围 |
 |---|---:|---|
-| [test_projection_worker.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_projection_worker.py) | 3 | 真实 Stream → SQL 事务投影、SQL 回滚、提交后 ACK 丢失、重放幂等、RUNNING 超时转 UNKNOWN、租户上下文恢复 |
-| [test_quota_bootstrap.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_quota_bootstrap.py) | 1 | 无策略/无审批的首次普通策略操作留下禁用占位；受控 initialize 后同操作继续完成 |
-| [test_quota_shards.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_quota_shards.py) | 8 | 10,001 条请求完整恢复、SQL epoch 更新、缺片/摘要/顺序/重复拒绝，以及分片和最终写入回执丢失续跑 |
-| [test_reconciliation.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_reconciliation.py) | 4 | UNKNOWN 单请求补记、保留其他冻结原因、原月份结算、SQL 投影确认、证据/权限拒绝和可信租户 header |
-| [test_usage_repository.py](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_usage_repository.py) | 6 | 实际 SQL 事务、并发首次月份插入、批处理回滚、终态幂等、跨月 UNKNOWN 统计、恢复 epoch 与并发策略变更的 CAS |
+| [test_projection_worker.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_projection_worker.py) | 3 | 真实 Stream → SQL 事务投影、SQL 回滚、提交后 ACK 丢失、重放幂等、RUNNING 超时转 UNKNOWN、租户上下文恢复 |
+| [test_quota_bootstrap.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_quota_bootstrap.py) | 1 | 无策略/无审批的首次普通策略操作留下禁用占位；受控 initialize 后同操作继续完成 |
+| [test_quota_shards.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_quota_shards.py) | 8 | 10,001 条请求完整恢复、SQL epoch 更新、缺片/摘要/顺序/重复拒绝，以及分片和最终写入回执丢失续跑 |
+| [test_reconciliation.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_reconciliation.py) | 4 | UNKNOWN 单请求补记、保留其他冻结原因、原月份结算、SQL 投影确认、证据/权限拒绝和可信租户 header |
+| [test_usage_repository.py](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/src/backend/test/dsh/test_usage_repository.py) | 6 | 实际 SQL 事务、并发首次月份插入、批处理回滚、终态幂等、跨月 UNKNOWN 统计、恢复 epoch 与并发策略变更的 CAS |
 
 主线此前联合回归记录为 232 passed、14 个 usage_db setup errors；错误来自隔离库选择/已有表保护，而非已经开始执行的产品断言。本次在空的专属库重跑了包含这些用例的五文件集合并全部通过。两个测试集合有重叠，不能将 232 与 22 简单相加，也不把本次分组复跑描述为再次执行了整个联合套件。
 
@@ -26,13 +26,13 @@
 
 主线最后一次 Gateway 验证为 **45 tests，0 failures，0 errors，0 skipped**，并确认 Maven package `BUILD SUCCESS`。本轮另只读汇总了当前 Surefire XML，计数与 45/0/0/0 一致；未重复运行或累加这些测试。
 
-较早单独执行的五万席位 scale 用例已通过一次，证据见 [gateway-progress.md](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/gateway-progress.md)。它属于此前的独立 scale 运行，不计入上述最新 45 项或虚构一次新运行。实际用例为 [DshManagementTest.fiftyThousandRowsPageInSqlAndProfileVersionsCannotReassign](/Users/zhangguoqing/works/bisheng-gateway/src/test/java/com/dataelem/gateway/dsh/DshManagementTest.java)，覆盖：
+较早单独执行的五万席位 scale 用例已通过一次，证据见 [gateway-progress.md](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/gateway-progress.md)。它属于此前的独立 scale 运行，不计入上述最新 45 项或虚构一次新运行。实际用例为 [DshManagementTest.fiftyThousandRowsPageInSqlAndProfileVersionsCannotReassign](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/java/com/dataelem/gateway/dsh/DshManagementTest.java)，覆盖：
 
 - 两租户共 50,000 个席位、相同排序时间戳、连续 keyset 分页不重叠；游标绑定租户及过滤条件。
 - 单调资料版本更新、缺失用户不创建席位、跨租户资料投影拒绝。
 - MySQL EXPLAIN 使用索引，实例最新席位查询不出现 filesort；索引为 `(installation_id,state,created_at,seat_id)`。
 
-同一 Gateway 交付波次还验证了真实 MySQL 首次席位空范围竞争、容量上限、会话 family 唯一性、并发 refresh 轮换/重放撤销、操作幂等及终态持久化；实际测试入口包括 [DshSeatRepositoryTest.java](/Users/zhangguoqing/works/bisheng-gateway/src/test/java/com/dataelem/gateway/dsh/DshSeatRepositoryTest.java)、[DshSessionRepositoryTest.java](/Users/zhangguoqing/works/bisheng-gateway/src/test/java/com/dataelem/gateway/dsh/DshSessionRepositoryTest.java)、[DshSeatOperationTerminalTest.java](/Users/zhangguoqing/works/bisheng-gateway/src/test/java/com/dataelem/gateway/dsh/DshSeatOperationTerminalTest.java)。具体执行说明仍以 gateway-progress 及对应测试报告为准。
+同一 Gateway 交付波次还验证了真实 MySQL 首次席位空范围竞争、容量上限、会话 family 唯一性、并发 refresh 轮换/重放撤销、操作幂等及终态持久化；实际测试入口包括 [DshSeatRepositoryTest.java](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/java/com/dataelem/gateway/dsh/DshSeatRepositoryTest.java)、[DshSessionRepositoryTest.java](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/java/com/dataelem/gateway/dsh/DshSessionRepositoryTest.java)、[DshSeatOperationTerminalTest.java](/Users/zhangguoqing/works/doberman-agent-gateway/src/test/java/com/dataelem/gateway/dsh/DshSeatOperationTerminalTest.java)。具体执行说明仍以 gateway-progress 及对应测试报告为准。
 
 主线还确认前端 38 项测试及 lint/typecheck/check-i18n 通过。这些是同轮交付信息，不构成数据库、检索或性能门禁的替代证据。
 
@@ -40,11 +40,11 @@
 
 **DM8 真库尚未执行。** 当前没有可用于此轮验收的 DM8 连接、运行环境及执行记录。DDL 编译、方言静态检查、SQL 代码审查和 MySQL 通过都不等于 DM8 真库验证。需在配置好的 Linux/DM8 环境重跑席位/会话/操作与 Python 策略/用量事务用例，保留竞争、回滚、重试和五万级过滤分页执行计划结果，该项已按用户确认移出本轮开发完成条件；未来上线 DM 环境仍应保留实机结果。
 
-T113 的本地七子进程、真实 Redis/MySQL/MinIO 故障样本已通过，见 [recovery-acceptance.md](/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/recovery-acceptance.md)。独占 Redis 的真实 AOF 重启及关闭旧主后晋升已额外通过两项验证；部署环境的主切换与旧主网络隔离、两副本 50 并发、额外准入 p95≤200 ms 目标，以及验席/投影/背压时序仍待环境。该本机样本不能替代生产 SLA 或完整部署验收，T113 同样保持未勾选。
+T113 的本地七子进程、真实 Redis/MySQL/MinIO 故障样本已通过，见 [recovery-acceptance.md](/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/recovery-acceptance.md)。独占 Redis 的真实 AOF 重启及关闭旧主后晋升已额外通过两项验证；部署环境的主切换与旧主网络隔离、两副本 50 并发、额外准入 p95≤200 ms 目标，以及验席/投影/背压时序仍待环境。该本机样本不能替代生产 SLA 或完整部署验收，T113 同样保持未勾选。
 
 ## 用户调整后的本轮验收边界
 
-DM8 配置不再是本轮开发阻塞项。毕昇 SQL 可移植性证据见 sql-portability-review.md；Gateway 保留现有 Mapper 风格，结论见 [gateway-sql-portability-review.md](./gateway-sql-portability-review.md)。逐模型额度替换旧共享额度后，相关 ORM/事务与投影已按新代码重跑，最新结果见 [修订验收](./model-quota-revision.md)；上面的旧数字只证明原检查时点。中央 Linux/DM8 实机回归仍可后续执行，但不作为本轮用户要求的完成条件。
+DM8 配置不再是本轮开发阻塞项。doberman-agent SQL 可移植性证据见 sql-portability-review.md；Gateway 保留现有 Mapper 风格，结论见 [gateway-sql-portability-review.md](./gateway-sql-portability-review.md)。逐模型额度替换旧共享额度后，相关 ORM/事务与投影已按新代码重跑，最新结果见 [修订验收](./model-quota-revision.md)；上面的旧数字只证明原检查时点。中央 Linux/DM8 实机回归仍可后续执行，但不作为本轮用户要求的完成条件。
 
 
 ## T007 补充：真实 MySQL 用户资料版本迁移验证

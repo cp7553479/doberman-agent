@@ -2,12 +2,12 @@ from datetime import datetime
 
 from loguru import logger
 
-from bisheng.api.services.workflow import WorkFlowService
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.user.domain.services.user import UserService
-from bisheng.worker import sync_mid_user_interact_dtl
-from bisheng.worker.telemetry.mid_table import (
+from doberman_agent.api.services.workflow import WorkFlowService
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.user.domain.services.user import UserService
+from doberman_agent.worker import sync_mid_user_interact_dtl
+from doberman_agent.worker.telemetry.mid_table import (
     sync_mid_app_increment,
     sync_mid_knowledge_increment,
     sync_mid_user_increment,

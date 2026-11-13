@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from bisheng.user.domain.services import jwt_secret as m
+from doberman_agent.user.domain.services import jwt_secret as m
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +22,7 @@ def _reset_cache():
 
 def _settings(monkeypatch, value):
     # Patch the resolver's own settings lookup rather than ``config_service.settings``:
-    # several legacy tests pop / re-import ``bisheng.common.services`` at import
+    # several legacy tests pop / re-import ``doberman_agent.common.services`` at import
     # time, so which module object a dotted path resolves to depends on run order.
     monkeypatch.setattr(m, "_settings_object", lambda: SimpleNamespace(jwt_secret=value))
 
@@ -95,23 +95,23 @@ class _FakeSession:
 
 
 def test_existing_db_row_is_reused(monkeypatch):
-    from bisheng.common.models import config as config_mod
+    from doberman_agent.common.models import config as config_mod
 
     monkeypatch.setattr(
         config_mod.ConfigDao, "get_config", classmethod(lambda cls, key: SimpleNamespace(value="db-secret"))
     )
     monkeypatch.setattr(
-        "bisheng.core.database.get_sync_db_session", lambda: (_ for _ in ()).throw(AssertionError("no insert"))
+        "doberman_agent.core.database.get_sync_db_session", lambda: (_ for _ in ()).throw(AssertionError("no insert"))
     )
     assert m._load_or_create_db_secret() == "db-secret"
 
 
 def test_missing_db_row_generates_and_persists(monkeypatch):
-    from bisheng.common.models import config as config_mod
+    from doberman_agent.common.models import config as config_mod
 
     session = _FakeSession()
     monkeypatch.setattr(config_mod.ConfigDao, "get_config", classmethod(lambda cls, key: None))
-    monkeypatch.setattr("bisheng.core.database.get_sync_db_session", lambda: session)
+    monkeypatch.setattr("doberman_agent.core.database.get_sync_db_session", lambda: session)
 
     secret = m._load_or_create_db_secret()
 
@@ -124,17 +124,17 @@ def test_missing_db_row_generates_and_persists(monkeypatch):
 
 
 def test_first_boot_race_returns_winner(monkeypatch):
-    from bisheng.common.models import config as config_mod
+    from doberman_agent.common.models import config as config_mod
 
     reads = iter([None, SimpleNamespace(value="winner-secret")])
     monkeypatch.setattr(config_mod.ConfigDao, "get_config", classmethod(lambda cls, key: next(reads)))
     session = _FakeSession(fail_commit=IntegrityError("insert", {}, Exception("dup")))
-    monkeypatch.setattr("bisheng.core.database.get_sync_db_session", lambda: session)
+    monkeypatch.setattr("doberman_agent.core.database.get_sync_db_session", lambda: session)
 
     assert m._load_or_create_db_secret() == "winner-secret"
 
 
 def test_settings_ships_no_default_secret():
-    from bisheng.core.config.settings import Settings
+    from doberman_agent.core.config.settings import Settings
 
     assert Settings.model_fields["jwt_secret"].default == ""

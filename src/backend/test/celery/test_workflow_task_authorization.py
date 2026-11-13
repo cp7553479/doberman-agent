@@ -14,11 +14,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.core.context.tenant import get_current_tenant_id
-from bisheng.open_api.domain.context import OpenApiExecutionSnapshot
-from bisheng.permission.application.identity import get_current_permission_actor
-from bisheng.worker.workflow import tasks
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.core.context.tenant import get_current_tenant_id
+from doberman_agent.open_api.domain.context import OpenApiExecutionSnapshot
+from doberman_agent.permission.application.identity import get_current_permission_actor
+from doberman_agent.worker.workflow import tasks
 
 WORKFLOW_ID = "flow-1"
 
@@ -71,7 +71,7 @@ def harness(monkeypatch):
         tasks, "_continue_workflow", lambda *args, **kwargs: seen.ran.append("continue")
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.execution_context.validate_execution_snapshot",
+        "doberman_agent.open_api.domain.services.execution_context.validate_execution_snapshot",
         lambda _snapshot: None,
     )
     monkeypatch.setattr(

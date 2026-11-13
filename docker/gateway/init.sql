@@ -1,8 +1,8 @@
--- MySQL deployment schema from bisheng-gateway v1.8.0 (2995df6f), covering
+-- MySQL deployment schema from doberman_agent-gateway v1.8.0 (2995df6f), covering
 -- init.sql, update_v_1.0.sql and update_v_2.5.sql. Existing tables are preserved.
-CREATE DATABASE IF NOT EXISTS bisheng_gateway
+CREATE DATABASE IF NOT EXISTS doberman_agent_gateway
     CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE bisheng_gateway;
+USE doberman_agent_gateway;
 
 CREATE TABLE IF NOT EXISTS gt_group_resource (
     id INT AUTO_INCREMENT PRIMARY KEY,

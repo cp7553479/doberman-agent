@@ -8,11 +8,11 @@ import pytest
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.citation.domain.services import citation_handle_service as svc
-from bisheng.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
-from bisheng.citation.domain.services.daily_citation_scope import DailyCitationScope
-from bisheng.workstation.domain.services import chat_service
-from bisheng.workstation.domain.services.chat_service import (
+from doberman_agent.citation.domain.services import citation_handle_service as svc
+from doberman_agent.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
+from doberman_agent.citation.domain.services.daily_citation_scope import DailyCitationScope
+from doberman_agent.workstation.domain.services import chat_service
+from doberman_agent.workstation.domain.services.chat_service import (
     DailyChatCitationToolWrapper,
     _build_tool_meta,
     _wrap_daily_chat_citation_tool,

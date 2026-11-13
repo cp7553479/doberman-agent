@@ -21,10 +21,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask, TaskExecutionError
-from bisheng.llm.domain.services import LLMService
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask, TaskExecutionError
+from doberman_agent.llm.domain.services import LLMService
 
 
 def _session(*, model: str | None, svid: str = "SV-1") -> LinsightSessionVersion:
@@ -57,7 +57,7 @@ async def test_get_llm_uses_per_task_model(monkeypatch: pytest.MonkeyPatch, patc
     )
     fake_llm = object()
     get_llm_mock = AsyncMock(return_value=fake_llm)
-    monkeypatch.setattr(LLMService, "get_bisheng_linsight_llm", get_llm_mock)
+    monkeypatch.setattr(LLMService, "get_doberman_agent_linsight_llm", get_llm_mock)
 
     task = LinsightWorkflowTask()
     task.session_version_id = "SV-1"
@@ -77,7 +77,7 @@ async def test_get_llm_preserves_original_exception(monkeypatch: pytest.MonkeyPa
         AsyncMock(return_value=SimpleNamespace(linsight_default_model_id="tenant-default", models=[])),
     )
     original = RuntimeError("model offline")
-    monkeypatch.setattr(LLMService, "get_bisheng_linsight_llm", AsyncMock(side_effect=original))
+    monkeypatch.setattr(LLMService, "get_doberman_agent_linsight_llm", AsyncMock(side_effect=original))
 
     task = LinsightWorkflowTask()
     task.session_version_id = "SV-1"

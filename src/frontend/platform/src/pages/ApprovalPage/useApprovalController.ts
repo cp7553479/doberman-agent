@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import {

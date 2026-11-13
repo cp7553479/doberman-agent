@@ -5,21 +5,21 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFile
 
 
 def _install_chat_service_stubs() -> None:
-    if "bisheng.api" not in sys.modules:
-        api_module = ModuleType("bisheng.api")
+    if "doberman_agent.api" not in sys.modules:
+        api_module = ModuleType("doberman_agent.api")
         api_module.__path__ = []
-        sys.modules["bisheng.api"] = api_module
-    if "bisheng.api.services" not in sys.modules:
-        services_module = ModuleType("bisheng.api.services")
+        sys.modules["doberman_agent.api"] = api_module
+    if "doberman_agent.api.services" not in sys.modules:
+        services_module = ModuleType("doberman_agent.api.services")
         services_module.__path__ = []
-        sys.modules["bisheng.api.services"] = services_module
-    if "bisheng.api.services.workstation" not in sys.modules:
-        workstation_module = ModuleType("bisheng.api.services.workstation")
+        sys.modules["doberman_agent.api.services"] = services_module
+    if "doberman_agent.api.services.workstation" not in sys.modules:
+        workstation_module = ModuleType("doberman_agent.api.services.workstation")
 
         class _DummyWorkStationService:
             @staticmethod
@@ -27,26 +27,26 @@ def _install_chat_service_stubs() -> None:
                 return SimpleNamespace(system_prompt="", user_prompt="", max_chunk_size=4)
 
         workstation_module.WorkStationService = _DummyWorkStationService
-        sys.modules["bisheng.api.services.workstation"] = workstation_module
+        sys.modules["doberman_agent.api.services.workstation"] = workstation_module
 
-    if "bisheng.api.v1" not in sys.modules:
-        v1_module = ModuleType("bisheng.api.v1")
+    if "doberman_agent.api.v1" not in sys.modules:
+        v1_module = ModuleType("doberman_agent.api.v1")
         v1_module.__path__ = []
-        sys.modules["bisheng.api.v1"] = v1_module
-    if "bisheng.api.v1.schema" not in sys.modules:
-        schema_module = ModuleType("bisheng.api.v1.schema")
+        sys.modules["doberman_agent.api.v1"] = v1_module
+    if "doberman_agent.api.v1.schema" not in sys.modules:
+        schema_module = ModuleType("doberman_agent.api.v1.schema")
         schema_module.__path__ = []
-        sys.modules["bisheng.api.v1.schema"] = schema_module
-    if "bisheng.api.v1.schema.chat_schema" not in sys.modules:
-        chat_schema_module = ModuleType("bisheng.api.v1.schema.chat_schema")
+        sys.modules["doberman_agent.api.v1.schema"] = schema_module
+    if "doberman_agent.api.v1.schema.chat_schema" not in sys.modules:
+        chat_schema_module = ModuleType("doberman_agent.api.v1.schema.chat_schema")
         chat_schema_module.ChatMessageHistoryResponse = dict
-        sys.modules["bisheng.api.v1.schema.chat_schema"] = chat_schema_module
+        sys.modules["doberman_agent.api.v1.schema.chat_schema"] = chat_schema_module
 
-    if "bisheng.api.v1.schemas" in sys.modules:
-        schemas_module = sys.modules["bisheng.api.v1.schemas"]
+    if "doberman_agent.api.v1.schemas" in sys.modules:
+        schemas_module = sys.modules["doberman_agent.api.v1.schemas"]
     else:
-        schemas_module = ModuleType("bisheng.api.v1.schemas")
-        sys.modules["bisheng.api.v1.schemas"] = schemas_module
+        schemas_module = ModuleType("doberman_agent.api.v1.schemas")
+        sys.modules["doberman_agent.api.v1.schemas"] = schemas_module
 
     class _DummySchema:
         def __init__(self, *args, **kwargs):
@@ -69,8 +69,8 @@ def _install_chat_service_stubs() -> None:
     schemas_module.FileProcessBase = getattr(schemas_module, "FileProcessBase", _DummySchema)
     schemas_module.ExcelRule = getattr(schemas_module, "ExcelRule", _DummySchema)
 
-    if "bisheng.chat_session.domain.chat" not in sys.modules:
-        chat_module = ModuleType("bisheng.chat_session.domain.chat")
+    if "doberman_agent.chat_session.domain.chat" not in sys.modules:
+        chat_module = ModuleType("doberman_agent.chat_session.domain.chat")
 
         class _DummyChatSessionService:
             @staticmethod
@@ -78,29 +78,29 @@ def _install_chat_service_stubs() -> None:
                 return []
 
         chat_module.ChatSessionService = _DummyChatSessionService
-        sys.modules["bisheng.chat_session.domain.chat"] = chat_module
+        sys.modules["doberman_agent.chat_session.domain.chat"] = chat_module
 
-    if "bisheng.common.utils.title_generator" not in sys.modules:
-        title_module = ModuleType("bisheng.common.utils.title_generator")
+    if "doberman_agent.common.utils.title_generator" not in sys.modules:
+        title_module = ModuleType("doberman_agent.common.utils.title_generator")
 
         async def _dummy_generate_conversation_title_async(*args, **kwargs):
             return "title"
 
         title_module.generate_conversation_title_async = _dummy_generate_conversation_title_async
-        sys.modules["bisheng.common.utils.title_generator"] = title_module
+        sys.modules["doberman_agent.common.utils.title_generator"] = title_module
 
-    if "bisheng.core.prompts.manager" not in sys.modules:
-        prompt_module = ModuleType("bisheng.core.prompts.manager")
+    if "doberman_agent.core.prompts.manager" not in sys.modules:
+        prompt_module = ModuleType("doberman_agent.core.prompts.manager")
 
         async def _dummy_get_prompt_manager():
             prompt_obj = SimpleNamespace(prompt=SimpleNamespace(system="", user=""))
             return SimpleNamespace(render_prompt=lambda **kwargs: prompt_obj)
 
         prompt_module.get_prompt_manager = _dummy_get_prompt_manager
-        sys.modules["bisheng.core.prompts.manager"] = prompt_module
+        sys.modules["doberman_agent.core.prompts.manager"] = prompt_module
 
-    if "bisheng.tool.domain.langchain.knowledge" not in sys.modules:
-        tool_module = ModuleType("bisheng.tool.domain.langchain.knowledge")
+    if "doberman_agent.tool.domain.langchain.knowledge" not in sys.modules:
+        tool_module = ModuleType("doberman_agent.tool.domain.langchain.knowledge")
 
         class _DummyKnowledgeRetrieverTool:
             def __init__(self, *args, **kwargs):
@@ -110,12 +110,12 @@ def _install_chat_service_stubs() -> None:
                 return []
 
         tool_module.KnowledgeRetrieverTool = _DummyKnowledgeRetrieverTool
-        sys.modules["bisheng.tool.domain.langchain.knowledge"] = tool_module
+        sys.modules["doberman_agent.tool.domain.langchain.knowledge"] = tool_module
 
 
 def _load_chat_service_class():
     _install_chat_service_stubs()
-    module = importlib.import_module("bisheng.knowledge.domain.services.knowledge_space_chat_service")
+    module = importlib.import_module("doberman_agent.knowledge.domain.services.knowledge_space_chat_service")
     return module.KnowledgeSpaceChatService
 
 
@@ -199,22 +199,22 @@ class TestKnowledgeSpaceChatPermissions:
                 return_value=file_record,
             ) as mock_require_view,
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
                 new_callable=AsyncMock,
                 return_value=space,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
                 new_callable=AsyncMock,
                 return_value=[SimpleNamespace(chat_id="chat-1", flow_id="flow-1")],
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_milvus_vectorstore",
                 new_callable=AsyncMock,
                 return_value=SimpleNamespace(as_retriever=lambda **kwargs: object()),
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_es_vectorstore",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeRag.init_knowledge_es_vectorstore",
                 new_callable=AsyncMock,
                 return_value=SimpleNamespace(as_retriever=lambda **kwargs: object()),
             ),
@@ -246,7 +246,7 @@ class TestKnowledgeSpaceChatPermissions:
                 new_callable=AsyncMock,
             ) as mock_require_folder,
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
@@ -265,7 +265,7 @@ class TestKnowledgeSpaceChatPermissions:
                 new_callable=AsyncMock,
             ) as mock_require_space,
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
@@ -294,12 +294,12 @@ class TestKnowledgeSpaceChatPermissions:
                 return_value=folder,
             ) as mock_require_folder,
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
                 new_callable=AsyncMock,
                 return_value=space,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.async_insert_one",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.async_insert_one",
                 new_callable=AsyncMock,
                 return_value=session,
             ),
@@ -333,17 +333,17 @@ class TestKnowledgeSpaceChatPermissions:
                 return_value=folder,
             ) as mock_require_folder,
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.MessageSessionDao.afilter_session",
                 new_callable=AsyncMock,
                 return_value=session,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
                 new_callable=AsyncMock,
                 return_value=space,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.SpaceFileDao.get_children_by_prefix",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.SpaceFileDao.get_children_by_prefix",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
@@ -393,12 +393,12 @@ class TestKnowledgeSpaceChatPermissions:
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeDao.aquery_by_id",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.knowledge.domain.services.knowledge_space_chat_service.NotFoundError",
+                "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.NotFoundError",
                 _MissingSpaceError,
             ),
         ):

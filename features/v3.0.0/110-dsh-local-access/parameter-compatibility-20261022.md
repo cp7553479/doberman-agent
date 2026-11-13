@@ -1,6 +1,6 @@
 # DSH 模型参数提前拦截修复与验证
 
-日期：2026-10-22。分支：`feat/bisheng-work-110`，修改基线：`7e573b3a6`。
+日期：2026-10-22。分支：`feat/doberman-agent-work-110`，修改基线：`7e573b3a6`。
 
 ## 问题与修复
 
@@ -34,7 +34,7 @@
 自动化覆盖：
 
 - 15 类已注册 OpenAI SDK 客户端接受 `max_completion_tokens`，其他 SDK 保持拒绝。
-- 真实 FastAPI 路由 → DSH 模型服务 → `BishengLLM` → Qwen/千帆/OpenAI SDK → mock HTTP 上游请求体。
+- 真实 FastAPI 路由 → DSH 模型服务 → `DobermanAgentLLM` → Qwen/千帆/OpenAI SDK → mock HTTP 上游请求体。
 - 两种参数名、6500/9000 两种值、流式与非流式组合；确认参数只存在一次且数值不变。
 - JSON/SSE 正文、`[DONE]`、usage 与额度结算；采样参数不丢失，审计上下文不作为模型输入。
 - 模型输出上限与独立能力校验仍然生效。
@@ -57,7 +57,7 @@ Mock HTTP 用例证明协议链路与参数构造；真实供应商证据见下�
 
 验证方式：在 `dsh-backend` 容器内启动独立 Python/ASGI 进程，仅在该进程内加载分支修复。使用原生 PKCE 登录、真实 DSH 模型服务、现有授权/额度、真实 Qwen 上游、真实审计和额度投影。没有替换运行服务的源文件、升级镜像或重启 API/Worker。
 
-同一独立进程加载修复前：返回 `400 / unsupported_parameter`，上游请求数为 0。加载修复后，对 `bisheng:2 / qwen-max` 传入 `max_completion_tokens`，捕获到现有适配器发出的 `max_tokens`，值保持一致。
+同一独立进程加载修复前：返回 `400 / unsupported_parameter`，上游请求数为 0。加载修复后，对 `doberman-agent:2 / qwen-max` 传入 `max_completion_tokens`，捕获到现有适配器发出的 `max_tokens`，值保持一致。
 
 | 传入上限 | 调用方式 | HTTP/正文 | 计量 | Request ID |
 | --- | --- | --- | --- | --- |
@@ -71,7 +71,7 @@ SQL 回读确认这些请求的审计状态为 `SUCCEEDED / COMPLETED / SETTLED 
 ### 独立限制与验证边界
 
 - `qwen-max` 传入 9000 已到达供应商，上游返回 `400 / invalid_parameter_error`，原因为 `Range of max_tokens should be [1, 8192]`。非流式平台返回 502；流式 HTTP 已建立，正文返回错误事件。这是模型自身的上限，不能计为调用成功，也不应静默裁剪用户参数。对应审计失败记录已落库。
-- 当前 `bisheng:3` 对该管理员账号返回 `429 / monthly_token_limit_exceeded`，上游请求数为 0。因此本轮没有验证其实际供应商调用成功，也没有为测试修改现有授权或额度。
+- 当前 `doberman-agent:3` 对该管理员账号返回 `429 / monthly_token_limit_exceeded`，上游请求数为 0。因此本轮没有验证其实际供应商调用成功，也没有为测试修改现有授权或额度。
 - 此次完成的是隔离进程的修复前后对照与真实上游验证。109 对外运行中的服务仍是旧代码，尚未部署本次修复。运行文件 SHA-256 与修改前 HEAD 完全一致，API/Worker 重启次数均为 0。
 - 三个本轮测试会话均已撤销。独立探测进程已退出，测试调用及审计证据保留。
 - 本轮验证没有启动桌面客户端，也不包含 DM8 或其他提供商的真实请求验证。

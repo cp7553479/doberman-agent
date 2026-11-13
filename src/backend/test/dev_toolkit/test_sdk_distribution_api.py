@@ -4,7 +4,7 @@ Four anonymous routes ride the F053 dev-toolkit router: the wheel download (bare
 and under its filename), the PEP 503 simple index (root + project page) and the
 developer guide. Two different clients read them — a developer or an agent
 follows the download path and the guide, while **pip inside a hosted build
-container** resolves ``bisheng-sdk`` through the index without any public
+container** resolves ``doberman-agent-sdk`` through the index without any public
 internet — so the assertions below pin the pip-facing details (normalised
 project name, a link whose last segment is a legal wheel filename, the
 ``#sha256=`` fragment) as hard as the human-facing ones.
@@ -25,7 +25,7 @@ VERSIONS_PATH = "/api/v1/dev-toolkit/versions"
 SDK_DOWNLOAD_PATH = "/api/v1/dev-toolkit/sdk/download"
 SDK_DOWNLOAD_NAMED_PATH = f"/api/v1/dev-toolkit/sdk/download/{SDK_WHEEL_NAME}"
 SIMPLE_ROOT_PATH = "/api/v1/dev-toolkit/simple/"
-SIMPLE_PROJECT_PATH = "/api/v1/dev-toolkit/simple/bisheng-sdk/"
+SIMPLE_PROJECT_PATH = "/api/v1/dev-toolkit/simple/doberman-agent-sdk/"
 SDK_GUIDE_PATH = "/api/v1/dev-toolkit/sdk-guide.md"
 
 SDK_SHA256 = hashlib.sha256(SDK_WHEEL_BYTES).hexdigest()
@@ -107,7 +107,7 @@ def test_sdk_download_with_filename_accepts_only_the_manifest_filename(staged_ar
     assert client.get(SDK_DOWNLOAD_NAMED_PATH).content == SDK_WHEEL_BYTES
     # A stale link (an older release's filename) must not silently serve today's
     # wheel: the client verified a hash against *that* name.
-    other = client.get("/api/v1/dev-toolkit/sdk/download/bisheng_sdk-0.0.9-py3-none-any.whl")
+    other = client.get("/api/v1/dev-toolkit/sdk/download/doberman_agent_sdk-0.0.9-py3-none-any.whl")
     assert other.status_code == 404
 
 
@@ -129,8 +129,8 @@ def test_simple_index_root_lists_the_normalised_project_name(staged_artifacts, c
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
     # PEP 503 normalisation is not cosmetic: pip requests exactly this segment,
-    # so `bisheng_sdk/` would make the index look empty to pip alone.
-    assert 'href="bisheng-sdk/"' in response.text
+    # so `doberman_agent_sdk/` would make the index look empty to pip alone.
+    assert 'href="doberman-agent-sdk/"' in response.text
     assert _dependency_names(_route(client.app, SIMPLE_ROOT_PATH).dependant) == set()
 
 
@@ -142,7 +142,7 @@ def test_simple_project_page_links_the_wheel_with_its_hash(staged_artifacts, cli
 
     assert response.status_code == 200
     assert f'href="../../sdk/download/{SDK_WHEEL_NAME}#sha256={SDK_SHA256}"' in response.text
-    # Two segments up from /api/v1/dev-toolkit/simple/bisheng-sdk/ is
+    # Two segments up from /api/v1/dev-toolkit/simple/doberman-agent-sdk/ is
     # /api/v1/dev-toolkit/ — relative so a gateway path prefix survives.
     assert "http://" not in response.text and "https://" not in response.text
 
@@ -158,7 +158,7 @@ def test_simple_project_page_404_when_not_staged(staged_cli_only, client_factory
 
 def test_sdk_guide_is_served_as_markdown_anonymously(staged_artifacts, client_factory):
     """The guide is the skill pack's own SKILL.md — one source, no second copy (决议-7)."""
-    from bisheng.dev_toolkit.domain.services import artifact_service
+    from doberman_agent.dev_toolkit.domain.services import artifact_service
 
     client = client_factory()
 
@@ -171,7 +171,7 @@ def test_sdk_guide_is_served_as_markdown_anonymously(staged_artifacts, client_fa
 
 
 def test_sdk_guide_missing_degrades_to_404_not_500(staged_artifacts, client_factory, monkeypatch):
-    from bisheng.dev_toolkit.api.endpoints import distribution
+    from doberman_agent.dev_toolkit.api.endpoints import distribution
 
     monkeypatch.setattr(distribution.artifact_service, "read_sdk_guide", lambda: None)
     client = client_factory()
@@ -198,7 +198,7 @@ def test_multi_tenant_no_jwt_does_not_raise_on_sdk_routes(staged_artifacts, clie
     tenant ContextVar is empty, and without the exemption the first tenant-aware
     SELECT under these handlers would raise ``NoTenantContextError``.
     """
-    from bisheng.utils import http_middleware
+    from doberman_agent.utils import http_middleware
 
     assert "/api/v1/dev-toolkit" in http_middleware.TENANT_CHECK_EXEMPT_PATHS
 

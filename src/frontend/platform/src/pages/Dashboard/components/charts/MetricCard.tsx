@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { MetricDataResponse } from '@/pages/Dashboard/types/chartData';
 import { cn } from '@/utils';

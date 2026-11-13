@@ -1,4 +1,4 @@
-import { Tag } from '@bisheng/ui';
+import { Tag } from '@doberman-agent/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/bs-ui/table';
 import type { ReactNode } from 'react';

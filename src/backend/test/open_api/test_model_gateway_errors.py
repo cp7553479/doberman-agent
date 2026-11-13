@@ -6,7 +6,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     install_catalog,
@@ -23,11 +23,11 @@ BODY = {"model": "gpt-4o", "messages": [{"role": "user", "content": "hi"}]}
 @pytest.fixture
 def admitted(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     install_catalog(monkeypatch, [server_row(1, "azure-openai")], [model_row(10, 1, "gpt-4o")])
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
     return capture_records(monkeypatch)
 
 
@@ -42,7 +42,7 @@ async def test_an_empty_message_list_is_a_readable_400(admitted):
 
     assert response.status_code == 400
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26503
+    assert body["doberman_agent_code"] == 26503
     assert body["type"] == "invalid_request_error"
     assert body["param"] == "messages"
 
@@ -59,7 +59,7 @@ async def test_a_refused_header_is_reported_before_a_bad_body(admitted):
 
     # Two things are wrong; the caller hears about the header. Answering the
     # body first would give an agent a different verdict on each retry.
-    assert response.json()["error"]["bisheng_code"] == 26505
+    assert response.json()["error"]["doberman_agent_code"] == 26505
 
 
 @pytest.mark.parametrize(
@@ -79,7 +79,7 @@ async def test_the_rest_of_the_openai_family_is_refused_readably(admitted, metho
 
     assert response.status_code == 404
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26501
+    assert body["doberman_agent_code"] == 26501
     assert body["code"] == "endpoint_not_supported"
 
 
@@ -98,15 +98,15 @@ async def test_the_anthropic_messages_path_gets_its_own_answer(admitted, path):
 
     assert response.status_code == 404
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26502
+    assert body["doberman_agent_code"] == 26502
     assert body["code"] == "anthropic_protocol_not_supported"
 
 
 async def test_credentials_are_judged_before_the_path_is(monkeypatch):
-    from bisheng.common.errcode.open_api import OpenApiCredentialMissingError
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialMissingError
 
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(side_effect=OpenApiCredentialMissingError()),
     )
 
@@ -114,7 +114,7 @@ async def test_credentials_are_judged_before_the_path_is(monkeypatch):
 
     # Otherwise an unauthenticated caller could enumerate which endpoints exist.
     assert response.status_code == 401
-    assert response.json()["error"]["bisheng_code"] == 26001
+    assert response.json()["error"]["doberman_agent_code"] == 26001
 
 
 async def test_an_unresolvable_model_is_a_404_with_the_reason(admitted):
@@ -122,7 +122,7 @@ async def test_an_unresolvable_model_is_a_404_with_the_reason(admitted):
 
     assert response.status_code == 404
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26511
+    assert body["doberman_agent_code"] == 26511
     assert body["code"] == "model_not_found"
 
 
@@ -137,7 +137,7 @@ async def test_an_ambiguous_bare_name_lists_the_qualified_alternatives(monkeypat
 
     assert response.status_code == 400
     body = response.json()["error"]
-    assert body["bisheng_code"] == 26514
+    assert body["doberman_agent_code"] == 26514
     assert body["candidates"] == ["azure-openai/shared", "qwen-cloud/shared"]
 
 
@@ -147,17 +147,17 @@ async def test_an_undecidable_catalog_refuses_with_503_rather_than_a_narrower_se
     response = await _call("POST", CHAT_PATH, json=BODY)
 
     assert response.status_code == 503
-    assert response.json()["error"]["bisheng_code"] == 26516
+    assert response.json()["error"]["doberman_agent_code"] == 26516
 
 
 async def test_a_permission_backend_outage_is_still_openai_shaped(monkeypatch, admitted):
-    from bisheng.common.errcode.permission import PermissionServiceUnavailableError
+    from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
 
     async def explode(*_args, **_kwargs):
         raise PermissionServiceUnavailableError()
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.model_gateway_service.list_callable_chat_models",
+        "doberman_agent.open_api.domain.services.model_gateway_service.list_callable_chat_models",
         explode,
     )
 
@@ -170,11 +170,11 @@ async def test_a_permission_backend_outage_is_still_openai_shaped(monkeypatch, a
 
 
 async def test_neighbouring_v2_paths_keep_the_platform_envelope(monkeypatch):
-    from bisheng.common.errcode.open_api import OpenApiCredentialMissingError
-    from bisheng.main import app
+    from doberman_agent.common.errcode.open_api import OpenApiCredentialMissingError
+    from doberman_agent.main import app
 
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(side_effect=OpenApiCredentialMissingError()),
     )
 

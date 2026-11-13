@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
 
 
 async def test_existing_publish_uses_real_principal_and_combined_actions(monkeypatch):
-    from bisheng.app_publish.domain.services import publish_pipeline_service as mod
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service as mod
 
     principal = SimpleNamespace(actor_kind="service_account", actor_id=24, tenant_id=3, resource_owner_user_id=42)
     app = SimpleNamespace(id="target", tenant_id=3, owner_user_id=81)

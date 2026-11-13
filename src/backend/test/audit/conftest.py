@@ -23,8 +23,8 @@ Two things the fixtures pin down that are easy to get wrong:
 # ⚠️ The stubs are **taken back out as soon as our own imports are done**. A
 # conftest is loaded at session start — before any test module — so a stub left
 # in ``sys.modules`` is not scoped to this directory: it becomes the answer
-# every later suite gets. ``bisheng.telemetry_search`` is a real package, and a
-# MagicMock standing in for it makes ``import bisheng.telemetry_search.domain``
+# every later suite gets. ``doberman_agent.telemetry_search`` is a real package, and a
+# MagicMock standing in for it makes ``import doberman_agent.telemetry_search.domain``
 # fail with "not a package" — which is how ``test/open_api`` and
 # ``test/permission`` turned into 11 collection errors the first time this
 # block lived in a conftest instead of a test module.
@@ -36,16 +36,16 @@ _router_stub.router = _MagicMock()
 _router_stub.router_rpc = _MagicMock()
 _stubbed: list[str] = []
 for _m in (
-    "bisheng.api.router",
-    "bisheng.api.v1",
-    "bisheng.api.v1.assistant",
-    "bisheng.api.v1.schema",
-    "bisheng.api.v1.schema.chat_schema",
-    "bisheng.api.v1.schema.workflow",
-    "bisheng.api.v1.schemas",
-    "bisheng.telemetry_search",
-    "bisheng.telemetry_search.api",
-    "bisheng.telemetry_search.api.router",
+    "doberman_agent.api.router",
+    "doberman_agent.api.v1",
+    "doberman_agent.api.v1.assistant",
+    "doberman_agent.api.v1.schema",
+    "doberman_agent.api.v1.schema.chat_schema",
+    "doberman_agent.api.v1.schema.workflow",
+    "doberman_agent.api.v1.schemas",
+    "doberman_agent.telemetry_search",
+    "doberman_agent.telemetry_search.api",
+    "doberman_agent.telemetry_search.api.router",
 ):
     if _m not in _sys.modules:
         _sys.modules[_m] = _router_stub
@@ -60,7 +60,7 @@ from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 from sqlmodel import Session  # noqa: E402
 
-from bisheng.database.models.audit_log import AuditLog  # noqa: E402
+from doberman_agent.database.models.audit_log import AuditLog  # noqa: E402
 
 for _m in _stubbed:
     del _sys.modules[_m]
@@ -105,7 +105,7 @@ def _tenant_context():
     is exactly the failure the AGENTS.md baseline-diff rule warns about. Pinning
     a context here makes the outcome the same either way.
     """
-    from bisheng.core.context.tenant import get_current_tenant_id, set_current_tenant_id
+    from doberman_agent.core.context.tenant import get_current_tenant_id, set_current_tenant_id
 
     previous = get_current_tenant_id()
     set_current_tenant_id(1)
@@ -150,12 +150,12 @@ def patch_audit_dao(monkeypatch, audit_session):
     async def _fake_get_async():
         yield None
 
-    monkeypatch.setattr("bisheng.database.models.audit_log.get_sync_db_session", _fake_get_sync)
-    monkeypatch.setattr("bisheng.database.models.audit_log.bypass_tenant_filter", lambda: nullcontext())
-    monkeypatch.setattr("bisheng.database.models.audit_log._db_dialect", lambda: "sqlite")
-    monkeypatch.setattr("bisheng.api.services.audit_log.resp_200", lambda data=None: {"data": data})
-    monkeypatch.setattr("bisheng.api.services.audit_log.bypass_tenant_filter", lambda: nullcontext())
-    monkeypatch.setattr("bisheng.api.services.audit_log.get_async_db_session", _fake_get_async)
+    monkeypatch.setattr("doberman_agent.database.models.audit_log.get_sync_db_session", _fake_get_sync)
+    monkeypatch.setattr("doberman_agent.database.models.audit_log.bypass_tenant_filter", lambda: nullcontext())
+    monkeypatch.setattr("doberman_agent.database.models.audit_log._db_dialect", lambda: "sqlite")
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.resp_200", lambda data=None: {"data": data})
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.bypass_tenant_filter", lambda: nullcontext())
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.get_async_db_session", _fake_get_async)
 
 
 @pytest.fixture()
@@ -182,15 +182,15 @@ def audit_lookups(monkeypatch):
     async def _group_users(group_ids, page=0, limit=0):
         return [g for g in state.group_users if g.group_id in set(group_ids)]
 
-    monkeypatch.setattr("bisheng.api.services.audit_log.AppDao.alist_by_ids", AsyncMock(side_effect=_apps_by_ids))
-    monkeypatch.setattr("bisheng.api.services.audit_log.AppDao.aget", AsyncMock(side_effect=_app_get))
-    monkeypatch.setattr("bisheng.api.services.audit_log.TenantDao.aget_by_ids", AsyncMock(side_effect=_tenants))
-    monkeypatch.setattr("bisheng.api.services.audit_log.UserDao.aget_user_by_ids", AsyncMock(side_effect=_users))
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.AppDao.alist_by_ids", AsyncMock(side_effect=_apps_by_ids))
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.AppDao.aget", AsyncMock(side_effect=_app_get))
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.TenantDao.aget_by_ids", AsyncMock(side_effect=_tenants))
+    monkeypatch.setattr("doberman_agent.api.services.audit_log.UserDao.aget_user_by_ids", AsyncMock(side_effect=_users))
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.UserGroupDao.aget_group_users", AsyncMock(side_effect=_group_users)
+        "doberman_agent.api.services.audit_log.UserGroupDao.aget_group_users", AsyncMock(side_effect=_group_users)
     )
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.CredentialRepository.get_by_ids", AsyncMock(side_effect=_credentials)
+        "doberman_agent.api.services.audit_log.CredentialRepository.get_by_ids", AsyncMock(side_effect=_credentials)
     )
     return state
 
@@ -204,7 +204,7 @@ def make_app(app_id, *, name, slug, tenant_id, state="online", owner_user_id=7):
 def make_credential(credential_id, *, key_prefix="bs-sak-", last4="ab12", subject_kind="service_account"):
     """A stand-in for ``ApiCredential`` — only the fields the mask needs; no
     plaintext exists on the real row either."""
-    from bisheng.open_api.domain.models.api_credential import mask_key
+    from doberman_agent.open_api.domain.models.api_credential import mask_key
 
     return SimpleNamespace(
         id=credential_id,

@@ -1,6 +1,6 @@
-# BiSheng Architecture Constitution
+# doberman-agent Architecture Constitution
 
-> **The single source of truth for BiSheng's architectural laws — invariant across all features, never to be violated.**
+> **The single source of truth for doberman-agent's architectural laws — invariant across all features, never to be violated.**
 >
 > - `AGENTS.md` and every feature's `design.md` **reference this file; they never copy it.** Changing an implementation never requires editing this file (they point here).
 > - `scripts/arch-guard.sh` is the **machine-enforcement arm** of this document: each RULE maps to a clause below (see the anchor table).
@@ -13,7 +13,7 @@
 | Clause | Law | arch-guard RULE | Severity |
 |---|---|---|---|
 | **C1** | DDD layered call chain | RULE-1 / 2 / 3 / 4 / 5 | VIOLATION (RULE-3 is WARNING during migration) |
-| **C1** | Backend holds no orchestration privilege (F054 K1): no docker / kubernetes SDK import, no `/var/run/docker.sock`, no `DOCKER_HOST` anywhere under `src/backend/bisheng/**`. Container lifecycle is driven by desired-state intents sent to the standalone `src/runtime-manager/` process, which is the sole holder of that access surface. | RULE-10 | VIOLATION |
+| **C1** | Backend holds no orchestration privilege (F054 K1): no docker / kubernetes SDK import, no `/var/run/docker.sock`, no `DOCKER_HOST` anywhere under `src/backend/doberman_agent/**`. Container lifecycle is driven by desired-state intents sent to the standalone `src/runtime-manager/` process, which is the sole holder of that access surface. | RULE-10 | VIOLATION |
 | **C2** | Dual-DB compatibility (MySQL + DM8) | — (review + CI) | — |
 | **C3** | Multi-tenancy auto-injection | — (review) | — |
 | **C4** | Permission unified entry point | RULE-8 / 9 | VIOLATION |
@@ -28,13 +28,13 @@
 
 Call chain — **never skip layers**: `Router → Endpoint → Service → Repository → DB`
 
-- **Never** `import bisheng.database.models.*` in endpoints — go through a Domain Service/DAO (RULE-3, WARNING during migration).
+- **Never** `import doberman_agent.database.models.*` in endpoints — go through a Domain Service/DAO (RULE-3, WARNING during migration).
 - **Never** write ORM queries in Service; **never** add new DAO entry points for new features.
 - `common/`, `core/` must not import `domain/`, `api/` (RULE-1).
 - `database/models/` must not import `domain/` (RULE-2).
 - `domain/models/` must not import `domain/services/` (RULE-4).
 - The API layer must not cross-import between modules (RULE-5).
-- `src/backend/bisheng/**` must not import a container/orchestration SDK (`docker`, `aiodocker`, `kubernetes`, `kubernetes_asyncio`), reference `/var/run/docker.sock`, or read `DOCKER_HOST` (RULE-10). The backend describes *desired state* over HTTP to the standalone `src/runtime-manager/` package; only that process holds the orchestration access surface. Rationale: a backend that can talk to dockerd is root-equivalent on the host, which defeats the isolation the whole hosted-app design rests on.
+- `src/backend/doberman_agent/**` must not import a container/orchestration SDK (`docker`, `aiodocker`, `kubernetes`, `kubernetes_asyncio`), reference `/var/run/docker.sock`, or read `DOCKER_HOST` (RULE-10). The backend describes *desired state* over HTTP to the standalone `src/runtime-manager/` package; only that process holds the orchestration access surface. Rationale: a backend that can talk to dockerd is root-equivalent on the host, which defeats the isolation the whole hosted-app design rests on.
 
 ## C2. Dual-DB Compatibility (MySQL + DM8) ⚠️
 
@@ -59,7 +59,7 @@ macOS: the DM8 driver (`dmPython`/`dmAsync`) is not installed (`sys_platform != 
 ## C4. Permissions — Verified Business Target + Unified Action Runtime
 
 ```python
-from bisheng.permission.application.business_authorization import (
+from doberman_agent.permission.application.business_authorization import (
     require_business_action,
 )
 
@@ -114,7 +114,7 @@ await require_business_action(
 **Module registry** (41 in use as of 2026-10-10). The authoritative source is always the `Code: int = NNNNN` / `Code = NNNNN` literals themselves; this table mirrors them and *will* drift. **Before claiming a new module number, re-derive the list:**
 
 ```bash
-grep -rhoE "Code(:\s*int)?\s*=\s*[0-9]{5}" src/backend/bisheng/common/errcode/*.py \
+grep -rhoE "Code(:\s*int)?\s*=\s*[0-9]{5}" src/backend/doberman_agent/common/errcode/*.py \
   | grep -oE "[0-9]{5}" | cut -c1-3 | sort -un
 ```
 
@@ -140,7 +140,7 @@ grep -rhoE "Code(:\s*int)?\s*=\s*[0-9]{5}" src/backend/bisheng/common/errcode/*.
 - **263 is assigned** to the MCP tool face and the unified retrieval facade (F052, `common/errcode/mcp_face.py`). Sub-bands: **26300–26319** MCP tool face — since 2026-10-10 the only MCP server is F067's `open_mcp/`; F052's own server was folded into it, 26305 / 26306 are raised by `open_mcp/tools/`, and 26301–26304 (F052's transport gate) are retired and never reused · **26320–26339** the retrieval facade, shared by its callers (the MCP retrieve tool, `POST /api/v2/filelib/retrieve`, the hosted-app runtime, the SDK's `retrieve`) · **26340+** reserved. It deliberately does **not** extend 260: that band's 26032–26039 / 26045–26049 holes are pinned by `test/open_api/test_error_codes.py`. Every 263xx carries a real `http_status` returned via `open_api/domain/http_status.py` on `/api/v2` paths (200 elsewhere), and every subclass spells its code `Code: int = 263xx` — the un-annotated form used in `open_api.py` is invisible to `pnpm check-i18n`'s backend-code regex, so a missing translation would pass CI.
 - **264 is assigned** to the anonymous public channel (`/api/v3`, `common/errcode/public_endpoints.py`, 26401–26404; was 261 until 2026-10-08). Its codes carry a real transport status for the v3 handler. Do not reuse it.
 - **265 is assigned** (was 262 until 2026-10-08) to the OpenAI-compatible model protocol face (`/api/v2/model/v1`; F051, `common/errcode/model_face.py`). Do not reuse it. Sub-bands: `26500–26509` protocol face / endpoint / request shape (26501 endpoint not offered · 26502 Anthropic path · 26503 malformed request · 26504 access token refused · 26505 delegation-style identity header refused) · `26510–26529` callable range and name resolution (26511 not found · 26512 offline · 26513 revoked · 26514 ambiguous bare name · 26515 capability undeclared · 26516 catalog undecidable, fail-closed 503 · 26517 provider daily limit, 429) · `26530–26549` upstream and streaming (26531 upstream failure · 26532 upstream rejection, transport status taken from the provider · 26533 upstream rate limit · 26534 stream interrupted, only inside an SSE event) · `26550–26559` records and ledger, reserved. `ModelFaceError` subclasses `OpenApiAuthError` purely to reuse the v2 handler's `http_status` branch — they are not authentication errors. Each code also carries `openai_type` / `openai_code`, the OpenAI-shaped rendering the face returns under its own path prefix; copy for each code must land in `packages/locales/src/api_errors/*.json` (all three languages) in the same change, and codes here are declared `Code: int = NNNNN` so `check-i18n` actually sees them.
-- **270 is assigned** to commercial license status aggregation and reporting (`commercial_license`). Do not reuse it. Do not treat Gateway business code 11001 as a BISHENG module number.
+- **270 is assigned** to commercial license status aggregation and reporting (`commercial_license`). Do not reuse it. Do not treat Gateway business code 11001 as a doberman-agent module number.
 - **280 is assigned** to isolation-environment (sandbox) execution (`sandbox`). Do not reuse it.
 - When you claim a number, add it here in the same change.
 
@@ -159,7 +159,7 @@ All other frontend conventions (state library, UI library, path aliases, i18n, T
 
 **Multi-node is the default assumption, not an edge case.** The backend already runs as several
 processes that need not share a machine: API replicas (`uvicorn --workers`), Celery workers, the
-Linsight worker (`bisheng/linsight/worker.py`, hostname-derived `node_id` + heartbeats), and Beat.
+Linsight worker (`doberman-agent/linsight/worker.py`, hostname-derived `node_id` + heartbeats), and Beat.
 Two processes agreeing today only because a single-host `docker compose` happens to bind-mount the
 same `/app/data` is an accident, not a design.
 
@@ -174,7 +174,7 @@ The local filesystem is a cache: disposable, rebuildable, never the source of tr
 | Fail loudly, or report the gap to the user | Log a warning and continue silently degraded |
 
 Reference implementations: `WorkspaceBackend` (MinIO truth + write-through cache) and `SkillStore`
-(content-addressed objects + local materialization) in `bisheng/linsight/domain/services/`.
+(content-addressed objects + local materialization) in `doberman-agent/linsight/domain/services/`.
 
 Precedents that make this a law rather than advice: skill bundles shipped as node-local files and
 were unreadable from any other host (fixed by moving them to object storage); the F048 resource

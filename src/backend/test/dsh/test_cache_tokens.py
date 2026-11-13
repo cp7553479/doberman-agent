@@ -7,12 +7,12 @@ import pytest
 from sqlalchemy import select
 from sqlmodel import Session
 
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.domain.schemas.chat import DshChatRequest
-from bisheng.dsh.domain.schemas.usage import UsageEvent
-from bisheng.dsh.infrastructure.chat_adapter import normalize_usage
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.domain.schemas.chat import DshChatRequest
+from doberman_agent.dsh.domain.schemas.usage import UsageEvent
+from doberman_agent.dsh.infrastructure.chat_adapter import normalize_usage
 from test.dsh.test_model_service import principal, service_setup  # noqa: F401
 from test.dsh.test_quota_admission import quota as real_quota  # noqa: F401
 from test.dsh.test_quota_admission import running
@@ -86,7 +86,7 @@ async def test_response_and_settlement_keep_cache_details(service_setup, stream)
     }
     llm.continue_stream.set()
     request = DshChatRequest(
-        model="bisheng:42",
+        model="doberman_agent:42",
         messages=[{"role": "user", "content": "test"}],
         stream=stream,
         stream_options={"include_usage": True} if stream else None,

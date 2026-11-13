@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _find_function_def(source: str, name: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:

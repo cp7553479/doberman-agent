@@ -24,8 +24,8 @@ vi.mock("@/controllers/API/permission", () => ({
   getMyResourcePermissionsApi: permissionApi,
 }))
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const React = await import("react")
 interface DropdownContextValue {
   open: boolean

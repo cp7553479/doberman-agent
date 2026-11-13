@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 

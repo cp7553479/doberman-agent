@@ -26,10 +26,10 @@
 
 ### 接口约定（供跨任务调用）
 
-- `ContextWindowService`（`src/backend/bisheng/llm/domain/services/context_window.py`）：
-  - `async def resolve(model: BishengLLM) -> ContextWindowResult`，从不抛异常；读取失败返回 `source="unknown"`。
+- `ContextWindowService`（`src/backend/doberman_agent/llm/domain/services/context_window.py`）：
+  - `async def resolve(model: DobermanAgentLLM) -> ContextWindowResult`，从不抛异常；读取失败返回 `source="unknown"`。
   - `async def invalidate(model_ids: Iterable[int]) -> None`，Redis 失败只记警告。
-  - Redis 客户端用 `bisheng.core.cache.redis_manager.get_redis_client()`。
+  - Redis 客户端用 `doberman_agent.core.cache.redis_manager.get_redis_client()`。
 - `ContextWindowResult` 字段：`window: int | None`、`kind: "total" | "input" | None`、`usable_input: int | None`、`source`。`source` 取值固定为：`manual`（高级配置）、`ollama_num_ctx`、`deployed`（vllm、llamacpp、ollama `/api/ps`、openai 类型读到 `max_model_len`）、`published`（xinference、ollama `/api/show`、anthropic、deepseek、moonshot、openai 类型读到 `context_length`、qwen）、`unknown`。
 - 超窗异常：见 design 决策 5。判断一律用 `isinstance(exc, ContextOverflowError)`。
 
@@ -38,7 +38,7 @@
 ## Wave 1 — P0 基础设施与测试（T001 先做，其余可并行）
 
 - [x] **T001**: 错误码与超窗异常类型
-  **文件**: `src/backend/bisheng/common/errcode/linsight.py`、`src/backend/bisheng/llm/domain/llm/exceptions.py`（新建）
+  **文件**: `src/backend/doberman_agent/common/errcode/linsight.py`、`src/backend/doberman_agent/llm/domain/llm/exceptions.py`（新建）
   **逻辑**: 新增错误码类 `LinsightContextOverflowError`（11075）、`LinsightContextCompressFailedError`（11076）；新增 `LLMContextOverflowError(ContextOverflowError)`，带 `body`、`status_code`、`reported_input_tokens`。错误码已在 release-contract 登记，无需再改。
   **依赖**: 无
 
@@ -61,7 +61,7 @@
   **依赖**: 无
 
 - [x] **T005**: 超窗识别与 `context_window` 剥离的测试
-  **文件**: `src/backend/test/llm/test_bisheng_llm_context_overflow.py`
+  **文件**: `src/backend/test/llm/test_doberman-agent_llm_context_overflow.py`
   **逻辑**: design 决策 5 表中每条规则用真实报错原文构造 SDK 异常，分别经 `_generate`、`_agenerate`、`_stream`、`_astream` 调用，断言：抛出的异常是 `ContextOverflowError`，同时仍是原 SDK 异常类型，`body`、`status_code` 保留，`__cause__` 为原异常，`reported_input_tokens` 按正则提取；非超窗的 400 原样抛出；四个装饰器在超窗时都不把模型状态写成 ERROR（决策 6）；高级配置含 `context_window` 时客户端构造参数里没有这个键。
   **覆盖 AC**: AC-02, AC-13, AC-15
   **依赖**: T001
@@ -75,29 +75,29 @@
 ## Wave 2 — P0 实现
 
 - [x] **T007**: `ContextWindowService` 核心（优先级、可用输入、缓存、失效）
-  **文件**: `src/backend/bisheng/llm/domain/services/context_window.py`
+  **文件**: `src/backend/doberman_agent/llm/domain/services/context_window.py`
   **逻辑**: 按"接口约定"与 design 决策 3、决策 4 实现；读取器以注册表形式接入，本任务只提供注册表与调度，具体读取器在 T008。
   **测试**: T002、T003 通过
   **覆盖 AC**: AC-01, AC-03, AC-05, AC-06, AC-07, AC-08
   **依赖**: T002, T003
 
 - [x] **T008**: P0 七种服务商读取器
-  **文件**: `src/backend/bisheng/llm/domain/services/context_window_probes.py`
-  **逻辑**: vllm、openai 类型、llamacpp、ollama、xinference、anthropic、deepseek、moonshot；地址和密钥取自 `BishengLLM` 已算好的客户端参数（决策 3）；单次超时 3 秒。
+  **文件**: `src/backend/doberman_agent/llm/domain/services/context_window_probes.py`
+  **逻辑**: vllm、openai 类型、llamacpp、ollama、xinference、anthropic、deepseek、moonshot；地址和密钥取自 `DobermanAgentLLM` 已算好的客户端参数（决策 3）；单次超时 3 秒。
   **测试**: T004 通过
   **覆盖 AC**: AC-04
   **依赖**: T004, T007
 
-- [x] **T009**: `BishengLLM` 超窗识别、剥离 `context_window`、不标异常
-  **文件**: `src/backend/bisheng/llm/domain/llm/llm.py`、`src/backend/bisheng/llm/domain/utils.py`
+- [x] **T009**: `DobermanAgentLLM` 超窗识别、剥离 `context_window`、不标异常
+  **文件**: `src/backend/doberman_agent/llm/domain/llm/llm.py`、`src/backend/doberman_agent/llm/domain/utils.py`
   **逻辑**: `_get_llm_params` 取出 `context_window`；四个调用入口在被装饰函数内部识别超窗并改抛（决策 5，保持原 SDK 类型与属性）；四个装饰器对 `ContextOverflowError` 跳过状态写入（决策 6）。
-  **影响范围**: `BishengLLM` 全平台共用。附带影响见 design 决策 5：日常模式的错误分类会得到 `context_overflow`；所有场景超窗不再标模型异常。`test/llm/` 全部既有用例必须不回归。
+  **影响范围**: `DobermanAgentLLM` 全平台共用。附带影响见 design 决策 5：日常模式的错误分类会得到 `context_overflow`；所有场景超窗不再标模型异常。`test/llm/` 全部既有用例必须不回归。
   **测试**: T005 通过
   **覆盖 AC**: AC-02, AC-13, AC-15
   **依赖**: T001, T005
 
 - [x] **T010**: 错误分类实现
-  **文件**: `src/backend/bisheng/common/services/llm_error_classifier.py`
+  **文件**: `src/backend/doberman_agent/common/services/llm_error_classifier.py`
   **逻辑**: 新增两个 `ErrorType`；`label_error` 在最前面识别（压缩失败按类名，避免 common 导入 linsight）；`classify_behavior` 对 `ContextOverflowError` 返回 FAIL_FAST；`classify_for_event` 按类型写入 11075、11076。
   **影响范围**: 共享模块。调用方为 linsight（resilience、失败处理）和日常模式 `chat_service.py:1467`、`:2377`。`:1467` 只判断是否属于临时错误，`context_overflow` 不属于，行为不变；`:2377` 得到新类型，由 T013 的文案覆盖。
   **测试**: T006 通过；`test/linsight/`、`test/workstation/` 中使用分类器的既有用例不回归
@@ -111,7 +111,7 @@
   **依赖**: T007
 
 - [x] **T011**: 保存配置与验证模型时清除缓存
-  **文件**: `src/backend/bisheng/llm/domain/services/llm.py`
+  **文件**: `src/backend/doberman_agent/llm/domain/services/llm.py`
   **逻辑**: 在 `update_llm_server` 里按模型逐个调用 `invalidate_llm_info_cache` 的循环中，调用 `ContextWindowService.invalidate`；`verify_model_status` 中调用 `invalidate_llm_info_cache` 之后同样调用。`update_model_online` 只改上下线状态，不影响上下文长度，不调用。
   **测试**: T034 通过
   **覆盖 AC**: AC-06
@@ -128,12 +128,12 @@
 - [x] **T013**: 前端错误码文案（api_errors）
   **文件**: `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`
   **逻辑**: 为 11075、11076 补三种语言文案，措辞对任务模式与日常模式都成立（design 决策 8）。改完运行 `pnpm locales:build` 重新生成 `client/src/locales/*/api_errors.gen.json` 与 `platform/public/locales/*/api_errors.json`，生成产物不手改。
-  **手动验证**: `pnpm --filter @bisheng/locales check`、`pnpm check-i18n` 通过。
+  **手动验证**: `pnpm --filter @doberman-agent/locales check`、`pnpm check-i18n` 通过。
   **覆盖 AC**: AC-14, AC-18
   **依赖**: T001
 
 - [x] **T014**: agent_factory 接入实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: `_resolve_model` 之后、`create_deep_agent` 之前调用 `ContextWindowService.resolve`；可用输入非空时设置 `model.profile`（决策 1、决策 2）；记录 `[linsight-context-window]` 日志。
   **测试**: T012 通过
   **覆盖 AC**: AC-08, AC-09, AC-11, AC-24
@@ -146,7 +146,7 @@
   **依赖**: T009, T010, T014
 
 - [x] **T016**: resilience 与 `task` 超窗中间件实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/resilience_middleware.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`、`src/backend/bisheng/linsight/domain/task_exec.py`（`_handle_task_failure`）
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/resilience_middleware.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`、`src/backend/doberman_agent/linsight/domain/task_exec.py`（`_handle_task_failure`）
   **逻辑**: resilience 对超窗直接抛出；新增主图 `wrap_tool_call` 中间件，只处理 `task` 工具的超窗异常，与研究员 resilience 实例共用降级计数（决策 9）；主图失败时在 `_handle_task_failure` 记录 `reported_input_tokens`，子图超窗时由新中间件记录（AC-15）。
   **测试**: T015 通过；`test_resilience_middleware.py` 不回归
   **覆盖 AC**: AC-13, AC-15, AC-16
@@ -183,7 +183,7 @@
 
 - [x] **T019**: 技术验证：替换框架压缩中间件
   **文件**: 验证脚本放 scratchpad；结论写入 design.md 决策 7
-  **逻辑**: 回答决策 7 的两个问题；确认 BiSheng 子类改 `name` 后不被排除规则移除；确认主图、子图都能拿到当次参数。不通过时停下与用户重新确认路线。
+  **逻辑**: 回答决策 7 的两个问题；确认 doberman-agent 子类改 `name` 后不被排除规则移除；确认主图、子图都能拿到当次参数。不通过时停下与用户重新确认路线。
   **依赖**: T018
 
 - [x] **T020**: 中日韩计数与用量基数的测试
@@ -193,20 +193,20 @@
   **依赖**: 无
 
 - [x] **T021**: 中日韩计数与用量基数的实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/context_budget.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/context_budget.py`
   **逻辑**: 按 design 决策 10 实现纯函数。
   **测试**: T020 通过
   **覆盖 AC**: AC-21
   **依赖**: T020
 
-- [x] **T022**: BiSheng 压缩中间件子类的测试
+- [x] **T022**: doberman-agent 压缩中间件子类的测试
   **文件**: `src/backend/test/linsight/test_context_summarization.py`
   **逻辑**: 摘要输入不超过 `0.5 × 可用输入`；保留部分不超过 `0.1 × 可用输入`；摘要第一次失败、重试成功；两次都失败 → 抛 `LinsightContextCompressFailedError`，任务 `error_type == "context_compress_failed"`、`error_code == 11076`，日志有错误级别记录，已生成文件保留，失败文本没有作为摘要进入下一次请求；计数使用 T021 的函数。
   **覆盖 AC**: AC-17, AC-18, AC-21, AC-24
   **依赖**: T019, T021
 
-- [x] **T023**: BiSheng 压缩中间件子类的实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/context_budget.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+- [x] **T023**: doberman-agent 压缩中间件子类的实现
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/context_budget.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: 按 T019 的结论接入，主图与研究员子图都使用。
   **测试**: T022 通过
   **覆盖 AC**: AC-17, AC-18, AC-21, AC-24
@@ -219,7 +219,7 @@
   **依赖**: T021
 
 - [x] **T025**: 单条工具结果转存与读文件截断的实现
-  **文件**: `src/backend/bisheng/linsight/domain/services/context_budget.py`、`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/context_budget.py`、`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
   **逻辑**: 新增 `wrap_tool_call` 中间件；提示文案与 `tool_loop_middleware` 现有的取回提示一致。与 T023 改同一组文件，串行执行。
   **测试**: T024 通过
   **覆盖 AC**: AC-19, AC-20, AC-24
@@ -232,7 +232,7 @@
   **依赖**: T008
 
 - [x] **T027**: 百炼读取器的实现
-  **文件**: `src/backend/bisheng/llm/domain/services/context_window_probes.py`
+  **文件**: `src/backend/doberman_agent/llm/domain/services/context_window_probes.py`
   **测试**: T026 通过
   **覆盖 AC**: AC-10
   **依赖**: T026
@@ -253,7 +253,7 @@
   **依赖**: 无
 
 - [x] **T030**: 删除死配置
-  **文件**: `src/backend/bisheng/core/config/settings.py`（`LinsightConf`）、`src/backend/bisheng/initdb_config.yaml`、`src/backend/bisheng_langchain/linsight/const.py`
+  **文件**: `src/backend/doberman_agent/core/config/settings.py`（`LinsightConf`）、`src/backend/doberman_agent/initdb_config.yaml`、`src/backend/doberman_agent_langchain/linsight/const.py`
   **逻辑**: 从 `LinsightConf` 和 `initdb_config.yaml` 删除 6 个字段。`const.py` 的 `ExecConfig` 类没有任何引用（已 grep 确认），整个类删除；同文件的 `TaskStatus` 等仍在使用，保留。`test/common/test_config_backfill.py` 使用自带的内联配置，不受影响。
   **测试**: T029 通过
   **覆盖 AC**: AC-22, AC-23
@@ -270,7 +270,7 @@
   **依赖**: T028, T030
 
 - [ ] **T033**: 收尾清理
-  **逻辑**: 合并后按用户的 worktree 清理规则删除 `bisheng-087-context-window` worktree 与本地分支。
+  **逻辑**: 合并后按用户的 worktree 清理规则删除 `doberman-agent-087-context-window` worktree 与本地分支。
   **依赖**: T032
 
 ---
@@ -316,8 +316,8 @@
 - T010 偏离：`unwrap` 增加"遇到超窗 / 压缩失败异常即停止"，原 design 未写 → 已补 design §5 坑 17。
 - T015：发现框架主动压缩后不再接住超窗 → design §5 坑 15、16。
 - T031：两轮 `/code-review`，修复提交 `fix(F087): address code review findings`，2026-10-21 合入 feat/3.0.0（6c6a62311）。
-- T019：验证脚本 `scratchpad/spike/spike_t019.py`（会话临时目录，未入库），结论写入 design 决策 7。与原计划不同：BiSheng 压缩部件通过 harness profile 的 `extra_middleware` 工厂注入，而不是 `middleware=`，因此位于 resilience 内层（决策 7 已说明，未推翻任何已确认决策）。
-- T023：P0 的 `test_context_overflow_flow.py` 改为按生产方式装配（`bisheng_summarization()`），并调小工具结果以单独覆盖超窗重试路径（design 坑 20）。
+- T019：验证脚本 `scratchpad/spike/spike_t019.py`（会话临时目录，未入库），结论写入 design 决策 7。与原计划不同：doberman-agent 压缩部件通过 harness profile 的 `extra_middleware` 工厂注入，而不是 `middleware=`，因此位于 resilience 内层（决策 7 已说明，未推翻任何已确认决策）。
+- T023：P0 的 `test_context_overflow_flow.py` 改为按生产方式装配（`doberman_agent_summarization()`），并调小工具结果以单独覆盖超窗重试路径（design 坑 20）。
 - T026 / T027：百炼北京等区域的原生接口 host 需要 WorkspaceId；默认地址 `dashscope.aliyuncs.com` 不带它，按未知处理（官方文档 2026-10-21 核实）。新加坡、香港与已带 workspace 的 `*.maas.aliyuncs.com` 可读。
 - T030：同时更新 `docs/architecture/05-linsight-agent.md` 的配置表。
 - T032：P1/P2 代码审查 NEEDS_FIX（摘要输入被裁空、压缩部件位于 resilience 内层导致重试重复压缩、grep/ls/glob 未受单条上限约束、文档过期）→ 已修，见 design 决策 7、坑 21、§8。

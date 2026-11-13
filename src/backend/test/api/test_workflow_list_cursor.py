@@ -16,7 +16,7 @@ This file focuses on the *workflow-specific* invariants that AC-02/08/11 demand:
 
 The pytest pre-mock chain (``test/conftest.py``) breaks
 ``class WorkFlowService(BaseService)`` instantiation because
-``bisheng.common.services.base`` is replaced with a ``MagicMock`` at collect
+``doberman_agent.common.services.base`` is replaced with a ``MagicMock`` at collect
 time. We therefore validate via the source code of the file rather than
 importing the live class.
 """
@@ -29,7 +29,7 @@ from pathlib import Path
 
 
 def _read(rel: str) -> str:
-    return (Path(__file__).resolve().parents[2] / "bisheng" / rel).read_text(encoding="utf-8")
+    return (Path(__file__).resolve().parents[2] / "doberman_agent" / rel).read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------

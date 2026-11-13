@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, toast } from '@bisheng/ui';
+import { Button, Input, toast } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";

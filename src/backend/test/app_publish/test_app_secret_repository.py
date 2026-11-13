@@ -8,9 +8,9 @@ from sqlmodel import select
 
 @pytest.fixture()
 async def secret_repository(publish_engine, publish_db):
-    from bisheng.app_publish.domain.models.app_secret_config import AppSecretConfig
-    from bisheng.app_publish.domain.repositories.app_secret_repository import AppSecretConfigRepository
-    from bisheng.app_publish.domain.secret_security import AppSecretCipher
+    from doberman_agent.app_publish.domain.models.app_secret_config import AppSecretConfig
+    from doberman_agent.app_publish.domain.repositories.app_secret_repository import AppSecretConfigRepository
+    from doberman_agent.app_publish.domain.secret_security import AppSecretCipher
 
     async with publish_engine.begin() as connection:
         await connection.run_sync(lambda conn: AppSecretConfig.__table__.create(conn, checkfirst=True))
@@ -19,8 +19,8 @@ async def secret_repository(publish_engine, publish_db):
 
 
 async def test_audit_failure_rolls_back_configuration(secret_repository, app_factory, owner_user, monkeypatch):
-    from bisheng.app_publish.domain.models.app_secret_config import AppSecretConfig
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.app_publish.domain.models.app_secret_config import AppSecretConfig
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
 
     repo, cipher = secret_repository
     app, _ = await app_factory()
@@ -37,8 +37,8 @@ async def test_audit_failure_rolls_back_configuration(secret_repository, app_fac
 
 
 async def test_caller_transaction_rolls_back_and_enforces_binding(secret_repository, app_factory, owner_user):
-    from bisheng.app_publish.domain.services.app_secret_service import AppSecretService
-    from bisheng.common.errcode.app_publish import AppSecretEncryptionUnavailableError
+    from doberman_agent.app_publish.domain.services.app_secret_service import AppSecretService
+    from doberman_agent.common.errcode.app_publish import AppSecretEncryptionUnavailableError
 
     repo, cipher = secret_repository
     app, version = await app_factory(state="online", terminal_state="online")
@@ -56,11 +56,11 @@ async def test_caller_transaction_rolls_back_and_enforces_binding(secret_reposit
 
 
 async def test_missing_context_cannot_write_tenantless_model(secret_repository, monkeypatch):
-    from bisheng.app_publish.domain.models.app_secret_config import AppSecretConfig
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.app_publish.domain.models.app_secret_config import AppSecretConfig
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     repo, cipher = secret_repository
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.multi_tenant, "enabled", True)
     set_current_tenant_id(None)

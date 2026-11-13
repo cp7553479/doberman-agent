@@ -4,8 +4,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { MessageSquareIcon } from "lucide-react";
-import { Outlined } from "bisheng-icons";
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Outlined } from "@doberman-agent/icons";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 import { NotificationSeverity } from "~/common";
 import { Input } from "~/components/ui/Input";
 import type { FolderSession } from "~/api/chatApi";

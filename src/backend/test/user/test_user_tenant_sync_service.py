@@ -23,14 +23,14 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantRelocateBlockedError
-from bisheng.open_api.domain.services.personal_token_service import PersonalTokenService
-from bisheng.tenant.domain.constants import (
+from doberman_agent.common.errcode.tenant_resolver import TenantRelocateBlockedError
+from doberman_agent.open_api.domain.services.personal_token_service import PersonalTokenService
+from doberman_agent.tenant.domain.constants import (
     TenantAuditAction,
     UserTenantSyncTrigger,
 )
-from bisheng.tenant.domain.services import user_tenant_sync_service as uts_module
-from bisheng.tenant.domain.services.user_tenant_sync_service import (
+from doberman_agent.tenant.domain.services import user_tenant_sync_service as uts_module
+from doberman_agent.tenant.domain.services.user_tenant_sync_service import (
     UserTenantSyncService,
 )
 
@@ -131,7 +131,7 @@ def patches(monkeypatch):
 
 def _set_enforce(monkeypatch, value: bool):
     """Patch ``_enforce_transfer_before_relocate`` classmethod directly —
-    avoids touching the deep ``bisheng.common.services.config_service``
+    avoids touching the deep ``doberman_agent.common.services.config_service``
     (pre-mocked in conftest)."""
     monkeypatch.setattr(
         uts_module.UserTenantSyncService,

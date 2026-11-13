@@ -34,7 +34,7 @@
 ### Wave 1 — 无依赖，可并行（含基础设施与基线）
 
 - [x] **T001**: 新增 `article` 来源类型与载荷 schema
-  **文件**: `src/backend/bisheng/citation/domain/schemas/citation_schema.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/schemas/citation_schema.py`
   **逻辑**: `CitationType` 增加 `ARTICLE = "article"`；新增 `ArticleCitationItemSchema` 与 `ArticleCitationPayloadSchema`（字段形状见 design §4.2）；`CitationSourcePayload` 联合类型扩为三种。**不改** `message_citation` 表结构（`citation_type` 已是 `varchar(32)`）——**无 DDL、无 Alembic，因而无需回滚方案**。
   **设计依据**: design §3 决策 2
   **依赖**: 无
@@ -67,7 +67,7 @@
 ### Wave 2 — 依赖 Wave 1
 
 - [x] **T006**: 解析服务实现 —— 匿名收紧 + 未解析原因判定
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_resolve_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_resolve_service.py`
   **逻辑**: 在 `_permitted_file_ids` / `_apply_tier_filter` **之前**加匿名分支：无登录用户时知识库与文章来源一律不返回（含 `shared` 档），网页来源放行；按决策 5 的安全序产出每条未解析来源的原因。**已登录用户的两档语义一个字不改。**
   **跨 Feature 影响**: 该文件是 F029 拥有的 citation 链路（release-contract 表 1 已登记 F054 的扩展权）；改动只加匿名分支，不触碰 F041 的 `accessScope` 两档语义。
   **设计依据**: design §3 决策 5 · §5 坑 4（本 Feature 最容易漏的地方）
@@ -77,14 +77,14 @@
   **依赖**: T002, T003
 
 - [x] **T007**: 注册服务支持文章来源 + 非整数标识护栏
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_registry_service.py`, `citation_prompt_helper.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_registry_service.py`, `citation_prompt_helper.py`
   **逻辑**: 新增文章来源标识生成（前缀 `articlesearch_`）、载荷构建与序列化；新增「给文章内容打标 + 收集 registry item」的 helper，形态对齐现有的知识库 / 网页两条。**护栏**：`_is_citable_rag_document` 增加「文档标识非整数则不视为可引用」的判断（决策 6 的 B 层）。
   **跨 Feature 影响**: 同 T006，属 F029 链路的扩展；不改既有两类来源的构建逻辑。
   **设计依据**: design §3 决策 2 / 决策 6
   **依赖**: T001
 
 - [x] **T008**: 工作流临时文件关断实现
-  **文件**: `src/backend/bisheng/tool/domain/services/executor.py`（临时工具打标）, `src/backend/bisheng/workflow/nodes/agent/agent.py`（`WorkflowCitationToolWrapper.wrap` 分派处跳过）
+  **文件**: `src/backend/doberman_agent/tool/domain/services/executor.py`（临时工具打标）, `src/backend/doberman_agent/workflow/nodes/agent/agent.py`（`WorkflowCitationToolWrapper.wrap` 分派处跳过）
   **逻辑**: 临时文件检索工具创建时带一个「临时来源」标记；Agent 节点包装工具时遇到该标记直接不包装 → 不登记来源。**不改临时文件的召回与答案内容。**
   **跨 Feature 影响**: `executor.py` 是所有工具的共享创建入口——只给临时文件那条分支加标记位，其余工具的创建路径不变。
   **设计依据**: design §3 决策 6 · §5 坑 5
@@ -101,7 +101,7 @@
   **依赖**: T007
 
 - [x] **T010**: 频道文章问答溯源实现 + 端点瘦身
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_chat_service.py`（新增编排）, `src/backend/bisheng/channel/api/endpoints/channel_chat.py`（下沉，不新增编排）
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_chat_service.py`（新增编排）, `src/backend/doberman_agent/channel/api/endpoints/channel_chat.py`（下沉，不新增编排）
   **逻辑**: 敏感内容准入校验**之后**登记文章来源并写运行时缓存；系统提示词尾部幂等追加引用规则（首次真正调用 `prompt_has_citation_rules`）；「参考资料」块携带来源标识；答案落库前**严格过滤**（只留答案里出现的，不用「无标记则全存」的兜底）+ 清除未注册标记；把来源绑到答案消息。
   **设计依据**: design §3 决策 1 / 3 / 4 · §4.3（编排必须落 Service）· §5 坑 1、坑 3
   **测试**: T009 全绿
@@ -109,7 +109,7 @@
   **依赖**: T007, T009
 
 - [x] **T011**: 解析端点响应追加未解析清单
-  **文件**: `src/backend/bisheng/citation/api/endpoints/citation.py`, `citation_schema.py`
+  **文件**: `src/backend/doberman_agent/citation/api/endpoints/citation.py`, `citation_schema.py`
   **逻辑**: `ResolveCitationResponse` 追加 `unresolved` 字段（形状见 design §4.2），`items` 语义与顺序不变；单条详情端点的 404 响应体携带同一个 `reason`。**不新增对外 API、不新增错误码段。**
   **测试**: T003 断言响应形状
   **覆盖 AC**: AC-08, AC-09, AC-10

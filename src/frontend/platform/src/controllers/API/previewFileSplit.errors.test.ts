@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { beforeEach, expect, it, vi } from 'vitest';
 import request from '../request';
 import { previewFileSplitApi } from './index';

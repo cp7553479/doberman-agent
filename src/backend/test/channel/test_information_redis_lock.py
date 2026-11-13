@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from bisheng.worker.information.redis_lock import InformationRedisLock
+from doberman_agent.worker.information.redis_lock import InformationRedisLock
 
 
 def test_lock_acquire_refresh_and_release_use_token_checks():

@@ -9,9 +9,9 @@ from unittest.mock import AsyncMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-from bisheng.tool.domain.langchain import linsight_knowledge as knowledge_tool
-from bisheng.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+from doberman_agent.tool.domain.langchain import linsight_knowledge as knowledge_tool
+from doberman_agent.tool.domain.langchain.linsight_knowledge import SearchKnowledgeBase
 
 
 def _hit(**overrides) -> Document:

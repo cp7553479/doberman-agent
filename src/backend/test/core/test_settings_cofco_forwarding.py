@@ -1,4 +1,4 @@
-from bisheng.core.config.settings import Settings
+from doberman_agent.core.config.settings import Settings
 
 
 def test_in_app_message_forwarding_defaults_disabled():
@@ -15,10 +15,10 @@ def test_in_app_message_forwarding_override():
             "cofco": {
                 "enabled": True,
                 "api_base": "http://10.28.64.30:8070/qwmsg-ui",
-                "app_id": "bisheng",
+                "app_id": "doberman_agent",
                 "secret": "xxx",
                 "agentid": 1,
-                "bisheng_inbox_url": "https://bisheng.cofco.com",
+                "doberman_agent_inbox_url": "https://doberman-agent.cofco.com",
             }
         }
     )

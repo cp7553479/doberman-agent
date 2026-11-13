@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { useEffect, useRef } from "react";
 import { KeyPairListComponentType } from "../../types/components";
 

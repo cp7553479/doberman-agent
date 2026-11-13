@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.department import DepartmentPermissionDeniedError
-from bisheng.department.domain.services import department_service as m
+from doberman_agent.common.errcode.department import DepartmentPermissionDeniedError
+from doberman_agent.department.domain.services import department_service as m
 
 
 def _user(user_id=10, user_role=None, tenant_id=5):
@@ -109,7 +109,7 @@ async def test_aget_member_edit_form_drops_foreign_affiliate_dept():
     affiliate raised 21009 and the orphan was round-tripped back on save;
     post-fix both inaccessible records are silently filtered out.
     """
-    from bisheng.database.models.department import DepartmentDao, UserDepartmentDao
+    from doberman_agent.database.models.department import DepartmentDao, UserDepartmentDao
 
     ctx_dept = SimpleNamespace(
         id=10, dept_id='BS@ctx', name='本部门', status='active', path='/1/10/',
@@ -161,7 +161,7 @@ async def test_aget_member_edit_form_drops_foreign_affiliate_dept():
         return []
 
     with patch(
-        'bisheng.department.domain.services.department_service.get_async_db_session',
+        'doberman_agent.department.domain.services.department_service.get_async_db_session',
         side_effect=_session_cm,
     ), patch.object(
         m, '_can_access_dept',
@@ -175,19 +175,19 @@ async def test_aget_member_edit_form_drops_foreign_affiliate_dept():
         DepartmentDao, 'aget_by_ids',
         new_callable=AsyncMock, return_value=[ctx_dept, foreign_dept],
     ), patch(
-        'bisheng.user.domain.models.user.UserDao.aget_user',
+        'doberman_agent.user.domain.models.user.UserDao.aget_user',
         new_callable=AsyncMock, return_value=target_user,
     ), patch(
-        'bisheng.user.domain.models.user_role.UserRoleDao.aget_user_roles',
+        'doberman_agent.user.domain.models.user_role.UserRoleDao.aget_user_roles',
         new_callable=AsyncMock, return_value=[],
     ), patch(
-        'bisheng.database.models.user_group.UserGroupDao.aget_user_group',
+        'doberman_agent.database.models.user_group.UserGroupDao.aget_user_group',
         new_callable=AsyncMock, return_value=[SimpleNamespace(group_id=177)],
     ), patch(
-        'bisheng.database.models.user_group.UserGroupDao.aget_user_admin_group',
+        'doberman_agent.database.models.user_group.UserGroupDao.aget_user_admin_group',
         new_callable=AsyncMock, return_value=[SimpleNamespace(group_id=55)],
     ), patch(
-        'bisheng.database.models.group.GroupDao.aget_group_by_ids',
+        'doberman_agent.database.models.group.GroupDao.aget_group_by_ids',
         new_callable=AsyncMock, return_value=[locked_group],
     ), patch.object(
         m.DepartmentService, '_aget_assignable_roles_catalog',
@@ -223,8 +223,8 @@ async def test_aapply_member_edit_preserves_user_group_permission_error():
     """A user-group scope error must remain 23006 instead of becoming 21009."""
     from contextlib import asynccontextmanager
 
-    from bisheng.common.errcode.user_group import UserGroupPermissionDeniedError
-    from bisheng.department.domain.schemas.department_schema import (
+    from doberman_agent.common.errcode.user_group import UserGroupPermissionDeniedError
+    from doberman_agent.department.domain.schemas.department_schema import (
         DepartmentMemberEditApply,
     )
 
@@ -254,19 +254,19 @@ async def test_aapply_member_edit_preserves_user_group_permission_error():
     group_error = UserGroupPermissionDeniedError()
 
     with patch(
-        'bisheng.department.domain.services.department_service.get_async_db_session',
+        'doberman_agent.department.domain.services.department_service.get_async_db_session',
         side_effect=_session_cm,
     ), patch.object(
         m, '_get_dept_and_check_permission',
         new_callable=AsyncMock, return_value=ctx_dept,
     ), patch(
-        'bisheng.user.domain.models.user.UserDao.aget_user',
+        'doberman_agent.user.domain.models.user.UserDao.aget_user',
         new_callable=AsyncMock, return_value=target_user,
     ), patch(
-        'bisheng.user.domain.models.user_role.UserRoleDao.get_user_roles',
+        'doberman_agent.user.domain.models.user_role.UserRoleDao.get_user_roles',
         return_value=[],
     ), patch(
-        'bisheng.user_group.domain.services.user_group_service.UserGroupService.areplace_user_memberships',
+        'doberman_agent.user_group.domain.services.user_group_service.UserGroupService.areplace_user_memberships',
         new_callable=AsyncMock, side_effect=group_error,
     ):
         with pytest.raises(UserGroupPermissionDeniedError) as exc_info:

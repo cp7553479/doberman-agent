@@ -53,13 +53,13 @@
 - LDAP 登录后端适配：LDAP 认证与密码登录共用 user_login 多租户分支，无需额外改动（已在 E-12 说明）
 
 **关键文件（预判）**:
-- 新建: `src/backend/bisheng/tenant/`（DDD 模块：api/ + domain/）
+- 新建: `src/backend/doberman_agent/tenant/`（DDD 模块：api/ + domain/）
 - 新建: `src/frontend/platform/src/pages/TenantPage/`
 - 新建: `src/frontend/platform/src/pages/LoginPage/TenantSelect.tsx`
 - 修改: `src/frontend/platform/src/pages/LoginPage/login.tsx`（登录后租户选择）
 - 修改: `src/frontend/platform/src/layout/MainLayout.tsx`（租户切换下拉 + 侧边栏菜单）
-- 修改: `src/backend/bisheng/user/domain/services/user.py`（登录流程适配）
-- 修改: `src/backend/bisheng/utils/http_middleware.py`（停用租户中间件拦截）
+- 修改: `src/backend/doberman_agent/user/domain/services/user.py`（登录流程适配）
+- 修改: `src/backend/doberman_agent/utils/http_middleware.py`（停用租户中间件拦截）
 
 **关联不变量**: INV-13, INV-14
 
@@ -172,7 +172,7 @@ F010 将 F001 建立的多租户基础设施暴露为可操作的管理界面和
 
 | # | 决策 | 选择 | 理由 |
 |---|------|------|------|
-| AD-1 | 模块位置 | 新建 `src/backend/bisheng/tenant/` DDD 模块 | 租户管理是独立领域，不应混入 user 模块。复用 F001 的 DAO（`database/models/tenant.py`） |
+| AD-1 | 模块位置 | 新建 `src/backend/doberman_agent/tenant/` DDD 模块 | 租户管理是独立领域，不应混入 user 模块。复用 F001 的 DAO（`database/models/tenant.py`） |
 | AD-2 | 页面位置 | 独立页面 `/admin/tenants`，侧边栏新顶级菜单 | 租户管理是跨租户的系统级操作，与租户内的 SystemPage 性质不同（用户确认 D1） |
 | AD-3 | 登录 JWT | 多租户时先发临时 JWT（tenant_id=0）+ requires_tenant_selection | 简单直接，中间件已有 DEFAULT_TENANT_ID 兜底（用户确认 D2） |
 | AD-4 | 管理员指定 | P1 仅选择现有用户 | 降低复杂度，创建新用户可在用户管理页单独完成（用户确认 D3） |
@@ -586,18 +586,18 @@ appConfig: {
 
 | 文件路径 | 说明 |
 |---------|------|
-| `src/backend/bisheng/tenant/__init__.py` | 模块包 |
-| `src/backend/bisheng/tenant/api/__init__.py` | API 子包 |
-| `src/backend/bisheng/tenant/api/router.py` | 路由聚合 |
-| `src/backend/bisheng/tenant/api/endpoints/__init__.py` | 端点子包 |
-| `src/backend/bisheng/tenant/api/endpoints/tenant_crud.py` | CRUD + 状态 + 配额端点 |
-| `src/backend/bisheng/tenant/api/endpoints/tenant_users.py` | 租户用户管理端点 |
-| `src/backend/bisheng/tenant/api/endpoints/user_tenant.py` | 用户侧端点 |
-| `src/backend/bisheng/tenant/domain/__init__.py` | Domain 子包 |
-| `src/backend/bisheng/tenant/domain/schemas/__init__.py` | Schema 子包 |
-| `src/backend/bisheng/tenant/domain/schemas/tenant_schema.py` | Pydantic DTO |
-| `src/backend/bisheng/tenant/domain/services/__init__.py` | Service 子包 |
-| `src/backend/bisheng/tenant/domain/services/tenant_service.py` | 业务逻辑 |
+| `src/backend/doberman_agent/tenant/__init__.py` | 模块包 |
+| `src/backend/doberman_agent/tenant/api/__init__.py` | API 子包 |
+| `src/backend/doberman_agent/tenant/api/router.py` | 路由聚合 |
+| `src/backend/doberman_agent/tenant/api/endpoints/__init__.py` | 端点子包 |
+| `src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py` | CRUD + 状态 + 配额端点 |
+| `src/backend/doberman_agent/tenant/api/endpoints/tenant_users.py` | 租户用户管理端点 |
+| `src/backend/doberman_agent/tenant/api/endpoints/user_tenant.py` | 用户侧端点 |
+| `src/backend/doberman_agent/tenant/domain/__init__.py` | Domain 子包 |
+| `src/backend/doberman_agent/tenant/domain/schemas/__init__.py` | Schema 子包 |
+| `src/backend/doberman_agent/tenant/domain/schemas/tenant_schema.py` | Pydantic DTO |
+| `src/backend/doberman_agent/tenant/domain/services/__init__.py` | Service 子包 |
+| `src/backend/doberman_agent/tenant/domain/services/tenant_service.py` | 业务逻辑 |
 | `src/frontend/platform/src/pages/TenantPage/index.tsx` | 租户管理页面 |
 | `src/frontend/platform/src/pages/TenantPage/components/TenantList.tsx` | 列表组件 |
 | `src/frontend/platform/src/pages/TenantPage/components/CreateTenantDialog.tsx` | 创建/编辑弹窗 |
@@ -611,13 +611,13 @@ appConfig: {
 
 | 文件路径 | 改动说明 |
 |---------|---------|
-| `src/backend/bisheng/database/models/tenant.py` | 扩展 TenantDao/UserTenantDao 方法 |
-| `src/backend/bisheng/common/errcode/tenant.py` | 新增 20005-20009 错误码 |
-| `src/backend/bisheng/api/router.py` | 注册 tenant_router |
-| `src/backend/bisheng/user/domain/services/user.py` | user_login() 多租户分支 |
-| `src/backend/bisheng/user/domain/models/user.py` | UserRead 增加 tenant 字段 |
-| `src/backend/bisheng/utils/http_middleware.py` | 停用租户中间件拦截 |
-| `src/backend/bisheng/api/v1/endpoints.py` | get_env() 增加 multi_tenant_enabled |
+| `src/backend/doberman_agent/database/models/tenant.py` | 扩展 TenantDao/UserTenantDao 方法 |
+| `src/backend/doberman_agent/common/errcode/tenant.py` | 新增 20005-20009 错误码 |
+| `src/backend/doberman_agent/api/router.py` | 注册 tenant_router |
+| `src/backend/doberman_agent/user/domain/services/user.py` | user_login() 多租户分支 |
+| `src/backend/doberman_agent/user/domain/models/user.py` | UserRead 增加 tenant 字段 |
+| `src/backend/doberman_agent/utils/http_middleware.py` | 停用租户中间件拦截 |
+| `src/backend/doberman_agent/api/v1/endpoints.py` | get_env() 增加 multi_tenant_enabled |
 | `src/frontend/platform/src/pages/LoginPage/login.tsx` | 登录后租户选择逻辑 |
 | `src/frontend/platform/src/layout/MainLayout.tsx` | 侧边栏菜单 + Header 租户切换 |
 | `src/frontend/platform/src/routes/index.tsx` | 新增路由 |

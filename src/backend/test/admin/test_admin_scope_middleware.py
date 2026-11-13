@@ -25,7 +25,7 @@ import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     get_admin_scope_tenant_id,
     get_is_management_api,
 )
@@ -44,7 +44,7 @@ TENANT_VIEW_LIST_PATHS = (
     "/api/v1/workstation/app/uncategorized",
 )
 
-MIDDLEWARE_MOD = "bisheng.common.middleware.admin_scope"
+MIDDLEWARE_MOD = "doberman_agent.common.middleware.admin_scope"
 
 
 # ---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ class _FakeRedis:
 
 def _build_app():
     """Minimal app with AdminScopeMiddleware + a diagnostic echo route."""
-    from bisheng.common.middleware.admin_scope import AdminScopeMiddleware
+    from doberman_agent.common.middleware.admin_scope import AdminScopeMiddleware
 
     app = FastAPI()
     app.add_middleware(AdminScopeMiddleware)
@@ -169,7 +169,7 @@ class TestManagementApiDetection:
         ),
     )
     def test_management_configuration_still_uses_scope(self, path):
-        from bisheng.common.middleware.admin_scope import _is_management_api_path
+        from doberman_agent.common.middleware.admin_scope import _is_management_api_path
 
         assert _is_management_api_path(path)
 

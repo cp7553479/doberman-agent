@@ -70,7 +70,7 @@
 <!-- site-hide -->
 ## 落地（给实现窗口）
 
-**2026-08-25 已落地**：`@bisheng/ui` 导出 `Switch`（`src/components/Switch/Switch.tsx`），demo 页 `docs/components/switch.mdx`，侧栏已注册；关闭轨道新立语义 token `--switch-off-bg` / `--switch-off-bg-hover`（tokens.css + tailwind-preset，gray-4 / gray-5，暗色随灰阶自动翻转）。client 现状迁移仍待迁移窗口。下面是当时给实现窗口的口径，已按此实现：
+**2026-08-25 已落地**：`@doberman-agent/ui` 导出 `Switch`（`src/components/Switch/Switch.tsx`），demo 页 `docs/components/switch.mdx`，侧栏已注册；关闭轨道新立语义 token `--switch-off-bg` / `--switch-off-bg-hover`（tokens.css + tailwind-preset，gray-4 / gray-5，暗色随灰阶自动翻转）。client 现状迁移仍待迁移窗口。下面是当时给实现窗口的口径，已按此实现：
 
 1. cva `variants: { size }`（22×38 / 18×32，滑块 18 / 14，内边距 2px）；`checked` / `loading` / `disabled` 三个独立布尔位，loading 时强制不可拨；框内文字走 `checkedChildren` / `unCheckedChildren` 两插槽。
 2. 颜色全走 token，禁裸 hex：开启轨道 `bg-blue-500`（`--brand-*`，随主题）、hover 取品牌悬停档（与按钮 primary hover 同源）；关闭轨道取 gray-4、hover gray-5——**经 semantic 层消费**（token 页规定组件不直接吃 primitive 灰阶），fill 系没有同值档位就照色彩规范惯例新立语义位，别硬凑；滑块白色用固定 `--white`（轨道有色，滑块不随暗色翻转）。
@@ -91,5 +91,5 @@
 |---|---|---|
 | 2026-08-25 | **small 档升为 18×32**（设计师拍板；原 antd 16×28 弃用）：滑块 12 → 14 维持 2px 内边距规则，宽高比 ≈1.78 与默认档 ≈1.73 统一；§2 尺寸表、落地区第 1 条、头部调研来源注同步。spinner 仍 14 / 10 | 本次窗口 |
 | 2026-08-25 | **默认档收窄 22×44 → 22×38**（设计师看 demo 页实物嫌宽，点名 client 工具菜单开关 20×34 作比例参考，≈1.7:1 等比套到 22 高）：§2 尺寸表、落地区第 1 条、头部调研来源注同步；small 16×28 比例本就 ≈1.75，不动。带框内文字仍随文字加宽、最小宽不变 | 本次窗口 |
-| 2026-08-25 | **组件落地**：`@bisheng/ui` 新增 `Switch`（radix switch 基座；`loading` / `checkedChildren` / `unCheckedChildren` 齐备，small 档不渲染框内文字），关闭轨道新立 `--switch-off-bg(-hover)` 语义 token（gray-4 / gray-5），demo 页 `components/switch.mdx` + 侧栏注册。展示层规则未增未减未改 | 本次窗口 |
+| 2026-08-25 | **组件落地**：`@doberman-agent/ui` 新增 `Switch`（radix switch 基座；`loading` / `checkedChildren` / `unCheckedChildren` 齐备，small 档不渲染框内文字），关闭轨道新立 `--switch-off-bg(-hover)` 语义 token（gray-4 / gray-5），demo 页 `components/switch.mdx` + 侧栏注册。展示层规则未增未减未改 | 本次窗口 |
 | 2026-08-24 | 建档 v1：定位「独立设置、立即生效」+ label 三条铁律（描述开着的是什么 / 不写疑问句 / 破坏性动作不用开关）；尺寸两档 22×44 / 16×28（默认档高对齐正文行高 22）；框内文字可选、≤2 字、small 档禁用；状态六态——开启品牌色、禁用降 40% 不透明保留侧别、loading 锁拨、失败回弹 + 轻提示；移动端整行热区 ≥44px、small 升档。rspress 侧栏注册与 demo 页待实现窗口 | 待 committer 窗口提交 |

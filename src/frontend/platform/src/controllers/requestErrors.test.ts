@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request, { showApiError, captureAndAlertRequestErrorHoc, handleUiRequest } from './request';
-import { ApiError } from '@bisheng/api-client';
+import { ApiError } from '@doberman-agent/api-client';
 
 const notices = vi.hoisted(() => vi.fn());
-vi.mock('@bisheng/ui', () => ({ notification: { open: notices } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: notices } }));
 const adapter = request.defaults.adapter;
 afterEach(() => { request.defaults.adapter = adapter; notices.mockClear(); vi.restoreAllMocks(); });
 

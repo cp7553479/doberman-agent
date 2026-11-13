@@ -14,7 +14,7 @@ import {
 } from '~/hooks';
 import { cn } from '~/utils';
 import NavToggle from './NavToggle';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { Button } from '~/components/ui';
 import NewChat from './NewChat';
 

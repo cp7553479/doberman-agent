@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import request from './request';
 import { findPersonalSkillByImport } from './skillCenter';
 jest.mock('./request', () => ({ __esModule: true, default: { get: jest.fn() } }));

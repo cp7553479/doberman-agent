@@ -1,11 +1,11 @@
 // @ts-strict-ignore
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input, Textarea } from '@bisheng/ui';
+import { Button, Input, Textarea } from '@doberman-agent/ui';
 import AssistantSetting from "@/components/Pro/security/AssistantSetting";
 import { TitleIconBg } from "@/components/bs-comp/cardComponent";
 import KnowledgeSelect from "@/components/bs-comp/selectComponent/knowledge";
 import ToolsSheet from "@/components/bs-comp/sheets/ToolsSheet";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import {
 Accordion,
@@ -17,7 +17,7 @@ AccordionTrigger,
 import { InputList } from '@/components/bs-comp/formFields/InputList';
 import { locationContext } from "@/contexts/locationContext";
 import { useAssistantStore } from "@/store/assistantStore";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { CircleMinus } from "lucide-react";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
@@ -48,7 +48,7 @@ export default function Setting() {
           </AccordionTrigger>
           <AccordionContent className="py-2">
             <div className="mb-4 px-6">
-              <label htmlFor="model" className="bisheng-label">
+              <label htmlFor="model" className="doberman_agent-label">
                 {t("build.model")}
               </label>
               <ModelSelect
@@ -59,7 +59,7 @@ export default function Setting() {
               />
             </div>
             <div className="mb-4 px-6">
-              <label htmlFor="slider" className="bisheng-label">
+              <label htmlFor="slider" className="doberman_agent-label">
                 {t("build.temperature")}
               </label>
               <Temperature
@@ -70,7 +70,7 @@ export default function Setting() {
               ></Temperature>
             </div>
             <div className="mb-4 px-6">
-              <label htmlFor="slider" className="bisheng-label flex gap-1">
+              <label htmlFor="slider" className="doberman_agent-label flex gap-1">
                 {t("build.maxToken")}
                 <AppHint content={t("build.maxTokenTip")}></AppHint>
               </label>
@@ -85,20 +85,20 @@ export default function Setting() {
           </AccordionTrigger>
           <AccordionContent className="py-2">
             <div className="mb-4 px-6">
-              <label htmlFor="open" className="bisheng-label">
+              <label htmlFor="open" className="doberman_agent-label">
                 {t("build.openingStatement")}
               </label>
               <Textarea name="open" style={{ height: 56 }} placeholder={t("build.assistantMessageFormat")} value={assistantState.guide_word} onChange={(e) =>
                   dispatchAssistant("setting", { guide_word: e.target.value })
                 } textareaClassName={"mt-2 min-h-[34px]"}></Textarea>
               {assistantState.guide_word.length > 1000 && (
-                <p className="bisheng-tip mt-1">
+                <p className="doberman_agent-tip mt-1">
                   {t("build.maximumPromptLength")}
                 </p>
               )}
             </div>
             <div className="mb-4 px-6">
-              <label htmlFor="open" className="bisheng-label flex gap-1">
+              <label htmlFor="open" className="doberman_agent-label flex gap-1">
                 {t("build.guidingQuestions")}
                 <AppHint content={t("build.recommendQuestionsForUsers")} />
               </label>
@@ -132,7 +132,7 @@ export default function Setting() {
               </PopoverTrigger>
               <PopoverContent className="w-[560px]">
                   <div className="flex justify-between">
-                      <label htmlFor="model" className="bisheng-label">{t('build.callingMethod')}</label>
+                      <label htmlFor="model" className="doberman_agent-label">{t('build.callingMethod')}</label>
                       <div>
                           <RadioCard checked={false} title={t('build.autoCall')} description={t('build.autoCallDescription')} calssName="mb-4"></RadioCard>
                           <RadioCard checked title={t('build.onDemandCall')} description={t('build.onDemandCallDescription')} calssName="mt-4"></RadioCard>
@@ -183,7 +183,7 @@ export default function Setting() {
               {/* F041: 用户知识库权限校验 toggle — default OFF, gates knowledge-space
                   retrieval by the runtime user's view_file (ON) vs the config author's (OFF). */}
               <div className="mt-4 flex items-center gap-2">
-                <label className="bisheng-label flex items-center gap-1">
+                <label className="doberman_agent-label flex items-center gap-1">
                   {t("build.userAuthVerification")}
                   <AppHint content={t("build.userAuthVerificationTips")} />
                 </label>

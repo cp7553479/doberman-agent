@@ -1,4 +1,4 @@
-import { Slider } from '@bisheng/ui';
+import { Slider } from '@doberman-agent/ui';
 import { useTranslation } from 'react-i18next';
 
 interface TemperatureProps {

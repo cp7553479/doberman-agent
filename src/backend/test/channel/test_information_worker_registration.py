@@ -1,14 +1,14 @@
 import importlib
 
-from bisheng.core.config.settings import CeleryConf, IntelligenceCenterConf
+from doberman_agent.core.config.settings import CeleryConf, IntelligenceCenterConf
 
 INFORMATION_TASKS = {
-    "dispatch_information_subscription_reconcile": "bisheng.worker.information.reconcile",
-    "reconcile_information_subscriptions": "bisheng.worker.information.reconcile",
-    "dispatch_information_article_poll": "bisheng.worker.information.article",
-    "sync_information_articles": "bisheng.worker.information.article",
-    "route_new_information_articles": "bisheng.worker.information.knowledge_delivery",
-    "deliver_information_articles_to_config": "bisheng.worker.information.knowledge_delivery",
+    "dispatch_information_subscription_reconcile": "doberman_agent.worker.information.reconcile",
+    "reconcile_information_subscriptions": "doberman_agent.worker.information.reconcile",
+    "dispatch_information_article_poll": "doberman_agent.worker.information.article",
+    "sync_information_articles": "doberman_agent.worker.information.article",
+    "route_new_information_articles": "doberman_agent.worker.information.knowledge_delivery",
+    "deliver_information_articles_to_config": "doberman_agent.worker.information.knowledge_delivery",
 }
 
 
@@ -30,7 +30,7 @@ def test_information_tasks_have_no_dedicated_queue_route():
 
 
 def test_six_information_tasks_are_registered_without_old_task_names():
-    worker = importlib.import_module("bisheng.worker")
+    worker = importlib.import_module("doberman_agent.worker")
 
     for task_name, module_name in INFORMATION_TASKS.items():
         task = getattr(worker, task_name)

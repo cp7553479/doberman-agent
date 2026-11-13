@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { getArticlesApi } from '~/api/channels';
 import { ArticleList } from './ArticleList';
 const localize = (key: string) => key;

@@ -8,19 +8,19 @@ from unittest.mock import AsyncMock
 import pytest
 from minio.error import S3Error
 
-from bisheng.linsight.domain import utils
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.services.workspace_backend import WorkspaceBackend, seed_workspace_from_previous
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao
-from bisheng.tool.domain.services.executor import ToolExecutor
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent.linsight.domain import utils
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.services.workspace_backend import WorkspaceBackend, seed_workspace_from_previous
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao
+from doberman_agent.tool.domain.services.executor import ToolExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 
 class MemoryStorage:
     """Persist object bytes independently of either turn's disposable directory."""
 
-    bucket = "bisheng"
+    bucket = "doberman_agent"
 
     def __init__(self):
         self.objects = {}
@@ -54,7 +54,7 @@ class MemoryStorage:
 async def test_local_files_survive_cleanup_and_followup(monkeypatch, tmp_path, selected):
     storage = MemoryStorage()
     category = SimpleNamespace(id=6, tenant_id=7, extra={"type": "local"})
-    row = GptsTools(id=6, type=6, tool_key="bisheng_code_interpreter")
+    row = GptsTools(id=6, type=6, tool_key="doberman_agent_code_interpreter")
     monkeypatch.setattr(GptsToolsDao, "aget_tool_by_tool_key", AsyncMock(return_value=row))
     monkeypatch.setattr(GptsToolsDao, "aget_one_tool_type", AsyncMock(return_value=category))
     monkeypatch.setattr(ToolExecutor, "_ensure_use_permission_async", AsyncMock())
@@ -67,7 +67,7 @@ async def test_local_files_survive_cleanup_and_followup(monkeypatch, tmp_path, s
     # Font cache rewriting is unrelated to these plain Python/CSV scripts.
     monkeypatch.setattr(LocalExecutor, "insert_set_font_code", staticmethod(lambda code: code))
     monkeypatch.setattr(utils, "get_minio_storage", AsyncMock(return_value=storage))
-    monkeypatch.setattr("bisheng.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=storage))
+    monkeypatch.setattr("doberman_agent.linsight.domain.task_exec.get_minio_storage", AsyncMock(return_value=storage))
 
     async def prepare(svid):
         folder = tmp_path / svid

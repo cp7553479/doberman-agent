@@ -11,7 +11,7 @@ def test_only_explicit_online_download_may_use_network_and_versions_are_never_ch
 
     original = b'{"dependencies":{"fixture":"1.2.3"}}'
     source = package(
-        tmp_path, "input", {"bisheng-app.yaml": b"runtime: node20", "package.json": original, "main.js": b""}
+        tmp_path, "input", {"doberman-agent-app.yaml": b"runtime: node20", "package.json": original, "main.js": b""}
     )
     phases = []
 

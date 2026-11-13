@@ -4,7 +4,7 @@
 > **关联 Spec**：[spec.md](./spec.md)
 > **版本契约**：[release-contract.md](../release-contract.md)
 > **最后更新**：2026-08-07
-> **界面参考**：[Figma · BISHENG · node 13051:92477](https://www.figma.com/design/FNt6RR3OZtaJQH6x8enmaZ/BISHENG?node-id=13051-92477&m=dev)
+> **界面参考**：Figma · doberman-agent · node 13051:92477
 
 ## 1. 目标与非目标
 
@@ -82,8 +82,8 @@
 ### D6. Figma 作为结构与交互基准，不复制生成代码
 
 - **备选**：直接采用 Figma 生成代码和原始样式值；在现有 design system 上按结构重建。
-- **选择**：复用 `@bisheng/ui`、项目 token、既有表单控件、图标与 i18n；不引入原始 hex、外部 UI 库或 Figma 生成代码。
-- **原因**：client 强制使用 `@bisheng/ui` 与主题 token；复制生成代码会绕过品牌主题、i18n 和移动端排版规则。
+- **选择**：复用 `@doberman-agent/ui`、项目 token、既有表单控件、图标与 i18n；不引入原始 hex、外部 UI 库或 Figma 生成代码。
+- **原因**：client 强制使用 `@doberman-agent/ui` 与主题 token；复制生成代码会绕过品牌主题、i18n 和移动端排版规则。
 - **重议条件**：设计系统正式新增对应组件并替换现有组件。
 
 ## 4. 详细设计
@@ -291,7 +291,7 @@ relation-model 配置读取从 endpoint 模块拆到 `permission/domain/services
 | `PermissionService` / OpenFGA | `ResourceAuthorizationService` 和 F026 下层依赖 + 第三方服务 | OpenFGA 不可用时 owner/初始授权按现有失败队列和错误码处理，不能宣称跨存储原子成功 |
 | relation-model 配置 | Config + FineGrainedPermissionService | 管理 permission ID 或 grant_tier 变化会改变权限区显隐和可授予模型，前端不得缓存角色名映射 |
 | `KnowledgeSpaceService` / `ChannelService` create/update | 内部资源 Service | 返回 ID 类型不同；私密清理语义若变化必须重新评审 D5 |
-| Bisheng Information | 频道创建的外部 HTTP 副作用 | 授权重试不得重放频道创建和信息源订阅 |
+| doberman-agent Information | 频道创建的外部 HTTP 副作用 | 授权重试不得重放频道创建和信息源订阅 |
 | `client/api/request.ts` | client 响应拦截器 | 403/业务错误管线变化会影响失权提示，页面不能自行复制处理分支 |
 
 上述归属和依赖登记到版本级 `release-contract.md`；本 Feature 只编排 owner service，不接管其领域写行为。
@@ -307,7 +307,7 @@ relation-model 配置读取从 endpoint 模块拆到 `permission/domain/services
 
 ### 7.2 手动验证
 
-1. 启动 API：`cd src/backend && uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log`；启动 client：`cd src/frontend/client && pnpm dev`。
+1. 启动 API：`cd src/backend && uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log`；启动 client：`cd src/frontend/client && pnpm dev`。
 2. 使用三类测试账号：A 具备资源创建+权限管理能力，B 仅 `edit_space`/频道编辑能力，C 只读；不在文档保存凭据。
 3. 访问 `/workspace/knowledge/create`、`/workspace/channel/create`；创建后访问对应 `/settings` 路由。A 可见权限区，B 只见可编辑业务字段，C 不见入口。
 4. 桌面端对照 Figma 检查知识空间单栏、频道双栏和固定底栏；浏览器宽度缩至 768px 以下检查单栏与完整能力。

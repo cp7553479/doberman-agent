@@ -280,7 +280,7 @@ export function getModelProviders(): Record<string, ConfigField[]> {
             key: "anthropic_api_url",
         },
     ],
-    bisheng_rt: [
+    doberman_agent_rt: [
         {
             label: "API Host",
             type: "text",
@@ -364,5 +364,5 @@ export function getModelProviders(): Record<string, ConfigField[]> {
 };
 }
 
-/** Providers the backend can serve rerank models for (backend: bisheng/llm/domain/llm/rerank.py). */
+/** Providers the backend can serve rerank models for (backend: doberman_agent/llm/domain/llm/rerank.py). */
 export const rerankProviders = ['openai', 'xinference', 'llamacpp', 'vllm', 'qwen', 'qianfan', 'silicon'];

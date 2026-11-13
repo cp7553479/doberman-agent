@@ -43,41 +43,41 @@ if _BACKEND_ROOT not in sys.path:
 from sqlalchemy import func, update  # noqa: E402
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.core.openfga.authorization_model_f048 import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.openfga.authorization_model_f048 import (  # noqa: E402
     MODEL_VERSION,
     authorization_model_checksum,
     get_authorization_model_f048,
 )
-from bisheng.core.openfga.client import FGAClient  # noqa: E402
-from bisheng.core.openfga.discovery import (  # noqa: E402
+from doberman_agent.core.openfga.client import FGAClient  # noqa: E402
+from doberman_agent.core.openfga.discovery import (  # noqa: E402
     discover_openfga_runtime,
     normalize_authorization_model,
 )
-from bisheng.core.openfga.runtime_heartbeat import list_runtime_heartbeats  # noqa: E402
-from bisheng.permission.application.catalog_api import (  # noqa: E402
+from doberman_agent.core.openfga.runtime_heartbeat import list_runtime_heartbeats  # noqa: E402
+from doberman_agent.permission.application.catalog_api import (  # noqa: E402
     OpenFGACatalogProjector,
     SqlCatalogImpact,
     SqlCatalogState,
 )
-from bisheng.permission.application.sql_runtime import RedisConsistencyMarker  # noqa: E402
-from bisheng.permission.domain.models import (  # noqa: E402
+from doberman_agent.permission.application.sql_runtime import RedisConsistencyMarker  # noqa: E402
+from doberman_agent.permission.domain.models import (  # noqa: E402
     AuthorizationModelRelease,
     PermissionCatalogRelease,
     PermissionProjectionOperation,
 )
-from bisheng.permission.domain.services.catalog_service import (  # noqa: E402
+from doberman_agent.permission.domain.services.catalog_service import (  # noqa: E402
     CatalogDraftBuildInput,
     CatalogService,
 )
-from bisheng.permission.domain.services.model_policy import CustomModelSelection  # noqa: E402
-from bisheng.permission.migration.f048_runtime_storage import (  # noqa: E402
+from doberman_agent.permission.domain.services.model_policy import CustomModelSelection  # noqa: E402
+from doberman_agent.permission.migration.f048_runtime_storage import (  # noqa: E402
     OpenFGAMigrationModelPublisher,
 )
 from scripts.reconcile_f048_visible_projection import (  # noqa: E402

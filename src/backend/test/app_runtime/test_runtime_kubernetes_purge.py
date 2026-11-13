@@ -2,9 +2,9 @@
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 from test.app_runtime.test_runtime_kubernetes_repository import NOW
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import (

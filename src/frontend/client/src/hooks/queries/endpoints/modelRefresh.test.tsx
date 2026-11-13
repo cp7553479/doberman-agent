@@ -10,7 +10,7 @@ jest.mock('~/api', () => ({ getKnowledgeStatusApi: jest.fn() }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/types/chat', () => {
   const actual = jest.requireActual('~/types/chat');
-  return { ...actual, dataService: { ...actual.dataService, getBishengConfig: jest.fn() } };
+  return { ...actual, dataService: { ...actual.dataService, getDobermanAgentConfig: jest.fn() } };
 });
 
 let client: QueryClient;
@@ -39,7 +39,7 @@ const response = (displayName: string): BsConfig => ({
 });
 
 test('refreshes a cleared alias on focus within the old five-minute cache and preserves selection', async () => {
-  const fetch = jest.mocked(dataService.getBishengConfig);
+  const fetch = jest.mocked(dataService.getDobermanAgentConfig);
   fetch.mockImplementationOnce(async () => response('Previous'))
     .mockImplementationOnce(async () => response(''))
     .mockImplementationOnce(async () => response('Renamed'));
@@ -55,7 +55,7 @@ test('refreshes a cleared alias on focus within the old five-minute cache and pr
 });
 
 test('keeps the current label on a failed read and applies the next successful empty alias', async () => {
-  const fetch = jest.mocked(dataService.getBishengConfig);
+  const fetch = jest.mocked(dataService.getDobermanAgentConfig);
   fetch.mockImplementationOnce(async () => response('Previous'))
     .mockRejectedValueOnce(new Error('offline'))
     .mockImplementationOnce(async () => response('   '));
@@ -63,7 +63,7 @@ test('keeps the current label on a failed read and applies the next successful e
   mount();
   await screen.findByText('Previous');
   await act(async () => { focusManager.setFocused(false); focusManager.setFocused(true); });
-  await waitFor(() => expect(client.getQueryState([QueryKeys.bishengConfig])?.status).toBe('error'));
+  await waitFor(() => expect(client.getQueryState([QueryKeys.dobermanAgentConfig])?.status).toBe('error'));
   expect(screen.getByText('Previous')).toBeInTheDocument();
   await act(async () => { focusManager.setFocused(false); focusManager.setFocused(true); });
   await screen.findByText('qwen-max');
@@ -73,7 +73,7 @@ test('keeps the current label on a failed read and applies the next successful e
 
 test('refreshes the selected label after 30 seconds while the same conversation remains mounted', async () => {
   jest.useFakeTimers();
-  const fetch = jest.mocked(dataService.getBishengConfig);
+  const fetch = jest.mocked(dataService.getDobermanAgentConfig);
   fetch.mockImplementationOnce(async () => response('Previous'))
     .mockImplementation(async () => response(''));
   const { onChange } = mount();

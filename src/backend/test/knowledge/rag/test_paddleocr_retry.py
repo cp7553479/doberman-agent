@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from bisheng.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
-from bisheng.utils.exceptions import EtlException
+from doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr import PaddleOcrLoader
+from doberman_agent.utils.exceptions import EtlException
 
 
 def _loader(**kwargs) -> PaddleOcrLoader:
@@ -34,9 +34,9 @@ def test_sync_retries_queue_full_response_then_succeeds() -> None:
     loader = _loader(max_retries=2)
 
     with patch(
-        "bisheng.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", side_effect=[queue_full, success]
+        "doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", side_effect=[queue_full, success]
     ) as post:
-        with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep:
+        with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep:
             result = loader._call_api_sync("encoded")
 
     assert result == {"layoutParsingResults": []}
@@ -48,7 +48,7 @@ def test_sync_does_not_retry_non_transient_response() -> None:
     bad_request = _response(400, {"errorCode": 40001, "errorMsg": "bad request"}, text="bad request")
     loader = _loader(max_retries=3)
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", return_value=bad_request) as post:
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", return_value=bad_request) as post:
         with pytest.raises(EtlException, match="status=400"):
             loader._call_api_sync("encoded")
 
@@ -60,10 +60,10 @@ def test_sync_stops_after_configured_retries() -> None:
     loader = _loader(max_retries=1)
 
     with patch(
-        "bisheng.knowledge.rag.pipeline.loader.paddle_ocr.requests.post",
+        "doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.requests.post",
         side_effect=[queue_full, queue_full],
     ) as post:
-        with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep:
+        with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep:
             with pytest.raises(EtlException, match="status=503"):
                 loader._call_api_sync("encoded")
 
@@ -81,8 +81,8 @@ async def test_async_retries_rate_limit_business_code_then_succeeds() -> None:
     client_context.__aexit__ = AsyncMock(return_value=None)
     loader = _loader(max_retries=2)
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
-        with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.asyncio.sleep", new_callable=AsyncMock) as sleep:
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
+        with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.asyncio.sleep", new_callable=AsyncMock) as sleep:
             result = await loader._call_api_async("encoded")
 
     assert result == {"layoutParsingResults": []}
@@ -109,7 +109,7 @@ async def test_async_preserves_provider_errors_containing_timeout(
     client_context.__aenter__ = AsyncMock(return_value=client)
     client_context.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
         with pytest.raises(EtlException, match=expected_error):
             await _loader()._call_api_async("encoded")
 
@@ -123,7 +123,7 @@ async def test_async_preserves_client_timeout_handling() -> None:
     client_context.__aenter__ = AsyncMock(return_value=client)
     client_context.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
+    with patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context):
         with pytest.raises(EtlException, match="PaddleOCR API timeout"):
             await _loader()._call_api_async("encoded")
 
@@ -133,8 +133,8 @@ async def test_async_preserves_client_timeout_handling() -> None:
 def test_sync_zero_retries_keeps_single_attempt() -> None:
     response = _response(503, {"errorCode": 10010, "errorMsg": "queue full"})
     with (
-        patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", return_value=response) as post,
-        patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep,
+        patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.requests.post", return_value=response) as post,
+        patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.time.sleep") as sleep,
         pytest.raises(EtlException, match="status=503"),
     ):
         _loader(max_retries=0)._call_api_sync("encoded")
@@ -149,8 +149,8 @@ async def test_async_stops_after_retries_with_exponential_backoff() -> None:
     client_context.__aenter__ = AsyncMock(return_value=client)
     client_context.__aexit__ = AsyncMock(return_value=None)
     with (
-        patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context),
-        patch("bisheng.knowledge.rag.pipeline.loader.paddle_ocr.asyncio.sleep", new_callable=AsyncMock) as sleep,
+        patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.httpx.AsyncClient", return_value=client_context),
+        patch("doberman_agent.knowledge.rag.pipeline.loader.paddle_ocr.asyncio.sleep", new_callable=AsyncMock) as sleep,
         pytest.raises(EtlException, match="rate limited"),
     ):
         await _loader(max_retries=3)._call_api_async("encoded")

@@ -62,16 +62,16 @@ T05 (ac-verification.md + 手工 QA + 本地/远程回归)
 ### T01 — 错误码 + CLAUDE.md + Enum 扩展 + spec 微调
 
 **文件（新建）**:
-- `src/backend/bisheng/common/errcode/resource_owner_transfer.py` — 6 个错误码 `19601-19606`
+- `src/backend/doberman_agent/common/errcode/resource_owner_transfer.py` — 6 个错误码 `19601-19606`
 
 **文件（修改）**:
-- `src/backend/bisheng/tenant/domain/constants.py` — `TenantAuditAction` enum 追加 `RESOURCE_TRANSFER_OWNER = 'resource.transfer_owner'`
+- `src/backend/doberman_agent/tenant/domain/constants.py` — `TenantAuditAction` enum 追加 `RESOURCE_TRANSFER_OWNER = 'resource.transfer_owner'`
 - `CLAUDE.md` — "错误码模块编码"清单在 `195=tenant_sharing` 后插入 `196=resource_owner_transfer`（已占位于 release-contract 表 3，但 CLAUDE.md 全局清单未同步）
 - `features/v2.5.1/018-resource-owner-transfer/spec.md` — §5 `SUPPORTED_TYPES` 去掉 `dashboard`；文末补脚注说明延后原因；§1-§8 中所有 `dashboard` 引用改为脚注形式
 
 **错误码定义**（模板对齐 F011 `tenant_tree.py` 风格）:
 ```python
-# src/backend/bisheng/common/errcode/resource_owner_transfer.py
+# src/backend/doberman_agent/common/errcode/resource_owner_transfer.py
 from .base import BaseErrorCode
 
 # F018 resource owner transfer module, code: 196 (v2.5.1, spec §9)
@@ -110,7 +110,7 @@ class ResourceTransferSelfError(BaseErrorCode):
 ### T02 — ResourceTypeRegistry（7 类资源元数据注册表）
 
 **文件（新建）**:
-- `src/backend/bisheng/tenant/domain/services/resource_type_registry.py`
+- `src/backend/doberman_agent/tenant/domain/services/resource_type_registry.py`
 - `src/backend/test/test_resource_type_registry.py`
 
 **逻辑**:
@@ -156,7 +156,7 @@ def get_meta(resource_type: str) -> ResourceTypeMeta: ...
 ### T03 — ResourceOwnershipService + Service 单元测试
 
 **文件（新建）**:
-- `src/backend/bisheng/tenant/domain/services/resource_ownership_service.py`
+- `src/backend/doberman_agent/tenant/domain/services/resource_ownership_service.py`
 - `src/backend/test/test_resource_ownership_service.py`
 
 **逻辑**:
@@ -369,12 +369,12 @@ class ResourceOwnershipService:
 ### T04 — API endpoints + DTO + 路由注册 + 集成测试
 
 **文件（新建）**:
-- `src/backend/bisheng/tenant/api/schemas/transfer_schema.py`
-- `src/backend/bisheng/tenant/api/endpoints/resource_owner_transfer.py`
+- `src/backend/doberman_agent/tenant/api/schemas/transfer_schema.py`
+- `src/backend/doberman_agent/tenant/api/endpoints/resource_owner_transfer.py`
 - `src/backend/test/test_resource_owner_transfer_api.py`
 
 **文件（修改）**:
-- `src/backend/bisheng/tenant/api/router.py` — 在 `include_router(tenant_mount.router)` 后追加 `include_router(resource_owner_transfer.router)`
+- `src/backend/doberman_agent/tenant/api/router.py` — 在 `include_router(tenant_mount.router)` 后追加 `include_router(resource_owner_transfer.router)`
 
 **DTO**:
 ```python
@@ -469,12 +469,12 @@ async def list_pending_transfer(
 - 跑全量回归：
   ```bash
   # 远程 114 服务器 via rsync → ssh
-  ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && \
+  ssh root@192.168.106.114 "cd /opt/doberman-agent/src/backend && \
     .venv/bin/pytest test/test_resource_type_registry.py \
                      test/test_resource_ownership_service.py \
                      test/test_resource_owner_transfer_api.py -v"
   # 全量回归
-  ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && .venv/bin/pytest test/ -q"
+  ssh root@192.168.106.114 "cd /opt/doberman-agent/src/backend && .venv/bin/pytest test/ -q"
   ```
 
 **覆盖 AC**: 全部 13 条（AC-01~10 + AC-08b/c/d）

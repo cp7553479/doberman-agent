@@ -5,8 +5,8 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from bisheng.dsh.domain.schemas.contracts import DshEnabledConfig
-from bisheng.dsh.domain.schemas.model_audit_context import AUDIT_FIELDS, parse_audit_context
+from doberman_agent.dsh.domain.schemas.contracts import DshEnabledConfig
+from doberman_agent.dsh.domain.schemas.model_audit_context import AUDIT_FIELDS, parse_audit_context
 
 
 @pytest.mark.parametrize("raw", [None, [], "", 1, True])

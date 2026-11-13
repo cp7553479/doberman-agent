@@ -16,18 +16,18 @@ import re
 import subprocess
 from pathlib import Path
 
-_BISHENG = Path(__file__).resolve().parents[2] / "bisheng"
+_DOBERMAN_AGENT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 def _grep_count(pattern: str, *paths: str, extra_args: list[str] | None = None) -> int:
-    """Count grep hits across ``paths`` (relative to ``bisheng/``).
+    """Count grep hits across ``paths`` (relative to ``doberman_agent/``).
 
     Uses POSIX-extended regex (``-E``). Returns 0 when grep finds nothing.
     """
     cmd = ["grep", "-rE", pattern]
     if extra_args:
         cmd.extend(extra_args)
-    cmd.extend(str(_BISHENG / p) for p in paths)
+    cmd.extend(str(_DOBERMAN_AGENT / p) for p in paths)
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode == 1:  # 1 = no matches, normal
         return 0
@@ -43,7 +43,7 @@ def _grep_count(pattern: str, *paths: str, extra_args: list[str] | None = None) 
 def test_no_callers_of_acount_user_knowledge():
     # The DAO method definition itself is allowed; only call sites are forbidden.
     proc = subprocess.run(
-        ["grep", "-rnE", r"acount_user_knowledge\(", str(_BISHENG)],
+        ["grep", "-rnE", r"acount_user_knowledge\(", str(_DOBERMAN_AGENT)],
         capture_output=True,
         text=True,
     )
@@ -62,7 +62,7 @@ def test_no_callers_of_acount_user_knowledge():
 
 def test_aget_all_apps_no_count_statement():
     """Scoped to the body of FlowDao.aget_all_apps via source-text extraction."""
-    src = (_BISHENG / "database" / "models" / "flow.py").read_text()
+    src = (_DOBERMAN_AGENT / "database" / "models" / "flow.py").read_text()
     # Slice from "async def aget_all_apps" to the next top-level def / @classmethod.
     m = re.search(r"async def aget_all_apps\b.*?(?=\n    @classmethod|\nclass )", src, re.DOTALL)
     assert m, "aget_all_apps not found"
@@ -83,7 +83,7 @@ def test_no_callers_pass_page_to_async_list_children():
         [
             "grep", "-rnE", "-z",
             r"async_list_children\([^)]*\bpage=",
-            str(_BISHENG),
+            str(_DOBERMAN_AGENT),
         ],
         capture_output=True,
         text=True,
@@ -98,7 +98,7 @@ def test_no_callers_pass_page_to_async_list_children():
 
 
 def test_scan_visible_child_items_has_cursor_loop_invariants():
-    src = (_BISHENG / "knowledge" / "domain" / "services" / "knowledge_space_service.py").read_text()
+    src = (_DOBERMAN_AGENT / "knowledge" / "domain" / "services" / "knowledge_space_service.py").read_text()
     # Function header → next def-at-same-indent.
     m = re.search(
         r"async def _scan_visible_child_items\b.*?(?=\n    async def |\n    def |\n    @classmethod|\nclass )",
@@ -120,7 +120,7 @@ def test_scan_visible_child_items_has_cursor_loop_invariants():
 
 
 def test_aget_department_still_uses_member_count():
-    src = (_BISHENG / "department" / "domain" / "services" / "department_service.py").read_text()
+    src = (_DOBERMAN_AGENT / "department" / "domain" / "services" / "department_service.py").read_text()
     m = re.search(
         r"async def aget_department\b.*?(?=\n    async def |\n    def |\n    @classmethod|\nclass )",
         src,

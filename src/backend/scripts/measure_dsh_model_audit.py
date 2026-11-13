@@ -110,7 +110,7 @@ async def run(args):
                         "/api/v1/dsh/chat/completions",
                         headers=user_headers,
                         json={
-                            "model": "bisheng:42",
+                            "model": "doberman_agent:42",
                             "stream": True,
                             "messages": [{"role": "user", "content": "synthetic-" + "x" * args.prompt_bytes}],
                             "audit_context": {"conversation_id": "measure-" + str(uuid4()), "request_kind": "chat"},

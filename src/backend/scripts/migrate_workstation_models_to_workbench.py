@@ -22,10 +22,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from bisheng.common.models.config import Config, ConfigDao, ConfigKeyEnum
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.database.models.tenant import ROOT_TENANT_ID
-from bisheng.llm.domain.models.tenant_system_model_config import TenantSystemModelConfigDao
+from doberman_agent.common.models.config import Config, ConfigDao, ConfigKeyEnum
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID
+from doberman_agent.llm.domain.models.tenant_system_model_config import TenantSystemModelConfigDao
 
 
 def _parse_json(value: str | None, *, default: Any) -> Any:

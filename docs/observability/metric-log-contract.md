@@ -1,4 +1,4 @@
-# BiSheng 指标日志契约（BS_METRIC）
+# doberman-agent 指标日志契约（BS_METRIC）
 
 > 给**监控团队**的解析依据。后端各进程（web / Celery / Linsight worker）向标准日志输出结构化行，marker 为 `BS_METRIC`，由日志管线（ELK / Loki / ES）采集并聚合成指标。后端**只打原始测量**；P95 / QPS / 成功率等聚合全部在监控层完成。
 >
@@ -60,19 +60,19 @@ BS_METRIC domain=eplus_notify result=ok http_status=200 biz_code=0 elapsed_ms=88
 
 DB QPS（5 分钟速率）：
 ```logql
-sum(rate({app="bisheng"} |= "BS_METRIC domain=db_query_agg" | logfmt | unwrap count [5m]))
+sum(rate({app="doberman-agent"} |= "BS_METRIC domain=db_query_agg" | logfmt | unwrap count [5m]))
 ```
 
 存储成功率（put，排除 excluded）：
 ```logql
-sum(count_over_time({app="bisheng"} |= "BS_METRIC domain=obj_storage" | logfmt | op="put" | result="ok" [5m]))
+sum(count_over_time({app="doberman-agent"} |= "BS_METRIC domain=obj_storage" | logfmt | op="put" | result="ok" [5m]))
 /
-sum(count_over_time({app="bisheng"} |= "BS_METRIC domain=obj_storage" | logfmt | op="put" | result=~"ok|error" [5m]))
+sum(count_over_time({app="doberman-agent"} |= "BS_METRIC domain=obj_storage" | logfmt | op="put" | result=~"ok|error" [5m]))
 ```
 
 模型 TTFT P95：
 ```logql
-quantile_over_time(0.95, {app="bisheng"} |= "BS_METRIC domain=model_invoke" | logfmt | unwrap ttft_ms [5m])
+quantile_over_time(0.95, {app="doberman-agent"} |= "BS_METRIC domain=model_invoke" | logfmt | unwrap ttft_ms [5m])
 ```
 
 > DB 查询 P95 需对 `le_*` 桶跨进程求和再做 histogram_quantile；若管线支持，把 `db_query_agg` 的桶转成 Prometheus histogram 系列（每个 `le_x` 一条）后用 `histogram_quantile(0.95, sum by (le)(...))`。

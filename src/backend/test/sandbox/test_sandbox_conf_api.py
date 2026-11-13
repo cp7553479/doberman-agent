@@ -7,10 +7,10 @@ import asyncio
 import pytest
 from fastapi.routing import APIRoute
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.tool.api import tool as tool_api
-from bisheng.tool.domain.services.sandbox_conf_service import SandboxConfService
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.tool.api import tool as tool_api
+from doberman_agent.tool.domain.services.sandbox_conf_service import SandboxConfService
 
 
 def _routes() -> dict[str, set[str]]:
@@ -38,7 +38,7 @@ def test_non_super_is_rejected_and_does_not_write(monkeypatch: pytest.MonkeyPatc
     async def insert(*args, **kwargs):
         writes.append(args)
 
-    monkeypatch.setattr("bisheng.common.models.config.ConfigDao.insert_or_update_config", insert)
+    monkeypatch.setattr("doberman_agent.common.models.config.ConfigDao.insert_or_update_config", insert)
     user = _user(False)
     body = tool_api.SandboxEndpointBody(endpoints=["http://h:8080"], token="x")
     with pytest.raises(UnAuthorizedError):

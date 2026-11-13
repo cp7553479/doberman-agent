@@ -4,8 +4,8 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.linsight.api.endpoints import linsight as endpoint
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
+from doberman_agent.linsight.api.endpoints import linsight as endpoint
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion, SessionVersionStatusEnum
 
 
 async def test_showcase_result_never_carries_api_meta(monkeypatch):

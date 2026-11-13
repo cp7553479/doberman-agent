@@ -19,7 +19,7 @@ import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.dependencies.user_deps import UserPayload
 
 
 @pytest.fixture()
@@ -46,7 +46,7 @@ def child_admin_payload():
 
 def _build_app(login_user):
     """Build the smallest app that contains the two F011 routers."""
-    from bisheng.tenant.api.endpoints import tenant_crud, tenant_mount
+    from doberman_agent.tenant.api.endpoints import tenant_crud, tenant_mount
 
     app = FastAPI()
     app.include_router(tenant_crud.router, prefix='/api/v1/tenants')
@@ -79,7 +79,7 @@ class TestMountTenantEndpoint:
         }
 
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.mount_child',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.mount_child',
             new_callable=AsyncMock, return_value=fake_tenant,
         ):
             resp = client.post(
@@ -93,13 +93,13 @@ class TestMountTenantEndpoint:
     def test_post_mount_tenant_nested_returns_400_22001(
         self, super_admin_payload,
     ):
-        from bisheng.common.errcode.tenant_tree import (
+        from doberman_agent.common.errcode.tenant_tree import (
             TenantTreeNestingForbiddenError,
         )
         app = _build_app(super_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.mount_child',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.mount_child',
             new_callable=AsyncMock,
             side_effect=TenantTreeNestingForbiddenError(),
         ):
@@ -115,7 +115,7 @@ class TestMountTenantEndpoint:
         app = _build_app(super_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.unmount_child',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.unmount_child',
             new_callable=AsyncMock,
             return_value={'tenant_id': 2, 'migrated_counts': {'flow': 3}},
         ):
@@ -131,7 +131,7 @@ class TestMountTenantEndpoint:
         app = _build_app(super_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.unmount_child',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.unmount_child',
             new_callable=AsyncMock,
             return_value={'tenant_id': 2, 'migrated_counts': {}},
         ):
@@ -173,7 +173,7 @@ class TestRootProtectionHttp:
         app = _build_app(super_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_crud.TenantService.aupdate_tenant_status',
+            'doberman_agent.tenant.api.endpoints.tenant_crud.TenantService.aupdate_tenant_status',
             new_callable=AsyncMock,
             return_value={'id': 5, 'status': 'disabled'},
         ) as svc:
@@ -194,7 +194,7 @@ class TestMigrateFromRootEndpoint:
         app = _build_app(super_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
             new_callable=AsyncMock,
             return_value={'migrated': 2, 'failed': []},
         ):
@@ -211,13 +211,13 @@ class TestMigrateFromRootEndpoint:
     def test_post_migrate_child_admin_returns_403_22010(
         self, child_admin_payload,
     ):
-        from bisheng.common.errcode.tenant_tree import (
+        from doberman_agent.common.errcode.tenant_tree import (
             TenantTreeMigratePermissionError,
         )
         app = _build_app(child_admin_payload)
         client = TestClient(app)
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
             new_callable=AsyncMock,
             side_effect=TenantTreeMigratePermissionError(),
         ):
@@ -236,7 +236,7 @@ class TestMigrateFromRootEndpoint:
         client = TestClient(app)
         failed = [{'resource_id': 101, 'reason': '22011: wrong source tenant_id'}]
         with patch(
-            'bisheng.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
+            'doberman_agent.tenant.api.endpoints.tenant_mount.TenantMountService.migrate_resources_from_root',
             new_callable=AsyncMock,
             return_value={'migrated': 2, 'failed': failed},
         ):

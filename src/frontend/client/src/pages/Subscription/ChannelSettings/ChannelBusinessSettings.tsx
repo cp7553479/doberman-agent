@@ -1,4 +1,4 @@
-// bisheng-icons has no boxed plus; SquarePlus matches the sibling "add condition" button.
+// @doberman-agent/icons has no boxed plus; SquarePlus matches the sibling "add condition" button.
 import { SquarePlus } from "lucide-react";
 import type { ComponentProps } from "react";
 import { NotificationSeverity } from "~/common";
@@ -7,7 +7,7 @@ import {
   SettingsSwitchRow,
 } from "~/components/permission/UnifiedPermissionControls";
 import { Input } from "~/components/ui/Input";
-import { Textarea } from "@bisheng/ui";
+import { Textarea } from "@doberman-agent/ui";
 import { Label } from "~/components/ui/Label";
 import { useToastContext } from "~/Providers";
 import { getFullWidthLength, truncateByFullWidth } from "~/utils";

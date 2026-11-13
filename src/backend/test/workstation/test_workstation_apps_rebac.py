@@ -6,9 +6,9 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.api.services.workflow import CHAT_ENTRY_EXCLUDED_FLOW_TYPES
-from bisheng.database.models.flow import FlowStatus, FlowType
-from bisheng.workstation.api.endpoints import apps as apps_mod
+from doberman_agent.api.services.workflow import CHAT_ENTRY_EXCLUDED_FLOW_TYPES
+from doberman_agent.database.models.flow import FlowStatus, FlowType
+from doberman_agent.workstation.api.endpoints import apps as apps_mod
 
 
 class _LoginUser:

@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.domain import utils
+from doberman_agent.linsight.domain import utils
 
 
 class StubNodeManager:
@@ -33,9 +33,9 @@ class StubNodeManager:
 
 @pytest.fixture
 def sweep(monkeypatch):
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.NodeManager = StubNodeManager
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
     monkeypatch.setattr(type(utils.settings), "aget_all_config", AsyncMock(return_value={}))
     monkeypatch.setattr(utils.LinsightExecuteTaskDao, "batch_update_status_by_session_version_id", AsyncMock())
     monkeypatch.setattr(utils, "announce_stranded_session_failure", AsyncMock())

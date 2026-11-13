@@ -4,10 +4,10 @@ import json
 
 import fitz
 
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
-from bisheng.knowledge.rag.pipeline.loader.pdf import LocalPdfLoader
-from bisheng.knowledge.rag.pipeline.loader.utils.md_from_pdf import align_pdf_elements
-from bisheng.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.knowledge.rag.pipeline.loader.pdf import LocalPdfLoader
+from doberman_agent.knowledge.rag.pipeline.loader.utils.md_from_pdf import align_pdf_elements
+from doberman_agent.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
 
 
 def test_align_pdf_elements_covers_rewritten_image_and_text():

@@ -1,5 +1,5 @@
 import { useRef, type ReactNode, type RefObject } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { asRecord, displayText, sourceId } from '../core/normalizeHistory';
 import { splitMessageContent } from '../core/messageContent';
 import type { RunPresentation } from '../core/describeRun';

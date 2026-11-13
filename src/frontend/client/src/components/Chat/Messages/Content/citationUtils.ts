@@ -1,9 +1,9 @@
 import i18next from 'i18next';
-import { createCitationUtilities, createCitationResourceResolver } from '@bisheng/chat/citations';
+import { createCitationUtilities, createCitationResourceResolver } from '@doberman-agent/chat/citations';
 import type { ChatCitation } from '~/api/chatApi';
 import { getFilePathApi } from '~/api/chat/data-service';
 import { getCitationAccessScope } from '~/api/citationScope';
-export * from '@bisheng/chat/citations';
+export * from '@doberman-agent/chat/citations';
 const legacyKeys: Record<string,string> = {
  'shared:app_chat.page':'com_linsight_export_page', 'shared:app_chat.chunk':'com_linsight_export_chunk',
  'shared:app_chat.document_preview':'com_message.document_preview',

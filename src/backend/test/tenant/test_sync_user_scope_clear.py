@@ -18,7 +18,7 @@ import sys
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-SERVICE_MOD = "bisheng.tenant.domain.services.user_tenant_sync_service"
+SERVICE_MOD = "doberman_agent.tenant.domain.services.user_tenant_sync_service"
 
 
 def _patch_deps(monkeypatch, new_leaf_id: int, current_leaf_id=None):
@@ -83,7 +83,7 @@ def _patch_deps(monkeypatch, new_leaf_id: int, current_leaf_id=None):
     )
     # D19 PAT tenant migration runs on both the relocate and the no-op exit;
     # it is imported lazily inside the service, so patch the class attribute.
-    from bisheng.open_api.domain.services.personal_token_service import PersonalTokenService
+    from doberman_agent.open_api.domain.services.personal_token_service import PersonalTokenService
 
     monkeypatch.setattr(PersonalTokenService, "migrate_tenant", AsyncMock(return_value=0))
 
@@ -93,7 +93,7 @@ def _patch_deps(monkeypatch, new_leaf_id: int, current_leaf_id=None):
     fake_ts_mod = MagicMock()
     fake_ts_mod.TenantScopeService = MagicMock()
     fake_ts_mod.TenantScopeService.clear_on_token_version_bump = clear_mock
-    sys.modules["bisheng.admin.domain.services.tenant_scope"] = fake_ts_mod
+    sys.modules["doberman_agent.admin.domain.services.tenant_scope"] = fake_ts_mod
 
     return mod, clear_mock
 

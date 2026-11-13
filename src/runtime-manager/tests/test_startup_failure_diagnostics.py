@@ -33,7 +33,7 @@ def test_docker_startup_failure_collects_safe_output_before_caller_cleanup(tmp_p
 
     clock = SimpleNamespace(monotonic=lambda: 0)
     launcher = BundleLauncher(Config(data_root=tmp_path, probe_timeout_seconds=0), Docker(), clock=clock)
-    operation = {"payload": {"runtime_env": {"BISHENG_APP_TOKEN": "fixture-token"}}}
+    operation = {"payload": {"runtime_env": {"DOBERMAN_AGENT_APP_TOKEN": "fixture-token"}}}
     with pytest.raises(ExecutionError, match=reason) as caught:
         launcher.wait_ready(operation, "ref")
     assert caught.value.tail and len(caught.value.tail.splitlines()) <= 40

@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_runtime.domain.repositories.runtime_object_store import BUCKET, RuntimeObjectStore
+from doberman_agent.app_runtime.domain.repositories.runtime_object_store import BUCKET, RuntimeObjectStore
 from test.app_runtime.test_runtime_material_transfers import (
     DATA,
     call,

@@ -3,7 +3,7 @@ import { ImageDetail, imageDetailNumeric, imageDetailValue } from '~/types/chat'
 import type { ValueType } from '@rc-component/mini-decimal';
 import type { TModelSelectProps } from '~/common';
 import { Input, Label, Slider, HoverCard, InputNumber, HoverCardTrigger } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { cn, defaultTextProps, optionText } from '~/utils/';
 import { useLocalize, useDebouncedInput } from '~/hooks';
 import OptionHover from './OptionHover';

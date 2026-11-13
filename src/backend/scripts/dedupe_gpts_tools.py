@@ -68,12 +68,12 @@ from collections import defaultdict  # noqa: E402
 
 from sqlmodel import col, delete, select, update  # noqa: E402
 
-from bisheng.core.context.manager import close_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.models.assistant import AssistantLink  # noqa: E402
-from bisheng.tool.domain.const import ToolPresetType  # noqa: E402
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsType  # noqa: E402
+from doberman_agent.core.context.manager import close_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.models.assistant import AssistantLink  # noqa: E402
+from doberman_agent.tool.domain.const import ToolPresetType  # noqa: E402
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsType  # noqa: E402
 
 
 def _group_by(rows, key):

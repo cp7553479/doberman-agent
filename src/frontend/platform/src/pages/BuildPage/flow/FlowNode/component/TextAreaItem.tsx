@@ -1,4 +1,4 @@
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { useState } from "react";
@@ -9,7 +9,7 @@ export default function TextAreaItem({ data, onChange, i18nPrefix }) {
     const { t } = useTranslation('flow')
 
     return <div className='node-item mb-4' data-key={data.key}>
-        <Label className='bisheng-label'>{t(`${i18nPrefix}label`)}</Label>
+        <Label className='doberman_agent-label'>{t(`${i18nPrefix}label`)}</Label>
         <Textarea value={value} placeholder={t(`${i18nPrefix}placeholder`) || ''} onChange={(e) => {
                 setValue(e.target.value);
                 onChange(e.target.value);

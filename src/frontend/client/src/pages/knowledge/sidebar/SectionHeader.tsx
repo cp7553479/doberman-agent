@@ -1,5 +1,5 @@
-import { Outlined } from "bisheng-icons";
-import { Dropdown, DropdownGroup, DropdownItem } from "@bisheng/ui";
+import { Outlined } from "@doberman-agent/icons";
+import { Dropdown, DropdownGroup, DropdownItem } from "@doberman-agent/ui";
 
 interface SortOption {
     value: string;

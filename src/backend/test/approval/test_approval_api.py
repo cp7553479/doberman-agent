@@ -13,8 +13,8 @@ from test.fixtures.mock_services import premock_import_chain
 
 premock_import_chain()
 
-from bisheng.approval.api.router import router as approval_router
-from bisheng.common.dependencies.user_deps import UserPayload
+from doberman_agent.approval.api.router import router as approval_router
+from doberman_agent.common.dependencies.user_deps import UserPayload
 
 
 class MockUser:
@@ -51,35 +51,35 @@ def _make_app(user_cls):
 def test_user_approval_endpoints():
     app = _make_app(MockUser)
     with patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.list_my_tasks',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.list_my_tasks',
         new_callable=AsyncMock,
         return_value={'data': [{'task_id': 11}], 'total': 1},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.get_task_detail',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.get_task_detail',
         new_callable=AsyncMock,
         return_value={'task_id': 11, 'status': 'pending'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.decide_task_api',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.decide_task_api',
         new_callable=AsyncMock,
         return_value={'task_id': 11, 'status': 'approved'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.list_my_requests',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.list_my_requests',
         new_callable=AsyncMock,
         return_value={'data': [{'instance_id': 21}], 'total': 1},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.get_instance_detail',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.get_instance_detail',
         new_callable=AsyncMock,
         return_value={'instance_id': 21, 'status': 'pending'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.withdraw_instance',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.withdraw_instance',
         new_callable=AsyncMock,
         return_value={'instance_id': 21, 'status': 'withdrawn'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.apply_menu_access_request',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.apply_menu_access_request',
         new_callable=AsyncMock,
         return_value={'decision': 'pending', 'instance_id': 31},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_user.ApprovalCenterService.revoke_menu_grant',
+        'doberman_agent.approval.api.endpoints.approval_user.ApprovalCenterService.revoke_menu_grant',
         new_callable=AsyncMock,
         return_value={'instance_id': 31, 'revoked_keys': ['knowledge']},
     ):
@@ -97,63 +97,63 @@ def test_user_approval_endpoints():
 def test_admin_approval_endpoints():
     app = _make_app(MockAdminUser)
     with patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_presets',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_presets',
         new_callable=AsyncMock,
         return_value=[{'scenario_code': 'menu_access_request'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_scenarios',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_scenarios',
         new_callable=AsyncMock,
         return_value=[{'id': 1, 'scenario_code': 'menu_access_request'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_scenario',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_scenario',
         new_callable=AsyncMock,
         return_value={'id': 1, 'scenario_code': 'menu_access_request'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_scenario',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_scenario',
         new_callable=AsyncMock,
         return_value={'id': 1, 'scenario_code': 'menu_access_request', 'enabled': True},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_routes',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_routes',
         new_callable=AsyncMock,
         return_value=[{'id': 9, 'route_type': 'flow'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_route',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_route',
         new_callable=AsyncMock,
         return_value={'id': 10, 'route_name': '默认流程', 'route_type': 'flow'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_route',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_route',
         new_callable=AsyncMock,
         return_value={'id': 9, 'route_name': '更新分支', 'route_type': 'pass'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_flows',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_flows',
         new_callable=AsyncMock,
         return_value=[{'id': 12, 'flow_code': 'menu_default', 'flow_name': '菜单默认流程'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_flow',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_flow',
         new_callable=AsyncMock,
         return_value={'id': 12, 'flow_code': 'menu_default', 'flow_name': '菜单默认流程'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_flow',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_flow',
         new_callable=AsyncMock,
         return_value={'id': 12, 'flow_code': 'menu_updated', 'flow_name': '更新流程'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_nodes',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_nodes',
         new_callable=AsyncMock,
         return_value=[{'id': 15, 'node_code': 'n1', 'node_name': '一级审批', 'node_mode': 'or'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_node',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.create_node',
         new_callable=AsyncMock,
         return_value={'id': 15, 'node_code': 'n1', 'node_name': '一级审批', 'node_mode': 'or'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_node',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.update_node',
         new_callable=AsyncMock,
         return_value={'id': 15, 'node_code': 'n1b', 'node_name': '更新节点', 'node_mode': 'and'},
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_open_exceptions',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalScenarioAdminService.list_open_exceptions',
         new_callable=AsyncMock,
         return_value=[{'id': 88, 'exception_type': 'route_missing'}],
     ), patch(
-        'bisheng.approval.api.endpoints.approval_admin.ApprovalExceptionService.retry_exception_api',
+        'doberman_agent.approval.api.endpoints.approval_admin.ApprovalExceptionService.retry_exception_api',
         new_callable=AsyncMock,
         return_value={'exception_id': 88, 'status': 'resolved'},
     ) as mock_retry_exception:

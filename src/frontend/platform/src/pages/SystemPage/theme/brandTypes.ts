@@ -7,31 +7,31 @@ export type BrandTextKey = "brandName";
 export type BrandPreviewTarget = BrandTextKey | BrandAssetKey | "loadingIcon" | "loadingAnimation";
 
 export const DEFAULT_BRAND_CONFIG: BrandConfig = {
-    brandName: { zh: "BISHENG", en: "BISHENG" },
+    brandName: { zh: "doberman-agent", en: "doberman-agent" },
     linsightAgentName: { zh: "灵思", en: "Linsight" },
     assets: {
         favicon: {
-            url: "/assets/bisheng/favicon.ico",
+            url: "/assets/doberman-agent/favicon.ico",
             relative_path: "",
             file_name: "",
         },
         loginHeroLight: {
-            url: "/assets/bisheng/login-logo-big.png",
+            url: "/assets/doberman-agent/login-logo-big.png",
             relative_path: "",
             file_name: "",
         },
         loginHeroDark: {
-            url: "/assets/bisheng/login-logo-dark.png",
+            url: "/assets/doberman-agent/login-logo-dark.png",
             relative_path: "",
             file_name: "",
         },
         headerLogoLight: {
-            url: "/assets/bisheng/login-logo-small.png",
+            url: "/assets/doberman-agent/login-logo-small.png",
             relative_path: "",
             file_name: "",
         },
         headerLogoDark: {
-            url: "/assets/bisheng/logo-small-dark.png",
+            url: "/assets/doberman-agent/logo-small-dark.png",
             relative_path: "",
             file_name: "",
         },

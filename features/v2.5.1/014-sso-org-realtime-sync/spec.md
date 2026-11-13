@@ -9,8 +9,8 @@
 ## 1. 概述与用户故事
 
 作为 **集团 IT / Gateway 管理员**，
-我希望 **Gateway 在用户 SSO 登录时同步部门结构 + 用户属性到 bisheng，并触发叶子 Tenant 派生**，
-以便 **bisheng 中的部门树与 HR 系统保持实时一致，无需管理员手工维护**。
+我希望 **Gateway 在用户 SSO 登录时同步部门结构 + 用户属性到 doberman-agent，并触发叶子 Tenant 派生**，
+以便 **doberman-agent 中的部门树与 HR 系统保持实时一致，无需管理员手工维护**。
 
 核心能力：
 - 新增内部接口 `POST /api/v1/internal/sso/login-sync`（HMAC 鉴权；用户登录时触发）
@@ -53,7 +53,7 @@
 | ID | 决策 | 选项 | 结论 |
 |----|------|------|------|
 | AD-01 | SSO 同步时机 | A: 登录时 / B: 事件驱动 | A（简单可靠） |
-| AD-02 | tenant_mapping 幂等 | A: 以 SSO 为准 / B: 以 bisheng 为准 | B（PRD §5.2.3）|
+| AD-02 | tenant_mapping 幂等 | A: 以 SSO 为准 / B: 以 doberman-agent 为准 | B（PRD §5.2.3）|
 
 ---
 

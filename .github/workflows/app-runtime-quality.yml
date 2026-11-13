@@ -26,13 +26,13 @@ on:
       - "docker/lib/**"
       - "docker/gateway/**"
       - "docker/nginx/**"
-      - "docker/bisheng/config/config.yaml"
+      - "docker/doberman-agent/config/config.yaml"
       - "scripts/tests/compose/verify-app-runtime-compose.sh"
       - "scripts/tests/compose/verify_app_runtime_compose.py"
       - ".github/workflows/app-runtime-quality.yml"
       - ".github/workflows/runtime-images.yml"
       - "scripts/build_runtime_images.sh"
-      - "scripts/sync_runtime_images_cr.sh"
+      - "scripts/sync_runtime_images.sh"
   workflow_dispatch:
 
 concurrency:
@@ -53,6 +53,8 @@ jobs:
       - name: Validate generated Compose configurations
         run: |
           bash docker/install.sh --prepare-only
+          source docker/lib/install-env.sh
+          env_set docker/.env DOBERMAN_AGENT_GATEWAY_IMAGE gateway:contract-test
           printf '%s\n' 'ci-configuration-check-only' > "$RUNNER_TEMP/gateway-license.txt"
           bash docker/install.sh --prepare-only --gateway \
             --license-file "$RUNNER_TEMP/gateway-license.txt" --public-url https://example.invalid

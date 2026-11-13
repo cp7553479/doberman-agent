@@ -1,11 +1,11 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { useContext, useEffect, useState } from "react";
 import { PopUpContext } from "@/contexts/popUpContext";
 import GenericModal from "@/modals/genericModal";
 import { TextAreaComponentType } from "@/types/components";
 import { TypeModal } from "@/utils";
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useTranslation } from "react-i18next";
 

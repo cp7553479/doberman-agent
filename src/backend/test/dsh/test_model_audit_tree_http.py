@@ -8,8 +8,8 @@ from datetime import timedelta
 
 from sqlmodel import select
 
-from bisheng.dsh.domain.models.model_audit_content import DshModelAuditBodyAccess
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditBodyAccess
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
 from test.dsh.model_audit_fixtures import NOW, audit_session
 from test.dsh.test_model_audit_flow import ADMIN, BASE, LOCAL_ADMIN, USER, fixture
 from test.dsh.test_model_audit_tree import add, finish

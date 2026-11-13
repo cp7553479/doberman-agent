@@ -3,21 +3,21 @@
 AC-16 is two different sentences with two different enforcement points:
 
 * **Build phase** — only the deployment's package index and the platform's own
-  distribution endpoint (that is where ``pip install bisheng-sdk`` gets the
+  distribution endpoint (that is where ``pip install doberman-agent-sdk`` gets the
   wheel from). Nothing an application declares applies here: a build is
   platform code assembling platform-chosen base images, and a manifest that
   could widen it would be a way to smuggle a dependency past review.
 * **Run phase** — deny by default; allow the platform API, this process (the
   attachment handle, contracts §9 — *the outbound whitelist must allow the
-  address ``BISHENG_APP_STORAGE_ENDPOINT`` points at, or the handle breaks with
-  it*), and the domains the application's own ``bisheng-app.yaml`` declares.
+  address ``DOBERMAN_AGENT_APP_STORAGE_ENDPOINT`` points at, or the handle breaks with
+  it*), and the domains the application's own ``doberman-agent-app.yaml`` declares.
   Direct-IP connections and **all UDP** are refused.
 
 Three layers carry that, and each one exists because the one above it can be
 absent on a given host:
 
 1. **L1 ``--internal`` network.** An application container is attached to
-   ``bisheng-apps`` and nothing else, so with the network created ``--internal``
+   ``doberman-agent-apps`` and nothing else, so with the network created ``--internal``
    the kernel has no route off the box at all. This is the only layer that is
    free, total and impossible to misconfigure *quietly* — but it is a property
    of a network object created by the deployment, and 114's was created before
@@ -81,7 +81,7 @@ DEFAULT_PORTS: tuple[int, ...] = (80, 443)
 #: that ``readonly._redactions`` (which matches on the *name*) strips the value
 #: out of application logs — including the copy of it inside ``HTTP_PROXY``,
 #: because that redaction replaces values wherever they appear in a line.
-ENV_EGRESS_TOKEN = "BISHENG_APP_EGRESS_TOKEN"
+ENV_EGRESS_TOKEN = "DOBERMAN_AGENT_APP_EGRESS_TOKEN"
 
 #: Platform-reserved environment names whose **value is a platform address**
 #: (contracts §5). Every one of them is on the run-phase allowlist, derived from
@@ -104,10 +104,10 @@ ENV_EGRESS_TOKEN = "BISHENG_APP_EGRESS_TOKEN"
 #: A value under one of these keys is therefore the platform's, never the
 #: application's.
 PLATFORM_URL_ENV_NAMES: tuple[str, ...] = (
-    "BISHENG_PLATFORM_API_BASE",
-    "BISHENG_APP_STORAGE_ENDPOINT",
+    "DOBERMAN_AGENT_PLATFORM_API_BASE",
+    "DOBERMAN_AGENT_APP_STORAGE_ENDPOINT",
     "OPENAI_BASE_URL",
-    "BISHENG_MODEL_BASE_URL",
+    "DOBERMAN_AGENT_MODEL_BASE_URL",
 )
 
 # Decision vocabulary. These words travel: they are logged by the proxy, and
@@ -136,9 +136,9 @@ class Destination:
     ``trusted`` says **who put it here**, and it is not decoration. An entry the
     *deployment* configured (the platform API, this process, ``RTM_EGRESS_ALLOW``)
     may legitimately live on a private address — on-premise platforms usually do.
-    An entry an *application* declared in its own ``bisheng-app.yaml`` may not:
+    An entry an *application* declared in its own ``doberman-agent-app.yaml`` may not:
     the proxy is dual-homed by construction (it is the only process with a route
-    both onto ``bisheng-apps`` and off the box), so a manifest naming ``mysql``,
+    both onto ``doberman-agent-apps`` and off the box), so a manifest naming ``mysql``,
     ``minio`` or ``10.0.0.5`` would otherwise turn the one hole in the wall into
     a relay into the deployment's own network — precisely the reachability L1
     exists to remove. See :func:`address_decision`.
@@ -301,7 +301,7 @@ def decide(
             False,
             DENY_IP_LITERAL,
             f"{host}:{port} is a direct IP connection and is not on the whitelist; "
-            "declare a hostname in bisheng-app.yaml egress.domains",
+            "declare a hostname in doberman-agent-app.yaml egress.domains",
         )
 
     if match is not None:
@@ -318,7 +318,7 @@ def decide(
     return EgressDecision(
         False,
         DENY_NOT_DECLARED,
-        f"{host} is not declared; add it to egress.domains in bisheng-app.yaml and publish a new version",
+        f"{host} is not declared; add it to egress.domains in doberman-agent-app.yaml and publish a new version",
     )
 
 
@@ -334,7 +334,7 @@ def address_decision(host: str, addresses: object) -> EgressDecision | None:
     The whitelist is decided on a name, but the proxy then opens a socket, and
     the proxy is the one process in the deployment with a route both onto the
     application network and off the box. Without this, ``egress: {domains:
-    [mysql]}`` in a ``bisheng-app.yaml`` — or a public name whose owner points it
+    [mysql]}`` in a ``doberman-agent-app.yaml`` — or a public name whose owner points it
     at ``10.0.0.5`` — is a relay straight into the platform's own network, which
     is exactly the reachability the ``--internal`` network was created to remove.
 
@@ -563,7 +563,7 @@ def platform_destinations(config: Config, platform_api_base: str = "") -> tuple[
     """What every hosted application may reach regardless of its manifest.
 
     ``app_facing_base`` is not optional decoration: it is the address behind
-    ``BISHENG_APP_STORAGE_ENDPOINT``, and contracts §9 records that leaving it
+    ``DOBERMAN_AGENT_APP_STORAGE_ENDPOINT``, and contracts §9 records that leaving it
     out breaks the attachment handle along with the whitelist. The app-proxy is
     absent on purpose — it dials *in*, never out.
 
@@ -721,7 +721,7 @@ def _no_proxy_hosts(config: Config, extra: object = ()) -> list[str]:
 
     This process is the one that matters: the attachment handle is a call from
     the application to ``RTM_APP_FACING_BASE_URL``, both endpoints sit on
-    ``bisheng-apps``, and routing it through the proxy would send in-network
+    ``doberman-agent-apps``, and routing it through the proxy would send in-network
     traffic out to a component that would then have to come back in.
     """
     hosts = ["localhost", "127.0.0.1", "::1"]
@@ -856,7 +856,7 @@ BACKEND_UNKNOWN = "unknown"
 #: The nftables table this module owns. Named, and hooked at a priority ahead of
 #: docker's own chains, because the nftables backend has no ``DOCKER-USER``
 #: equivalent to insert into (design pit 22).
-NFT_TABLE = "bisheng_egress"
+NFT_TABLE = "doberman_agent_egress"
 NFT_PRIORITY = -100
 
 
@@ -878,7 +878,7 @@ class FirewallRule:
             spec += ["-p", self.protocol]
         if self.port:
             spec += ["--dport", str(self.port)]
-        spec += ["-m", "comment", "--comment", f"bisheng-egress: {self.why}", "-j", self.verdict]
+        spec += ["-m", "comment", "--comment", f"doberman-agent-egress: {self.why}", "-j", self.verdict]
         return spec
 
     def nft_spec(self, subnet: str) -> str:
@@ -890,7 +890,7 @@ class FirewallRule:
         if self.port:
             parts.append(f"{self.protocol} dport {self.port}")
         parts.append("accept" if self.verdict == "RETURN" else "drop")
-        parts.append(f'comment "bisheng-egress: {self.why}"')
+        parts.append(f'comment "doberman-agent-egress: {self.why}"')
         return " ".join(parts)
 
 
@@ -1009,7 +1009,7 @@ def nft_script(config: Config, rules: list[FirewallRule]) -> str:
     body = "\n".join(f"    add rule inet {NFT_TABLE} forward {rule.nft_spec(config.apps_subnet)}" for rule in rules)
     return (
         f"#!/usr/sbin/nft -f\n"
-        f"# BiSheng hosted-app egress (F054 D12 L3). Generated by runtime_manager.egress.\n"
+        f"# DobermanAgent hosted-app egress (F054 D12 L3). Generated by runtime_manager.egress.\n"
         f"delete table inet {NFT_TABLE}\n"
         f"table inet {NFT_TABLE} {{\n"
         f"    chain forward {{\n"

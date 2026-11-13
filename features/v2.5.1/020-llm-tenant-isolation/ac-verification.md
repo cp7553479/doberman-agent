@@ -2,7 +2,7 @@
 
 **生成时间**: 2026-04-21
 **分支**: `feat/v2.5.1/020-llm-tenant-isolation`（base=`2.5.0-PM`，commit `ee6d24e61`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/020-llm-tenant-isolation`
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/020-llm-tenant-isolation`
 **本地 pytest 环境**: 不可用（无 `.venv`），所有自动化测试**待 114 环境执行**
 **F020 测试套件（新增）**: 5 个文件
   - `test_f020_migration.py` — 3 用例（Alembic 迁移）
@@ -18,7 +18,7 @@
 
 | AC | 描述 | 自动化测试 | 代码路径 | 手工 QA |
 |----|------|-----------|----------|---------|
-| **AC-01** | 超管 POST `/llm` 默认 `share_to_children=true` → 写 FGA `{llm_server}#shared_with → tenant:{child}` 每 Child | `test_llm_tenant_isolation_dao.py::test_root_llm_default_shared_writes_viewer_tuple` | DAO: `llm_server.py::ainsert_server_with_models` L130-174；调 `ResourceShareService.enable_sharing` | 114 §1：超管创建模型 → `bisheng_fga` store 观察 `llm_server:{id}#shared_with` 元组 |
+| **AC-01** | 超管 POST `/llm` 默认 `share_to_children=true` → 写 FGA `{llm_server}#shared_with → tenant:{child}` 每 Child | `test_llm_tenant_isolation_dao.py::test_root_llm_default_shared_writes_viewer_tuple` | DAO: `llm_server.py::ainsert_server_with_models` L130-174；调 `ResourceShareService.enable_sharing` | 114 §1：超管创建模型 → `doberman_agent_fga` store 观察 `llm_server:{id}#shared_with` 元组 |
 | **AC-02** | 超管 POST 勾选 `share_to_children=false` → 不写 FGA | `test_llm_tenant_isolation_dao.py::test_root_llm_share_off_skips_viewer_tuple` | 同 DAO；false 分支跳过 `ResourceShareService.enable_sharing` | §2 |
 | **AC-03** | Child 用户 GET `/llm` → 本 Child + Root 共享合并 | `test_llm_tenant_isolation_service.py::test_child_user_llm_list_merges_root_shared` + `test_aget_shared_server_ids_for_leaf_returns_root_shared` | Service: `get_all_llm` L35-87（bypass + 合并）；DAO: `aget_shared_server_ids_for_leaf` L508-554 | §3：Child 5 用户登录 `/model/manage` 看到本 Child + Root 共享（带 Badge） |
 | **AC-04** | 超管 PUT `{share_to_children: false}` → FGA 元组撤销 | `test_toggle_root_llm_share_enables_fga_tuple` / `_off_removes_fga_tuple` | DAO: `aupdate_server_share` L176-205；Service: `update_llm_server` 分发 L279-286 | §4 |
@@ -68,7 +68,7 @@
 ## 执行清单（待 114 环境运行）
 
 ```bash
-cd /opt/bisheng-f020/src/backend  # 114 worktree，具体路径按 deploy.sh 结果
+cd /opt/doberman-agent-f020/src/backend  # 114 worktree，具体路径按 deploy.sh 结果
 
 # 1) F020 自动化（预期全绿）
 .venv/bin/pytest -v \
@@ -89,7 +89,7 @@ cd /opt/bisheng-f020/src/backend  # 114 worktree，具体路径按 deploy.sh 结
 
 # 3) Alembic 迁移演练（v2.4 SQL dump）
 .venv/bin/alembic upgrade head
-mysql -e "SHOW CREATE TABLE llm_server\G" bisheng | grep uk_llm_server_tenant_name  # 确认索引
+mysql -e "SHOW CREATE TABLE llm_server\G" doberman-agent | grep uk_llm_server_tenant_name  # 确认索引
 
 # 4) 前端 TS 构建
 cd src/frontend/platform && npm run build

@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.tenant_tree import TenantTreeRootProtectedError
+from doberman_agent.common.errcode.tenant_tree import TenantTreeRootProtectedError
 
 
 @pytest.fixture()
@@ -38,8 +38,8 @@ def fake_user():
 class TestAupdateTenantStatusRootProtection:
 
     async def test_root_id_raises_22008(self, fake_user):
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         with pytest.raises(TenantTreeRootProtectedError) as exc_info:
             await TenantService.aupdate_tenant_status(
@@ -51,11 +51,11 @@ class TestAupdateTenantStatusRootProtection:
 
     async def test_root_protection_does_not_touch_dao(self, fake_user):
         """Guard must fire before any DAO call on the Root."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_service.TenantDao.aupdate_tenant',
+            'doberman_agent.tenant.domain.services.tenant_service.TenantDao.aupdate_tenant',
             new_callable=AsyncMock,
         ) as dao_mock:
             with pytest.raises(TenantTreeRootProtectedError):
@@ -68,8 +68,8 @@ class TestAupdateTenantStatusRootProtection:
 
     async def test_child_tenant_status_update_passes_guard(self, fake_user):
         """Non-root id proceeds to DAO (other behaviours mocked)."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         mock_tenant = type('T', (), {
             'id': 5, 'tenant_code': 'child', 'tenant_name': 'Child',
@@ -80,13 +80,13 @@ class TestAupdateTenantStatusRootProtection:
         })()
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_service.TenantDao.aget_by_id',
+            'doberman_agent.tenant.domain.services.tenant_service.TenantDao.aget_by_id',
             new_callable=AsyncMock, return_value=mock_tenant,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_service.TenantDao.aupdate_tenant',
+            'doberman_agent.tenant.domain.services.tenant_service.TenantDao.aupdate_tenant',
             new_callable=AsyncMock, return_value=mock_tenant,
         ), patch(
-            'bisheng.tenant.domain.services.tenant_service.get_redis_client',
+            'doberman_agent.tenant.domain.services.tenant_service.get_redis_client',
             new_callable=AsyncMock,
         ) as redis_getter:
             redis_mock = AsyncMock()
@@ -110,19 +110,19 @@ class TestAupdateTenantStatusRootProtection:
 class TestAdeleteTenantRootProtection:
 
     async def test_root_id_raises_22008(self, fake_user):
-        from bisheng.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
 
         with pytest.raises(TenantTreeRootProtectedError):
             await TenantService.adelete_tenant(tenant_id=1, login_user=fake_user)
 
     async def test_root_protection_does_not_call_dao(self, fake_user):
-        from bisheng.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_service.TenantDao.adelete_tenant',
+            'doberman_agent.tenant.domain.services.tenant_service.TenantDao.adelete_tenant',
             new_callable=AsyncMock,
         ) as dao_mock, patch(
-            'bisheng.tenant.domain.services.tenant_service.UserDepartmentDao.acount_users_by_tenant_subtree',
+            'doberman_agent.tenant.domain.services.tenant_service.UserDepartmentDao.acount_users_by_tenant_subtree',
             new_callable=AsyncMock, return_value=0,
         ):
             with pytest.raises(TenantTreeRootProtectedError):

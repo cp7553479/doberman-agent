@@ -14,7 +14,7 @@
  *   declarations broke. An unmarked row means "checked just now and fine",
  *   which is true: the mark is computed per request, nothing is stored.
  * - **It offers no way to edit a declaration.** Capabilities are declared in
- *   `bisheng-app.yaml` and take effect through a publish; a control here would
+ *   `doberman_agent-app.yaml` and take effect through a publish; a control here would
  *   be a second, unapproved way to change what an application may call.
  *   AC-54's "no provider account or endpoint configuration in the workbench"
  *   is kept by this file having no inputs at all.

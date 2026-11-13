@@ -13,8 +13,8 @@ vi.mock('@/controllers/API/user', () => ({ disableUserApi: mock.disable }))
 vi.mock('@/controllers/request', () => ({ showApiError: mock.error }))
 vi.mock('@/contexts/userContext', () => ({ userContext: createContext({ user: {} }) }))
 vi.mock('@/pages/DepartmentPage/components/MemberTableView', () => ({ MemberTableView: () => null }))
-vi.mock('@bisheng/ui', async (importOriginal) => ({
-    ...await importOriginal<typeof import('@bisheng/ui')>(), notification: { open: mock.notify },
+vi.mock('@doberman-agent/ui', async (importOriginal) => ({
+    ...await importOriginal<typeof import('@doberman-agent/ui')>(), notification: { open: mock.notify },
 }))
 beforeEach(() => vi.clearAllMocks())
 afterEach(cleanup)

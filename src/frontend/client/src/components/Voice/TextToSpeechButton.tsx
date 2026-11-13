@@ -1,9 +1,9 @@
 "use client"
 
-import { isApiError } from "@bisheng/api-client"
+import { isApiError } from "@doberman-agent/api-client"
 import { showApiError } from "~/api/request"
 
-import { Outlined } from "bisheng-icons"
+import { Outlined } from "@doberman-agent/icons"
 import { readVoiceAudioPath, synthesizeVoice } from "~/api/voice"
 import { NotificationSeverity } from "~/common"
 import { useLocalize } from "~/hooks"

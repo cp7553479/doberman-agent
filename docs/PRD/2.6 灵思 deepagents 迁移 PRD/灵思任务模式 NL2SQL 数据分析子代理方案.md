@@ -2,7 +2,7 @@
 
 > **定位**：v2.6.0 · 灵思任务模式在"问数/NL2SQL"场景的效果增强（轻量方案）
 > **归属**：F035-linsight-task-mode 域内增强，不新增领域对象（复用 `LinsightSkill` 等既有对象）
-> **落地入口**：`src/backend/bisheng/linsight/domain/services/agent_factory.py` + skill 正文约定
+> **落地入口**：`src/backend/doberman_agent/linsight/domain/services/agent_factory.py` + skill 正文约定
 > **关联**：[灵思 Linsight 迁移 deepagents 框架 PRD](./灵思%20Linsight%20迁移%20deepagents%20框架%20PRD.md) · [灵思任务模式 #1 子代理重引入技术方案](./灵思任务模式%20%231%20子代理重引入技术方案.md) · [灵思任务模式 Skill 能力恢复方案](./灵思任务模式%20Skill%20能力恢复方案.md)
 
 ---
@@ -37,7 +37,7 @@
 ### 3.1 容器 · `data-analyst` 子代理
 
 - 新增第二个子代理（`name="data-analyst"`，区别于 researcher 的 `general-purpose`）。其 `description` 会被 deepagents 的 `SubAgentMiddleware` **自动冒泡进主图 system prompt**（`subagents.py:683-685`），模型据此决定派活，**无需手写进主模板**。
-- 工具 = `_subagent_tools(tools)`（已核实：含 `bisheng_code_interpreter` 沙箱、且不在 `_SUBAGENT_TOOL_DENY` 黑名单）。**只读纪律**靠 prompt + skill 里的只读账号。
+- 工具 = `_subagent_tools(tools)`（已核实：含 `doberman_agent_code_interpreter` 沙箱、且不在 `_SUBAGENT_TOOL_DENY` 黑名单）。**只读纪律**靠 prompt + skill 里的只读账号。
 - 中间件栈 = resilience + tool-loop-breaker + **SkillsMiddleware（新接线，见 3.2）** + LanguageTail（永远置尾）。
 
 ### 3.2 内容 · skill 接线进子代理（约束 2 · 命门）
@@ -49,7 +49,7 @@
   - 位置：**LanguageTail 之前**（保证语言指令仍在最尾）
   - `file_dir` / `skills_present` 在子代理装配作用域（`agent_factory.py:742-751`）内已可见，**无需改函数签名**。
 - **披露方式**（progressive disclosure）：模型 system prompt 里只看到 skill 的 `name + description + 路径`；连接串写在 SKILL.md **正文**，子代理**按需 `read_file /skills/<name>/SKILL.md`** 才拉进上下文（枚举靠 FilesystemBackend、读正文靠子代理自身 FilesystemMiddleware 的共享 WorkspaceBackend 按路径读，各司其职）。
-- **通用工作流**（schema-exploration / query-writing 那套 know-how）→ **写进子代理 prompt**（不新建 skill——BiSheng 无"常驻 skill"机制，做成 skill 反而更重）；**场景 skill**（早报，含连接 + 领域知识）仍走会话选中 + 本接线。
+- **通用工作流**（schema-exploration / query-writing 那套 know-how）→ **写进子代理 prompt**（不新建 skill——doberman-agent 无"常驻 skill"机制，做成 skill 反而更重）；**场景 skill**（早报，含连接 + 领域知识）仍走会话选中 + 本接线。
 
 ### 3.3 澄清环 · NEED_CLARIFICATION（约束 1 · 纯 prompt 零代码）
 
@@ -79,7 +79,7 @@
 
 ## 四、改动清单（What to change）
 
-**唯一核心文件**：`src/backend/bisheng/linsight/domain/services/agent_factory.py`
+**唯一核心文件**：`src/backend/doberman_agent/linsight/domain/services/agent_factory.py`
 
 | 改动 | 位置 | 说明 |
 |---|---|---|
@@ -93,7 +93,7 @@
 
 **明确不动**：无新工具、无 DB schema/迁移、无前端、无数据源模块、researcher 子代理不变、workflow 节点不动。
 
-**依赖**：data-analyst 走沙箱查库，需用户在配置里**启用 `bisheng_code_interpreter`**。
+**依赖**：data-analyst 走沙箱查库，需用户在配置里**启用 `doberman_agent_code_interpreter`**。
 
 ---
 

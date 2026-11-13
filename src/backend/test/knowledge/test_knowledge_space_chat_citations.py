@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import (
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import (
     KnowledgeSpaceChatService,
 )
 
@@ -33,11 +33,11 @@ async def test_prepare_rag_citation_context_contains_real_chunk_id(monkeypatch):
         classmethod(lambda cls, documents: {10: "Test Space"}),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.cache_citation_registry_items",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.cache_citation_registry_items",
         cache_mock,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.KnowledgeUtils.format_retrieved_chunk",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.KnowledgeUtils.format_retrieved_chunk",
         lambda doc: (
             f"<chunk_id>{doc.metadata['citation_key']}</chunk_id>\n"
             f"<file_title>{doc.metadata['document_name']}</file_title>\n"

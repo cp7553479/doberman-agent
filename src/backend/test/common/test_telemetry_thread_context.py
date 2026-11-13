@@ -26,25 +26,25 @@ for _mod in ('elasticsearch', 'elasticsearch.exceptions'):
 # Drop the conftest pre-mock so the real module gets loaded by the import
 # below. Both the parent package and the leaf module are pre-mocked.
 for _mod in (
-    'bisheng.common.services.telemetry.telemetry_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services',
+    'doberman_agent.common.services.telemetry.telemetry_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services',
 ):
     sys.modules.pop(_mod, None)
 
 import threading  # noqa: E402
 
-from bisheng.common.constants.enums.telemetry import (  # noqa: E402
+from doberman_agent.common.constants.enums.telemetry import (  # noqa: E402
     BaseTelemetryTypeEnum,
 )
-from bisheng.common.schemas.telemetry.base_telemetry_schema import (  # noqa: E402
+from doberman_agent.common.schemas.telemetry.base_telemetry_schema import (  # noqa: E402
     UserContext,
 )
-from bisheng.common.errcode.tenant import NoTenantContextError  # noqa: E402
-from bisheng.common.services.telemetry.telemetry_service import (  # noqa: E402
+from doberman_agent.common.errcode.tenant import NoTenantContextError  # noqa: E402
+from doberman_agent.common.services.telemetry.telemetry_service import (  # noqa: E402
     BaseTelemetryService,
 )
-from bisheng.core.context.tenant import (  # noqa: E402
+from doberman_agent.core.context.tenant import (  # noqa: E402
     current_tenant_id,
     set_current_tenant_id,
 )
@@ -182,11 +182,11 @@ async def test_init_user_context_retries_without_tenant_context(monkeypatch):
             return _FakeUser()
 
     monkeypatch.setattr(
-        'bisheng.common.services.telemetry.telemetry_service.get_async_db_session',
+        'doberman_agent.common.services.telemetry.telemetry_service.get_async_db_session',
         fake_get_async_db_session,
     )
     monkeypatch.setattr(
-        'bisheng.common.services.telemetry.telemetry_service.UserRepositoryImpl',
+        'doberman_agent.common.services.telemetry.telemetry_service.UserRepositoryImpl',
         _FakeRepository,
     )
 

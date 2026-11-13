@@ -18,11 +18,11 @@ from fastapi.responses import ORJSONResponse
 from starlette import status
 from starlette.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode import BaseErrorCode
-from bisheng.knowledge.api.dependencies import get_knowledge_space_service
-from bisheng.knowledge.api.endpoints.knowledge_space import router as ks_router
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode import BaseErrorCode
+from doberman_agent.knowledge.api.dependencies import get_knowledge_space_service
+from doberman_agent.knowledge.api.endpoints.knowledge_space import router as ks_router
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
 
 
 # --- Lightweight handlers (mirror production main.py) ---------------------

@@ -4,8 +4,8 @@ from datetime import timedelta
 
 from sqlmodel import select
 
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
 from test.dsh.model_audit_fixtures import NOW, audit_database, audit_session
 from test.dsh.test_model_audit_groups import row
 

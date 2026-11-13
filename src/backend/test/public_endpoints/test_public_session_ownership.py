@@ -1,7 +1,7 @@
 import pytest
 
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.database.models.session import MessageSession
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.database.models.session import MessageSession
 
 
 def _session(**updates) -> MessageSession:

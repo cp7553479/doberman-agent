@@ -1,5 +1,5 @@
-import { Tabs } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Tabs } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback, useEffect, useState } from "react";
 import { getResourcePermissionContext } from "~/api/permission";
 import type {
@@ -11,7 +11,7 @@ import type {
   SubjectType,
 } from "~/api/permission";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/components/ui";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useLocalize } from "~/hooks";
 import { ModeHeader } from "./ModeHeader";
 import { PermissionGrantTab } from "./PermissionGrantTab";

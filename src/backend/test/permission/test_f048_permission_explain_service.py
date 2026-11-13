@@ -9,12 +9,12 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_explain_service import (
+from doberman_agent.permission.domain.services.permission_explain_service import (
     InheritedGrantSet,
     PermissionExplainContext,
     PermissionExplainService,

@@ -8,12 +8,12 @@ import { join, resolve } from 'node:path';
 // Uses the real Client dialogs and Desktop native-view/preload contract with fixture services.
 const project = resolve(import.meta.dirname, '..');
 const desktop = process.env.DESKTOP_SOURCE && resolve(process.env.DESKTOP_SOURCE);
-assert.ok(desktop, 'Set DESKTOP_SOURCE to a built BISHENG Desktop V1.2.0 checkout');
+assert.ok(desktop, 'Set DESKTOP_SOURCE to a built DOBERMAN_AGENT Desktop V1.2.0 checkout');
 const client = join(project, 'src/frontend/client');
 const output = resolve(process.argv[2] || 'outputs/desktop-dialog-overlay');
 const desktopRequire = createRequire(join(desktop, 'package.json'));
 const { build } = desktopRequire('esbuild');
-const temporary = await mkdtemp(join(tmpdir(), 'bisheng-dialog-overlay-'));
+const temporary = await mkdtemp(join(tmpdir(), 'doberman-agent-dialog-overlay-'));
 await mkdir(output, { recursive: true });
 
 const renderer = [

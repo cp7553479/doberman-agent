@@ -39,16 +39,16 @@
 
 | MCP 工具 | source API | 输入字段 | MCP 成功输出 |
 |---|---|---|---|
-| `bisheng_knowledge_list` | `GET /api/v2/filelib/` | `type?: 0\|1\|3=0`；`name?: string`；`sort_by?: update_time\|create_time\|name=update_time`；`page_size?: integer=10`；`cursor?: string` | `ResourceListData` |
-| `bisheng_knowledge_create` | `POST /api/v2/filelib/` | `name: string`；`type?: 0\|1\|3=0`；`description?: string\|null`；`model?: string\|null`（type 0/1 必填，type 3 忽略）；`auth_type?: public\|private\|approval=public`（仅 type 3）；`is_released?: boolean=false`（仅 type 3） | `Resource` |
-| `bisheng_knowledge_update` | `PUT /api/v2/filelib/` | `knowledge_id: integer`；`name?: string\|null`；`description?: string\|null`。保持原 API 语义：`name` 不传不修改，`description` 不传则置空 | `Resource` |
-| `bisheng_knowledge_delete` | `DELETE /api/v2/filelib/{knowledge_id}` | `knowledge_id: integer` | `OperationResult` |
-| `bisheng_knowledge_clear` | `DELETE /api/v2/filelib/clear/{knowledge_id}` | `knowledge_id: integer` | `OperationResult` |
-| `bisheng_knowledge_retrieve` | `POST /api/v2/filelib/retrieve` | `query: string(minLength=1)`；`knowledge_base_ids: integer[](minItems=1)`；`filters?: RetrieveFilters\|null`；`top_k?: integer[1,200]=10`；`max_content?: integer(minimum=1)=15000` | `RetrieveData` |
-| `bisheng_knowledge_file_upload` | `POST /api/v2/filelib/file/{knowledge_id}` | `knowledge_id: integer`；文件来源二选一：`file_name: string` + `content_base64: string(maxLength=§2.2)`（`mime_type?: string\|null`）或 `file_url: string(uri, §2.2 受控目标)`；`parent_id?: integer\|null`；`split_mode?: auto\|custom\|hierarchical=auto`；`separator?: string[]`；`separator_rule?: string[]`；`chunk_size?: integer`；`chunk_overlap?: integer`；`retain_images?: 0\|1=1`；`force_ocr?: 0\|1=0`；`enable_formula?: 0\|1=1`；`filter_page_header_footer?: 0\|1=0` | `FileRecord` |
-| `bisheng_knowledge_file_list` | `GET /api/v2/filelib/file/list` | `knowledge_id: integer`；`parent_id?: integer`；`keyword?: string`；`status?: integer[]`（1 处理中、2 成功、3 失败、4 重建中、5 排队中、6 超时、7 内容安全违规）；`page_size?: integer=10`；`cursor?: string` | `FileListData` |
-| `bisheng_knowledge_file_delete` | `DELETE /api/v2/filelib/file/{file_id}` | `file_id: integer` | `OperationResult` |
-| `bisheng_knowledge_files_delete` | `POST /api/v2/filelib/delete_file` | `file_ids: integer[]` | `OperationResult` |
+| `doberman_agent_knowledge_list` | `GET /api/v2/filelib/` | `type?: 0\|1\|3=0`；`name?: string`；`sort_by?: update_time\|create_time\|name=update_time`；`page_size?: integer=10`；`cursor?: string` | `ResourceListData` |
+| `doberman_agent_knowledge_create` | `POST /api/v2/filelib/` | `name: string`；`type?: 0\|1\|3=0`；`description?: string\|null`；`model?: string\|null`（type 0/1 必填，type 3 忽略）；`auth_type?: public\|private\|approval=public`（仅 type 3）；`is_released?: boolean=false`（仅 type 3） | `Resource` |
+| `doberman_agent_knowledge_update` | `PUT /api/v2/filelib/` | `knowledge_id: integer`；`name?: string\|null`；`description?: string\|null`。保持原 API 语义：`name` 不传不修改，`description` 不传则置空 | `Resource` |
+| `doberman_agent_knowledge_delete` | `DELETE /api/v2/filelib/{knowledge_id}` | `knowledge_id: integer` | `OperationResult` |
+| `doberman_agent_knowledge_clear` | `DELETE /api/v2/filelib/clear/{knowledge_id}` | `knowledge_id: integer` | `OperationResult` |
+| `doberman_agent_knowledge_retrieve` | `POST /api/v2/filelib/retrieve` | `query: string(minLength=1)`；`knowledge_base_ids: integer[](minItems=1)`；`filters?: RetrieveFilters\|null`；`top_k?: integer[1,200]=10`；`max_content?: integer(minimum=1)=15000` | `RetrieveData` |
+| `doberman_agent_knowledge_file_upload` | `POST /api/v2/filelib/file/{knowledge_id}` | `knowledge_id: integer`；文件来源二选一：`file_name: string` + `content_base64: string(maxLength=§2.2)`（`mime_type?: string\|null`）或 `file_url: string(uri, §2.2 受控目标)`；`parent_id?: integer\|null`；`split_mode?: auto\|custom\|hierarchical=auto`；`separator?: string[]`；`separator_rule?: string[]`；`chunk_size?: integer`；`chunk_overlap?: integer`；`retain_images?: 0\|1=1`；`force_ocr?: 0\|1=0`；`enable_formula?: 0\|1=1`；`filter_page_header_footer?: 0\|1=0` | `FileRecord` |
+| `doberman_agent_knowledge_file_list` | `GET /api/v2/filelib/file/list` | `knowledge_id: integer`；`parent_id?: integer`；`keyword?: string`；`status?: integer[]`（1 处理中、2 成功、3 失败、4 重建中、5 排队中、6 超时、7 内容安全违规）；`page_size?: integer=10`；`cursor?: string` | `FileListData` |
+| `doberman_agent_knowledge_file_delete` | `DELETE /api/v2/filelib/file/{file_id}` | `file_id: integer` | `OperationResult` |
+| `doberman_agent_knowledge_files_delete` | `POST /api/v2/filelib/delete_file` | `file_ids: integer[]` | `OperationResult` |
 
 ### 2.1 两处协议适配
 
@@ -71,16 +71,16 @@ annotations 只描述客户端风险与重试提示，不参与服务端授权�
 
 | MCP 工具 | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
 |---|---:|---:|---:|---:|
-| `bisheng_knowledge_list` | true | false | true | false |
-| `bisheng_knowledge_create` | false | false | false | false |
-| `bisheng_knowledge_update` | false | false | true | false |
-| `bisheng_knowledge_delete` | false | true | true | false |
-| `bisheng_knowledge_clear` | false | true | true | false |
-| `bisheng_knowledge_retrieve` | true | false | true | false |
-| `bisheng_knowledge_file_upload` | false | false | false | true |
-| `bisheng_knowledge_file_list` | true | false | true | false |
-| `bisheng_knowledge_file_delete` | false | true | true | false |
-| `bisheng_knowledge_files_delete` | false | true | true | false |
+| `doberman_agent_knowledge_list` | true | false | true | false |
+| `doberman_agent_knowledge_create` | false | false | false | false |
+| `doberman_agent_knowledge_update` | false | false | true | false |
+| `doberman_agent_knowledge_delete` | false | true | true | false |
+| `doberman_agent_knowledge_clear` | false | true | true | false |
+| `doberman_agent_knowledge_retrieve` | true | false | true | false |
+| `doberman_agent_knowledge_file_upload` | false | false | false | true |
+| `doberman_agent_knowledge_file_list` | true | false | true | false |
+| `doberman_agent_knowledge_file_delete` | false | true | true | false |
+| `doberman_agent_knowledge_files_delete` | false | true | true | false |
 
 ### 2.4 API → MCP 单向兼容规则
 

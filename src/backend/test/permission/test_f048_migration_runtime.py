@@ -14,13 +14,13 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     build_authorization_model_f048,
 )
-from bisheng.core.openfga.discovery import OpenFGARuntimePin
-from bisheng.database.models.failed_tuple import FailedTuple
-from bisheng.permission.domain.models import (
+from doberman_agent.core.openfga.discovery import OpenFGARuntimePin
+from doberman_agent.database.models.failed_tuple import FailedTuple
+from doberman_agent.permission.domain.models import (
     AuthorizationModelRelease,
     PermissionAction,
     PermissionActionResourceScope,
@@ -34,22 +34,22 @@ from bisheng.permission.domain.models import (
     PermissionVisibleSourceProjection,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.migration_repository import (
+from doberman_agent.permission.domain.repositories.migration_repository import (
     MigrationRepository,
 )
-from bisheng.permission.migration import f048_runtime_source, f048_runtime_storage
-from bisheng.permission.migration.f048_runtime_source import (
+from doberman_agent.permission.migration import f048_runtime_source, f048_runtime_storage
+from doberman_agent.permission.migration.f048_runtime_source import (
     LiveMigrationSourceProvider,
 )
-from bisheng.permission.migration.f048_runtime_storage import (
+from doberman_agent.permission.migration.f048_runtime_storage import (
     OpenFGAMigrationModelPublisher,
     SqlMigrationRunStore,
     SqlOpenFGAMigrationTargetWriter,
 )
-from bisheng.permission.migration.f048_runtime_verification import (
+from doberman_agent.permission.migration.f048_runtime_verification import (
     LiveMigrationEvidenceProvider,
 )
-from bisheng.permission.migration.f048_source_inventory import (
+from doberman_agent.permission.migration.f048_source_inventory import (
     LegacyConfigSource,
     LegacyTupleSource,
     MigrationEnvironmentFacts,
@@ -773,7 +773,7 @@ async def test_runtime_builder_discovers_store_and_source_model(
     config = SimpleNamespace(
         enabled=True,
         api_url="http://openfga:8080",
-        store_name="bisheng",
+        store_name="doberman_agent",
         timeout=5,
         force_write_model=False,
     )
@@ -808,7 +808,7 @@ async def test_runtime_builder_resume_uses_durable_source_model(
     config = SimpleNamespace(
         enabled=True,
         api_url="http://openfga:8080",
-        store_name="bisheng",
+        store_name="doberman_agent",
         timeout=5,
         force_write_model=False,
     )

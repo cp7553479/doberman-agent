@@ -2,8 +2,8 @@
 
 import json
 
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
 from test.dsh.model_audit_fixtures import NOW, ControlledAuditQueue, FaultAuditObjects, audit_database, audit_session
 from test.dsh.test_model_audit_writer import writer_for
 
@@ -122,7 +122,7 @@ async def test_parent_cannot_resolve_other_historical_user():
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer fixture-peer"},
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "e2e-peer"}],
                 "audit_context": {"conversation_id": "peer-parent"},
             },
@@ -156,10 +156,10 @@ async def test_source_pending_scan_is_fair_after_complete_body():
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-    from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-    from bisheng.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
-    from bisheng.dsh.domain.services.model_audit_states import DshModelAuditStateService
+    from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+    from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+    from doberman_agent.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
+    from doberman_agent.dsh.domain.services.model_audit_states import DshModelAuditStateService
 
     with audit_database() as engine:
         with audit_session(engine) as session, session.begin():

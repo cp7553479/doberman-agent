@@ -1,14 +1,14 @@
 import { DesktopShellBridge } from "./DesktopShellBridge";
 import { isDesktopEmbedded } from "~/components/Chat/desktopEmbedding";
 import { getBysConfigApi } from "~/api/apps";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import KeepAlive from "react-activation";
 import { matchPath, Navigate, NavLink, useLocation, useOutlet } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { usePrefersMobileLayout, useScrollRevealRef } from "~/hooks";
-import { bishengConfState } from "~/pages/appChat/store/atoms";
+import { dobermanAgentConfState } from "~/pages/appChat/store/atoms";
 import { useGetBsConfig } from "~/hooks/queries/data-provider";
 import { skillCenterPath } from "~/components/Skills/types";
 import { useAuthContext, useLocalize, useWorkbenchMenuNames } from "~/hooks";
@@ -306,8 +306,8 @@ export default function MainLayout() {
     }
   }, [isUserLoading, user, logout]);
 
-  // Load env config once on mount — makes bishengConfState available to all pages
-  const [config, setConfig] = useRecoilState(bishengConfState);
+  // Load env config once on mount — makes dobermanAgentConfState available to all pages
+  const [config, setConfig] = useRecoilState(dobermanAgentConfState);
   useEffect(() => {
     getBysConfigApi().then((res: any) => {
       setConfig(res.data);

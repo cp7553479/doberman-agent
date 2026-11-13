@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { startAssistantForHost, assistantStreamForHost } from '@bisheng/chat/core';
+import { startAssistantForHost, assistantStreamForHost } from '@doberman-agent/chat/core';
 import { ChatMessageType } from '@/types/chat';
 import { formatDate } from '@/util/utils';
 import { createStore } from 'zustand/vanilla';

@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { addFilesApi, uploadFileToServerApi, uploadFolderApi, listKnowledgeFolders, deleteFileApi, retryDuplicateFilesApi } from '~/api/knowledge';
 import { showApiError } from '~/api/request';
 import { uploadFilesSequential, useFileUpload, buildUploadFailureMessage } from './useFileUpload';

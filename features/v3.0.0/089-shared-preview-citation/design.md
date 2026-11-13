@@ -12,7 +12,7 @@
 
 ## 2. 关键约束
 
-遵循 [constitution](../../../docs/constitution.md) C1–C8 及 [release-contract](../release-contract.md)。公共 UI 仍遵守 `@bisheng/ui` 纯展示合同，文件/引用业务组件不放入 UI 基础库。
+遵循 [constitution](../../../docs/constitution.md) C1–C8 及 [release-contract](../release-contract.md)。公共 UI 仍遵守 `@doberman-agent/ui` 纯展示合同，文件/引用业务组件不放入 UI 基础库。
 
 - 前后台可独立启动和部署；platform base 当前为空，client 为 `/workspace`；后台还支持自定义前缀。worker、cmaps、图表脚本地址均以宿主 base 生成。
 - PDF 两端均用 pdfjs-dist 3.10.111，后台另有 react-window 虚拟滚动、文字/批注及框选编辑。PDF 页面尺寸、坐标和滚动不是简单替换 UI。
@@ -24,9 +24,9 @@
 
 ### 3.1 扩展已有文件预览包
 
-**选定**：扩展 `@bisheng/file-viewers`，沿用 Excel，按格式拆出视图、内容加载和 PDF 内核。两端薄入口负责布局、工具栏、宿主 URL/权限适配。
+**选定**：扩展 `@doberman-agent/file-viewers`，沿用 Excel，按格式拆出视图、内容加载和 PDF 内核。两端薄入口负责布局、工具栏、宿主 URL/权限适配。
 
-**否决**：后台直接 import client 文件，会引入 `~/`、Recoil、路由和 client API；全部塞进 `@bisheng/ui` 则违反基础库合同。
+**否决**：后台直接 import client 文件，会引入 `~/`、Recoil、路由和 client API；全部塞进 `@doberman-agent/ui` 则违反基础库合同。
 
 **原因**：现有包已被后台 PreviewFile、Citation 抽屉和 client XlsxViewer 使用，适合承载不依赖宿主业务的预览。现有 Excel 依赖及语言加载不重做。新组件所有新增文案经 props/locale 传入，避免扩大公共包对宿主 i18n 的耦合。
 
@@ -44,7 +44,7 @@
 
 ### 3.3 引用内核和来源内容归共享会话包
 
-**选定**：在 `@bisheng/chat/citations` 子入口统一纯类型/解析，在对应视图子入口提供来源列表和预览内容；沿用该包已存在的 citationMarkers、citationPreview、MarkdownServices。共享视图调用文件预览包，不反向依赖宿主。
+**选定**：在 `@doberman-agent/chat/citations` 子入口统一纯类型/解析，在对应视图子入口提供来源列表和预览内容；沿用该包已存在的 citationMarkers、citationPreview、MarkdownServices。共享视图调用文件预览包，不反向依赖宿主。
 
 **否决**：新建第三套独立引用算法，或把两端整个 citationUtils 直接拼接后保留重复导出。
 
@@ -64,7 +64,7 @@
 
 ### 3.5 图表脚本原样复制
 
-**选定**：新增业务无关的 workspace 包 `@bisheng/diagram-runtime`，持有现有两份一致脚本的一份源文件、白名单 manifest 和公共脚本加载器。两端使用现有 vite-plugin-static-copy，从公共文件复制到各自 build 根目录；开发模式由该插件直接提供文件，不先生成 app/public 副本。
+**选定**：新增业务无关的 workspace 包 `@doberman-agent/diagram-runtime`，持有现有两份一致脚本的一份源文件、白名单 manifest 和公共脚本加载器。两端使用现有 vite-plugin-static-copy，从公共文件复制到各自 build 根目录；开发模式由该插件直接提供文件，不先生成 app/public 副本。
 
 路径保持 `<base>/echarts.min.js`、`<base>/mermaid.min.js`。复制目标在共享 config helper 中定义，路径基于配置文件位置，不依赖启动 cwd。不对这两个资源做 Rollup import、转译或再次压缩；现有生产 gzip/br 是传输压缩，可照常保留。CI 比较原 JS 的 SHA-256。
 

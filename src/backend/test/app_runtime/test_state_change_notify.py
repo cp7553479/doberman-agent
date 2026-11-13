@@ -17,8 +17,8 @@ from typing import Any
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
-from bisheng.app_runtime.domain.services.state_change_notify import (
+from doberman_agent.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.services.state_change_notify import (
     ACTION_RESUMED_BY_ADMIN,
     ACTION_STOPPED_BY_ADMIN,
     notify_owner_of_admin_state_change,
@@ -28,13 +28,13 @@ pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator", "fake_permis
 
 
 def _super_admin_payload(user_id: int = 90999):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name="f056-super", user_role=[], tenant_id=1, is_global_super=True)
 
 
 def _tenant_admin_payload(user_id: int = 90888):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     return UserPayload(user_id=user_id, user_name="f056-tenant-admin", user_role=[], tenant_id=1, is_global_super=False)
 
@@ -45,7 +45,7 @@ def sent(monkeypatch):
 
     ``sent.fail = True`` makes the sender raise, to drive AC-45.
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     box = SimpleNamespace(calls=[], fail=False)
 
@@ -59,7 +59,7 @@ def sent(monkeypatch):
 
 
 async def _state(app_db, app_id) -> str | None:
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with app_db() as session:
         row = await AppDao.aget(session, app_id)
@@ -69,7 +69,7 @@ async def _state(app_db, app_id) -> str | None:
 class TestWhoGetsTold:
     async def test_owner_stopping_own_app_sends_nothing(self, app_db, app_factory, app_owner, sent):
         """AC-43 — "owner 本人执行时不发"."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         await AppStateService.stop(app.id, actor=app_owner.payload)
@@ -81,7 +81,7 @@ class TestWhoGetsTold:
         self, app_db, app_factory, app_owner, tenant_admins, sent
     ):
         """AC-43 — exactly one message, to the owner, naming the app and the actor."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         actor = _tenant_admin_payload()
@@ -99,7 +99,7 @@ class TestWhoGetsTold:
 
     async def test_super_admin_resume_sends_one_message_to_owner(self, app_db, app_factory, app_owner, sent):
         """AC-43 — a super admin acting through the tenant view counts as an administrator."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.STOPPED.value)
         actor = _super_admin_payload()
@@ -113,7 +113,7 @@ class TestWhoGetsTold:
 
     async def test_resume_that_stays_stopped_sends_nothing(self, app_db, app_factory, fake_orchestrator, sent):
         """A resume that lost the capacity gate (AC-41) changed nothing the owner needs to hear about."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         fake_orchestrator.responses["admission"] = {"admitted": False, "reason": "committed_mb", "snapshot": {}}
         app, _ = await app_factory(state=AppState.STOPPED.value)
@@ -127,7 +127,7 @@ class TestWhoGetsTold:
     async def test_publish_paths_send_nothing(self, app_db, app_factory, sent, action):
         """决议-11 — publish / manual publish belong to F055's pipeline; a second
         message from here would double what the approval engine already sends."""
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         source = AppState.DRAFT.value if action == "publish" else AppState.PENDING_CAPACITY.value
         app, _ = await app_factory(state=source)
@@ -141,8 +141,8 @@ class TestWhoGetsTold:
 class TestSendFailureIsSideEffectFree:
     async def test_stop_completes_when_sender_raises(self, app_db, app_factory, tenant_admins, sent, audit_sink):
         """AC-45 — the stop stands, is audited, and reports success."""
-        from bisheng.app_runtime.domain.constants import AppAuditAction
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.constants import AppAuditAction
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         actor = _tenant_admin_payload()
@@ -156,7 +156,7 @@ class TestSendFailureIsSideEffectFree:
         assert [row["action"] for row in audit_sink] == [AppAuditAction.STOP.value]
 
     async def test_resume_completes_when_sender_raises(self, app_db, app_factory, sent):
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, version = await app_factory(state=AppState.STOPPED.value)
         sent.fail = True
@@ -179,9 +179,9 @@ def message_sink(app_db, monkeypatch):
     lands in the inbox. ``notify_users`` swallows every exception it meets, so
     each test asserts the sink is non-empty before reading it.
     """
-    from bisheng.approval.domain.services import approval_notification_service
-    from bisheng.message.api import dependencies as message_dependencies
-    from bisheng.message.domain.services.message_service import MessageService
+    from doberman_agent.approval.domain.services import approval_notification_service
+    from doberman_agent.message.api import dependencies as message_dependencies
+    from doberman_agent.message.domain.services.message_service import MessageService
 
     saved: list = []
 
@@ -221,8 +221,8 @@ class TestMessageShape:
     async def test_lands_as_a_neutral_notify_statement(
         self, app_db, app_factory, app_owner, tenant_admins, message_sink, source_state, method, expected_code
     ):
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-        from bisheng.message.domain.models.inbox_message import MessageStatusEnum, MessageTypeEnum
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.message.domain.models.inbox_message import MessageStatusEnum, MessageTypeEnum
 
         app, _ = await app_factory(state=source_state)
         actor = _tenant_admin_payload()

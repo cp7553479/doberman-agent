@@ -67,7 +67,7 @@ class TestRouteResolution:
     def test_upstream_is_bridge_ip_not_published_port(self, logged_in, upstream_transport):
         """AC-33: reachable only through here.
 
-        The manager answers with the container's address on the ``bisheng-apps``
+        The manager answers with the container's address on the ``doberman-agent-apps``
         bridge — host-reachable, externally unreachable, and identical in both
         deployment shapes. A ``127.0.0.1:<port>`` here would mean somebody
         published a port and every hosted app became directly dialable, bypassing
@@ -259,16 +259,16 @@ class TestForwarding:
             "/apps/foo",
             headers={
                 **NAVIGATE_HEADERS,
-                "X_BiSheng_User_Id": "1",
-                "x-bisheng-user-name": "root",
-                "X-BISHENG-SUBJECT-KIND": "service_account",
+                "X_Doberman_Agent_User_Id": "1",
+                "x-doberman-agent-user-name": "root",
+                "X-DOBERMAN_AGENT-SUBJECT-KIND": "service_account",
                 "X-Forwarded-Host": "attacker.example.com",
             },
         )
         received = headers_of(echo_upstream.requests[-1])
 
-        assert received["x-bisheng-user-id"] == "42"
-        assert received["x-bisheng-subject-kind"] == "human"
+        assert received["x-doberman-agent-user-id"] == "42"
+        assert received["x-doberman-agent-subject-kind"] == "human"
         assert received["x-forwarded-host"] != "attacker.example.com"
 
     def test_identity_headers_reach_the_app(self, logged_in, echo_upstream):
@@ -278,11 +278,11 @@ class TestForwarding:
         logged_in.get("/apps/foo", headers=NAVIGATE_HEADERS)
         received = headers_of(echo_upstream.requests[-1])
 
-        assert unquote(received["x-bisheng-user-name"]) == "张三"
-        assert unquote(received["x-bisheng-dept-name"]) == "研发中心"
-        assert received["x-bisheng-dept-id"] == "BS@d4f1"
-        assert received["x-bisheng-access-token"] == "obo.jwt.token"
-        assert received["x-bisheng-request-id"]
+        assert unquote(received["x-doberman-agent-user-name"]) == "张三"
+        assert unquote(received["x-doberman-agent-dept-name"]) == "研发中心"
+        assert received["x-doberman-agent-dept-id"] == "BS@d4f1"
+        assert received["x-doberman-agent-access-token"] == "obo.jwt.token"
+        assert received["x-doberman-agent-request-id"]
 
     def test_platform_session_cookie_does_not_reach_the_app(self, logged_in, echo_upstream):
         """The container gets the 900s OBO token, not a full platform session."""

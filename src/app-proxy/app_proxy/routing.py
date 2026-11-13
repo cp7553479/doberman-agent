@@ -6,11 +6,11 @@ Two small, testable pieces sit between the verdict and the forward:
 route table. Not the container name (app-proxy runs as a host systemd unit on
 114 and is not on the docker network at all — 坑 30), and not a published host
 port (AC-33 forbids one). The manager answers with the container's address on
-the ``bisheng-apps`` bridge, which is host-reachable and externally
+the ``doberman-agent-apps`` bridge, which is host-reachable and externally
 unreachable, and means the same thing in both deployment shapes.
 
 **Path.** ``/apps/{slug}`` is a platform URL layout, not something a hosted app
-should have to know: the same source runs at the root under ``bisheng dev``.
+should have to know: the same source runs at the root under ``doberman-agent dev``.
 So the prefix comes off here and goes back on as ``X-Forwarded-Prefix`` for the
 framework to rebuild absolute URLs from (D5.2).
 """

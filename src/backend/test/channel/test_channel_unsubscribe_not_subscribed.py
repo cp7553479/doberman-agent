@@ -14,12 +14,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import (
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import (
     ChannelGrantedNotSubscribedError,
     ChannelNotSubscribedError,
 )
-from bisheng.common.models.space_channel_member import MembershipStatusEnum
+from doberman_agent.common.models.space_channel_member import MembershipStatusEnum
 
 _CHANNEL_ID = "ba05d6abbb214bbf92de036115a748fa"
 

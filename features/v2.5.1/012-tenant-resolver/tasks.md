@@ -70,10 +70,10 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T01**: 错误码 `tenant_resolver.py` + `UserTenantSyncConf` + Settings 注册 + CLAUDE.md 同步
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/tenant_resolver.py` — 4 个 `BaseErrorCode` 子类（19101-19104）
-  - `src/backend/bisheng/core/config/user_tenant_sync.py` — Pydantic `UserTenantSyncConf(enforce_transfer_before_relocate: bool = False)`
+  - `src/backend/doberman_agent/common/errcode/tenant_resolver.py` — 4 个 `BaseErrorCode` 子类（19101-19104）
+  - `src/backend/doberman_agent/core/config/user_tenant_sync.py` — Pydantic `UserTenantSyncConf(enforce_transfer_before_relocate: bool = False)`
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — 注册 `user_tenant_sync: UserTenantSyncConf`
+  - `src/backend/doberman_agent/core/config/settings.py` — 注册 `user_tenant_sync: UserTenantSyncConf`
   - `CLAUDE.md` — 错误码编码表 "MMM" 清单补 `191=tenant_resolver (F012)`
   **错误码清单**:
   ```python
@@ -92,7 +92,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T02**: `User` ORM 追加 `token_version` + DAO 方法 + DAO 测试
   **文件（修改）**:
-  - `src/backend/bisheng/user/domain/models/user.py` — `User` 加字段 + `UserDao` 加方法
+  - `src/backend/doberman_agent/user/domain/models/user.py` — `User` 加字段 + `UserDao` 加方法
   **文件（新建）**:
   - `src/backend/test/test_user_token_version_dao.py`
   **逻辑**:
@@ -123,7 +123,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T03**: Alembic 迁移 + SQLite table_definitions 同步
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f012_user_token_version.py`
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f012_user_token_version.py`
   **文件（修改）**:
   - `src/backend/test/fixtures/table_definitions.py` — `TABLE_USER` 追加 `token_version INTEGER DEFAULT 0`
   **逻辑**:
@@ -150,7 +150,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T04**: `core/context/tenant.py` 扩展 4 个 ContextVar + `strict_tenant_filter()` + `get_current_tenant_id()` 优先级
   **文件（修改）**:
-  - `src/backend/bisheng/core/context/tenant.py`
+  - `src/backend/doberman_agent/core/context/tenant.py`
   **文件（新建）**:
   - `src/backend/test/test_tenant_context_vars.py`
   **逻辑**（spec §5.4 签名严格对齐）:
@@ -190,7 +190,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T05**: `TenantResolver` 服务 + 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/tenant/domain/services/tenant_resolver.py`
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_resolver.py`
   - `src/backend/test/test_tenant_resolver.py`
   **逻辑**（spec §5.1 + 计划 §6.1）:
   ```python
@@ -236,7 +236,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T06**: `UserTenantSyncService.sync_user` + 单元测试
   **文件（新建）**:
-  - `src/backend/bisheng/tenant/domain/services/user_tenant_sync_service.py`
+  - `src/backend/doberman_agent/tenant/domain/services/user_tenant_sync_service.py`
   - `src/backend/test/test_user_tenant_sync_service.py`
   **逻辑**（spec §5.2 + 计划 §3 Q4-Q6）:
   ```python
@@ -339,7 +339,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T07**: JWT payload + `LoginUser` 扩展 + 登录流程调用 TenantResolver
   **文件（修改）**:
-  - `src/backend/bisheng/user/domain/services/auth.py`
+  - `src/backend/doberman_agent/user/domain/services/auth.py`
     - `create_access_token` 接受扩展 subject（增加 `token_version` field）
     - `login` / `sso_login`（如存在）流程：先 `TenantResolver.resolve_user_leaf_tenant(user.user_id)` 替代 `tenant_id = DEFAULT_TENANT_ID`
     - `LoginUser` BaseModel 追加 `token_version: int = 0`
@@ -360,7 +360,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T08**: `CustomMiddleware` 增强：token_version 401 + `visible_tenant_ids` 计算
   **文件（修改）**:
-  - `src/backend/bisheng/utils/http_middleware.py`
+  - `src/backend/doberman_agent/utils/http_middleware.py`
   **文件（新建）**:
   - `src/backend/test/test_middleware_token_version.py`
   **逻辑**（计划 §6.3 骨架）:
@@ -387,7 +387,7 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T09**: `UserDepartmentService.change_primary_department` + sync 入口 + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/user/domain/services/user_department_service.py`
+  - `src/backend/doberman_agent/user/domain/services/user_department_service.py`
   - `src/backend/test/test_user_department_service.py`
   **逻辑**:
   - `change_primary_department(user_id, new_dept_id, operator)`:
@@ -412,10 +412,10 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T10**: `GET /api/v1/user/current-tenant` + F011 switch-tenant 410 回归 + 集成测试
   **文件（新建）**:
-  - `src/backend/bisheng/user/api/endpoints/current_tenant.py`
+  - `src/backend/doberman_agent/user/api/endpoints/current_tenant.py`
   - `src/backend/test/test_current_tenant_api.py`
   **文件（修改）**:
-  - `src/backend/bisheng/user/api/router.py` — 注册 current_tenant 路由
+  - `src/backend/doberman_agent/user/api/router.py` — 注册 current_tenant 路由
   **逻辑**:
   - `GET /api/v1/user/current-tenant`（需登录）:
     - 调 `TenantResolver.resolve_user_leaf_tenant(login_user.user_id)` → leaf Tenant
@@ -448,21 +448,21 @@ T01 (errcode + UserTenantSyncConf)
 
 - [x] **T11**: 6h reconcile Celery 任务 + beat 注册 + 测试
   **文件（新建）**:
-  - `src/backend/bisheng/worker/tenant_reconcile/__init__.py`
-  - `src/backend/bisheng/worker/tenant_reconcile/tasks.py`
+  - `src/backend/doberman_agent/worker/tenant_reconcile/__init__.py`
+  - `src/backend/doberman_agent/worker/tenant_reconcile/tasks.py`
   - `src/backend/test/test_tenant_reconcile_task.py`
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — `CeleryConf.validate` 注册任务:
+  - `src/backend/doberman_agent/core/config/settings.py` — `CeleryConf.validate` 注册任务:
     ```python
     if 'reconcile_user_tenant_assignments' not in self.beat_schedule:
         self.beat_schedule['reconcile_user_tenant_assignments'] = {
-            'task': 'bisheng.worker.tenant_reconcile.tasks.reconcile_user_tenant_assignments',
+            'task': 'doberman_agent.worker.tenant_reconcile.tasks.reconcile_user_tenant_assignments',
             'schedule': crontab.from_string('0 */6 * * *'),  # 每 6h（00:00/06:00/12:00/18:00）
         }
     ```
   **逻辑**（计划 §3 Q8）:
   ```python
-  @bisheng_celery.task(acks_late=True, time_limit=1800)
+  @doberman_agent_celery.task(acks_late=True, time_limit=1800)
   def reconcile_user_tenant_assignments():
       loop = asyncio.new_event_loop()
       try:
@@ -532,7 +532,7 @@ T01 (errcode + UserTenantSyncConf)
 主要偏差：
 - **T02 DAO-method 测试精简**：6 条 SQL 级行为测试 替代原 4 条 async+Redis mock（conftest `premock_import_chain` + SQLModel metadata 双重注册冲突不可解；DAO 方法的 Redis 缓存路径由 T06 集成调用链间接覆盖）。
 - **T10 endpoint 抽离**：handler 独立到 `user/api/current_tenant.py`，原 `user.py` 仅作路由薄包装（`user.py` 导入链过重单测不可用）。
-- **T11 测试 importlib 旁路**：通过 `importlib.util.spec_from_file_location` 直接加载 `tasks.py`，绕过 `bisheng.worker/__init__.py` 的 eager-import。
+- **T11 测试 importlib 旁路**：通过 `importlib.util.spec_from_file_location` 直接加载 `tasks.py`，绕过 `doberman_agent.worker/__init__.py` 的 eager-import。
 - **T08 Middleware 原地增强**：未拆 `TenantContextMiddleware`，直接在 `CustomMiddleware.dispatch` 内集成（plan §3 Q2 决策）。
 - **T07 登录流程扩展**：`user/domain/services/user.py::user_login` 增加 `UserTenantSyncService.sync_user(trigger=LOGIN)` 并用 `UserDao.aget_token_version` 刷新版本，保证 JWT 携带最新 token_version。
 

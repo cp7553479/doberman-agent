@@ -395,17 +395,17 @@
     "same_as_integrated": false
   },
   {
-    "path": "src/backend/bisheng/api/services/f048_preset_dashboard_bootstrap.py",
+    "path": "src/backend/doberman_agent/api/services/f048_preset_dashboard_bootstrap.py",
     "sha256": "80d0118a2065f2e1e2e69d50a48a512f810d6c43ac40428ec0454e805734ad30",
     "same_as_integrated": true
   },
   {
-    "path": "src/backend/bisheng/core/context/tenant.py",
+    "path": "src/backend/doberman_agent/core/context/tenant.py",
     "sha256": "6cd240901bab1b9fc8983044ea4e3fe1eb6d31a908304efba6417ef1b5ddf62a",
     "same_as_integrated": true
   },
   {
-    "path": "src/backend/bisheng/permission/application/system_resource_reconcile.py",
+    "path": "src/backend/doberman_agent/permission/application/system_resource_reconcile.py",
     "sha256": "48a3ec8b62cca4d97a99eeab896505fbe2a21f7d167b2e4e36f43ccd85c742cf",
     "same_as_integrated": false
   },

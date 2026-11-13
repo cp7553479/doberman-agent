@@ -104,7 +104,7 @@ def _quote(identifier: str) -> str:
 def _check_identifier(name: str, *, what: str) -> str:
     if not isinstance(name, str) or not _IDENTIFIER.match(name):
         raise DataInvalidError(f"{what} {name!r} is not a plain identifier")
-    if name.lower().startswith(("sqlite_", "_bisheng_")):
+    if name.lower().startswith(("sqlite_", "_doberman_agent_")):
         raise DataInvalidError(f"{what} {name!r} is reserved by SQLite")
     return name
 
@@ -281,7 +281,7 @@ class AppDbService:
     @staticmethod
     def _table_names(conn: sqlite3.Connection) -> list[str]:
         rows = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_bisheng_*' ORDER BY name"
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_doberman_agent_*' ORDER BY name"
         ).fetchall()
         return [row["name"] for row in rows]
 
@@ -530,7 +530,7 @@ DESTRUCTIVE_OPS: frozenset[str] = frozenset({PLAN_REBUILD_TABLE, PLAN_DROP_TABLE
 
 #: Suffix of the scratch table a rebuild goes through. Long enough that it
 #: cannot collide with a declared name, and dropped again either way.
-_REBUILD_SUFFIX = "__bisheng_migrating"
+_REBUILD_SUFFIX = "__doberman_agent_migrating"
 
 #: A declared column type, as it may be quoted into DDL. SQLite accepts any
 #: string as a type name (affinity is derived from substrings), so the check is
@@ -987,10 +987,10 @@ class PlatformAppDb(AppDbSchemaService):
         try:
             conn.execute("BEGIN IMMEDIATE")
             conn.execute(
-                "CREATE TABLE IF NOT EXISTS _bisheng_runtime_migrations (operation_id TEXT PRIMARY KEY, plan_digest TEXT NOT NULL)"
+                "CREATE TABLE IF NOT EXISTS _doberman_agent_runtime_migrations (operation_id TEXT PRIMARY KEY, plan_digest TEXT NOT NULL)"
             )
             previous = conn.execute(
-                "SELECT plan_digest FROM _bisheng_runtime_migrations WHERE operation_id=?",
+                "SELECT plan_digest FROM _doberman_agent_runtime_migrations WHERE operation_id=?",
                 (self.operation["operation_id"],),
             ).fetchone()
             if previous:
@@ -1003,7 +1003,7 @@ class PlatformAppDb(AppDbSchemaService):
             for item in items:
                 applied.append(self._apply_one(conn, item))
             conn.execute(
-                "INSERT INTO _bisheng_runtime_migrations VALUES (?,?)", (self.operation["operation_id"], digest)
+                "INSERT INTO _doberman_agent_runtime_migrations VALUES (?,?)", (self.operation["operation_id"], digest)
             )
             conn.commit()
             return {"applied": applied, "skipped": []}

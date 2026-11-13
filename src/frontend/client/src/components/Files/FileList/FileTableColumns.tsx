@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TFile } from '~/types/chat';
 import { CrossIcon, DotsIcon } from '~/components/svg';
 import { Button } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { formatDate, getFileType } from '~/utils';
 import useLocalize from '~/hooks/useLocalize';
 import FileIcon from '~/components/svg/Files/FileIcon';

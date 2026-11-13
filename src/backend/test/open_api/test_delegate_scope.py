@@ -2,9 +2,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
-from bisheng.open_api.domain.schemas.credential import DelegateScopeInput
-from bisheng.open_api.domain.services.delegate_scope_service import DelegateScopeService
+from doberman_agent.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
+from doberman_agent.open_api.domain.schemas.credential import DelegateScopeInput
+from doberman_agent.open_api.domain.services.delegate_scope_service import DelegateScopeService
 
 
 async def test_user_and_department_scopes_are_validated_in_tenant(monkeypatch):
@@ -18,11 +18,11 @@ async def test_user_and_department_scopes_are_validated_in_tenant(monkeypatch):
         }
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
+        "doberman_agent.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
         users,
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.delegate_scope_service.DelegateScopeRepository.get_departments",
+        "doberman_agent.open_api.domain.services.delegate_scope_service.DelegateScopeRepository.get_departments",
         departments,
     )
     entries = await DelegateScopeService.validate_entries(
@@ -41,7 +41,7 @@ async def test_cross_tenant_or_inactive_scope_is_rejected(monkeypatch):
         return {9: SimpleNamespace(user_id=9, tenant_id=5)}
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
+        "doberman_agent.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
         cross_tenant,
     )
     with pytest.raises(OpenApiDelegateConfigurationInvalidError):

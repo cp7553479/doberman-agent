@@ -19,15 +19,15 @@ import pytest
 from fastapi import HTTPException
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.services import knowledge_space_chat_service as svc_mod
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services import knowledge_space_chat_service as svc_mod
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
 
 
 class _StubNotFoundError(Exception):
-    """Stand-in for bisheng.common.errcode.http_error.NotFoundError.
+    """Stand-in for doberman_agent.common.errcode.http_error.NotFoundError.
 
-    The project's conftest pre-mocks bisheng.common.errcode.http_error as a
+    The project's conftest pre-mocks doberman_agent.common.errcode.http_error as a
     MagicMock, so the real NotFoundError class is unavailable inside tests. We
     inject this real-exception substitute into svc_mod so ``raise NotFoundError``
     paths can be asserted against. Accepts the same kwargs as the real class.

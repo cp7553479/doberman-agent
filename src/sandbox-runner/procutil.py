@@ -1,4 +1,4 @@
-"""Process-group kill and tree ownership helpers. Must not import bisheng."""
+"""Process-group kill and tree ownership helpers. Must not import doberman_agent."""
 
 from __future__ import annotations
 

@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.channel.domain.services.information_knowledge_delivery_service import (
+from doberman_agent.channel.domain.services.information_knowledge_delivery_service import (
     InformationKnowledgeDeliveryService,
 )
-from bisheng.common.errcode.knowledge_space import SpaceFileNameDuplicateError
+from doberman_agent.common.errcode.knowledge_space import SpaceFileNameDuplicateError
 
 
 def _config():

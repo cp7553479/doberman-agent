@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { toast } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
 import { Camera, X } from "lucide-react";
 import type { ChangeEvent, ReactNode } from "react";
 import { useTranslation } from "react-i18next";

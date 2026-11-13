@@ -18,10 +18,10 @@ import pytest
 from loguru import logger
 from sqlalchemy import text
 
-from bisheng.common.services import metric_log as ml
-from bisheng.common.services.metric_log import DbQueryHistogram
-from bisheng.core.config.settings import MetricLogConf
-from bisheng.core.database.connection import DatabaseConnectionManager
+from doberman_agent.common.services import metric_log as ml
+from doberman_agent.common.services.metric_log import DbQueryHistogram
+from doberman_agent.core.config.settings import MetricLogConf
+from doberman_agent.core.database.connection import DatabaseConnectionManager
 
 
 @contextmanager
@@ -51,7 +51,7 @@ def _reset_histogram():
 
 @pytest.fixture
 def set_conf(monkeypatch):
-    from bisheng.common.services import config_service
+    from doberman_agent.common.services import config_service
 
     def _set(**kw):
         monkeypatch.setattr(config_service.settings, "metric_log", MetricLogConf(**kw), raising=False)

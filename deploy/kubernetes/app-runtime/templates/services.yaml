@@ -10,7 +10,7 @@
 {{- if .Release.IsUpgrade }}
 {{- if not $canary }}{{ fail "existing canary plans are required for upgrade" }}{{ end }}
 {{- $owned := dict "runtime-canary-plans" $canary }}
-{{- $installation := get (default (dict) $canary.metadata.labels) "runtime.bisheng.io/installation" }}
+{{- $installation := get (default (dict) $canary.metadata.labels) "runtime.doberman-agent.io/installation" }}
 {{- if and $installation (ne $installation .Values.execution.installationId) }}
 {{- fail "canary installation identity mismatch" }}
 {{- end }}
@@ -62,7 +62,7 @@
 {{- end }}
 {{- $template := default (dict) $plan.template }}
 {{- $meta := default (dict) $template.metadata }}
-{{- if or (ne $template.kind $plan.kind) (ne $meta.name $plan.name) (ne $meta.namespace $plan.namespace) (ne (get (default (dict) $meta.labels) "runtime.bisheng.io/resource") $ref) }}
+{{- if or (ne $template.kind $plan.kind) (ne $meta.name $plan.name) (ne $meta.namespace $plan.namespace) (ne (get (default (dict) $meta.labels) "runtime.doberman-agent.io/resource") $ref) }}
 {{- fail "existing canary plan template scope is invalid" }}
 {{- end }}
 {{- end }}
@@ -89,7 +89,7 @@ metadata:
   annotations:
     helm.sh/resource-policy: keep
   labels:
-    runtime.bisheng.io/installation: {{ .Values.execution.installationId }}
+    runtime.doberman-agent.io/installation: {{ .Values.execution.installationId }}
     pod-security.kubernetes.io/enforce: restricted
     pod-security.kubernetes.io/enforce-version: v1.28
 ---
@@ -150,7 +150,7 @@ metadata:
   name: runtime-canary-plans
   namespace: {{ .Values.services.namespace }}
   labels:
-    runtime.bisheng.io/installation: {{ .Values.execution.installationId | quote }}
+    runtime.doberman-agent.io/installation: {{ .Values.execution.installationId | quote }}
 {{- if .Release.IsUpgrade }}
   uid: {{ $canary.metadata.uid | quote }}
   resourceVersion: {{ $canary.metadata.resourceVersion | quote }}

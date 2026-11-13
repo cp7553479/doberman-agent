@@ -33,14 +33,14 @@ pytestmark = pytest.mark.asyncio
 
 
 def _handler():
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
 
     return AppPublishScenarioHandler()
 
 
 def _result(*, state: str, ok: bool = True, reason: str = "", version_id: str | None = None, detail=None):
     """An ``ActionResult`` as F054's state actions return it."""
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult
 
     return ActionResult(
         app_id="app",
@@ -54,7 +54,7 @@ def _result(*, state: str, ok: bool = True, reason: str = "", version_id: str | 
 
 async def _scene(app_factory, deployment_factory, *, state: str = "draft"):
     """An app with a version and the deployment whose approval just passed."""
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
 
     app, version = await app_factory(state=state, with_version=True)
     deployment = await deployment_factory(
@@ -85,7 +85,7 @@ def state_actions(monkeypatch):
     orchestrator, and what is under test here is the *dispatch* — which branch
     ran, and whether the callback returned or raised.
     """
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     calls: list[tuple[str, dict]] = []
     responses: dict[str, object] = {
@@ -118,7 +118,7 @@ def state_actions(monkeypatch):
 
 
 async def _terminal_state(publish_db, app_id: str, version_id: str):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async with publish_db() as session:
         row = await AppVersionDao.aget(session, app_id, version_id)
@@ -240,7 +240,7 @@ async def test_second_capacity_gate_is_reported_as_capacity_not_as_a_crash(
     stage called that a crash and sent the owner to debug code that was fine,
     so the **code** is what decides.
     """
-    from bisheng.common.errcode.app_publish import AppCapacityInsufficientError
+    from doberman_agent.common.errcode.app_publish import AppCapacityInsufficientError
 
     _, _, _, payload = await _scene(app_factory, deployment_factory)
     state_actions.responses["publish"] = _result(
@@ -306,9 +306,9 @@ async def test_failed_iteration_records_the_run_as_failed(
 
     Nothing is waiting for capacity or for a human to press a button — the
     submission simply did not land, and "fix it and deploy again" is the next
-    step. ``bisheng deploy --wait`` reads ``status`` to tell the user that.
+    step. ``doberman-agent deploy --wait`` reads ``status`` to tell the user that.
     """
-    from bisheng.app_publish.domain.models.app_deployment import (
+    from doberman_agent.app_publish.domain.models.app_deployment import (
         STAGE_PUBLISHING,
         STATUS_FAILED,
         AppDeploymentDao,
@@ -457,7 +457,7 @@ async def test_version_not_found_raises_16253(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications
 ):
     """Nothing to publish now or ever — that needs an administrator, so it raises."""
-    from bisheng.common.errcode.app_publish import AppVersionNotFoundError
+    from doberman_agent.common.errcode.app_publish import AppVersionNotFoundError
 
     _, _, _, payload = await _scene(app_factory, deployment_factory)
     payload["version_id"] = "no-such-version"
@@ -472,7 +472,7 @@ async def test_orchestrator_unreachable_raises(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications
 ):
     """The system is broken; the outbox's exception record is how somebody finds out."""
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
 
     _, _, _, payload = await _scene(app_factory, deployment_factory)
     state_actions.responses["publish"] = AppOrchestratorUnavailableError()
@@ -485,7 +485,7 @@ async def test_state_conflict_raises(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications
 ):
     """A refused transition is a real conflict, not a parked app: it will not fix itself."""
-    from bisheng.common.errcode.app_factory import AppStateConflictError
+    from doberman_agent.common.errcode.app_factory import AppStateConflictError
 
     _, _, _, payload = await _scene(app_factory, deployment_factory)
     state_actions.responses["stage_version"] = AppStateConflictError(app_id="app")
@@ -505,7 +505,7 @@ async def test_iteration_on_an_online_app_can_publish(publish_db, app_factory, d
     Deliberately exercises the *real* transition table rather than the
     fixture's stand-in — the gap was in the table, and a stub would hide it.
     """
-    from bisheng.app_runtime.domain.constants import AppState, is_transition_allowed
+    from doberman_agent.app_runtime.domain.constants import AppState, is_transition_allowed
 
     assert is_transition_allowed(AppState.ONLINE.value, AppState.ONLINE.value)
     # The neighbouring edges must not have been widened along with it: an online
@@ -524,7 +524,7 @@ async def test_deployment_reaches_a_terminal_stage(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications
 ):
     """The CLI polls ``stage``; both outcomes are ``succeeded`` because the pipeline did its job."""
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     _, _, deployment, payload = await _scene(app_factory, deployment_factory)
 
@@ -538,7 +538,7 @@ async def test_deployment_reaches_a_terminal_stage(
 async def test_parked_deployment_stage_is_pending_online(
     publish_db, app_factory, deployment_factory, state_actions, audit_sink, approval_notifications
 ):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     _, _, deployment, payload = await _scene(app_factory, deployment_factory)
     state_actions.responses["publish"] = _result(state="pending_capacity", ok=False, detail={"stage": "admission"})

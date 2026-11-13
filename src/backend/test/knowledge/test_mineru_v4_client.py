@@ -4,8 +4,8 @@ import zipfile
 import httpx
 import pytest
 
-from bisheng.core.config.settings import MineruV4Conf
-from bisheng.knowledge.rag.pipeline.loader.mineru_v4_client import MineruV4Client, MineruV4Error
+from doberman_agent.core.config.settings import MineruV4Conf
+from doberman_agent.knowledge.rag.pipeline.loader.mineru_v4_client import MineruV4Client, MineruV4Error
 
 
 def _zip_bytes() -> bytes:

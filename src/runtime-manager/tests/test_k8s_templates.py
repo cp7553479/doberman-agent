@@ -10,7 +10,7 @@ def plan():
     from runtime_manager.k8s_templates import PodPlan
 
     return PodPlan(
-        namespace="bisheng-runtime-apps",
+        namespace="doberman-agent-runtime-apps",
         app_id="app-identity",
         operation_id="operation-identity",
         resource_ref="11111111-1111-4111-8111-111111111111",
@@ -104,7 +104,7 @@ def test_preparer_credentials_do_not_cross_untrusted_install_phase(plan):
         assert len(spec["containers"]) == 1
     install = pod_template(replace(base, purpose="prepare-install"))["spec"]
     assert not any(v["name"] == "material-auth" for v in install["volumes"])
-    assert not any(e["name"].startswith("BISHENG_") for e in install["containers"][0]["env"])
+    assert not any(e["name"].startswith("DOBERMAN_AGENT_") for e in install["containers"][0]["env"])
 
 
 def test_data_offline_has_no_business_container_or_platform_credentials(plan):
@@ -132,7 +132,7 @@ def test_service_is_internal_and_selects_the_exact_resource(plan):
 
     obj = service_template(plan)
     assert obj["spec"]["type"] == "ClusterIP"
-    assert obj["spec"]["selector"] == {"runtime.bisheng.io/resource": plan.resource_ref}
+    assert obj["spec"]["selector"] == {"runtime.doberman-agent.io/resource": plan.resource_ref}
     assert obj["spec"]["ports"][0]["targetPort"] == plan.port
     assert "nodePort" not in obj["spec"]["ports"][0]
     with pytest.raises(ValueError):
@@ -189,10 +189,10 @@ def test_template_digest_is_stable_and_changes_with_frozen_inputs(plan):
 def test_business_credentials_use_only_app_scoped_secret_references(plan):
     from runtime_manager.k8s_templates import pod_template
 
-    obj = pod_template(replace(plan, app_secret="app-credentials-a", secret_env=("BISHENG_APP_API_KEY", "HTTPS_PROXY")))
+    obj = pod_template(replace(plan, app_secret="app-credentials-a", secret_env=("DOBERMAN_AGENT_APP_API_KEY", "HTTPS_PROXY")))
     containers = obj["spec"]["containers"]
     app = next(x for x in containers if x["name"] == "app")
-    selected = [x for x in app["env"] if x["name"] in {"BISHENG_APP_API_KEY", "HTTPS_PROXY"}]
+    selected = [x for x in app["env"] if x["name"] in {"DOBERMAN_AGENT_APP_API_KEY", "HTTPS_PROXY"}]
     assert len(selected) == 2
     assert all(x["valueFrom"]["secretKeyRef"]["name"] == "app-credentials-a" for x in selected)
     assert not any("value" in x for x in selected)
@@ -204,8 +204,8 @@ def test_business_credentials_use_only_app_scoped_secret_references(plan):
 @pytest.mark.parametrize(
     "change",
     [
-        {"app_secret": "", "secret_env": ("BISHENG_APP_API_KEY",)},
-        {"app_secret": "../credentials", "secret_env": ("BISHENG_APP_API_KEY",)},
+        {"app_secret": "", "secret_env": ("DOBERMAN_AGENT_APP_API_KEY",)},
+        {"app_secret": "../credentials", "secret_env": ("DOBERMAN_AGENT_APP_API_KEY",)},
         {"app_secret": "app-a", "secret_env": ("RTM_PLATFORM_SECRET",)},
         {"app_secret": "app-a", "secret_env": ("APP_PORT",)},
         {"app_secret": "app-a", "secret_env": ("DUPLICATE", "DUPLICATE")},
@@ -370,13 +370,13 @@ def test_static_bundle_preserves_image_entrypoint_and_frozen_arguments(plan, pur
         runtime_language="static",
         purpose=purpose,
         port=8765,
-        env={"PORT": "8765", "BISHENG_APP_PORT": "8765"},
+        env={"PORT": "8765", "DOBERMAN_AGENT_APP_PORT": "8765"},
         command=frozen,
         pvc_name=plan.pvc_name if purpose == "serve" else "",
         deadline_seconds=None if purpose == "serve" else 60,
     )
     app = next(container for container in pod_template(current)["spec"]["containers"] if container["name"] == "app")
-    assert app["command"] == ["/opt/bisheng/entrypoint.sh"]
+    assert app["command"] == ["/opt/doberman-agent/entrypoint.sh"]
     assert app["args"] == list(frozen) and current.command == frozen
     assert app["ports"] == [{"name": "http", "containerPort": 8765, "protocol": "TCP"}]
     assert {item["name"]: item.get("value") for item in app["env"]}["PORT"] == "8765"

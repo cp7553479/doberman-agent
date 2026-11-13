@@ -10,7 +10,7 @@ from uuid import UUID
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-DOMAIN = b"BISHENG-RUNTIME-DATA-V1\n"
+DOMAIN = b"DOBERMAN_AGENT-RUNTIME-DATA-V1\n"
 ACTIONS = frozenset({"tables", "schema", "rows", "update", "export", "result"})
 CLAIMS = frozenset(
     {

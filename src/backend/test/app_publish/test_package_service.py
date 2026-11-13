@@ -37,7 +37,7 @@ VERSION_ID = "ver-f055-pkg"
 @pytest.fixture(autouse=True)
 def _reset_bucket_cache():
     """The "bucket already ensured" flag is process-level; tests must not inherit it."""
-    from bisheng.app_publish.domain.services import package_service
+    from doberman_agent.app_publish.domain.services import package_service
 
     package_service.reset_bucket_cache()
     yield
@@ -45,7 +45,7 @@ def _reset_bucket_cache():
 
 
 def _extract(tar_path: Path, dest: Path):
-    from bisheng.app_publish.domain.services.package_service import safe_extract
+    from doberman_agent.app_publish.domain.services.package_service import safe_extract
 
     return safe_extract(tar_path, dest)
 
@@ -67,7 +67,7 @@ def _extract(tar_path: Path, dest: Path):
     ],
 )
 async def test_reject_illegal_entry_kinds(tmp_path, tarball_factory, kind, kwargs):
-    from bisheng.common.errcode.app_publish import AppPackageInvalidError
+    from doberman_agent.common.errcode.app_publish import AppPackageInvalidError
 
     package = tarball_factory(**kwargs)
     with pytest.raises(AppPackageInvalidError) as excinfo:
@@ -85,7 +85,7 @@ async def test_valid_package_extracts_completely(tmp_path, tarball_factory):
     """The guard must not be so eager that an ordinary package fails."""
     result = _extract(tarball_factory(), tmp_path / "out")
     names = {path.name for path in result.root.rglob("*") if path.is_file()}
-    assert {"bisheng-app.yaml", "main.py", "requirements.txt"} <= names
+    assert {"doberman-agent-app.yaml", "main.py", "requirements.txt"} <= names
     assert result.entries >= 3
     assert result.unpacked_bytes > 0
 
@@ -97,8 +97,8 @@ async def test_valid_package_extracts_completely(tmp_path, tarball_factory):
 
 async def test_reject_over_max_package_mb_16201(tmp_path, tarball_factory, app_runtime_settings):
     """The upload gate reads deployment configuration, not a constant (F053 AC-32 depends on it)."""
-    from bisheng.app_publish.domain.services.package_service import check_upload_size
-    from bisheng.common.errcode.app_publish import AppPackageTooLargeError
+    from doberman_agent.app_publish.domain.services.package_service import check_upload_size
+    from doberman_agent.common.errcode.app_publish import AppPackageTooLargeError
 
     app_runtime_settings(max_package_mb=1)
     with pytest.raises(AppPackageTooLargeError) as excinfo:
@@ -112,7 +112,7 @@ async def test_reject_over_max_package_mb_16201(tmp_path, tarball_factory, app_r
 
 async def test_reject_over_max_unpacked_mb(tmp_path, tarball_factory, app_runtime_settings):
     """A tar bomb: 8 MB of zeros gzip to a few KB, so only the unpacked gate can see it."""
-    from bisheng.common.errcode.app_publish import AppPackageTooLargeError
+    from doberman_agent.common.errcode.app_publish import AppPackageTooLargeError
 
     app_runtime_settings(max_unpacked_mb=2, max_package_mb=50, max_package_entries=20000)
     package = tarball_factory(payload_mb=8)
@@ -124,7 +124,7 @@ async def test_reject_over_max_unpacked_mb(tmp_path, tarball_factory, app_runtim
 
 
 async def test_reject_over_max_package_entries(tmp_path, tarball_factory, app_runtime_settings):
-    from bisheng.common.errcode.app_publish import AppPackageTooLargeError
+    from doberman_agent.common.errcode.app_publish import AppPackageTooLargeError
 
     app_runtime_settings(max_package_entries=50, max_unpacked_mb=200)
     with pytest.raises(AppPackageTooLargeError) as excinfo:
@@ -134,8 +134,8 @@ async def test_reject_over_max_package_entries(tmp_path, tarball_factory, app_ru
 
 async def test_missing_manifest_is_16203_not_a_package_error(tmp_path, tarball_factory):
     """"You forgot the manifest" is its own code — it is a fixable authoring mistake, not a broken package."""
-    from bisheng.app_publish.domain.services.package_service import read_manifest_bytes
-    from bisheng.common.errcode.app_publish import AppManifestMissingError
+    from doberman_agent.app_publish.domain.services.package_service import read_manifest_bytes
+    from doberman_agent.common.errcode.app_publish import AppManifestMissingError
 
     result = _extract(tarball_factory(include_manifest=False), tmp_path / "out")
     with pytest.raises(AppManifestMissingError) as excinfo:
@@ -150,7 +150,7 @@ async def test_missing_manifest_is_16203_not_a_package_error(tmp_path, tarball_f
 
 async def test_snapshot_key_layout_matches_f054(tmp_path, tarball_factory, fake_minio):
     """``apps/{app_id}/versions/{version_id}/code.tar.gz`` — F054's layout, written once."""
-    from bisheng.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key, store_package
+    from doberman_agent.app_publish.domain.services.package_service import APPS_BUCKET, snapshot_key, store_package
 
     package = tarball_factory()
     key = await store_package(package, app_id=APP_ID, version_id=VERSION_ID)
@@ -162,7 +162,7 @@ async def test_snapshot_key_layout_matches_f054(tmp_path, tarball_factory, fake_
 
 async def test_upload_never_read_into_memory(tmp_path, tarball_factory, fake_minio):
     """``put_object(file=Path(...))`` → ``fput_object``; ``await file.read()`` would heap a 50 MB package."""
-    from bisheng.app_publish.domain.services.package_service import store_package
+    from doberman_agent.app_publish.domain.services.package_service import store_package
 
     await store_package(tarball_factory(), app_id=APP_ID, version_id=VERSION_ID)
     put = [call for call in fake_minio.calls if call[0] == "put_object"]
@@ -173,8 +173,8 @@ async def test_bucket_ensured_idempotently_on_first_use(tmp_path, tarball_factor
     """The private bucket is this service's business — ``_init_bucket_conf`` stays untouched (坑 14)."""
     import inspect
 
-    from bisheng.app_publish.domain.services.package_service import APPS_BUCKET, store_package
-    from bisheng.core.storage.minio.minio_storage import MinioStorage
+    from doberman_agent.app_publish.domain.services.package_service import APPS_BUCKET, store_package
+    from doberman_agent.core.storage.minio.minio_storage import MinioStorage
 
     await store_package(tarball_factory(), app_id=APP_ID, version_id="v1")
     await store_package(tarball_factory(), app_id=APP_ID, version_id="v2")
@@ -187,7 +187,7 @@ async def test_bucket_ensured_idempotently_on_first_use(tmp_path, tarball_factor
 
 async def test_snapshot_immutable_and_retrievable(tmp_path, tarball_factory, fake_minio):
     """AC-43: any version's snapshot comes back byte-for-byte, for review / preview / rollback."""
-    from bisheng.app_publish.domain.services.package_service import fetch_package, store_package
+    from doberman_agent.app_publish.domain.services.package_service import fetch_package, store_package
 
     package = tarball_factory()
     original = package.read_bytes()
@@ -210,8 +210,8 @@ async def test_orphan_cleanup_on_next_deploy_same_app(publish_db, tmp_path, tarb
     """
     from sqlalchemy import update
 
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeployment
-    from bisheng.app_publish.domain.services.package_service import cleanup_orphans, store_package
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED, AppDeployment
+    from doberman_agent.app_publish.domain.services.package_service import cleanup_orphans, store_package
 
     app_row, live_version = await app_factory()
 
@@ -240,6 +240,6 @@ async def test_orphan_cleanup_on_next_deploy_same_app(publish_db, tmp_path, tarb
 
 
 async def fetch_or_none(key: str):
-    from bisheng.app_publish.domain.services.package_service import fetch_package
+    from doberman_agent.app_publish.domain.services.package_service import fetch_package
 
     return await fetch_package(key)

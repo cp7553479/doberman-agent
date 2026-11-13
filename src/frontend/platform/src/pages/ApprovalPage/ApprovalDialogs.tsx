@@ -1,9 +1,9 @@
-import { Button, Input, Textarea } from '@bisheng/ui';
+import { Button, Input, Textarea } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import type { ApproverSource } from "./approvalMetadata";
 import { approverSourceLabel } from "./approverSources";
 import { useContext } from "react";

@@ -1,6 +1,6 @@
-import { Tabs, Tag } from "@bisheng/ui";
-import { VersionDiffView } from "@bisheng/file-viewers";
-import { Outlined } from "bisheng-icons";
+import { Tabs, Tag } from "@doberman-agent/ui";
+import { VersionDiffView } from "@doberman-agent/file-viewers";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import {
   getReviewContextApi,

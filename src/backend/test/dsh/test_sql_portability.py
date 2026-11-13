@@ -11,12 +11,12 @@ from sqlalchemy.dialects.mysql import dialect as MySQLDialect
 from sqlalchemy.engine.default import DefaultDialect
 from sqlalchemy.schema import CreateColumn, CreateIndex, CreateTable
 
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.core.database.dialect_helpers import JsonType
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.core.database.dialect_helpers import JsonType
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 
 BACKEND = Path(__file__).resolve().parents[2]
@@ -64,10 +64,10 @@ def _raw_sql_calls(source):
 
 
 def test_dsh_business_and_migration_have_no_raw_sql_entry_points():
-    files = sorted((BACKEND / "bisheng/dsh").rglob("*.py"))
+    files = sorted((BACKEND / "doberman_agent/dsh").rglob("*.py"))
     files += [
-        BACKEND / "bisheng/user/domain/repositories/dsh_profile.py",
-        BACKEND / "bisheng/core/database/alembic/versions/v3_0_0_f062_profile_version.py",
+        BACKEND / "doberman_agent/user/domain/repositories/dsh_profile.py",
+        BACKEND / "doberman_agent/core/database/alembic/versions/v3_0_0_f062_profile_version.py",
     ]
     violations = []
     for source_file in files:
@@ -112,7 +112,7 @@ def sql_dialect(request):
 
 
 def test_model_ddl_and_profile_column_compile_with_real_dialect(sql_dialect):
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.user.domain.models.user import User
 
     for model in MODELS:
         ddl = str(CreateTable(model.__table__).compile(dialect=sql_dialect))
@@ -151,10 +151,10 @@ class _CaptureSession:
 
 
 def test_repository_queries_pagination_and_row_locks_compile_with_real_dialect(sql_dialect):
-    from bisheng.dsh.domain.repositories.admin_operation import DshOperationRepository
-    from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
-    from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-    from bisheng.user.domain.repositories.dsh_profile import UserDshProfileRepository
+    from doberman_agent.dsh.domain.repositories.admin_operation import DshOperationRepository
+    from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+    from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+    from doberman_agent.user.domain.repositories.dsh_profile import UserDshProfileRepository
 
     session = _CaptureSession()
     token = set_current_tenant_id(2)

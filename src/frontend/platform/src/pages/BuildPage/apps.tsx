@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, SearchInput, notification } from '@bisheng/ui';
+import { Button, SearchInput, notification } from '@doberman-agent/ui';
 import CardComponent from "@/components/bs-comp/cardComponent";
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import LabelShow from "@/components/bs-comp/cardComponent/LabelShow";
@@ -7,7 +7,7 @@ import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDial
 import { hasResourceAction,useResourceActions } from "@/components/bs-comp/permission/useResourceActions";
 import AppTempSheet from "@/components/bs-comp/sheets/AppTempSheet";
 import { LoadingIcon } from "@/components/bs-icons/loading";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import LoadMore from "@/components/bs-comp/loadMore";
@@ -31,7 +31,7 @@ import { HOSTED_APP_STATES, stateI18nKey } from "./hostedApp/types";
 import { FlowType } from "@/types/flow";
 import { useInfiniteCursorTable } from "@/util/hook";
 import { generateUUID } from "@/utils";
-import { Select, Tag } from "@bisheng/ui";
+import { Select, Tag } from "@doberman-agent/ui";
 import { useContext,useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";

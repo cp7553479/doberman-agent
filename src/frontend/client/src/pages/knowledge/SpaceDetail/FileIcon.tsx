@@ -1,5 +1,5 @@
 import React from 'react';
-import { Colored } from 'bisheng-icons';
+import { Colored } from '@doberman-agent/icons';
 import { FileStatus, FileType } from '~/api/knowledge';
 import { TxtIcon, FolderIcon } from '~/components/icons';
 import { cn } from '~/utils';

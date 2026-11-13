@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import os
 
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
 
 class _FakeMinio:
@@ -47,7 +47,7 @@ def _touch(root, rel: str) -> str:
 def test_mirror_is_a_noop_without_a_workspace_prefix(tmp_path, monkeypatch):
     """Non-linsight callers (and E2B) never get a prefix — they must not mirror."""
     _touch(tmp_path, "output/a.txt")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"})
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"})
     fake = _FakeMinio()
     monkeypatch.setattr(exe, "_minio_client", lambda: fake)
 
@@ -64,7 +64,7 @@ def test_mirror_is_a_noop_without_minio_config(tmp_path):
 def test_mirror_puts_each_file_under_the_workspace_prefix(tmp_path, monkeypatch):
     deck = _touch(tmp_path, "output/deck.pptx")
     chart = _touch(tmp_path, "scratch/chart.png")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc123")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc123")
     fake = _FakeMinio()
     monkeypatch.setattr(exe, "_minio_client", lambda: fake)
 
@@ -72,8 +72,8 @@ def test_mirror_puts_each_file_under_the_workspace_prefix(tmp_path, monkeypatch)
 
     assert synced == 2
     assert fake.calls == [
-        ("bisheng", "workspace/abc123/output/deck.pptx", deck),
-        ("bisheng", "workspace/abc123/scratch/chart.png", chart),
+        ("doberman_agent", "workspace/abc123/output/deck.pptx", deck),
+        ("doberman_agent", "workspace/abc123/scratch/chart.png", chart),
     ]
 
 
@@ -82,7 +82,7 @@ def test_mirror_skips_paths_that_are_not_files(tmp_path, monkeypatch):
     must be skipped rather than blow up the run."""
     _touch(tmp_path, "output/kept.txt")
     os.makedirs(os.path.join(tmp_path, "output", "subdir"), exist_ok=True)
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc")
     fake = _FakeMinio()
     monkeypatch.setattr(exe, "_minio_client", lambda: fake)
 
@@ -97,19 +97,19 @@ def test_one_failed_object_does_not_abort_the_rest(tmp_path, monkeypatch):
     degrade that one file, never the run."""
     _touch(tmp_path, "output/first.txt")
     second = _touch(tmp_path, "output/second.txt")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc")
     fake = _FakeMinio(fail_first=1)
     monkeypatch.setattr(exe, "_minio_client", lambda: fake)
 
     synced = exe.sync_to_workspace(str(tmp_path), ["output/first.txt", "output/second.txt"])
 
     assert synced == 1
-    assert fake.calls == [("bisheng", "workspace/abc/output/second.txt", second)]
+    assert fake.calls == [("doberman_agent", "workspace/abc/output/second.txt", second)]
 
 
 def test_client_init_failure_is_swallowed(tmp_path, monkeypatch):
     _touch(tmp_path, "output/a.txt")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc")
 
     def _boom():
         raise RuntimeError("cannot reach object storage")
@@ -120,7 +120,7 @@ def test_client_init_failure_is_swallowed(tmp_path, monkeypatch):
 
 def test_prefix_slashes_are_normalised(tmp_path, monkeypatch):
     _touch(tmp_path, "output/a.txt")
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="/workspace/abc/")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="/workspace/abc/")
     fake = _FakeMinio()
     monkeypatch.setattr(exe, "_minio_client", lambda: fake)
 
@@ -137,7 +137,7 @@ def test_run_with_dir_mirrors_exactly_what_the_run_touched(tmp_path, monkeypatch
     i.e. this run's files, not the whole working dir."""
     _touch(tmp_path, "uploads/preexisting.xlsx")  # present BEFORE the run
 
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc")
     exe.local_sync_path = str(tmp_path)
 
     def _fake_execute(code, work_dir=None, lang=None, **kwargs):
@@ -158,7 +158,7 @@ def test_run_with_dir_mirrors_exactly_what_the_run_touched(tmp_path, monkeypatch
 
 def test_run_with_dir_does_not_mirror_on_failure(tmp_path, monkeypatch):
     """A failed run returns early; nothing it half-wrote should reach the workspace."""
-    exe = LocalExecutor(minio={"public_bucket": "bisheng"}, workspace_prefix="workspace/abc")
+    exe = LocalExecutor(minio={"public_bucket": "doberman_agent"}, workspace_prefix="workspace/abc")
     exe.local_sync_path = str(tmp_path)
     monkeypatch.setattr(exe, "execute_code", lambda code, work_dir=None, lang=None, **kw: (1, "boom\n", []))
 

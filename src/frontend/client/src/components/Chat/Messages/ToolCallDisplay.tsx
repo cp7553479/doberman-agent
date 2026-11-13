@@ -10,7 +10,7 @@
  *   - "web"         → 「已联网搜索 (N 个结果)」, site-style chips (title + source)
  *   - "tool" (any)  → 「已调用 {display_name} 工具」, brief chips / result preview
  */
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { AlertCircle } from "lucide-react";
 import { memo, useEffect, useState, type FC } from "react";
 import type { AgentToolCall } from "~/api/chatApi";

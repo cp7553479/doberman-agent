@@ -2,7 +2,7 @@
 
 **测试环境**: Platform 前端（`npm start` :3001，vite 代理指向本地后端 :7860）/ Client `:3001/workspace`
 **后端**: localhost:7860（真实中台 192.168.106.116：MySQL/Redis/Milvus/ES/MinIO/OpenFGA）
-**账号**: admin / `Bisheng@top1`（super_admin，配置者）+ 至少一个普通用户（运行使用者，对目标空间文件有**差异化** `view_file`）
+**账号**: admin / `doberman-agent@top1`（super_admin，配置者）+ 至少一个普通用户（运行使用者，对目标空间文件有**差异化** `view_file`）
 
 > API 端可自动化的 AC（AC-02/03/04/05/10/11）已由 `test/backend/test/e2e/test_e2e_f041_knowledge_space_select.py` 覆盖并通过（6/6）。
 > 本清单覆盖**需真实向量库检索 / 差异化权限 / 浏览器交互**的 AC——单测已覆盖过滤/分级纯逻辑，此处验证端到端真实链路。
@@ -80,7 +80,7 @@
 ## 运行时回归（worker）
 
 ### 坑 5.2: 无 "Event loop is closed"
-- [ ] 起 `workflow_celery` worker（`uv run celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery`）
+- [ ] 起 `workflow_celery` worker（`uv run celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery`）
 - [ ] 以**非配置者**账号触发含知识空间检索节点的工作流
 - [ ] 预期：worker 日志无 `Event loop is closed`、无 OpenFGA/aiomysql 单例报错；检索正常返回（run_async_safe 单一持久 loop 生效）
 

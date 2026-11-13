@@ -24,9 +24,9 @@ import zipfile
 import openpyxl
 import pytest
 
-from bisheng.common.errcode.knowledge import KnowledgeFileDamagedError
-from bisheng.knowledge.rag.pipeline.loader.utils.md_from_excel import convert_file_to_markdown
-from bisheng.knowledge.rag.pipeline.loader.utils.xlsx_repair import STYLES_PART, repair_xlsx_styles
+from doberman_agent.common.errcode.knowledge import KnowledgeFileDamagedError
+from doberman_agent.knowledge.rag.pipeline.loader.utils.md_from_excel import convert_file_to_markdown
+from doberman_agent.knowledge.rag.pipeline.loader.utils.xlsx_repair import STYLES_PART, repair_xlsx_styles
 
 
 def _write_workbook(path, rows=(("名称", "数量"), ("大豆", 12))):

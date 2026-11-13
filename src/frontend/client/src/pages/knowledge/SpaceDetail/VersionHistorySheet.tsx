@@ -1,5 +1,5 @@
 import { showApiError } from "~/api/request";
-import { Button as RetryButton, Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Button as RetryButton, Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { CheckCircle, Download, Eye, Loader2, Trash2, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/Dialog";

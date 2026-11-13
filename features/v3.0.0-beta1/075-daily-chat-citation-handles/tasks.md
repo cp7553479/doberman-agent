@@ -27,7 +27,7 @@
   **依赖**: 无
 
 - [x] **T002**: `HandleStreamConverter` 实现
-  **文件**: `src/backend/bisheng/citation/domain/services/citation_handle_service.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/citation_handle_service.py`
   **逻辑**: design §3 决策 2
   **测试**: T001 通过
   **依赖**: T001
@@ -58,7 +58,7 @@
 ### Wave 2：日常模式接线
 
 - [x] **T007**: `DailyCitationScope`
-  **文件**: `src/backend/bisheng/citation/domain/services/daily_citation_scope.py`
+  **文件**: `src/backend/doberman_agent/citation/domain/services/daily_citation_scope.py`
   **逻辑**: 鸭子类型满足 `assign_handles`；`load()` 水化；本轮统计 seen / unknown / legacy；`pins_contract = False`
   **依赖**: T006
 

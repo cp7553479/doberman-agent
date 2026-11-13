@@ -12,11 +12,11 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.messages import AIMessage
 
-from bisheng.api.v1.schemas import KnowledgeSpaceConfig
-from bisheng.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
+from doberman_agent.api.v1.schemas import KnowledgeSpaceConfig
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_service import KnowledgeSpaceChatService
 
-_YAML = Path(__file__).resolve().parents[2] / "bisheng" / "core" / "prompts" / "yaml" / "knowledge_space.yaml"
-_IMG = "![chart](/bisheng/knowledge/images/1/2/chart.png)"
+_YAML = Path(__file__).resolve().parents[2] / "doberman_agent" / "core" / "prompts" / "yaml" / "knowledge_space.yaml"
+_IMG = "![chart](/doberman_agent/knowledge/images/1/2/chart.png)"
 
 
 def _service() -> KnowledgeSpaceChatService:
@@ -35,7 +35,7 @@ def test_default_yaml_is_not_rewritten_with_view_image_rules():
 def test_apply_image_anchors_when_visual_and_markdown():
     text, registry = KnowledgeSpaceChatService._apply_image_anchors(f"body {_IMG}", visual=True)
     assert f"{_IMG}⟦img#1⟧" in text
-    assert registry.get("img#1") == {"url": "/bisheng/knowledge/images/1/2/chart.png"}
+    assert registry.get("img#1") == {"url": "/doberman_agent/knowledge/images/1/2/chart.png"}
 
 
 def test_apply_image_anchors_skipped_when_not_visual():
@@ -57,7 +57,7 @@ def test_apply_image_anchors_noop_without_markdown_image():
 async def test_resolve_workbench_visual_follows_image_view_tool(monkeypatch):
     service = _service()
     configured = AsyncMock(return_value=True)
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", configured)
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", configured)
     assert await service._resolve_workbench_visual(11) is True
     configured.return_value = False
     assert await service._resolve_workbench_visual(2) is False
@@ -85,10 +85,10 @@ async def test_render_uses_vision_loop_when_visual_and_images(monkeypatch):
 
     async def fake_loop(model, messages, registry, *, visual, **kwargs):
         loop_calls.append((visual, len(registry), "".join(str(m.content) for m in messages)))
-        yield AIMessage(content="answer with ![](/bisheng/knowledge/images/1/2/chart.png)")
+        yield AIMessage(content="answer with ![](/doberman_agent/knowledge/images/1/2/chart.png)")
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.run_react_vision_stream",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.run_react_vision_stream",
         fake_loop,
     )
 
@@ -97,11 +97,11 @@ async def test_render_uses_vision_loop_when_visual_and_images(monkeypatch):
             row.id = index
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.ChatMessageDao.ainsert_batch",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.ChatMessageDao.ainsert_batch",
         _insert,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.save_message_citations",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.save_message_citations",
         AsyncMock(),
     )
 
@@ -135,15 +135,15 @@ async def test_render_does_not_annotate_when_visual_false(monkeypatch):
         yield AIMessage(content="ok")
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.run_react_vision_stream",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.run_react_vision_stream",
         fake_loop,
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.ChatMessageDao.ainsert_batch",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.ChatMessageDao.ainsert_batch",
         AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_chat_service.save_message_citations",
+        "doberman_agent.knowledge.domain.services.knowledge_space_chat_service.save_message_citations",
         AsyncMock(),
     )
 

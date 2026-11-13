@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { Button, Input, Textarea, Toaster, Notifier, notification, toast } from '@bisheng/ui';
+import { Button, Input, Textarea, Toaster, Notifier, notification, toast } from '@doberman-agent/ui';
 import { InputList } from '@/components/bs-comp/formFields/InputList';
 import { NonNegativeInput } from '@/components/bs-comp/formFields/NonNegativeInput';
 import { PassInput } from '@/components/bs-comp/formFields/PassInput';

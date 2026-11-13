@@ -16,9 +16,9 @@ metadata:
   name: {{ .name }}
   annotations: {helm.sh/resource-policy: keep}
   labels:
-    runtime.bisheng.io/installation: {{ $.Values.execution.installationId }}
-    runtime.bisheng.io/namespace: {{ $.Values.execution.namespace }}
-    runtime.bisheng.io/volume-role: {{ .role }}
+    runtime.doberman-agent.io/installation: {{ $.Values.execution.installationId }}
+    runtime.doberman-agent.io/namespace: {{ $.Values.execution.namespace }}
+    runtime.doberman-agent.io/volume-role: {{ .role }}
 spec:
   capacity: {storage: {{ printf "%dMi" (int .sizeMi) | quote }}}
   volumeMode: Filesystem

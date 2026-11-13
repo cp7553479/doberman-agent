@@ -37,15 +37,15 @@
 
 - [x] **T001**: Information 类型化配置与 Dispatcher 默认周期
   **文件**:
-  - `src/backend/bisheng/core/config/settings.py`
-  - `src/backend/bisheng/initdb_config.yaml`
+  - `src/backend/doberman_agent/core/config/settings.py`
+  - `src/backend/doberman_agent/initdb_config.yaml`
   **逻辑**: 在 `IntelligenceCenterConf` 增加并校验 `information_initial_article_limit=20`（1～100）、`information_sync_jitter_seconds=600`（非负）、`information_subscription_auto_unsubscribe_enabled=true`、`information_knowledge_delivery_enabled=true`、`information_business_timezone=Asia/Shanghai`。用 3600 秒订阅 Dispatcher 和 1800 秒文章 Dispatcher 替换旧每日/半小时直执任务默认项；保留既有自定义 `celery_task.beat_schedule` 覆盖能力，配置 backfill 不覆盖运维值。
   **回滚**: 回滚应用时保留 DB 中新增 YAML key（旧版本忽略）；恢复旧 Beat 项前必须停掉新 Dispatcher，禁止两套算法并行。
   **覆盖 AC**: AC-06, AC-10, AC-20, AC-22, AC-32
   **依赖**: 无
 
 - [x] **T002**: 公共文章同步状态 SQLModel
-  **文件**: `src/backend/bisheng/channel/domain/models/information_article_sync_state.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/models/information_article_sync_state.py`
   **逻辑**: 新增 `InformationArticleSyncState(table=True)`：`source_id CHAR(36)` 主键，三个 nullable `BIGINT` 字段 `article_cursor_create_time/processed_remote_sync_at/processed_article_list_updated_at`，以及双数据库兼容的 `create_time/update_time`。不含 `tenant_id`、API Key、任务或知识投递字段；文件位于自动模型发现目录。
   **回滚**: 独立新表由 `create_all(checkfirst=True)` 创建，不新增 Alembic revision；应用回滚保留表和进度，后续重装可复用，物理删表需另行 DBA 评审。
   **覆盖 AC**: AC-13, AC-16, AC-17, AC-18, AC-20, AC-21, AC-35
@@ -53,8 +53,8 @@
 
 - [x] **T003**: 公共状态 Repository 接口与实现
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/information_article_sync_state_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/information_article_sync_state_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/information_article_sync_state_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/information_article_sync_state_repository_impl.py`
   **逻辑**: 定义 `find_by_source_id(source_id)`、`create_initial_boundary_if_absent(source_id, cursor)`（主键冲突后回读胜者）、`commit_if_unchanged(source_id, expected_state, next_cursor, remote_sync_at, article_list_updated_at)`。提交方法使用短事务与 `SELECT ... FOR UPDATE`/旧值比较，冲突返回 false，不覆盖更新者；所有 SQL 位于 Repository。
   **接口产出**: `InformationArticleSyncService` 只依赖该接口，不直接持有 Session。
   **覆盖 AC**: AC-16, AC-17, AC-18, AC-20, AC-21, AC-35
@@ -62,8 +62,8 @@
 
 - [x] **T004**: `channel_info_source` 公共目录兼容语义
   **文件**:
-  - `src/backend/bisheng/core/database/tenant_filter.py`
-  - `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`
+  - `src/backend/doberman_agent/core/database/tenant_filter.py`
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`
   **逻辑**: 将 `channel_info_source` 加入 tenant filter 的显式全局排除集合，并从租户卸载迁移表清单移除；保留 ORM `tenant_id` 兼容列和存量值，不做数据迁移。注释说明仅移除强制导入项不能阻止 metadata 自动发现。
   **跨 Feature 影响**: F060 已在 v3 release-contract 接管 `ChannelInfoSource` 生命周期；仅改变该表读取/卸载语义，不改变 `channel`、知识或其他租户表。
   **回滚**: 恢复过滤会让公共目录再次按历史 tenant 值不可见，不建议数据层回滚；应用回滚需与旧 F031 任务同时评估。
@@ -72,8 +72,8 @@
 
 - [x] **T005**: 当前租户频道来源读取能力
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/channel_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/channel_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/channel_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/channel_repository_impl.py`
   **逻辑**: 保留 `find_all_referenced_source_ids()` 并新增 `find_channels_referencing_source(source_id)`；两者只读取当前 tenant Context 可见的 `channel/source_list`，在 Python 规范化、去空、去重/筛选，不新增 JSON_EXTRACT/JSON_CONTAINS。后者供知识路由与频道展示时间更新使用。
   **接口产出**: 平台 Worker 逐租户调用并自行判断快照是否完整。
   **覆盖 AC**: AC-01, AC-03, AC-24, AC-35
@@ -81,8 +81,8 @@
 
 - [x] **T006**: 公共来源元数据幂等 Repository
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/channel_info_source_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/channel_info_source_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/channel_info_source_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/channel_info_source_repository_impl.py`
   **逻辑**: 将现有 `find_by_ids/find_all/batch_add` 明确为公共目录语义；新增 `upsert_metadata(sources)`，按外部 `id` 幂等插入/更新名称、图标、类型和描述，主键冲突回读后更新。不得以行存在推断远端订阅，不再提供对账删除公共元数据的调用路径。
   **跨 Feature 影响**: 频道详情继续消费同一模型；不改 HTTP schema。
   **覆盖 AC**: AC-09, AC-36, AC-37
@@ -90,15 +90,15 @@
 
 - [x] **T007**: 知识同步配置只读 Repository
   **文件**:
-  - `src/backend/bisheng/channel/domain/repositories/interfaces/channel_knowledge_sync_repository.py`
-  - `src/backend/bisheng/channel/domain/repositories/implementations/channel_knowledge_sync_repository_impl.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/interfaces/channel_knowledge_sync_repository.py`
+  - `src/backend/doberman_agent/channel/domain/repositories/implementations/channel_knowledge_sync_repository_impl.py`
   **逻辑**: 定义 `find_enabled_by_channel_ids(channel_ids)` 和 `find_by_id(sync_config_id)`。配置表没有 `tenant_id`，因此接口只接受已在当前 tenant Context 验证过的 channel IDs；按 ID 回读后调用方还必须通过当前租户 `ChannelRepository.find_by_id(config.channel_id)` 验证归属。不得新增 DAO 入口或写入投递状态。
   **接口产出**: `InformationKnowledgeDeliveryService` 的配置读取协议。
   **覆盖 AC**: AC-24, AC-31, AC-35
   **依赖**: 无
 
 - [x] **T008**: Information 同步响应模型
-  **文件**: `src/backend/bisheng/core/external/bisheng_information_client/response_schema.py`
+  **文件**: `src/backend/doberman_agent/core/external/doberman_agent_information_client/response_schema.py`
   **逻辑**: 增加订阅项与分页响应模型，显式解析 `id/source_id/business_type/name/description/icon/original_url/follow_num/subscribed_at/last_sync_at/article_list_updated_at` 和 `currentPage/PageSize/totalCount`；时间为 Unix 秒、可空字段保持可空。文章响应模型继续保留稳定 `article.id`。
   **覆盖 AC**: AC-04, AC-09, AC-11, AC-12, AC-13, AC-14
   **依赖**: 无
@@ -117,7 +117,7 @@
   **依赖**: T008
 
 - [x] **T010**: Information Client 同步查询能力实现（绿）
-  **文件**: `src/backend/bisheng/core/external/bisheng_information_client/client.py`
+  **文件**: `src/backend/doberman_agent/core/external/doberman_agent_information_client/client.py`
   **逻辑**: 实现 `list_all_subscriptions(page_size=100)`、`subscribe_one(source_id)`、`unsubscribe_one(source_id)` 与 async `get_information_articles_page(...)`。完整分页冻结首个 total，校验页码、各页 total、ID 唯一与最终数量；请求始终从动态 `conf` 取 Key但绝不记录。保留现有公开 Client 方法兼容，频道业务不再调用批量订阅。
   **测试**: T009 全部通过。
   **覆盖 AC**: AC-04, AC-05, AC-06, AC-08, AC-09, AC-11, AC-14, AC-34
@@ -133,7 +133,7 @@
   **依赖**: 无
 
 - [x] **T012**: Information Redis 锁实现（绿）
-  **文件**: `src/backend/bisheng/worker/information/redis_lock.py`
+  **文件**: `src/backend/doberman_agent/worker/information/redis_lock.py`
   **逻辑**: 提供 token + TTL + Lua compare-refresh/release 的小型同步锁封装，支持平台 key `information:subscription-reconcile` 和来源 key `information:article-sync:{source_id}`。不得用本地文件/进程锁作为回退；调用方在续租失败后停止后续写入。
   **测试**: T011 全部通过。
   **覆盖 AC**: AC-19, AC-35
@@ -156,7 +156,7 @@
   **依赖**: T005, T006, T010
 
 - [x] **T014**: 平台订阅对账 Service 实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_subscription_reconcile_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_subscription_reconcile_service.py`
   **逻辑**: 定义不可变 `DesiredSubscriptionSnapshot(ids, complete, failed_tenants)` 和 `reconcile(desired_v1, reload_desired)`；调用 Client 完整 actual，逐项收敛，退订前二次读取，最终确认并用 `emit_metric("information_subscription_reconcile", ...)` 输出结果。Service 不设置 tenant Context、不写 ORM、不持有 Redis 锁；公共元数据只 upsert 不删除。
   **测试**: T013 全部通过。
   **覆盖 AC**: AC-01, AC-02, AC-03, AC-04, AC-05, AC-06, AC-07, AC-08, AC-09, AC-33, AC-34
@@ -174,7 +174,7 @@
   **依赖**: T006
 
 - [x] **T016**: 频道 Service 移除同步订阅副作用（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/channel_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/channel_service.py`
   **逻辑**: create/update 只持久化频道期望来源；删除远端 subscribe 判据和新来源一小时后旧 `sync_information_article` 调度，保留来源元数据 best-effort upsert；dismiss 不删除公共目录。保留 `add_articles_to_knowledge_space` 用户接口和默认 `skip_missing_and_duplicates=false`。不得改权限、成员、配额、审批或 HTTP schema。
   **跨 Feature 影响**: 仅替代 F031 信息源订阅生命周期；频道权限/审批代码不改。
   **测试**: T015 及既有频道创建/编辑/审批测试通过。
@@ -195,7 +195,7 @@
   **依赖**: 无
 
 - [x] **T018**: Article ES realtime mget 与逐项 bulk 实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/article_es_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/article_es_service.py`
   **逻辑**: 新增 async `mget_existing_ids(article_ids)`、`bulk_index_articles_detailed(articles_by_id)` 和严格 `refresh_index()`；保留现有方法兼容。详细 bulk 检查每个 item，日志只采样有限失败 ID，严格 refresh 不复用现有吞异常的 sync helper。
   **测试**: T017 全部通过。
   **覆盖 AC**: AC-15, AC-16, AC-23, AC-25, AC-34
@@ -215,7 +215,7 @@
   **依赖**: T003, T010
 
 - [x] **T020**: 文章 Service 远端门禁实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_article_sync_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_article_sync_service.py`
   **逻辑**: 建立 `sync_source(subscription, lock_guard, dispatch_callback)` 主入口、业务时区解析、水位比较和 no-change/empty 快速提交；不从 `channel_info_source.update_time` 或 ES 最大时间推断进度。先实现 T019 范围，分页分支保持为后续 T022 增量实现的明确私有入口，不留延迟实现标记。
   **测试**: T019 全部通过。
   **覆盖 AC**: AC-11, AC-12, AC-13, AC-18, AC-33, AC-34
@@ -235,7 +235,7 @@
   **依赖**: T018, T020
 
 - [x] **T022**: 文章 Service 首次边界与分页实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_article_sync_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_article_sync_service.py`
   **逻辑**: 增量实现首次边界状态机、固定下界完整分页、响应完整性/排序校验和上游 Article→`ArticleDocument` 转换。游标只使用秒级 create_time；禁止引入 `min_article_id`。首次无文章提交水位但保持 cursor null。
   **测试**: T021 与 T019 全部通过。
   **覆盖 AC**: AC-14, AC-15, AC-20, AC-21
@@ -256,7 +256,7 @@
   **依赖**: T018, T022
 
 - [x] **T024**: 文章 Service 写入、派发与状态提交实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_article_sync_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_article_sync_service.py`
   **逻辑**: 完成每页 detailed write、新增候选识别、严格 refresh、即时 dispatch、锁所有权检查、一次有界补拉和 Repository CAS 提交；用 `emit_metric("information_article_sync", ...)` 输出 result/lag/count/duration。任一失败不更新公共进度，且不吞异常结果。
   **测试**: T023、T021、T019 全部通过。
   **覆盖 AC**: AC-16, AC-17, AC-19, AC-23, AC-33, AC-34, AC-35
@@ -280,7 +280,7 @@
   **依赖**: T005, T007, T018
 
 - [x] **T026**: 知识路由 Service 实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_knowledge_delivery_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_knowledge_delivery_service.py`
   **逻辑**: 实现 `route_current_tenant(source_id, article_ids, detected_at, dispatch_config)`；按当前租户频道→启用配置读取，主/子频道筛选并发送配置消息。投递成功不得调用 `ChannelKnowledgeSyncDao.touch_update_time`；指标与日志只含有限 ID 样本。
   **测试**: T025 全部通过。
   **覆盖 AC**: AC-23, AC-24, AC-25, AC-26, AC-30, AC-31, AC-32, AC-33, AC-34
@@ -301,7 +301,7 @@
   **依赖**: T026
 
 - [x] **T028**: 知识逐篇终态执行实现（绿）
-  **文件**: `src/backend/bisheng/channel/domain/services/information_knowledge_delivery_service.py`
+  **文件**: `src/backend/doberman_agent/channel/domain/services/information_knowledge_delivery_service.py`
   **逻辑**: 增量实现 `deliver_to_config(tenant_id, sync_config_id, article_ids, detected_at)`；构造 `UserPayload(user_id=config.user_id, tenant_id=tenant_id)`，每篇复用既有知识导入链路并窄化异常分类，失败继续；发出 `information_knowledge_delivery` metric。不得修改/删除知识空间既有文件，也不 touch 配置时间。
   **测试**: T027 与 T025 全部通过。
   **覆盖 AC**: AC-27, AC-28, AC-29, AC-30, AC-31, AC-33, AC-34
@@ -324,7 +324,7 @@
   **依赖**: T012, T014
 
 - [x] **T030**: 订阅 Dispatcher/执行任务实现（绿）
-  **文件**: `src/backend/bisheng/worker/information/reconcile.py`
+  **文件**: `src/backend/doberman_agent/worker/information/reconcile.py`
   **逻辑**: 定义 `dispatch_information_subscription_reconcile` 与 `reconcile_information_subscriptions`。前者只随机投递；后者持平台 token 锁，枚举全部活跃 tenant IDs，逐个设置/恢复 ContextVar并构造完整 desired snapshot，再调用 Service。Worker 不计算差集、不直接 ORM/HTTP；finally 比较 token 释放。
   **测试**: T029 全部通过。
   **覆盖 AC**: AC-01, AC-03, AC-06, AC-10, AC-33, AC-34, AC-35
@@ -346,7 +346,7 @@
   **依赖**: T012, T024
 
 - [x] **T032**: 文章 Dispatcher/执行任务实现（绿）
-  **文件**: `src/backend/bisheng/worker/information/article.py`
+  **文件**: `src/backend/doberman_agent/worker/information/article.py`
   **逻辑**: 用新 `dispatch_information_article_poll/sync_information_articles` 替代旧逐租户 `sync_information_article` 主链。执行任务只完整读取 remote actual、逐来源获取/续租锁并调用 Service；知识开关开启且新增成功时发送 route task。逐租户频道展示时间更新显式恢复 ContextVar，失败不影响公共状态。
   **测试**: T031 及旧文章检索/频道排序回归通过。
   **覆盖 AC**: AC-11, AC-19, AC-22, AC-23, AC-32, AC-33, AC-34, AC-35
@@ -366,7 +366,7 @@
   **依赖**: T028
 
 - [x] **T034**: 知识路由/单配置任务实现（绿）
-  **文件**: `src/backend/bisheng/worker/information/knowledge_delivery.py`
+  **文件**: `src/backend/doberman_agent/worker/information/knowledge_delivery.py`
   **逻辑**: 定义 `route_new_information_articles` 与 `deliver_information_articles_to_config`。route 枚举活跃租户并调用当前租户路由 Service；在各 tenant Context 内 `apply_async` 触发现有 header 注入。config 任务读取 ContextVar并校验 payload tenant，再调用逐篇 Service；所有任务无应用 retry，逐项结果已在 Service 终结。
   **测试**: T033 全部通过。
   **覆盖 AC**: AC-24, AC-27, AC-28, AC-31, AC-32, AC-33, AC-34, AC-35
@@ -382,7 +382,7 @@
   **依赖**: T001, T030, T032, T034
 
 - [x] **T036**: Celery 任务注册切换（绿）
-  **文件**: `src/backend/bisheng/worker/__init__.py`
+  **文件**: `src/backend/doberman_agent/worker/__init__.py`
   **逻辑**: 注册六个新任务，移除旧 `sync_information_article/reconcile_all_tenants` 导入；不新增 Information queue/Worker，不改变 `task_routes`，六个任务继续使用默认 `celery` queue。文件被知识空间接受后的既有解析/向量化任务仍按原路由使用 `knowledge_celery`。确认 `worker/main.py` 已加载 tenant publish/prerun/postrun signals，无需重复注册。
   **测试**: T035 全部通过。
   **覆盖 AC**: AC-10, AC-22, AC-24, AC-32, AC-35, AC-36

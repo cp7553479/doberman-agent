@@ -20,7 +20,7 @@
 **根因**：`Settings.jwt_secret` 在代码里有默认值（2.4 为 `secret`，2.6+ 为 `secret_cF2k…`），且默认部署不覆盖；令牌校验只看 `user_id`，伪造 `user_id=1` 即超管。
 
 **决策 1 — 默认值置空，两个历史值列入黑名单。**
-`bisheng/core/config/settings.py` `jwt_secret: str = ""`。新模块 `bisheng/user/domain/services/jwt_secret.py` 持有 `LEGACY_JWT_SECRETS`，命中即视为未配置。
+`doberman-agent/core/config/settings.py` `jwt_secret: str = ""`。新模块 `doberman-agent/user/domain/services/jwt_secret.py` 持有 `LEGACY_JWT_SECRETS`，命中即视为未配置。
 
 **决策 2 — 未配置时生成一次、存系统配置表。**
 `ConfigKeyEnum.JWT_SECRET = "jwt_secret"`，值为 `secrets.token_urlsafe(48)`。选配置表而非本地文件：api / worker / linsight worker 是不同进程甚至不同节点，必须共用同一份；配置表本来就是它们的共同真相源。首次启动多进程竞争插入时靠 `key` 唯一约束，输家捕获 `IntegrityError` 后回读胜者的值。
@@ -96,6 +96,6 @@
 
 ## 7. 运维与文档
 
-- `docker/bisheng/config/config.yaml` 增加注释掉的 `jwt_secret` 示例与说明。
+- `docker/doberman-agent/config/config.yaml` 增加注释掉的 `jwt_secret` 示例与说明。
 - `docs/architecture/08-deployment.md` 配置系统一节补 `jwt_secret` 语义；升级 checklist 加 v3.0 条目。
 - Release Notes 三条见 spec §4。

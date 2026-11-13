@@ -11,15 +11,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionMutationTooLargeError
-from bisheng.core.openfga.client import (
+from doberman_agent.common.errcode.permission import PermissionMutationTooLargeError
+from doberman_agent.core.openfga.client import (
     BUSINESS_ATOMIC_TUPLE_LIMIT,
     BUSINESS_BATCH_CHECK_LIMIT,
     OPENFGA_BATCH_CHECK_LIMIT,
     OPENFGA_WRITE_TUPLE_LIMIT,
     FGAClient,
 )
-from bisheng.core.openfga.exceptions import (
+from doberman_agent.core.openfga.exceptions import (
     FGAClientError,
     FGAConnectionError,
     FGAWriteError,

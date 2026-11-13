@@ -31,7 +31,7 @@ PRD 覆盖 R1–R10，P0 + P1 + P2。建议**拆 4 个 Feature、分 2 批**，P
 
 | 项 | beta1 现状 | 影响 |
 |---|---|---|
-| `src/backend/bisheng/open_api/` | **不存在** | 凭据底座整体从 vibe 搬 |
+| `src/backend/doberman_agent/open_api/` | **不存在** | 凭据底座整体从 vibe 搬 |
 | `/api/v2/**` | **43 个 HTTP + 2 个 WS，全部匿名**（`open_endpoints/api/endpoints/` 8 个文件）；身份靠 `open_endpoints/domain/utils.py` 的 `get_default_operator*()` / `resolve_operator(user_id)` | PRD 附录 B.1 逐端点改造清单适用；数量比 PRD 写的 42 多 1，落 spec 时重数 |
 | `default_operator` / `enable_guest_access` | 在 `open_endpoints/` 内取用 | 随 F053 移除（PRD §4.9） |
 | client `pages/standaloneChat/` | 存在（两个免登录分享页的真身，走 v2 WS） | F053 锁 v2 WS 后这两页会断——须随 F053 做 share-token 通道（vibe 049 决议-1），否则分享页失效 |

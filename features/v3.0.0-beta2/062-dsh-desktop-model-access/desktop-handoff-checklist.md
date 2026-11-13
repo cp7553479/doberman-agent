@@ -57,7 +57,7 @@
 {
   "environment": "isolated",
   "base": "https://dsh-e2e.example.test",
-  "backend_sha": "实际部署 BiSheng SHA",
+  "backend_sha": "实际部署 doberman-agent SHA",
   "gateway_sha": "实际部署 Gateway SHA",
   "config_version": "测试部署配置版本",
   "license_id": null,
@@ -85,9 +85,9 @@ DSH_E2E_MANIFEST=/absolute/private/dsh-e2e.json \
 uv run pytest --confcutdir=test/dsh test/dsh/test_dsh_e2e.py -q -rs --tb=short --junitxml=/absolute/private/dsh-e2e-results.xml
 ```
 
-`--confcutdir=test/dsh` 避免父层单元测试 conftest 的服务 premock/本地 app config 初始化；该 harness 本身不需要加载 BiSheng config.yaml。证书为内部 CA 时显式指定 `DSH_E2E_CA_FILE`；不支持关闭 TLS 验证，也不跟随重定向或使用环境代理。禁止 xdist 并行。
+`--confcutdir=test/dsh` 避免父层单元测试 conftest 的服务 premock/本地 app config 初始化；该 harness 本身不需要加载 doberman-agent config.yaml。证书为内部 CA 时显式指定 `DSH_E2E_CA_FILE`；不支持关闭 TLS 验证，也不跟随重定向或使用环境代理。禁止 xdist 并行。
 
-默认不调用供应商模型。仅在已配置专用用户模型策略和预算后追加 `DSH_E2E_ALLOW_MODEL_CALLS=1`，manifest 的 model_id 使用 models 返回的 `bisheng:<id>`。只发送固定无隐私提示，每次最多 16 输出 token，JSON/SSE 各一次；仍会产生真实模型用量。
+默认不调用供应商模型。仅在已配置专用用户模型策略和预算后追加 `DSH_E2E_ALLOW_MODEL_CALLS=1`，manifest 的 model_id 使用 models 返回的 `doberman-agent:<id>`。只发送固定无隐私提示，每次最多 16 输出 token，JSON/SSE 各一次；仍会产生真实模型用量。
 
 清理仅作用于经核验的 `actors.user`：setup 撤销上次残留会话，若已有 REVOKED 席位则显式重分配；teardown 再撤销释放名额。测试保留 REVOKED 席位行、审计与已计量记录，不删除账号/租户/策略，不操作其他人员。中断后以相同 manifest 重跑可清理；清理失败保留具体 operation_id，负责人核对后通过管理页恢复，禁止全表/全实例删除。
 
@@ -99,7 +99,7 @@ uv run pytest --confcutdir=test/dsh test/dsh/test_dsh_e2e.py -q -rs --tb=short -
 
 ## 2026-09-09 必须同步的逐模型额度修订
 
-- 切换模型后使用 GET usage?model=bisheng:<id> 查询该模型独立月额度；模型调用完成及月额度错误后同样刷新该模型。
+- 切换模型后使用 GET usage?model=doberman-agent:<id> 查询该模型独立月额度；模型调用完成及月额度错误后同样刷新该模型。
 - 无参数 usage 是汇总展示，remaining 不能由总 limit-used 推算，不能将模型 A 耗尽解释为所有模型均不可用。
 - 接口形状/认证/登出保席位保持既定契约；本次查询参数与额度语义变动已记录 client-api.md 和 contract fixture，联调前需客户端确认已同步。
 - 一期无限流配置。

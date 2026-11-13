@@ -2,13 +2,13 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.permission.application.resource_api import F048ResourcePermissionApi
-from bisheng.permission.domain.models import (
+from doberman_agent.permission.application.resource_api import F048ResourcePermissionApi
+from doberman_agent.permission.domain.models import (
     PermissionGrant,
     PermissionGrantAssignee,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.grant_repository import (
+from doberman_agent.permission.domain.repositories.grant_repository import (
     GrantRepository,
     ResourcePermissionModeRepository,
 )

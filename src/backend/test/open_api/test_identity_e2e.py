@@ -3,12 +3,12 @@ from types import SimpleNamespace
 from fastapi import APIRouter, Depends, FastAPI, Request
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.open_api.api import middleware as audit_middleware_module
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.api.middleware import OpenApiAuditMiddleware
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.scopes import open_api_scope
+from doberman_agent.open_api.api import middleware as audit_middleware_module
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.api.middleware import OpenApiAuditMiddleware
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.scopes import open_api_scope
 
 
 def delegated_key_principal() -> OpenApiPrincipal:
@@ -72,18 +72,18 @@ async def configure_identity(monkeypatch):
     async def allowed(_credential_id, _user_id):
         return True
 
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", validate)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", validate)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service."
+        "doberman_agent.open_api.domain.services.identity_service."
         "OwnerRepository.get_active_natural_person",
         target,
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service._is_privileged_target",
+        "doberman_agent.open_api.domain.services.identity_service._is_privileged_target",
         not_privileged,
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
+        "doberman_agent.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
         allowed,
     )
 
@@ -116,7 +116,7 @@ async def test_removed_identity_inputs_and_missing_delegate_header_fail_explicit
     old_header = await client_request(
         build_app(),
         "/api/v2/delegated",
-        headers={**base_headers, "X-Bisheng-On-Behalf-Of": "21"},
+        headers={**base_headers, "X-Doberman-Agent-On-Behalf-Of": "21"},
     )
     assert old_header.status_code == 400
     assert old_header.json()["status_code"] == 26019

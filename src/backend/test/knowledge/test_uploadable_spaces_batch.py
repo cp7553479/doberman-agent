@@ -8,23 +8,23 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionEnumerationIncompleteError,
     PermissionFGAUnavailableError,
 )
-from bisheng.knowledge.domain.services.knowledge_permission_service import (
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import (
     F048KnowledgeContainerPermissionAdapter,
     KnowledgeContainerDaoPermissionLoader,
 )
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.permission.application.control_state import PermissionResourceSnapshot
-from bisheng.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
-from bisheng.permission.domain.schemas import VisibleObjectEnumerationResult
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.permission.application.control_state import PermissionResourceSnapshot
+from doberman_agent.permission.application.data_scope import DATA_SCOPE_ALL, DATA_SCOPE_PERSONAL
+from doberman_agent.permission.domain.schemas import VisibleObjectEnumerationResult
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.knowledge.test_knowledge_space_service import _make_login_user, _make_space
 
-MODULE = "bisheng.knowledge.domain.services.knowledge_space_service"
+MODULE = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 @pytest.fixture
@@ -85,7 +85,7 @@ def case():
         stack.enter_context(patch(f"{MODULE}.get_f048_runtime", new=AsyncMock(return_value=runtime)))
         stack.enter_context(
             patch(
-                "bisheng.permission.application.business_authorization.get_f048_runtime",
+                "doberman_agent.permission.application.business_authorization.get_f048_runtime",
                 new=AsyncMock(return_value=runtime),
             )
         )

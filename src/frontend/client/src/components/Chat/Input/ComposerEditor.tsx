@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import type { ClipboardEvent, CompositionEvent, KeyboardEvent, UIEvent } from 'react';
 
 export interface ComposerReference {

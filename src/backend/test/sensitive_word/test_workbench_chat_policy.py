@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.sensitive_word.domain.schemas import (
+from doberman_agent.sensitive_word.domain.schemas import (
     SensitiveWordBusinessType,
     SensitiveWordCheckResult,
     SensitiveWordHit,
     SensitiveWordPolicyPayload,
 )
-from bisheng.sensitive_word.domain.services.sensitive_word_policy_service import (
+from doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service import (
     DEFAULT_AUTO_REPLY,
     SensitiveWordPolicyService,
 )
@@ -66,7 +66,7 @@ async def test_upsert_enabled_rejects_empty_word_types(monkeypatch):
     )
     upsert = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
+        "doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
         upsert,
     )
     payload = SensitiveWordPolicyPayload(
@@ -86,7 +86,7 @@ async def test_upsert_enabled_rejects_blank_auto_reply(monkeypatch):
     monkeypatch.setattr(SensitiveWordPolicyService, "_current_tenant_id", staticmethod(lambda _user: 1))
     upsert = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
+        "doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
         upsert,
     )
     payload = SensitiveWordPolicyPayload(
@@ -105,7 +105,7 @@ async def test_upsert_enabled_rejects_auto_reply_over_500(monkeypatch):
     monkeypatch.setattr(SensitiveWordPolicyService, "_current_tenant_id", staticmethod(lambda _user: 1))
     upsert = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
+        "doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
         upsert,
     )
     payload = SensitiveWordPolicyPayload(
@@ -132,7 +132,7 @@ async def test_upsert_disabled_still_writes_words_and_reply(monkeypatch):
         )
     )
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
+        "doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service.SensitiveWordPolicyDao.aupsert_policy",
         upsert,
     )
     payload = SensitiveWordPolicyPayload(
@@ -152,13 +152,13 @@ async def test_upsert_disabled_still_writes_words_and_reply(monkeypatch):
 
 
 def test_inactive_when_not_pro_even_if_policy_enabled(monkeypatch):
-    monkeypatch.setattr(SensitiveWordPolicyService, "_is_bisheng_pro", classmethod(lambda cls: False))
+    monkeypatch.setattr(SensitiveWordPolicyService, "_is_doberman_agent_pro", classmethod(lambda cls: False))
     monkeypatch.setattr(SensitiveWordPolicyService, "is_effective", classmethod(lambda cls, *a, **k: True))
     assert SensitiveWordPolicyService.is_workbench_content_safety_active(1) is False
 
 
 def test_active_only_when_pro_and_effective(monkeypatch):
-    monkeypatch.setattr(SensitiveWordPolicyService, "_is_bisheng_pro", classmethod(lambda cls: True))
+    monkeypatch.setattr(SensitiveWordPolicyService, "_is_doberman_agent_pro", classmethod(lambda cls: True))
     monkeypatch.setattr(SensitiveWordPolicyService, "is_effective", classmethod(lambda cls, *a, **k: True))
     assert SensitiveWordPolicyService.is_workbench_content_safety_active(1) is True
 
@@ -206,7 +206,7 @@ def test_evaluate_returns_result_on_hit(monkeypatch):
 
 def test_check_text_workbench_uses_existing_ac_engine(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy",
+        "doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy",
         lambda **kwargs: _policy(words_types=["builtin", "custom"], custom_words="自定义词"),
     )
     monkeypatch.setattr(
@@ -225,7 +225,7 @@ def test_check_text_workbench_uses_existing_ac_engine(monkeypatch):
 
 def test_ineffective_policy_is_not_a_hit(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy",
+        "doberman_agent.sensitive_word.domain.models.sensitive_word_policy.SensitiveWordPolicyDao.get_policy",
         lambda **kwargs: _policy(enabled=True, words_types=["custom"], custom_words=""),
     )
     result = SensitiveWordPolicyService.check_text(

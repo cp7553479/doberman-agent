@@ -1,4 +1,4 @@
-import { Pagination, Button, SearchInput, Select, notification } from "@bisheng/ui";
+import { Pagination, Button, SearchInput, Select, notification } from "@doberman-agent/ui";
 // F035 (PRD §4.5): tenant custom skill management section, mounted in the
 // merged Daily tab of Build / Workbench Config (replaces the legacy SOP manual library).
 // List shows display_name only — the skill ID stays detail-level; no
@@ -8,14 +8,14 @@ import { hasResourceAction, useResourceActions } from "@/components/bs-comp/perm
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table";
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { SkillBrief, SkillDetail, skillApi } from "@/controllers/API/linsight";
 import { showApiError } from "@/controllers/request";
 import { Sparkles } from "lucide-react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SkillDetailSheet } from "./SkillDetailSheet";

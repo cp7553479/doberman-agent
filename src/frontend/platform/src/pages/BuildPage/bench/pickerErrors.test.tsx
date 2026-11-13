@@ -7,7 +7,7 @@ const mock = vi.hoisted(() => ({ kb: vi.fn(), tools: vi.fn(), report: vi.fn(), n
 vi.mock('@/controllers/API', () => ({ readFileLibDatabase: mock.kb }));
 vi.mock('@/controllers/API/tools', () => ({ getToolsApi: mock.tools }));
 vi.mock('@/controllers/request', () => ({ showApiError: mock.report }));
-vi.mock('@bisheng/ui', async (original) => ({ ...await original<typeof import('@bisheng/ui')>(), notification: { open: mock.notice } }));
+vi.mock('@doberman-agent/ui', async (original) => ({ ...await original<typeof import('@doberman-agent/ui')>(), notification: { open: mock.notice } }));
 beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 

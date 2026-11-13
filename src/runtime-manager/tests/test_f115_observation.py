@@ -19,15 +19,15 @@ def docker_service(tmp_path, monkeypatch):
     raw = {
         "Config": {
             "Labels": {
-                "bisheng.runtime.node": "node-a",
-                "bisheng.app.id": "app-a",
-                "bisheng.managed": "v2",
+                "doberman-agent.runtime.node": "node-a",
+                "doberman-agent.app.id": "app-a",
+                "doberman-agent.managed": "v2",
                 OP_LABEL: "op-a",
             }
         },
         "State": {"Running": True, "StartedAt": "2026-10-30T10:33:15.363879485Z"},
         "RestartCount": 0,
-        "NetworkSettings": {"Networks": {"bisheng-apps": {"IPAddress": "127.0.0.2"}}},
+        "NetworkSettings": {"Networks": {"doberman-agent-apps": {"IPAddress": "127.0.0.2"}}},
     }
 
     class Platform:
@@ -44,7 +44,7 @@ def docker_service(tmp_path, monkeypatch):
             assert ref == "container-a"
             return deepcopy(raw)
 
-    config = Config(node_id="node-a", data_root=tmp_path, network="bisheng-apps")
+    config = Config(node_id="node-a", data_root=tmp_path, network="doberman-agent-apps")
     executor = DockerExecutor(config, Platform(), Docker())
     service = SimpleNamespace(config=config, platform=executor.platform, docker=executor.docker, runtime=executor)
     monkeypatch.setattr(platform_observe, "executor", lambda: service)

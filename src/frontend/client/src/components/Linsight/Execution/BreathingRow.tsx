@@ -13,7 +13,7 @@
  *  - researching → com_linsight_executing  ("Working")
  *  - generating  → com_linsight_generating ("Generating results, please wait…")
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocalize } from '~/hooks';
 
 type BreathingState = 'preparing' | 'planning' | 'researching' | 'generating';

@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.open_api.domain.schemas.task_mode import (
+from doberman_agent.open_api.domain.schemas.task_mode import (
     TASK_TEXT_MAX_LENGTH,
     OpenTaskStatus,
     OpenTaskSubmitReq,

@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from bisheng.common.errcode import mcp_face
+from doberman_agent.common.errcode import mcp_face
 
 LOCALE_DIR = Path(__file__).resolve().parents[3] / "frontend" / "packages" / "locales" / "src" / "api_errors"
 LOCALES = ("zh-Hans.json", "en.json", "ja.json")

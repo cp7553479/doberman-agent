@@ -1,6 +1,6 @@
 import { asRecord, normalizeHistory } from './normalizeHistory';
 import type { ChatMessage, HistoryOptions, RawMessage } from './types';
-const SNAPSHOT = '__bisheng_chat_snapshot';
+const SNAPSHOT = '__doberman_agent_chat_snapshot';
 interface HostSnapshot { message: unknown; files: unknown; id: unknown; messageId: unknown; end: unknown; normalized: ChatMessage }
 export function withoutHostSnapshot(value: unknown): RawMessage {
   const raw = { ...asRecord(value) }; delete raw[SNAPSHOT]; return raw;

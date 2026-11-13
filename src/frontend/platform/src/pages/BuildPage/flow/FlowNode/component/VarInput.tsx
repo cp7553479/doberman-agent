@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { RbDragIcon } from "@/components/bs-icons/rbDrag";
 
 import { Dialog,DialogContent,DialogTrigger } from "@/components/bs-ui/dialog";
 import { Label } from "@/components/bs-ui/label";
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { FlowTooltip as Tip } from "@/pages/BuildPage/flow/FlowTooltip";
 import { isVarInFlow,updateVariableName } from "@/util/flowUtils";
@@ -314,7 +314,7 @@ export default function VarInput({
                     </SelectVar>
                 </div>
                 : <div className="flex justify-between gap-1 border-b dark:border-gray-600 px-2 py-1" onClick={() => textareaRef.current.focus()}>
-                    <Label className="bisheng-label text-xs" onClick={validateVarAvailble}>
+                    <Label className="doberman_agent-label text-xs" onClick={validateVarAvailble}>
                         {paramItem.required && <span className="text-red-500">*</span>}
                         {label ?? paramItem.label}
                     </Label>
@@ -397,7 +397,7 @@ export default function VarInput({
                     }
                     e.stopPropagation()
                 }}
-                className={`${heightClass} nowheel bisheng-richtext px-3 py-2 cursor-text whitespace-pre-line overflow-y-auto overflow-x-hidden border-none outline-none bg-search-input rounded-md dark:text-gray-50 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50`}
+                className={`${heightClass} nowheel doberman_agent-richtext px-3 py-2 cursor-text whitespace-pre-line overflow-y-auto overflow-x-hidden border-none outline-none bg-search-input rounded-md dark:text-gray-50 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50`}
             ></div>
             {children}
             {/* drag size */}

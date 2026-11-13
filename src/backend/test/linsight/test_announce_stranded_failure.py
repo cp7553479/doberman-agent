@@ -14,10 +14,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.domain import utils
-from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
-from bisheng.linsight.domain.services import state_message_manager as smm
-from bisheng.linsight.domain.services.state_message_manager import MessageEventType
+from doberman_agent.linsight.domain import utils
+from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+from doberman_agent.linsight.domain.services import state_message_manager as smm
+from doberman_agent.linsight.domain.services.state_message_manager import MessageEventType
 
 
 class FakeStateManager:
@@ -123,9 +123,9 @@ async def test_crash_sweep_announces_every_terminated_session(monkeypatch):
         def __init__(self, redis_client, node_id):
             pass
 
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.NodeManager = StubNodeManager
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
     monkeypatch.setattr(utils, "get_redis_client", AsyncMock(return_value=SimpleNamespace(aget=AsyncMock(return_value=None))))
     monkeypatch.setattr(type(utils.settings), "aget_all_config", AsyncMock(return_value={}))
 

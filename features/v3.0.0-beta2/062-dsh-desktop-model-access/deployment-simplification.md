@@ -6,20 +6,20 @@
 
 | 内容 | 当前来源 | 取消的重复配置 |
 |---|---|---|
-| 毕昇与 Gateway 共享 Secret | 毕昇 sso_sync.gateway_hmac_secret；Gateway bisheng.gateway-hmac-secret | DSH 双向 key ID/secret、Token 签名私钥和验签公钥、issuer 配置 |
-| 毕昇 Redis | 已解密的应用 settings.redis_url | dsh.quota_redis_url |
+| doberman-agent与 Gateway 共享 Secret | doberman-agent sso_sync.gateway_hmac_secret；Gateway doberman_agent.gateway-hmac-secret | DSH 双向 key ID/secret、Token 签名私钥和验签公钥、issuer 配置 |
+| doberman-agent Redis | 已解密的应用 settings.redis_url | dsh.quota_redis_url |
 | 用户可用模型和逐模型月额度 | DSH 管理界面；候选模型复用原模型管理及租户共享规则 | dsh.verified_model_capabilities |
 | 月度边界 | Asia/Shanghai，北京时间每月 1 日零点 | 默认 UTC |
-| 对外地址 | dsh.platform_public_url 与 Gateway 从 bisheng.home-url 提取的 origin，等于客户端填写的 Nginx origin | Gateway dsh.public-origin；不与客户端 loopback 回调混淆 |
-| Gateway 请求 Python | bisheng.bisheng-api-url | dsh.python-origin |
+| 对外地址 | dsh.platform_public_url 与 Gateway 从 doberman_agent.home-url 提取的 origin，等于客户端填写的 Nginx origin | Gateway dsh.public-origin；不与客户端 loopback 回调混淆 |
+| Gateway 请求 Python | doberman_agent.doberman-agent-api-url | dsh.python-origin |
 
 ## 身份协议
 
 > 2026-09-11 实现修订（未部署）：删除安装标识；以下派生方式由双方同步切换，详细要求见 [解绑修订](./installation-unbinding-revision.md)。公开客户端 contract_version 保持 0.5.0。
 
-现有用户同步 HMAC 协议不变。DSH 由同一共享 Secret 通过 HKDF-SHA256 派生用途密钥，不增加运维配置：salt=UTF-8("bisheng-dsh-v1")，info=UTF-8(purpose)，输出 32 字节；purpose 分别为 bisheng-to-gateway-v1、gateway-to-bisheng-v1、dsh-access-v1。服务请求继续使用时间窗和共享 nonce 防重放，其 HMAC secret 为派生结果的小写 hex UTF-8；Token 直接使用 32 字节派生结果签名。
+现有用户同步 HMAC 协议不变。DSH 由同一共享 Secret 通过 HKDF-SHA256 派生用途密钥，不增加运维配置：salt=UTF-8("doberman-agent-dsh-v1")，info=UTF-8(purpose)，输出 32 字节；purpose 分别为 doberman-agent-to-gateway-v1、gateway-to-doberman-agent-v1、dsh-access-v1。服务请求继续使用时间窗和共享 nonce 防重放，其 HMAC secret 为派生结果的小写 hex UTF-8；Token 直接使用 32 字节派生结果签名。
 
-DSH access token 固定 HS256、typ=bisheng-dsh-access+jwt、kid=dsh-access-v1、iss=bisheng-dsh、aud=bisheng-dsh-model，最长 600 秒。验签之后仍在线检查真实用户、租户、席位和会话。普通 JWT/PAT/SAK 不成为 DSH 凭证。客户端不获得共享 Secret，也不本地验签；将 token 视为不透明凭证。
+DSH access token 固定 HS256、typ=doberman-agent-dsh-access+jwt、kid=dsh-access-v1、iss=doberman-agent-dsh、aud=doberman-agent-dsh-model，最长 600 秒。验签之后仍在线检查真实用户、租户、席位和会话。普通 JWT/PAT/SAK 不成为 DSH 凭证。客户端不获得共享 Secret，也不本地验签；将 token 视为不透明凭证。
 
 Ticket 保持随机、短期、Redis 原子一次性消费和 PKCE/授权事务绑定，Gateway 通过 HMAC 认证的内部接口兑换。无需为 ticket 新增签名格式。/api/dsh/jwks 为旧接线保留空 keys 响应，任何密钥都不通过该接口发布。License 发行和验证继续独立，不以共享 HMAC 生成 License。
 
@@ -37,7 +37,7 @@ Ticket 保持随机、短期、Redis 原子一次性消费和 PKCE/授权事务�
 
 config.contract_version 升为 0.4.0；HTTP 路径、调用顺序、ticket 兑换和正常 JSON/SSE 形状不变。旧 RS256 access token 失效，应重新登录；已有席位和逐模型额度记录保留。共享 Secret 轮换同时影响用户同步与 DSH，应协调两端同步更新。客户端契约已更新在本地，未向客户端团队发送消息。
 
-部署目标为 192.168.106.109。毕昇通过 feat/3.0.0-beta2-pre 推送构建；Gateway 通过带 -dsh- 的 v 前缀联调 tag 构建，跳过旧流水线对 115 的自动部署。最终构建 SHA、镜像 digest、运行版本和实测结果另行记录，不将本设计说明视为部署完成证明。
+部署目标为 192.168.106.109。doberman-agent通过 feat/3.0.0-beta2-pre 推送构建；Gateway 通过带 -dsh- 的 v 前缀联调 tag 构建，跳过旧流水线对 115 的自动部署。最终构建 SHA、镜像 digest、运行版本和实测结果另行记录，不将本设计说明视为部署完成证明。
 
 ## 2026-09-10：HTTP 部署支持
 

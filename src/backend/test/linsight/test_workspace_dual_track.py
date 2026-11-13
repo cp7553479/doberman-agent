@@ -1,6 +1,6 @@
 """Unit tests for the dual-track workspace write (markdown view + original).
 
-The originals exist so ``bisheng_code_interpreter`` can compute on real data:
+The originals exist so ``doberman_agent_code_interpreter`` can compute on real data:
 a spreadsheet flattened to markdown loses cell types, sheets and formulas, which
 is precisely what a user uploading a spreadsheet wants to work with.
 
@@ -9,14 +9,14 @@ is precisely what a user uploading a spreadsheet wants to work with.
 
 from types import SimpleNamespace
 
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
 
 
 class FakeMinio:
     """Minimal MinIO stand-in recording every put, with optional read failures."""
 
     def __init__(self, objects=None, fail_on_get=()):
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         self.objects = dict(objects or {})
         self.puts = {}
@@ -175,7 +175,7 @@ async def test_pointer_block_exposes_raw_and_guidance():
     # filesystem root and fail — the model can only reach it via the relative form.
     assert "raw: uploads/销售数据.xlsx" in block
     assert "raw: /uploads/销售数据.xlsx" not in block
-    assert "bisheng_code_interpreter" in block
+    assert "doberman_agent_code_interpreter" in block
     assert "pandas" in block
 
 
@@ -192,7 +192,7 @@ async def test_pointer_block_stays_lean_without_raw():
     block = (await Impl.prepare_file_list(session_with(files), has_code_interpreter=True))[0]
 
     # No dual-track guidance paragraph when there is nothing dual about it.
-    assert "bisheng_code_interpreter" not in block
+    assert "doberman_agent_code_interpreter" not in block
     assert "raw:" not in block
 
 
@@ -210,7 +210,7 @@ async def test_unparsed_file_announced_instead_of_hidden():
 
     assert "/uploads/TDS-33kv SA.pdf" in block
     assert "不可 read_file" in block
-    assert "bisheng_code_interpreter" in block
+    assert "doberman_agent_code_interpreter" in block
 
 
 async def test_invalid_file_without_workspace_path_still_skipped():
@@ -234,7 +234,7 @@ async def test_pointer_block_omits_unbound_code_interpreter():
     block = (await Impl.prepare_file_list(session_with(files), has_code_interpreter=False))[0]
 
     assert "raw: uploads/销售数据.xlsx" in block  # still disclosed
-    assert "bisheng_code_interpreter" not in block
+    assert "doberman_agent_code_interpreter" not in block
     assert "没有可用的代码执行工具" in block
 
 
@@ -368,7 +368,7 @@ def test_ingest_route_truth_table():
 
 def test_parse_wins_exts_are_actually_parseable():
     """Every carve-out must have a loader, or it silently routes to a failure."""
-    from bisheng.knowledge.rag.base_file_pipeline import FileExtensionMap
+    from doberman_agent.knowledge.rag.base_file_pipeline import FileExtensionMap
 
     assert Impl._PARSE_WINS_EXTS <= set(FileExtensionMap)
     # And the carve-out only makes sense for types we would otherwise pass through.

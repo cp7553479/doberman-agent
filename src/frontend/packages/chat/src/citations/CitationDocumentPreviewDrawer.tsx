@@ -1,6 +1,6 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useEffect,useRef } from 'react';
-import cn from '@bisheng/ui/cn';
+import cn from '@doberman-agent/ui/cn';
 import { createCitationUtilities } from './preview';
 import { useCitationPreview } from './useCitationPreview';
 import { CitationPreviewBody } from './CitationDocumentPreview';

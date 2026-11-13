@@ -4,14 +4,14 @@
 
 ## 背景
 
-客户的数据库密码可能包含 `@` 等特殊字符。毕昇应该正确处理，不能要求客户换成简单密码来规避。
+客户的数据库密码可能包含 `@` 等特殊字符。doberman-agent应该正确处理，不能要求客户换成简单密码来规避。
 
 ## 问题与原因
 
 已用模拟密码复现：密码为 `p@ss` 时，直接拼接连接串会把部分密码当成主机地址，导致解析错误。涉及两处：
 
-- [工作流 SQL 节点](../../src/backend/bisheng/workflow/nodes/agent/agent.py)：直接拼接账号、密码和地址，没有处理特殊字符。
-- [主库配置](../../src/backend/bisheng/core/config/settings.py)：密码解密后直接写回连接串，同样可能解析错误。
+- [工作流 SQL 节点](../../src/backend/doberman_agent/workflow/nodes/agent/agent.py)：直接拼接账号、密码和地址，没有处理特殊字符。
+- [主库配置](../../src/backend/doberman_agent/core/config/settings.py)：密码解密后直接写回连接串，同样可能解析错误。
 
 这是参数解析问题，尚未连接真实数据库验证。并不是所有字段含 `@` 都有问题，例如本次账号含 `@` 的样本解析正常。
 

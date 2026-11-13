@@ -2,9 +2,9 @@
 
 from unittest.mock import Mock
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.core.logger import trace_id_var
-from bisheng.dsh.infrastructure import telemetry
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.core.logger import trace_id_var
+from doberman_agent.dsh.infrastructure import telemetry
 from test.dsh.test_model_service import principal, request, service_setup  # noqa: F401
 
 

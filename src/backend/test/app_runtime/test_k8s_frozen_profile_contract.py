@@ -8,9 +8,9 @@ import copy
 
 import pytest
 
-from bisheng.app_publish.domain.schemas.app_manifest import BundleDelivery, SourceImageDelivery
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_publish.domain.schemas.app_manifest import BundleDelivery, SourceImageDelivery
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import HELPER, IMAGE, MANAGER, REF, document, short_hash
 from test.app_runtime.test_runtime_kubernetes_service import control as control

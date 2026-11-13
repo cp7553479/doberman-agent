@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type CompositionEvent } from "react";
 import { ArrowLeft } from "lucide-react";
 import { EmptyStateIllustration } from "~/components/illustrations";
-import { SearchInput } from "@bisheng/ui";
+import { SearchInput } from "@doberman-agent/ui";
 import { Button } from "~/components/ui/Button";
 import { LoadingIcon } from "~/components/ui/icon/Loading";
 import { useToastContext } from "~/Providers";
@@ -367,7 +367,7 @@ export default function KnowledgeSquare({
             >
                 {/* Outer holds width/centering + mobile side padding. */}
                 <div className="mx-auto mb-1 mt-6 w-full max-w-[480px] max-[767px]:px-4">
-                    {/* Spec search field (@bisheng/ui) — realtime filter via
+                    {/* Spec search field (@doberman-agent/ui) — realtime filter via
                         onChange; composition handlers pass through untouched. */}
                     <SearchInput
                         placeholder={tSearchPlaceholder}

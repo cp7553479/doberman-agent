@@ -1,4 +1,4 @@
-import { ErrorPage, collectDiagnostics } from '@bisheng/ui';
+import { ErrorPage, collectDiagnostics } from '@doberman-agent/ui';
 import { useContext, useMemo } from 'react';
 import { useRouteError } from 'react-router-dom';
 import { SystemErrorIllustration } from '~/components/illustrations';
@@ -9,7 +9,7 @@ import { useLocalize } from '~/hooks';
 /**
  * Crash screen for anything the router throws.
  *
- * The screen itself lives in @bisheng/ui so this app and the admin app hand a
+ * The screen itself lives in @doberman-agent/ui so this app and the admin app hand a
  * support engineer the same identifiers, the same QR payload and the same log
  * file — an engineer reading a user's screenshot should not have to know which
  * app it came from. Everything app-shaped stays here: where the error comes

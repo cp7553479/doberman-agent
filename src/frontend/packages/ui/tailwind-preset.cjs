@@ -1,10 +1,10 @@
 const plugin = require('tailwindcss/plugin');
 
 /**
- * @bisheng/ui tailwind preset — maps the semantic tokens in
+ * @doberman-agent/ui tailwind preset — maps the semantic tokens in
  * `src/styles/tokens.css` to Tailwind classes. Consumers add:
  *
- *   presets: [require('@bisheng/ui/tailwind-preset')],
+ *   presets: [require('@doberman-agent/ui/tailwind-preset')],
  *   content: [..., '../packages/ui/src/** / *.{ts,tsx}']
  *
  * client adopted this preset and deleted its duplicated theme keys — verified by

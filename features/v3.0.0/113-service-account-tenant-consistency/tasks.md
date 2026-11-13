@@ -25,7 +25,7 @@
 
 - [x] **T001**：错误码与C5登记
   **类型**：基础设施
-  **文件**：`src/backend/bisheng/common/errcode/open_api.py`、`docs/constitution.md`
+  **文件**：`src/backend/doberman_agent/common/errcode/open_api.py`、`docs/constitution.md`
   **逻辑**：重新扫描占用后登记26071–26073，分别表达失配、无法确认、管理范围变化；保留26030依赖错误，不改既有码。
   **覆盖 AC**：AC-02、AC-05、AC-06、AC-23、AC-27
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -65,7 +65,7 @@
 
 - [x] **T006**：当前绑定仓储
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/domain/repositories/owner_repository.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py`
   **逻辑**：新增唯一有效成员和账号/owner读取；精确受限bypass；不以User.delete为执行闸门、不first吞多关系；原PAT/候选语义保留。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-05、AC-06、AC-07、AC-08、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -73,7 +73,7 @@
 
 - [x] **T007**：实时资格服务和公开协议
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/domain/services/service_account_tenancy.py`、`src/backend/bisheng/open_api/application/service_account_tenancy.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/services/service_account_tenancy.py`、`src/backend/doberman_agent/open_api/application/service_account_tenancy.py`
   **逻辑**：提供revalidate_service_account及require_owner_tenant，依赖异常保留堆栈并转26030；只更新当次owner/name，不授予owner权限或改变凭据。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-05、AC-06、AC-07、AC-08、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -81,7 +81,7 @@
 
 - [x] **T008**：凭据缓存合流接线及受影响fixture
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/domain/services/credential_validator.py`、`src/backend/test/open_api/test_credential_validator.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/services/credential_validator.py`、`src/backend/test/open_api/test_credential_validator.py`
   **逻辑**：热/冷合流均调用资格，保留原缓存上界；仅为真实受影响测试补成员事实，不能全局mock绕过新规则。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-05、AC-06、AC-07、AC-08、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -97,7 +97,7 @@
 
 - [x] **T010**：MCP工具准入接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_mcp/server.py`、`src/backend/bisheng/open_api/application/access_context.py`
+  **文件**：`src/backend/doberman_agent/open_mcp/server.py`、`src/backend/doberman_agent/open_api/application/access_context.py`
   **逻辑**：工具marker加真实请求头重进公共准入，只绑定任务ContextVar，不改共享scope身份；保持错误/audit协议。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-06、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -113,7 +113,7 @@
 
 - [x] **T012**：中性WS消息回调与执行快照
   **类型**：实现
-  **文件**：`src/backend/bisheng/common/chat/manager.py`、`src/backend/bisheng/common/chat/client.py`
+  **文件**：`src/backend/doberman_agent/common/chat/manager.py`、`src/backend/doberman_agent/common/chat/client.py`
   **逻辑**：common仅接中性callable；权限检查/投递前每消息准入，handle_message捕获不可变执行身份，不覆盖client.login_user；无回调行为不变。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-06、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -121,7 +121,7 @@
 
 - [x] **T013**：v2 WS准入端点接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_endpoints/api/endpoints/assistant.py`
+  **文件**：`src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py`
   **逻辑**：构造每消息完整公共认证回调，重算委托/operator/permission及snapshot；保持watcher和ContextVar reset。
   **覆盖 AC**：AC-01、AC-02、AC-03、AC-04、AC-06、AC-09
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -145,7 +145,7 @@
 
 - [x] **T015**：租户边界域策略与公开协议
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/application/tenant_access.py`、`src/backend/bisheng/app_runtime/domain/services/tenant_access.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/application/tenant_access.py`、`src/backend/doberman_agent/app_runtime/domain/services/tenant_access.py`
   **逻辑**：只读认证来源边界，先租户后角色，原super策略显式；人工_start先校验，保留后台恢复，后续批准启动在T026接线。
   **覆盖 AC**：AC-29、AC-33、AC-34、AC-35、AC-36、AC-37、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -153,7 +153,7 @@
 
 - [x] **T016**：人工状态入口租户接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
   **逻辑**：在operator/deleter的owner分支前采用认证租户策略，不用目标App上下文自证；批准启动后续独立接线。
   **覆盖 AC**：AC-29、AC-33、AC-34、AC-35、AC-36、AC-37、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -161,7 +161,7 @@
 
 - [x] **T017**：元信息与数据边界
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`
   **逻辑**：人工metadata拒绝无来源actor；数据/导出保留owner-only，返回旧任务结果前重新授权；发布内部元信息在T028接可信来源。
   **覆盖 AC**：AC-29、AC-33、AC-34、AC-35、AC-36、AC-37
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -169,7 +169,7 @@
 
 - [x] **T018**：日志与发布状态边界
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`
   **逻辑**：真实entry租户闸门在owner分支和装配前；发布页manual入口保持owner-only；runtime_hint只沿已授权内部调用。
   **覆盖 AC**：AC-29、AC-33、AC-34、AC-35、AC-36、AC-37
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -185,7 +185,7 @@
 
 - [x] **T020**：共享ReviewAccess入口
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_publish/domain/services/snapshot_browse_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/snapshot_browse_service.py`
   **逻辑**：先认证租户再owner/admin/task；同租户diff任意侧审批任务原规则保留，预览消费者复用。
   **覆盖 AC**：AC-29、AC-35、AC-36、AC-37、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -201,7 +201,7 @@
 
 - [x] **T022**：审批来源只读应用投影
   **类型**：实现
-  **文件**：`src/backend/bisheng/approval/application/execution_source.py`
+  **文件**：`src/backend/doberman_agent/approval/application/execution_source.py`
   **逻辑**：包装现有审批repository，返回不可变实例状态/业务键/资源/快照，只读不改审批人解析、引擎、outbox签名。
   **覆盖 AC**：AC-14、AC-15、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -209,7 +209,7 @@
 
 - [x] **T023**：发布来源仓储与内部值
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_publish/domain/repositories/release_tenancy_repository.py`、`src/backend/bisheng/app_publish/domain/schemas/release_tenancy.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/repositories/release_tenancy_repository.py`、`src/backend/doberman_agent/app_publish/domain/schemas/release_tenancy.py`
   **逻辑**：精确读取唯一deployment及App/version，ApprovedReleaseSource只作本次内部值，不能HTTP构造或持久缓存；不得用审计兜底授权。
   **覆盖 AC**：AC-11、AC-12、AC-13、AC-14、AC-16、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -217,7 +217,7 @@
 
 - [x] **T024**：发布资格服务及公开入口
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_publish/domain/services/release_tenancy_service.py`、`src/backend/bisheng/app_publish/application/release_tenancy.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/release_tenancy_service.py`、`src/backend/doberman_agent/app_publish/application/release_tenancy.py`
   **逻辑**：实现require_release_eligible及qualify_approved_release，调用公开owner资格与审批投影；stage前完成，保留合法阶段与不自动重试边界。
   **覆盖 AC**：AC-10、AC-11、AC-12、AC-13、AC-14、AC-15、AC-16、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -233,7 +233,7 @@
 
 - [x] **T026**：批准启动与共用状态实现
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/application/approved_release.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/application/approved_release.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
   **逻辑**：共用已授权启动体，批准入口核对source与App/所选版本，不模拟owner、无skip参数或HTTP入口；保留原审计通知、CAS与容量结果。
   **覆盖 AC**：AC-14、AC-15、AC-33、AC-34、AC-35、AC-37、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -241,7 +241,7 @@
 
 - [x] **T027**：发布接收/worker与上线接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_online_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py`
   **逻辑**：接收留资源前、worker materialise前、生成版本前、stage前资格；_settle分人工/source，迁移前完成检查；失败记记录/清理并raise。worker沿原headers恢复tenant。
   **覆盖 AC**：AC-10、AC-11、AC-12、AC-13、AC-14、AC-15、AC-28、AC-30、AC-32、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -249,7 +249,7 @@
 
 - [x] **T028**：发布元信息公开入口
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_runtime/application/release_metadata.py`、`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`
+  **文件**：`src/backend/doberman_agent/app_runtime/application/release_metadata.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`
   **逻辑**：update_meta_for_release(deployment_id)从可信deployment资格读owner/tenant，人工actorNone不能豁免；管道用application入口，保持原字段审计。
   **覆盖 AC**：AC-11、AC-13、AC-33、AC-34、AC-37、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -265,7 +265,7 @@
 
 - [x] **T029**：预览与配置确认重建资格
   **类型**：实现
-  **文件**：`src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`、`src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py`
+  **文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py`
   **逻辑**：原人工ReviewAccess/owner后、新session或部署维护前资格；后台终态/到期清理保留，不改保存不重启。
   **覆盖 AC**：AC-14、AC-15、AC-16、AC-31、AC-34、AC-35、AC-36、AC-38
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -281,7 +281,7 @@
 
 - [x] **T031**：可用租户查询与F019应用包装
   **类型**：实现
-  **文件**：`src/backend/bisheng/admin/application/tenant_scope.py`、`src/backend/bisheng/admin/domain/repositories/tenant_scope_repository.py`
+  **文件**：`src/backend/doberman_agent/admin/application/tenant_scope.py`、`src/backend/doberman_agent/admin/domain/repositories/tenant_scope_repository.py`
   **逻辑**：共享F019唯一真相，包装active查询及受控setter，不改其他页scope；异常不得fallbackRoot。
   **覆盖 AC**：AC-17、AC-18、AC-19、AC-23、AC-24、AC-25、AC-26
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -289,7 +289,7 @@
 
 - [x] **T032**：账号管理范围服务与DTO
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/domain/services/service_account_scope_service.py`、`src/backend/bisheng/open_api/domain/schemas/service_account_scope.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/services/service_account_scope_service.py`、`src/backend/doberman_agent/open_api/domain/schemas/service_account_scope.py`
   **逻辑**：预期X-Service-Account-Tenant不授权；验证后固定request ContextVar，收尾reset；超管写必选scope并匹配表单头，普通/单租户兼容。
   **覆盖 AC**：AC-17、AC-18、AC-19、AC-20、AC-21、AC-22、AC-23、AC-24、AC-25、AC-26、AC-27
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -297,7 +297,7 @@
 
 - [x] **T033**：管理依赖与静态scope端点
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/api/dependencies.py`、`src/backend/bisheng/open_api/api/endpoints/service_account_scope.py`
+  **文件**：`src/backend/doberman_agent/open_api/api/dependencies.py`、`src/backend/doberman_agent/open_api/api/endpoints/service_account_scope.py`
   **逻辑**：GET/PUT scope单独super依赖不陷入未选scope循环；owner-candidates原admin，先于动态ID路由注册；所有账号读写scope准入与业务方法清单。
   **覆盖 AC**：AC-17、AC-18、AC-19、AC-20、AC-21、AC-22、AC-23、AC-24、AC-25、AC-26、AC-27
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -305,7 +305,7 @@
 
 - [x] **T034**：账号/密钥路由范围接线
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/api/endpoints/service_account.py`、`src/backend/bisheng/open_api/api/endpoints/service_account_keys.py`
+  **文件**：`src/backend/doberman_agent/open_api/api/endpoints/service_account.py`、`src/backend/doberman_agent/open_api/api/endpoints/service_account_keys.py`
   **逻辑**：账号所有写及密钥/授权变更同一范围依赖；只读POST不误标写，GET按预期头防迟到；纯scopes目录保留范围无关读取。
   **覆盖 AC**：AC-17、AC-18、AC-19、AC-20、AC-21、AC-22、AC-23、AC-24、AC-25、AC-26、AC-27
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -313,7 +313,7 @@
 
 - [x] **T035**：归属人候选与创建范围约束
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/domain/repositories/owner_repository.py`、`src/backend/bisheng/open_api/domain/services/service_account_service.py`
+  **文件**：`src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py`、`src/backend/doberman_agent/open_api/domain/services/service_account_service.py`
   **逻辑**：同管理租户有界唯一自然人候选；显式super创建scope不随owner猜；改绑/创建最终重验，租户字段不可编辑。
   **覆盖 AC**：AC-18、AC-19、AC-20、AC-21、AC-24、AC-25、AC-26
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。
@@ -321,7 +321,7 @@
 
 - [x] **T036**：新静态router注册与管理API配对
   **类型**：实现
-  **文件**：`src/backend/bisheng/open_api/api/router.py`
+  **文件**：`src/backend/doberman_agent/open_api/api/router.py`
   **逻辑**：在动态ID前注册scope/owner路由；仅测试新增管理API和完整写动作清单，不扩大到PAT管理。
   **覆盖 AC**：AC-17、AC-18、AC-19、AC-20、AC-23、AC-24、AC-25、AC-26
   **验证/配对**：运行前驱本功能测试，检查文件范围/架构/信息泄漏并记录L1。

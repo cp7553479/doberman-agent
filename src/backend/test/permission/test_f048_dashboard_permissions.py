@@ -8,27 +8,27 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.http_error import NotFoundError, UnAuthorizedError
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.http_error import NotFoundError, UnAuthorizedError
+from doberman_agent.common.errcode.permission import (
     PermissionFGAUnavailableError,
     PermissionInvalidResourceError,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
-from bisheng.telemetry_search.domain.models.dashboard import (
+from doberman_agent.telemetry_search.domain.models.dashboard import (
     Dashboard,
     DashboardComponent,
     DashboardStatus,
     DashboardType,
 )
-from bisheng.telemetry_search.domain.services.dashboard import (
+from doberman_agent.telemetry_search.domain.services.dashboard import (
     DASHBOARD_OPERATION_ACTIONS,
     DashboardResourceAuthorizationPort,
     DashboardService,
 )
-from bisheng.telemetry_search.domain.services.f048_dashboard_permission import (
+from doberman_agent.telemetry_search.domain.services.f048_dashboard_permission import (
     DashboardPermissionRecord,
     F048DashboardPermissionAdapter,
 )
@@ -234,7 +234,7 @@ async def test_preset_oss_delete_remains_blocked_by_dashboard_business_rule(
         status=DashboardStatus.PUBLISHED.value,
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
         AsyncMock(return_value=dashboard),
     )
     service = DashboardService(
@@ -324,31 +324,31 @@ async def test_copy_preset_creates_custom_dashboard_owned_by_copier(
         project_copy=AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
         AsyncMock(return_value=source),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.count_dashboards",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.count_dashboards",
         AsyncMock(return_value=0),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_components",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_components",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.insert",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.insert",
         insert_dashboard,
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.insert_components",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.insert_components",
         AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.get_f048_resource_adapter",
+        "doberman_agent.telemetry_search.domain.services.dashboard.get_f048_resource_adapter",
         AsyncMock(return_value=adapter),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.resolve_permission_actor",
+        "doberman_agent.telemetry_search.domain.services.dashboard.resolve_permission_actor",
         AsyncMock(return_value=_actor(tenant_id=6)),
     )
     service = DashboardService(
@@ -408,27 +408,27 @@ async def test_copy_projection_failure_removes_committed_dashboard(
     )
     delete_one = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
         AsyncMock(return_value=source),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.count_dashboards",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.count_dashboards",
         AsyncMock(return_value=0),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_components",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_components",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.insert",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.insert",
         AsyncMock(return_value=inserted),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.delete_one",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.delete_one",
         delete_one,
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.get_f048_resource_adapter",
+        "doberman_agent.telemetry_search.domain.services.dashboard.get_f048_resource_adapter",
         AsyncMock(return_value=adapter),
     )
     service = DashboardService(
@@ -464,11 +464,11 @@ async def test_component_query_rejects_component_from_other_dashboard(
         dataset_code="telemetry",
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_one",
         AsyncMock(return_value=dashboard),
     )
     monkeypatch.setattr(
-        "bisheng.telemetry_search.domain.services.dashboard.DashboardDao.get_one_component",
+        "doberman_agent.telemetry_search.domain.services.dashboard.DashboardDao.get_one_component",
         AsyncMock(return_value=foreign_component),
     )
     service = DashboardService(

@@ -32,14 +32,14 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.constants import AdminRole  # noqa: E402
-from bisheng.permission.domain.services.legacy_rbac_sync_service import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.constants import AdminRole  # noqa: E402
+from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (  # noqa: E402
     LegacyRBACSyncService,
 )
-from bisheng.user.domain.models.user import User  # noqa: E402
-from bisheng.user.domain.models.user_role import UserRole  # noqa: E402
+from doberman_agent.user.domain.models.user import User  # noqa: E402
+from doberman_agent.user.domain.models.user_role import UserRole  # noqa: E402
 
 
 async def set_admin(user_id: int) -> int:

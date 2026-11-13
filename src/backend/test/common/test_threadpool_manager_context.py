@@ -1,4 +1,4 @@
-"""Regression: ``bisheng.utils.threadpool.ThreadPoolManager`` sync-path
+"""Regression: ``doberman_agent.utils.threadpool.ThreadPoolManager`` sync-path
 ``submit`` must propagate contextvars (notably the tenant ContextVar)
 into the worker thread.
 
@@ -17,11 +17,11 @@ coroutine submissions.
 
 import threading
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.utils.threadpool import ThreadPoolManager
+from doberman_agent.utils.threadpool import ThreadPoolManager
 
 
 def test_submit_sync_propagates_tenant_to_worker_thread():
@@ -83,7 +83,7 @@ def test_submit_sync_still_sets_trace_id_from_kwarg():
     and sets ``trace_id_var`` inside the worker. ``ctx.run`` runs on a
     Context copy, so this still works — and the caller's ContextVars
     remain untouched."""
-    from bisheng.core.logger import trace_id_var
+    from doberman_agent.core.logger import trace_id_var
 
     tp = ThreadPoolManager(2, thread_name_prefix='test-tp-trace')
     captured = {}

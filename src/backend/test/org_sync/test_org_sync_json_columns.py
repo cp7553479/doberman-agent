@@ -16,8 +16,8 @@ These guards pin both columns back to ``JsonType`` so any future drift fails in
 CI — fully offline, no DB connection required.
 """
 
-from bisheng.core.database.dialect_helpers import JsonType
-from bisheng.org_sync.domain.models.org_sync import OrgSyncConfig, OrgSyncLog
+from doberman_agent.core.database.dialect_helpers import JsonType
+from doberman_agent.org_sync.domain.models.org_sync import OrgSyncConfig, OrgSyncLog
 
 
 def test_org_sync_log_error_details_uses_json_type():

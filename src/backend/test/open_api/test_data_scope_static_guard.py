@@ -18,9 +18,9 @@ BACKEND_ROOT = Path(__file__).resolve().parents[2]
 # file (relative to src/backend) -> exact number of "is_global_super" tokens.
 AUDITED_ADMIN_READS = {
     # 2x system_scope (both guarded by _f066_data_scope_narrowed) + one helper.
-    "bisheng/knowledge/domain/services/knowledge_space_service.py": 3,
+    "doberman_agent/knowledge/domain/services/knowledge_space_service.py": 3,
     # init_login_user real-role resolution feeding the v2 operator facade.
-    "bisheng/open_endpoints/domain/utils.py": 2,
+    "doberman_agent/open_endpoints/domain/utils.py": 2,
 }
 
 
@@ -37,15 +37,15 @@ def test_admin_identity_reads_on_v2_knowledge_path_are_pinned():
 
 def test_open_endpoints_grow_no_new_admin_identity_reads():
     hits = []
-    for path in sorted((BACKEND_ROOT / "bisheng" / "open_endpoints").rglob("*.py")):
+    for path in sorted((BACKEND_ROOT / "doberman_agent" / "open_endpoints").rglob("*.py")):
         count = path.read_text(encoding="utf-8").count("is_global_super")
         if count:
             hits.append((str(path.relative_to(BACKEND_ROOT)), count))
-    assert hits == [("bisheng/open_endpoints/domain/utils.py", 2)], hits
+    assert hits == [("doberman_agent/open_endpoints/domain/utils.py", 2)], hits
 
 
 def test_narrowed_guard_is_wired_to_both_system_scope_reads():
-    text = (BACKEND_ROOT / "bisheng" / "knowledge" / "domain" / "services" / "knowledge_space_service.py").read_text(
+    text = (BACKEND_ROOT / "doberman_agent" / "knowledge" / "domain" / "services" / "knowledge_space_service.py").read_text(
         encoding="utf-8"
     )
     assert text.count("bool(self.login_user.is_global_super) and not _f066_data_scope_narrowed()") == 2, (
@@ -59,7 +59,7 @@ def test_application_layer_super_admin_shortcuts_respect_data_scope():
     True before the runtime's denial could fire."""
 
     text = (
-        BACKEND_ROOT / "bisheng" / "permission" / "application" / "business_authorization.py"
+        BACKEND_ROOT / "doberman_agent" / "permission" / "application" / "business_authorization.py"
     ).read_text(encoding="utf-8")
     shortcuts = text.count("actor.super_admin")
     guarded = text.count("actor.super_admin and actor.data_scope == DATA_SCOPE_ALL")

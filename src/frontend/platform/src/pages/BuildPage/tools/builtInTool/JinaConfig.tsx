@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { DialogClose, DialogFooter } from "@/components/bs-ui/dialog";
 import { useState } from 'react';

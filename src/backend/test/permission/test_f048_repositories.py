@@ -17,10 +17,10 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.permission import PermissionVersionConflictError
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.core.database import tenant_filter
-from bisheng.permission.domain.models import (
+from doberman_agent.common.errcode.permission import PermissionVersionConflictError
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.permission.domain.models import (
     AuthorizationModelRelease,
     PermissionCatalogRelease,
     PermissionGrant,
@@ -31,13 +31,13 @@ from bisheng.permission.domain.models import (
     PermissionProjectionTuple,
     PermissionVisibleSourceProjection,
 )
-from bisheng.permission.domain.repositories.catalog_repository import CatalogRepository
-from bisheng.permission.domain.repositories.grant_repository import GrantRepository
-from bisheng.permission.domain.repositories.migration_repository import (
+from doberman_agent.permission.domain.repositories.catalog_repository import CatalogRepository
+from doberman_agent.permission.domain.repositories.grant_repository import GrantRepository
+from doberman_agent.permission.domain.repositories.migration_repository import (
     MigrationRepository,
     _migration_source_checksum,
 )
-from bisheng.permission.domain.repositories.projection_repository import ProjectionRepository
+from doberman_agent.permission.domain.repositories.projection_repository import ProjectionRepository
 
 SessionFactory = Callable[[], AbstractAsyncContextManager[AsyncSession]]
 

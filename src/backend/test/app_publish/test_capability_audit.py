@@ -16,22 +16,22 @@ from types import SimpleNamespace
 import pytest
 from sqlmodel import select
 
-from bisheng.app_publish.domain.models.capability_call_record import (
+from doberman_agent.app_publish.domain.models.capability_call_record import (
     CAPABILITY_KNOWLEDGE,
     RESULT_REFUSED,
     RESULT_SUCCESS,
     AppCapabilityCallRecord,
 )
-from bisheng.app_publish.domain.services import capability_audit
-from bisheng.app_publish.domain.services.capability_audit import (
+from doberman_agent.app_publish.domain.services import capability_audit
+from doberman_agent.app_publish.domain.services.capability_audit import (
     SUBJECT_KIND_APP_SELF,
     SUBJECT_KIND_USER,
     assert_model_attribution,
     record_retrieval,
 )
-from bisheng.app_publish.domain.services.capability_bus_service import CapabilityBusService
-from bisheng.common.errcode.app_publish import AppCapabilityRevokedError
-from bisheng.common.errcode.mcp_face import RetrievalIdentityMissingError
+from doberman_agent.app_publish.domain.services.capability_bus_service import CapabilityBusService
+from doberman_agent.common.errcode.app_publish import AppCapabilityRevokedError
+from doberman_agent.common.errcode.mcp_face import RetrievalIdentityMissingError
 
 ACCESS_USER_ID = 93077
 
@@ -44,8 +44,8 @@ async def _records(publish_db) -> list[AppCapabilityCallRecord]:
 @pytest.fixture()
 def fake_facade(monkeypatch):
     """A facade double that returns a fixed effective scope."""
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
-    from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
+    from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
 
     state = {"effective": [], "raise": None}
 
@@ -65,7 +65,7 @@ def fake_facade(monkeypatch):
 
 
 async def _online_app_declaring(publish_db, app_factory, knowledge_ids):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, version = await app_factory(state="online", name="调研应用")
     async with publish_db() as session:
@@ -124,7 +124,7 @@ async def test_the_record_carries_the_retrieval_target_not_the_question(
 
 
 async def test_a_refusal_is_recorded_too_with_its_code(publish_db, app_factory, knowledge_factory, fake_facade):
-    from bisheng.common.errcode.mcp_face import KnowledgeCapabilityRevokedError
+    from doberman_agent.common.errcode.mcp_face import KnowledgeCapabilityRevokedError
 
     kb = await knowledge_factory(name="产品手册")
     app_row, _version = await _online_app_declaring(publish_db, app_factory, [kb.id])
@@ -148,7 +148,7 @@ async def test_a_refusal_the_bus_itself_raises_is_recorded_like_any_other(
     "what did this app keep reaching for" is only answerable if it is recorded —
     a 26322 refusal raised one layer deeper already is.
     """
-    from bisheng.common.errcode.app_publish import AppCapabilityNotDeclaredError
+    from doberman_agent.common.errcode.app_publish import AppCapabilityNotDeclaredError
 
     kb = await knowledge_factory(name="产品手册")
     undeclared = await knowledge_factory(name="财务档案")
@@ -214,7 +214,7 @@ async def test_recording_never_breaks_a_working_retrieval(
 
 async def test_the_table_is_insert_only(publish_db, app_factory, knowledge_factory, fake_facade):
     """No update path exists — a record of something that happened does not change."""
-    from bisheng.app_publish.domain.models import capability_call_record
+    from doberman_agent.app_publish.domain.models import capability_call_record
 
     dao_methods = {name for name in vars(capability_call_record.AppCapabilityCallRecordDao) if not name.startswith("_")}
     assert dao_methods == {"ainsert"}
@@ -259,8 +259,8 @@ async def test_the_model_face_stamps_the_pair_on_its_own_records():
     the visitor. Either way the actor is the application's **uuid** — the field
     a per-application query reads (F055 T055 note ①).
     """
-    from bisheng.open_api.domain.services import model_range_policy
-    from bisheng.open_api.domain.services.model_range_policy import (
+    from doberman_agent.open_api.domain.services import model_range_policy
+    from doberman_agent.open_api.domain.services.model_range_policy import (
         ACCESS_TOKEN_HEADER,
         AccessSubject,
         resolve_range_and_subject,

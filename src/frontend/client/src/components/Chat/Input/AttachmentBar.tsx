@@ -7,7 +7,7 @@ import {
     useRef,
     useState,
 } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { OGDialog, OGDialogContent } from "~/components/ui";
 import { cn } from "~/utils";
 import { formatBytes } from "~/utils/files";

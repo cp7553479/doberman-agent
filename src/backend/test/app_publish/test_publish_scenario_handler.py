@@ -49,7 +49,7 @@ _SOURCES = {"sources": [{"type": "department_admin"}, {"type": "tenant_admin"}]}
 
 
 def _handler():
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
 
     return AppPublishScenarioHandler()
 
@@ -197,7 +197,7 @@ async def test_self_approval_flag_carried_via_handler_instance_attr(publish_db, 
     exactly four fields — neither can carry "this one was self-approved", and
     AC-17 requires it to be audited.
     """
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateResult
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateResult
 
     handler = _handler()
     assert handler.last_self_approval is False, "must default to False before any resolution"
@@ -262,7 +262,7 @@ async def test_approver_resolver_not_modified_by_this_scenario(publish_db, dept_
     person who owns the channel or the space genuinely should see their own
     request.
     """
-    from bisheng.approval.domain.services.approver_resolver import resolve_approvers_from_sources
+    from doberman_agent.approval.domain.services.approver_resolver import resolve_approvers_from_sources
 
     req = _req(
         tenant_id=SUB_TENANT_ID, applicant_user_id=DEPT_ADMIN_USER_ID, department_id=dept_admin_user.department_id
@@ -377,7 +377,7 @@ async def test_build_business_link_points_at_the_publish_tab(publish_db):
 
 async def test_preset_is_registered_with_handler_key_and_source_types():
     """``handler_key`` has no default: omitting it raises at import time, not at publish time."""
-    from bisheng.approval.domain.services.approval_registry import ApprovalRegistry
+    from doberman_agent.approval.domain.services.approval_registry import ApprovalRegistry
 
     preset = ApprovalRegistry.with_default_presets().get_preset(SCENARIO_CODE)
 
@@ -396,8 +396,8 @@ async def test_runtime_handler_factory_builds_this_scenario():
     The failure is silent: ``build_runtime_handler`` raises ``KeyError``, the
     outbox records a task failure and nothing on the publish face changes.
     """
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
-    from bisheng.approval.domain.services.approval_runtime_handler_factory import build_runtime_handler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.approval.domain.services.approval_runtime_handler_factory import build_runtime_handler
 
     handler = await build_runtime_handler(SCENARIO_CODE)
 
@@ -406,7 +406,7 @@ async def test_runtime_handler_factory_builds_this_scenario():
 
 async def test_runtime_handler_factory_returns_a_fresh_instance_each_time():
     """Per-request instances are the precondition of the self-approval flag."""
-    from bisheng.approval.domain.services.approval_runtime_handler_factory import build_runtime_handler
+    from doberman_agent.approval.domain.services.approval_runtime_handler_factory import build_runtime_handler
 
     first = await build_runtime_handler(SCENARIO_CODE)
     second = await build_runtime_handler(SCENARIO_CODE)

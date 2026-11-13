@@ -1,7 +1,7 @@
 # Kinyoo work-120 migration
 
-Source: `feat/bisheng-work-120` at `de60988d7`.
-Target baseline: `origin/feat/bisheng-work-120-main` at `7e573b3a6`.
+Source: `feat/doberman-agent-work-120` at `de60988d7`.
+Target baseline: `origin/feat/doberman-agent-work-120-main` at `7e573b3a6`.
 
 ## Scope
 

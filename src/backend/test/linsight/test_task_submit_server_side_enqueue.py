@@ -29,8 +29,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.linsight.domain import utils as linsight_execute_utils
-from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+from doberman_agent.linsight.domain import utils as linsight_execute_utils
+from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
 
 def _session(status=SessionVersionStatusEnum.NOT_STARTED, user_id=1):
@@ -53,7 +53,7 @@ async def test_enqueue_puts_the_session_on_the_worker_queue(monkeypatch: pytest.
         def __init__(self, *args, **kwargs):
             self.put = put
 
-    import bisheng.linsight.worker as worker_mod
+    import doberman_agent.linsight.worker as worker_mod
 
     monkeypatch.setattr(worker_mod, "LinsightQueue", _Queue)
     monkeypatch.setattr(worker_mod, "encode_queue_item", lambda svid, tenant_id: f"{svid}:{tenant_id}")
@@ -70,7 +70,7 @@ async def test_enqueue_puts_the_session_on_the_worker_queue(monkeypatch: pytest.
 # ---------------------------------------------------------------------------
 @pytest.fixture
 def endpoint_env(monkeypatch: pytest.MonkeyPatch):
-    from bisheng.linsight.api.endpoints import linsight as ep
+    from doberman_agent.linsight.api.endpoints import linsight as ep
 
     state: dict = {"enqueued": 0, "session": _session()}
 

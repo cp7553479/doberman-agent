@@ -11,16 +11,16 @@ def platform_environment(
     prefix = base_path or f"/apps/{slug}"
     env.update(
         {
-            "BISHENG_APP_DB_URL": "sqlite:////data/app.db",
-            "BISHENG_APP_DB_PATH": "/data/app.db",
-            "BISHENG_APP_ID": app_id,
-            "BISHENG_APP_SLUG": slug,
-            "BISHENG_APP_VERSION_ID": version_id,
-            "BISHENG_APP_VERSION": "" if version_no is None else str(version_no),
+            "DOBERMAN_AGENT_APP_DB_URL": "sqlite:////data/app.db",
+            "DOBERMAN_AGENT_APP_DB_PATH": "/data/app.db",
+            "DOBERMAN_AGENT_APP_ID": app_id,
+            "DOBERMAN_AGENT_APP_SLUG": slug,
+            "DOBERMAN_AGENT_APP_VERSION_ID": version_id,
+            "DOBERMAN_AGENT_APP_VERSION": "" if version_no is None else str(version_no),
             "PORT": str(port),
-            "BISHENG_APP_PORT": str(port),
-            "BISHENG_APP_BASE_PATH": prefix,
-            "BISHENG_APP_HEALTH_PATH": health_path,
+            "DOBERMAN_AGENT_APP_PORT": str(port),
+            "DOBERMAN_AGENT_APP_BASE_PATH": prefix,
+            "DOBERMAN_AGENT_APP_HEALTH_PATH": health_path,
         }
     )
     if language == "python3.11":

@@ -1,1 +1,1 @@
-export { useCitationMediaQuery } from '@bisheng/chat/citation-views';
+export { useCitationMediaQuery } from '@doberman-agent/chat/citation-views';

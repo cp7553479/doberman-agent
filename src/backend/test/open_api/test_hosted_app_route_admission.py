@@ -20,9 +20,9 @@ from unittest.mock import AsyncMock
 from fastapi import APIRouter, Depends, FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.open_api.api.dependencies import verify_open_api_access
-from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-from bisheng.open_api.domain.scopes import open_api_scope
+from doberman_agent.open_api.api.dependencies import verify_open_api_access
+from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+from doberman_agent.open_api.domain.scopes import open_api_scope
 from test.open_api.model_gateway_fixtures import hosted_app_principal, service_account_principal
 
 
@@ -52,7 +52,7 @@ def _app() -> FastAPI:
 
 def _admit(monkeypatch, principal) -> None:
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=principal),
     )
 

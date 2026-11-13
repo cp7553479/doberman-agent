@@ -4,57 +4,57 @@
   "architecture": "amd64",
   "containers": [
     {
-      "name": "bisheng-backend",
+      "name": "doberman-agent-backend",
       "service": "backend",
-      "image": "cr.dataelem.com/dataelement/bisheng-backend:v3.0.0-beta6",
+      "image": "cr.dataelem.com/cp7553479/doberman-agent-backend:v3.0.0-beta6",
       "image_id": "sha256:55c0061e8cee11064d1e780e6716927ba32d7a9a7cb05a85f8e0c54ceb275c7a",
       "status": "running",
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network",
-        "bisheng-sandbox"
+        "doberman-agent-network",
+        "doberman-agent-sandbox"
       ]
     },
     {
-      "name": "bisheng-backend-worker",
+      "name": "doberman-agent-backend-worker",
       "service": "backend_worker",
-      "image": "cr.dataelem.com/dataelement/bisheng-backend:v3.0.0-beta6",
+      "image": "cr.dataelem.com/cp7553479/doberman-agent-backend:v3.0.0-beta6",
       "image_id": "sha256:55c0061e8cee11064d1e780e6716927ba32d7a9a7cb05a85f8e0c54ceb275c7a",
       "status": "running",
       "exit_code": 0,
       "health": null,
       "networks": [
-        "bisheng-network",
-        "bisheng-sandbox"
+        "doberman-agent-network",
+        "doberman-agent-sandbox"
       ]
     },
     {
-      "name": "bisheng-code-runner-1",
+      "name": "doberman-agent-code-runner-1",
       "service": "code-runner-1",
-      "image": "cr.dataelem.com/dataelement/bisheng-sandbox:feat_3.0.0",
+      "image": "cr.dataelem.com/cp7553479/doberman-agent-sandbox:feat_3.0.0",
       "image_id": "sha256:b3718657209c1b78c7a8fdebd1d786611e3a3f2bc62a36070f8d7b55c3299dcc",
       "status": "running",
       "exit_code": 0,
       "health": null,
       "networks": [
-        "bisheng-sandbox"
+        "doberman-agent-sandbox"
       ]
     },
     {
-      "name": "bisheng-code-runner-2",
+      "name": "doberman-agent-code-runner-2",
       "service": "code-runner-2",
-      "image": "cr.dataelem.com/dataelement/bisheng-sandbox:feat_3.0.0",
+      "image": "cr.dataelem.com/cp7553479/doberman-agent-sandbox:feat_3.0.0",
       "image_id": "sha256:b3718657209c1b78c7a8fdebd1d786611e3a3f2bc62a36070f8d7b55c3299dcc",
       "status": "running",
       "exit_code": 0,
       "health": null,
       "networks": [
-        "bisheng-sandbox"
+        "doberman-agent-sandbox"
       ]
     },
     {
-      "name": "bisheng-es",
+      "name": "doberman-agent-es",
       "service": "elasticsearch",
       "image": "cr.dataelem.com/bitnami/elasticsearch:8.12.0",
       "image_id": "sha256:9523903650c44aa8398f85cc53dc10795625f2a58d6c8044ee4853ecebb15735",
@@ -62,23 +62,23 @@
       "exit_code": 0,
       "health": null,
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-frontend",
+      "name": "doberman-agent-frontend",
       "service": "frontend",
-      "image": "cr.dataelem.com/dataelement/bisheng-frontend:v3.0.0-beta6",
+      "image": "cr.dataelem.com/cp7553479/doberman-agent-frontend:v3.0.0-beta6",
       "image_id": "sha256:2787c8b09afac41d0ab1e29e8f4a5d871657f7bbfb78c4b7465014d7288ffd25",
       "status": "running",
       "exit_code": 0,
       "health": null,
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-milvus-etcd",
+      "name": "doberman-agent-milvus-etcd",
       "service": "etcd",
       "image": "cr.dataelem.com/quay.io/coreos/etcd:v3.5.5",
       "image_id": "sha256:673f29d03de9f5d46158b4cfc3e4c1d69b72d31a800825b4c5e9e6b1ed553acb",
@@ -86,11 +86,11 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-milvus-minio",
+      "name": "doberman-agent-milvus-minio",
       "service": "minio",
       "image": "cr.dataelem.com/minio/minio:RELEASE.2023-03-20T20-16-18Z",
       "image_id": "sha256:400c20c8aac03024d00a34603f5445dd4679b97712e062727190a8462c6a34b5",
@@ -98,11 +98,11 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-milvus-standalone",
+      "name": "doberman-agent-milvus-standalone",
       "service": "milvus",
       "image": "cr.dataelem.com/milvusdb/milvus:v2.5.10",
       "image_id": "sha256:d500060a18e831d28ecc83833160ffe87f2ae95f8a60ec23982478496b25c5ed",
@@ -110,11 +110,11 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-mysql",
+      "name": "doberman-agent-mysql",
       "service": "mysql",
       "image": "cr.dataelem.com/mysql:8.0",
       "image_id": "sha256:af332304d0c65ad3469204d2b0a79f81ea20c1582bd6153d69ef65f8b48dd333",
@@ -122,11 +122,11 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-openfga",
+      "name": "doberman-agent-openfga",
       "service": "openfga",
       "image": "cr.dataelem.com/dataelement/openfga:v1.15.2-dm",
       "image_id": "sha256:31744344bbb1b3f00e62f0d1f2358e071d812c1b71093b712dffb50fca3eadd3",
@@ -134,11 +134,11 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-openfga-migrate",
+      "name": "doberman-agent-openfga-migrate",
       "service": "openfga-migrate",
       "image": "cr.dataelem.com/dataelement/openfga:v1.15.2-dm",
       "image_id": "sha256:31744344bbb1b3f00e62f0d1f2358e071d812c1b71093b712dffb50fca3eadd3",
@@ -146,11 +146,11 @@
       "exit_code": 0,
       "health": "unhealthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     },
     {
-      "name": "bisheng-redis",
+      "name": "doberman-agent-redis",
       "service": "redis",
       "image": "cr.dataelem.com/redis:7.0.4",
       "image_id": "sha256:2460522297a148c1bcb477b126451ed44cca05c916694367313be1a91c69f793",
@@ -158,7 +158,7 @@
       "exit_code": 0,
       "health": "healthy",
       "networks": [
-        "bisheng-network"
+        "doberman-agent-network"
       ]
     }
   ],

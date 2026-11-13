@@ -1,6 +1,6 @@
-import { Outlined } from 'bisheng-icons';
-import { Tag } from '@bisheng/ui';
-import cn from '@bisheng/ui/cn';
+import { Outlined } from '@doberman-agent/icons';
+import { Tag } from '@doberman-agent/ui';
+import cn from '@doberman-agent/ui/cn';
 import { createCitationUtilities } from './preview';
 import { CitationSourceIcon } from './CitationSourceIcon';
 import type { ChatCitation, ChatLocalize, CitationPreview, CitationReferenceItem } from './types';

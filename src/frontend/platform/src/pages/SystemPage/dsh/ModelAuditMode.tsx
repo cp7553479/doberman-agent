@@ -1,4 +1,4 @@
-import { Alert, Button } from "@bisheng/ui";
+import { Alert, Button } from "@doberman-agent/ui";
 import { getAuditMode, saveAuditMode } from "@/controllers/API/dshModelAudit";
 import type { AuditMode, AuditModeSnapshot } from "@/types/dshModelAudit";
 import { useEffect, useId, useState } from "react";

@@ -13,20 +13,20 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, create_engine, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.chat_session.domain.chat import ChatSessionService
-from bisheng.chat_session.domain.models.workflow_file_manifest import WorkflowFileManifest
-from bisheng.chat_session.domain.repositories import workflow_file_repository as repository_module
-from bisheng.chat_session.domain.repositories.workflow_file_repository import WorkflowFileRepository
-from bisheng.chat_session.domain.services.workflow_file_service import WorkflowFileService
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.database.models.message import ChatMessage
-from bisheng.database.models.session import MessageSession
+from doberman_agent.chat_session.domain.chat import ChatSessionService
+from doberman_agent.chat_session.domain.models.workflow_file_manifest import WorkflowFileManifest
+from doberman_agent.chat_session.domain.repositories import workflow_file_repository as repository_module
+from doberman_agent.chat_session.domain.repositories.workflow_file_repository import WorkflowFileRepository
+from doberman_agent.chat_session.domain.services.workflow_file_service import WorkflowFileService
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.database.models.session import MessageSession
 
 
 @pytest.fixture(autouse=True)
 def not_found_response(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.NotFoundError",
+        "doberman_agent.chat_session.domain.chat.NotFoundError",
         SimpleNamespace(
             http_exception=lambda: HTTPException(status_code=404),
         ),
@@ -138,7 +138,7 @@ def test_context_registers_before_upload_and_uses_session_tenant(monkeypatch):
     """AC-05, AC-07: object attribution follows the message tenant, not the shared workflow tenant."""
     storage = SimpleNamespace(bucket="main", tmp_bucket="temp")
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
+        "doberman_agent.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
     )
     monkeypatch.setattr(WorkflowFileRepository, "conversation_tenant", lambda *args: 42)
     writes = []
@@ -169,7 +169,7 @@ def test_debug_images_stay_in_temp_without_persistent_manifest(monkeypatch):
     storage = MagicMock(bucket="main", tmp_bucket="temp")
     storage.get_share_link_sync.return_value = "/temp/image?signature=expiring"
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
+        "doberman_agent.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
     )
     save = MagicMock()
     monkeypatch.setattr(WorkflowFileRepository, "save_assets", save)
@@ -203,7 +203,7 @@ async def test_resolve_derived_image_checks_namespace_and_readiness(monkeypatch,
     monkeypatch.setattr(ChatSessionService, "_own_conversation_or_raise", AsyncMock(return_value=owner))
     monkeypatch.setattr(WorkflowFileRepository, "attachment_messages", AsyncMock(return_value=[message]))
     storage = MagicMock(get_share_link=AsyncMock(return_value="/main/fresh?signature=new"))
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=storage))
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=storage))
     if allowed:
         assert "signature=new" in await ChatSessionService.resolve_attachment_url("c1", asset["file_id"], None)
         storage.get_share_link.assert_awaited_once_with(asset["object_name"])
@@ -220,13 +220,13 @@ async def test_session_cleanup_removes_original_and_pending_images(monkeypatch):
     message = SimpleNamespace(files=json.dumps([{"object_name": "chat/7/original.pdf", "derived_assets": [image]}]))
     monkeypatch.setattr(WorkflowFileRepository, "attachment_messages", AsyncMock(return_value=[message]))
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one",
+        "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one",
         AsyncMock(
             return_value=SimpleNamespace(tenant_id=1, user_id=7),
         ),
     )
     storage = MagicMock(remove_object=AsyncMock(side_effect=[OSError("storage down"), None, None, None]))
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=storage))
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=storage))
     await ChatSessionService._remove_attachments("c1")
     await ChatSessionService._remove_attachments("c1")
     removed = [call.kwargs["object_name"] for call in storage.remove_object.await_args_list]
@@ -280,7 +280,7 @@ def test_daily_session_retains_parsed_images_with_the_existing_manifest(database
         session.commit()
     storage = SimpleNamespace(bucket="main", tmp_bucket="temp")
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
+        "doberman_agent.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: storage
     )
     context = WorkflowFileService.image_storage(
         chat_id="c1",

@@ -1,4 +1,4 @@
-from bisheng.common.errcode import open_api
+from doberman_agent.common.errcode import open_api
 
 EXPECTED_CODES = {
     26001,
@@ -78,7 +78,7 @@ def test_mcp_face_codes_are_in_263_band_and_have_three_language_copy():
     import json
     from pathlib import Path
 
-    from bisheng.common.errcode import mcp_face
+    from doberman_agent.common.errcode import mcp_face
 
     codes = {
         value.Code

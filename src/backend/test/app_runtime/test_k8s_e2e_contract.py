@@ -22,7 +22,7 @@ from test.e2e.helpers.vibe_runtime import (
 def package(path, document):
     with tarfile.open(path, "w:gz") as archive:
         content = json.dumps(document).encode()
-        info = tarfile.TarInfo("bisheng-app.yaml")
+        info = tarfile.TarInfo("doberman-agent-app.yaml")
         info.size = len(content)
         archive.addfile(info, io.BytesIO(content))
     return path
@@ -54,12 +54,12 @@ def test_package_is_inspected_without_extracting_paths(tmp_path):
     """AC-55: a nested or ambiguous manifest is not used to authorize cleanup."""
     path = tmp_path / "app.tar.gz"
     with tarfile.open(path, "w:gz") as archive:
-        info = tarfile.TarInfo("../bisheng-app.yaml")
+        info = tarfile.TarInfo("../doberman-agent-app.yaml")
         info.size = 2
         archive.addfile(info, io.BytesIO(b"{}"))
     with pytest.raises(ValueError, match="root manifest"):
         validate_package(path, "e2e-f059-smoke")
-    assert not (tmp_path.parent / "bisheng-app.yaml").exists()
+    assert not (tmp_path.parent / "doberman-agent-app.yaml").exists()
 
 
 def test_scenario_freezes_exact_slug_and_mode(tmp_path):

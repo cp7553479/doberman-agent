@@ -51,13 +51,13 @@ ONLINE_TABLES = [
 
 
 def _svc():
-    from bisheng.app_publish.domain.services import schema_evolution_service
+    from doberman_agent.app_publish.domain.services import schema_evolution_service
 
     return schema_evolution_service
 
 
 def _tables(*declarations: dict):
-    from bisheng.app_publish.domain.schemas.app_manifest import DatabaseTable
+    from doberman_agent.app_publish.domain.schemas.app_manifest import DatabaseTable
 
     return [DatabaseTable.model_validate(item) for item in declarations]
 
@@ -93,7 +93,7 @@ ADDITIVE_YAML = _yaml_with_tables(
 
 async def _set_online_tables(publish_db, app, version, tables=ONLINE_TABLES) -> None:
     """Freeze ``database.tables`` on the version the application is running."""
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async with publish_db() as session:
         row = await AppVersionDao.aget(session, app.id, version.id)
@@ -186,7 +186,7 @@ def test_tables_of_accepts_stored_dicts_and_legacy_name_only_columns():
 
 
 def test_require_confirmation_raises_16229_with_every_item_and_the_breaking_subset():
-    from bisheng.common.errcode.app_publish import AppSchemaChangeUnconfirmedError
+    from doberman_agent.common.errcode.app_publish import AppSchemaChangeUnconfirmedError
 
     svc = _svc()
     change = svc.diff_tables(_tables(*ONLINE_TABLES), _tables({"name": "orders", "columns": ["id", "amount"]}))
@@ -212,7 +212,7 @@ def test_require_confirmation_raises_16229_with_every_item_and_the_breaking_subs
 
 
 async def test_evaluate_returns_none_without_an_online_version(publish_db, app_factory):
-    from bisheng.app_publish.domain.schemas.app_manifest import AppManifest
+    from doberman_agent.app_publish.domain.schemas.app_manifest import AppManifest
 
     manifest = AppManifest.model_validate({"name": "x", "runtime": "python3.11", "port": 1})
     assert await _svc().evaluate(None, manifest) is None
@@ -244,8 +244,8 @@ async def test_evaluate_diffs_against_the_current_version_manifest(publish_db, a
 @pytest.fixture()
 def _receive_leg(app_runtime_settings, monkeypatch):
     """Runtime layer on, tenant seeded, Celery hand-off captured — as ``test_pipeline_accept`` does."""
-    from bisheng.app_publish.domain.services import publish_pipeline_service
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     set_current_tenant_id(ROOT_TENANT_ID)
     app_runtime_settings(enabled=True)
@@ -259,7 +259,7 @@ def _receive_leg(app_runtime_settings, monkeypatch):
 
 
 async def _accept(package, principal, **kwargs):
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     return await PublishPipelineService.accept(package_path=package, principal=principal, **kwargs)
 
@@ -283,8 +283,8 @@ async def test_breaking_change_without_confirmation_is_16229_and_leaves_nothing_
     audit_sink,
     _receive_leg,
 ):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.common.errcode.app_publish import AppSchemaChangeUnconfirmedError
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.common.errcode.app_publish import AppSchemaChangeUnconfirmedError
 
     app = await _online_app(publish_db, app_factory)
 
@@ -296,7 +296,7 @@ async def test_breaking_change_without_confirmation_is_16229_and_leaves_nothing_
     assert breaking == {("amount", "modify_column"), ("note", "drop_column")}
     async with publish_db() as session:
         assert await AppDeploymentDao.alist_by_app(session, app.id) == []
-    assert fake_minio.list_object_names("bisheng-apps") == []
+    assert fake_minio.list_object_names("doberman-agent-apps") == []
     assert _receive_leg == [] and fake_orchestrator.calls == []
     assert "app.release.submit" not in {call["action"] for call in audit_sink}
 
@@ -390,8 +390,8 @@ async def test_pipeline_stage_hands_the_summary_to_the_approval_port(
     audit_sink,
     _receive_leg,
 ):
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, AppDeploymentDao
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, AppDeploymentDao
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     app = await _online_app(publish_db, app_factory)
     result = await _accept(
@@ -420,9 +420,9 @@ async def test_approval_payload_carries_the_change_when_submit_derives_it_itself
     publish_db, app_factory, deployment_factory, approval_env, audit_sink, approval_notifications, super_admin_user
 ):
     """A caller that skipped the stage still gets the card filled — one diff, derived on demand."""
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app = await _online_app(publish_db, app_factory)
     deployment = await deployment_factory(
@@ -453,7 +453,7 @@ async def test_approval_payload_carries_the_change_when_submit_derives_it_itself
 
 
 async def test_detail_snapshot_passes_the_summary_through_verbatim(publish_db):
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
 
     summary = {"has_breaking": True, "items": [{"table": "orders", "column": "note", "op": "drop_column"}]}
     req = SimpleNamespace(
@@ -468,14 +468,14 @@ async def test_detail_snapshot_passes_the_summary_through_verbatim(publish_db):
 async def test_publish_status_shows_the_pending_change_and_hides_it_once_settled(
     publish_db, app_factory, deployment_factory, tier_seed
 ):
-    from bisheng.app_publish.domain.models.app_deployment import (
+    from doberman_agent.app_publish.domain.models.app_deployment import (
         STAGE_APPROVAL_CREATED,
         STAGE_ONLINE,
         STATUS_FAILED,
         STATUS_SUCCEEDED,
         STATUS_WAITING_APPROVAL,
     )
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     app = await _online_app(publish_db, app_factory)
     actor = SimpleNamespace(user_id=OWNER_USER_ID, tenant_id=ROOT_TENANT_ID, is_global_super=False)

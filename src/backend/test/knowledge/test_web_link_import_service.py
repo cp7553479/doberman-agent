@@ -1,4 +1,4 @@
-from bisheng.knowledge.domain.services.web_link_import_service import (
+from doberman_agent.knowledge.domain.services.web_link_import_service import (
     KnowledgeWebLinkImportService,
     WEB_LINK_DYNAMIC_RENDER_MARKDOWN,
     WEB_LINK_LOGIN_ENTRY_MARKDOWN,

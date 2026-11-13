@@ -100,8 +100,8 @@ export interface RunningStatus {
   showReRun?: boolean;
 }
 
-// 毕昇配置
-export type BishengConfig = {
+// doberman-agent配置
+export type DobermanAgentConfig = {
   env: string;
   uns_support: string[];
   office_url: string;

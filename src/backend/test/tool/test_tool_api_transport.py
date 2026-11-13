@@ -3,8 +3,8 @@
 import httpx
 import pytest
 
-from bisheng.common.errcode.dsh import DshToolOutputTooLargeError, DshToolUpstreamFailedError
-from bisheng.tool.domain.services.bounded_openapi import BoundedOpenApiTools
+from doberman_agent.common.errcode.dsh import DshToolOutputTooLargeError, DshToolUpstreamFailedError
+from doberman_agent.tool.domain.services.bounded_openapi import BoundedOpenApiTools
 
 
 def implementation():
@@ -30,7 +30,7 @@ async def test_bounded_success_and_saved_argument_mapping(monkeypatch):
     impl = implementation()
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs),
     )
     assert await impl.arun(query="hello") == '{"results":[],"truncated":false}'
@@ -51,7 +51,7 @@ async def test_transport_failures_do_not_return_sensitive_text(monkeypatch, stat
     """AC-19, AC-21, AC-28, AC-31: fail before converting errors into results."""
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(
             transport=httpx.MockTransport(lambda _: httpx.Response(status, headers=headers, text=text)), **kwargs
         ),
@@ -67,7 +67,7 @@ async def test_http_library_logging_does_not_reveal_query_credentials(monkeypatc
 
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(lambda _: httpx.Response(200, text="ok")), **kwargs),
     )
     impl = implementation()
@@ -102,7 +102,7 @@ async def test_stream_cap_stops_consumption_and_closes(monkeypatch):
     stream = Stream()
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(
             transport=httpx.MockTransport(lambda _: httpx.Response(200, stream=stream)), **kwargs
         ),
@@ -131,7 +131,7 @@ async def test_number_arguments_keep_integer_precision(monkeypatch):
     )
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs),
     )
     assert await impl.arun(id=9007199254740993) == "ok"
@@ -150,7 +150,7 @@ async def test_body_parameter_does_not_override_same_named_saved_credential(monk
 
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs),
     )
     credential = "fixture-private-credential"
@@ -186,7 +186,7 @@ async def test_nested_json_body_is_sent_without_transformation_or_defaults(monke
 
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs),
     )
     impl = BoundedOpenApiTools(
@@ -209,7 +209,7 @@ async def test_nested_json_body_is_sent_without_transformation_or_defaults(monke
 
 
 def test_legacy_and_bounded_argument_mappers_preserve_the_same_nested_body():
-    from bisheng_langchain.gpts.tools.api_tools.openapi import OpenApiTools
+    from doberman_agent_langchain.gpts.tools.api_tools.openapi import OpenApiTools
 
     params = {
         "path": "/submit",
@@ -232,7 +232,7 @@ async def test_actual_imported_protocol_preserves_caller_id_and_omits_default_mo
     from pathlib import Path
     from types import SimpleNamespace
 
-    from bisheng.tool.domain.services.saved_schema import SavedToolSchema
+    from doberman_agent.tool.domain.services.saved_schema import SavedToolSchema
 
     fixture = json.loads((Path(__file__).parent / "fixtures/nested_openapi_input.json").read_text())
     params = {"path": "/submit", "method": "post", "parameters": fixture["parameters"]}
@@ -259,7 +259,7 @@ async def test_actual_imported_protocol_preserves_caller_id_and_omits_default_mo
 
     original = httpx.AsyncClient
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.bounded_openapi.httpx.AsyncClient",
+        "doberman_agent.tool.domain.services.bounded_openapi.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs),
     )
     impl = BoundedOpenApiTools(url="https://fixture.example", params=params, max_output_bytes=100)

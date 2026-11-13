@@ -17,9 +17,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.tenant.domain.constants import UserTenantSyncTrigger
-from bisheng.tenant.domain.services import user_tenant_sync_service as uts_module
-from bisheng.tenant.domain.services.user_tenant_sync_service import (
+from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
+from doberman_agent.tenant.domain.services import user_tenant_sync_service as uts_module
+from doberman_agent.tenant.domain.services.user_tenant_sync_service import (
     UserTenantSyncService,
 )
 

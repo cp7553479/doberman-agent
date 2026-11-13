@@ -46,16 +46,16 @@ T07a(Schemas)  ──┤
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/core/config/openfga.py` |
-| 修改 | `src/backend/bisheng/core/config/settings.py` |
-| 修改 | `src/backend/bisheng/config.yaml` |
+| 新建 | `src/backend/doberman_agent/core/config/openfga.py` |
+| 修改 | `src/backend/doberman_agent/core/config/settings.py` |
+| 修改 | `src/backend/doberman_agent/config.yaml` |
 | 修改 | `docker/docker-compose.yml` |
 
 ### 实现要点
 
 1. **`core/config/openfga.py`** — `OpenFGAConf(BaseModel)`：
    - `api_url: str = 'http://localhost:8080'`
-   - `store_name: str = 'bisheng'`
+   - `store_name: str = 'doberman-agent'`
    - `store_id: Optional[str] = None` — 已有 store 时直接使用
    - `model_id: Optional[str] = None` — 已有 model 时直接使用
    - `timeout: int = 5` — httpx 请求超时（秒）
@@ -64,7 +64,7 @@ T07a(Schemas)  ──┤
 
 2. **`core/config/settings.py`** — Settings 类添加字段（在 `multi_tenant` 后）：
    ```python
-   from bisheng.core.config.openfga import OpenFGAConf
+   from doberman_agent.core.config.openfga import OpenFGAConf
    openfga: OpenFGAConf = OpenFGAConf()
    ```
 
@@ -72,14 +72,14 @@ T07a(Schemas)  ──┤
    ```yaml
    openfga:
      api_url: 'http://localhost:8080'
-     store_name: 'bisheng'
+     store_name: 'doberman-agent'
      enabled: true
    ```
 
 4. **`docker/docker-compose.yml`** — 添加 OpenFGA 服务：
    - `image: openfga/openfga:latest`
    - `command: run`
-   - `environment`: `OPENFGA_DATASTORE_ENGINE=mysql`, `OPENFGA_DATASTORE_URI` 指向 bisheng-mysql
+   - `environment`: `OPENFGA_DATASTORE_ENGINE=mysql`, `OPENFGA_DATASTORE_URI` 指向 doberman-agent-mysql
    - `ports`: 8080, 8081, 3000
    - `depends_on`: mysql（healthy）
    - `healthcheck`: `wget --no-verbose --tries=1 --spider http://localhost:8080/healthz`
@@ -104,9 +104,9 @@ T07a(Schemas)  ──┤
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/core/openfga/__init__.py` |
-| 新建 | `src/backend/bisheng/core/openfga/client.py` |
-| 新建 | `src/backend/bisheng/core/openfga/exceptions.py` |
+| 新建 | `src/backend/doberman_agent/core/openfga/__init__.py` |
+| 新建 | `src/backend/doberman_agent/core/openfga/client.py` |
+| 新建 | `src/backend/doberman_agent/core/openfga/exceptions.py` |
 
 ### 实现要点
 
@@ -157,8 +157,8 @@ T07a(Schemas)  ──┤
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/core/openfga/manager.py` |
-| 修改 | `src/backend/bisheng/core/context/manager.py` |
+| 新建 | `src/backend/doberman_agent/core/openfga/manager.py` |
+| 修改 | `src/backend/doberman_agent/core/context/manager.py` |
 
 ### 实现要点
 
@@ -177,7 +177,7 @@ T07a(Schemas)  ──┤
 
 2. **`core/context/manager.py`** — `_register_default_contexts()` 末尾添加（在 PromptManager 后、`logger.debug` 前）：
    ```python
-   from bisheng.core.openfga.manager import FGAManager
+   from doberman_agent.core.openfga.manager import FGAManager
    if config.openfga.enabled:
        self.register_context(FGAManager(openfga_config=config.openfga))
    ```
@@ -200,7 +200,7 @@ T07a(Schemas)  ──┤
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/core/openfga/authorization_model.py` |
+| 新建 | `src/backend/doberman_agent/core/openfga/authorization_model.py` |
 
 ### 实现要点
 
@@ -239,7 +239,7 @@ T07a(Schemas)  ──┤
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/common/errcode/permission.py` |
+| 新建 | `src/backend/doberman_agent/common/errcode/permission.py` |
 
 ### 实现要点
 
@@ -290,8 +290,8 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/database/models/failed_tuple.py` |
-| 新建 | `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f004_rebac.py` |
+| 新建 | `src/backend/doberman_agent/database/models/failed_tuple.py` |
+| 新建 | `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f004_rebac.py` |
 
 ### 实现要点
 
@@ -340,11 +340,11 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/__init__.py` |
-| 新建 | `src/backend/bisheng/permission/domain/__init__.py` |
-| 新建 | `src/backend/bisheng/permission/domain/schemas/__init__.py` |
-| 新建 | `src/backend/bisheng/permission/domain/schemas/permission_schema.py` |
-| 新建 | `src/backend/bisheng/permission/domain/services/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/schemas/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/schemas/permission_schema.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/services/__init__.py` |
 
 ### 实现要点
 
@@ -362,7 +362,7 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/domain/services/permission_service.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/services/permission_service.py` |
 
 ### 实现要点
 
@@ -442,7 +442,7 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/domain/services/permission_cache.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/services/permission_cache.py` |
 
 ### 实现要点
 
@@ -483,9 +483,9 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/domain/schemas/tuple_operation.py` |
-| 修改 | `src/backend/bisheng/department/domain/services/department_change_handler.py` |
-| 修改 | `src/backend/bisheng/user_group/domain/services/group_change_handler.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/schemas/tuple_operation.py` |
+| 修改 | `src/backend/doberman_agent/department/domain/services/department_change_handler.py` |
+| 修改 | `src/backend/doberman_agent/user_group/domain/services/group_change_handler.py` |
 
 ### 实现要点
 
@@ -524,8 +524,8 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/department/domain/services/department_service.py` |
-| 修改 | `src/backend/bisheng/user_group/domain/services/user_group_service.py` |
+| 修改 | `src/backend/doberman_agent/department/domain/services/department_service.py` |
+| 修改 | `src/backend/doberman_agent/user_group/domain/services/user_group_service.py` |
 
 ### 实现要点
 
@@ -549,16 +549,16 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/worker/permission/__init__.py` |
-| 新建 | `src/backend/bisheng/worker/permission/retry_failed_tuples.py` |
-| 修改 | `src/backend/bisheng/core/config/settings.py` |
-| 修改 | `src/backend/bisheng/worker/__init__.py` |
+| 新建 | `src/backend/doberman_agent/worker/permission/__init__.py` |
+| 新建 | `src/backend/doberman_agent/worker/permission/retry_failed_tuples.py` |
+| 修改 | `src/backend/doberman_agent/core/config/settings.py` |
+| 修改 | `src/backend/doberman_agent/worker/__init__.py` |
 
 ### 实现要点
 
 1. **`worker/permission/retry_failed_tuples.py`**：
    ```python
-   @bisheng_celery.task(acks_late=True)
+   @doberman_agent_celery.task(acks_late=True)
    def retry_failed_tuples():
    ```
    - 查询 `FailedTupleDao.aget_pending(limit=100)`
@@ -575,14 +575,14 @@ class PermissionInvalidRelationError(BaseErrorCode):
    ```python
    if 'retry_failed_tuples' not in self.beat_schedule:
        self.beat_schedule['retry_failed_tuples'] = {
-           'task': 'bisheng.worker.permission.retry_failed_tuples.retry_failed_tuples',
+           'task': 'doberman_agent.worker.permission.retry_failed_tuples.retry_failed_tuples',
            'schedule': 30.0,
        }
    ```
 
 3. **`worker/__init__.py`** — 添加导入：
    ```python
-   from bisheng.worker.permission.retry_failed_tuples import retry_failed_tuples
+   from doberman_agent.worker.permission.retry_failed_tuples import retry_failed_tuples
    ```
 
 ### 测试
@@ -603,7 +603,7 @@ class PermissionInvalidRelationError(BaseErrorCode):
 
 | 操作 | 文件 |
 |------|------|
-| 修改 | `src/backend/bisheng/user/domain/services/auth.py` |
+| 修改 | `src/backend/doberman_agent/user/domain/services/auth.py` |
 
 ### 实现要点
 
@@ -614,7 +614,7 @@ async def rebac_check(self, relation: str, object_type: str, object_id: str) -> 
     """ReBAC 权限检查（新统一入口，INV-3）。
     委托 PermissionService.check()，内含五级链路。
     """
-    from bisheng.permission.domain.services.permission_service import PermissionService
+    from doberman_agent.permission.domain.services.permission_service import PermissionService
     return await PermissionService.check(
         user_id=self.user_id,
         relation=relation,
@@ -625,7 +625,7 @@ async def rebac_check(self, relation: str, object_type: str, object_id: str) -> 
 
 async def rebac_list_accessible(self, relation: str, object_type: str) -> Optional[List[str]]:
     """列出可访问资源 ID（admin 返回 None 表示不过滤）。"""
-    from bisheng.permission.domain.services.permission_service import PermissionService
+    from doberman_agent.permission.domain.services.permission_service import PermissionService
     return await PermissionService.list_accessible_ids(
         user_id=self.user_id,
         relation=relation,
@@ -657,11 +657,11 @@ async def rebac_list_accessible(self, relation: str, object_type: str) -> Option
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/api/__init__.py` |
-| 新建 | `src/backend/bisheng/permission/api/router.py` |
-| 新建 | `src/backend/bisheng/permission/api/endpoints/__init__.py` |
-| 新建 | `src/backend/bisheng/permission/api/endpoints/permission_check.py` |
-| 修改 | `src/backend/bisheng/api/router.py` |
+| 新建 | `src/backend/doberman_agent/permission/api/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/api/router.py` |
+| 新建 | `src/backend/doberman_agent/permission/api/endpoints/__init__.py` |
+| 新建 | `src/backend/doberman_agent/permission/api/endpoints/permission_check.py` |
+| 修改 | `src/backend/doberman_agent/api/router.py` |
 
 ### 实现要点
 
@@ -707,8 +707,8 @@ async def rebac_list_accessible(self, relation: str, object_type: str) -> Option
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/api/endpoints/resource_permission.py` |
-| 修改 | `src/backend/bisheng/permission/api/router.py` |
+| 新建 | `src/backend/doberman_agent/permission/api/endpoints/resource_permission.py` |
+| 修改 | `src/backend/doberman_agent/permission/api/router.py` |
 
 ### 实现要点
 
@@ -735,7 +735,7 @@ async def rebac_list_accessible(self, relation: str, object_type: str) -> Option
 
 | 操作 | 文件 |
 |------|------|
-| 新建 | `src/backend/bisheng/permission/domain/services/owner_service.py` |
+| 新建 | `src/backend/doberman_agent/permission/domain/services/owner_service.py` |
 
 ### 实现要点
 

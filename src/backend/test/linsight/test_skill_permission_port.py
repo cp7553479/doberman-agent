@@ -2,12 +2,12 @@
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionInvalidResourceError
-from bisheng.linsight.domain.services.f048_skill_permission import (
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError
+from doberman_agent.linsight.domain.services.f048_skill_permission import (
     F048SkillPermissionAdapter,
     SkillPermissionRecord,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 def _record(**overrides) -> SkillPermissionRecord:

@@ -9,7 +9,7 @@
 
 | # | 任务 | 产物 | 状态 |
 |---|---|---|---|
-| T1 | 新表模型 + DAO（pin/unpin/list_pinned_space_ids，幂等 upsert） | `bisheng/knowledge/domain/models/knowledge_space_user_pin.py` | ✅ |
+| T1 | 新表模型 + DAO（pin/unpin/list_pinned_space_ids，幂等 upsert） | `doberman-agent/knowledge/domain/models/knowledge_space_user_pin.py` | ✅ |
 | T2 | `pin_space` 改造：前置 `_require_read_permission` + 写置顶表 | `knowledge_space_service.py` | ✅ |
 | T3 | 列表装配 `_format_accessible_spaces` / `_format_member_spaces` 改用 `pinned_ids` | `knowledge_space_service.py` | ✅ |
 | T4 | 删除死代码 `SpaceChannelMemberDao.pin_space_id` | `common/models/space_channel_member.py` | ✅ |

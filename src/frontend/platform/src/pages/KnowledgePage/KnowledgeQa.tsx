@@ -1,7 +1,7 @@
-import { Button, Dropdown, DropdownItem, DropdownSeparator, SearchInput, notification } from '@bisheng/ui';
+import { Button, Dropdown, DropdownItem, DropdownSeparator, SearchInput, notification } from '@doberman-agent/ui';
 import { QaLibraryDialog } from "./components/QaLibraryDialog";
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Shield } from "lucide-react";
 import { KnowledgeHint, KnowledgeTooltip } from "./components/KnowledgeTooltip";
 

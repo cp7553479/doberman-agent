@@ -14,8 +14,8 @@ from fastapi.testclient import TestClient
 def app_with_mocked_svc():
     """Build a minimal FastAPI app mounting only the knowledge_version router,
     with the KnowledgeVersionService dependency replaced by a MagicMock."""
-    from bisheng.knowledge.api.endpoints.knowledge_version import router
-    from bisheng.knowledge.api.dependencies import get_knowledge_version_service
+    from doberman_agent.knowledge.api.endpoints.knowledge_version import router
+    from doberman_agent.knowledge.api.dependencies import get_knowledge_version_service
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")

@@ -2,9 +2,9 @@
 
 import pytest
 
-from bisheng.common.errcode.flow import WorkflowMediaFileCountLimitError
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.workflow.nodes.input.input import InputNode, ParseModeEnum
+from doberman_agent.common.errcode.flow import WorkflowMediaFileCountLimitError
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.workflow.nodes.input.input import InputNode, ParseModeEnum
 
 EXTRACT = ParseModeEnum.EXTRACT_TEXT.value
 

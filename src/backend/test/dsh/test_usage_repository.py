@@ -9,17 +9,17 @@ from sqlalchemy import Column, DateTime, Integer, MetaData, Table, create_engine
 from sqlalchemy.engine import make_url
 from sqlmodel import Session, SQLModel
 
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.role import Role
-from bisheng.database.models.tenant import Tenant
-from bisheng.user.domain.models.user_role import UserRole
-from bisheng.dsh.domain.models.unified_policy import CreditRule, ModelVisibility, PersonalLedgerState
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository, UsageEvent
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.role import Role
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.user.domain.models.user_role import UserRole
+from doberman_agent.dsh.domain.models.unified_policy import CreditRule, ModelVisibility, PersonalLedgerState
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository, UsageEvent
 
 
 def event(user=20, **changes):

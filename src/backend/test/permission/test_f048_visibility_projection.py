@@ -7,13 +7,13 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceRecord,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.visibility_projection_service import (
+from doberman_agent.permission.domain.services.visibility_projection_service import (
     VisibilityProjectionCompiler,
 )
 

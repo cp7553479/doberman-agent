@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.open_mcp.registry import TOOL_REGISTRY
+from doberman_agent.open_mcp.registry import TOOL_REGISTRY
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = BACKEND_ROOT / "scripts/verify_open_mcp.py"
@@ -26,16 +26,16 @@ def test_verifier_allowlist_and_calls_are_read_only():
         name for name, definition in TOOL_REGISTRY.items() if definition.source_method != "MCP"
     )
     assert script.READ_ONLY_TOOL_NAMES == {
-        "bisheng_knowledge_list",
-        "bisheng_knowledge_retrieve",
-        "bisheng_knowledge_file_list",
+        "doberman_agent_knowledge_list",
+        "doberman_agent_knowledge_retrieve",
+        "doberman_agent_knowledge_file_list",
     }
     args = script._parser().parse_args(
         [
             "--url",
-            "https://bisheng.example.com/api/v2/mcp",
+            "https://doberman-agent.example.com/api/v2/mcp",
             "--call-tool",
-            "bisheng_knowledge_list",
+            "doberman_agent_knowledge_list",
             "--arguments-json",
             '{"page_size":1}',
         ]
@@ -48,25 +48,25 @@ def test_verifier_detects_missing_and_unexpected_tools_for_exact_profiles():
     script = _load_script()
 
     missing, unexpected = script._tool_differences(
-        script.EXPECTED_TOOL_NAMES - {"bisheng_knowledge_delete"},
+        script.EXPECTED_TOOL_NAMES - {"doberman_agent_knowledge_delete"},
         "full",
     )
-    assert missing == ["bisheng_knowledge_delete"]
+    assert missing == ["doberman_agent_knowledge_delete"]
     assert unexpected == []
 
     missing, unexpected = script._tool_differences(
-        script.READ_ONLY_TOOL_NAMES | {"bisheng_knowledge_delete"},
+        script.READ_ONLY_TOOL_NAMES | {"doberman_agent_knowledge_delete"},
         "pat",
     )
     assert missing == []
-    assert unexpected == ["bisheng_knowledge_delete"]
+    assert unexpected == ["doberman_agent_knowledge_delete"]
 
 
 def test_verifier_scope_filtered_profile_only_rejects_out_of_allowlist_tools():
     script = _load_script()
 
     missing, unexpected = script._tool_differences(
-        {"bisheng_knowledge_list", "not_a_f067_tool"},
+        {"doberman_agent_knowledge_list", "not_a_f067_tool"},
         "scope-filtered",
     )
     assert missing == []
@@ -80,9 +80,9 @@ def test_verifier_rejects_write_tool_selection():
         script._parser().parse_args(
             [
                 "--url",
-                "https://bisheng.example.com/api/v2/mcp",
+                "https://doberman-agent.example.com/api/v2/mcp",
                 "--call-tool",
-                "bisheng_knowledge_delete",
+                "doberman_agent_knowledge_delete",
             ]
         )
 
@@ -90,7 +90,7 @@ def test_verifier_rejects_write_tool_selection():
 def test_verifier_reports_auth_failure_without_leaking_token(monkeypatch, capsys):
     script = _load_script()
     token = "secret-token-that-must-not-appear"
-    monkeypatch.setenv("BISHENG_API_KEY", token)
+    monkeypatch.setenv("DOBERMAN_AGENT_API_KEY", token)
 
     def fail_run(coroutine):
         coroutine.close()
@@ -98,7 +98,7 @@ def test_verifier_reports_auth_failure_without_leaking_token(monkeypatch, capsys
 
     monkeypatch.setattr(script.asyncio, "run", fail_run)
 
-    assert script.main(["--url", "https://bisheng.example.com/api/v2/mcp"]) == 3
+    assert script.main(["--url", "https://doberman-agent.example.com/api/v2/mcp"]) == 3
     output = capsys.readouterr()
     assert token not in output.out
     assert token not in output.err
@@ -107,7 +107,7 @@ def test_verifier_reports_auth_failure_without_leaking_token(monkeypatch, capsys
 
 def test_verifier_missing_credential_returns_nonzero(monkeypatch, capsys):
     script = _load_script()
-    monkeypatch.delenv("BISHENG_API_KEY", raising=False)
+    monkeypatch.delenv("DOBERMAN_AGENT_API_KEY", raising=False)
 
-    assert script.main(["--url", "https://bisheng.example.com/api/v2/mcp"]) == 2
+    assert script.main(["--url", "https://doberman-agent.example.com/api/v2/mcp"]) == 2
     assert "missing credential" in capsys.readouterr().err

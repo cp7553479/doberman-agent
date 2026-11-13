@@ -170,7 +170,7 @@
 1. **组件位置**：`packages/ui/src/components/Pagination/`，对外一个 `Pagination`：`current` / `defaultCurrent`、`total`、`pageSize` / `defaultPageSize`（默认 10）、`onChange(page, pageSize)`、`size: "small" | "medium" | "large"`（默认 medium）、`simple?: boolean`（缺省时 `< 576px` 自动为 true，用 `usePrefersMobileLayout` 或同口径断点）、`showTotal?: boolean`（默认 false）、`showSizeChanger?: boolean`（默认 false）、`pageSizeOptions`（默认 `[10, 20, 50, 100]`）、`showQuickJumper?: boolean`（缺省 = 总页数 > 10）、`disabled`。改 `pageSize` 时内部回到第 1 页并回调 `onChange(1, newSize)`。
 2. **语义**：外层 `<nav aria-label="分页">`（走 i18n），页码与箭头用 `<button type="button">`，**不再用 `<a href="javascript:;">` / `href="#"`**；当前页 `aria-current="page"`；省略号 `aria-hidden`；箭头 `aria-label` 上一页 / 下一页。
 3. **页码块样式**：复用 `Button` 的 `default × text`（hover / disabled / `focus-visible` 环），按档 `h-6 min-w-6 px-1` / `h-8 min-w-8 px-1.5` / `h-10 min-w-10 px-2`，圆角随档 `rounded-sm` / `rounded-md` / `rounded-lg`，`text-text-2`。当前页 `bg-blue-50 text-blue-600 font-medium`（禁用时 `bg-fill-2 text-text-4`），`pointer-events-none`（保留可聚焦）。页码块间 `gap-1`，组间 `gap-4`（small `gap-3`）。组件内无裸 hex、无 `dark:`。
-4. **图标**：上 / 下页、省略号统一用 `bisheng-icons` 的 `Outlined.*`（左 / 右箭头、更多，导出名以图标库实际为准），随档 14 / 16 / 18；替换现有 lucide `ChevronLeft` / `ChevronRight` / `MoreHorizontal` / `Ellipsis`。
+4. **图标**：上 / 下页、省略号统一用 `@doberman-agent/icons` 的 `Outlined.*`（左 / 右箭头、更多，导出名以图标库实际为准），随档 14 / 16 / 18；替换现有 lucide `ChevronLeft` / `ChevronRight` / `MoreHorizontal` / `Ellipsis`。
 5. **省略算法**：`totalPages ≤ 7` 全量；否则 `[1, …, c-2 … c+2, …, N]`（窗口越界截掉，不向内补齐，见 §3.1 表），省略号只在缺 ≥ 2 页时出现（缺 1 页直接补那一页）。现有 `AutoPagination` / `PaginationBar` 的 `maxVisiblePages=5` + 窗口 ±1 规则作废。
 6. **每页条数**：`<Select size={size} options=[{ value: 10, label: "10 条/页" }…]>`，描边形态，不开搜索；跳页 `<InputNumber size={size} min={1} max={totalPages} precision={0}>`（宽 `w-16` / `w-[72px]` / `w-20`，内容居中；报错走 Tooltip，不用 InputNumber 的下方提示行，免得撑破一行），回车 / 失焦提交，越界设 `status="error"` + Tooltip「请输入 1–N」、不跳不改值，提交成功后清空。
 7. **总条数**：`text-body text-text-2`，数字 `toLocaleString()`；删除现有 `text-[#335CFF]` / `text-blue-500` 的数字着色与 `text-[#86909c]`。
@@ -205,5 +205,5 @@
 | 2026-10-21 | 跳页输入框由 Input 改为 InputNumber（1 到总页数、整数、步进），宽度随档 64 / 72 / 80px；§5.3 / 落地 6 同步 | 未提交 |
 | 2026-10-21 | 当前页由中性灰底 + 主文字改为浅主题色底 `blue-50` + 主题色文字 `blue-600`（设计师看实际效果后改定）；§6.1 / §9 / 落地 3 同步 | 未提交 |
 | 2026-10-21 | 「共 N 条」改为可选、默认不显示（`showTotal` 默认 false），打开后仍放最左；§2 / §3 / §5.1 / §6.2 / §8 示例同步 | 未提交 |
-| 2026-10-21 | 组件落地：`@bisheng/ui` 导出 `Pagination` + demo 页；文案收口为 `locale`，末页删空退页内置（见落地 11） | 未提交 |
+| 2026-10-21 | 组件落地：`@doberman-agent/ui` 导出 `Pagination` + demo 页；文案收口为 `locale`，末页删空退页内置（见落地 11） | 未提交 |
 | 2026-10-21 | 建档 v1：调研 antd / Arco / Carbon / NN/g / Apple HIG；设计师拍板四项（当前页中性灰底 + 主文字加粗、尺寸三档 24 / 32 / 40 默认 32、每页条数显式打开才出现、「共 N 条」最左且整排右对齐数字不变色）；其余按业内共识先定：标准 / 简洁两型、≤ 7 页全铺 + 当前页 ±2 省略、省略号不可点、总页数 > 10 出跳页、越界不跳不改值、分页永远显示、改条数与改筛选回第 1 页、手机自动简洁型。9 节展示层 + 落地 / 待决策两节隐藏区；附 client / platform 分页现状扫描 | 待 committer 窗口提交 |

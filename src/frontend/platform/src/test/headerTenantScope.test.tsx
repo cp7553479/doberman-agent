@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({ setScope: vi.fn(), tenants: vi.fn() }))
 vi.mock('@/hooks/useAdminScope', () => ({ useAdminScope: () => ({ scope: { scope_tenant_id: 2 }, loading: false, setScope: mocks.setScope }) }))
 vi.mock('@/controllers/API/tenant', () => ({ getTenantsApi: mocks.tenants }))
 // Keep the production option values and onChange contract visible in this test.
-vi.mock('@bisheng/ui', () => ({ notification: { open: vi.fn() }, Select: ({ options, value, onChange, ...props }: { options: {value: string | number; label: string}[]; value: string | number; onChange: (value: string) => void; 'aria-labelledby'?: string }) => <select aria-labelledby={props['aria-labelledby']} value={value} onChange={e => onChange(e.target.value)}>{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> }))
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: vi.fn() }, Select: ({ options, value, onChange, ...props }: { options: {value: string | number; label: string}[]; value: string | number; onChange: (value: string) => void; 'aria-labelledby'?: string }) => <select aria-labelledby={props['aria-labelledby']} value={value} onChange={e => onChange(e.target.value)}>{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> }))
 const user = { is_global_super: true } as User
 beforeEach(() => {
  vi.clearAllMocks()

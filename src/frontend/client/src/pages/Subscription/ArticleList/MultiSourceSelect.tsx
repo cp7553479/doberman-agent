@@ -4,7 +4,7 @@ import { NotificationSeverity } from "~/common";
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import {
     Popover,
     PopoverContent,

@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.database.models.department import DepartmentDao
+from doberman_agent.database.models.department import DepartmentDao
 
 
 class TestDepartmentPathLabelMap:
     @pytest.mark.asyncio
     async def test_full_path_with_batched_ancestor_load(self):
-        from bisheng.user.api.user import _department_path_label_map
+        from doberman_agent.user.api.user import _department_path_label_map
 
         catalog = {
             1: types.SimpleNamespace(id=1, name="总公司", path="/1/"),
@@ -37,13 +37,13 @@ class TestDepartmentPathLabelMap:
 
     @pytest.mark.asyncio
     async def test_empty_returns_empty(self):
-        from bisheng.user.api.user import _department_path_label_map
+        from doberman_agent.user.api.user import _department_path_label_map
 
         assert await _department_path_label_map([]) == {}
 
     @pytest.mark.asyncio
     async def test_no_extra_query_when_all_ancestors_granted(self):
-        from bisheng.user.api.user import _department_path_label_map
+        from doberman_agent.user.api.user import _department_path_label_map
 
         catalog = {
             1: types.SimpleNamespace(id=1, name="总公司", path="/1/"),

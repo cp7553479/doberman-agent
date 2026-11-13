@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.core.config.open_platform import OpenMcpConf
+from doberman_agent.core.config.open_platform import OpenMcpConf
 
 
 def test_open_mcp_safe_defaults_and_body_formula():

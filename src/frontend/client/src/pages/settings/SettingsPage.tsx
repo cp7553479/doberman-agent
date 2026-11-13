@@ -1,7 +1,7 @@
 import { readDesktopSettingsSection } from "./desktopSettings";
 import { DesktopSettingsPane } from "./sections/DesktopSettingsPane";
-import { Badge } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Badge } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 // store.mobileSystemMenuOpenState is a shared legacy atom (same usage as Subscription/knowledge pages).

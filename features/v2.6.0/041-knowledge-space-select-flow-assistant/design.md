@@ -37,7 +37,7 @@
 - **选定**：A。
 - **原因**：① 结果格式与 citation **自动一致**（走的是同一个 `KnowledgeRetrieverTool` → `List[Document]` → 同一套 annotate/collect），6.3 天然满足，无需另写一份 citation 组装；② `aretrieve_chunks` 的空间路径 `_aretrieve_chunks_for_kb` **只校 `view_space`、不做 F029 双层 `view_file` 过滤**，且不产节点风格 citation，用它反而要补更多；③ blast radius 更小——只在 `RagUtils` / 助手工具加空间分支，不动 F030 对外 RPC 语义。
 - **何时重新考虑**：若未来 `aretrieve_chunks` 的空间路径补齐了 view_file 双层过滤 + 统一 citation，则可收敛为单一入口。
-- **arch-guard 注（实测修正）**：`workflow/common/knowledge.py` 路径含 `/common/`，且**顶部本就** `from bisheng.knowledge.domain...`（KnowledgeRag/KnowledgeFileDao 等，F041 之前即存在）→ arch-guard **RULE-1 是既有违规**（该文件是错放在 common 的领域耦合工具）。F041 的空间分支一律用**函数内缩进懒导入**（`space_flow_retrieval` / `run_async_safe` 等），git diff 零新增顶层领域导入 → **不加重**违规。彻底修复需把 `RagUtils` 迁出 common，超出 F041 范围（另立技术债 feature）。
+- **arch-guard 注（实测修正）**：`workflow/common/knowledge.py` 路径含 `/common/`，且**顶部本就** `from doberman_agent.knowledge.domain...`（KnowledgeRag/KnowledgeFileDao 等，F041 之前即存在）→ arch-guard **RULE-1 是既有违规**（该文件是错放在 common 的领域耦合工具）。F041 的空间分支一律用**函数内缩进懒导入**（`space_flow_retrieval` / `run_async_safe` 等），git diff 零新增顶层领域导入 → **不加重**违规。彻底修复需把 `RagUtils` 迁出 common，超出 F041 范围（另立技术债 feature）。
 
 ### 决策 2：过滤身份按开关切换（本 feature 的核心）
 
@@ -177,7 +177,7 @@
 - **单元**：过滤身份切换（开=运行使用者 / 关=配置者）；`accessScope` 赋值（4 生成点 × 开关）；`resolve_operator(配置者id)` 造 UserPayload。
 - **集成**：空间检索在开/关两档下的 `view_file` 命中集合（越权文件不进结果）；`shared` citation 的 enrich URL 门禁（无权→无 URL、有权→有 URL）；历史 citation（缓存失效走 DB）accessScope 正确。
 - **e2e（`/e2e-test`）**：4 入口各选空间 → 开/关开关 → 校验检索结果与角标；节点改名三语；回显区分。
-- **手动**：起 workflow worker `uv run celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h`（cwd `src/backend/`），在 platform（:3001）建一个含知识库检索节点+选知识空间的工作流，用**非配置者**账号触发运行，观察 worker 日志无 "Event loop is closed"、检索结果符合开/关两档预期（坑 5.2 回归 + 决策 2 身份切换）。溯源在 client（`/workspace`）用不同权限账号打开会话验证 `shared`/`per_user` 分级。
+- **手动**：起 workflow worker `uv run celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h`（cwd `src/backend/`），在 platform（:3001）建一个含知识库检索节点+选知识空间的工作流，用**非配置者**账号触发运行，观察 worker 日志无 "Event loop is closed"、检索结果符合开/关两档预期（坑 5.2 回归 + 决策 2 身份切换）。溯源在 client（`/workspace`）用不同权限账号打开会话验证 `shared`/`per_user` 分级。
 - **可观测**：沿用 F029 `permission_filter` 结构化日志（strategy / accessible_ids_size / post_filter_dropped_count），本 feature 额外打点 `identity=runtime|author` 与 `accessScope`。
 
 ---

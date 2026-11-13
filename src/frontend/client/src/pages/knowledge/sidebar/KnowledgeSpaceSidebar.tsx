@@ -15,7 +15,7 @@ import { usePersonalTokenEnabled } from "~/hooks/useVersionManagementEnabled";
 import { getPersonalTokenStatusApi } from "~/api/personalToken";
 import { PersonalTokenDialog } from "~/components/PersonalTokenDialog";
 import { shouldShowPersonalTokenEntry } from "~/pages/settings/sections/personalTokenEntry";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { cn } from "~/utils";
 import { useGetBsConfig } from "~/hooks/queries/data-provider";
 import { UserPopMenu } from "~/layouts/UserPopMenu";

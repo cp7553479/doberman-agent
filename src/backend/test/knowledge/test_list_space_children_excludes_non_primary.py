@@ -64,11 +64,11 @@ def _compile_sql(statement) -> str:
 @pytest.mark.asyncio
 async def test_async_list_children_exclude_file_ids_adds_notin_clause():
     """exclude_file_ids must produce a NOT IN clause in the generated SQL."""
-    from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
 
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -88,11 +88,11 @@ async def test_async_list_children_exclude_file_ids_adds_notin_clause():
 @pytest.mark.asyncio
 async def test_async_list_children_no_exclude_file_ids_no_notin_clause():
     """When exclude_file_ids is None (default) no NOT IN clause should appear."""
-    from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
 
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -109,11 +109,11 @@ async def test_async_list_children_no_exclude_file_ids_no_notin_clause():
 @pytest.mark.asyncio
 async def test_async_list_children_empty_exclude_file_ids_no_notin_clause():
     """When exclude_file_ids is an empty list no NOT IN clause should appear."""
-    from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+    from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
 
     session = _FakeAsyncSession()
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -135,9 +135,9 @@ async def test_async_list_children_empty_exclude_file_ids_no_notin_clause():
 @pytest.mark.asyncio
 async def test_find_non_primary_file_ids_returns_correct_ids(async_db_session):
     """find_non_primary_file_ids returns only the non-primary file ids."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
         KnowledgeDocumentVersionRepositoryImpl,
     )
 
@@ -161,9 +161,9 @@ async def test_find_non_primary_file_ids_returns_correct_ids(async_db_session):
 @pytest.mark.asyncio
 async def test_find_primary_versions_by_file_ids_returns_primary_only(async_db_session):
     """find_primary_versions_by_file_ids returns only is_primary=True rows."""
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
         KnowledgeDocumentVersionRepositoryImpl,
     )
 
@@ -201,9 +201,9 @@ async def test_enrich_with_version_info_sets_fields(async_db_session):
     import importlib
     import sys
 
-    from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-    from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+    from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+    from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
         KnowledgeDocumentVersionRepositoryImpl,
     )
 
@@ -243,7 +243,7 @@ async def test_enrich_with_version_info_sets_fields(async_db_session):
         yield async_db_session
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service.get_async_db_session",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.get_async_db_session",
         new=_session_ctx,
     ):
         result = await svc._enrich_with_version_info([kf_101, kf_200])

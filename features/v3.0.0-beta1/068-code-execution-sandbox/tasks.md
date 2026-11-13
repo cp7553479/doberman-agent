@@ -21,7 +21,7 @@
 - **后端 Test-First**：测试任务排在配对实现之前；实现任务的「测试」字段写明要转绿的用例。
 - **无新表 / 无 Alembic / 无新对外路径**。浏览器与 FastAPI 不直连 runner。错误码模块 **280** 已在 release-contract 登记，落码时回写 constitution C5。
 - **自包含**：任务内联文件与逻辑；**为什么这么做指向 design §3 决策编号，不复制论证**。
-- **共享文件只做增量**：`load_tools.py` 只改 dispatch；`workbench_impl.py` 只改 `_init_bisheng_code_tool` 的 container 分支（**不要删** E2B `file_list` 预扫，E2B 冻结）；`docker-compose.yml` 只加 `sandbox_net` 与具名 runner；`local_executor.py` 瘦身为 `execute_code`；`settings.py` 只加 `sandbox_conf`。
+- **共享文件只做增量**：`load_tools.py` 只改 dispatch；`workbench_impl.py` 只改 `_init_doberman-agent_code_tool` 的 container 分支（**不要删** E2B `file_list` 预扫，E2B 冻结）；`docker-compose.yml` 只加 `sandbox_net` 与具名 runner；`local_executor.py` 瘦身为 `execute_code`；`settings.py` 只加 `sandbox_conf`。
 - **禁止**：`deploy_mode` / `orchestrator` 配置项；`discover_*` 主机名扫描；runner 向 Redis/API 注册；`else: E2bCodeExecutor`；容器模式装配时预扫 `file_list`；静默回落进程内 `exec`；把 E2B 的 5MB `SIZE_AUTOPUSH` 套到 container。
 - **无新 Celery 任务**：执行发生在既有 Linsight / workflow / default worker 进程内，tenant 已由既有 ContextVar 注入；**不得**把 `tenant_id` / MinIO 密钥写进 runner 子进程 env。
 - **前端**：只改 Platform 内置工具弹窗；Client 无新页面。
@@ -34,14 +34,14 @@
 ### Wave 1 — 基础设施（错误码 / 文案 / 配置）
 
 - [x] **T001**: 错误码模块 280 + constitution C5 回写
-  **文件**: `src/backend/bisheng/common/errcode/sandbox.py`, `docs/constitution.md`
+  **文件**: `src/backend/doberman_agent/common/errcode/sandbox.py`, `docs/constitution.md`
   **逻辑**: 新建 `SandboxUnreachableError` 28001、`SandboxCapacityExceededError` 28002、`SandboxExecTimeoutError` 28003、`SandboxCopyInLimitError` 28004、`SandboxCodeNodeOutputError` 28005、`SandboxProtocolError` 28006，继承 `BaseErrorCode`，`Msg` 用英文短句（用户可见文案走 T002）。`constitution.md` 模块登记表补 `28x | 280 sandbox`，并加一句 **280 is assigned**（与 260/270 同款）。`release-contract.md` 已有 280，**不要改表 1 所有权**。无 DDL，无需回滚。
   **设计依据**: design §2 · §4.2 错误码 · C5
   **依赖**: 无
 
 - [x] **T002**: 280 段 `api_errors` 三语文案
   **文件**: `src/frontend/packages/locales/src/api_errors/{en,zh-Hans,ja}.json`
-  **逻辑**: 只改 **源文件**，禁止手改 `platform/public/locales/*/api_errors.json` 与 `client/src/locales/*/api_errors.gen.json`。键 `28001`–`28006` 与 T001 语义对齐（不可达 / 容量已满 / 超时且未完成产物不存在 / copy-in 超限已跳过并点名 / 代码节点出参无法序列化 / 执行环境响应不合契约）。三语同一 PR。跑 `pnpm --filter @bisheng/locales check`（或仓库约定的 locales 构建）确认生成物更新。
+  **逻辑**: 只改 **源文件**，禁止手改 `platform/public/locales/*/api_errors.json` 与 `client/src/locales/*/api_errors.gen.json`。键 `28001`–`28006` 与 T001 语义对齐（不可达 / 容量已满 / 超时且未完成产物不存在 / copy-in 超限已跳过并点名 / 代码节点出参无法序列化 / 执行环境响应不合契约）。三语同一 PR。跑 `pnpm --filter @doberman-agent/locales check`（或仓库约定的 locales 构建）确认生成物更新。
   **覆盖 AC**: AC-05, AC-16, AC-19, AC-27
   **依赖**: T001
 
@@ -52,7 +52,7 @@
   **依赖**: 无
 
 - [x] **T004**: `Settings.sandbox_conf` + 发布稿注释掉该段
-  **文件**: `src/backend/bisheng/core/config/settings.py`, `docker/bisheng/config/config.yaml`
+  **文件**: `src/backend/doberman_agent/core/config/settings.py`, `docker/doberman-agent/config/config.yaml`
   **逻辑**: 新增 `SandboxConf`（字段见 design §4.2，**不要**加 `deploy_mode`）。`Settings.sandbox_conf: SandboxConf = Field(default_factory=SandboxConf)`。发布 `config.yaml` **整段注释**（坑 9：旧镜像遇未知顶层 key 会起不来）。env 形如 `BS_SANDBOX_CONF__TOKEN`。`token` 不要写进代码常量。
   **设计依据**: design 决策 12 · §4.2 · §5 坑 9、18
   **跨 Feature 影响**: `Settings` 被全平台加载；只加可选段 + 默认值，不得改其它 Conf 的校验。
@@ -69,7 +69,7 @@
   **依赖**: 无
 
 - [x] **T006**: `run_with_dir` 上提到 `BaseExecutor`，本地只留 `execute_code`
-  **文件**: `src/backend/bisheng_langchain/gpts/tools/code_interpreter/base_executor.py`, `src/backend/bisheng_langchain/gpts/tools/code_interpreter/local_executor.py`
+  **文件**: `src/backend/doberman_agent_langchain/gpts/tools/code_interpreter/base_executor.py`, `src/backend/doberman_agent_langchain/gpts/tools/code_interpreter/local_executor.py`
   **逻辑**: `BaseExecutor.execute_code` 改为抽象；把 `LocalExecutor.run_with_dir` 的快照 diff / 根级归位 / `upload_minio` / `sync_to_workspace` / `sync_files_to_local` 上提为共享实现。`LocalExecutor.execute_code` 仍是本机 `subprocess`（现有实现可原样上提为实例方法）。`run()` 出口形状不变。禁止在本任务引入 HTTP。
   **设计依据**: design 决策 4 · §4.3
   **跨 Feature 影响**: 本地 / E2B 调用链；E2B **本任务不改** `e2b_executor.py`（冻结）。
@@ -77,7 +77,7 @@
   **覆盖 AC**: AC-03, AC-07, AC-08, AC-09
   **依赖**: T005
 
-### Wave 3 — runner HTTP（独立包，不 import `bisheng`）
+### Wave 3 — runner HTTP（独立包，不 import `doberman-agent`）
 
 - [x] **T007**: 租约协议单测（ASGI + httpx）
   **文件**: `src/backend/test/sandbox/conftest.py`, `src/backend/test/sandbox/test_runner_leases.py`
@@ -87,7 +87,7 @@
 
 - [x] **T008**: runner 租约：`POST /v1/sessions` + `DELETE` + idle 扫描
   **文件**: `src/sandbox-runner/app.py`, `src/sandbox-runner/leases.py`
-  **逻辑**: **禁止** `import bisheng`。Starlette/FastAPI 迷你应用监听 8080。内存租约表；默认 `max_sessions_per_replica=1`；工作目录 `/tmp/sessions/<uuid>/`。`GET /health` 200。idle 扫 `pool_lease_ttl_s`。子进程 env **不得**出现全局 token / 任何 lease_token。
+  **逻辑**: **禁止** `import doberman_agent`。Starlette/FastAPI 迷你应用监听 8080。内存租约表；默认 `max_sessions_per_replica=1`；工作目录 `/tmp/sessions/<uuid>/`。`GET /health` 200。idle 扫 `pool_lease_ttl_s`。子进程 env **不得**出现全局 token / 任何 lease_token。
   **设计依据**: design 决策 2、11 · §4.5
   **测试**: T007 全绿
   **覆盖 AC**: AC-15, AC-17, AC-27
@@ -130,7 +130,7 @@
   **依赖**: T001, T006, T012
 
 - [x] **T014**: 实现 `ContainerExecutor`
-  **文件**: `src/backend/bisheng_langchain/gpts/tools/code_interpreter/container_executor.py`
+  **文件**: `src/backend/doberman_agent_langchain/gpts/tools/code_interpreter/container_executor.py`
   **逻辑**: 只实现 `execute_code` / `close`（领租约、tar、exec、copy-out、finally DELETE 除非 `keep_session`）。产物收割走 T006 共享 `run_with_dir`。`description` 与本地模式库清单对齐且 `path_namespace_rules(include_skills=True)`。错误映射 T001 的 28001–28004、28006。记录 copy-in 字节数。禁止 import docker / kubernetes。副本 URL **只**来自已注入的 `endpoints`，不实现主机名扫描。
   **设计依据**: design 决策 4、5、9、10 · §4.1–§4.2 · §5 坑 1、4、17
   **测试**: T013 全绿
@@ -162,10 +162,10 @@
   **依赖**: T014
 
 - [x] **T018**: `load_tools._get_native_code_interpreter` 显式三分支
-  **文件**: `src/backend/bisheng_langchain/gpts/load_tools.py`
+  **文件**: `src/backend/doberman_agent_langchain/gpts/load_tools.py`
   **逻辑**: 去掉 `else: E2bCodeExecutor`。`container` 读 `config.container`（timeout/profile），池参数 **不** 从 extra 读。切换不需要重启（无模块级全局单例绑死 type）。
   **设计依据**: design 决策 10 · §4.7 · §5 坑 7
-  **跨 Feature 影响**: 所有走 `bisheng_code_interpreter` 的路径共用此函数；未知 type 从静默 e2b 变为显式失败。
+  **跨 Feature 影响**: 所有走 `doberman_agent_code_interpreter` 的路径共用此函数；未知 type 从静默 e2b 变为显式失败。
   **测试**: T017 全绿
   **覆盖 AC**: AC-01, AC-02, AC-22, AC-23
   **依赖**: T017
@@ -176,8 +176,8 @@
   **覆盖 AC**: AC-06, AC-09, AC-11
   **依赖**: T018
 
-- [x] **T020**: `_init_bisheng_code_tool` 增加 `config.container`，容器模式不预扫
-  **文件**: `src/backend/bisheng/linsight/domain/services/workbench_impl.py`
+- [x] **T020**: `_init_doberman-agent_code_tool` 增加 `config.container`，容器模式不预扫
+  **文件**: `src/backend/doberman_agent/linsight/domain/services/workbench_impl.py`
   **逻辑**: `keep_session` / `local_sync_path` / `workspace_prefix` 与本地模式对齐。container **不要** `os.walk` 填 `file_list`（copy-in 在 `run()`，AC-11）。E2B 分支原样保留。
   **设计依据**: design §4.1 路径 1 · §5 坑 4
   **跨 Feature 影响**: 仅灵思工具装配；日常/助手不走此函数。
@@ -194,7 +194,7 @@
   **依赖**: T006, T001
 
 - [x] **T022**: `SandboxCodeParser`：本地 `ast.parse` + wrapper 调同一 `execute_code`
-  **文件**: `src/backend/bisheng/workflow/nodes/code/code_parse.py`, `src/backend/bisheng/workflow/nodes/code/code.py`
+  **文件**: `src/backend/doberman_agent/workflow/nodes/code/code_parse.py`, `src/backend/doberman_agent/workflow/nodes/code/code.py`
   **逻辑**: 执行侧不认识 `main`。wrapper：`json.loads` 入参 → 调 `main` → 哨兵行 `json.dumps`。`CodeNode._run` 改调新解析器；`code_node_enabled=False` 回退旧 `exec`。失败禁止回落（开关关闭是唯一回退）。
   **设计依据**: design 决策 8 · §4.1 档 B · §5 坑 8
   **跨 Feature 影响**: 存量工作流出参仍是 dict；不可序列化从静默空值改为 28005。
@@ -223,8 +223,8 @@
 
 ### Wave 9 — 镜像与 compose（本期交付）
 
-- [x] **T025**: `dataelement/bisheng-sandbox` Dockerfile
-  **文件**: `docker/bisheng-sandbox/Dockerfile`（从 `src/backend/base.Dockerfile` 派生，COPY `src/sandbox-runner`）
+- [x] **T025**: `cp7553479/doberman-agent-sandbox` Dockerfile
+  **文件**: `docker/doberman-agent-sandbox/Dockerfile`（从 `src/backend/base.Dockerfile` 派生，COPY `src/sandbox-runner`）
   **逻辑**: 全量 venv + 完整 LibreOffice/pandoc/fonts-wqy-zenhei + ffmpeg + runner 为 PID 1。不拷 `config.yaml` / `entrypoint.sh` / 平台业务代码。不装 Chromium 浏览器二进制。多架构同一 Dockerfile。
   **设计依据**: design 决策 7 · §4.4
   **覆盖 AC**: AC-04, AC-12, AC-15, AC-28
@@ -249,13 +249,13 @@
 
 - [x] **T027**: 新装默认 / 升级不改存量 单测
   **文件**: `src/backend/test/sandbox/test_code_interpreter_seed_default.py`
-  **逻辑**: 解析 `t_gpts_tools.json` 中 `tool_key=bisheng_code_interpreter` 的 `extra.type == container`（红灯直到 T029）。读 `init_data.py`（或它调用的预设工具函数）断言对已存在的 `gpts_tools` **没有** `UPDATE extra` / 按 id upsert extra。本任务不改 JSON、不改 `init_data.py`。
+  **逻辑**: 解析 `t_gpts_tools.json` 中 `tool_key=doberman_agent_code_interpreter` 的 `extra.type == container`（红灯直到 T029）。读 `init_data.py`（或它调用的预设工具函数）断言对已存在的 `gpts_tools` **没有** `UPDATE extra` / 按 id upsert extra。本任务不改 JSON、不改 `init_data.py`。
   **覆盖 AC**: AC-23, AC-24
   **依赖**: T018
 
 - [x] **T029**: 种子 JSON 写入 `type=container`
-  **文件**: `src/backend/bisheng/database/data/t_gpts_tools.json`
-  **逻辑**: 仅 `tool_key=bisheng_code_interpreter` 那条 `extra` 增加 `"type": "container"`（AC-24）。**禁止**改 `init_data.py`、禁止给其它内置工具改 extra。
+  **文件**: `src/backend/doberman_agent/database/data/t_gpts_tools.json`
+  **逻辑**: 仅 `tool_key=doberman_agent_code_interpreter` 那条 `extra` 增加 `"type": "container"`（AC-24）。**禁止**改 `init_data.py`、禁止给其它内置工具改 extra。
   **设计依据**: design §4.7 · AC-23 / AC-24
   **跨 Feature 影响**: `t_gpts_tools.json` 是全平台内置工具种子；只动代码执行器这一行，其它 `tool_key` 字节级不变。
   **测试**: T027 全绿

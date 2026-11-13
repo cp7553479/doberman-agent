@@ -11,17 +11,17 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.exceptions.auth import AuthJWTException
-from bisheng.core.context.tenant import set_current_tenant_id
-from bisheng.linsight.api.endpoints import personal_skill as personal_endpoints
-from bisheng.linsight.api.endpoints import skill as skill_endpoints
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill
-from bisheng.linsight.domain.services.personal_skill_service import PERSONAL_SKILL_BYTES_LIMIT, PersonalSkillService
-from bisheng.linsight.domain.services.skill_service import SkillService
-from bisheng.linsight.domain.services.skill_store import SkillStore
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.exceptions.auth import AuthJWTException
+from doberman_agent.core.context.tenant import set_current_tenant_id
+from doberman_agent.linsight.api.endpoints import personal_skill as personal_endpoints
+from doberman_agent.linsight.api.endpoints import skill as skill_endpoints
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill
+from doberman_agent.linsight.domain.services.personal_skill_service import PERSONAL_SKILL_BYTES_LIMIT, PersonalSkillService
+from doberman_agent.linsight.domain.services.skill_service import SkillService
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 BASE = "/api/v1/linsight/skill"
@@ -65,7 +65,7 @@ def api(tmp_path, monkeypatch):
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     db_path = tmp_path / "skills.db"
     sync_engine = create_engine(f"sqlite:///{db_path}")
@@ -90,14 +90,14 @@ def api(tmp_path, monkeypatch):
     async def permitted(_user, *, resource_ids, **kwargs):
         return {str(skill_id): {"use"} for skill_id in resource_ids}
 
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.batch_check_business_actions", permitted)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.batch_check_business_actions", permitted)
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
+        "doberman_agent.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
         AsyncMock(return_value=set()),
     )
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.require_business_action",
+        "doberman_agent.permission.application.business_authorization.require_business_action",
         AsyncMock(),
     )
     monkeypatch.setattr(skill_endpoints, "_current_tenant_id", lambda: TENANT)
@@ -121,7 +121,7 @@ def api(tmp_path, monkeypatch):
         lambda: SkillService(store=store, owner_projection=projection),
     )
 
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
     logged_in = _app()
 
     async def end_user():
@@ -267,11 +267,11 @@ class TestPersonalSkillApi:
         assert api.client.delete(f"{BASE}/personal/{saved['id']}").json()["data"] == {}
 
 
-@pytest.mark.parametrize("source,expected", [("builtin", "bisheng-docx"), ("manual", None), ("personal", None)])
+@pytest.mark.parametrize("source,expected", [("builtin", "doberman-agent-docx"), ("manual", None), ("personal", None)])
 def test_center_card_retains_builtin_provenance(source, expected):
     skill = SimpleNamespace(
         id=1,
-        name="bisheng-docx",
+        name="doberman-agent-docx",
         display_name="Configured name",
         description="Description",
         source=source,

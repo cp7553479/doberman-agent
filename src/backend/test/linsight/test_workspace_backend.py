@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.linsight.domain.services.workspace_backend import (
+from doberman_agent.linsight.domain.services.workspace_backend import (
     WORKSPACE_PREFIX,
     WorkspaceBackend,
 )

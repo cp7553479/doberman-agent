@@ -1,5 +1,5 @@
 import type { DshUsageTimeSummary } from "@/types/dsh";
-import { Segmented } from "@bisheng/ui";
+import { Segmented } from "@doberman-agent/ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UsageHeatmap } from "./UsageHeatmap";

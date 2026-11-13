@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { FileIcon } from "@/components/bs-icons/file";
 import {
 Accordion,
@@ -10,7 +10,7 @@ AccordionTrigger,
 } from "@/components/bs-ui/accordion";
 
 import { Label } from "@/components/bs-ui/label";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { KnowledgeHint,KnowledgeTooltip } from "./KnowledgeTooltip";
 
 

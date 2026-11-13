@@ -5,15 +5,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionFGAUnavailableError,
     PermissionProjectionFailedError,
     PermissionPublishNotReadyError,
 )
-from bisheng.permission.application import business_authorization, sql_runtime
-from bisheng.permission.application.business_authorization import batch_check_verified_business_actions
-from bisheng.permission.application.sql_runtime import (
+from doberman_agent.permission.application import business_authorization, sql_runtime
+from doberman_agent.permission.application.business_authorization import batch_check_verified_business_actions
+from doberman_agent.permission.application.sql_runtime import (
     HIGHER_CONSISTENCY,
     RECENT_CATALOG_MARKER,
     RECENT_MARKER_SENTINEL,

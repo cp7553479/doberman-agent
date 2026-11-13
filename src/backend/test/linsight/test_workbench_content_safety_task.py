@@ -6,11 +6,11 @@ import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.linsight.api.endpoints import linsight as linsight_ep
-from bisheng.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
-from bisheng.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.linsight.api.endpoints import linsight as linsight_ep
+from doberman_agent.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
+from doberman_agent.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
+from doberman_agent.workstation.domain.services import chat_service
 
 AUTO_REPLY = "当前对话内容违反相关规范，请修改后重新输入"
 HIT = SensitiveWordCheckResult(
@@ -64,12 +64,12 @@ async def test_task_mode_hit_skips_submit_and_handoff(monkeypatch):
     inserted = _patch_blocked_init(monkeypatch)
     submit = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.submit_user_question",
+        "doberman_agent.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.submit_user_question",
         submit,
     )
     enqueue = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.linsight.domain.utils.enqueue_session_for_execution",
+        "doberman_agent.linsight.domain.utils.enqueue_session_for_execution",
         enqueue,
     )
     chunks = await _drain(await chat_service.stream_chat_completion(MagicMock(), _task_data("禁词"), MagicMock()))
@@ -93,18 +93,18 @@ async def test_task_mode_miss_still_submits(monkeypatch):
     session_version = SimpleNamespace(id="sv-1", session_id="chat-1")
     submit = AsyncMock(return_value=(MagicMock(), session_version))
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.submit_user_question",
+        "doberman_agent.linsight.domain.services.workbench_impl.LinsightWorkbenchImpl.submit_user_question",
         submit,
     )
     monkeypatch.setattr(
-        "bisheng.linsight.domain.utils.enqueue_session_for_execution",
+        "doberman_agent.linsight.domain.utils.enqueue_session_for_execution",
         AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.linsight.domain.utils.persist_task_turn_message",
+        "doberman_agent.linsight.domain.utils.persist_task_turn_message",
         AsyncMock(),
     )
-    monkeypatch.setattr(chat_service.LLMService, "get_bisheng_llm", AsyncMock(return_value=MagicMock()))
+    monkeypatch.setattr(chat_service.LLMService, "get_doberman_agent_llm", AsyncMock(return_value=MagicMock()))
     monkeypatch.setattr(chat_service, "gen_title", AsyncMock(return_value=None))
     monkeypatch.setattr(chat_service, "_TITLE_GEN_TIMEOUT_S", 0.1)
     await _drain(await chat_service._task_mode_stream_completion(MagicMock(), _task_data(), MagicMock()))

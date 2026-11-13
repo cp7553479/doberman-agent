@@ -5,7 +5,7 @@ import { FileSources, FileContext } from '~/types/chat';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TFile } from '~/types/chat';
 import { Button, OpenAIMinimalIcon, AzureMinimalIcon } from '~/components';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import ImagePreview from '~/components/Chat/Input/Files/ImagePreview';
 import FilePreview from '~/components/Chat/Input/Files/FilePreview';
 import { SortFilterHeader } from './SortFilterHeader';

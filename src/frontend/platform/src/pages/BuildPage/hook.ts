@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { getAllLabelsApi } from "@/controllers/API/label";
 import { AppType } from "@/types/app";
@@ -44,8 +44,8 @@ export const useCreateTemp = () => {
     const flowRef = useRef(null)
     useEffect(() => {
         const reset = () => { flowRef.current = null; setOpen(false); };
-        window.addEventListener('bisheng:management-scope-changed', reset);
-        return () => window.removeEventListener('bisheng:management-scope-changed', reset);
+        window.addEventListener('doberman_agent:management-scope-changed', reset);
+        return () => window.removeEventListener('doberman_agent:management-scope-changed', reset);
     }, []);
 
     return {

@@ -9,9 +9,9 @@ import pytest
 from deepagents.graph import BASE_AGENT_PROMPT
 from langchain_core.messages import SystemMessage
 
-from bisheng.linsight.domain.services import base_prompt
-from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt, create_linsight_agent
-from bisheng.linsight.domain.services.base_prompt import LINSIGHT_BASE_PROMPT_ZH, LinsightBasePromptMiddleware
+from doberman_agent.linsight.domain.services import base_prompt
+from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt, create_linsight_agent
+from doberman_agent.linsight.domain.services.base_prompt import LINSIGHT_BASE_PROMPT_ZH, LinsightBasePromptMiddleware
 
 
 class _Request:

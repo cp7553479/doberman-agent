@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, Select } from '@bisheng/ui';
+import { Button, Input, Select } from '@doberman-agent/ui';
 
 
 
@@ -16,7 +16,7 @@ SelectValue,
 } from "@/components/bs-ui/select";
 import { useComponentEditorStore } from "@/store/dashboardStore";
 import { cn } from "@/utils";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { useEffect,useMemo,useState } from "react";
 import { SketchPicker } from 'react-color';
 import { useTranslation } from "react-i18next";

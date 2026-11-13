@@ -24,14 +24,14 @@
 **目标**: 创建 `RBACToReBACMigrator` 类骨架，实现 CLI 参数解析、checkpoint 持久化、批量写入基础设施。
 
 **文件**:
-- 新建: `src/backend/bisheng/permission/migration/__init__.py`
-- 新建: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`
+- 新建: `src/backend/doberman_agent/permission/migration/__init__.py`
+- 新建: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`
 
 **AC 覆盖**: AC-09, AC-10, AC-11
 
 **验证**:
-- [x] `python -m bisheng.permission.migration.migrate_rbac_to_rebac --help` 输出帮助
-- [x] `python -m bisheng.permission.migration.migrate_rbac_to_rebac --dry-run` 可运行（各步骤为空壳）
+- [x] `python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --help` 输出帮助
+- [x] `python -m doberman_agent.permission.migration.migrate_rbac_to_rebac --dry-run` 可运行（各步骤为空壳）
 - [x] checkpoint 文件正确创建、读取、恢复
 - [x] `--step 3` 正确跳过 step 1-2
 
@@ -80,7 +80,7 @@
 **目标**: 实现 `step1_super_admin()` 和 `step2_user_group_membership()`，使 T2 测试通过。
 
 **文件**:
-- 修改: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`
+- 修改: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`
 
 **AC 覆盖**: AC-01, AC-02
 
@@ -108,7 +108,7 @@
 
 **文件**:
 - 修改: `test/test_f006_permission_migration.py`（新增测试）
-- 修改: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`（实现 step3）
+- 修改: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`（实现 step3）
 
 **AC 覆盖**: AC-03
 
@@ -139,7 +139,7 @@
 
 **文件**:
 - 修改: `test/test_f006_permission_migration.py`（新增测试）
-- 修改: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`（实现 step4/5）
+- 修改: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`（实现 step4/5）
 
 **AC 覆盖**: AC-04, AC-05
 
@@ -172,7 +172,7 @@
 
 **文件**:
 - 修改: `test/test_f006_permission_migration.py`（新增测试）
-- 修改: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`（实现 step6）
+- 修改: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`（实现 step6）
 
 **AC 覆盖**: AC-06
 
@@ -201,8 +201,8 @@
 **目标**: 实现 `verify_all()` 对比逻辑、`init_default_data()` 集成调用、dry-run 统计输出格式。
 
 **文件**:
-- 修改: `src/backend/bisheng/permission/migration/migrate_rbac_to_rebac.py`（verify + dry-run 输出）
-- 修改: `src/backend/bisheng/common/init_data.py`（添加自动迁移调用）
+- 修改: `src/backend/doberman_agent/permission/migration/migrate_rbac_to_rebac.py`（verify + dry-run 输出）
+- 修改: `src/backend/doberman_agent/common/init_data.py`（添加自动迁移调用）
 
 **AC 覆盖**: AC-07, AC-08, AC-11
 

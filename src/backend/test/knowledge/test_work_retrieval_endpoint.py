@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, patch
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
-from bisheng.knowledge.api.dependencies import (
+from doberman_agent.knowledge.api.dependencies import (
     get_knowledge_document_version_repository,
     get_knowledge_space_chat_service,
 )
-from bisheng.knowledge.api.endpoints.knowledge_space import router
+from doberman_agent.knowledge.api.endpoints.knowledge_space import router
 
 
 class WorkRetrievalEndpointTests(unittest.TestCase):
@@ -20,9 +20,9 @@ class WorkRetrievalEndpointTests(unittest.TestCase):
             login_user=SimpleNamespace(user_id=27, tenant_id=1),
             aretrieve_chunks=AsyncMock(return_value=[]),
         )
-        self.catalog = AsyncMock(return_value={91: SimpleNamespace(tool_key="bisheng_knowledge_search")})
+        self.catalog = AsyncMock(return_value={91: SimpleNamespace(tool_key="doberman_agent_knowledge_search")})
         catalog_patch = patch(
-            "bisheng.dsh.domain.services.work_capabilities.WorkCapabilitiesService._tools", self.catalog
+            "doberman_agent.dsh.domain.services.work_capabilities.WorkCapabilitiesService._tools", self.catalog
         )
         catalog_patch.start()
         self.addCleanup(catalog_patch.stop)

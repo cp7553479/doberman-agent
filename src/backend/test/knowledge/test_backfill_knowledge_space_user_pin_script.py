@@ -6,13 +6,13 @@ from __future__ import annotations
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.knowledge.domain.models.knowledge_space_user_pin import KnowledgeSpaceUserPin
+from doberman_agent.knowledge.domain.models.knowledge_space_user_pin import KnowledgeSpaceUserPin
 from scripts.backfill_knowledge_space_user_pin import backfill
 
 

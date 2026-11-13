@@ -4,8 +4,8 @@ from copy import deepcopy
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshContentSafetyConflictError
-from bisheng.dsh.domain.schemas.content_safety import ContentSafetyEvent
+from doberman_agent.common.errcode.dsh import DshContentSafetyConflictError
+from doberman_agent.dsh.domain.schemas.content_safety import ContentSafetyEvent
 
 STATES = ("PASSED", "BLOCKED", "ERROR", "DISABLED", "NOT_APPLICABLE", "UNREPORTED")
 # Literal AC-34 decision table, in the input/output order above.
@@ -39,7 +39,7 @@ def safety_event(factory, input_state, output_state, *, version=1, input_version
 
 @pytest.mark.parametrize("input_state,output_state,expected", MATRIX)
 def test_all_36_phase_combinations_follow_literal_precedence(content_safety_event, input_state, output_state, expected):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     event = safety_event(content_safety_event, input_state, output_state)
     reduced = reduce_safety(None, event)
@@ -52,7 +52,7 @@ def test_all_36_phase_combinations_follow_literal_precedence(content_safety_even
 
 
 def test_no_event_remains_unreported_and_preserves_unknown_instead_of_pass():
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     reduced = reduce_safety(None, None)
     assert reduced["content_safety_state"] == "UNREPORTED"
@@ -63,7 +63,7 @@ def test_no_event_remains_unreported_and_preserves_unknown_instead_of_pass():
 
 
 def test_partial_stage_report_is_unreported_until_other_phase_is_known(content_safety_event):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     first = reduce_safety(None, safety_event(content_safety_event, "PASSED", "UNREPORTED"))
     assert first["content_safety_state"] == "UNREPORTED"
@@ -75,7 +75,7 @@ def test_partial_stage_report_is_unreported_until_other_phase_is_known(content_s
 
 
 def test_repeat_is_idempotent_and_reducer_does_not_mutate_arguments(content_safety_event):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     event = safety_event(content_safety_event, "PASSED", "BLOCKED", version=3)
     event_before = event.model_dump()
@@ -88,7 +88,7 @@ def test_repeat_is_idempotent_and_reducer_does_not_mutate_arguments(content_safe
 
 @pytest.mark.parametrize("direction", ["input", "output"])
 def test_old_version_hit_accumulates_without_overwriting_newer_phase_version(content_safety_event, direction):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     recent = reduce_safety(None, safety_event(content_safety_event, "PASSED", "PASSED", version=5))
     old = safety_event(
@@ -108,7 +108,7 @@ def test_old_version_hit_accumulates_without_overwriting_newer_phase_version(con
 
 @pytest.mark.parametrize("terminal", STATES[:-1])
 def test_drain_old_unknown_snapshot_cannot_reopen_a_terminal_phase(content_safety_event, terminal):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     current = reduce_safety(None, safety_event(content_safety_event, terminal, "NOT_APPLICABLE", version=2))
     drain = safety_event(
@@ -118,7 +118,7 @@ def test_drain_old_unknown_snapshot_cannot_reopen_a_terminal_phase(content_safet
 
 
 def test_same_phase_version_different_fact_is_explicit_conflict(content_safety_event):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     current = reduce_safety(None, safety_event(content_safety_event, "PASSED", "UNREPORTED", version=2))
     before = deepcopy(current)
@@ -130,7 +130,7 @@ def test_same_phase_version_different_fact_is_explicit_conflict(content_safety_e
 
 @pytest.mark.parametrize("terminal", STATES[:-1])
 def test_newer_contradictory_terminal_fact_is_rejected_without_clearing_hit(content_safety_event, terminal):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     current = reduce_safety(None, safety_event(content_safety_event, terminal, "NOT_APPLICABLE", version=2))
     before = deepcopy(current)
@@ -144,7 +144,7 @@ def test_newer_contradictory_terminal_fact_is_rejected_without_clearing_hit(cont
 
 
 def test_later_unchanged_snapshot_preserves_each_stage_version(content_safety_event):
-    from bisheng.dsh.domain.services.content_safety_states import reduce_safety
+    from doberman_agent.dsh.domain.services.content_safety_states import reduce_safety
 
     current = reduce_safety(
         None, safety_event(content_safety_event, "DISABLED", "NOT_APPLICABLE", version=2, input_version=1)

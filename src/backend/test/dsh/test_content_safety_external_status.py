@@ -11,15 +11,15 @@ from unittest.mock import AsyncMock, call
 import pytest
 from sqlmodel import Session, SQLModel, select
 
-from bisheng.core.context.tenant import strict_tenant_filter
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.repositories import content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.schemas.model_audit_status import audit_status_facts, refresh_audit_status
-from bisheng.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
-from bisheng.dsh.domain.services.model_audit_states import DshModelAuditStateService, derive_audit_states
+from doberman_agent.core.context.tenant import strict_tenant_filter
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.repositories import content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.schemas.model_audit_status import audit_status_facts, refresh_audit_status
+from doberman_agent.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
+from doberman_agent.dsh.domain.services.model_audit_states import DshModelAuditStateService, derive_audit_states
 from test.dsh.model_audit_fixtures import AUDIT_MODELS
 from test.dsh.test_content_safety_merge import append_and_merge, committed_merge, output_event
 from test.dsh.test_content_safety_native_writer import capture_events, safety_first

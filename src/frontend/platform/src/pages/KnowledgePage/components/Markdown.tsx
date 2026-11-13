@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 import { Label } from "@/components/bs-ui/label";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { forwardRef,useEffect,useImperativeHandle,useRef,useState } from "react";
 import AceEditor from "react-ace";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ const VditorEditor = forwardRef(({ edit, markdown, hidden }, ref) => {
     useEffect(() => {
         // console.log('markdown :>> ', markdown);
         const processedMarkdown = markdown.replace(/^( {4,})/gm, '   ')
-            .replaceAll('(bisheng/', '(/bisheng/')
+            .replaceAll('(doberman_agent/', '(/doberman_agent/')
 
         if (!hidden && vditorRef.current && readyRef.current) {
             vditorRef.current.setValue(processedMarkdown);

@@ -7,8 +7,8 @@ import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.core.context.tenant import tenant_execution_scope
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.core.context.tenant import tenant_execution_scope
 
 AUDIT_USER = UserPayload(user_id=7, user_name="admin", tenant_id=1, user_role=[])
 
@@ -21,16 +21,16 @@ def audit_tenant():
 
 @pytest.fixture
 async def audit_env(monkeypatch, audit_tenant):
-    from bisheng.app_governance.domain.models.runtime_audit import RuntimeAuditExport, RuntimeAuditQuerySnapshot
-    from bisheng.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
-    from bisheng.app_governance.domain.schemas.runtime_audit import AuthorizedRuntimeAuditScope
-    from bisheng.app_governance.domain.services.runtime_audit_query_service import RuntimeAuditQueryService
-    from bisheng.app_publish.domain.models.capability_call_record import AppCapabilityCallRecord
-    from bisheng.common.services.config_service import settings
-    from bisheng.database.models.app_access_log import AppAccessLog
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
-    from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.app_governance.domain.models.runtime_audit import RuntimeAuditExport, RuntimeAuditQuerySnapshot
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
+    from doberman_agent.app_governance.domain.schemas.runtime_audit import AuthorizedRuntimeAuditScope
+    from doberman_agent.app_governance.domain.services.runtime_audit_query_service import RuntimeAuditQueryService
+    from doberman_agent.app_publish.domain.models.capability_call_record import AppCapabilityCallRecord
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.database.models.app_access_log import AppAccessLog
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
+    from doberman_agent.user.domain.models.user import User
     from test.app_publish.conftest import _sqlite_ddl_quirks
 
     monkeypatch.setattr(settings.app_runtime, "enabled", True)
@@ -61,7 +61,7 @@ async def audit_env(monkeypatch, audit_tenant):
     async def resolve(user, tenant_id=None, *, app_id=None):
         assert user == AUDIT_USER
         if tenant_id not in (None, 1):
-            from bisheng.common.errcode.app_governance import RuntimeAuditAccessDeniedError
+            from doberman_agent.common.errcode.app_governance import RuntimeAuditAccessDeniedError
 
             raise RuntimeAuditAccessDeniedError()
         return scope
@@ -118,7 +118,7 @@ async def audit_env(monkeypatch, audit_tenant):
 async def test_display_labels_keep_ids_and_do_not_expand_history(audit_env, credential_tenant):
     """AC-26/29/31/34: names decorate the authorized facts without replacing IDs."""
     service, _, sessions, _ = audit_env
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
 
     async with sessions() as s:
         s.add(
@@ -150,7 +150,7 @@ async def test_display_labels_keep_ids_and_do_not_expand_history(audit_env, cred
 async def test_model_subject_names_require_a_real_typed_identity(audit_env):
     """AC-26/34: app-self never borrows the resource owner's user identity."""
     service, _, sessions, _ = audit_env
-    from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
+    from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
 
     async with sessions() as s:
         for record_id, kind, subject in [(10, "user", 9), (11, "app_self", None), (12, "user", 999)]:
@@ -216,10 +216,10 @@ async def test_export_preserves_source_nulls_and_zero_without_display_enrichment
     import csv
     import io
 
-    from bisheng.app_governance.domain.schemas.runtime_audit import FIELDS, normalize
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import csv_bytes
-    from bisheng.app_publish.domain.models.capability_call_record import AppCapabilityCallRecord
-    from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
+    from doberman_agent.app_governance.domain.schemas.runtime_audit import FIELDS, normalize
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import csv_bytes
+    from doberman_agent.app_publish.domain.models.capability_call_record import AppCapabilityCallRecord
+    from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
 
     _, repo, sessions, scope = audit_env
     async with sessions() as s:
@@ -289,7 +289,7 @@ async def test_service_account_rows_and_null_tokens_survive_stable_pages(audit_e
 
 
 async def test_cursor_refuses_changed_filter_and_tampering(audit_env):
-    from bisheng.common.errcode.app_governance import RuntimeAuditCursorInvalidError
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditCursorInvalidError
 
     service, _, _, _ = audit_env
     page = await service.list(AUDIT_USER, "model", {"time_range": "all"}, limit=1)
@@ -302,7 +302,7 @@ async def test_cursor_refuses_changed_filter_and_tampering(audit_env):
 
 
 async def test_frozen_watermark_excludes_later_insert(audit_env):
-    from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
+    from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
 
     service, _, sessions, _ = audit_env
     page = await service.list(AUDIT_USER, "model", {"time_range": "all"}, limit=1)
@@ -336,7 +336,7 @@ async def test_capability_and_access_snapshots_without_live_joins(audit_env):
     [{"time_range": "custom"}, {"time_range": "all", "credential_id": 10}, {"time_range": "all", "app_id": "foreign"}],
 )
 async def test_invalid_inapplicable_and_foreign_filters_refused(audit_env, filters):
-    from bisheng.common.errcode.app_governance import RuntimeAuditFilterInvalidError
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditFilterInvalidError
 
     service, _, _, _ = audit_env
     with pytest.raises(RuntimeAuditFilterInvalidError):
@@ -344,8 +344,8 @@ async def test_invalid_inapplicable_and_foreign_filters_refused(audit_env, filte
 
 
 async def test_historical_candidates_scope_and_disabled(audit_env, monkeypatch):
-    from bisheng.common.errcode.app_factory import AppFactoryNotEnabledError
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.errcode.app_factory import AppFactoryNotEnabledError
+    from doberman_agent.common.services.config_service import settings
 
     service, _, _, _ = audit_env
     options = await service.candidates(AUDIT_USER, "capability", "app", {"time_range": "all"})
@@ -359,11 +359,11 @@ async def test_scope_rejects_non_session_and_fresh_non_admin(monkeypatch):
     """AC-52/53 + F114: a typed session still needs current audit-entry qualification."""
     from types import SimpleNamespace
 
-    from bisheng.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
-    from bisheng.app_governance.domain.services import runtime_audit_scope as module
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.app_governance import RuntimeAuditAccessDeniedError
-    from bisheng.core.context.tenant import tenant_execution_scope
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
+    from doberman_agent.app_governance.domain.services import runtime_audit_scope as module
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditAccessDeniedError
+    from doberman_agent.core.context.tenant import tenant_execution_scope
 
     with pytest.raises(RuntimeAuditAccessDeniedError):
         await module.resolve_scope(SimpleNamespace(user_id=7, is_global_super=True))
@@ -410,11 +410,11 @@ async def test_global_super_uses_one_current_tenant_without_http_middleware(monk
     """AC-52/56 + F114: use one concrete tenant, with own-tenant fallback."""
     from types import SimpleNamespace
 
-    from bisheng.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
-    from bisheng.app_governance.domain.services import runtime_audit_scope as module
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.app_governance import RuntimeAuditAccessDeniedError
-    from bisheng.core.context.tenant import tenant_execution_scope
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_repository import RuntimeAuditRepository
+    from doberman_agent.app_governance.domain.services import runtime_audit_scope as module
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditAccessDeniedError
+    from doberman_agent.core.context.tenant import tenant_execution_scope
 
     async def account(*args):
         return SimpleNamespace(token_version=0)
@@ -446,8 +446,8 @@ async def test_source_naive_time_converts_from_deployment_zone(audit_env, monkey
     """覆盖 AC: AC-47, AC-51. Container TZ dates must not disappear behind a UTC upper bound."""
     from datetime import timedelta
 
-    from bisheng.common.services.config_service import settings
-    from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
 
     service, _, sessions, _ = audit_env
     instant = datetime.utcnow().replace(microsecond=0) - timedelta(seconds=10)
@@ -478,10 +478,10 @@ async def test_actual_read_router_envelope_and_invalid_filter(audit_env, monkeyp
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.base import BaseErrorCode
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.base import BaseErrorCode
 
-    module = importlib.import_module("bisheng.app_governance.api.router")
+    module = importlib.import_module("doberman_agent.app_governance.api.router")
     service, _, _, _ = audit_env
     monkeypatch.setattr(module, "RuntimeAuditQueryService", lambda: service)
     app = FastAPI()

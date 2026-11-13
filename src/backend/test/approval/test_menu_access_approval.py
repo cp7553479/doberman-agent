@@ -4,10 +4,10 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import bisheng.approval.domain.services.approval_center_service as approval_center_service_module
-import bisheng.approval.domain.services.user_menu_access_service as user_menu_access_service_module
-import bisheng.user.domain.services.auth as auth_module
-from bisheng.common.errcode.approval import ApprovalMenuApplyDisabledError
+import doberman_agent.approval.domain.services.approval_center_service as approval_center_service_module
+import doberman_agent.approval.domain.services.user_menu_access_service as user_menu_access_service_module
+import doberman_agent.user.domain.services.auth as auth_module
+from doberman_agent.common.errcode.approval import ApprovalMenuApplyDisabledError
 
 
 def test_expand_menu_keys_with_dependencies_adds_parent_entries():
@@ -42,7 +42,7 @@ async def test_grant_menu_access_writes_leaf_and_parent_dependencies():
         return SimpleNamespace(**kwargs)
 
     with patch(
-        "bisheng.approval.domain.services.user_menu_access_service.UserMenuAccessRepository.upsert_active_grant",
+        "doberman_agent.approval.domain.services.user_menu_access_service.UserMenuAccessRepository.upsert_active_grant",
         new=_fake_upsert,
     ):
         rows = await UserMenuAccessService.grant_menu_access(
@@ -70,7 +70,7 @@ async def test_revoke_menu_access_records_revoke_on_leaf_first():
         return SimpleNamespace(**kwargs)
 
     with patch(
-        "bisheng.approval.domain.services.user_menu_access_service.UserMenuAccessRepository.revoke_grant",
+        "doberman_agent.approval.domain.services.user_menu_access_service.UserMenuAccessRepository.revoke_grant",
         new=_fake_revoke,
     ):
         rows = await UserMenuAccessService.revoke_menu_access(
@@ -95,27 +95,27 @@ async def test_apply_menu_access_request_uses_gate_when_mode_enabled():
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_center_service.UserDao.aget_user",
+            "doberman_agent.approval.domain.services.approval_center_service.UserDao.aget_user",
             new_callable=AsyncMock,
             return_value=db_user,
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.DepartmentDao.aget_user_admin_departments",
+            "doberman_agent.approval.domain.services.approval_center_service.DepartmentDao.aget_user_admin_departments",
             new_callable=AsyncMock,
             return_value=[],
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.LoginUser.get_roles_web_menu",
+            "doberman_agent.approval.domain.services.approval_center_service.LoginUser.get_roles_web_menu",
             new_callable=AsyncMock,
             return_value=([2], ["apps"]),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.LoginUser.compute_menu_approval_mode_for_menu",
+            "doberman_agent.approval.domain.services.approval_center_service.LoginUser.compute_menu_approval_mode_for_menu",
             new_callable=AsyncMock,
             return_value=True,
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.ApprovalGate.request_or_pass",
+            "doberman_agent.approval.domain.services.approval_center_service.ApprovalGate.request_or_pass",
             new_callable=AsyncMock,
             return_value=SimpleNamespace(model_dump=lambda: {"decision": "pending", "instance_id": 99}),
         ) as mock_request,
@@ -146,28 +146,28 @@ async def test_apply_admin_menu_rejected_when_only_workbench_scope_enabled():
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_center_service.UserDao.aget_user",
+            "doberman_agent.approval.domain.services.approval_center_service.UserDao.aget_user",
             new_callable=AsyncMock,
             return_value=db_user,
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.DepartmentDao.aget_user_admin_departments",
+            "doberman_agent.approval.domain.services.approval_center_service.DepartmentDao.aget_user_admin_departments",
             new_callable=AsyncMock,
             return_value=[],
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.LoginUser.get_roles_web_menu",
+            "doberman_agent.approval.domain.services.approval_center_service.LoginUser.get_roles_web_menu",
             new_callable=AsyncMock,
             return_value=([2], ["apps"]),
         ),
         patch(
             # workbench scope on, admin scope off → the resolver returns False for 'knowledge'.
-            "bisheng.approval.domain.services.approval_center_service.LoginUser.compute_menu_approval_mode_for_menu",
+            "doberman_agent.approval.domain.services.approval_center_service.LoginUser.compute_menu_approval_mode_for_menu",
             new_callable=AsyncMock,
             return_value=False,
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.ApprovalGate.request_or_pass",
+            "doberman_agent.approval.domain.services.approval_center_service.ApprovalGate.request_or_pass",
             new_callable=AsyncMock,
         ) as mock_request,
     ):
@@ -188,7 +188,7 @@ async def test_revoke_menu_grant_uses_instance_payload_menu_key():
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_center_service.ApprovalInstanceRepository.get_instance",
+            "doberman_agent.approval.domain.services.approval_center_service.ApprovalInstanceRepository.get_instance",
             new_callable=AsyncMock,
             return_value=SimpleNamespace(
                 id=22,
@@ -200,16 +200,16 @@ async def test_revoke_menu_grant_uses_instance_payload_menu_key():
             ),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_center_service.UserMenuAccessService.revoke_menu_access",
+            "doberman_agent.approval.domain.services.approval_center_service.UserMenuAccessService.revoke_menu_access",
             new_callable=AsyncMock,
             return_value=[SimpleNamespace(menu_key="knowledge")],
         ) as mock_revoke,
         patch(
-            "bisheng.approval.domain.services.approval_center_service.ApprovalInstanceRepository.create_action_log",
+            "doberman_agent.approval.domain.services.approval_center_service.ApprovalInstanceRepository.create_action_log",
             new_callable=AsyncMock,
         ) as mock_action_log,
         patch(
-            "bisheng.approval.domain.services.approval_center_service.ApprovalCenterService._write_audit_log",
+            "doberman_agent.approval.domain.services.approval_center_service.ApprovalCenterService._write_audit_log",
             new_callable=AsyncMock,
         ) as mock_audit_log,
     ):
@@ -239,17 +239,17 @@ async def test_get_roles_web_menu_includes_personal_menu_grants():
 
     with (
         patch(
-            "bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles",
+            "doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles",
             new_callable=AsyncMock,
             return_value=role_rows,
         ),
         patch(
-            "bisheng.user.domain.services.auth.RoleAccessDao.aget_role_access",
+            "doberman_agent.user.domain.services.auth.RoleAccessDao.aget_role_access",
             new_callable=AsyncMock,
             return_value=role_access_rows,
         ),
         patch(
-            "bisheng.user.domain.services.auth.UserMenuAccessService.list_effective_menu_grants",
+            "doberman_agent.user.domain.services.auth.UserMenuAccessService.list_effective_menu_grants",
             new_callable=AsyncMock,
             return_value=["workstation", "home"],
         ) as mock_personal_menu,
@@ -268,17 +268,17 @@ async def test_get_roles_web_menu_gives_department_admin_only_system_identity_me
 
     with (
         patch(
-            "bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles",
+            "doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles",
             new_callable=AsyncMock,
             return_value=[SimpleNamespace(role_id=2)],
         ),
         patch(
-            "bisheng.user.domain.services.auth.RoleAccessDao.aget_role_access",
+            "doberman_agent.user.domain.services.auth.RoleAccessDao.aget_role_access",
             new_callable=AsyncMock,
             return_value=[SimpleNamespace(third_id="workstation")],
         ),
         patch(
-            "bisheng.user.domain.services.auth.UserMenuAccessService.list_effective_menu_grants",
+            "doberman_agent.user.domain.services.auth.UserMenuAccessService.list_effective_menu_grants",
             new_callable=AsyncMock,
             return_value=["home"],
         ),

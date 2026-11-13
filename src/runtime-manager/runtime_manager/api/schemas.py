@@ -68,7 +68,7 @@ class DeployRequest(BaseModel):
     health: HealthIn = Field(default_factory=HealthIn)
     platform_api_base: str = ""
     base_path: str = ""
-    #: ``egress.domains`` from the version's ``bisheng-app.yaml`` (AC-16). The
+    #: ``egress.domains`` from the version's ``doberman-agent-app.yaml`` (AC-16). The
     #: platform's own addresses are **not** in here — the manager derives those
     #: from its own configuration, so an application cannot reach the platform
     #: by declaring it and cannot lose access by not declaring it.
@@ -112,7 +112,7 @@ class PreviewStartRequest(BaseModel):
     same fields :class:`DeployRequest` carries, and for the same reason: the
     container gets the **whole** environment contract of §5. A preview that saw
     only a partial one would not be a trial of the release — an app never told
-    ``BISHENG_APP_DB_URL`` exits on start-up, and an approver would read that as
+    ``DOBERMAN_AGENT_APP_DB_URL`` exits on start-up, and an approver would read that as
     "this release is broken". ``base_path`` is ``/apps/preview/{session}`` here
     rather than ``/apps/{slug}``; that one difference is the point of it being
     a field.

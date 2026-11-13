@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { checkPersonalSkill, getPersonalSkillUsage } from '~/api/skillCenter';
@@ -25,7 +25,7 @@ jest.mock('~/hooks', () => ({
   useLocalize: () => (key: string) => copy[key] ?? key,
 }));
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
-jest.mock('bisheng-icons', () => {
+jest.mock('@doberman-agent/icons', () => {
   const icons = new Proxy({}, { get: () => () => null });
   return { Outlined: icons, Filled: icons, Colored: icons };
 });

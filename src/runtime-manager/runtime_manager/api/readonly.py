@@ -14,7 +14,7 @@ Three questions the platform asks and never answers itself:
 * **"Can this host run apps at all?"** — ``GET /v1/runtime/status``. Capacity,
   the runtimes this deployment can actually build, and a pre-flight that names
   the operational mistakes which otherwise surface as an opaque failure on
-  someone's first publish (missing ``bisheng-apps`` network, base image never
+  someone's first publish (missing ``doberman-agent-apps`` network, base image never
   pulled on an air-gapped box).
 
 **Redaction is deliberately narrow.** The manager replaces values *the platform

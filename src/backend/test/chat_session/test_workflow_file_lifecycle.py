@@ -13,17 +13,17 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.chat_session.domain.chat import ChatSessionService
-from bisheng.chat_session.domain.models.workflow_file_manifest import WorkflowFileManifest
-from bisheng.chat_session.domain.repositories import workflow_file_repository as repository_module
-from bisheng.chat_session.domain.repositories.workflow_file_repository import WorkflowFileRepository, source_identity
-from bisheng.chat_session.domain.services.chat_message_service import ChatMessageService
-from bisheng.chat_session.domain.services.workflow_file_service import WorkflowFileService
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.database.models.message import ChatMessage
-from bisheng.database.models.session import MessageSession
-from bisheng.knowledge.rag.pipeline.transformer.image_upload import ImageUploadTransformer
-from bisheng.knowledge.rag.pipeline.types import ImageStorageContext
+from doberman_agent.chat_session.domain.chat import ChatSessionService
+from doberman_agent.chat_session.domain.models.workflow_file_manifest import WorkflowFileManifest
+from doberman_agent.chat_session.domain.repositories import workflow_file_repository as repository_module
+from doberman_agent.chat_session.domain.repositories.workflow_file_repository import WorkflowFileRepository, source_identity
+from doberman_agent.chat_session.domain.services.chat_message_service import ChatMessageService
+from doberman_agent.chat_session.domain.services.workflow_file_service import WorkflowFileService
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.knowledge.rag.pipeline.transformer.image_upload import ImageUploadTransformer
+from doberman_agent.knowledge.rag.pipeline.types import ImageStorageContext
 from test.chat_session.test_workflow_file_assets import database as _database_fixture
 from test.chat_session.test_workflow_file_assets import not_found_response as _not_found_fixture
 
@@ -43,10 +43,10 @@ async def async_database(database, monkeypatch):
             yield session
 
     monkeypatch.setattr(repository_module, "get_async_db_session", connection)
-    monkeypatch.setattr("bisheng.database.models.session.get_async_db_session", connection)
-    monkeypatch.setattr("bisheng.database.models.message.get_sync_db_session", repository_module.get_sync_db_session)
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.FlowDao.aget_flow_by_id", AsyncMock(return_value=None))
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.telemetry_service.log_event", AsyncMock())
+    monkeypatch.setattr("doberman_agent.database.models.session.get_async_db_session", connection)
+    monkeypatch.setattr("doberman_agent.database.models.message.get_sync_db_session", repository_module.get_sync_db_session)
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.FlowDao.aget_flow_by_id", AsyncMock(return_value=None))
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.telemetry_service.log_event", AsyncMock())
     try:
         yield database
     finally:
@@ -64,12 +64,12 @@ def storage(monkeypatch):
     client.get_share_link = AsyncMock(side_effect=lambda key: f"/main/{key}?fresh")
     client.objects = objects
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: client
+        "doberman_agent.chat_session.domain.services.workflow_file_service.get_minio_storage_sync", lambda: client
     )
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: client
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.get_minio_storage_sync", lambda: client
     )
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=client))
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.get_minio_storage", AsyncMock(return_value=client))
     return client
 
 
@@ -113,7 +113,7 @@ def test_legacy_upload_failure_does_not_delete_previously_published_image(tmp_pa
 
     storage.put_object_sync.side_effect = put
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.pipeline.transformer.image_upload.os.listdir", lambda _: ["one.png", "two.png"]
+        "doberman_agent.knowledge.rag.pipeline.transformer.image_upload.os.listdir", lambda _: ["one.png", "two.png"]
     )
     loader = SimpleNamespace(local_image_dir=str(tmp_path), image_object_dir=prefix)
     context = ImageStorageContext(prefix, "main", lambda name: name) if with_context else None
@@ -189,14 +189,14 @@ async def test_first_and_repeat_delete_refuse_nonowners_before_any_side_effect(
     """AC-07: initial deletion and retries apply the same natural-person boundary."""
     session = SimpleNamespace(user_id=7, tenant_id=1, api_subject_type=subject, is_delete=deleted)
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.chat.MessageSessionDao.async_get_one", AsyncMock(return_value=session)
+        "doberman_agent.chat_session.domain.chat.MessageSessionDao.async_get_one", AsyncMock(return_value=session)
     )
     remove = AsyncMock()
     delete = AsyncMock()
     audit = AsyncMock()
     monkeypatch.setattr(ChatSessionService, "_remove_attachments", remove)
     monkeypatch.setattr(WorkflowFileRepository, "soft_delete_owned_session", delete)
-    monkeypatch.setattr("bisheng.chat_session.domain.chat.AuditLogService.delete_chat_workflow", audit)
+    monkeypatch.setattr("doberman_agent.chat_session.domain.chat.AuditLogService.delete_chat_workflow", audit)
     with pytest.raises(HTTPException) as exc:
         await ChatSessionService.delete_session(
             "c1", SimpleNamespace(user_id=user_id, tenant_id=tenant_id), "127.0.0.1"
@@ -290,7 +290,7 @@ def test_own_minio_signatures_normalize_without_discarding_business_parameters()
 def test_manifest_matches_the_correct_external_attachment(database, storage, monkeypatch, urls):
     """AC-07: both object identity and source-attachment matching retain the origin."""
     monkeypatch.setattr(
-        "bisheng.chat_session.domain.services.workflow_file_service.uuid4", lambda: SimpleNamespace(hex="fixed")
+        "doberman_agent.chat_session.domain.services.workflow_file_service.uuid4", lambda: SimpleNamespace(hex="fixed")
     )
     with Session(database) as session:
         row = session.exec(select(ChatMessage)).one()
@@ -310,8 +310,8 @@ def test_manifest_matches_the_correct_external_attachment(database, storage, mon
 
 async def test_http_image_access_and_delete_use_real_ownership_and_cleanup(async_database, storage, tmp_path):
     """AC-05, AC-07, AC-08: HTTP authorization reaches the real services and SQL."""
-    from bisheng.chat_session.api.endpoints.chat import router as chat_router
-    from bisheng.chat_session.api.endpoints.workflow_files import router as file_router
+    from doberman_agent.chat_session.api.endpoints.chat import router as chat_router
+    from doberman_agent.chat_session.api.endpoints.workflow_files import router as file_router
 
     context = _context()
     _upload(context, tmp_path)
@@ -342,9 +342,9 @@ async def test_http_image_access_and_delete_use_real_ownership_and_cleanup(async
 
 def test_independent_manifest_model_is_discovered_for_schema_bootstrap():
     """AC-08, AC-09: online upgrades discover the new standalone table."""
-    from bisheng.core.database.model_discovery import discover_sqlmodel_module_names
+    from doberman_agent.core.database.model_discovery import discover_sqlmodel_module_names
 
-    assert "bisheng.chat_session.domain.models.workflow_file_manifest" in discover_sqlmodel_module_names()
+    assert "doberman_agent.chat_session.domain.models.workflow_file_manifest" in discover_sqlmodel_module_names()
 
 
 async def test_manifest_keyset_scan_includes_all_pages_after_questions_are_deleted(async_database):

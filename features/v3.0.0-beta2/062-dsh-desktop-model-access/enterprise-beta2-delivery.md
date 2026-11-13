@@ -3,7 +3,7 @@
 ## 分支与范围
 
 - 分支：`codex/dsh-enterprise-beta2`；基线：`upstream/feat/3.0.0-beta2-pre@20cb6af63cceb74a542eb2e25175e5d6a3c686a1`。
-- 推送目标：`https://github.com/SuperstructureJH/bisheng.git`。
+- 推送目标：`https://github.com/SuperstructureJH/doberman_agent.git`。
 - 管理端集中提供授权与席位、部门树模型与额度、使用统计、接入设置、企业插件。操作审计入口隐藏，历史采集、查询与代码保留；旧审计链接落到可用页签。
 - 部门与用户额度按最大值生效，输入和展示统一为万 Token/月，清空保存为 0；席位在登录时分配。
 - 看板提供年度热力图与时间范围统计、Token/消息数切换和统一单位；统计读取 PROVIDER、RECONCILED 结算记录。

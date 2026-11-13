@@ -55,7 +55,7 @@ async def _yield_session(session):
 
 
 def test_archived_tenant_code_appends_unix_timestamp():
-    from bisheng.tenant.domain.services.tenant_mount_service import (
+    from doberman_agent.tenant.domain.services.tenant_mount_service import (
         ARCHIVED_CODE_SEPARATOR,
         archived_tenant_code,
     )
@@ -70,7 +70,7 @@ def test_archived_tenant_code_appends_unix_timestamp():
 def test_archived_tenant_code_is_idempotent():
     """Re-archiving an already-archived code must not double-suffix —
     the unmount path may run more than once during retries."""
-    from bisheng.tenant.domain.services.tenant_mount_service import (
+    from doberman_agent.tenant.domain.services.tenant_mount_service import (
         archived_tenant_code,
     )
 
@@ -80,7 +80,7 @@ def test_archived_tenant_code_is_idempotent():
 
 
 def test_display_tenant_code_strips_archive_suffix():
-    from bisheng.tenant.domain.services.tenant_mount_service import (
+    from doberman_agent.tenant.domain.services.tenant_mount_service import (
         archived_tenant_code,
         display_tenant_code,
     )
@@ -99,7 +99,7 @@ def test_display_tenant_code_strips_archive_suffix():
 async def test_unmount_child_archives_code_and_single_commit():
     """Happy path: tenant gets archived + suffixed, dept gets unset,
     everything inside one session.commit."""
-    from bisheng.tenant.domain.services import tenant_mount_service as svc_mod
+    from doberman_agent.tenant.domain.services import tenant_mount_service as svc_mod
 
     session = MagicMock()
     session.execute = AsyncMock()
@@ -136,7 +136,7 @@ async def test_unmount_child_rolls_back_when_dept_unset_fails():
     """If the dept UPDATE raises after the tenant archive UPDATE, commit
     must NOT fire — the in-flight archive change rolls back with the session
     so we don't end up with a half-archived tenant + still-mounted dept."""
-    from bisheng.tenant.domain.services import tenant_mount_service as svc_mod
+    from doberman_agent.tenant.domain.services import tenant_mount_service as svc_mod
 
     session = MagicMock()
     # First UPDATE (tenant archive) succeeds; second (dept unset) blows up.

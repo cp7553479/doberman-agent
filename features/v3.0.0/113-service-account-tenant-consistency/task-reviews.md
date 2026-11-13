@@ -16,7 +16,7 @@
 
 **任务**：错误码与C5登记
 **类型**：基础设施
-**文件**：`src/backend/bisheng/common/errcode/open_api.py`、`docs/constitution.md`
+**文件**：`src/backend/doberman_agent/common/errcode/open_api.py`、`docs/constitution.md`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -116,7 +116,7 @@
 
 **任务**：当前绑定仓储
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/domain/repositories/owner_repository.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -136,7 +136,7 @@
 
 **任务**：实时资格服务和公开协议
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/domain/services/service_account_tenancy.py`、`src/backend/bisheng/open_api/application/service_account_tenancy.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/services/service_account_tenancy.py`、`src/backend/doberman_agent/open_api/application/service_account_tenancy.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -156,7 +156,7 @@
 
 **任务**：凭据缓存合流接线及受影响fixture
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/domain/services/credential_validator.py`、`src/backend/test/open_api/test_credential_validator.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/services/credential_validator.py`、`src/backend/test/open_api/test_credential_validator.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -196,7 +196,7 @@
 
 **任务**：MCP工具准入接线
 **类型**：实现
-**文件**：`src/backend/bisheng/open_mcp/server.py`、`src/backend/bisheng/open_api/application/access_context.py`
+**文件**：`src/backend/doberman_agent/open_mcp/server.py`、`src/backend/doberman_agent/open_api/application/access_context.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -236,7 +236,7 @@
 
 **任务**：中性WS消息回调与执行快照
 **类型**：实现
-**文件**：`src/backend/bisheng/common/chat/manager.py`、`src/backend/bisheng/common/chat/client.py`
+**文件**：`src/backend/doberman_agent/common/chat/manager.py`、`src/backend/doberman_agent/common/chat/client.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -256,7 +256,7 @@
 
 **任务**：v2 WS准入端点接线
 **类型**：实现
-**文件**：`src/backend/bisheng/open_endpoints/api/endpoints/assistant.py`
+**文件**：`src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -325,7 +325,7 @@
 
 **任务**：租户边界域策略与公开协议
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/application/tenant_access.py`、`src/backend/bisheng/app_runtime/domain/services/tenant_access.py`
+**文件**：`src/backend/doberman_agent/app_runtime/application/tenant_access.py`、`src/backend/doberman_agent/app_runtime/domain/services/tenant_access.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -347,7 +347,7 @@
 
 **任务**：人工状态入口租户接线
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -369,7 +369,7 @@
 
 **任务**：元信息与数据边界
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`、`src/backend/bisheng/app_runtime/domain/services/app_data_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -391,7 +391,7 @@
 
 **任务**：日志与发布状态边界
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_status_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -435,7 +435,7 @@
 
 **任务**：共享ReviewAccess入口
 **类型**：实现
-**文件**：`src/backend/bisheng/app_publish/domain/services/snapshot_browse_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/snapshot_browse_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -479,7 +479,7 @@
 
 **任务**：审批来源只读应用投影
 **类型**：实现
-**文件**：`src/backend/bisheng/approval/application/execution_source.py`
+**文件**：`src/backend/doberman_agent/approval/application/execution_source.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -501,7 +501,7 @@
 
 **任务**：发布来源仓储与内部值
 **类型**：实现
-**文件**：`src/backend/bisheng/app_publish/domain/repositories/release_tenancy_repository.py`、`src/backend/bisheng/app_publish/domain/schemas/release_tenancy.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/repositories/release_tenancy_repository.py`、`src/backend/doberman_agent/app_publish/domain/schemas/release_tenancy.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -523,7 +523,7 @@
 
 **任务**：发布资格服务及公开入口
 **类型**：实现
-**文件**：`src/backend/bisheng/app_publish/domain/services/release_tenancy_service.py`、`src/backend/bisheng/app_publish/application/release_tenancy.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/release_tenancy_service.py`、`src/backend/doberman_agent/app_publish/application/release_tenancy.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -567,7 +567,7 @@
 
 **任务**：批准启动与共用状态实现
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/application/approved_release.py`、`src/backend/bisheng/app_runtime/domain/services/app_state_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/application/approved_release.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -589,7 +589,7 @@
 
 **任务**：发布接收/worker与上线接线
 **类型**：实现
-**文件**：`src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/bisheng/app_publish/domain/services/publish_online_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py`、`src/backend/doberman_agent/app_publish/domain/services/publish_online_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -611,7 +611,7 @@
 
 **任务**：发布元信息公开入口
 **类型**：实现
-**文件**：`src/backend/bisheng/app_runtime/application/release_metadata.py`、`src/backend/bisheng/app_runtime/domain/services/app_meta_service.py`
+**文件**：`src/backend/doberman_agent/app_runtime/application/release_metadata.py`、`src/backend/doberman_agent/app_runtime/domain/services/app_meta_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -655,7 +655,7 @@
 
 **任务**：预览与配置确认重建资格
 **类型**：实现
-**文件**：`src/backend/bisheng/app_publish/domain/services/preview_instance_service.py`、`src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py`
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/preview_instance_service.py`、`src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -699,7 +699,7 @@
 
 **任务**：可用租户查询与F019应用包装
 **类型**：实现
-**文件**：`src/backend/bisheng/admin/application/tenant_scope.py`、`src/backend/bisheng/admin/domain/repositories/tenant_scope_repository.py`
+**文件**：`src/backend/doberman_agent/admin/application/tenant_scope.py`、`src/backend/doberman_agent/admin/domain/repositories/tenant_scope_repository.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -721,7 +721,7 @@
 
 **任务**：账号管理范围服务与DTO
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/domain/services/service_account_scope_service.py`、`src/backend/bisheng/open_api/domain/schemas/service_account_scope.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/services/service_account_scope_service.py`、`src/backend/doberman_agent/open_api/domain/schemas/service_account_scope.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -743,7 +743,7 @@
 
 **任务**：管理依赖与静态scope端点
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/api/dependencies.py`、`src/backend/bisheng/open_api/api/endpoints/service_account_scope.py`
+**文件**：`src/backend/doberman_agent/open_api/api/dependencies.py`、`src/backend/doberman_agent/open_api/api/endpoints/service_account_scope.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -765,7 +765,7 @@
 
 **任务**：账号/密钥路由范围接线
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/api/endpoints/service_account.py`、`src/backend/bisheng/open_api/api/endpoints/service_account_keys.py`
+**文件**：`src/backend/doberman_agent/open_api/api/endpoints/service_account.py`、`src/backend/doberman_agent/open_api/api/endpoints/service_account_keys.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -787,7 +787,7 @@
 
 **任务**：归属人候选与创建范围约束
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/domain/repositories/owner_repository.py`、`src/backend/bisheng/open_api/domain/services/service_account_service.py`
+**文件**：`src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py`、`src/backend/doberman_agent/open_api/domain/services/service_account_service.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|
@@ -809,7 +809,7 @@
 
 **任务**：新静态router注册与管理API配对
 **类型**：实现
-**文件**：`src/backend/bisheng/open_api/api/router.py`
+**文件**：`src/backend/doberman_agent/open_api/api/router.py`
 
 | # | 检查项 | 结果 | 说明 |
 |---|---|---|---|

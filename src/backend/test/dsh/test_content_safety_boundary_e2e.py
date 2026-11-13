@@ -51,12 +51,12 @@ def test_raw_boundary_bodies_exercise_actual_parser_edges(protocol, kind):
     elif kind == "duplicate":
         pairs = json.loads(raw, object_pairs_hook=list)
         assert sum(key == "model" for key, _ in pairs) == 2
-        assert [value for key, value in pairs if key == "model"] == ["bisheng:8", "bisheng:8"]
+        assert [value for key, value in pairs if key == "model"] == ["doberman_agent:8", "doberman_agent:8"]
     else:
         parsed = json.loads(raw)
         if kind == "oversized":
             assert len(raw) == 33_554_433
-            assert parsed["model"] == "bisheng:8"
+            assert parsed["model"] == "doberman_agent:8"
             assert isinstance(parsed["messages"][0]["content"], str)
         elif protocol == "chat":
             assert parsed["messages"][0]["content"][0]["type"] == "unknown"
@@ -129,7 +129,7 @@ def _raw_request(protocol, kind, model_id, scenario, conversation):
         raise LiveSafetyError("Invalid boundary request parameters")
     marker = "F111_SCENARIO:" + scenario
     payload = {
-        "model": f"bisheng:{model_id}",
+        "model": f"doberman_agent:{model_id}",
         "stream": False,
         "audit_context": {"conversation_id": conversation, "request_kind": "chat", "session_origin": "main"},
     }
@@ -147,7 +147,7 @@ def _raw_request(protocol, kind, model_id, scenario, conversation):
     if kind == "malformed":
         return raw[:-1]
     if kind == "duplicate":
-        return ('{"model":"bisheng:' + str(model_id) + '",').encode("ascii") + raw[1:]
+        return ('{"model":"doberman_agent:' + str(model_id) + '",').encode("ascii") + raw[1:]
     if kind == "oversized":
         token = b"BOUNDARY_PADDING_TOKEN"
         _require(raw.count(token) == 1, "Boundary padding token was ambiguous")

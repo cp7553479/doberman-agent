@@ -9,7 +9,7 @@ shrink: when a route is renamed, delete it here.
 
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
-from bisheng.main import app
+from doberman_agent.main import app
 
 LEGACY_CONFIG_ROUTES = {
     ("GET", "/api/v1/web/config"),

@@ -32,7 +32,7 @@
 ### Wave 1 — 无依赖，可并行（枚举 + i18n）
 
 - [x] **T001**: 新增 `workbench_chat` 业务类型
-  **文件**: `src/backend/bisheng/sensitive_word/domain/schemas.py`
+  **文件**: `src/backend/doberman_agent/sensitive_word/domain/schemas.py`
   **逻辑**: `SensitiveWordBusinessType` 增加 `WORKBENCH_CHAT = 'workbench_chat'`。不改表、不 Alembic（`business_type` 已是 `String(64)`）——**无 DDL，无需回滚**。既有 `knowledge_space_file_parse` / `channel_article` 取值一字不改。FastAPI 路由已按枚举路径参数工作，加值后 `GET/PUT .../workbench_chat` 即通。
   **设计依据**: design §3 决策 2 · §4.6
   **跨 Feature 影响**: 枚举被知识空间 / 频道策略 API 共用；只增量一个成员。
@@ -48,13 +48,13 @@
 
 - [x] **T003**: `workbench_chat` 策略服务单测
   **文件**: `src/backend/test/sensitive_word/test_workbench_chat_policy.py`
-  **逻辑**: mock DAO / `bisheng_pro`。①`default_response(WORKBENCH_CHAT)` 的 `auto_reply` 是工作台示例句，**不是**知识空间「上传内容命中敏感词…」（design 坑 7）。②`KNOWLEDGE_SPACE_FILE_PARSE` 默认句不变。③`enabled=True` 且 `words_types=[]` 或 `auto_reply` 空白 / 超 500 字 → upsert 拒绝。④`enabled=False` 仍写入 `custom_words` 与 `auto_reply`（AC-06）。⑤`is_workbench_content_safety_active`：`bisheng_pro=False` 为 False（即使策略 enabled）；pro=True 且 `is_effective` 为 True 才 True。⑥`evaluate_workbench_user_text`：未激活或无 hits 返回 `None`；命中返回带 `auto_reply` 的 result。⑦`check_text(..., WORKBENCH_CHAT)` 命中走现有 AC 引擎（builtin ∪ custom）。⑧策略无效时 `enabled=False, hits=[]`，不得当命中（design 坑 14）。
+  **逻辑**: mock DAO / `doberman_agent_pro`。①`default_response(WORKBENCH_CHAT)` 的 `auto_reply` 是工作台示例句，**不是**知识空间「上传内容命中敏感词…」（design 坑 7）。②`KNOWLEDGE_SPACE_FILE_PARSE` 默认句不变。③`enabled=True` 且 `words_types=[]` 或 `auto_reply` 空白 / 超 500 字 → upsert 拒绝。④`enabled=False` 仍写入 `custom_words` 与 `auto_reply`（AC-06）。⑤`is_workbench_content_safety_active`：`doberman_agent_pro=False` 为 False（即使策略 enabled）；pro=True 且 `is_effective` 为 True 才 True。⑥`evaluate_workbench_user_text`：未激活或无 hits 返回 `None`；命中返回带 `auto_reply` 的 result。⑦`check_text(..., WORKBENCH_CHAT)` 命中走现有 AC 引擎（builtin ∪ custom）。⑧策略无效时 `enabled=False, hits=[]`，不得当命中（design 坑 14）。
   **覆盖 AC**: AC-02, AC-05, AC-06, AC-07, AC-14
   **依赖**: T001
 
 - [x] **T004**: 策略服务：分类型默认回复 + 开启校验 + 运行时开关
-  **文件**: `src/backend/bisheng/sensitive_word/domain/services/sensitive_word_policy_service.py`
-  **逻辑**: `default_response` / `to_response` 按 `business_type` 选默认 `auto_reply`（工作台用 PRD 示例句）。`aupsert_policy` 在 `business_type=workbench_chat` 且 `enabled=True` 时校验：`words_types` 至少一项、`auto_reply` 去空白后非空、长度 ≤500；失败用现有 `resp_500` / 校验异常，**不新开错误码模块**。关闭时不校验、不清空词表。新增 `is_workbench_content_safety_active(tenant_id)`：先读 `settings.get_system_login_method().bisheng_pro`，再 `is_effective(..., WORKBENCH_CHAT)`。新增 `evaluate_workbench_user_text(tenant_id, text) -> Optional[CheckResult]`：未激活或无 hits 返回 `None`，命中返回 result（仅 `enabled and hits`）。放在本 Service 是为了让 workstation 与 linsight **两边都能调、不形成 workstation↔linsight 循环 import**。不改 `check_text` 匹配算法。
+  **文件**: `src/backend/doberman_agent/sensitive_word/domain/services/sensitive_word_policy_service.py`
+  **逻辑**: `default_response` / `to_response` 按 `business_type` 选默认 `auto_reply`（工作台用 PRD 示例句）。`aupsert_policy` 在 `business_type=workbench_chat` 且 `enabled=True` 时校验：`words_types` 至少一项、`auto_reply` 去空白后非空、长度 ≤500；失败用现有 `resp_500` / 校验异常，**不新开错误码模块**。关闭时不校验、不清空词表。新增 `is_workbench_content_safety_active(tenant_id)`：先读 `settings.get_system_login_method().doberman_agent_pro`，再 `is_effective(..., WORKBENCH_CHAT)`。新增 `evaluate_workbench_user_text(tenant_id, text) -> Optional[CheckResult]`：未激活或无 hits 返回 `None`，命中返回 result（仅 `enabled and hits`）。放在本 Service 是为了让 workstation 与 linsight **两边都能调、不形成 workstation↔linsight 循环 import**。不改 `check_text` 匹配算法。
   **设计依据**: design §3 决策 1 / 决策 2 · §5 坑 7、9、10、14
   **跨 Feature 影响**: 知识空间 / 频道 upsert 不走本类型校验；其默认回复不得被改掉。
   **测试**: T003 全绿；`test/sensitive_word/test_sensitive_word_policy_service.py` 仍全绿
@@ -70,7 +70,7 @@
   **依赖**: T001
 
 - [x] **T006**: 实现 `StreamContentSafetyScanner`
-  **文件**: `src/backend/bisheng/sensitive_word/domain/services/stream_scanner.py`
+  **文件**: `src/backend/doberman_agent/sensitive_word/domain/services/stream_scanner.py`
   **逻辑**: 新文件。构造传入 `tenant_id` + `WORKBENCH_CHAT`。`feed(delta) -> Optional[CheckResult]`：追加到内部 buffer，`len(buffer) - last_checked >= 100` 时对 **buffer 全文** `check_text`；命中（`enabled and hits`）则返回 result。`finish() -> Optional[CheckResult]` 再审一次余量。字数用 `len(str)`（Unicode 码点）。本文件不 yield SSE、不读 ChatMessage。
   **设计依据**: design §4.4 · §5 坑 5、6
   **测试**: T005 全绿
@@ -86,7 +86,7 @@
   **依赖**: T004
 
 - [x] **T008**: 日常入口：输入命中则跳过 LLM 并短流结束
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`；若短流/落库不宜内联，第二文件放 `src/backend/bisheng/workstation/domain/services/content_safety.py`（`evaluate` + `blocked_answer_payload`），**禁止**第三文件。
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`；若短流/落库不宜内联，第二文件放 `src/backend/doberman_agent/workstation/domain/services/content_safety.py`（`evaluate` + `blocked_answer_payload`），**禁止**第三文件。
   **逻辑**: `_agent_stream_chat_completion` 在调 LLM **之前**调用 T004 的 `evaluate_workbench_user_text(tenant_id, data.text)`（只审 `text`，不读 `files`）。命中则仍走会话 initialize（写入用户行，design 坑 11），然后 persist 自动回复、yield `created` + `agent_answer/end`、关流。日志 `warning` 只带 `tenant_id` / `mode=input` / `chat_id`，**不带原文和词**。本任务**不**接输出扫描（T010）。日常短流助手若抽到 `content_safety.py`，只放 SSE/落库，**不要**把 `evaluate` 再包一层（linsight 必须直接调 T004，避免循环 import）。
   **设计依据**: design §3 决策 3 · §4.3 · §5 坑 11、14
   **跨 Feature 影响**: `chat_service.py` 是日常统一入口；未命中分支零行为变化。
@@ -98,12 +98,12 @@
 
 - [x] **T009**: 日常输出 100 字命中 / 只审最终回答 单测
   **文件**: `src/backend/test/workstation/test_workbench_content_safety_output.py`
-  **逻辑**: mock scanner / `check_text`。①最终回答累积到 100 字命中：停止后续 token；SSE 最后一条 `agent_answer/end` 的 `msg` 为自动回复；落库 `msg` **不含**已流出的模型正文（AC-15 / 坑 12）。②思考 / tool 文本含敏感词、最终回答不含 → 不替换。③流结束余量 <100 命中 → 同样替换。④有工具 `astream_events` 与无工具 `bisheng_llm.astream` **两条**循环都要能触发（可分两个用例，mock 不同分支）。
+  **逻辑**: mock scanner / `check_text`。①最终回答累积到 100 字命中：停止后续 token；SSE 最后一条 `agent_answer/end` 的 `msg` 为自动回复；落库 `msg` **不含**已流出的模型正文（AC-15 / 坑 12）。②思考 / tool 文本含敏感词、最终回答不含 → 不替换。③流结束余量 <100 命中 → 同样替换。④有工具 `astream_events` 与无工具 `doberman_agent_llm.astream` **两条**循环都要能触发（可分两个用例，mock 不同分支）。
   **覆盖 AC**: AC-09, AC-10, AC-15
   **依赖**: T006, T008
 
 - [x] **T010**: 两条 LLM 循环都接 scanner，命中则替换并落库
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`
   **逻辑**: `_agent_stream_chat_completion` 内，仅当 `is_workbench_content_safety_active` 时构造 `StreamContentSafetyScanner`。**两处**向 `final_msg` 追加最终回答 delta 之后：`feed(delta)`；照常 yield `agent_answer/stream`（决策 4）；命中则停消费 LLM，把 `final_msg` / text events 换成自动回复（丢掉思考/工具事件），persist 后 yield `end` 并 return。流正常结束调 `finish()`。`reasoning_content` 只进 thinking，不 `feed`。`extra` 可 `{content_safety: true}`，不要写命中词。
   **设计依据**: design §3 决策 4 · §4.4 · §5 坑 2、12
   **跨 Feature 影响**: 只增量日常 agent 循环；知识空间 / 频道问答入口不改。
@@ -120,7 +120,7 @@
   **依赖**: T004, T008
 
 - [x] **T012**: 统一入口 + 遗留 submit 在创建任务前拦截
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`, `src/backend/bisheng/linsight/api/endpoints/linsight.py`
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`, `src/backend/doberman_agent/linsight/api/endpoints/linsight.py`
   **逻辑**: `_task_mode_stream_completion` 在 `submit_user_question` **之前**对 `data.text` 调 T004 `evaluate_workbench_user_text`；命中则复用 T008 的日常短流（会话 + `agent_answer/end`），**禁止** yield `linsight_task_handoff`（design 坑 3）。`submit_linsight_workbench` 同样在 submit 前调 **同一个** T004 evaluate（坑 4，禁止从 workstation 反 import）；命中用该端点现有 `EventSourceResponse` 返回自动回复（可以是一条业务事件或 typed error，但必须让客户端结束请求），**不**建 `LinsightSessionVersion`。不审任务执行输出，**不改** `task_exec.py`。
   **设计依据**: design §3 决策 3 · §4.5 · §5 坑 3、4
   **跨 Feature 影响**: linsight 执行 / worker 不改；未命中 handoff 契约不变。
@@ -199,4 +199,4 @@
 > **只留一行指针**，论证写进 design.md（决策 / 坑），这里不重复。
 > 推翻已 ★ 确认的决策时，先停下与用户重新确认，再记录。
 
-- 商业开关 `_is_bisheng_pro` 直接读 `BISHENG_PRO`（与 `get_system_login_method().bisheng_pro` 同源）；页面保存时策略 PUT 在 `confirmBlindOverwrite` 之后、写 workstation JSON 之前。论证见 design §3 决策 5。
+- 商业开关 `_is_doberman-agent_pro` 直接读 `DOBERMAN_AGENT_PRO`（与 `get_system_login_method().doberman_agent_pro` 同源）；页面保存时策略 PUT 在 `confirmBlindOverwrite` 之后、写 workstation JSON 之前。论证见 design §3 决策 5。

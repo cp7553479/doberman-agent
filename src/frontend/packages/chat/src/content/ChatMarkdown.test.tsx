@@ -6,7 +6,7 @@ import { useMarkdownServices } from './MarkdownServices';
 afterEach(cleanup);
 it('owns an isolated client-style scope and preserves the client code bar and double-click selection', () => {
   const { container } = render(<ChatMarkdown services={services()} content={'Inline `value`\n\n```javascript\nconst value = 1;\n```'} />);
-  expect(container.querySelector('.bs-mkdown.bisheng-chat-markdown')).toBeTruthy();
+  expect(container.querySelector('.bs-mkdown.doberman_agent-chat-markdown')).toBeTruthy();
   expect(screen.getByRole('button', { name: 'shared:app_chat.copy_code' }).textContent).toContain('shared:app_chat.copy_code');
   expect(container.querySelector('code.hljs.language-javascript')).toBeTruthy();
   const inline = screen.getByText('value', { selector: 'code' });

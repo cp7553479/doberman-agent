@@ -16,8 +16,8 @@ import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 from langgraph.errors import GraphRecursionError
 
-from bisheng.common.services.llm_error_classifier import ErrorType, label_error
-from bisheng.linsight.domain.services.tool_loop_middleware import (
+from doberman_agent.common.services.llm_error_classifier import ErrorType, label_error
+from doberman_agent.linsight.domain.services.tool_loop_middleware import (
     LinsightToolLoopBreakerMiddleware,
     LinsightToolLoopError,
     assemble_partial_result,

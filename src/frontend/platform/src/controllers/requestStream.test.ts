@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const toast = vi.hoisted(() => vi.fn());
-vi.mock("@bisheng/ui", () => ({ notification: { open: toast } }));
+vi.mock("@doberman-agent/ui", () => ({ notification: { open: toast } }));
 vi.mock("i18next", () => ({ default: { t: (key: string) => key, exists: () => false } }));
 beforeEach(() => {
   vi.resetModules();

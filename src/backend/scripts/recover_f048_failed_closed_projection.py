@@ -36,32 +36,32 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     app_context,
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import (  # noqa: E402
+from doberman_agent.core.context.tenant import (  # noqa: E402
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.department.domain.services.department_projection_scope import (  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.department.domain.services.department_projection_scope import (  # noqa: E402
     get_department_projection_scope,
 )
-from bisheng.permission.application.runtime import (  # noqa: E402
+from doberman_agent.permission.application.runtime import (  # noqa: E402
     build_f048_permission_runtime,
 )
-from bisheng.permission.application.sql_runtime import (  # noqa: E402
+from doberman_agent.permission.application.sql_runtime import (  # noqa: E402
     SqlCatalogDecisionState,
 )
-from bisheng.permission.domain.models import (  # noqa: E402
+from doberman_agent.permission.domain.models import (  # noqa: E402
     PermissionProjectionOperation,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.projection_repository import (  # noqa: E402
+from doberman_agent.permission.domain.repositories.projection_repository import (  # noqa: E402
     ProjectionRepository,
 )
 

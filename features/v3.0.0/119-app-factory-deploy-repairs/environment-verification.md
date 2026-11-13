@@ -6,7 +6,7 @@
 
 - 目标节点：docker-116-vibe，linux/amd64。
 - 现有已启用 profile：vibe-node20-release-20261025@1。
-- 固定引用：`192.168.106.189:5443/vibe-release/bisheng-app-node@sha256:4eef7367dd0cec9209eec2e0c24ac4a68b29f8c19d480a923b86145cf2069f13`。
+- 固定引用：`192.168.106.189:5443/vibe-release/doberman-agent-app-node@sha256:4eef7367dd0cec9209eec2e0c24ac4a68b29f8c19d480a923b86145cf2069f13`。
 - Image ID：`sha256:9880455346cc5ad40ac3d0e285e6d1be9499775b9bf2d1d3e475ba078b247f9a`。
 
 操作前重新读取 profile 并确认 digest、Image ID、UID/GID 与已核实目标一致。本地原先不存在该 Image ID；执行精确 digest 拉取后，核对本地 Image ID、RepoDigest、linux/amd64 和非 root 默认用户均符合原 profile，未修改 profile 或默认映射。

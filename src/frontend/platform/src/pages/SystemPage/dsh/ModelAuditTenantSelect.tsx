@@ -1,4 +1,4 @@
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import { getTenantsApi } from "@/controllers/API/tenant";
 import type { Tenant } from "@/types/api/tenant";
 import { displayTenantName } from "@/utils/tenantDisplayName";

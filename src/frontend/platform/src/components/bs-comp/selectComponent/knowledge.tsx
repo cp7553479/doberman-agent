@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 import MultiSelect from "@/components/bs-ui/select/multi";
-import { Tabs } from '@bisheng/ui';
+import { Tabs } from '@doberman-agent/ui';
 import { readFileLibDatabase } from "@/controllers/API";
 import { getSelectableKnowledgeSpacesApi } from "@/controllers/API/knowledgeSpace";
 import { showApiError } from "@/controllers/request";

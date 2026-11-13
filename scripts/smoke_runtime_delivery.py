@@ -183,7 +183,7 @@ def run_suite(inventory, root, *, sqlite_only=False):
     engine = _RealDockerBackend(base_url=os.environ.get("RTM_DOCKER_HOST"))
     suite = "e2e-f086-" + uuid4().hex[:12]
     network = engine._client().create_network(
-        suite, internal=True, labels={"bisheng.test": suite}
+        suite, internal=True, labels={"doberman-agent.test": suite}
     )["Id"]
     cfg = Config(
         data_root=root,
@@ -232,7 +232,7 @@ def run_suite(inventory, root, *, sqlite_only=False):
             app = suite + "-" + language.replace(".", "")
             source = root / "sources" / app
             source.mkdir(parents=True)
-            (source / "bisheng-app.yaml").write_text("manifest_version: 2\n")
+            (source / "doberman-agent-app.yaml").write_text("manifest_version: 2\n")
             (source / filename).write_text(content)
             if language == "python3.11":
                 (source / "requirements.txt").write_text("")
@@ -379,7 +379,7 @@ def run_suite(inventory, root, *, sqlite_only=False):
         app = suite + "-frontend"
         source = root / "sources" / app
         source.mkdir(parents=True)
-        (source / "bisheng-app.yaml").write_text("manifest_version: 2\n")
+        (source / "doberman-agent-app.yaml").write_text("manifest_version: 2\n")
         (source / "package.json").write_text(
             json.dumps(
                 {
@@ -465,7 +465,7 @@ def run_suite(inventory, root, *, sqlite_only=False):
         app = suite + "-native"
         source = root / "sources" / app
         source.mkdir(parents=True)
-        (source / "bisheng-app.yaml").write_text("manifest_version: 2\n")
+        (source / "doberman-agent-app.yaml").write_text("manifest_version: 2\n")
         (source / "requirements.txt").write_text(".\n")
         (source / "pyproject.toml").write_text(
             '[build-system]\nrequires=["setuptools==80.9.0","wheel==0.45.1"]\nbuild-backend="setuptools.build_meta"\n'
@@ -535,7 +535,7 @@ def run_suite(inventory, root, *, sqlite_only=False):
         print(json.dumps({"platform": inventory["platform"], "checks": results}))
     finally:
         for container in engine.list_containers(
-            filters={"label": [f"bisheng.runtime.node={suite}"]}
+            filters={"label": [f"doberman-agent.runtime.node={suite}"]}
         ):
             engine.remove_container(container["Id"], force=True)
         engine._client().remove_network(network)

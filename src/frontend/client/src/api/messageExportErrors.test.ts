@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import request from './request';
 import { exportMessagesApi, importMessagesToKnowledgeApi } from './messageExport';
 jest.mock('./request', () => ({ __esModule: true, default: { postResponse: jest.fn(), post: jest.fn() } }));

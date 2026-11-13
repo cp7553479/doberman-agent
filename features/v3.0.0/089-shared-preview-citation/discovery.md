@@ -11,7 +11,7 @@
 
 ## 现状及范围
 
-- 两端 Excel 已调用 `@bisheng/file-viewers`，该包同时包含 Excel 图片展示；继续复用。
+- 两端 Excel 已调用 `@doberman-agent/file-viewers`，该包同时包含 Excel 图片展示；继续复用。
 - platform `KnowledgePage/components/PreviewFile.tsx` 实际调用本地 DOCX、TXT/Markdown/HTML 和 PDF 预览；client `knowledge/FilePreview` 实际调用对应 viewers。
 - platform `PlatformChatMarkdown` 与 client `ClientChatMarkdown` 都调用共享 `ChatMarkdown`，但通过各自适配器挂载本地 CitationDocumentPreviewDrawer。
 - 两端 citationUtils、引用列表及文档抽屉仍被实际入口使用；client 有非 PDF 引用文字定位和异步地址解析，platform 有后台 PDF/媒体内容组合。不能简单用任意一方整文件覆盖另一方。

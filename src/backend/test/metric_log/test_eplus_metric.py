@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from loguru import logger
 
-from bisheng.notification.external.cofco_eplus_client import CofcoEPlusClient
+from doberman_agent.notification.external.cofco_eplus_client import CofcoEPlusClient
 
 
 @contextmanager
@@ -34,7 +34,7 @@ def _line_for(messages, domain):
 
 @contextmanager
 def _mock_conf():
-    with patch("bisheng.notification.external.cofco_eplus_client.settings") as m:
+    with patch("doberman_agent.notification.external.cofco_eplus_client.settings") as m:
         c = m.get_cofco_forwarding_conf.return_value
         c.api_base = "http://x/qwmsg-ui"
         c.app_id = "a"
@@ -64,7 +64,7 @@ def _resp(code, status=200):
 async def test_client_success_emits_ok():
     client = CofcoEPlusClient()
     with _mock_conf(), capture_metric_logs() as messages:
-        with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+        with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
             ACli.return_value.__aenter__.return_value.post = AsyncMock(return_value=_resp("0", 200))
             await client.send_textcard(message_id=1, action_code="request_channel", touser=["U1"], textcard=_CARD)
     line = _line_for(messages, "eplus_notify")
@@ -76,7 +76,7 @@ async def test_client_success_emits_ok():
 async def test_client_nonzero_code_emits_error():
     client = CofcoEPlusClient()
     with _mock_conf(), capture_metric_logs() as messages:
-        with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+        with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
             ACli.return_value.__aenter__.return_value.post = AsyncMock(return_value=_resp("82001", 200))
             await client.send_textcard(message_id=2, action_code="approved_channel", touser=["U1"], textcard=_CARD)
     line = _line_for(messages, "eplus_notify")
@@ -87,7 +87,7 @@ async def test_client_nonzero_code_emits_error():
 async def test_client_exception_emits_error():
     client = CofcoEPlusClient()
     with _mock_conf(), capture_metric_logs() as messages:
-        with patch("bisheng.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
+        with patch("doberman_agent.notification.external.cofco_eplus_client.httpx.AsyncClient") as ACli:
             ACli.return_value.__aenter__.return_value.post = AsyncMock(side_effect=Exception("network down"))
             await client.send_textcard(message_id=3, action_code="rejected_channel", touser=["U1"], textcard=_CARD)
     line = _line_for(messages, "eplus_notify")
@@ -100,8 +100,8 @@ async def test_client_exception_emits_error():
 
 
 def test_forwarder_recipient_skip_emits_skipped():
-    from bisheng.notification import forwarder
-    from bisheng.notification.external._payload import FORWARDABLE_ACTION_CODES
+    from doberman_agent.notification import forwarder
+    from doberman_agent.notification.external._payload import FORWARDABLE_ACTION_CODES
 
     action_code = next(iter(FORWARDABLE_ACTION_CODES))
     message = MagicMock()
@@ -115,8 +115,8 @@ def test_forwarder_recipient_skip_emits_skipped():
 
     with capture_metric_logs() as messages:
         with (
-            patch("bisheng.notification.forwarder.settings") as msettings,
-            patch("bisheng.notification.forwarder.UserDao") as mUserDao,
+            patch("doberman_agent.notification.forwarder.settings") as msettings,
+            patch("doberman_agent.notification.forwarder.UserDao") as mUserDao,
         ):
             conf = msettings.get_cofco_forwarding_conf.return_value
             conf.enabled = True
@@ -129,13 +129,13 @@ def test_forwarder_recipient_skip_emits_skipped():
 
 
 def test_forwarder_feature_disabled_not_metered():
-    from bisheng.notification import forwarder
+    from doberman_agent.notification import forwarder
 
     message = MagicMock()
     message.id = 8
 
     with capture_metric_logs() as messages:
-        with patch("bisheng.notification.forwarder.settings") as msettings:
+        with patch("doberman_agent.notification.forwarder.settings") as msettings:
             msettings.get_cofco_forwarding_conf.return_value.enabled = False
             forwarder.maybe_forward_external(message)
 

@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.worker.workflow import redis_callback as callback_module
-from bisheng.worker.workflow.redis_callback import RedisCallback
+from doberman_agent.worker.workflow import redis_callback as callback_module
+from doberman_agent.worker.workflow.redis_callback import RedisCallback
 
 
 @pytest.fixture
@@ -42,8 +42,8 @@ def title_context(monkeypatch):
         "get_workbench_llm_sync",
         lambda **kwargs: SimpleNamespace(chat_title_llm=SimpleNamespace(id="913")),
     )
-    monkeypatch.setattr(callback_module.LLMService, "get_bisheng_llm_sync", lambda **kwargs: TitleModel())
-    from bisheng.common.utils import title_generator
+    monkeypatch.setattr(callback_module.LLMService, "get_doberman_agent_llm_sync", lambda **kwargs: TitleModel())
+    from doberman_agent.common.utils import title_generator
 
     monkeypatch.setattr(
         title_generator,
@@ -79,7 +79,7 @@ def test_manual_rename_during_model_call_is_not_overwritten(monkeypatch, title_c
             title_context.session.name = "Manually named conversation"
             return SimpleNamespace(content="Hangzhou travel recommendations")
 
-    monkeypatch.setattr(callback_module.LLMService, "get_bisheng_llm_sync", lambda **kwargs: SlowTitleModel())
+    monkeypatch.setattr(callback_module.LLMService, "get_doberman_agent_llm_sync", lambda **kwargs: SlowTitleModel())
     title_context.callback.generate_session_title()
     assert title_context.session.name == "Manually named conversation"
 

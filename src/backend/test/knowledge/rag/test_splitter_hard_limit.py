@@ -10,8 +10,8 @@ because they rewrite tables to per-row markdown before splitting.
 
 from langchain_core.documents import Document
 
-from bisheng.common.constants.knowledge import KNOWLEDGE_MAX_CHUNK_CHARS
-from bisheng.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
+from doberman_agent.common.constants.knowledge import KNOWLEDGE_MAX_CHUNK_CHARS
+from doberman_agent.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
 
 DEFAULT_SEPARATORS = ["\n\n", "\n", "。", "\\."]
 CHUNK_SIZE = 1000

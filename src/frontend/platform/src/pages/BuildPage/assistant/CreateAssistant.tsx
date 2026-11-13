@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Input, Textarea } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Textarea } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import Avator from "@/components/bs-ui/input/avator";
 import { uploadFileWithProgress } from "@/modals/UploadModal/upload";
@@ -119,19 +119,19 @@ ${t('build.exampleTwo')}
         </DialogHeader>
         <div className="flex flex-col gap-8 py-6">
             <div className="">
-                <label htmlFor="name" className="bisheng-label">{t('build.assistantAvatar')}</label>
+                <label htmlFor="name" className="doberman_agent-label">{t('build.assistantAvatar')}</label>
                 <Avator value={formData.url} className="mt-2" onChange={uploadAvator}><Outlined.Application className="bg-primary w-9 h-9 rounded-sm" /></Avator>
-                {/* {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>} */}
+                {/* {errors.name && <p className="doberman_agent-tip mt-1">{errors.name}</p>} */}
             </div>
             <div className="">
-                <label htmlFor="name" className="bisheng-label">{t('build.assistantName')}<span className="bisheng-tip">*</span></label>
+                <label htmlFor="name" className="doberman_agent-label">{t('build.assistantName')}<span className="doberman_agent-tip">*</span></label>
                 <Input id="name" name="name" maxLength={50} showCount placeholder={t('build.giveAssistantName')} value={formData.name} onChange={handleChange} className={"mt-2"} />
-                {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
+                {errors.name && <p className="doberman_agent-tip mt-1">{errors.name}</p>}
             </div>
             <div className="">
-                <label htmlFor="roleAndTasks" className="bisheng-label">{t('build.whatWant')}</label>
+                <label htmlFor="roleAndTasks" className="doberman_agent-label">{t('build.whatWant')}</label>
                 <Textarea id="roleAndTasks" name="roleAndTasks" placeholder={t('build.forExample')} maxLength={1000} value={formData.roleAndTasks} onChange={handleChange} textareaClassName={"mt-2 min-h-32"} showCount />
-                {errors.roleAndTasks && <p className="bisheng-tip mt-1">{errors.roleAndTasks}</p>}
+                {errors.roleAndTasks && <p className="doberman_agent-tip mt-1">{errors.roleAndTasks}</p>}
             </div>
         </div>
         <DialogFooter>

@@ -14,11 +14,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.citation.domain.services import citation_handle_service as handle_svc
-from bisheng.citation.domain.services import linsight_citation_scope as scope_mod
-from bisheng.linsight.domain import task_exec as task_exec_mod
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.citation.domain.services import citation_handle_service as handle_svc
+from doberman_agent.citation.domain.services import linsight_citation_scope as scope_mod
+from doberman_agent.linsight.domain import task_exec as task_exec_mod
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 
 class FakeRedis:
@@ -70,9 +70,9 @@ def env(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(task_exec_mod, "create_linsight_agent", fake_create_linsight_agent)
     monkeypatch.setattr(task_exec_mod, "get_minio_storage", AsyncMock(return_value=SimpleNamespace()))
-    monkeypatch.setattr("bisheng.linsight.domain.services.workspace_backend.WorkspaceBackend", _Backend)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.workspace_backend.WorkspaceBackend", _Backend)
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.skill_provisioning.materialize_session_skills",
+        "doberman_agent.linsight.domain.services.skill_provisioning.materialize_session_skills",
         AsyncMock(return_value=SimpleNamespace(failed=[], copied=[])),
     )
     conf = {"enabled": True}

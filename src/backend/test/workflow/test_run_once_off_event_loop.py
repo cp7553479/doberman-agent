@@ -9,9 +9,9 @@ import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.api.services import workflow as workflow_service
-from bisheng.api.services.workflow import WorkFlowService
-from bisheng.core.context.tenant import current_tenant_id, get_current_tenant_id
+from doberman_agent.api.services import workflow as workflow_service
+from doberman_agent.api.services.workflow import WorkFlowService
+from doberman_agent.core.context.tenant import current_tenant_id, get_current_tenant_id
 
 
 class _FakeToolNode:

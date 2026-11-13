@@ -7,11 +7,11 @@ from uuid import uuid4
 import pytest
 from sqlmodel import Session
 
-from bisheng.common.errcode.dsh import DshOperationConflictError
-from bisheng.core.context import tenant as context
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.repositories.admin_operation import DshOperationRepository
-from bisheng.worker.dsh.operations import dispatch_operation
+from doberman_agent.common.errcode.dsh import DshOperationConflictError
+from doberman_agent.core.context import tenant as context
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.repositories.admin_operation import DshOperationRepository
+from doberman_agent.worker.dsh.operations import dispatch_operation
 from test.dsh.test_policy_repository import NOW, sql_store  # noqa: F401
 
 

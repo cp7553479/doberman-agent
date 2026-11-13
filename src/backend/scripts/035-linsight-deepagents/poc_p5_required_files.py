@@ -3,7 +3,7 @@ FileNotFoundError 提示后补声明的修复成功率。关联 Track C/A。
 失败影响：大文件改无条件全量 push（牺牲 copy-in 耗时）。
 
 可运行评测骨架（directional spike）：
-  1. 注入 BiSheng 代码工具（args_schema 含 `required_files: list[str]`，见契约 C2）；
+  1. 注入 doberman-agent 代码工具（args_schema 含 `required_files: list[str]`，见契约 C2）；
   2. 评测集：prompt 需读取一个 >SIZE_AUTOPUSH 的工作区文件，统计模型在 required_files 中声明该文件的比例；
   3. 对未声明的样本，回灌「需在 required_files 中声明」提示，统计补声明后修复成功率。
 
@@ -49,15 +49,15 @@ class _CodeArgs(BaseModel):
 
 
 @tool(args_schema=_CodeArgs)
-def bisheng_code_interpreter(code: str, required_files: list[str]) -> str:
+def doberman_agent_code_interpreter(code: str, required_files: list[str]) -> str:
     """在 E2B 沙箱执行 Python 代码。大文件需在 required_files 声明，由 worker 中转写入沙箱。"""
     return "executed"
 
 
 async def _resolve_model(model_id: int | None):
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.llm.domain.services.llm import ApplicationTypeEnum as AppEnum
-    from bisheng.llm.domain.services.llm import BishengLLM
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.llm.domain.services.llm import ApplicationTypeEnum as AppEnum
+    from doberman_agent.llm.domain.services.llm import DobermanAgentLLM
 
     set_current_tenant_id(1)
     candidates = [model_id] if model_id else [4, 5, 25, 26, 33, 35, 52, 55, 57, 58]
@@ -65,7 +65,7 @@ async def _resolve_model(model_id: int | None):
         if mid is None:
             continue
         try:
-            llm = BishengLLM(
+            llm = DobermanAgentLLM(
                 model_id=mid, app_id=AppEnum.LINSIGHT.value, app_name="poc-p5", app_type=AppEnum.LINSIGHT, user_id=1
             )
             await asyncio.wait_for(llm.ainvoke("ping，请回复 ok"), timeout=30)
@@ -79,7 +79,7 @@ async def _resolve_model(model_id: int | None):
 def _declared(result: dict, expect_path: str) -> bool:
     for msg in result.get("messages", []):
         for tc in getattr(msg, "tool_calls", None) or []:
-            if tc.get("name") == "bisheng_code_interpreter":
+            if tc.get("name") == "doberman_agent_code_interpreter":
                 if expect_path in ((tc.get("args") or {}).get("required_files") or []):
                     return True
     return False
@@ -98,7 +98,7 @@ async def main() -> int:
 
     from deepagents import create_deep_agent
 
-    agent = create_deep_agent(model=llm, tools=[bisheng_code_interpreter])
+    agent = create_deep_agent(model=llm, tools=[doberman_agent_code_interpreter])
 
     first_declared = 0
     fixed_after_hint = 0

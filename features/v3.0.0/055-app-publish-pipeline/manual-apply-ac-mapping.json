@@ -3,14 +3,14 @@
   "head_at_check": "09b17ebd71a8c7e4263f7097549204fdd4a7ebda",
   "working_tree_delta_included": true,
   "source_sha256": {
-    "src/backend/bisheng/app_publish/domain/services/app_secret_service.py": "6b4ad0cbafa4be3f54cde703450bbb99ee5f10d361ceba35daeda4711e94e086",
-    "src/backend/bisheng/app_publish/domain/services/publish_approval_service.py": "d2403107e77ec423882a5ee4d115e194af11ee168514f8333caa0618da0ccf93",
-    "src/backend/bisheng/app_publish/domain/services/publish_status_service.py": "ff228ee71b8176acdf1fb90dc48b6b6e336dc02509fc1522cd460c2fbfb7e6e3",
-    "src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py": "ed3b4ad62b76af638f7488e886c7ef44e7267204426e1c29278742e7c722398c",
-    "src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py": "9a8ce16b9ec5f33692fec3524e56b2783f80792cb91e5c5c8d1c23f5389f7592",
+    "src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py": "6b4ad0cbafa4be3f54cde703450bbb99ee5f10d361ceba35daeda4711e94e086",
+    "src/backend/doberman_agent/app_publish/domain/services/publish_approval_service.py": "d2403107e77ec423882a5ee4d115e194af11ee168514f8333caa0618da0ccf93",
+    "src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py": "ff228ee71b8176acdf1fb90dc48b6b6e336dc02509fc1522cd460c2fbfb7e6e3",
+    "src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py": "ed3b4ad62b76af638f7488e886c7ef44e7267204426e1c29278742e7c722398c",
+    "src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py": "9a8ce16b9ec5f33692fec3524e56b2783f80792cb91e5c5c8d1c23f5389f7592",
     "src/frontend/platform/src/pages/BuildPage/hostedApp/publish/AppSecretSettings.tsx": "af5013aa5b714dbb28996eccb8c585244132de5d1359c1a7895fe4d272af06f1",
     "src/frontend/client/src/components/approval/AppPublishDetailPanel.tsx": "d245e7f70e54c07d59fe8a6fbf3b9b16ea4426a2ce1f6ed645996b5ef8f7ac20",
-    "src/bisheng-cli/bisheng_cli/commands/deploy.py": "1e6c759b98fcbf83cbfb7804d44e47fc8e0424f7234b716dd4ab33d9c2a4c537"
+    "src/doberman-agent-cli/doberman_agent_cli/commands/deploy.py": "1e6c759b98fcbf83cbfb7804d44e47fc8e0424f7234b716dd4ab33d9c2a4c537"
   },
   "acs": [
     {

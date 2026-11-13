@@ -1,6 +1,6 @@
 import type { TModelSelectProps } from '~/common';
 import { Label, Slider, HoverCard, InputNumber, SelectDropDown, HoverCardTrigger } from '~/components';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { cn, optionText, defaultTextProps, removeFocusRings } from '~/utils';
 import OptionHover from './OptionHover';
 import { useLocalize } from '~/hooks';

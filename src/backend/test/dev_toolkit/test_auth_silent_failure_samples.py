@@ -19,13 +19,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from bisheng.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
+from doberman_agent.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
 
 FIXTURE = Path(__file__).parent / "fixtures" / "auth_silent_failure_samples.md"
 SKILL_MD = SKILLS_DIR / "platform-wiring" / "SKILL.md"
 
 # AC-19's rule, inherited: a sample must not name the product.
-PRODUCT_NAMES = ("毕昇", "bisheng", "BiSheng", "BISHENG")
+PRODUCT_NAMES = ("doberman-agent", "doberman_agent", "doberman-agent", "DOBERMAN_AGENT")
 
 # The kind of intent that makes "build a login page" the naive answer. A sample
 # without one of these is not testing the silent failure point at all.

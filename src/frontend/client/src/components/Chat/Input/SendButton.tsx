@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import React, { forwardRef } from 'react';
 import { useWatch } from 'react-hook-form';
 import type { Control } from 'react-hook-form';

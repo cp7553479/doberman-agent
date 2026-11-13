@@ -62,9 +62,9 @@
 | v2 实例状态投影 | `src/runtime-manager/runtime_manager/api/platform_observe.py::status` |
 | Docker 实际 HTTP 探活 | `src/runtime-manager/runtime_manager/executors/docker.py::observe` |
 | K8s Ready 与应用容器重启计数 | `src/runtime-manager/runtime_manager/executors/kubernetes.py::_observed` |
-| 后端实例字段白名单 | `src/backend/bisheng/app_runtime/domain/services/app_query_service.py::get_instance` |
+| 后端实例字段白名单 | `src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py::get_instance` |
 | 发布页已有显示字段 | `src/frontend/platform/src/pages/BuildPage/hostedApp/tabs/PublishTab.tsx` |
-| 审计候选/过滤 | `src/backend/bisheng/app_governance/domain/repositories/runtime_audit_repository.py::candidates / statement` |
+| 审计候选/过滤 | `src/backend/doberman_agent/app_governance/domain/repositories/runtime_audit_repository.py::candidates / statement` |
 | 审批快照占位与客户端读取 | `app_publish/.../app_publish_scenario_handler.py::build_detail`、`client/.../approval/AppPublishDetailPanel.tsx` |
 | 租管前端路由补全 | `src/frontend/platform/src/routes/index.tsx::CHILD_ADMIN_ROUTE_PERMISSIONS` |
 | 知识库按钮与后端创建菜单 | `KnowledgePage/KnowledgeFile.tsx`、`KnowledgeQa.tsx`、`knowledge/api/endpoints/knowledge.py::create_knowledge` |

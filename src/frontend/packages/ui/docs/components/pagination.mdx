@@ -5,7 +5,7 @@ component: Pagination
 
 # 分页 Pagination
 
-把一长串数据切成一页一页，每次只看一页，用页码在页之间跳。用户要**找、比、回头找**某一条（表格、成员列表、日志）时用分页；只是往下逛（应用广场、消息流）用滚动加载。组件库 `@bisheng/ui` 导出 **`Pagination`**。规范全文见「文档 → 组件规范 → 分页 Pagination」。
+把一长串数据切成一页一页，每次只看一页，用页码在页之间跳。用户要**找、比、回头找**某一条（表格、成员列表、日志）时用分页；只是往下逛（应用广场、消息流）用滚动加载。组件库 `@doberman-agent/ui` 导出 **`Pagination`**。规范全文见「文档 → 组件规范 → 分页 Pagination」。
 
 **组件把规范写死的部分**：「共 N 条」默认不显示，`showTotal` 打开后固定在最左、数字不变色；省略规则（≤ 7 页全铺，否则首末页常驻 + 当前页左右各 2 页，省略号只替 2 页及以上）；当前页浅主题色底 + 主题色文字（跟随蓝 / 绿主题与深色模式）；首末页时箭头置灰而不隐藏；只有 1 页、甚至 0 条时分页照常显示；总页数 > 10 自动出跳页；改每页条数回到第 1 页；末页数据删空自动退到新的末页；手机（< 576px）自动换简洁型。这些没有 prop。
 
@@ -31,7 +31,7 @@ const locale = {
 整排靠容器右侧对齐。页数不超过 7 页时全部铺开。
 
 ```tsx
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -48,7 +48,7 @@ export default () => <Pagination total={58} locale={locale} />;
 「共 N 条」**可选**，默认不显示；用户需要知道一共有多少条时（日志、审计记录、成员列表）用 `showTotal` 打开。打开后放在最左侧，数字与文字同为辅助文字色、不变色不加粗，超过 4 位加千分位。
 
 ```tsx
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -66,7 +66,7 @@ export default () => <Pagination total={12800} pageSize={2000} showTotal locale=
 
 ```tsx
 import { useState } from 'react';
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -91,7 +91,7 @@ export default () => {
 
 ```tsx
 import { useState } from 'react';
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -133,7 +133,7 @@ export default () => {
 三档 24 / 32 / 40，默认 medium。**跟着表格行高挑档**：紧凑行高的表格、弹窗和抽屉里的列表配 small。每页条数和跳页输入框随档同高。
 
 ```tsx
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -156,7 +156,7 @@ export default () => (
 弹窗、抽屉、侧栏等窄容器用 `simple`：`‹ 6 / 13 ›`，中间只显示、不能点，换页靠两侧箭头，不带每页条数和跳页。不传 `simple` 时，**手机上自动换成简洁型**，small 档同时升到 medium。
 
 ```tsx
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,
@@ -177,7 +177,7 @@ export default () => (
 只有 1 页时照常显示，两个箭头都禁用；没有数据也保留——分页一会儿有一会儿没有，表格底部会跟着跳。`disabled` 只用于整张表格不可操作时（如批量处理中）。
 
 ```tsx
-import { Pagination } from '@bisheng/ui';
+import { Pagination } from '@doberman-agent/ui';
 
 const locale = {
   total: (n) => `共 ${n} 条`,

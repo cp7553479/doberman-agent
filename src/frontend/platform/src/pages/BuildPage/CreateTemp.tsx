@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, Textarea, toast } from '@bisheng/ui';
+import { Button, Input, Textarea, toast } from '@doberman-agent/ui';
 
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/bs-ui/dialog';
 
@@ -85,13 +85,13 @@ export default function CreateTemp({ flow, open, type, setOpen, onCreated }) {
                 </DialogHeader>
                 <div className='flex flex-col gap-4 py-2'>
                     <div className=''>
-                        <label htmlFor='name' className='bisheng-label'>
+                        <label htmlFor='name' className='doberman_agent-label'>
                             {type === AppType.ASSISTANT ? t('build.assistantName') : t('build.workFlowName')}
                         </label>
                         <Input name='name' value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} className={"mt-2"} />
                     </div>
                     <div className=''>
-                        <label htmlFor='roleAndTasks' className='bisheng-label'>
+                        <label htmlFor='roleAndTasks' className='doberman_agent-label'>
                             {t('skills.description')}
                         </label>
                         <Textarea id='name' value={data.description} onChange={(e) => setData({ ...data, description: e.target.value })} textareaClassName={"col-span-2"} />

@@ -10,16 +10,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.linsight import SkillFileTooLargeError
-from bisheng.linsight.api.endpoints import skill as skill_endpoint
-from bisheng.linsight.domain.services import skill_store
-from bisheng.linsight.domain.services.skill_service import SkillService
+from doberman_agent.common.errcode.linsight import SkillFileTooLargeError
+from doberman_agent.linsight.api.endpoints import skill as skill_endpoint
+from doberman_agent.linsight.domain.services import skill_store
+from doberman_agent.linsight.domain.services.skill_service import SkillService
 
 MB = 1024 * 1024
 
 
 def _conf(monkeypatch, megabytes, unpacked_megabytes=None):
-    # bisheng_settings is a pydantic BaseModel with validate_assignment=True, so an
+    # doberman_agent_settings is a pydantic BaseModel with validate_assignment=True, so an
     # instance-level setattr on a method is rejected ("no such attribute" — pydantic
     # only allows assigning declared fields). Patch the class method instead.
     fields = {"skill_upload_max_size_mb": megabytes}
@@ -29,7 +29,7 @@ def _conf(monkeypatch, megabytes, unpacked_megabytes=None):
     async def _aget_linsight_conf(self):
         return SimpleNamespace(**fields)
 
-    monkeypatch.setattr(type(skill_store.bisheng_settings), "aget_linsight_conf", _aget_linsight_conf)
+    monkeypatch.setattr(type(skill_store.doberman_agent_settings), "aget_linsight_conf", _aget_linsight_conf)
 
 
 async def test_limit_comes_from_system_config(monkeypatch):
@@ -41,7 +41,7 @@ async def test_unreadable_or_nonsense_config_falls_back_to_default(monkeypatch):
     async def _boom(self):
         raise RuntimeError("config store down")
 
-    monkeypatch.setattr(type(skill_store.bisheng_settings), "aget_linsight_conf", _boom)
+    monkeypatch.setattr(type(skill_store.doberman_agent_settings), "aget_linsight_conf", _boom)
     assert await skill_store.resolve_skill_upload_limit() == skill_store.MAX_BUNDLE_SIZE
 
     _conf(monkeypatch, 0)

@@ -32,8 +32,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS, AuditLogDao
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS, AuditLogDao
 from test.audit.conftest import insert_audit, make_app, make_credential, make_user_payload
 
 APP_ID = "app-query-1"
@@ -136,8 +136,8 @@ def _no_log_menu_lookup(monkeypatch):
 
 async def _query(user, **kwargs):
     with (
-        patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-        patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=TENANT),
+        patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+        patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=TENANT),
     ):
         return await AuditLogService.get_audit_log(
             user,
@@ -178,7 +178,7 @@ class TestEventsAreRegistered:
         """
         import inspect
 
-        from bisheng.open_api.domain.services.credential_service import CredentialService
+        from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
         source = inspect.getsource(CredentialService.issue)
         assert '"open_api.api_key.issue"' in source
@@ -346,15 +346,15 @@ class TestKnownGaps:
     )
     def test_access_record_is_reachable_from_the_audit_face(self):
         # Read off the source tree rather than off the route table: this package
-        # stubs ``bisheng.api.router`` into ``sys.modules``, so importing the app
+        # stubs ``doberman_agent.api.router`` into ``sys.modules``, so importing the app
         # here would raise and the sentinel would 「pass」 forever on the wrong
         # reason — exactly the way a sentinel stops being one.
         from pathlib import Path
 
-        import bisheng
+        import doberman_agent
 
         on_whitelist = any(action.startswith("app.access") for action in _UI_VISIBLE_V2_ACTIONS)
-        package_root = Path(bisheng.__file__).parent
+        package_root = Path(doberman_agent.__file__).parent
         readers = [
             path
             for path in package_root.rglob("*.py")
@@ -373,7 +373,7 @@ class TestKnownGaps:
     def test_model_call_records_are_traceable(self):
         import importlib.util
 
-        assert importlib.util.find_spec("bisheng.database.models.model_call_record") is not None
+        assert importlib.util.find_spec("doberman_agent.database.models.model_call_record") is not None
 
     @pytest.mark.xfail(
         strict=True,

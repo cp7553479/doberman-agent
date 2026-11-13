@@ -1,15 +1,15 @@
 /* Isolate client form presentation from legacy host label/input selectors. */
-.bisheng-chat-form {
+.doberman_agent-chat-form {
   color: rgb(var(--text-1));
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
 }
-.bisheng-chat-form label {
+.doberman_agent-chat-form label {
   color: inherit;
   font: inherit;
 }
-.bisheng-chat-file-field {
+.doberman_agent-chat-file-field {
   background: var(--search-input);
   color: rgb(var(--text-3));
   border-color: rgb(var(--border-base));

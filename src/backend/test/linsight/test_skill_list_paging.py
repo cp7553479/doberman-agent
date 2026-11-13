@@ -24,15 +24,15 @@ import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import col, update
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.core.context.tenant import (
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
 
 ROOT = 1
 # The whole seeded batch shares this timestamp — that is what makes the tie

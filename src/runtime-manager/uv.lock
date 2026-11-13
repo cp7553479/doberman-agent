@@ -97,7 +97,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bisheng-runtime-manager"
+name = "doberman-agent-runtime-manager"
 version = "3.0.0"
 source = { editable = "." }
 dependencies = [

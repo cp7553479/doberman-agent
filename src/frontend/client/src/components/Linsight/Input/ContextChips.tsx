@@ -4,7 +4,7 @@
  * attached files — each removable via "x". Tools never produce chips.
  */
 import { Loader2, Paperclip, Sparkles, X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useLocalize } from '~/hooks';
 import type { TaskModeKnowledgeItem, TaskModeSkill } from '~/store/linsight';
 

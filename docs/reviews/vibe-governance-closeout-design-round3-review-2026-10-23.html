@@ -4,7 +4,7 @@
 <h2 id="r3-2">1. B1：隔离规则丢失后，既有应用没有恢复或隔离路径</h2>
 <p><strong>严重性：high / blocker。关联 F054 AC-66、AC-68、AC-69。</strong></p>
 <ul>
-<li>设计位置：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">F054 design.md:151</a>、<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">同文档:155</a>、<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">同文档:161</a>。§4.4 的宿主 timer 是“只验证”，报告只用于新 create/claim/路由提交准入；安装更新中的失败恢复不等于运行期间持续修复。</li>
+<li>设计位置：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">F054 design.md:151</a>、<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">同文档:155</a>、<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/054-app-domain-runtime/design.md">同文档:161</a>。§4.4 的宿主 timer 是“只验证”，报告只用于新 create/claim/路由提交准入；安装更新中的失败恢复不等于运行期间持续修复。</li>
 <li>失败序列：应用已运行且报告通过 → 本模块 INPUT 跳转因受控故障丢失（模拟防火墙重载）→ 应用继续运行 → verifier 报 failed → 新部署被拒绝，但既有应用仍可直连宿主监听服务。报告失效本身不会关闭数据面路径。</li>
 <li>不断言普通 dockerd 重启必然删除规则，也不把防御恶意宿主 root 作为目标。缺口是已经检测到的隔离故障没有执行消费者。</li>
 <li>修正方向：明确宿主 unit 在规则丢失、支持范围内的服务重启时如何恢复本模块规则、读回并配对验证；恢复不了时，明确本机隔离或停止受影响执行体的责任方、状态及恢复条件。网络隔离不等于 writer 已停止，仍须原停止证据才能交接数据卷；不能强删未知 writer。</li>
@@ -13,9 +13,9 @@
 <h2 id="r3-3">2. S1：凭据审计补丁没有覆盖实际 binding 回收写方</h2>
 <p><strong>严重性：medium / should-fix。关联 F056 AC-59、F055 AC-81。</strong></p>
 <ul>
-<li>设计位置：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md">F056 design.md:95</a>、<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md">同文档:142</a>。D15 将具体新增落点指向 <code>CredentialService._audit</code>，但运行期 binding 的失效另有写方。</li>
-<li>实际签发入口：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/src/backend/bisheng/app_publish/domain/services/app_credential_service.py">app_credential_service.py:186</a> 的 <code>stage()</code> 经 CredentialService 签发候选凭据，再保存 operation binding。</li>
-<li>实际回收入口：<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py">runtime_projection_service.py:50</a> 切路由时直接把旧 binding 标成 revoked；<a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/src/backend/bisheng/app_runtime/domain/services/runtime_projection_service.py">同文件:64</a> 在失败候选/停止终结时同样直接改 binding。两条路径均不调用 <a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/src/backend/bisheng/open_api/domain/services/credential_service.py">CredentialService._audit:305</a>。不能把 binding 失效等同于 ApiCredential 行已撤销。</li>
+<li>设计位置：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md">F056 design.md:95</a>、<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/features/v3.0.0/056-app-square-governance/design.md">同文档:142</a>。D15 将具体新增落点指向 <code>CredentialService._audit</code>，但运行期 binding 的失效另有写方。</li>
+<li>实际签发入口：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/src/backend/doberman_agent/app_publish/domain/services/app_credential_service.py">app_credential_service.py:186</a> 的 <code>stage()</code> 经 CredentialService 签发候选凭据，再保存 operation binding。</li>
+<li>实际回收入口：<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py">runtime_projection_service.py:50</a> 切路由时直接把旧 binding 标成 revoked；<a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/src/backend/doberman_agent/app_runtime/domain/services/runtime_projection_service.py">同文件:64</a> 在失败候选/停止终结时同样直接改 binding。两条路径均不调用 <a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/src/backend/doberman_agent/open_api/domain/services/credential_service.py">CredentialService._audit:305</a>。不能把 binding 失效等同于 ApiCredential 行已撤销。</li>
 <li>失败序列：正式 v1 → 发布 v2 或同版本刷新 → 新凭据签发 → 旧 binding 失效 → 按 app 查询操作审计。仅补 <code>_audit.target_app_id</code> 能找到新签发，仍没有此次旧 binding 回收事实；读取侧不能补造该事件。</li>
 <li>修正方向：将真实 binding 状态变化接入凭据 Owner 的公开应用协议，说明可信 app/credential/operation 关联、事务或持久事件交接，以及重试去重。覆盖切换撤旧、候选失败、停用/删除；区分运行资格回收和 ApiCredential 撤销，避免重复记成两次同一事件。不新建并列凭据管理服务。</li>
 <li>定向验证方向：切换撤旧与失败候选回收均能按 app 查到；重复 activate/terminal 不重复留痕；无状态变化不制造回收事件；关联不能来自查看者参数。当前未执行。</li>
@@ -88,10 +88,10 @@
 <p>部署加密 key 轮换仍仅为运维说明。规格已确认；设计未确认。依据 AGENTS.md §6、SDD-Guide §3 和 sdd-review，本轮停留在设计评审，不进入任务拆解与编码。独立架构结论是建议，由用户决定下一步。</p>
 <h2 id="r3-5">4. 证据与历史</h2>
 <ul>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-review-2026-10-23.html">当前三份设计全文与 AC 映射</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-architecture-critique-round3-2026-10-23.md">本轮独立审查原文</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-revision2-review-2026-10-23.md">上一轮修订复审（历史）</a></li>
-<li><a href="file:///Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-architecture-critique-round2-2026-10-23.md">上一轮独立审查原文（历史归档）</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-review-2026-10-23.html">当前三份设计全文与 AC 映射</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-architecture-critique-round3-2026-10-23.md">本轮独立审查原文</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-design-revision2-review-2026-10-23.md">上一轮修订复审（历史）</a></li>
+<li><a href="file:///Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration/docs/reviews/vibe-governance-closeout-architecture-critique-round2-2026-10-23.md">上一轮独立审查原文（历史归档）</a></li>
 </ul>
 <p>本轮只做静态文档/代码核对及本地链接、HTML 目录、离线资源检查；未做页面视觉或打印实测，未跑产品测试或全量回归。三份 spec/design 的 SHA-256 及每项检查状态见同名 JSON。</p>
 </main></body></html>

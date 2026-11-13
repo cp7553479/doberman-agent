@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import React, { useLayoutEffect, useRef, useState, ReactNode } from 'react';
 
 import {

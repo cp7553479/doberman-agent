@@ -1,8 +1,8 @@
 // @ts-strict-ignore
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Check, X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
-import { Dropdown, DropdownItem, DropdownSeparator } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Dropdown, DropdownItem, DropdownSeparator } from '@doberman-agent/ui';
 import type { MouseEvent, FocusEvent, KeyboardEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';

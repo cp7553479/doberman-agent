@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Select, Textarea, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Select, Textarea, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 
 
@@ -242,7 +242,7 @@ export const RunTest = forwardRef((props, ref) => {
                 <div className="px-2 pt-2 pb-10 h-[calc(100vh-40px-var(--license-banner-h,0px))] overflow-y-auto bg-[#fff] dark:bg-[#303134]">
                     {inputs.map((input) => (
                         input.autoFill ? null : <div className="mb-2" key={input.key}>
-                            <Label className="flex items-center bisheng-label mb-2">
+                            <Label className="flex items-center doberman_agent-label mb-2">
                                 {input.required && <span className="text-red-500">*</span>}
                                 {input.label}
                             </Label>

@@ -189,7 +189,7 @@
 ## 10. 完整示例
 
 ```bash
-HOST=https://bisheng.example.com
+HOST=https://platform.example.com.com
 KEY=bs-sak-xxxx
 H=(-H "Authorization: Bearer $KEY" -H "X-End-User: emp-1024")
 
@@ -213,7 +213,7 @@ curl -s -OJ "$HOST/api/v2/workstation/tasks/3f2c…/files/a1b2" "${H[@]}"
 ```python
 import time, requests
 
-BASE, HEADERS = "https://bisheng.example.com/api/v2", {"Authorization": "Bearer bs-sak-xxxx", "X-End-User": "emp-1024"}
+BASE, HEADERS = "https://platform.example.com.com/api/v2", {"Authorization": "Bearer bs-sak-xxxx", "X-End-User": "emp-1024"}
 
 def run_task(text, files, model, skills):
     body = {"run_mode": "task", "execution": "async", "clientTimestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),

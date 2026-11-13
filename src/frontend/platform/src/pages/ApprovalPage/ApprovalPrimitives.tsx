@@ -1,6 +1,6 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
-import { Tag, Tooltip } from "@bisheng/ui";
+import { Tag, Tooltip } from "@doberman-agent/ui";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 

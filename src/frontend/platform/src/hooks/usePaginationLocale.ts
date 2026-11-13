@@ -1,4 +1,4 @@
-import type { PaginationLocale } from '@bisheng/ui';
+import type { PaginationLocale } from '@doberman-agent/ui';
 import { useTranslation } from 'react-i18next';
 
 /** Localized copy for the shared Pagination, independent of the page's namespace. */

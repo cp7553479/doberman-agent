@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, SearchInput, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, SearchInput, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDialog";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
@@ -12,7 +12,7 @@ import { showApiError } from "@/controllers/request";
 import { copyDashboard,createDashboard,deleteDashboard } from "@/controllers/API/dashboard";
 import { generateUniqueName } from "@/util/utils";
 import { cn } from "@/utils";
-import { Tooltip as Tip } from "@bisheng/ui";
+import { Tooltip as Tip } from "@doberman-agent/ui";
 
 import { useContext,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";

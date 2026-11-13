@@ -1,6 +1,6 @@
 # 部署与运维
 
-BiSheng 采用 Docker Compose 编排全部基础设施和应用服务。生产环境通过 `docker/docker-compose.yml` 一键拉起 9 个容器，覆盖数据库、缓存、向量存储、全文检索、对象存储、后端 API、异步 Worker 和前端。本地开发时可选择混合部署模式：存储层保留 Docker 容器运行，后端和前端从源码启动，避免每次代码变更都要重建镜像。配置系统支持多层合并（YAML 文件、环境变量、数据库配置、Redis 缓存），密码字段通过 Fernet 加密保护。
+doberman-agent 采用 Docker Compose 编排全部基础设施和应用服务。生产环境通过 `docker/docker-compose.yml` 一键拉起 9 个容器，覆盖数据库、缓存、向量存储、全文检索、对象存储、后端 API、异步 Worker 和前端。本地开发时可选择混合部署模式：存储层保留 Docker 容器运行，后端和前端从源码启动，避免每次代码变更都要重建镜像。配置系统支持多层合并（YAML 文件、环境变量、数据库配置、Redis 缓存），密码字段通过 Fernet 加密保护。
 
 ## 容器清单
 
@@ -8,31 +8,31 @@ BiSheng 采用 Docker Compose 编排全部基础设施和应用服务。生产�
 
 | 容器名 | 镜像 | 端口映射 | 职责 |
 |--------|------|---------|------|
-| `bisheng-mysql` | `mysql:8.0` | 3306:3306 | 关系型数据存储，默认密码 `1234`，数据库 `bisheng` |
-| `bisheng-redis` | `redis:7.0.4` | 6379:6379 | 缓存、Celery Broker、会话存储 |
-| `bisheng-backend` | `dataelement/bisheng-backend:v2.4.0` | 7860:7860 | FastAPI 后端 API，通过 `entrypoint.sh api` 启动 |
-| `bisheng-backend-worker` | `dataelement/bisheng-backend:v2.4.0` | (无) | Celery 全部 Worker + Beat，通过 `entrypoint.sh worker` 启动 |
-| `bisheng-frontend` | `dataelement/bisheng-frontend:v2.4.0` | 3001:3001 | Nginx 托管前端静态资源 |
-| `bisheng-milvus-etcd` | `quay.io/coreos/etcd:v3.5.5` | (无) | Milvus 元数据存储（ETCD） |
-| `bisheng-milvus-minio` | `minio/minio:RELEASE.2023-03-20T20-16-18Z` | 9100:9000 | Milvus 数据存储（MinIO），同时作为业务对象存储。管理台端口 9001 不对外映射，见 [对象存储凭证与端口](#对象存储凭证与端口) |
-| `bisheng-milvus-standalone` | `milvusdb/milvus:v2.5.10` | 19530:19530, 9091:9091 | 向量数据库，依赖 ETCD 和 MinIO |
-| `bisheng-es` | `bitnamilegacy/elasticsearch:8.12.0` | 9200:9200, 9300:9300 | 全文检索引擎 |
+| `doberman-agent-mysql` | `mysql:8.0` | 3306:3306 | 关系型数据存储，默认密码 `1234`，数据库 `doberman-agent` |
+| `doberman-agent-redis` | `redis:7.0.4` | 6379:6379 | 缓存、Celery Broker、会话存储 |
+| `doberman-agent-backend` | `cp7553479/doberman-agent-backend:v2.4.0` | 7860:7860 | FastAPI 后端 API，通过 `entrypoint.sh api` 启动 |
+| `doberman-agent-backend-worker` | `cp7553479/doberman-agent-backend:v2.4.0` | (无) | Celery 全部 Worker + Beat，通过 `entrypoint.sh worker` 启动 |
+| `doberman-agent-frontend` | `cp7553479/doberman-agent-frontend:v2.4.0` | 3001:3001 | Nginx 托管前端静态资源 |
+| `doberman-agent-milvus-etcd` | `quay.io/coreos/etcd:v3.5.5` | (无) | Milvus 元数据存储（ETCD） |
+| `doberman-agent-milvus-minio` | `minio/minio:RELEASE.2023-03-20T20-16-18Z` | 9100:9000 | Milvus 数据存储（MinIO），同时作为业务对象存储。管理台端口 9001 不对外映射，见 [对象存储凭证与端口](#对象存储凭证与端口) |
+| `doberman-agent-milvus-standalone` | `milvusdb/milvus:v2.5.10` | 19530:19530, 9091:9091 | 向量数据库，依赖 ETCD 和 MinIO |
+| `doberman-agent-es` | `bitnamilegacy/elasticsearch:8.12.0` | 9200:9200, 9300:9300 | 全文检索引擎 |
 
 ### 服务依赖关系
 
 ```
-bisheng-backend
+doberman-agent-backend
   ├── depends_on: mysql (healthy)
   └── depends_on: redis (healthy)
 
-bisheng-backend-worker
+doberman-agent-backend-worker
   ├── depends_on: mysql (healthy)
   └── depends_on: redis (healthy)
 
-bisheng-frontend
+doberman-agent-frontend
   └── depends_on: backend
 
-bisheng-milvus-standalone
+doberman-agent-milvus-standalone
   ├── depends_on: etcd
   └── depends_on: minio
 ```
@@ -43,8 +43,8 @@ bisheng-milvus-standalone
 
 | 文件 | 容器名 | 镜像 | 端口 | 用途 |
 |------|--------|------|------|------|
-| `docker-compose-uns.yml` | `bisheng-unstructured` | `dataelement/bisheng-unstructured:v0.0.3.14` | 10001 | 非结构化文档解析服务 |
-| `docker-compose-office.yml` | `bisheng-office` | `onlyoffice/documentserver:7.1.1` | 8701:80 | OnlyOffice 文档预览与编辑 |
+| `docker-compose-uns.yml` | `doberman-agent-unstructured` | `cp7553479/doberman-agent-unstructured:v0.0.3.14` | 10001 | 非结构化文档解析服务 |
+| `docker-compose-office.yml` | `doberman-agent-office` | `onlyoffice/documentserver:7.1.1` | 8701:80 | OnlyOffice 文档预览与编辑 |
 
 ## 配置系统
 
@@ -119,7 +119,7 @@ workflow:
   code_node_enabled: false
 ```
 
-该节点会执行用户填写的 Python 代码，当前版本**没有执行沙箱**，代码以后端进程的权限运行，可读取服务器文件、环境变量（含数据库与对象存储凭证）并访问内网。因此开启后，**所有能创建或编辑工作流的用户都等同于持有这台服务器的命令执行权限**——这与其在毕昇中的角色无关，也与是否部署在内网无关。仅在「所有能创建应用的人都可信」的环境下开启。
+该节点会执行用户填写的 Python 代码，当前版本**没有执行沙箱**，代码以后端进程的权限运行，可读取服务器文件、环境变量（含数据库与对象存储凭证）并访问内网。因此开启后，**所有能创建或编辑工作流的用户都等同于持有这台服务器的命令执行权限**——这与其在doberman-agent中的角色无关，也与是否部署在内网无关。仅在「所有能创建应用的人都可信」的环境下开启。
 
 只有字面量 `true` 视为开启；写成 `"true"`、`1`、`yes` 一律按关闭处理。改动约 100 秒生效，无需重启。
 
@@ -135,14 +135,14 @@ workflow:
 
 ### 密码加密
 
-`config.yaml` 中的 `database_url` 和 `redis_url` 密码字段使用 Fernet 对称加密。加密密钥硬编码在 `src/backend/bisheng/core/config/settings.py` 的 `secret_key` 变量中。Settings 类在加载配置时自动解密：
+`config.yaml` 中的 `database_url` 和 `redis_url` 密码字段使用 Fernet 对称加密。加密密钥硬编码在 `src/backend/doberman_agent/core/config/settings.py` 的 `secret_key` 变量中。Settings 类在加载配置时自动解密：
 
 - `database_url`：正则匹配 `:password@` 中的密码部分，调用 `decrypt_token()` 解密
 - `redis_url`：支持字符串 URL 和字典两种格式，字典格式使用 `encrypt(...)` 包装标记加密值
 
 ### Settings 类主要字段
 
-`Settings` 类定义在 `src/backend/bisheng/core/config/settings.py`，主要配置分组：
+`Settings` 类定义在 `src/backend/doberman_agent/core/config/settings.py`，主要配置分组：
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -168,7 +168,7 @@ workflow:
 技能包脚本从**用户自己的电脑**回调平台，所以它需要「用户浏览器访问平台用的地址」。这个地址有两个来源：
 
 1. **配置命令里的浏览器地址（优先）**：「AI 助手接入」弹窗的一键复制命令是 `search.py --configure --base-url <浏览器地址> --api-key <密钥>`，地址取自浏览器的 `window.location.origin`，写入用户本机凭据文件后成为默认地址。浏览器看到的就是正确的协议、域名和端口，也天然适配「内网 IP / 域名 / VPN 多入口」。
-2. **包内烘焙地址（兜底）**：下载 zip 时后端现场渲染，推导顺序在 `bisheng/open_api/api/public_base_url.py`：
+2. **包内烘焙地址（兜底）**：下载 zip 时后端现场渲染，推导顺序在 `doberman-agent/open_api/api/public_base_url.py`：
    1. `config.yaml` 的 `open_api.public_base_url`（`scheme://host[:port][/prefix]`，启动期校验）；
    2. 反向代理传来的 `X-Forwarded-Proto` / `X-Forwarded-Host`（取逗号链首值），退而取 `Host`；
    3. 进程绑定的 socket。
@@ -211,19 +211,19 @@ Vite Dev Server  :3001                Milvus 2.5       :19530
 
 ```bash
 # 1. 启动全部 Docker 容器
-cd docker && docker compose -p bisheng up -d
+cd docker && docker compose -p doberman-agent up -d
 
 # 2. 停止与本地服务冲突的容器
-docker stop bisheng-backend bisheng-backend-worker bisheng-frontend
+docker stop doberman-agent-backend doberman-agent-backend-worker doberman-agent-frontend
 
 # 3. 启动本地后端
 cd src/backend
-.venv/bin/uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
+.venv/bin/uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log
 
 # 4. 启动 Celery Workers（各开一个终端）
-.venv/bin/celery -A bisheng.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
-.venv/bin/celery -A bisheng.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
-.venv/bin/celery -A bisheng.worker.main beat -l info
+.venv/bin/celery -A doberman_agent.worker.main worker -l info -c 20 -P threads -Q knowledge_celery -n knowledge@%h
+.venv/bin/celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -Q workflow_celery -n workflow@%h
+.venv/bin/celery -A doberman_agent.worker.main beat -l info
 
 # 5. 启动前端开发服务器
 cd src/frontend/platform
@@ -232,44 +232,44 @@ npm start -- --host 0.0.0.0   # 端口 3001，API 代理到 localhost:7860
 
 ## 远程开发工作流
 
-个人开发机用「git 检出 + systemd」部署：目标机上的 `/opt/bisheng` 是真实的 git 检出，部署就是把它收敛到分支头再重启服务，`git rev-parse HEAD` 就是这台机器的版本。
+个人开发机用「git 检出 + systemd」部署：目标机上的 `/opt/doberman-agent` 是真实的 git 检出，部署就是把它收敛到分支头再重启服务，`git rev-parse HEAD` 就是这台机器的版本。
 
-旧的 rsync 同步脚本 `bisheng-sync.sh`（个人本地文件，已被 `.gitignore` 排除）**不要再用来部署**。rsync 只覆盖有改动的文件，目标机上更早落后的文件和已删除的文件都不会被处理，「目标机是否等于某个提交」无法回答。
+旧的 rsync 同步脚本 `doberman-agent-sync.sh`（个人本地文件，已被 `.gitignore` 排除）**不要再用来部署**。rsync 只覆盖有改动的文件，目标机上更早落后的文件和已删除的文件都不会被处理，「目标机是否等于某个提交」无法回答。
 
 ### 114（192.168.106.114）
 
 | 项 | 内容 |
 |----|------|
-| 部署 | `bash /opt/bisheng-ops/deploy.sh`（默认分支 `feat/3.0.0-vibe`）。脚本和运维说明在独立的运维仓 `/opt/bisheng-ops/`，不进产品仓，先读它的 README |
-| 后端 | 6 个 systemd unit（`bisheng-api`、4 个 `bisheng-celery-*`、`bisheng-linsight-worker`）+ `bisheng.target` |
+| 部署 | `bash /opt/doberman-agent-ops/deploy.sh`（默认分支 `feat/3.0.0-vibe`）。脚本和运维说明在独立的运维仓 `/opt/doberman-agent-ops/`，不进产品仓，先读它的 README |
+| 后端 | 6 个 systemd unit（`doberman-agent-api`、4 个 `doberman-agent-celery-*`、`doberman-agent-linsight-worker`）+ `doberman_agent.target` |
 | 入口 | `http://192.168.106.114:4101/`（管理端，vite 开发服务）、`/workspace/`（用户端静态包）、`/apps/<slug>/`（托管应用） |
 | 托管应用运行时层 | 2026-10-27 起以容器运行（协议 v2 + 宿主隔离），`deploy.sh` 不更新它；换镜像的步骤见运维仓 README。为什么不能再用 systemd 形态见 [14-app-factory-deployment.md](14-app-factory-deployment.md) 「形态二」 |
 
 ## Celery Worker 启动模式
 
-`docker/bisheng/entrypoint.sh` 通过第一个参数控制启动模式，支持 7 种运行方式：
+`docker/doberman-agent/entrypoint.sh` 通过第一个参数控制启动模式，支持 7 种运行方式：
 
 | 模式 | 命令 | 队列 | 并发数 | 说明 |
 |------|------|------|--------|------|
-| `api` | `uvicorn bisheng.main:app` | -- | 8 workers | FastAPI 服务器（默认模式） |
+| `api` | `uvicorn doberman_agent.main:app` | -- | 8 workers | FastAPI 服务器（默认模式） |
 | `knowledge` | `celery ... worker -Q knowledge_celery` | `knowledge_celery` | 20 线程 | 知识库文档解析、Embedding 生成 |
 | `workflow` | `celery ... worker -Q workflow_celery` | `workflow_celery` | 100 线程 | 工作流 DAG 执行 |
 | `beat` | `celery ... beat` | -- | -- | 定时任务调度器 |
 | `default` | `celery ... worker -Q celery` | `celery` | 100 线程 | 遥测统计等默认任务 |
-| `linsight` | `python bisheng/linsight/worker.py` | -- | 4 worker / 5 并发 | 灵思 Agent 独立进程 |
+| `linsight` | `python doberman-agent/linsight/worker.py` | -- | 4 worker / 5 并发 | 灵思 Agent 独立进程 |
 | `worker` | 以上全部（除 api） | 全部 | -- | 一次性启动全部 Worker + Beat |
 
 ### 定时任务（Beat Schedule）
 
-在 `CeleryConf`（`src/backend/bisheng/core/config/settings.py`）中定义的默认定时任务：
+在 `CeleryConf`（`src/backend/doberman_agent/core/config/settings.py`）中定义的默认定时任务：
 
 | 任务标识 | Celery Task 路径 | 调度时间 | 说明 |
 |---------|-----------------|---------|------|
-| `telemetry_mid_user_increment` | `bisheng.worker.telemetry.mid_table.sync_mid_user_increment` | 每日 00:30 | 用户增量遥测统计 |
-| `telemetry_mid_knowledge_increment` | `bisheng.worker.telemetry.mid_table.sync_mid_knowledge_increment` | 每日 00:30 | 知识库增量遥测统计 |
-| `telemetry_sync_mid_app_increment` | `bisheng.worker.telemetry.mid_table.sync_mid_app_increment` | 每日 00:30 | 应用增量遥测统计 |
-| `telemetry_sync_mid_user_interact_dtl` | `bisheng.worker.telemetry.mid_table.sync_mid_user_interact_dtl` | 每日 00:30 | 用户交互明细统计 |
-| `sync_information_article` | `bisheng.worker.information.article.sync_information_article` | 每日 05:30 | 同步情报中心文章 |
+| `telemetry_mid_user_increment` | `doberman_agent.worker.telemetry.mid_table.sync_mid_user_increment` | 每日 00:30 | 用户增量遥测统计 |
+| `telemetry_mid_knowledge_increment` | `doberman_agent.worker.telemetry.mid_table.sync_mid_knowledge_increment` | 每日 00:30 | 知识库增量遥测统计 |
+| `telemetry_sync_mid_app_increment` | `doberman_agent.worker.telemetry.mid_table.sync_mid_app_increment` | 每日 00:30 | 应用增量遥测统计 |
+| `telemetry_sync_mid_user_interact_dtl` | `doberman_agent.worker.telemetry.mid_table.sync_mid_user_interact_dtl` | 每日 00:30 | 用户交互明细统计 |
+| `sync_information_article` | `doberman_agent.worker.information.article.sync_information_article` | 每日 05:30 | 同步情报中心文章 |
 
 ## 运维管理脚本
 
@@ -288,7 +288,7 @@ npm start -- --host 0.0.0.0   # 端口 3001，API 代理到 localhost:7860
 ### Existing-environment updates
 
 Compose image references live in `.env`; use the template when adding new
-settings manually. `BISHENG_SANDBOX_IMAGE` replaces `SANDBOX_IMAGE_TAG`.
+settings manually. `DOBERMAN_AGENT_SANDBOX_IMAGE` replaces `SANDBOX_IMAGE_TAG`.
 
 Use `bash scripts/deploy.sh` from the matching release checkout to update an existing Compose
 deployment. Keep the release's Compose file, mounted entrypoint and image versions
@@ -439,7 +439,7 @@ ownership）。横向扩容时按下表核对。
 ## 相关文档
 
 - 系统架构总览 -- `docs/architecture/01-architecture-overview.md`
-- 配置系统详解 -- Settings 类定义在 `src/backend/bisheng/core/config/settings.py`
+- 配置系统详解 -- Settings 类定义在 `src/backend/doberman_agent/core/config/settings.py`
 - 开发指南 -- `docs/architecture/09-development-guide.md`
 - **应用工场部署与配置** -- `docs/architecture/14-app-factory-deployment.md`（v3.0 新增的托管应用
   运行时层：runtime-manager / app-proxy 两个服务、`/apps/` 的 nginx location、`app_runtime` 与

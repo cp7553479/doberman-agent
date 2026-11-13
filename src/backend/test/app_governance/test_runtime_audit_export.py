@@ -25,8 +25,8 @@ class MemoryStorage:
 
 
 async def test_export_whole_selection_is_immutable_and_csv_safe(audit_env):
-    from bisheng.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
 
     service, repo, _, scope = audit_env
     storage = MemoryStorage()
@@ -58,15 +58,15 @@ async def test_export_whole_selection_is_immutable_and_csv_safe(audit_env):
 
 @pytest.mark.parametrize("text", ["=1+1", "  +1", "\t@sum(A1)", "\r-3", "\x00 =1"])
 def test_formula_prefix_after_whitespace_and_controls(text):
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import safe_csv_value
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import safe_csv_value
 
     assert safe_csv_value(text).startswith("'")
 
 
 async def test_revoked_reader_cannot_download_ready_object(audit_env):
-    from bisheng.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
-    from bisheng.common.errcode.app_governance import RuntimeAuditAccessDeniedError
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditAccessDeniedError
 
     service, repo, _, scope = audit_env
     allowed = True
@@ -96,8 +96,8 @@ def test_celery_wrapper_passes_factory_with_explicit_tenant(monkeypatch):
     """覆盖 AC: AC-56. The actual worker adapter accepts a coroutine factory."""
     import inspect
 
-    from bisheng.core.context.tenant import get_current_tenant_id
-    from bisheng.worker.runtime_audit import tasks
+    from doberman_agent.core.context.tenant import get_current_tenant_id
+    from doberman_agent.worker.runtime_audit import tasks
 
     def runner(factory):
         assert callable(factory)
@@ -115,9 +115,9 @@ async def test_terminal_artifact_gc_marker_does_not_starve_later_jobs(audit_env)
     """覆盖 AC: AC-57. Completed GC is durable; expired snapshots are independent of copied job filters."""
     from datetime import datetime, timedelta
 
-    from bisheng.app_governance.domain.models.runtime_audit import RuntimeAuditQuerySnapshot
-    from bisheng.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
+    from doberman_agent.app_governance.domain.models.runtime_audit import RuntimeAuditQuerySnapshot
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
 
     service, source, sessions, scope = audit_env
     repo = RuntimeAuditExportRepository(source.factory)
@@ -142,10 +142,10 @@ async def test_expired_attempt_cannot_publish_after_new_owner_claim(audit_env):
     """覆盖 AC: AC-51, AC-56. Recovery restarts one read-view attempt and fences its predecessor."""
     from datetime import datetime, timedelta
 
-    from bisheng.app_governance.domain.models.runtime_audit import RuntimeAuditExport
-    from bisheng.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
-    from bisheng.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
-    from bisheng.common.errcode.app_governance import RuntimeAuditExportUnavailableError
+    from doberman_agent.app_governance.domain.models.runtime_audit import RuntimeAuditExport
+    from doberman_agent.app_governance.domain.repositories.runtime_audit_export_repository import RuntimeAuditExportRepository
+    from doberman_agent.app_governance.domain.services.runtime_audit_export_service import RuntimeAuditExportService
+    from doberman_agent.common.errcode.app_governance import RuntimeAuditExportUnavailableError
 
     service, source, sessions, _ = audit_env
     repo = RuntimeAuditExportRepository(source.factory)

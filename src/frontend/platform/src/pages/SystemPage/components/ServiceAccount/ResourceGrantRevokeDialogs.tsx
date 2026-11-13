@@ -1,4 +1,4 @@
-import { Alert, Button } from '@bisheng/ui';
+import { Alert, Button } from '@doberman-agent/ui';
 
 import {
   Dialog,

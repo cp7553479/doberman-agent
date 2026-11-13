@@ -13,15 +13,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge import KnowledgeSpaceTagLibraryInvalidError
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_space_tag_library import (
+from doberman_agent.common.errcode.knowledge import KnowledgeSpaceTagLibraryInvalidError
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_space_tag_library import (
     KnowledgeSpaceTagLibrary,
 )
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import (
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import (
     KnowledgeSpaceInfoResp,
 )
-from bisheng.knowledge.domain.services.knowledge_space_service import (
+from doberman_agent.knowledge.domain.services.knowledge_space_service import (
     KnowledgeSpaceService,
 )
 
@@ -44,7 +44,7 @@ async def test_apply_disabled_clears_private_library_and_unbinds():
     space = _make_space()
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.adelete_private_for_knowledge",
         new=AsyncMock(),
     ) as delete_private:
@@ -91,7 +91,7 @@ async def test_apply_custom_tags_upserts_private_and_returns_its_id():
     )
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.aupsert_private",
         new=AsyncMock(return_value=private),
     ) as upsert:
@@ -135,11 +135,11 @@ async def test_apply_library_mode_validates_and_clears_orphan_private():
     space = _make_space()
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryService.validate_bindable_library",
         new=AsyncMock(),
     ) as validate, patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.adelete_private_for_knowledge",
         new=AsyncMock(),
     ) as delete_private:
@@ -197,7 +197,7 @@ async def test_decorate_private_library_masks_id_and_returns_tags():
     )
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.aget",
         new=AsyncMock(return_value=private),
     ):
@@ -228,7 +228,7 @@ async def test_decorate_public_library_keeps_id_and_marks_library_mode():
     )
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.aget",
         new=AsyncMock(return_value=public),
     ):
@@ -261,7 +261,7 @@ async def test_decorate_private_library_owned_by_other_space_treated_as_library(
     )
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service."
+        "doberman_agent.knowledge.domain.services.knowledge_space_service."
         "KnowledgeSpaceTagLibraryDao.aget",
         new=AsyncMock(return_value=foreign_private),
     ):
@@ -277,7 +277,7 @@ async def test_decorate_private_library_owned_by_other_space_treated_as_library(
 
 @pytest.mark.asyncio
 async def test_visibility_gate_returns_false_when_config_missing():
-    import bisheng.knowledge.domain.services.knowledge_space_service as svc
+    import doberman_agent.knowledge.domain.services.knowledge_space_service as svc
 
     fake_workstation = SimpleNamespace(
         get_knowledge_space_config_with_meta=AsyncMock(
@@ -290,7 +290,7 @@ async def test_visibility_gate_returns_false_when_config_missing():
 
 @pytest.mark.asyncio
 async def test_visibility_gate_honours_auto_tag_visible_flag():
-    import bisheng.knowledge.domain.services.knowledge_space_service as svc
+    import doberman_agent.knowledge.domain.services.knowledge_space_service as svc
 
     cfg = SimpleNamespace(auto_tag_visible=True)
     fake_workstation = SimpleNamespace(

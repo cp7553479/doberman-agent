@@ -73,16 +73,16 @@
 
 | 维度 | platform | client |
 |---|---|---|
-| 公共组件库 `@bisheng/ui` | **未接入**（`packages/ui/AGENTS.md` 明载 "platform has not adopted it yet"） | 已接入；**溯源角标就是共享 Badge 的 `citation` 形态**，设计规范已落地 |
-| Tailwind 主题 | 自有完整 theme，**且 `important: true`（全局 !important）** | `presets: [@bisheng/ui/tailwind-preset]` |
+| 公共组件库 `@doberman-agent/ui` | **未接入**（`packages/ui/AGENTS.md` 明载 "platform has not adopted it yet"） | 已接入；**溯源角标就是共享 Badge 的 `citation` 形态**，设计规范已落地 |
+| Tailwind 主题 | 自有完整 theme，**且 `important: true`（全局 !important）** | `presets: [@doberman-agent/ui/tailwind-preset]` |
 | 设计变量 `tokens.css` | 未引入 | 已引入 |
-| 图标包 `bisheng-icons` | 未安装（公共组件依赖它） | 已安装 |
+| 图标包 `doberman-agent-icons` | 未安装（公共组件依赖它） | 已安装 |
 | Markdown 渲染器 | react-markdown **10** | react-markdown **9** |
 | 状态 / 请求 / 别名 | Zustand · react-query v3 · `@/` | Recoil · @tanstack/react-query v4 · `~/` |
 
 两条硬约束：
 
-- **`@bisheng/ui` 有明文契约：不得包含状态管理、HTTP、i18n key、路由。** 因此角标的「拿编号换详情」逻辑放不进该包 —— 若要共享须另开包，或只共享纯解析函数。
+- **`@doberman-agent/ui` 有明文契约：不得包含状态管理、HTTP、i18n key、路由。** 因此角标的「拿编号换详情」逻辑放不进该包 —— 若要共享须另开包，或只共享纯解析函数。
 - **平台端接入公共主题是影响全站的基建**（要处理 `important: true` 与现有 theme 去重），不属于本 Feature 范围。
 
 ---

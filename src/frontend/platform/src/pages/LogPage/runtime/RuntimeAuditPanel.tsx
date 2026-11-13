@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, Segmented, Select } from '@bisheng/ui'
+import { Button, Segmented, Select } from '@doberman-agent/ui'
 import { DatePicker } from '@/components/bs-ui/calendar/datePicker'
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/bs-ui/table'

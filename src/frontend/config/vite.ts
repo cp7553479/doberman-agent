@@ -38,7 +38,7 @@ export function createMinioWarning(envName: string, target: string) {
     if (warned) return;
     warned = true;
     console.warn(
-      `[bisheng:minio-proxy] MinIO returned 403 for "${requestUrl}". ` +
+      `[doberman_agent:minio-proxy] MinIO returned 403 for "${requestUrl}". ` +
         `Set ${envName} to the backend object_storage.minio.sharepoint host ` +
         `(currently ${new URL(target).host}; localhost and 127.0.0.1 sign differently).`,
     );

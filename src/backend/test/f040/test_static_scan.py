@@ -12,7 +12,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-_BACKEND = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND = Path(__file__).resolve().parents[2] / "doberman_agent"
 _CLIENT = Path(__file__).resolve().parents[3] / "frontend" / "client" / "src"
 
 

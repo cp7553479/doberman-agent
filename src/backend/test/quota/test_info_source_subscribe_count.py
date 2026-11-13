@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from sqlmodel.sql.expression import SelectOfScalar
 
-from bisheng.role.domain.services.quota_service import QuotaService
+from doberman_agent.role.domain.services.quota_service import QuotaService
 
 
 class _FakeSession:
@@ -42,7 +42,7 @@ async def _session_ctx(session):
 async def test_dedupes_source_ids_across_channels(col):
     session = _FakeSession([["a", "b"], ["b", "c"], None])
     with patch(
-        "bisheng.core.database.get_async_db_session",
+        "doberman_agent.core.database.get_async_db_session",
         lambda: _session_ctx(session),
     ):
         ids = await QuotaService._distinct_info_source_ids(col, 1)
@@ -54,7 +54,7 @@ async def test_statement_is_a_scalar_select():
     """The guard proper: anything else and exec hands back Row tuples."""
     session = _FakeSession([["a"]])
     with patch(
-        "bisheng.core.database.get_async_db_session",
+        "doberman_agent.core.database.get_async_db_session",
         lambda: _session_ctx(session),
     ):
         await QuotaService._distinct_info_source_ids("user_id", 1)
@@ -65,7 +65,7 @@ async def test_statement_is_a_scalar_select():
 async def test_unknown_column_is_not_queried():
     session = _FakeSession([["a"]])
     with patch(
-        "bisheng.core.database.get_async_db_session",
+        "doberman_agent.core.database.get_async_db_session",
         lambda: _session_ctx(session),
     ):
         assert await QuotaService._distinct_info_source_ids("nope", 1) == set()

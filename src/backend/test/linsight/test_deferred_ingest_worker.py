@@ -33,16 +33,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.linsight.domain import task_exec as te
-from bisheng.linsight.domain.models.linsight_session_version import (
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.linsight.domain import task_exec as te
+from doberman_agent.linsight.domain.models.linsight_session_version import (
     LinsightSessionVersion,
     SessionVersionStatusEnum,
 )
-from bisheng.linsight.domain.schemas.linsight_schema import SubmitFileSchema
-from bisheng.linsight.domain.services import workbench_impl
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.linsight.domain.schemas.linsight_schema import SubmitFileSchema
+from doberman_agent.linsight.domain.services import workbench_impl
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 TENANT_ID = 3
 
@@ -62,7 +62,7 @@ def _no_question_row_annotation(monkeypatch: pytest.MonkeyPatch):
 
 class FakeMinio:
     def __init__(self) -> None:
-        self.bucket = "bisheng"
+        self.bucket = "doberman_agent"
         self.tmp_bucket = "tmp-dir"
         self.store: dict[tuple[str, str], bytes] = {}
 
@@ -283,8 +283,8 @@ async def test_one_unreadable_attachment_does_not_fail_the_session(monkeypatch: 
     with (
         patch.object(workbench_impl, "get_minio_storage", new=AsyncMock(return_value=FakeMinio())),
         patch.object(LinsightWorkbenchImpl, "_get_redis", return_value=AsyncMock()),
-        patch("bisheng.core.cache.utils.async_file_download", new=_download),
-        patch("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _OkPipeline),
+        patch("doberman_agent.core.cache.utils.async_file_download", new=_download),
+        patch("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _OkPipeline),
     ):
         await task._ingest_pending_attachments(session_model)
 

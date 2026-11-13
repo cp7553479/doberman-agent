@@ -3,9 +3,9 @@
 An application gets **one** storage space and never sees how it is made:
 bucket, key prefix, endpoint and credentials all stay on this side. What the
 app receives is a handle — an HTTP base URL and a bearer token, both injected
-as ``BISHENG_APP_STORAGE_*`` at deploy time — and four operations on it:
+as ``DOBERMAN_AGENT_APP_STORAGE_*`` at deploy time — and four operations on it:
 upload, download, list, delete (plus metadata). F057's SDK ``storage`` module
-is the consumer; the same names are what F053's ``bisheng dev`` injects locally
+is the consumer; the same names are what F053's ``doberman-agent dev`` injects locally
 (as a directory handle there), so application code is identical in both.
 
 Three properties are load bearing and each is pinned by ``tests/test_storage.py``:
@@ -15,9 +15,9 @@ Three properties are load bearing and each is pinned by ``tests/test_storage.py`
   absolute path, another app's ``apps/…`` prefix) is *rejected*, never
   silently rewritten into place. A rewrite would make "it worked" and "it
   landed somewhere else" indistinguishable to the app.
-* **The bucket is ``bisheng-apps``, never the platform's ``bisheng``** (design
+* **The bucket is ``doberman-agent-apps``, never the platform's ``doberman-agent``** (design
   pit 20). The public bucket is not anonymous-readable as a whole, but the
-  platform's nginx forwards *any* key under ``/bisheng/`` to MinIO, so the
+  platform's nginx forwards *any* key under ``/doberman-agent/`` to MinIO, so the
   bucket policy becomes the only wall. The attachment bucket has no nginx
   location and this module never writes a bucket policy — a fresh bucket is
   private by default and stays that way.
@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 #: The platform's public bucket. Named here only so a test can assert we are
 #: not it (pit 20).
-PUBLIC_PLATFORM_BUCKET = "bisheng"
+PUBLIC_PLATFORM_BUCKET = "doberman-agent"
 
 #: Addresses that accept connections from this host only. A process bound to
 #: one of these cannot serve an application container, whatever address the
@@ -69,9 +69,9 @@ MAX_KEY_BYTES = 1024
 #: Injected environment names (the handle). Kept as constants so lifecycle,
 #: the API and the backend-side contract (``app_runtime/domain/constants.py``)
 #: spell them identically.
-ENV_STORAGE_ENDPOINT = "BISHENG_APP_STORAGE_ENDPOINT"
-ENV_STORAGE_TOKEN = "BISHENG_APP_STORAGE_TOKEN"
-ENV_STORAGE_MAX_FILE_MB = "BISHENG_APP_STORAGE_MAX_FILE_MB"
+ENV_STORAGE_ENDPOINT = "DOBERMAN_AGENT_APP_STORAGE_ENDPOINT"
+ENV_STORAGE_TOKEN = "DOBERMAN_AGENT_APP_STORAGE_TOKEN"
+ENV_STORAGE_MAX_FILE_MB = "DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB"
 STORAGE_ENV_NAMES: tuple[str, ...] = (ENV_STORAGE_ENDPOINT, ENV_STORAGE_TOKEN, ENV_STORAGE_MAX_FILE_MB)
 
 DEFAULT_LIST_LIMIT = 100
@@ -268,7 +268,7 @@ def ensure_private_bucket(store: ObjectStore, bucket: str) -> None:
 
     Shared by the attachment handle and by the publish pipeline's pre-migration
     database snapshots (``appdb.AppDbSchemaService``) — both write into
-    ``bisheng-apps``, and the pit-20 guard has to be one piece of code or the
+    ``doberman-agent-apps``, and the pit-20 guard has to be one piece of code or the
     second caller is the one that leaks. No bucket policy is ever written here:
     a fresh MinIO bucket is private, and staying private is the whole point.
     """
@@ -384,7 +384,7 @@ def mint_storage_token() -> str:
 
 
 def storage_endpoint_for(config: Config, app_id: str) -> str:
-    """``BISHENG_APP_STORAGE_ENDPOINT`` value for one app."""
+    """``DOBERMAN_AGENT_APP_STORAGE_ENDPOINT`` value for one app."""
     return f"{config.app_facing_base}/v1/apps/{app_id}/storage"
 
 
@@ -552,7 +552,7 @@ def storage_preflight(config: Config) -> dict[str, Any]:
         return {
             "name": name,
             "ok": False,
-            "detail": f"RTM_STORAGE_BUCKET={PUBLIC_PLATFORM_BUCKET} is the platform's public bucket — use bisheng-apps",
+            "detail": f"RTM_STORAGE_BUCKET={PUBLIC_PLATFORM_BUCKET} is the platform's public bucket — use doberman-agent-apps",
         }
     base = config.app_facing_base
     bound_to_loopback = config.host in _LOOPBACK_HOSTS

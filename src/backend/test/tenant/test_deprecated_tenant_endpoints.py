@@ -23,7 +23,7 @@ def tenant_app():
     the 410 contract does not need any of those — the handlers must fire
     before any business logic.
     """
-    from bisheng.tenant.api.endpoints import tenant_crud
+    from doberman_agent.tenant.api.endpoints import tenant_crud
 
     app = FastAPI()
     app.include_router(tenant_crud.router, prefix='/api/v1/tenants')
@@ -32,7 +32,7 @@ def tenant_app():
 
 @pytest.fixture()
 def user_tenant_app():
-    from bisheng.tenant.api.endpoints import user_tenant
+    from doberman_agent.tenant.api.endpoints import user_tenant
 
     app = FastAPI()
     app.include_router(user_tenant.router, prefix='/api/v1/user')

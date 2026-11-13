@@ -6,7 +6,7 @@
  * Layout follows the timeline-item design: a left rail (16px icon +
  * 1px vertical connector) next to a body column (trigger + collapsible text).
  */
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { memo, useCallback, useState, type FC, type MouseEvent } from "react";
 import { useRecoilValue } from "recoil";
 import { cn } from "~/utils";

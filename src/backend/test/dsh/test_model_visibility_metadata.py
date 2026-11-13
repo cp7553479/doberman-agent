@@ -10,22 +10,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.dsh import DshModelNotAllowedError
-from bisheng.core.context.tenant import (
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.dsh import DshModelNotAllowedError
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     get_current_tenant_id,
     is_tenant_filter_bypassed,
     set_current_tenant_id,
 )
-from bisheng.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
+from doberman_agent.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
 from test.dsh.test_subject_policy import subject_store as subject_store
 from test.dsh.test_unified_policy_repository import store as store
 
 
 @pytest.fixture
 def governed(monkeypatch):
-    from bisheng.llm.domain.services.llm import LLMDao, LLMService
+    from doberman_agent.llm.domain.services.llm import LLMDao, LLMService
 
     model = SimpleNamespace(id=42, tenant_id=2, server_id=8, online=False, model_type="llm")
     provider = SimpleNamespace(id=8, tenant_id=2, type="openai")
@@ -116,8 +116,8 @@ async def test_online_invocation_retains_the_exact_authorized_uncached_pair(gove
 
 @pytest.fixture
 async def management(store, governed, monkeypatch):
-    import bisheng.core.database as database
-    from bisheng.dsh.api.endpoints import unified_policy as api
+    import doberman_agent.core.database as database
+    from doberman_agent.dsh.api.endpoints import unified_policy as api
 
     state = SimpleNamespace(allowed=True, attempts=[])
 

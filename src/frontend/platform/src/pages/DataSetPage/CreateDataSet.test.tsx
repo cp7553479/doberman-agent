@@ -9,8 +9,8 @@ const mock = vi.hoisted(() => ({ create: vi.fn(), message: vi.fn(), read: vi.fn(
 vi.mock('@/controllers/API', () => ({ readFileLibDatabase: mock.read }))
 vi.mock('@/controllers/API/finetune', () => ({ createDatasetApi: mock.create }))
 vi.mock('@/controllers/request', () => ({ captureAndAlertRequestErrorHoc: (p: Promise<unknown>) => p.catch(() => false), showApiError: mock.error }))
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({ useToast: () => ({ message: mock.message }) }))();
 const hooks = Reflect.get(previous, 'useToast')?.() ?? {};
 return { ...actual, notification: { ...actual.notification, open: Reflect.get(previous, 'toast') ?? Reflect.get(hooks, 'toast') ?? actual.notification.open }, toast: { ...actual.toast, show: Reflect.get(previous, 'message') ?? Reflect.get(hooks, 'message') ?? actual.toast.show } };

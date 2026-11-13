@@ -248,7 +248,7 @@ class TestE2EF053OpenApiAuthIdentity:
         bearer = {"Authorization": f"Bearer {service_account['key']['plaintext']}"}
         legacy = await client.get(
             f"{API_ORIGIN}/api/v2/auth/whoami",
-            headers={**bearer, "X-Bisheng-End-User": "legacy"},
+            headers={**bearer, "X-Doberman-Agent-End-User": "legacy"},
         )
         assert legacy.status_code == 400
         assert_resp_error(legacy, 26019)

@@ -1,4 +1,4 @@
-import { Button, Input, SearchInput, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, SearchInput, Textarea, notification } from '@doberman-agent/ui';
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
@@ -16,8 +16,8 @@ import {
     type KnowledgeSpaceTagLibraryListItem,
 } from "@/controllers/API/knowledgeSpaceTagLibrary";
 import { handleUiRequest, showApiError } from "@/controllers/request";
-import { Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -120,19 +120,19 @@ function TagLibraryDialog({ open, mode, initial, onOpenChange, onSaved }: TagLib
                 </DialogHeader>
                 <div className="space-y-5 py-2">
                     <div>
-                        <Label className="bisheng-label">
+                        <Label className="doberman_agent-label">
                             {t("build.tagLibraryName")}
-                            <span className="bisheng-tip">*</span>
+                            <span className="doberman_agent-tip">*</span>
                         </Label>
                         <Input value={name} maxLength={200} onChange={(e) => setName(e.target.value)} className={"mt-2"} showCount />
                     </div>
                     <div>
-                        <Label className="bisheng-label">{t("build.description")}</Label>
+                        <Label className="doberman_agent-label">{t("build.description")}</Label>
                         <Textarea value={description} maxLength={1000} onChange={(e) => setDescription(e.target.value)} textareaClassName={"mt-2 min-h-20"} showCount />
                     </div>
                     <div>
                         <div className="mb-2 flex items-center justify-between">
-                            <Label className="bisheng-label">{t("build.tags")}</Label>
+                            <Label className="doberman_agent-label">{t("build.tags")}</Label>
                             <span className="text-xs text-muted-foreground">
                                 {tags.length}/{TAG_LIMIT}
                             </span>

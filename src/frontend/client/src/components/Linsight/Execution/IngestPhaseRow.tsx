@@ -21,7 +21,7 @@
  * stopwatch measures how long you have waited, never how much is left, and the
  * whole surface dropped elapsed-time headers for that reason.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import type { FC } from 'react';
 import { useLocalize } from '~/hooks';
 import { ACCENT, MUTED } from './execTokens';

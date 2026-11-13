@@ -6,9 +6,9 @@ import pytest
 from redis.exceptions import ConnectionError
 from sqlmodel import Session
 
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.dsh.infrastructure.quota_redis import QuotaRedis, QuotaRejected
-from bisheng.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRedis, QuotaRejected
+from doberman_agent.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
 from test.dsh.test_quota_admission import quota as quota
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal

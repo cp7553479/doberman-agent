@@ -10,7 +10,7 @@
 
 ## 1. 目标与非目标
 
-- **目标**：把灵思**任务模式**的报告产出接入 BiSheng **既有的 citation 溯源子系统**（`bisheng/citation/`，日常对话模式已在用），让报告正文出现可点击的内联角标，回看知识库原文件（bbox 定位）或原网页。**最大化复用、最小化改动、零新增前端（Phase 1）**。
+- **目标**：把灵思**任务模式**的报告产出接入 doberman-agent **既有的 citation 溯源子系统**（`doberman-agent/citation/`，日常对话模式已在用），让报告正文出现可点击的内联角标，回看知识库原文件（bbox 定位）或原网页。**最大化复用、最小化改动、零新增前端（Phase 1）**。
 - **非目标**：
   - 不自研任务模式专属的溯源机制；不新增溯源相关的领域对象/表/事件类型/迁移。
   - Phase 1 不改下载的 Word/PDF（Phase 2）；不做「参考资料」汇总面板；不做引用修复 pass。
@@ -35,7 +35,7 @@
 ### 决策 1：整体路线 —— 复用 citation 子系统，而非自研或 Skill/提示词
 
 - **备选**：
-  - A. **复用 `bisheng/citation/`**：让任务模式的检索工具走与日常模式相同的 annotate→collect→cache→resolve 链路，模型发相同的 Unicode 私用区标记，前端复用相同渲染器。
+  - A. **复用 `doberman-agent/citation/`**：让任务模式的检索工具走与日常模式相同的 annotate→collect→cache→resolve 链路，模型发相同的 Unicode 私用区标记，前端复用相同渲染器。
   - B. **自研任务模式专属溯源**：新建 sources 数据结构 + 新前端组件 + 新 resolve。
   - C. **Skill / 提示词让模型自己在文末写「参考资料」列表**：零代码，纯 prompt/Skill。
 - **选定**：A。
@@ -43,7 +43,7 @@
   - **C 从根上走不通**——今天 `search_knowledge_base` 只把 `page_content` 交给模型（`linsight_knowledge.py` `base_search` 丢弃 `Document.metadata`），模型**根本看不到 chunk 来自哪个文件/页**。让模型自己写文献表 = 让它**凭空编造文件名**，与「可信溯源」正相反。这恰好证明：无论用不用 Skill，都必须先在**工具边界**把来源身份暴露出来。
   - 一旦来源身份已流出，B 相比 A 没有任何收益却要重造 registry / resolve / 前端渲染 / **INV-7 权限过滤**（安全红线，A 现成、B 得重写且易错）。
   - A 的前端成本为 **0**：任务模式报告预览已复用日常模式同一个 citation-capable 渲染器（`PreviewBody.tsx` → `Chat/Messages/Content/Markdown`，后者从正文私用区标记惰性 `/citations/resolve`）。
-  - 对标 ChatGPT / Gemini Deep Research：其溯源本质就是「检索时给来源分配稳定 ID → 模型按 ID 内联引用 → 渲染层解析成可点击卡」。BiSheng 的 citation 子系统就是这套架构，任务模式只是没接线。
+  - 对标 ChatGPT / Gemini Deep Research：其溯源本质就是「检索时给来源分配稳定 ID → 模型按 ID 内联引用 → 渲染层解析成可点击卡」。doberman-agent 的 citation 子系统就是这套架构，任务模式只是没接线。
 - **关于「Skill 减小改动量」**：Skill 无法减小改动——(1) 元数据缺口是工具边界的代码级问题，Skill 救不了；(2) 溯源须**常开**（用了 KB/Web 就生效），而 Skill 是用户按会话勾选的，skill-gating 会让溯源时有时无；(3) 来源身份流出后复用现成模块 ≈ 手写文献表的成本，却白拿可点击/过滤/bbox。
 - **何时该重新考虑**：若未来 citation 子系统被大改或下线；或任务模式产物彻底脱离 Markdown 预览（如纯二进制），则 A 的「前端零改动」前提失效，需重估。
 
@@ -206,7 +206,7 @@
   - **Phase 2** `bake_citations_for_export`：RAG/WEB 各一，标记→`[n]` + 「参考资料」段；无标记 no-op。
 - **集成**（连 test 环境中间件，不改 test 部署）：选 KB 跑一个任务 → 断言 `output/*.md` 含私用区标记、`message_citation` 有以任务 ChatMessage id 落的行、`/resolve` 返回富 RAG（签名 URL+bbox）；**INV-7 回归**：无文件查看权限的用户调 `/resolve` 拿不到该文件来源。
 - **手动验证一遍**（本地起前后端 + 连 test 环境中间件 ES/Milvus/MinIO，不改 test 部署代码）：
-  1. 后端 `export config=config.yaml; uv run uvicorn bisheng.main:app --port 7860`；灵思 worker `uv run python bisheng/linsight/worker.py`；client `pnpm --filter bishengchat start`（:4001，base `/workspace`）。
+  1. 后端 `export config=config.yaml; uv run uvicorn doberman_agent.main:app --port 7860`；灵思 worker `uv run python doberman-agent/linsight/worker.py`；client `pnpm --filter doberman-agentchat start`（:4001，base `/workspace`）。
   2. 在任务模式选一个含 PDF 的知识库，并打开联网检索，提交一个会同时检索两者的任务；等产出报告。
   3. 预览报告（`PreviewBody` 走 `Chat/Messages/Content/Markdown`）→ 断言：正文出现 [1][2] 上标角标、悬浮卡有文档名+页码或站点+URL、点击 KB 角标开 `PdfViewer` 且黄框高亮定位、点击 Web 角标开原网页。
   4. 换一个对该 PDF 无查看权限的用户预览同一报告 → 角标灰化为「无权限」，`/resolve` 不返回该文件字段（INV-7）。

@@ -30,8 +30,8 @@ vi.mock("@/controllers/API/permission", () => ({
   getMyResourcePermissionsApi: vi.fn(),
 }))
 
-vi.mock('@bisheng/ui', async () => {
-const actual = await vi.importActual<typeof import('@bisheng/ui')>('@bisheng/ui');
+vi.mock('@doberman-agent/ui', async () => {
+const actual = await vi.importActual<typeof import('@doberman-agent/ui')>('@doberman-agent/ui');
 const previous = await (() => ({
   toast: vi.fn(),
   useToast: () => ({ toast: vi.fn(), message: vi.fn() }),

@@ -20,8 +20,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_publish.domain.services import capability_bus_service
-from bisheng.app_publish.domain.services.capability_bus_service import (
+from doberman_agent.app_publish.domain.services import capability_bus_service
+from doberman_agent.app_publish.domain.services.capability_bus_service import (
     CAPABILITY_KIND_KNOWLEDGE,
     CAPABILITY_KIND_MODEL,
     REASON_AMBIGUOUS,
@@ -31,13 +31,13 @@ from bisheng.app_publish.domain.services.capability_bus_service import (
     load_effective_declaration,
     model_capability_status,
 )
-from bisheng.common.errcode.app_publish import AppCapabilityRevokedError
-from bisheng.common.errcode.model_face import ModelFaceModelAmbiguousError, ModelFaceModelNotFoundError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.common.errcode.app_publish import AppCapabilityRevokedError
+from doberman_agent.common.errcode.model_face import ModelFaceModelAmbiguousError, ModelFaceModelNotFoundError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 
 async def _online_app_declaring(publish_db, app_factory, capabilities):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, version = await app_factory(state="online")
     async with publish_db() as session:
@@ -67,7 +67,7 @@ def test_16273_carries_the_capability_name_and_the_reason():
 
 def test_16274_is_a_different_answer_from_16273():
     """ "Declare it and publish again" and "ask why it disappeared" are two fixes."""
-    from bisheng.common.errcode.app_publish import AppCapabilityNotDeclaredError
+    from doberman_agent.common.errcode.app_publish import AppCapabilityNotDeclaredError
 
     undeclared = AppCapabilityNotDeclaredError(capability="财务档案", kind=CAPABILITY_KIND_KNOWLEDGE)
 
@@ -139,8 +139,8 @@ async def test_a_capability_dropped_by_the_new_iteration_stops_working_when_it_g
     """
     from datetime import datetime
 
-    from bisheng.database.models.app import AppDao
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.database.models.app import AppDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     dropped = await knowledge_factory(name="将被移出声明")
     kept = await knowledge_factory(name="留在声明里")
@@ -182,7 +182,7 @@ def test_the_credential_side_of_the_five_second_bound_is_asserted_not_assumed():
     Owned by T055; re-asserted from here because AC-37 is what makes the bound a
     product promise rather than an implementation detail of the credential cache.
     """
-    from bisheng.app_publish.domain.services.app_credential_service import (
+    from doberman_agent.app_publish.domain.services.app_credential_service import (
         REVOCATION_BOUND_SECONDS,
         assert_revocation_bound,
     )
@@ -237,7 +237,7 @@ async def test_nothing_about_the_marks_is_persisted(publish_db, app_factory, kno
     assert (await capability_status(app_id=app_row.id))[0].revoked is True
 
     # And the version row that carries the declaration was never written to.
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async with publish_db() as session:
         stored = await AppVersionDao.aget(session, app_row.id, version.id)
@@ -271,7 +271,7 @@ async def test_model_marks_use_f051s_resolution_not_a_second_rule(monkeypatch, p
             raise ModelFaceModelAmbiguousError(model=requested, candidates=["a/重名模型", "b/重名模型"])
         return SimpleNamespace(model_name=requested)
 
-    import bisheng.llm.domain.services.model_catalog as catalog
+    import doberman_agent.llm.domain.services.model_catalog as catalog
 
     monkeypatch.setattr(catalog, "resolve_model_name", _resolve)
 
@@ -290,7 +290,7 @@ async def test_the_publish_surface_serves_the_marks_it_computed(
     monkeypatch, publish_db, app_factory, knowledge_factory, tier_seed
 ):
     """AC-61 / AC-63 on the read model the publish page actually calls."""
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     alive = await knowledge_factory(name="产品手册")
     app_row, _version = await _online_app_declaring(
@@ -299,7 +299,7 @@ async def test_the_publish_surface_serves_the_marks_it_computed(
         {"models": [{"name": "qwen-max"}], "knowledge_bases": [{"id": str(alive.id)}, {"id": "999999"}]},
     )
 
-    import bisheng.llm.domain.services.model_catalog as catalog
+    import doberman_agent.llm.domain.services.model_catalog as catalog
 
     async def _resolve(tenant_id, requested, *, range=None):
         raise ModelFaceModelNotFoundError(model=requested)
@@ -323,8 +323,8 @@ async def test_the_publish_surface_still_renders_when_resolution_is_unavailable(
     monkeypatch, publish_db, app_factory, knowledge_factory, tier_seed
 ):
     """A bad minute in the catalog must not take the whole page down."""
-    from bisheng.app_publish.domain.services import capability_bus_service as bus
-    from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
+    from doberman_agent.app_publish.domain.services import capability_bus_service as bus
+    from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
 
     kb = await knowledge_factory(name="产品手册")
     app_row, _version = await _online_app_declaring(publish_db, app_factory, {"knowledge_bases": [{"id": str(kb.id)}]})

@@ -6,9 +6,9 @@ from uuid import uuid4
 import pytest
 from elasticsearch import Elasticsearch, helpers
 
-from bisheng.telemetry_search.domain.models.dashboard_dataset import MetricConfig
-from bisheng.telemetry_search.domain.schemas.component import AggregationType, ComponentDataConfig
-from bisheng.telemetry_search.domain.schemas.query_builder import (
+from doberman_agent.telemetry_search.domain.models.dashboard_dataset import MetricConfig
+from doberman_agent.telemetry_search.domain.schemas.component import AggregationType, ComponentDataConfig
+from doberman_agent.telemetry_search.domain.schemas.query_builder import (
     AggregationExpression,
     AggsTypeEnum,
     FilterExpression,
@@ -16,8 +16,8 @@ from bisheng.telemetry_search.domain.schemas.query_builder import (
     RangeValue,
     TermOp,
 )
-from bisheng.telemetry_search.domain.services.component import DataQueryService
-from bisheng.telemetry_search.domain.services.search_engine_service import (
+from doberman_agent.telemetry_search.domain.services.component import DataQueryService
+from doberman_agent.telemetry_search.domain.services.search_engine_service import (
     QueryBuilder,
     SearchEngineService,
     SearchParameters,
@@ -191,7 +191,7 @@ def test_real_es_counts_each_invocation_once_with_legacy_and_correct_dates(es_ev
         stack_dimension=AggregationExpression(name="app", field="app_name", type=AggsTypeEnum.TERMS),
     )
     response = client.search(index=index, body=QueryBuilder(nested).build_query_dsl())
-    from bisheng.telemetry_search.domain.services.search_engine_service import ResultParser
+    from doberman_agent.telemetry_search.domain.services.search_engine_service import ResultParser
 
     assert sorted(ResultParser(nested).parse_to_2d_array(response.body)) == [
         ["group-a", "daily_chat", 212],

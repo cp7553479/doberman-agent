@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 
 def _compiled(col: str, val) -> str:
-    from bisheng.role.domain.services.quota_service import QuotaService
+    from doberman_agent.role.domain.services.quota_service import QuotaService
 
     stmt = QuotaService._knowledge_space_count_stmt(col, val)
     assert stmt is not None
@@ -22,7 +22,7 @@ def _compiled(col: str, val) -> str:
 class TestCountScope:
     def test_not_registered_as_raw_template(self):
         """A template would silently lose the type filter and break DM8 quoting."""
-        from bisheng.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
+        from doberman_agent.role.domain.services.quota_service import _RESOURCE_COUNT_TEMPLATES
 
         assert "knowledge_space" not in _RESOURCE_COUNT_TEMPLATES
 
@@ -30,7 +30,7 @@ class TestCountScope:
         """`_count_resource` must route knowledge_space to the ORM counter."""
         import inspect
 
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         src = inspect.getsource(QuotaService._count_resource)
         dispatch = src.index('resource_type == "knowledge_space"')
@@ -62,7 +62,7 @@ class TestCountScope:
         assert "TENANT_ID IN" not in where, where
 
     def test_unsupported_column_returns_none(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         assert QuotaService._knowledge_space_count_stmt("nope", 1) is None
 
@@ -77,7 +77,7 @@ class TestTenantFilterBypass:
     """
 
     async def test_count_runs_inside_bypass_tenant_filter(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         class _Result:
             def scalar(self):
@@ -93,10 +93,10 @@ class TestTenantFilterBypass:
 
         with (
             patch(
-                "bisheng.core.context.tenant.bypass_tenant_filter",
+                "doberman_agent.core.context.tenant.bypass_tenant_filter",
                 return_value=contextlib.nullcontext(),
             ) as mock_bypass,
-            patch("bisheng.core.database.get_async_db_session", _fake_session),
+            patch("doberman_agent.core.database.get_async_db_session", _fake_session),
         ):
             got = await QuotaService._count_knowledge_space("tenant_id", 7)
 
@@ -104,12 +104,12 @@ class TestTenantFilterBypass:
         mock_bypass.assert_called_once()
 
     async def test_db_failure_is_logged_and_counted_as_zero(self):
-        from bisheng.role.domain.services.quota_service import QuotaService
+        from doberman_agent.role.domain.services.quota_service import QuotaService
 
         @contextlib.asynccontextmanager
         async def _boom():
             raise RuntimeError("db down")
             yield  # pragma: no cover
 
-        with patch("bisheng.core.database.get_async_db_session", _boom):
+        with patch("doberman_agent.core.database.get_async_db_session", _boom):
             assert await QuotaService._count_knowledge_space("user_id", 11) == 0

@@ -1,6 +1,6 @@
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/bs-ui/popover'
-import { Button,Checkbox,Tag } from '@bisheng/ui'
-import { Outlined } from 'bisheng-icons'
+import { Button,Checkbox,Tag } from '@doberman-agent/ui'
+import { Outlined } from '@doberman-agent/icons'
 import type { Dispatch,SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FILE_STATUSES } from './KnowledgeFileStatus'

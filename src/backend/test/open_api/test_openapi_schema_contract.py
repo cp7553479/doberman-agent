@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from bisheng.common.services.config_service import settings
-from bisheng.main import app
-from bisheng.open_api.api.exception_handlers import MODEL_GATEWAY_PATH_PREFIX
-from bisheng.open_api.api.openapi_schema import BEARER_SCHEME_NAME
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.main import app
+from doberman_agent.open_api.api.exception_handlers import MODEL_GATEWAY_PATH_PREFIX
+from doberman_agent.open_api.api.openapi_schema import BEARER_SCHEME_NAME
 
 
 def test_all_v2_http_operations_publish_bearer_security():

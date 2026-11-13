@@ -28,7 +28,7 @@ import tempfile
 
 import pytest
 
-from bisheng.linsight.domain.services.workspace_backend import WORKSPACE_PREFIX, WorkspaceBackend
+from doberman_agent.linsight.domain.services.workspace_backend import WORKSPACE_PREFIX, WorkspaceBackend
 from test.linsight.test_workspace_backend import FakeMinioStorage
 
 TREE = [

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { workflowStreamForHost } from '@bisheng/chat/core';
+import { workflowStreamForHost } from '@doberman-agent/chat/core';
 import { generateUUID } from '@/components/bs-ui/utils';
 import { WorkflowMessage } from '@/types/flow';
 import { formatDate } from '@/util/utils';

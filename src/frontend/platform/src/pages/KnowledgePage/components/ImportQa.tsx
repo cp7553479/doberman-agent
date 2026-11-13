@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import { checkSassUrl } from "@/components/bs-comp/FileView";
 
 import { Dialog,DialogClose,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
@@ -247,7 +247,7 @@ export const ImportQa = forwardRef(function ({ knowlageId, onChange }: any, ref)
                 </DialogHeader>
                 <div>
                     <div className="flex justify-between items-center">
-                        <label htmlFor="dataSetName" className="bisheng-label">
+                        <label htmlFor="dataSetName" className="doberman_agent-label">
                             <span className="text-red-500">*</span>{t('upFile')}
                         </label>
                         <div className="flex gap-2 items-center">
@@ -275,7 +275,7 @@ export const ImportQa = forwardRef(function ({ knowlageId, onChange }: any, ref)
                     </div>
                 </div>
                 {!!dataList.length && <div>
-                    <label htmlFor="dataSetName" className="bisheng-label">
+                    <label htmlFor="dataSetName" className="doberman_agent-label">
                         {t('importPreview')}
                     </label>
                     <div className="flex flex-col gap-4 py-2 max-h-[36vh] overflow-y-auto">

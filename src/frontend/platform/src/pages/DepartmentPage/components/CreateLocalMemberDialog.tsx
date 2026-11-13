@@ -1,4 +1,4 @@
-import { Button, Input, PasswordInput, Select, notification } from '@bisheng/ui';
+import { Button, Input, PasswordInput, Select, notification } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog"
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels"

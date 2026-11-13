@@ -11,7 +11,7 @@
 //                                inherited_from_root=true.
 
 import { useContext } from "react";
-import { Alert, Tag } from "@bisheng/ui";
+import { Alert, Tag } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import { locationContext } from "@/contexts/locationContext";
 import { Tenant } from "@/types/api/tenant";

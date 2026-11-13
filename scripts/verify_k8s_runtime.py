@@ -42,7 +42,7 @@ from runtime_manager.platform_protocol import signed_headers  # noqa: E402
 
 _NAME = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")
 _IMAGE = re.compile(r"[A-Za-z0-9][A-Za-z0-9./:_-]*@sha256:[a-f0-9]{64}")
-_RESULT = "BISHENG_RUNTIME_RESULT "
+_RESULT = "DOBERMAN_AGENT_RUNTIME_RESULT "
 # A pattern match is insufficient: arbitrary secret text can look like a code.
 _SAFE_PROBE_REASONS = frozenset(
     {
@@ -592,7 +592,7 @@ class InstallationVerifier:
             raise ProbeError("admission_refresh_refused") from None
         if not isinstance(pods, list) or not pods:
             raise ProbeError("admission_refresh_targets_unavailable")
-        annotation = "runtime.bisheng.io/canary-plans-revision"
+        annotation = "runtime.doberman-agent.io/canary-plans-revision"
         for listed in pods:
             previous = self._admission_refresh_target(listed)
             try:
@@ -712,7 +712,7 @@ class InstallationVerifier:
         pod = pod_template(plan)
         pod["metadata"]["name"] = "preflight-" + uuid4().hex[:20]
         if unschedulable:
-            pod["spec"]["nodeSelector"]["runtime.bisheng.io/preflight-unassigned"] = uuid4().hex
+            pod["spec"]["nodeSelector"]["runtime.doberman-agent.io/preflight-unassigned"] = uuid4().hex
         app = pod["spec"]["containers"][0]
         for key in ("readinessProbe", "livenessProbe", "startupProbe"):
             app.pop(key, None)
@@ -772,7 +772,7 @@ class InstallationVerifier:
     def _namespace_budget(self):
         namespace = self.api.get("namespace", self.namespace)
         if (
-            namespace["metadata"].get("labels", {}).get("runtime.bisheng.io/installation")
+            namespace["metadata"].get("labels", {}).get("runtime.doberman-agent.io/installation")
             != self.options["installation_id"]
         ):
             raise ProbeError("namespace_ownership_unconfirmed")
@@ -1017,14 +1017,14 @@ class InstallationVerifier:
                 "namespace": self.namespace,
                 "labels": {
                     RESOURCE_LABEL: str(uuid4()),
-                    "bisheng.managed": "v2",
-                    "runtime.bisheng.io/purpose": "probe",
+                    "doberman-agent.managed": "v2",
+                    "runtime.doberman-agent.io/purpose": "probe",
                 },
                 "annotations": {
                     POLICY_ANNOTATION: self.document["status_policy_revision"],
-                    "runtime.bisheng.io/operation": "preflight-" + uuid4().hex[:20],
-                    "runtime.bisheng.io/generation": "1",
-                    "runtime.bisheng.io/owner-epoch": "1",
+                    "runtime.doberman-agent.io/operation": "preflight-" + uuid4().hex[:20],
+                    "runtime.doberman-agent.io/generation": "1",
+                    "runtime.doberman-agent.io/owner-epoch": "1",
                 },
             },
             "spec": {
@@ -1037,8 +1037,8 @@ class InstallationVerifier:
         if storage.get("static_pool"):
             pvc["spec"]["selector"] = {
                 "matchLabels": {
-                    "runtime.bisheng.io/namespace": self.namespace,
-                    "runtime.bisheng.io/volume-role": "preflight",
+                    "runtime.doberman-agent.io/namespace": self.namespace,
+                    "runtime.doberman-agent.io/volume-role": "preflight",
                 }
             }
         self._create(pvc)
@@ -1183,13 +1183,13 @@ class InstallationVerifier:
         pod = pod_template(plan)
         # Reuse the real policy label without serving traffic through its Service.
         # No controller populates this condition; phase Succeeded is still observable.
-        pod["spec"]["readinessGates"] = [{"conditionType": "runtime.bisheng.io/preflight-not-serving"}]
+        pod["spec"]["readinessGates"] = [{"conditionType": "runtime.doberman-agent.io/preflight-not-serving"}]
         pod["metadata"]["name"] = "preflight-" + uuid4().hex[:20]
         pod["metadata"]["labels"] = {
             "app": role,
-            "runtime.bisheng.io/preflight-installation": self.options["installation_id"],
+            "runtime.doberman-agent.io/preflight-installation": self.options["installation_id"],
         }
-        pod["metadata"]["annotations"]["runtime.bisheng.io/preflight-expiry"] = str(int(time.time()) + 3500)
+        pod["metadata"]["annotations"]["runtime.doberman-agent.io/preflight-expiry"] = str(int(time.time()) + 3500)
         app = pod["spec"]["containers"][0]
         app["env"] = [
             {
@@ -1482,10 +1482,10 @@ class InstallationVerifier:
             self.created.append({"plan": plan, "resource": resource, "name": plan["name"], "uid": plan["uid"]})
         for pod in self.api.list("pods", namespace=self.api.control):
             meta = pod["metadata"]
-            expiry = meta.get("annotations", {}).get("runtime.bisheng.io/preflight-expiry", "")
+            expiry = meta.get("annotations", {}).get("runtime.doberman-agent.io/preflight-expiry", "")
             if (
                 meta.get("name", "").startswith("preflight-")
-                and meta.get("labels", {}).get("runtime.bisheng.io/preflight-installation")
+                and meta.get("labels", {}).get("runtime.doberman-agent.io/preflight-installation")
                 == self.options["installation_id"]
                 and expiry.isdecimal()
                 and int(expiry) <= now

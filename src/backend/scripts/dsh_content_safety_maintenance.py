@@ -30,19 +30,19 @@ if __name__ == "__main__":
     from loguru import logger
 
     logging.disable(logging.CRITICAL)
-    logger.disable("bisheng")
+    logger.disable("doberman_agent")
 
 _STARTUP_FAILURE = None
 try:
     from sqlmodel import select
 
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.tenant import strict_tenant_filter
-    from bisheng.core.database import get_sync_db_session
-    from bisheng.database.models.tenant import Tenant
-    from bisheng.dsh.domain.repositories.content_safety_maintenance import ContentSafetyMaintenanceRepository
-    from bisheng.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
-    from bisheng.dsh.domain.services.profile import profile_scope
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.tenant import strict_tenant_filter
+    from doberman_agent.core.database import get_sync_db_session
+    from doberman_agent.database.models.tenant import Tenant
+    from doberman_agent.dsh.domain.repositories.content_safety_maintenance import ContentSafetyMaintenanceRepository
+    from doberman_agent.dsh.domain.repositories.model_audit_setting import DshModelAuditSettingRepository
+    from doberman_agent.dsh.domain.services.profile import profile_scope
 except Exception as error:
     # YAML/dependency errors may contain secrets; retain their type alone.
     _STARTUP_FAILURE = type(error).__name__

@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.permission.application.roster_search import search_source_page
+from doberman_agent.permission.application.roster_search import search_source_page
 
 
 async def test_search_reaches_people_beyond_first_page_without_losing_cursor():

@@ -23,14 +23,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.models.space_channel_member import (
     MembershipStatusEnum,
     UserRoleEnum,
 )
-from bisheng.knowledge.domain.services import (
+from doberman_agent.knowledge.domain.services import (
     department_knowledge_space_service as mod,
 )
-from bisheng.knowledge.domain.services.department_knowledge_space_service import (
+from doberman_agent.knowledge.domain.services.department_knowledge_space_service import (
     DepartmentKnowledgeSpaceService,
 )
 

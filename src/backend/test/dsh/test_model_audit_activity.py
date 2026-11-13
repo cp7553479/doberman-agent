@@ -3,7 +3,7 @@
 import asyncio
 from unittest.mock import AsyncMock
 
-from bisheng.dsh.infrastructure.model_audit_activity import RedisAuditActivity
+from doberman_agent.dsh.infrastructure.model_audit_activity import RedisAuditActivity
 
 
 class LeaseRedis:

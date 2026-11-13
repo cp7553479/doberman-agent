@@ -6,11 +6,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.approval.domain.models.approval_instance import ApprovalInstance
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
-from bisheng.common.errcode.approval import ApprovalRequestPermissionDeniedError
-from bisheng.core.context import tenant
+from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
+from doberman_agent.common.errcode.approval import ApprovalRequestPermissionDeniedError
+from doberman_agent.core.context import tenant
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def pending(monkeypatch):
     monkeypatch.setattr(ApprovalInstanceRepository, "list_tasks", AsyncMock(return_value=[]))
     monkeypatch.setattr(ApprovalInstanceRepository, "list_action_logs", AsyncMock(return_value=[]))
     monkeypatch.setattr(
-        "bisheng.permission.application.is_tenant_admin", AsyncMock(side_effect=lambda uid, tid: uid == 7 and tid == 2)
+        "doberman_agent.permission.application.is_tenant_admin", AsyncMock(side_effect=lambda uid, tid: uid == 7 and tid == 2)
     )
     return instance
 
@@ -73,8 +73,8 @@ async def test_management_api_checks_tenant_admin_before_returning_progress(pend
     from fastapi import FastAPI
     from starlette.testclient import TestClient
 
-    from bisheng.approval.api.endpoints.approval_admin import router
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.approval.api.endpoints.approval_admin import router
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
@@ -89,8 +89,8 @@ async def test_management_api_checks_tenant_admin_before_returning_progress(pend
 
 
 async def test_global_list_never_supplies_an_implicit_write_tenant(pending):
-    from bisheng.approval.api.endpoints.approval_admin import _tenant
-    from bisheng.common.errcode.admin_scope import AdminScopeTenantRequiredError
+    from doberman_agent.approval.api.endpoints.approval_admin import _tenant
+    from doberman_agent.common.errcode.admin_scope import AdminScopeTenantRequiredError
 
     user = SimpleNamespace(user_id=1, tenant_id=1, is_global_super=True)
     bindings = [

@@ -18,8 +18,8 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
-from bisheng_langchain.linsight.const import TaskStatus
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent_langchain.linsight.const import TaskStatus
 
 
 def _task() -> LinsightWorkflowTask:

@@ -1,7 +1,7 @@
 """Compare DM8 catalog metadata with SQLAlchemy column reflection.
 
 This script is read-only. It helps diagnose cases where DaMeng reports that a
-column already exists while ``Inspector.get_columns()`` or BiSheng's shared
+column already exists while ``Inspector.get_columns()`` or doberman-agent's shared
 ``column_exists()`` helper reports that it is missing.
 
 Run it inside an API or worker container from ``/app`` using the same ``config``
@@ -28,8 +28,8 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlalchemy import inspect, text  # noqa: E402
 
-from bisheng.core.database.dialect_helpers import column_exists  # noqa: E402
-from bisheng.core.database.manager import sync_get_database_connection  # noqa: E402
+from doberman_agent.core.database.dialect_helpers import column_exists  # noqa: E402
+from doberman_agent.core.database.manager import sync_get_database_connection  # noqa: E402
 
 
 def _stringify(value: Any) -> Any:
@@ -184,10 +184,10 @@ def diagnose(table: str, column: str, schema_override: str | None) -> tuple[int,
 
             try:
                 helper_result = column_exists(connection, table, column)
-                report["bisheng_column_exists"] = {"ok": True, "value": helper_result}
+                report["doberman_agent_column_exists"] = {"ok": True, "value": helper_result}
             except Exception as exc:
                 helper_result = False
-                report["bisheng_column_exists"] = {
+                report["doberman_agent_column_exists"] = {
                     "ok": False,
                     "error": f"{type(exc).__name__}: {exc}",
                 }
@@ -215,7 +215,7 @@ def diagnose(table: str, column: str, schema_override: str | None) -> tuple[int,
             "catalog_found": catalog_found,
             "inspector_found_without_schema": inspector_without_schema,
             "inspector_found_with_schema": inspector_with_schema,
-            "bisheng_column_exists": helper_result,
+            "doberman_agent_column_exists": helper_result,
             "exit_code": exit_code,
         }
         return exit_code, report

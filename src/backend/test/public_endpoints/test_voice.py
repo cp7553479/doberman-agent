@@ -8,15 +8,15 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.core.context.tenant import get_current_tenant_id
-from bisheng.database.models.assistant import AssistantStatus
-from bisheng.database.models.flow import FlowStatus, FlowType
-from bisheng.permission.application.identity import get_current_permission_actor
-from bisheng.public_endpoints.api.endpoints import llm
-from bisheng.public_endpoints.api.exception_handlers import register_public_exception_handlers
-from bisheng.public_endpoints.api.router import router_public
-from bisheng.public_endpoints.domain.context import get_current_public_api_principal
-from bisheng.public_endpoints.domain.services import guest_policy
+from doberman_agent.core.context.tenant import get_current_tenant_id
+from doberman_agent.database.models.assistant import AssistantStatus
+from doberman_agent.database.models.flow import FlowStatus, FlowType
+from doberman_agent.permission.application.identity import get_current_permission_actor
+from doberman_agent.public_endpoints.api.endpoints import llm
+from doberman_agent.public_endpoints.api.exception_handlers import register_public_exception_handlers
+from doberman_agent.public_endpoints.api.router import router_public
+from doberman_agent.public_endpoints.domain.context import get_current_public_api_principal
+from doberman_agent.public_endpoints.domain.services import guest_policy
 
 WORKFLOW_ID = UUID(int=101).hex
 ASSISTANT_ID = UUID(int=102).hex
@@ -80,15 +80,15 @@ def publication(monkeypatch):
     )
 
     monkeypatch.setattr(
-        "bisheng.user.domain.services.auth.UserRoleDao.aget_user_roles",
+        "doberman_agent.user.domain.services.auth.UserRoleDao.aget_user_roles",
         AsyncMock(side_effect=lambda _uid: [SimpleNamespace(role_id=r) for r in state.role_ids]),
     )
     monkeypatch.setattr(
-        "bisheng.utils.http_middleware._check_is_global_super",
+        "doberman_agent.utils.http_middleware._check_is_global_super",
         AsyncMock(side_effect=lambda _uid, role_ids=None: state.is_global_super),
     )
     monkeypatch.setattr(
-        "bisheng.permission.application.relation_api.is_tenant_admin",
+        "doberman_agent.permission.application.relation_api.is_tenant_admin",
         AsyncMock(side_effect=lambda _uid, _tid: state.is_tenant_admin),
     )
 

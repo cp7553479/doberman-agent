@@ -15,11 +15,11 @@ import pytest
 from fastapi import HTTPException
 from websockets.exceptions import InvalidStatus
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.core.ai.asr import realtime, speech_cloud, volcengine
-from bisheng.core.ai.asr.capabilities import realtime_protocol, should_promote_legacy_asr
-from bisheng.llm.domain.llm.asr import BishengASR, is_asr_provider_supported
-from bisheng.utils.mask_data import JsonFieldMasker
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.core.ai.asr import realtime, speech_cloud, volcengine
+from doberman_agent.core.ai.asr.capabilities import realtime_protocol, should_promote_legacy_asr
+from doberman_agent.llm.domain.llm.asr import DobermanAgentASR, is_asr_provider_supported
+from doberman_agent.utils.mask_data import JsonFieldMasker
 
 VOLC_CONFIG = {"speech_api_key": "fixture-api", "speech_resource_id": "volc.seedasr.sauc.duration"}
 BAIDU_CONFIG = {"speech_app_id": "123", "speech_api_key": "fixture-api"}
@@ -239,7 +239,7 @@ async def test_volcengine_forbidden_resource_fails_the_handshake(monkeypatch):
 
 
 async def test_save_rejects_a_resource_the_speech_credentials_cannot_use(monkeypatch):
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     async def reject(self):
         raise volcengine.SpeechAccessRejected("rejected")
@@ -278,21 +278,21 @@ async def test_factory_and_capability_match(provider, model, config, cls):
     assert realtime_protocol(provider, model)
     assert is_asr_provider_supported(provider)
     server = SimpleNamespace(type=provider, config=config)
-    instance = await BishengASR.init_asr_client(
+    instance = await DobermanAgentASR.init_asr_client(
         SimpleNamespace(model_name=model, model_type="asr_rt", config=None), server
     )
     assert isinstance(instance, cls) and isinstance(instance, realtime.RealtimeASRClient)
     unknown = SimpleNamespace(model_name="unsupported", model_type="asr_rt", config=None)
     if provider == "volcengine":
         with pytest.raises(ValueError):
-            await BishengASR.init_asr_client(unknown, server)
+            await DobermanAgentASR.init_asr_client(unknown, server)
     else:
-        built = await BishengASR.init_asr_client(unknown, server)
+        built = await DobermanAgentASR.init_asr_client(unknown, server)
         assert built.model == "unsupported"
-    legacy = await BishengASR.init_asr_client(SimpleNamespace(model_name=model, model_type="asr", config=None), server)
+    legacy = await DobermanAgentASR.init_asr_client(SimpleNamespace(model_name=model, model_type="asr", config=None), server)
     assert isinstance(legacy, cls)
     with pytest.raises(ValueError, match="no file ASR client"):
-        await BishengASR.init_asr_client(
+        await DobermanAgentASR.init_asr_client(
             SimpleNamespace(model_name="unsupported", model_type="asr", config=None), server
         )
     assert realtime_protocol(provider, "unsupported") is None
@@ -469,15 +469,15 @@ async def test_baidu_non_numeric_engine_fails_when_the_session_starts(monkeypatc
         speech_cloud.BaiduRealtimeASRClient("", BAIDU_CONFIG)
 
 
-async def test_get_bisheng_asr_builds_an_unlisted_tencent_engine(monkeypatch):
+async def test_get_doberman_agent_asr_builds_an_unlisted_tencent_engine(monkeypatch):
     model = SimpleNamespace(id=21, model_name="new-engine", model_type="asr_rt", online=True, config=None)
     server = SimpleNamespace(type="tencent", name="Tencent", config=TENCENT_CONFIG)
 
     async def lookup(_model_id):
         return model, server
 
-    monkeypatch.setattr(BishengASR, "get_model_server_info", lookup)
-    instance = await BishengASR.get_bisheng_asr(
+    monkeypatch.setattr(DobermanAgentASR, "get_model_server_info", lookup)
+    instance = await DobermanAgentASR.get_doberman_agent_asr(
         model_id=21,
         ignore_online=True,
         app_id=ApplicationTypeEnum.MODEL_TEST.value,
@@ -489,20 +489,20 @@ async def test_get_bisheng_asr_builds_an_unlisted_tencent_engine(monkeypatch):
 
 
 async def test_probe_invokes_realtime_asr(monkeypatch):
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     fake = AsyncMock()
     fake.ainvoke = AsyncMock(return_value="hello")
     getter = AsyncMock(return_value=fake)
-    monkeypatch.setattr("bisheng.llm.domain.services.llm.BishengASR.get_bisheng_asr", getter)
+    monkeypatch.setattr("doberman_agent.llm.domain.services.llm.DobermanAgentASR.get_doberman_agent_asr", getter)
     await LLMService._invoke_model_probe(SimpleNamespace(id=21, model_type="asr_rt", model_name="new-engine"), {})
     getter.assert_awaited()
     fake.ainvoke.assert_awaited()
 
 
 async def test_empty_workbench_slot_accepts_realtime_asr(monkeypatch):
-    from bisheng.llm.domain.schemas import WorkbenchModelConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.schemas import WorkbenchModelConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     saved = {}
 
@@ -519,9 +519,9 @@ async def test_empty_workbench_slot_accepts_realtime_asr(monkeypatch):
 
 
 async def test_file_typed_tencent_model_is_not_kept(monkeypatch):
-    from bisheng.llm.domain.models.llm_server import LLMDao
-    from bisheng.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.models.llm_server import LLMDao
+    from doberman_agent.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     deleted = {}
 
@@ -552,7 +552,7 @@ async def test_file_typed_tencent_model_is_not_kept(monkeypatch):
     monkeypatch.setattr(LLMDao, "ainsert_server_with_models", insert)
     monkeypatch.setattr(LLMDao, "adelete_server_by_id", delete)
     monkeypatch.setattr(LLMService, "get_one_llm", listed)
-    monkeypatch.setattr(BishengASR, "get_model_server_info", lookup)
+    monkeypatch.setattr(DobermanAgentASR, "get_model_server_info", lookup)
     server = LLMServerCreateReq(
         name="tencent-speech",
         type="tencent",
@@ -565,9 +565,9 @@ async def test_file_typed_tencent_model_is_not_kept(monkeypatch):
 
 
 async def test_add_checks_speech_by_calling_the_provider(monkeypatch):
-    from bisheng.llm.domain.models.llm_server import LLMDao
-    from bisheng.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.models.llm_server import LLMDao
+    from doberman_agent.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     deleted = {}
     called = {}
@@ -603,8 +603,8 @@ async def test_add_checks_speech_by_calling_the_provider(monkeypatch):
     monkeypatch.setattr(LLMDao, "ainsert_server_with_models", insert)
     monkeypatch.setattr(LLMDao, "adelete_server_by_id", delete)
     monkeypatch.setattr(LLMService, "get_one_llm", listed)
-    monkeypatch.setattr(BishengASR, "get_model_server_info", lookup)
-    monkeypatch.setattr(BishengASR, "ainvoke", reject)
+    monkeypatch.setattr(DobermanAgentASR, "get_model_server_info", lookup)
+    monkeypatch.setattr(DobermanAgentASR, "ainvoke", reject)
     server = LLMServerCreateReq(
         name="tencent-speech-rt",
         type="tencent",

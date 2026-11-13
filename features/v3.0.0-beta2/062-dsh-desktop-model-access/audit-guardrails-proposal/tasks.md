@@ -6,7 +6,7 @@
 
 ## 2026-10-20 会话标题同步：恢复实施
 
-用户最新指令恢复标题上报，开发后分别提交推送双端、核对CI再部署109并使用实际客户端E2E。Gateway不改，沿用Nginx→Gateway→毕昇及既有DSH认证。移除“查看本用户会话”“查看父会话”；本节优先于历史状态，证据见audit-title-validation.md。
+用户最新指令恢复标题上报，开发后分别提交推送双端、核对CI再部署109并使用实际客户端E2E。Gateway不改，沿用Nginx→Gateway→doberman-agent及既有DSH认证。移除“查看本用户会话”“查看父会话”；本节优先于历史状态，证据见audit-title-validation.md。
 
 本节仅更新标题增量，不改历史执行记录。标题已接入双端源码；提交、CI、109及实际客户端验收分别记录，不将实现或单测等同于部署。
 
@@ -40,7 +40,7 @@
 
 ## 2026-10-19 父子会话嵌套展示：实施阶段
 
-本节优先于下文既有交付状态。用户已确认设计0.13，按下表实施；功能和验证完成后才提交推送，不单独提交文档，不部署109。所有新文件均在bisheng本分支，客户端不变。
+本节优先于下文既有交付状态。用户已确认设计0.13，按下表实施；功能和验证完成后才提交推送，不单独提交文档，不部署109。所有新文件均在doberman-agent本分支，客户端不变。
 
 | 交付 | 当前状态 | 说明 |
 |---|---|---|
@@ -110,7 +110,7 @@
 
 ## 2 客户端并行开发轨道
 
-桌面客户端是外部 `bisheng-work` 仓库，不是本仓库 `src/frontend/client`。本轮独立 agent 使用 `/Users/zhangguoqing/works/bisheng-work/.worktrees/feat-3.0.0-dsh-audit`，分支 `feat/3.0.0-dsh-audit`，fetch 后最新 origin/main 基线为 `3f6f010b280e7e095a13f59d8e3faae2c6223ab2`。下文“客户端仓库/”指该工作树。旧 `.worktrees/codex-dsh-audit-poc` 只作调研参考，主检出及旧 PoC 的用户工作保持不变。
+桌面客户端是外部 `doberman-agent-work` 仓库，不是本仓库 `src/frontend/client`。本轮独立 agent 使用 `/Users/zhangguoqing/works/doberman-agent-work/.worktrees/feat-3.0.0-dsh-audit`，分支 `feat/3.0.0-dsh-audit`，fetch 后最新 origin/main 基线为 `3f6f010b280e7e095a13f59d8e3faae2c6223ab2`。下文“客户端仓库/”指该工作树。旧 `.worktrees/codex-dsh-audit-poc` 只作调研参考，主检出及旧 PoC 的用户工作保持不变。
 
 直接交给客户端：[接口契约](./client-api-audit-extension.md)。生产请求只附加服务端已公布的 `conversation_id` 与 `request_kind`，由真实 `GenerateOptions.sessionId/purpose` 取值；主进程使用可信企业连接能力快照，不相信任意模型请求自行声明服务端能力。账号身份和审计模式只由服务端决定。
 
@@ -169,15 +169,15 @@
 #### C009 可切换能力的 mock 服务
 
 - [x] C009（客户端 Desktop）
-- 文件：`客户端仓库/scripts/mock-bisheng-enterprise.mjs`；`客户端仓库/scripts/mock-bisheng-enterprise.d.mts`
+- 文件：`客户端仓库/scripts/mock-doberman-agent-enterprise.mjs`；`客户端仓库/scripts/mock-doberman-agent-enterprise.d.mts`
 - 依赖：无
-- 工作与上下文：为现有 mock 增加 config 两字段/仅会话/无能力/坏可选能力模式，记录净化后收到的两字段和请求次数，保留 SSE/工具/图片/错误及取消场景；不伪装成真实毕昇已持久化审计。
+- 工作与上下文：为现有 mock 增加 config 两字段/仅会话/无能力/坏可选能力模式，记录净化后收到的两字段和请求次数，保留 SSE/工具/图片/错误及取消场景；不伪装成真实doberman-agent已持久化审计。
 - 完成标准：客户端可独立用 mock 连通 C002–C008，模型请求计数证明无自动重放。
 
 #### T001 租户模式与变更模型
 
 - [x] T001（基础设施）
-- 文件：`src/backend/bisheng/dsh/domain/models/model_audit_setting.py`；`src/backend/bisheng/core/database/tenant_filter.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/models/model_audit_setting.py`；`src/backend/doberman_agent/core/database/tenant_filter.py`
 - 依赖：无
 - 工作与上下文：定义 dsh_model_audit_setting（tenant_id 唯一，mode/version/updated_by/at）和 setting_change（operation_id/actor/before/after/time）；OFF 为未配置默认，切换与留痕同事务。使用 SQLModel table=True 和双库兼容类型。新表由既有 model_discovery/create_all 发现，不向旧租户回填模式；回退应用时保留表和历史数据。
 - 完成标准：类型/模型可加载，双库兼容约束和既有配置不受破坏；记录本任务验证。
@@ -185,7 +185,7 @@
 #### T002 请求、证据与完整性清单模型
 
 - [x] T002（基础设施）
-- 文件：`src/backend/bisheng/dsh/domain/models/model_audit_request.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/models/model_audit_request.py`
 - 依赖：无
 - 工作与上下文：定义 request、evidence、manifest 三张表；request 保存认证身份、模型展示快照、conversation_id/key、四轴状态及来源时间、状态版本；evidence 唯一(request_id,event_type)，MODE_READ_FAILED 不含用户/会话/模型正文；manifest 保存 input_complete/capture_failed、固定通道计数/末序号/校验和模型终止事实。新表发现与回退规则同 T001。
 - 完成标准：类型/模型可加载，双库兼容约束和既有配置不受破坏；记录本任务验证。
@@ -193,7 +193,7 @@
 #### T003 正文、出现与查看日志模型
 
 - [x] T003（基础设施）
-- 文件：`src/backend/bisheng/dsh/domain/models/model_audit_content.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/models/model_audit_content.py`
 - 依赖：无
 - 工作与上下文：定义 content、occurrence、body_access；content 必含 tenant/user/scope_type/scope_id/编码与密钥版本/object_key/长度/摘要/写入状态，scope_type 为 CONVERSATION 或 REQUEST；occurrence 唯一(request_id,stage,channel,sequence)；查看日志保存 actor/target/time/result/trace。SQL 无输入输出文本列；新增表回退保留原件引用与密钥。
 - 完成标准：类型/模型可加载，双库兼容约束和既有配置不受破坏；记录本任务验证。
@@ -201,7 +201,7 @@
 #### T004 内部 DTO 与有界运行配置
 
 - [x] T004（基础设施）
-- 文件：`src/backend/bisheng/dsh/domain/schemas/model_audit.py`；`src/backend/bisheng/core/config/dsh.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/schemas/model_audit.py`；`src/backend/doberman_agent/core/config/dsh.py`
 - 依赖：无
 - 工作与上下文：定义管理元数据/分页/四轴状态/模式命令 DTO（不含正文），模式写入含 operation_id 与 expected_version；DshSettings 添加审计分块、单请求/全局队列预算、配置读取/存储超时、有限重试、刷新/观察窗口及密钥引用参数。默认租户模式仍由 SQL 决定，密钥缺失只使 CONTENT 留存失败；不增加旧 YAML 不识别的新顶层键。运维默认值可调，不宣称 D-09 SLA。
 - 完成标准：类型/模型可加载，双库兼容约束和既有配置不受破坏；记录本任务验证。
@@ -337,7 +337,7 @@
 #### T007 审计关联软解析与能力 DTO
 
 - [x] T007（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/schemas/model_audit_context.py`；`src/backend/bisheng/dsh/domain/schemas/contracts.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/schemas/model_audit_context.py`；`src/backend/doberman_agent/dsh/domain/schemas/contracts.py`
 - 依赖：T006
 - 工作与上下文：实现 parse_audit_context(raw,advertised_fields) 返回有效字段及缺失/无效诊断，不返回原始无效值；只支持 conversation_id 与 chat/compaction/session-title。DshEnabledConfig 可选 audit_context.fields，无独立 version，保持 0.5.0 基础契约；未知/无效扩展不转交业务 DTO。
 - 完成标准：T006 通过。
@@ -345,7 +345,7 @@
 #### T013 租户模式仓储与服务
 
 - [x] T013（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/repositories/model_audit_setting.py`；`src/backend/bisheng/dsh/domain/services/model_audit_setting.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_setting.py`；`src/backend/doberman_agent/dsh/domain/services/model_audit_setting.py`
 - 依赖：T012
 - 工作与上下文：仓储 read_mode/change_mode 内封装 SQL；服务 snapshot_mode(tenant,request_id) 在有界读取后固定模式，失败回 OFF 与最小降级诊断。管理读/写复用现有管理员身份与受限租户范围，切换只允许全局超管；模式变更与不可变日志同事务，不做新 F048 资源。
 - 完成标准：T012 通过。
@@ -353,7 +353,7 @@
 #### T025 统一状态/缺口判定器
 
 - [x] T025（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/services/model_audit_states.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/services/model_audit_states.py`
 - 依赖：T024、T004
 - 工作与上下文：derive_audit_states 接收固定模式、模型/响应事实、真实用量状态、完整性核验、活动租约和时钟；OFF/METADATA 不误报正文缺口，模式未知只标适用性待核实，独立 entered 才证明进入。未知不填零或补造失败；状态 CAS 保护，已完整原件不因响应失联降级。
 - 完成标准：T024 通过。
@@ -373,7 +373,7 @@
 - [x] C006（客户端 Desktop）
 - 文件：`客户端仓库/packages/dsh-desktop-enterprise/openai.js`；`客户端仓库/packages/dsh-desktop-enterprise/index.js`
 - 依赖：C004、C005
-- 工作与上下文：注册 auditContext 回调读取当前能力快照，EnterpriseLlmAdapter.stream 取真实 options.sessionId/purpose，正常已确认生成→chat，compaction/session-title 原值映射，未知省略。只对毕昇企业请求附加两个字段，删除本期不需要的消息来源上报依赖；不响应后补报、不新增模型重试。
+- 工作与上下文：注册 auditContext 回调读取当前能力快照，EnterpriseLlmAdapter.stream 取真实 options.sessionId/purpose，正常已确认生成→chat，compaction/session-title 原值映射，未知省略。只对doberman-agent企业请求附加两个字段，删除本期不需要的消息来源上报依赖；不响应后补报、不新增模型重试。
 - 完成标准：C005 通过；现有企业 adapter 测试回归。
 
 #### T008 能力入口和业务 JSON 分离测试
@@ -406,7 +406,7 @@
 #### T035 证据旁路写入
 
 - [x] T035（Worker）
-- 文件：`src/backend/bisheng/dsh/domain/repositories/model_audit_write.py`；`src/backend/bisheng/dsh/audit_runtime.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py`；`src/backend/doberman_agent/dsh/audit_runtime.py`
 - 依赖：T034、T013
 - 工作与上下文：独立有界队列/消费者按唯一键尽力写 entered 或降级诊断，有限重试与失败指标；每批使用事件内可信 tenant_id 建 ContextVar，无正文或客户端身份覆盖。配置 OFF 不启动进入事件写入，模式读取故障的系统诊断仍可尽力落库。
 - 完成标准：T034 通过。
@@ -433,7 +433,7 @@
 #### T009 公开能力及模型入口软解析
 
 - [x] T009（后端 API）
-- 文件：`src/backend/bisheng/dsh/api/endpoints/identity.py`；`src/backend/bisheng/dsh/api/endpoints/models.py`
+- 文件：`src/backend/doberman_agent/dsh/api/endpoints/identity.py`；`src/backend/doberman_agent/dsh/api/endpoints/models.py`
 - 依赖：T008
 - 工作与上下文：enabled config 公布已实施的两字段，关闭部署保持旧响应；Chat Completions 读取一次 JSON，先分离 audit_context 再严格 DshChatRequest.model_validate，并保持现有错误映射和 DSH 认证。模型路由把 request.state.request_id 与解析结果交给服务，逐请求不探测/重放。
 - 完成标准：T008 通过；主客户端旧版 config/模型契约测试通过。
@@ -441,7 +441,7 @@
 #### T015 版本化分块编码与事件清单
 
 - [x] T015（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/infrastructure/model_audit_codec.py`；`src/backend/bisheng/dsh/domain/schemas/model_audit_events.py`
+- 文件：`src/backend/doberman_agent/dsh/infrastructure/model_audit_codec.py`；`src/backend/doberman_agent/dsh/domain/schemas/model_audit_events.py`
 - 依赖：T014
 - 工作与上下文：定义 entered/input/output/terminal 事件与固定通道清单；分块前后保留统一接口实际值。作用域编码含 tenant/user/scope_type/scope_id/version，conversation_key 使用稳定 SHA-256 后再精确核对原值；计数、末序号和增量摘要在入队尝试前更新，编码/投递失败置 capture_failed。不额外复制完整正文。
 - 完成标准：T014 通过。
@@ -479,14 +479,14 @@
 - [ ] C010（客户端测试）
 - 文件：`客户端仓库/test/enterprise-audit-integration.test.ts`；`客户端仓库/docs/dsh-model-audit-validation.md`
 - 依赖：C008、C009
-- 工作与上下文：贯穿 config→状态→插件→适配器→主进程→mock；实测持久 Session 跨重启/登录续接、普通/标题/压缩/Fork、字段子集、无 ID、切 BASE、取消和失败编号。记录哪些是局部/mock证据；真实毕昇归组和持久化由 T064 联调验证，不在本任务伪称通过。
+- 工作与上下文：贯穿 config→状态→插件→适配器→主进程→mock；实测持久 Session 跨重启/登录续接、普通/标题/压缩/Fork、字段子集、无 ID、切 BASE、取消和失败编号。记录哪些是局部/mock证据；真实doberman-agent归组和持久化由 T064 联调验证，不在本任务伪称通过。
 - 覆盖 AC: AC-01, AC-02, AC-03, AC-05, AC-07, AC-08, AC-22, AC-28, AC-34, AC-36
 - 完成标准：新增用例先失败；配对实现完成后全部通过，记录测试命令与实际结果，不跳过故障断言。
 
 #### T011 请求编号只生成一次
 
 - [x] T011（后端 API）
-- 文件：`src/backend/bisheng/dsh/api/responses.py`；`src/backend/bisheng/dsh/domain/services/model.py`
+- 文件：`src/backend/doberman_agent/dsh/api/responses.py`；`src/backend/doberman_agent/dsh/domain/services/model.py`
 - 依赖：T009、T010
 - 工作与上下文：DshRoute 在请求入口设置 request.state.request_id，error 接收同一编号；complete 接收路由传入编号，直接内部调用可显式给编号或采用单次缺省生成，API 链不二次生成。UsageEvent 与 SSE/JSON 均沿用；错误分支不依赖退出后已复位的日志 trace。
 - 完成标准：T010 通过；既有模型错误和刷新语义回归通过。
@@ -532,7 +532,7 @@
 #### T017 共享对象原件与密钥适配
 
 - [x] T017（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/infrastructure/model_audit_storage.py`；`src/backend/bisheng/dsh/infrastructure/model_audit_keys.py`
+- 文件：`src/backend/doberman_agent/dsh/infrastructure/model_audit_storage.py`；`src/backend/doberman_agent/dsh/infrastructure/model_audit_keys.py`
 - 依赖：T016
 - 工作与上下文：实现 put_verified_block/open_verified_blocks，复用共享 MinIO 与已有加密依赖；AEAD 关联数据含带类型作用域，密钥引用/版本独立于 License/HMAC。用有限超时与有限重试，失败显式回报留存结果，浏览器经服务读取；本地盘仅可作可丢缓存，原件真相在 MinIO。
 - 完成标准：T016 通过。
@@ -540,7 +540,7 @@
 #### T019 写入仓储
 
 - [x] T019（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/repositories/model_audit_write.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_write.py`
 - 依赖：T018
 - 工作与上下文：提供 upsert_request/append_occurrence/save_manifest/link_verified_content/compare_and_set_states；SQL 事务中保留每次出现及唯一键摘要，不覆盖冲突原件；对象核验后才建已就绪引用，tenant ContextVar 自动过滤，SQL 不含正文。
 - 完成标准：T018 通过。
@@ -548,7 +548,7 @@
 #### T021 AuditCapture 有界观察器
 
 - [x] T021（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/services/model_audit_capture.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/services/model_audit_capture.py`
 - 依赖：T020
 - 工作与上下文：实现请求固定模式的 Noop/Metadata/Content capture；entered/input/output/terminal 只做有界本地工作及非阻断投递。维护入队前预期清单、失败标志、模型结果来源；非关键故障明确记录计数并继续模型，不吞/重放响应，不生成替代摘要。
 - 完成标准：T020 通过。
@@ -584,7 +584,7 @@
 #### T033 活动集合与后台刷新器
 
 - [x] T033（Worker）
-- 文件：`src/backend/bisheng/dsh/infrastructure/model_audit_activity.py`
+- 文件：`src/backend/doberman_agent/dsh/infrastructure/model_audit_activity.py`
 - 依赖：T032、T021
 - 工作与上下文：提供 register_active/finish/read_activity 和 API 进程后台批量刷新；固定容量/超时/代次，Redis 为共享证据，本地集合可丢；开始/终止的租户取认证快照，每次数据库/Redis 分区操作显式恢复对应 ContextVar，不等待模型路径远程 ACK。
 - 完成标准：T032 通过。
@@ -611,7 +611,7 @@
 #### T023 异步写入器与完整性核验
 
 - [x] T023（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/services/model_audit_writer.py`；`src/backend/bisheng/dsh/domain/services/model_audit_integrity.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/services/model_audit_writer.py`；`src/backend/doberman_agent/dsh/domain/services/model_audit_integrity.py`
 - 依赖：T022
 - 工作与上下文：write(event) 组合 T019/T017，先核验原件再提交引用；按清单核对连续序号、数量、顺序摘要、input_complete/capture_failed 与模型终止证据。已有行未完成为 PENDING，超窗判定交给状态器；有限重试耗尽报告部分/未采集，队列不无限积压。
 - 完成标准：T022 通过。
@@ -619,7 +619,7 @@
 #### T027 适配器/统一返回观察接入
 
 - [x] T027（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/infrastructure/chat_adapter.py`
+- 文件：`src/backend/doberman_agent/dsh/infrastructure/chat_adapter.py`
 - 依赖：T026
 - 工作与上下文：prepare 暴露业务值与已绑定工具快照；invoke/stream 真正调用时 entered，统一结果/增量产出时观察，正常/异常/可核验取消时终止；观察器异常隔离。保持当前工具解析、能力校验、usage 和供应商调用次数。
 - 完成标准：T026 通过。
@@ -636,7 +636,7 @@
 #### T045 管理查询仓储与服务
 
 - [x] T045（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py`；`src/backend/bisheng/dsh/domain/services/model_audit_queries.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py`；`src/backend/doberman_agent/dsh/domain/services/model_audit_queries.py`
 - 依赖：T044
 - 工作与上下文：list_requests/get_request/list_conversation 返回任务头约定元数据 DTO 和稳定游标、模式/水位/积压说明；先现有 authorize_admin 限定所选租户，再恢复 ContextVar，用户模糊匹配仅本范围。按 request_id 引用既有用量与独立证据，当前模式不倒推历史；不按消息文本识别来源或输出正文预览。
 - 完成标准：T044 通过。
@@ -692,7 +692,7 @@
 #### T029 模型服务采集与结算轴接入
 
 - [x] T029（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/services/model.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/services/model.py`
 - 依赖：T028、T011
 - 工作与上下文：complete 固定模式及认证身份，prepare/invoke/PreparedStream 接 T021/T027；在结算确认、未知或不确定分支独立记录真实状态来源。读模式失败 OFF；前置拒绝/未迭代关闭无 entered。用量仍走既有唯一链路，不改变额度准入或生成第二账本。
 - 完成标准：T028 通过；现有 model_service/model_quota/settlement 测试回归。
@@ -700,7 +700,7 @@
 #### T047 正文读取服务与日志仓储
 
 - [x] T047（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/domain/services/model_audit_body_access.py`；`src/backend/bisheng/dsh/domain/repositories/model_audit_queries.py`
+- 文件：`src/backend/doberman_agent/dsh/domain/services/model_audit_body_access.py`；`src/backend/doberman_agent/dsh/domain/repositories/model_audit_queries.py`
 - 依赖：T046
 - 工作与上下文：open_body_access 验证已授权记录和对象可读性，先提交 durable attempt/result，再有界读取原件；授权日志失败 fail closed。响应逐块保序、无直链/跨请求预取/批量导出，附加传输结果只报告服务观察值；不能声称客户端收到。
 - 完成标准：T046 通过。
@@ -710,7 +710,7 @@
 #### T031 响应发送观察接入
 
 - [x] T031（后端 API）
-- 文件：`src/backend/bisheng/dsh/api/responses.py`；`src/backend/bisheng/dsh/api/endpoints/models.py`
+- 文件：`src/backend/doberman_agent/dsh/api/responses.py`；`src/backend/doberman_agent/dsh/api/endpoints/models.py`
 - 依赖：T030、T029
 - 工作与上下文：在 API/ASGI 边界采集 COMPLETED/ERROR/INTERRUPTED 与来源时间，非流式错误关联同一编号；DshStreamingResponse finally 维持 PreparedStream 关闭语义。此项只增量改响应观察，T009 的软解析和 T011 的编号规则保持。
 - 完成标准：T030 通过。
@@ -738,15 +738,15 @@
 #### T037 审计运行时与模型依赖装配
 
 - [x] T037（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/audit_runtime.py`；`src/backend/bisheng/dsh/runtime.py`
+- 文件：`src/backend/doberman_agent/dsh/audit_runtime.py`；`src/backend/doberman_agent/dsh/runtime.py`
 - 依赖：T036、T029、T031
-- 工作与上下文：组装 T013/T017/T019/T021/T023/T025/T033/T035，现有 get_model_runtime 向模型服务注入 capture_factory 和旁路依赖；通过业务运行时协调每进程后台任务，设置有限写入重试/关闭；不增加普通毕昇业务启动门禁。
+- 工作与上下文：组装 T013/T017/T019/T021/T023/T025/T033/T035，现有 get_model_runtime 向模型服务注入 capture_factory 和旁路依赖；通过业务运行时协调每进程后台任务，设置有限写入重试/关闭；不增加普通doberman-agent业务启动门禁。
 - 完成标准：T036 通过。
 
 #### T049 管理端点与路由组合
 
 - [x] T049（后端 API）
-- 文件：`src/backend/bisheng/dsh/api/endpoints/model_audit_admin.py`；`src/backend/bisheng/dsh/api/router.py`
+- 文件：`src/backend/doberman_agent/dsh/api/endpoints/model_audit_admin.py`；`src/backend/doberman_agent/dsh/api/router.py`
 - 依赖：T048
 - 工作与上下文：实现 /api/v1/dsh/admin/model-audit 下设计 §6.2 六种路径/六个方法，依赖 UserPayload.get_tenant_admin_user，Endpoint 委托服务；PUT 模式额外全局超管判断，tenant_id 由服务核对范围。元数据沿 resp_200，正文走已授权有界响应；新路径不含 config。
 - 完成标准：T048 通过。
@@ -765,7 +765,7 @@
 #### T041 审计状态检查任务与 worker runtime
 
 - [x] T041（Worker）
-- 文件：`src/backend/bisheng/worker/dsh/model_audit.py`；`src/backend/bisheng/dsh/operations_runtime.py`
+- 文件：`src/backend/doberman_agent/worker/dsh/model_audit.py`；`src/backend/doberman_agent/dsh/operations_runtime.py`
 - 依赖：T040、T037
 - 工作与上下文：提供 dsh.scan_model_audit/dsh.inspect_model_audit 及有界租户分派扫描；trusted Celery headers.tenant_id 必与参数一致，进入异步桥前取 headers，profile_scope 恢复 ContextVar。扫描 pending/unknown 与历史在途记录，不按当前租户 OFF 跳过；复用 T025/CAS，不改用量巡检或账本。
 - 完成标准：T040 通过。
@@ -773,7 +773,7 @@
 #### T051 管理服务装配
 
 - [x] T051（后端 Domain）
-- 文件：`src/backend/bisheng/dsh/audit_admin_runtime.py`
+- 文件：`src/backend/doberman_agent/dsh/audit_admin_runtime.py`
 - 依赖：T050、T049
 - 工作与上下文：为新管理路由暴露 query/body_access/settings 服务工厂，复用 authorize_admin 与共享依赖；读原文按记录租户，不能按被审计用户当前 membership 改历史归属；不恢复旧操作审计隐藏页签或改变现有管理 API。
 - 完成标准：T050 通过。
@@ -792,7 +792,7 @@
 #### T039 沿现有 DSH close 关闭旁路
 
 - [x] T039（后端 API）
-- 文件：`src/backend/bisheng/dsh/runtime.py`
+- 文件：`src/backend/doberman_agent/dsh/runtime.py`
 - 依赖：T038
 - 工作与上下文：在 DshRuntime.close 的既有生命周期中关闭已创建审计运行时；main.lifespan 已调用此 close，无须新增主应用启动强依赖。保留 Gateway/身份运行时关闭与异常处理。
 - 完成标准：T038 通过。
@@ -811,7 +811,7 @@
 #### T043 注册状态任务与调度
 
 - [x] T043（Worker）
-- 文件：`src/backend/bisheng/worker/dsh/registry.py`；`src/backend/bisheng/worker/config.py`
+- 文件：`src/backend/doberman_agent/worker/dsh/registry.py`；`src/backend/doberman_agent/worker/config.py`
 - 依赖：T042
 - 工作与上下文：沿 register_dsh_tasks 添加审计注册与关闭，worker.config 添加可调状态检查分派周期；无 tenant_id 的扫描只发现租户并为每个子任务写可信 header，不在业务查询绕过租户过滤。API 活动刷新仍属 API runtime，Celery 只收敛审计状态。
 - 完成标准：T042 通过。
@@ -839,7 +839,7 @@
 #### T066 测试环境评估脚本与指标
 
 - [ ] T066（后端 Domain）
-- 文件：`src/backend/scripts/measure_dsh_model_audit.py`；`src/backend/bisheng/dsh/infrastructure/model_audit_telemetry.py`
+- 文件：`src/backend/scripts/measure_dsh_model_audit.py`；`src/backend/doberman_agent/dsh/infrastructure/model_audit_telemetry.py`
 - 依赖：T065、T043、T051
 - 工作与上下文：脚本仅接受显式测试 BASE/合成样本/独立 entered 清单，对比 OFF/METADATA/CONTENT 首字/总时长 P95/P99、内存、可见时效及覆盖；以模式快照分组并保存基线来源。指标记录预算/队列/存储/清单/活动/查看失败，不带正文、凭证或高基数请求 ID。
 - 完成标准：T065 通过；开发后测试环境产出实测报告，D-09 数值后续据实决定。
@@ -950,7 +950,7 @@ L1 逐项审查 T001、T002、T003、T004、T005、T006、T007、T008、T009、T
 
 ### 2026-10-16 消息来源与子 Agent 关联增量（确认前历史快照）
 
-用户接受调研建议，要求同时修改服务端及 bisheng-work 客户端，以区分消息类型、压缩请求和子 Agent 关系。现已更新 spec.md 0.20 草案，新增 AC-40、AC-41、AC-42、AC-43、AC-44、AC-45、AC-46、AC-47、AC-48；上文任务与完成记录仍仅针对既有基线，不代表新能力已实现。
+用户接受调研建议，要求同时修改服务端及 doberman-agent-work 客户端，以区分消息类型、压缩请求和子 Agent 关系。现已更新 spec.md 0.20 草案，新增 AC-40、AC-41、AC-42、AC-43、AC-44、AC-45、AC-46、AC-47、AC-48；上文任务与完成记录仍仅针对既有基线，不代表新能力已实现。
 
 | 文档/交付 | 增量状态 | 下一步 |
 |---|---|---|
@@ -986,11 +986,11 @@ L1 逐项审查 T001、T002、T003、T004、T005、T006、T007、T008、T009、T
 
 ### 2026-10-16 设计确认后的增量实施计划
 
-用户已确认设计。下表为新增执行轨道，历史未验收门禁不被覆盖。后端路径前缀 B=`src/backend/bisheng/dsh/`、测试 T=`src/backend/test/dsh/`；平台 P=`src/frontend/platform/src/`；桌面 D 为 bisheng-work 审计工作树。每行最多两个实现/测试文件，同文件后续任务只增量接线。迁移只加可空字段/索引；应用回退保留列和对象，不在本任务执行删除。审计扫描继续沿既有 Celery 可信 tenant header → ContextVar，不增加跨租户后台入口。
+用户已确认设计。下表为新增执行轨道，历史未验收门禁不被覆盖。后端路径前缀 B=`src/backend/doberman_agent/dsh/`、测试 T=`src/backend/test/dsh/`；平台 P=`src/frontend/platform/src/`；桌面 D 为 doberman-agent-work 审计工作树。每行最多两个实现/测试文件，同文件后续任务只增量接线。迁移只加可空字段/索引；应用回退保留列和对象，不在本任务执行删除。审计扫描继续沿既有 Celery 可信 tenant header → ContextVar，不增加跨租户后台入口。
 
 | 完成 | 任务及依赖 | 文件与自包含工作/验收 |
 |---|---|---|
-| [x] | X001 基础设施；无依赖 | B/domain/models/model_audit_request.py、src/backend/bisheng/core/database/alembic/versions/v3_0_0_dsh_audit_sources.py：新增 origin/parent/独立标注状态和引用，状态巡检索引；以实际单 head 为父，DDL 幂等，双库兼容，不回填正文，应用回退保留数据 |
+| [x] | X001 基础设施；无依赖 | B/domain/models/model_audit_request.py、src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_dsh_audit_sources.py：新增 origin/parent/独立标注状态和引用，状态巡检索引；以实际单 head 为父，DDL 幂等，双库兼容，不回填正文，应用回退保留数据 |
 | [x] | X002 后端测试；X001 | T/test_model_audit_sources.py：先写失败用例，覆盖五字段、12KiB/128项/4来源、坏索引、预算隔离、旧能力；覆盖 AC: AC-40, AC-41, AC-42, AC-43, AC-44, AC-46, AC-47 |
 | [x] | X003 后端 Domain；X002 | B/domain/schemas/model_audit_context.py、B/domain/schemas/model_audit_sources.py：独立规范化、依赖校验、repr 隐藏来源、最终消息索引验证；保留有效基础字段，不遍历未知对象 |
 | [x] | X004 后端测试；X003 | T/test_model_audit_sources_flow.py：先写加密标注/异步状态/权限读取/队列故障的失败用例；覆盖 AC: AC-44, AC-45, AC-46, AC-47, AC-48 |

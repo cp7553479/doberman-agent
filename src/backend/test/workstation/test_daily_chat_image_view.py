@@ -13,10 +13,10 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool as lc_tool
 
-from bisheng.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
-from bisheng.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, VisionToolBindWrapper, annotate
-from bisheng.common.image_view.fetch import FetchEncodeResult
-from bisheng.workstation.domain.services.chat_service import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
+from doberman_agent.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, VisionToolBindWrapper, annotate
+from doberman_agent.common.image_view.fetch import FetchEncodeResult
+from doberman_agent.workstation.domain.services.chat_service import (
     DailyChatCitationToolWrapper,
     _prepare_tools,
 )
@@ -31,7 +31,7 @@ def _dummy_kb(query: str) -> str:
 @pytest.fixture(autouse=True)
 def _stub_format_retrieved_chunk(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.chat_service.knowledge_imp.KnowledgeUtils.format_retrieved_chunk",
+        "doberman_agent.workstation.domain.services.chat_service.knowledge_imp.KnowledgeUtils.format_retrieved_chunk",
         staticmethod(lambda doc, kb_name="": getattr(doc, "page_content", "")),
         raising=False,
     )
@@ -50,26 +50,26 @@ def _wrapper(registry: ImageRegistry | None) -> DailyChatCitationToolWrapper:
 def test_dump_knowledge_chunks_annotates_after_format():
     registry = ImageRegistry()
     doc = Document(
-        page_content="see ![chart](/bisheng/knowledge/images/1/2/c.png)",
+        page_content="see ![chart](/doberman_agent/knowledge/images/1/2/c.png)",
         metadata={"document_name": "f.md", "knowledge_id": "1"},
     )
     w = _wrapper(registry)
     text = w._dump_knowledge_chunks(w._format_knowledge_chunks([doc, doc]))
-    assert "![chart](/bisheng/knowledge/images/1/2/c.png)⟦img#1⟧" in text
+    assert "![chart](/doberman_agent/knowledge/images/1/2/c.png)⟦img#1⟧" in text
     assert text.count("⟦img#1⟧") == 2
     assert "⟦img#2⟧" not in text
-    assert registry.get("img#1") == {"url": "/bisheng/knowledge/images/1/2/c.png"}
+    assert registry.get("img#1") == {"url": "/doberman_agent/knowledge/images/1/2/c.png"}
 
 
 def test_dump_knowledge_chunks_skips_annotate_without_registry():
     doc = Document(
-        page_content="see ![chart](/bisheng/knowledge/images/1/2/c.png)",
+        page_content="see ![chart](/doberman_agent/knowledge/images/1/2/c.png)",
         metadata={"document_name": "f.md", "knowledge_id": "1"},
     )
     w = _wrapper(None)
     text = w._dump_knowledge_chunks(w._format_knowledge_chunks([doc]))
     assert "⟦img#" not in text
-    assert "![chart](/bisheng/knowledge/images/1/2/c.png)" in text
+    assert "![chart](/doberman_agent/knowledge/images/1/2/c.png)" in text
 
 
 @pytest.mark.asyncio
@@ -80,12 +80,12 @@ async def test_prepare_tools_does_not_include_view_image(monkeypatch):
         return "[]"
 
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.chat_service._build_web_search_tool",
+        "doberman_agent.workstation.domain.services.chat_service._build_web_search_tool",
         AsyncMock(return_value=(web_search, None)),
     )
     kb = SimpleNamespace(name="search_knowledge_bases")
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.chat_service._build_knowledge_search_tool",
+        "doberman_agent.workstation.domain.services.chat_service._build_knowledge_search_tool",
         AsyncMock(return_value=kb),
     )
 
@@ -107,7 +107,7 @@ async def test_prepare_tools_does_not_include_view_image(monkeypatch):
 async def test_prepare_tools_skips_image_view_config_row(monkeypatch):
     init = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.workstation.domain.services.chat_service.ToolExecutor.init_by_tool_id",
+        "doberman_agent.workstation.domain.services.chat_service.ToolExecutor.init_by_tool_id",
         init,
     )
 
@@ -169,7 +169,7 @@ async def test_vision_wrapper_empty_registry_binds_only_base_tools():
 async def test_vision_wrapper_nonempty_registry_binds_view_image_and_rules():
     llm = _RecordingLLM()
     registry = ImageRegistry()
-    annotate("![chart](/bisheng/knowledge/images/1/2/c.png)", registry)
+    annotate("![chart](/doberman_agent/knowledge/images/1/2/c.png)", registry)
     wrapper = VisionToolBindWrapper(llm, registry, [_NamedTool("web_search")])
     runnable = wrapper({}, None)
     await runnable.ainvoke([SystemMessage(content="base"), HumanMessage(content="trend")])
@@ -207,19 +207,19 @@ class _VisionAnswer:
     async def astream(self, messages, config=None, **kwargs):
         del config, kwargs
         self.seen.append(list(messages))
-        yield AIMessage(content="是的，有这张图。\n![](/bisheng/knowledge/images/1/2/c.png)")
+        yield AIMessage(content="是的，有这张图。\n![](/doberman_agent/knowledge/images/1/2/c.png)")
 
 
 @pytest.mark.asyncio
 async def test_configured_vision_model_reads_pixels_without_view_image(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.common.image_view.react_loop.fetch_and_encode",
+        "doberman_agent.common.image_view.react_loop.fetch_and_encode",
         AsyncMock(return_value=FetchEncodeResult(ok=True, data_uri="data:image/png;base64,aaa")),
     )
     chat = _RecordingLLM()
     vision = _VisionAnswer()
     registry = ImageRegistry()
-    annotate("![chart](/bisheng/knowledge/images/1/2/c.png)", registry)
+    annotate("![chart](/doberman_agent/knowledge/images/1/2/c.png)", registry)
     wrapper = VisionToolBindWrapper(
         chat,
         registry,
@@ -238,7 +238,7 @@ async def test_configured_vision_model_reads_pixels_without_view_image(monkeypat
     assert not result.tool_calls
     handed = "".join(str(m.content) for m in chat.stream_messages[0])
     assert "图片查看结果：" in handed
-    assert "/bisheng/knowledge/images/1/2/c.png" in handed
+    assert "/doberman_agent/knowledge/images/1/2/c.png" in handed
     assert "data:image/png;base64,aaa" not in handed
     await runnable.ainvoke(question)
     assert len(vision.seen) == 1

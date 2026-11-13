@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import bisheng.knowledge.rag.pipeline.transformer.file_encoding as _enc_mod
-from bisheng.knowledge.rag.pipeline.transformer.file_encoding import (
+import doberman_agent.knowledge.rag.pipeline.transformer.file_encoding as _enc_mod
+from doberman_agent.knowledge.rag.pipeline.transformer.file_encoding import (
     FileEncodingTransformer,
     VALID_PATTERN,
     FALLBACK,
@@ -93,7 +93,7 @@ async def test_do_work_skips_when_shougang_disabled():
     )
     t = FileEncodingTransformer(invoke_user_id=42, knowledge_file=kf)
     fake_conf = SimpleNamespace(enabled=False, prefix=None)
-    with patch.object(_enc_mod.bisheng_settings, 'aget_shougang_conf', AsyncMock(return_value=fake_conf)):
+    with patch.object(_enc_mod.doberman_agent_settings, 'aget_shougang_conf', AsyncMock(return_value=fake_conf)):
         await t._do_work()
     assert kf.file_encoding is None
 
@@ -107,6 +107,6 @@ async def test_do_work_skips_when_encoding_already_present():
     )
     t = FileEncodingTransformer(invoke_user_id=42, knowledge_file=kf)
     fake_conf = SimpleNamespace(enabled=True, prefix="GF")
-    with patch.object(_enc_mod.bisheng_settings, 'aget_shougang_conf', AsyncMock(return_value=fake_conf)):
+    with patch.object(_enc_mod.doberman_agent_settings, 'aget_shougang_conf', AsyncMock(return_value=fake_conf)):
         await t._do_work()
     assert kf.file_encoding == "GF-STD-SC-20260300000001"

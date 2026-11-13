@@ -4,8 +4,8 @@ import json
 
 from langgraph.prebuilt import ToolNode
 
-from bisheng.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
-from bisheng.workstation.domain.services.chat_service import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import CitationRegistryCollector
+from doberman_agent.workstation.domain.services.chat_service import (
     _build_knowledge_search_tool,
     _handle_agent_tool_error,
 )

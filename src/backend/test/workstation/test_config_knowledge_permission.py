@@ -1,10 +1,10 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.api.v1.schemas import OrgKbConfig, WorkstationConfig
-from bisheng.dsh.domain.services.capability_catalog import CapabilityCatalogService
-from bisheng.workstation.api.endpoints import config as config_endpoint
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.api.v1.schemas import OrgKbConfig, WorkstationConfig
+from doberman_agent.dsh.domain.services.capability_catalog import CapabilityCatalogService
+from doberman_agent.workstation.api.endpoints import config as config_endpoint
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 def _login_user():
@@ -30,7 +30,7 @@ async def test_public_config_keeps_only_visible_org_kbs(monkeypatch):
         return {"12": frozenset(), "13": frozenset({"visible"})}
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         fake_batch,
     )
     monkeypatch.setattr(
@@ -55,7 +55,7 @@ async def test_public_config_keeps_only_visible_org_kbs(monkeypatch):
     )
     monkeypatch.setattr(
         config_endpoint,
-        "bisheng_settings",
+        "doberman_agent_settings",
         SimpleNamespace(
             dsh=SimpleNamespace(enabled=False),
             async_get_knowledge=AsyncMock(return_value=SimpleNamespace(image_parser_enabled=False)),
@@ -79,7 +79,7 @@ async def test_org_kb_visibility_filter_short_circuits_empty_input(monkeypatch):
         raise AssertionError("permission check must not run for an empty list")
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         fail_batch,
     )
 

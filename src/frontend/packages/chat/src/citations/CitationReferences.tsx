@@ -1,8 +1,8 @@
 import { useEffect,useRef,useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Outlined } from 'bisheng-icons';
-import { Badge } from '@bisheng/ui';
-import cn from '@bisheng/ui/cn';
+import { Outlined } from '@doberman-agent/icons';
+import { Badge } from '@doberman-agent/ui';
+import cn from '@doberman-agent/ui/cn';
 import type { ChatCitation, CitationReferenceItem, CitationDocumentPreviewState, CitationReferencesDesktopPayload } from './types';
 import type { CitationViewProps } from './viewTypes';
 import { createCitationUtilities } from './preview';

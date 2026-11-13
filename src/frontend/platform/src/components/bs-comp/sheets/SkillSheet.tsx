@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, SearchInput } from '@bisheng/ui';
+import { Button, SearchInput } from '@doberman-agent/ui';
 import { useState } from "react";
 import { readOnlineFlows } from "../../../controllers/API/flow";
 import { FlowType } from "../../../types/flow";

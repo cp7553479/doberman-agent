@@ -41,7 +41,7 @@ ROLES = ("OWNER", "NONOWNER", "FOREIGN", "APPROVER")
 
 
 SOURCE_VENDOR_VERSIONS = {
-    "bisheng-sdk": "0.1.1",
+    "doberman-agent-sdk": "0.1.1",
     "httpx": "0.28.1",
     "httpcore": "1.0.9",
     "h11": "0.16.0",
@@ -351,8 +351,8 @@ def source_vendor_files(directory):
                     raise BootstrapError("source_vendor_native_wheel_refused")
                 if Path(relative).name != name.replace("-", "_") + "-" + version + "-py3-none-any.whl":
                     raise BootstrapError("source_vendor_filename_invalid")
-                if name == "bisheng-sdk":
-                    sdk = ROOT / "src/backend/bisheng/dev_toolkit/artifacts/bisheng_sdk-0.1.1-py3-none-any.whl"
+                if name == "doberman-agent-sdk":
+                    sdk = ROOT / "src/backend/doberman_agent/dev_toolkit/artifacts/doberman_agent_sdk-0.1.1-py3-none-any.whl"
                     if data != sdk.read_bytes():
                         raise BootstrapError("source_vendor_sdk_mismatch")
                 licensed = False
@@ -383,8 +383,8 @@ def source_vendor_files(directory):
                         and Path(path).name.upper().startswith(("LICENSE", "LICENCE", "COPYING"))
                         and bool(files[target])
                     )
-                if name == "bisheng-sdk":
-                    original_wheels["_vendor/licenses/bisheng-sdk/LICENSE"] = (ROOT / "LICENSE").read_bytes()
+                if name == "doberman-agent-sdk":
+                    original_wheels["_vendor/licenses/doberman-agent-sdk/LICENSE"] = (ROOT / "LICENSE").read_bytes()
                 elif not licensed:
                     raise BootstrapError("source_vendor_license_missing")
                 original_wheels["_vendor/wheels/" + Path(relative).name] = data
@@ -484,7 +484,7 @@ def build_packages(
                 knowledge_ids=knowledge_ids,
             )
             files = {
-                "bisheng-app.yaml": yaml.safe_dump(manifest, sort_keys=False),
+                "doberman-agent-app.yaml": yaml.safe_dump(manifest, sort_keys=False),
                 "fixture-version.txt": str(version),
                 "capabilities.json": json.dumps({"model_name": model_name, "knowledge_base_ids": list(knowledge_ids)}),
             }

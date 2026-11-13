@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 from pptx.enum.shapes import MSO_SHAPE_TYPE, PP_PLACEHOLDER
 
-from bisheng.pptx2md.parser import has_meaningful_shape_text, is_text_block
-from bisheng.pptx2md.types import ConversionConfig
+from doberman_agent.pptx2md.parser import has_meaningful_shape_text, is_text_block
+from doberman_agent.pptx2md.types import ConversionConfig
 
 
 def make_config():

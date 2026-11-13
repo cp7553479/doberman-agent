@@ -25,7 +25,7 @@
 
 测试包含纯规则、MySQL/DM SQL 编译（含达梦 as_comparison 修正）、真实 SQLite 查询、授权范围/计数、用户/部门/租户管理、用户组原成员显示、迁移图与回滚。期间修正测试 harness 对新 Repository 的会话注入以及新增目录装配参数的 mock 签名，没有为测试放宽业务范围。
 
-使用 `/Users/shanghang/dataelem/ca-bisheng/src/backend/.venv/bin/python -m pytest -q`，工作目录和 PYTHONPATH 指向各自的 src/backend。config 指向主线自带 docker/bisheng/config/config.yaml；临时 wrapper 仅提供 localhost/test-only 的 !env 默认值，不复制客户配置或修改真实数据库。
+使用 `/Users/shanghang/dataelem/ca-doberman-agent/src/backend/.venv/bin/python -m pytest -q`，工作目录和 PYTHONPATH 指向各自的 src/backend。config 指向主线自带 docker/doberman-agent/config/config.yaml；临时 wrapper 仅提供 localhost/test-only 的 !env 默认值，不复制客户配置或修改真实数据库。
 
 扩大范围：`test/permission test/user test/department test/tenant test/user_group test/database/test_alembic_single_head.py test/database/test_dm_dialect_helpers.py`。
 

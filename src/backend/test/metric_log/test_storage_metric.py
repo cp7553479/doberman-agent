@@ -12,7 +12,7 @@ import pytest
 from loguru import logger
 from minio.error import S3Error
 
-from bisheng.core.storage.minio.minio_storage import (
+from doberman_agent.core.storage.minio.minio_storage import (
     MinioStorage,
     _classify_storage_exc,
 )
@@ -44,14 +44,14 @@ def _s3error(code, status):
         request_id="req",
         host_id="host",
         response=MagicMock(status=status, headers={}),
-        bucket_name="bisheng",
+        bucket_name="doberman_agent",
         object_name="obj",
     )
 
 
 def _make_storage():
     storage = MinioStorage.__new__(MinioStorage)
-    storage.bucket = "bisheng"
+    storage.bucket = "doberman_agent"
     storage.tmp_bucket = "tmp-dir"
     storage.minio_client_sync = MagicMock()
     return storage
@@ -86,7 +86,7 @@ def test_classify_non_s3_exception_is_error():
 
 
 def test_classify_fallback_miss_is_ok():
-    from bisheng.common.errcode.tenant_sharing import StorageSharingFallbackError
+    from doberman_agent.common.errcode.tenant_sharing import StorageSharingFallbackError
 
     result, _, _ = _classify_storage_exc(StorageSharingFallbackError())
     assert result == "ok"  # genuine cross-tenant miss: storage worked, object absent

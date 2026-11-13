@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.database.models.flow import FlowType
-from bisheng.database.models.session import MessageSession
-from bisheng.knowledge.api.dependencies import (
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.knowledge.api.dependencies import (
     get_knowledge_chat_session_repository,
     get_knowledge_space_chat_service,
 )
-from bisheng.knowledge.domain.repositories.implementations.knowledge_chat_session_repository_impl import (
+from doberman_agent.knowledge.domain.repositories.implementations.knowledge_chat_session_repository_impl import (
     KnowledgeChatSessionRepositoryImpl,
 )
 

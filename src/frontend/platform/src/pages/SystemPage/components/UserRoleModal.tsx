@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
 import { generateUUID } from "@/components/bs-ui/utils";
 import { updateUserGroups,updateUserRoles } from "@/controllers/API/user";
 import { handleUiRequest } from "@/controllers/request";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect,useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_publish.domain.services import version_review_service as service
-from bisheng.common.errcode.app_factory import AppStateConflictError
+from doberman_agent.app_publish.domain.services import version_review_service as service
+from doberman_agent.common.errcode.app_factory import AppStateConflictError
 
 
 def deployment(**kwargs):

@@ -3,18 +3,18 @@ import json
 import traceback
 from typing import List, Dict
 
-from bisheng.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
-from bisheng.knowledge.domain.knowledge_rag import KnowledgeRag
-from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.llm.domain import LLMService
-from bisheng.script.knowledge_data_fix import get_all_knowledge_files, _get_milvus_chunks_data, _get_es_chunks_data
+from doberman_agent.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
+from doberman_agent.knowledge.domain.knowledge_rag import KnowledgeRag
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.llm.domain import LLMService
+from doberman_agent.script.knowledge_data_fix import get_all_knowledge_files, _get_milvus_chunks_data, _get_es_chunks_data
 
 user_map = {}
 
 
 def get_user_name_by_id(user_id: int):
-    from bisheng.user.domain.models.user import UserDao
+    from doberman_agent.user.domain.models.user import UserDao
 
     if user_id in user_map:
         return user_map[user_id]
@@ -54,7 +54,7 @@ def convert_milvus_data(knowledge: Knowledge, all_file: List[KnowledgeFile], new
     # convert_milvus_chunk
     # New.. MilvusObjects
 
-    embedding = LLMService.get_bisheng_knowledge_embedding_sync(0, model_id=int(knowledge.model))
+    embedding = LLMService.get_doberman_agent_knowledge_embedding_sync(0, model_id=int(knowledge.model))
     new_milvus = KnowledgeRag.init_milvus_vectorstore(new_collection_name, embedding,
                                                       metadata_schemas=KNOWLEDGE_RAG_METADATA_SCHEMA)
 

@@ -7,7 +7,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_role_access_callbacks_never_project_business_tuples() -> None:
-    from bisheng.permission.domain.services.legacy_rbac_sync_service import (
+    from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (
         ACCESS_TYPE_TO_FGA,
         LegacyRBACSyncService,
     )
@@ -32,8 +32,8 @@ async def test_role_access_callbacks_never_project_business_tuples() -> None:
 
 @pytest.mark.asyncio
 async def test_sync_user_role_change_writes_super_admin_identity() -> None:
-    from bisheng.database.constants import AdminRole
-    from bisheng.permission.domain.services.legacy_rbac_sync_service import (
+    from doberman_agent.database.constants import AdminRole
+    from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (
         LegacyRBACSyncService,
     )
 
@@ -60,7 +60,7 @@ async def test_sync_user_role_change_writes_super_admin_identity() -> None:
 
 @pytest.mark.asyncio
 async def test_sync_user_auth_created_writes_group_identities() -> None:
-    from bisheng.permission.domain.services.legacy_rbac_sync_service import (
+    from doberman_agent.permission.domain.services.legacy_rbac_sync_service import (
         LegacyRBACSyncService,
     )
 
@@ -94,8 +94,8 @@ async def test_sync_user_auth_created_writes_group_identities() -> None:
 
 @pytest.mark.asyncio
 async def test_group_change_handler_invalidates_direct_user_cache() -> None:
-    from bisheng.permission.domain.schemas.tuple_operation import TupleOperation
-    from bisheng.user_group.domain.services.group_change_handler import (
+    from doberman_agent.permission.domain.schemas.tuple_operation import TupleOperation
+    from doberman_agent.user_group.domain.services.group_change_handler import (
         GroupChangeHandler,
     )
 
@@ -114,11 +114,11 @@ async def test_group_change_handler_invalidates_direct_user_cache() -> None:
         ),
     ]
     with patch(
-        "bisheng.permission.domain.services.permission_service."
+        "doberman_agent.permission.domain.services.permission_service."
         "PermissionService.batch_write_tuples",
         new_callable=AsyncMock,
     ) as batch_write, patch(
-        "bisheng.permission.domain.services.permission_cache."
+        "doberman_agent.permission.domain.services.permission_cache."
         "PermissionCache.invalidate_user",
         new_callable=AsyncMock,
     ) as invalidate:

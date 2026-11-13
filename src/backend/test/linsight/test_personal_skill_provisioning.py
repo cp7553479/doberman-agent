@@ -9,24 +9,24 @@ from types import SimpleNamespace
 
 import pytest
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
-from bisheng.linsight.domain.services.skill_provisioning import (
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.schemas.linsight_schema import LinsightQuestionSubmitSchema
+from doberman_agent.linsight.domain.services.skill_provisioning import (
     materialize_session_skills,
     pending_skill_snapshot,
 )
-from bisheng.linsight.domain.services.skill_store import SkillStore
-from bisheng.linsight.domain.services.workbench_impl import build_e2b_file_list
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
+from doberman_agent.linsight.domain.services.workbench_impl import build_e2b_file_list
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5
 USER = 11
 OTHER = 22
 
-_TASK_EXEC = Path(__file__).parents[2] / "bisheng/linsight/domain/task_exec.py"
+_TASK_EXEC = Path(__file__).parents[2] / "doberman_agent/linsight/domain/task_exec.py"
 
 
 def _skill_md(name: str, description: str) -> bytes:
@@ -97,7 +97,7 @@ async def env(monkeypatch, tmp_path):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",
@@ -128,10 +128,10 @@ async def env(monkeypatch, tmp_path):
     async def permitted(_user, *, resource_ids, **kwargs):
         return {str(skill_id): {"use"} for skill_id in resource_ids}
 
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.batch_check_business_actions", permitted)
-    monkeypatch.setattr("bisheng.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.batch_check_business_actions", permitted)
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._check_is_global_super", AsyncMock(return_value=False))
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
+        "doberman_agent.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
         AsyncMock(return_value=set()),
     )
 
@@ -256,7 +256,7 @@ class TestFileListOrder:
 
         (backend.file_dir / "skills" / "pdf" / "ok.txt").write_bytes(b"ok")
         (backend.file_dir / "skills" / "pdf" / "big.bin").write_bytes(b"x" * 8)
-        import bisheng.linsight.domain.services.workbench_impl as workbench
+        import doberman_agent.linsight.domain.services.workbench_impl as workbench
 
         monkeypatch.setattr(workbench, "SIZE_AUTOPUSH", 4)
         listed_after = {entry.path for entry in build_e2b_file_list(str(backend.file_dir))}

@@ -10,14 +10,14 @@ if [[ ! ${python_path} =~ ^/[A-Za-z0-9_./-]+$ || ! -x ${python_path} ]]; then
   exit 1
 fi
 "${python_path}" -c 'import runtime_manager.host_isolation'
-for required_file in /etc/bisheng/runtime-host-isolation.json /etc/bisheng/runtime-host-isolation.env; do
+for required_file in /etc/doberman-agent/runtime-host-isolation.json /etc/doberman-agent/runtime-host-isolation.env; do
   test -f "${required_file}"
   chown root:root "${required_file}"
   chmod 600 "${required_file}"
 done
 unit_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-sed "s|@PYTHON@|${python_path}|g" "${unit_dir}/bisheng-host-isolation.service" > /etc/systemd/system/bisheng-host-isolation.service
-install -m 0644 "${unit_dir}/bisheng-host-isolation.timer" /etc/systemd/system/bisheng-host-isolation.timer
+sed "s|@PYTHON@|${python_path}|g" "${unit_dir}/doberman-agent-host-isolation.service" > /etc/systemd/system/doberman-agent-host-isolation.service
+install -m 0644 "${unit_dir}/doberman-agent-host-isolation.timer" /etc/systemd/system/doberman-agent-host-isolation.timer
 systemctl daemon-reload
-systemctl start bisheng-host-isolation.service
-systemctl enable --now bisheng-host-isolation.timer
+systemctl start doberman-agent-host-isolation.service
+systemctl enable --now doberman-agent-host-isolation.timer

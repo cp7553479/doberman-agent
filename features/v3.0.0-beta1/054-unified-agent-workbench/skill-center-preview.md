@@ -46,7 +46,7 @@
 | 检查 | 结果 |
 | --- | --- |
 | 工作台严格类型检查 | 悬停与布局调整合入已部署导航后 PASS，1304 个严格文件 |
-| 专项单元测试 | 初版 PASS，14 项；菜单归并沿用已验证的上传及存储逻辑；`pnpm --filter bishengchat exec jest --config jest.skill-center.config.mjs --runInBand` |
+| 专项单元测试 | 初版 PASS，14 项；菜单归并沿用已验证的上传及存储逻辑；`pnpm --filter doberman-agentchat exec jest --config jest.skill-center.config.mjs --runInBand` |
 | 国际化检查 | PASS，新增文案同步中文、英文、日文 |
 | 工作台 lint | PASS，使用 `--pass-on-unpruned-suppressions` 保留仓库原有抑制记录；默认命令提示清理未使用记录 |
 | 管理后台、共享 UI、文件预览包 lint | PASS |
@@ -87,7 +87,7 @@ window.APP_CONFIG = {
 Nginx 的 3001 server 使用精确路径提供该环境配置，并关闭缓存：
 
 ```nginx
-location = /workspace/assets/bisheng/config.js {
+location = /workspace/assets/doberman-agent/config.js {
     alias /etc/nginx/conf.d/client-runtime-config.js;
     default_type application/javascript;
     add_header Cache-Control "no-store" always;

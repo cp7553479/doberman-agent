@@ -11,8 +11,8 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
-from bisheng.core.database import retry as retry_mod
-from bisheng.core.database.retry import (
+from doberman_agent.core.database import retry as retry_mod
+from doberman_agent.core.database.retry import (
     is_transient_db_conflict,
     retry_on_transient_db_conflict,
 )

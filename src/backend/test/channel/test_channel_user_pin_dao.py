@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.channel.domain.models.channel_user_pin import ChannelUserPinDao
+from doberman_agent.channel.domain.models.channel_user_pin import ChannelUserPinDao
 
 _DDL = """
 CREATE TABLE IF NOT EXISTS channel_user_pin (
@@ -50,7 +50,7 @@ async def pin_db(monkeypatch):
             await session.close()
 
     monkeypatch.setattr(
-        "bisheng.channel.domain.models.channel_user_pin.get_async_db_session",
+        "doberman_agent.channel.domain.models.channel_user_pin.get_async_db_session",
         _fake_session,
     )
     yield engine

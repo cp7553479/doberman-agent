@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.knowledge.domain.services.temp_upload_service import TempUploadService
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.knowledge.domain.services.temp_upload_service import TempUploadService
 
 
 async def test_attachment_reference_is_bound_to_complete_session_subject(monkeypatch):
@@ -11,7 +11,7 @@ async def test_attachment_reference_is_bound_to_complete_session_subject(monkeyp
         return SimpleNamespace(tmp_bucket="tmp-dir")
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.temp_upload_service.get_minio_storage",
+        "doberman_agent.knowledge.domain.services.temp_upload_service.get_minio_storage",
         minio,
     )
     first = SessionSubject.service_account(

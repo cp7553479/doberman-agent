@@ -68,16 +68,16 @@ class TestCreateRole:
     @pytest.mark.asyncio
     async def test_tenant_admin_creates_tenant_role(self, mock_tenant_admin):
         """AC-01: Tenant admin creates role → role_type='tenant'."""
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Test Role", quota_config={"channel": 10})
 
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.Role") as mock_role_cls,
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.Role") as mock_role_cls,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             created_role = MagicMock()
             created_role.id = 15
@@ -102,16 +102,16 @@ class TestCreateRole:
     @pytest.mark.asyncio
     async def test_admin_creates_global_role(self, mock_admin_user):
         """AC-02: System admin creates global role → role_type='global'."""
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Global Template")
 
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.Role") as mock_role_cls,
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.Role") as mock_role_cls,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             created_role = MagicMock()
             created_role.id = 16
@@ -137,16 +137,16 @@ class TestCreateRole:
     @pytest.mark.asyncio
     async def test_duplicate_name_raises(self, mock_tenant_admin):
         """AC-09: Duplicate role_name in same scope → 24002."""
-        from bisheng.common.errcode.role import RoleNameDuplicateError
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RoleNameDuplicateError
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Existing Role")
 
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             mock_dao.aget_role_by_name = AsyncMock(return_value=_make_role(3, "Existing Role"))
             mock_qs.validate_quota_config = MagicMock()
@@ -156,8 +156,8 @@ class TestCreateRole:
 
     @pytest.mark.asyncio
     async def test_same_name_allowed_in_different_departments(self, mock_tenant_admin):
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Existing Role", department_id=10)
 
@@ -165,9 +165,9 @@ class TestCreateRole:
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_validate_department", new_callable=AsyncMock),
             patch.object(RoleService, "_ensure_create_scope", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.Role") as mock_role_cls,
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.Role") as mock_role_cls,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             created_role = MagicMock()
             created_role.id = 18
@@ -189,9 +189,9 @@ class TestCreateRole:
     @pytest.mark.asyncio
     async def test_invalid_quota_config_raises(self, mock_tenant_admin):
         """AC-10c: Invalid quota_config values → 24005."""
-        from bisheng.common.errcode.role import QuotaConfigInvalidError
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import QuotaConfigInvalidError
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Bad Quota", quota_config={"channel": -5})
 
@@ -202,9 +202,9 @@ class TestCreateRole:
     @pytest.mark.asyncio
     async def test_normal_user_denied(self, mock_normal_user):
         """AC-10b: Regular user calling role mgmt API → 24003."""
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Nope")
 
@@ -220,8 +220,8 @@ class TestCreateRole:
         only auto-fills when the value is None/0 — so child-tenant admins created
         roles owned by Root and the tenant-scoped list query returned empty.
         """
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         child_admin = MagicMock()
         child_admin.user_id = 42
@@ -233,8 +233,8 @@ class TestCreateRole:
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_ensure_create_scope", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.Role") as mock_role_cls,
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.Role") as mock_role_cls,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
         ):
             created_role = MagicMock()
             created_role.id = 99
@@ -251,15 +251,15 @@ class TestCreateRole:
 
     @pytest.mark.asyncio
     async def test_dept_admin_cannot_create_unscoped_role(self, mock_dept_admin):
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Dept Wide")
 
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="dept_admin"),
             patch.object(RoleService, "_get_dept_subtree_ids", new_callable=AsyncMock, return_value=[5, 6]),
         ):
@@ -269,16 +269,16 @@ class TestCreateRole:
 
     @pytest.mark.asyncio
     async def test_dept_admin_cannot_create_role_outside_subtree(self, mock_dept_admin):
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.schemas.role_schema import RoleCreateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.schemas.role_schema import RoleCreateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         req = RoleCreateRequest(role_name="Out of Scope", department_id=99)
 
         with (
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="dept_admin"),
             patch.object(RoleService, "_get_dept_subtree_ids", new_callable=AsyncMock, return_value=[5, 6]),
             patch.object(RoleService, "_validate_department", new_callable=AsyncMock),
@@ -296,11 +296,11 @@ class TestListRoles:
     @pytest.mark.asyncio
     async def test_admin_sees_all_except_adminrole(self, mock_admin_user):
         """AC-04: System admin sees all roles except AdminRole(id=1)."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [_make_role(2, "Default"), _make_role(5, "Custom")]
 
-        with patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao:
+        with patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao:
             mock_dao.aget_visible_roles = AsyncMock(return_value=roles)
             mock_dao.acount_visible_roles = AsyncMock(return_value=2)
             mock_dao.aget_user_count_by_role_ids = AsyncMock(return_value={2: 45, 5: 3})
@@ -320,7 +320,7 @@ class TestListRoles:
     @pytest.mark.asyncio
     async def test_admin_can_edit_role_created_by_others(self, mock_admin_user):
         """System admin can edit roles even when the creator is someone else."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [
             _make_role(5, "Custom Tenant", role_type="tenant", department_id=8),
@@ -328,7 +328,7 @@ class TestListRoles:
         ]
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_get_department_names", new_callable=AsyncMock, return_value={}),
             patch.object(RoleService, "_department_scope_paths_for_roles", new_callable=AsyncMock, return_value={}),
             patch.object(RoleService, "_get_role_creator_ids", new_callable=AsyncMock, return_value={5: 99, 6: 42}),
@@ -357,7 +357,7 @@ class TestListRoles:
     @pytest.mark.asyncio
     async def test_tenant_admin_sees_global_readonly(self, mock_tenant_admin):
         """AC-03: Tenant admin sees global roles as readonly."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [
             _make_role(2, "Default", role_type="global"),
@@ -366,16 +366,16 @@ class TestListRoles:
 
         with (
             patch(
-                "bisheng.database.models.department.DepartmentDao.aget_user_admin_departments",
+                "doberman_agent.database.models.department.DepartmentDao.aget_user_admin_departments",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
             patch(
-                "bisheng.permission.application.is_tenant_admin",
+                "doberman_agent.permission.application.is_tenant_admin",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(
                 RoleService,
                 "_get_role_creator_ids",
@@ -402,7 +402,7 @@ class TestListRoles:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_binding_catalog_includes_global_roles(self, mock_tenant_admin):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [
             _make_role(2, "Default", role_type="global"),
@@ -411,16 +411,16 @@ class TestListRoles:
 
         with (
             patch(
-                "bisheng.database.models.department.DepartmentDao.aget_user_admin_departments",
+                "doberman_agent.database.models.department.DepartmentDao.aget_user_admin_departments",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
             patch(
-                "bisheng.permission.application.is_tenant_admin",
+                "doberman_agent.permission.application.is_tenant_admin",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(
                 RoleService,
                 "_get_role_creator_ids",
@@ -453,22 +453,22 @@ class TestListRoles:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_can_edit_missing_creator_role(self, mock_tenant_admin):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [_make_role(5, "Custom", role_type="tenant")]
 
         with (
             patch(
-                "bisheng.database.models.department.DepartmentDao.aget_user_admin_departments",
+                "doberman_agent.database.models.department.DepartmentDao.aget_user_admin_departments",
                 new_callable=AsyncMock,
                 return_value=[],
             ),
             patch(
-                "bisheng.permission.application.is_tenant_admin",
+                "doberman_agent.permission.application.is_tenant_admin",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_get_role_creator_ids", new_callable=AsyncMock, return_value={}),
             patch.object(RoleService, "_get_creator_names", new_callable=AsyncMock, return_value={}),
         ):
@@ -487,7 +487,7 @@ class TestListRoles:
 
     @pytest.mark.asyncio
     async def test_dept_admin_sees_global_scope_role_but_only_creator_can_edit(self, mock_dept_admin):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [
             _make_role(5, "Tenant Global Scope", role_type="tenant", department_id=None),
@@ -500,16 +500,16 @@ class TestListRoles:
 
         with (
             patch(
-                "bisheng.database.models.department.DepartmentDao.aget_user_admin_departments",
+                "doberman_agent.database.models.department.DepartmentDao.aget_user_admin_departments",
                 new_callable=AsyncMock,
                 return_value=[admin_dept],
             ),
             patch(
-                "bisheng.database.models.department.DepartmentDao.aget_subtree_ids",
+                "doberman_agent.database.models.department.DepartmentDao.aget_subtree_ids",
                 new_callable=AsyncMock,
                 return_value=[8, 9],
             ),
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_get_department_names", new_callable=AsyncMock, return_value={}),
             patch.object(RoleService, "_department_scope_paths_for_roles", new_callable=AsyncMock, return_value={}),
             patch.object(
@@ -540,7 +540,7 @@ class TestListRoles:
 
 class TestRoleDaoVisibility:
     def test_dept_admin_query_includes_unscoped_tenant_roles(self):
-        source = (Path(__file__).resolve().parents[2] / "bisheng" / "database" / "models" / "role.py").read_text(
+        source = (Path(__file__).resolve().parents[2] / "doberman_agent" / "database" / "models" / "role.py").read_text(
             encoding="utf-8"
         )
 
@@ -554,8 +554,8 @@ class TestDeleteRole:
     @pytest.mark.asyncio
     async def test_delete_builtin_role_raises(self, mock_admin_user):
         """AC-07: Deleting AdminRole or DefaultRole → 24004."""
-        from bisheng.common.errcode.role import RoleBuiltinProtectedError
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RoleBuiltinProtectedError
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         with pytest.raises(RoleBuiltinProtectedError):
             await RoleService.delete_role(role_id=1, login_user=mock_admin_user)
@@ -563,8 +563,8 @@ class TestDeleteRole:
     @pytest.mark.asyncio
     async def test_delete_builtin_default_role_raises(self, mock_admin_user):
         """AC-07: DefaultRole(id=2) also protected."""
-        from bisheng.common.errcode.role import RoleBuiltinProtectedError
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RoleBuiltinProtectedError
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         with pytest.raises(RoleBuiltinProtectedError):
             await RoleService.delete_role(role_id=2, login_user=mock_admin_user)
@@ -572,14 +572,14 @@ class TestDeleteRole:
     @pytest.mark.asyncio
     async def test_delete_role_cascades(self, mock_admin_user):
         """AC-08: Delete role cascades UserRole + RoleAccess."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Deletable")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch(
-                "bisheng.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService.sync_role_deleted",
+                "doberman_agent.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService.sync_role_deleted",
                 new_callable=AsyncMock,
             ) as mock_sync,
         ):
@@ -593,17 +593,17 @@ class TestDeleteRole:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_can_delete_tenant_role_created_by_other_admin(self, mock_tenant_admin):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Owned By Another User")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="tenant_admin"),
             patch.object(RoleService, "_get_role_creator_ids", new_callable=AsyncMock, return_value={15: 999}),
             patch(
-                "bisheng.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService.sync_role_deleted",
+                "doberman_agent.permission.domain.services.legacy_rbac_sync_service.LegacyRBACSyncService.sync_role_deleted",
                 new_callable=AsyncMock,
             ) as mock_sync,
         ):
@@ -619,7 +619,7 @@ class TestDeleteRole:
 class TestCreatorResolution:
     @pytest.mark.asyncio
     async def test_get_role_creator_ids_merges_audit_log_fallback(self):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         roles = [_make_role(15), _make_role(16)]
 
@@ -633,7 +633,7 @@ class TestCreatorResolution:
 
     @pytest.mark.asyncio
     async def test_get_creator_names_maps_system_admin_to_system_preset(self):
-        from bisheng.role.domain.services.role_service import (
+        from doberman_agent.role.domain.services.role_service import (
             SYSTEM_PRESET_CREATOR_NAME,
             RoleService,
         )
@@ -643,7 +643,7 @@ class TestCreatorResolution:
         admin_user.user_name = "admin"
 
         with (
-            patch("bisheng.role.domain.services.role_service.UserDao") as mock_user_dao,
+            patch("doberman_agent.role.domain.services.role_service.UserDao") as mock_user_dao,
             patch.object(RoleService, "_get_system_admin_user_ids", new_callable=AsyncMock, return_value={1}),
         ):
             mock_user_dao.aget_user_by_ids = AsyncMock(return_value=[admin_user])
@@ -654,14 +654,14 @@ class TestCreatorResolution:
 
     @pytest.mark.asyncio
     async def test_get_creator_names_keeps_regular_username(self):
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         normal_user = MagicMock()
         normal_user.user_id = 8
         normal_user.user_name = "alice"
 
         with (
-            patch("bisheng.role.domain.services.role_service.UserDao") as mock_user_dao,
+            patch("doberman_agent.role.domain.services.role_service.UserDao") as mock_user_dao,
             patch.object(RoleService, "_get_system_admin_user_ids", new_callable=AsyncMock, return_value=set()),
         ):
             mock_user_dao.aget_user_by_ids = AsyncMock(return_value=[normal_user])
@@ -677,15 +677,15 @@ class TestUpdateRole:
     @pytest.mark.asyncio
     async def test_update_role_succeeds(self, mock_admin_user):
         """AC-05: Update role_name/quota_config/remark."""
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Old Name", role_type="tenant")
         req = RoleUpdateRequest(role_name="New Name")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             mock_dao.aget_role_by_id = AsyncMock(return_value=role)
             mock_dao.aget_role_by_name = AsyncMock(return_value=None)
@@ -702,15 +702,15 @@ class TestUpdateRole:
 
     @pytest.mark.asyncio
     async def test_update_role_checks_duplicate_name_in_target_department_scope(self, mock_admin_user):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Old Name", role_type="tenant", department_id=5)
         req = RoleUpdateRequest(role_name="New Name", department_id=8)
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
             patch.object(RoleService, "_validate_department", new_callable=AsyncMock),
         ):
             mock_dao.aget_role_by_id = AsyncMock(return_value=role)
@@ -733,15 +733,15 @@ class TestUpdateRole:
 
     @pytest.mark.asyncio
     async def test_update_role_checks_duplicate_name_when_clearing_scope_to_global(self, mock_admin_user):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Scoped Name", role_type="tenant", department_id=5)
         req = RoleUpdateRequest(role_name="Global Name", department_id=None)
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
         ):
             mock_dao.aget_role_by_id = AsyncMock(return_value=role)
             mock_dao.aget_role_by_name = AsyncMock(return_value=None)
@@ -765,14 +765,14 @@ class TestUpdateRole:
     @pytest.mark.asyncio
     async def test_tenant_admin_cannot_update_global(self, mock_tenant_admin):
         """AC-06: Tenant admin updating global role → 24003."""
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(2, "Default", role_type="global")
         req = RoleUpdateRequest(remark="hacked")
 
-        with patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao:
+        with patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao:
             mock_dao.aget_role_by_id = AsyncMock(return_value=role)
 
             with pytest.raises(RolePermissionDeniedError):
@@ -784,15 +784,15 @@ class TestUpdateRole:
 
     @pytest.mark.asyncio
     async def test_dept_admin_cannot_update_role_outside_subtree(self, mock_dept_admin):
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(18, "Tenant Role", role_type="tenant", department_id=99)
         req = RoleUpdateRequest(remark="nope")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="dept_admin"),
             patch.object(RoleService, "_get_dept_subtree_ids", new_callable=AsyncMock, return_value=[5, 6]),
@@ -808,14 +808,14 @@ class TestUpdateRole:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_can_update_tenant_role_created_by_other_admin(self, mock_tenant_admin):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(16, "Editable?", role_type="tenant")
         req = RoleUpdateRequest(remark="attempt")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="tenant_admin"),
             patch.object(RoleService, "_get_role_creator_ids", new_callable=AsyncMock, return_value={16: 998}),
@@ -833,14 +833,14 @@ class TestUpdateRole:
 
     @pytest.mark.asyncio
     async def test_tenant_admin_can_update_missing_creator_legacy_role(self, mock_tenant_admin):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(17, "Legacy Role", role_type="tenant")
         req = RoleUpdateRequest(remark="attempt")
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="tenant_admin"),
             patch.object(RoleService, "_get_role_creator_ids", new_callable=AsyncMock, return_value={}),
@@ -863,7 +863,7 @@ class TestMenuPermissions:
     @pytest.mark.asyncio
     async def test_update_menu(self, mock_admin_user):
         """AC-11: Update role menu permissions."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Test", role_type="tenant")
         db_now = object()
@@ -879,10 +879,10 @@ class TestMenuPermissions:
             yield session
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.role_service.func") as mock_func,
-            patch("bisheng.role.domain.services.role_service.select") as mock_select,
-            patch("bisheng.role.domain.services.role_service.get_async_db_session", fake_session),
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.role_service.func") as mock_func,
+            patch("doberman_agent.role.domain.services.role_service.select") as mock_select,
+            patch("doberman_agent.role.domain.services.role_service.get_async_db_session", fake_session),
             patch.object(RoleService, "_replace_menu_access_in_session", new_callable=AsyncMock) as mock_replace,
         ):
             mock_role_dao.aget_role_by_id = AsyncMock(return_value=role)
@@ -903,8 +903,8 @@ class TestMenuPermissions:
 
     @pytest.mark.asyncio
     async def test_update_role_with_menu_touches_role_timestamp_for_menu_only_edits(self, mock_admin_user):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(16, "Menu Only", role_type="tenant")
         req = RoleUpdateRequest(menu_ids=["workstation", "knowledge"])
@@ -922,11 +922,11 @@ class TestMenuPermissions:
             yield session
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.role_service.func") as mock_func,
-            patch("bisheng.role.domain.services.role_service.select") as mock_select,
-            patch("bisheng.role.domain.services.role_service.get_async_db_session", fake_session),
-            patch("bisheng.role.domain.services.role_service.QuotaService") as mock_qs,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.role_service.func") as mock_func,
+            patch("doberman_agent.role.domain.services.role_service.select") as mock_select,
+            patch("doberman_agent.role.domain.services.role_service.get_async_db_session", fake_session),
+            patch("doberman_agent.role.domain.services.role_service.QuotaService") as mock_qs,
             patch.object(RoleService, "_replace_menu_access_in_session", new_callable=AsyncMock) as mock_replace,
         ):
             mock_role_dao.aget_role_by_id = AsyncMock(return_value=role)
@@ -949,14 +949,14 @@ class TestMenuPermissions:
     @pytest.mark.asyncio
     async def test_get_menu(self, mock_admin_user):
         """AC-12: Get role menu permissions."""
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(15, "Test", role_type="tenant")
         menu_records = [MagicMock(third_id="workstation"), MagicMock(third_id="build")]
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_role_dao,
-            patch("bisheng.role.domain.services.role_service.RoleAccessDao") as mock_ra_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleAccessDao") as mock_ra_dao,
         ):
             mock_role_dao.aget_role_by_id = AsyncMock(return_value=role)
             mock_ra_dao.aget_role_access = AsyncMock(return_value=menu_records)
@@ -967,13 +967,13 @@ class TestMenuPermissions:
 
     @pytest.mark.asyncio
     async def test_dept_admin_cannot_update_menu_outside_subtree(self, mock_dept_admin):
-        from bisheng.common.errcode.role import RolePermissionDeniedError
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.common.errcode.role import RolePermissionDeniedError
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(22, "Tenant Role", role_type="tenant", department_id=99)
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_role_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_get_permission_level", new_callable=AsyncMock, return_value="dept_admin"),
             patch.object(RoleService, "_get_dept_subtree_ids", new_callable=AsyncMock, return_value=[5, 6]),
@@ -989,8 +989,8 @@ class TestMenuPermissions:
 
     @pytest.mark.asyncio
     async def test_update_role_with_menu_touches_update_time_on_menu_only_edit(self, mock_admin_user):
-        from bisheng.role.domain.schemas.role_schema import RoleUpdateRequest
-        from bisheng.role.domain.services.role_service import RoleService
+        from doberman_agent.role.domain.schemas.role_schema import RoleUpdateRequest
+        from doberman_agent.role.domain.services.role_service import RoleService
 
         role = _make_role(25, "Menu Only", role_type="tenant")
         req = RoleUpdateRequest(menu_ids=["workstation", "knowledge"])
@@ -1006,11 +1006,11 @@ class TestMenuPermissions:
             yield session
 
         with (
-            patch("bisheng.role.domain.services.role_service.RoleDao") as mock_role_dao,
+            patch("doberman_agent.role.domain.services.role_service.RoleDao") as mock_role_dao,
             patch.object(RoleService, "_check_role_permission", new_callable=AsyncMock),
             patch.object(RoleService, "_ensure_role_mutation_access", new_callable=AsyncMock),
-            patch("bisheng.role.domain.services.role_service.select") as mock_select,
-            patch("bisheng.role.domain.services.role_service.get_async_db_session", fake_session),
+            patch("doberman_agent.role.domain.services.role_service.select") as mock_select,
+            patch("doberman_agent.role.domain.services.role_service.get_async_db_session", fake_session),
             patch.object(RoleService, "_replace_menu_access_in_session", new_callable=AsyncMock) as mock_replace,
         ):
             mock_role_dao.aget_role_by_id = AsyncMock(return_value=role)

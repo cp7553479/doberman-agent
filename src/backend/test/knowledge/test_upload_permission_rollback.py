@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.knowledge.domain.services import knowledge_space_service as module
-from bisheng.knowledge.domain.services.knowledge_permission_service import F048KnowledgeFilePermissionAdapter
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.knowledge.domain.services import knowledge_space_service as module
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import F048KnowledgeFilePermissionAdapter
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.knowledge.test_knowledge_space_service import _make_file, _make_login_user, _make_space
 
 
@@ -62,7 +62,7 @@ def upload(monkeypatch):
     monkeypatch.setattr(module.KnowledgeFileDao, "adelete_batch", AsyncMock(side_effect=delete))
     storage = MagicMock()
     monkeypatch.setattr(module, "get_minio_storage_sync", lambda: storage)
-    from bisheng.worker.knowledge import scheduler
+    from doberman_agent.worker.knowledge import scheduler
 
     dispatch = MagicMock()
     monkeypatch.setattr(scheduler, "enqueue_or_dispatch", dispatch)
@@ -99,10 +99,10 @@ async def test_root_upload_with_matching_space_file_id(upload, monkeypatch, asyn
 async def test_mid_batch_failure_cleans_initialized_and_uninitialized_files(upload, monkeypatch, async_db_session):
     from sqlmodel import select
 
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_repository_impl import (
         KnowledgeDocumentRepositoryImpl,
     )
-    from bisheng.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
+    from doberman_agent.knowledge.domain.repositories.implementations.knowledge_document_version_repository_impl import (
         KnowledgeDocumentVersionRepositoryImpl,
     )
 

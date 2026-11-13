@@ -1,18 +1,18 @@
 from unittest.mock import MagicMock
 
-from bisheng.worker.knowledge import file_worker
+from doberman_agent.worker.knowledge import file_worker
 
 
 def test_retry_legacy_path_still_parses_inline(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
+        "doberman_agent.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
         False,
     )
     monkeypatch.setattr(file_worker, "delete_knowledge_file_vectors", MagicMock())
     parse = MagicMock(return_value=MagicMock())
     monkeypatch.setattr(file_worker, "_parse_knowledge_file", parse)
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
         lambda ids: [MagicMock(user_id=1)],
     )
 
@@ -23,7 +23,7 @@ def test_retry_legacy_path_still_parses_inline(monkeypatch):
 
 def test_retry_fair_path_reenqueues_after_cleanup(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
+        "doberman_agent.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
         True,
     )
     cleanup = MagicMock()
@@ -33,17 +33,17 @@ def test_retry_fair_path_reenqueues_after_cleanup(monkeypatch):
 
     db_row = MagicMock(user_id=11, file_name="a.pdf")
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.get_file_by_ids",
         lambda ids: [db_row],
     )
     status_update = MagicMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.update_file_status",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.update_file_status",
         status_update,
     )
 
     enqueue = MagicMock()
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.enqueue_or_dispatch", enqueue)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.enqueue_or_dispatch", enqueue)
 
     file_worker.retry_knowledge_file_celery.run(99, "pk", "cb")
 
@@ -60,7 +60,7 @@ def test_retry_fair_path_reenqueues_after_cleanup(monkeypatch):
 
 def test_retry_fair_path_cleanup_failure_marks_failed(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
+        "doberman_agent.common.services.config_service.settings.knowledge_file_worker.fair_scheduler_enabled",
         True,
     )
     monkeypatch.setattr(
@@ -70,7 +70,7 @@ def test_retry_fair_path_cleanup_failure_marks_failed(monkeypatch):
     )
     status_update = MagicMock()
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.models.knowledge_file.KnowledgeFileDao.update_file_status",
+        "doberman_agent.knowledge.domain.models.knowledge_file.KnowledgeFileDao.update_file_status",
         status_update,
     )
 

@@ -65,7 +65,7 @@ const SheetContent = React.forwardRef<
             {...props}
             onInteractOutside={event => {
                 // Portaled notices belong to the current interaction, not the backdrop.
-                if (event.target instanceof Element && event.target.closest('[data-bisheng-notice]')) {
+                if (event.target instanceof Element && event.target.closest('[data-doberman_agent-notice]')) {
                     event.preventDefault();
                 }
                 onInteractOutside?.(event);

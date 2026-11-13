@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { exportMessagesApi, triggerBrowserDownload } from '~/api/messageExport';
 import { showApiError } from '~/api/request';
 import { ExportFormatSheet } from './ExportFormatSheet';

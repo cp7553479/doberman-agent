@@ -1,6 +1,6 @@
 import { hydrateStreamChatCitations } from './hydrateStreamChatCitations';
 import type { ChatMessage, ChatCitation } from './chatApi';
-import { transformPrivateCitations } from '@bisheng/chat/citations';
+import { transformPrivateCitations } from '@doberman-agent/chat/citations';
 
 const id = 'knowledgesearch_15c85c1a';
 const message = (text: string, user = false): ChatMessage => ({ text, messageId: '442820', parentMessageId: '', conversationId: 'chat', sender: 'AI', isCreatedByUser: user });

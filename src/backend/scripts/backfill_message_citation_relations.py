@@ -32,20 +32,20 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import col, select  # noqa: E402
 
-from bisheng.citation.domain.models.message_citation import (  # noqa: E402
+from doberman_agent.citation.domain.models.message_citation import (  # noqa: E402
     MessageCitation,
     MessageCitationRelation,
 )
-from bisheng.citation.domain.repositories.implementations.message_citation_repository_impl import (  # noqa: E402
+from doberman_agent.citation.domain.repositories.implementations.message_citation_repository_impl import (  # noqa: E402
     MessageCitationRepositoryImpl,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (  # noqa: E402
+from doberman_agent.citation.domain.services.citation_prompt_helper import (  # noqa: E402
     CITATION_START_MARKER,
     extract_citation_ids_from_text,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.models.message import ChatMessage  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.models.message import ChatMessage  # noqa: E402
 
 DEFAULT_BATCH_SIZE = 500
 

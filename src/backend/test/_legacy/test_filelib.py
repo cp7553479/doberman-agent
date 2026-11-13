@@ -2,11 +2,11 @@ import os
 import sys
 
 import requests
-# from bisheng.database.models.knowledge import KnowledgeCreate
+# from doberman_agent.database.models.knowledge import KnowledgeCreate
 
 parent_dir = os.path.dirname(os.path.abspath(__file__)).replace('test', '')
 sys.path.append(parent_dir)
-os.environ['config'] = os.path.join(parent_dir, 'bisheng/config.dev.yaml')
+os.environ['config'] = os.path.join(parent_dir, 'doberman_agent/config.dev.yaml')
 
 url_host = 'http://{ip}:{port}/api'.format(ip='127.0.0.1', port=7860)
 

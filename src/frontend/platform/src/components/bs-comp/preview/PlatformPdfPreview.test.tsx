@@ -2,8 +2,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { PlatformPdfPreview } from './PlatformPdfPreview';
 const { document } = vi.hoisted(()=>({document:{numPages:400}}));
-vi.mock('@bisheng/file-viewers/pdf',async importOriginal=>{
-  const original=await importOriginal<typeof import('@bisheng/file-viewers/pdf')>();
+vi.mock('@doberman-agent/file-viewers/pdf',async importOriginal=>{
+  const original=await importOriginal<typeof import('@doberman-agent/file-viewers/pdf')>();
   return {...original,usePdfDocument:()=>({status:'ready',document}),PdfPage:({pageIndex,width,renderOverlay}:{pageIndex:number;width:number;renderOverlay?:(metrics:{width:number;height:number;scale:number})=>React.ReactNode})=><div data-pdf-page={pageIndex} style={{width,height:width*2}}>{renderOverlay?.({width,height:width*2,scale:width/100})}</div>};
 });
 beforeEach(()=>{

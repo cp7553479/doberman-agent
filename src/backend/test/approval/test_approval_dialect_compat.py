@@ -8,10 +8,10 @@ from sqlalchemy.dialects import mysql, sqlite
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.types import CLOB, JSON, Text
 
-from bisheng.approval.domain.models.approval_instance import ApprovalInstance, ApprovalOutbox
-from bisheng.approval.domain.repositories import approval_instance_repository, approval_query_repository
-from bisheng.approval.domain.services import approval_center_service, approval_exception_service, approval_gate
-from bisheng.core.database.dialect_helpers import JsonType, UPDATE_TIME_SERVER_DEFAULT
+from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance, ApprovalOutbox
+from doberman_agent.approval.domain.repositories import approval_instance_repository, approval_query_repository
+from doberman_agent.approval.domain.services import approval_center_service, approval_exception_service, approval_gate
+from doberman_agent.core.database.dialect_helpers import JsonType, UPDATE_TIME_SERVER_DEFAULT
 
 
 class _DmDialect(DefaultDialect):

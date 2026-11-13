@@ -1,10 +1,10 @@
-import { Checkbox } from "@bisheng/ui";
-import { Button, SearchInput, Tag } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
+import { Button, SearchInput, Tag } from "@doberman-agent/ui";
 import { SubjectIdentity } from "./SubjectIdentity";
 import { useSubjectKeyword } from "./useSubjectKeyword";
 import { searchUsers } from "~/api/permission";
 import type { GrantUser, ResourceType, SelectedSubject } from "~/api/permission";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalize } from "~/hooks";
 import { cn } from "~/utils";

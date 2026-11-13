@@ -7,9 +7,9 @@ import pytest
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from bisheng.citation.domain.services import citation_handle_service as handle_svc
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.citation.domain.services import citation_handle_service as handle_svc
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import (
     _build_researcher_subagent,
     _is_web_citation_tool,
     _wrap_linsight_web_citation_tools,
@@ -39,7 +39,7 @@ def cache_web(monkeypatch: pytest.MonkeyPatch):
         return items
 
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache
+        "doberman_agent.citation.domain.services.citation_prompt_helper.cache_citation_registry_items", fake_cache
     )
 
 

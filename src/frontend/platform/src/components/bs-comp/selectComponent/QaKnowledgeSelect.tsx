@@ -1,7 +1,7 @@
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
 import { readFileLibDatabase } from '@/controllers/API';
 import { showApiError } from '@/controllers/request';
-import { Select, type SelectOption } from '@bisheng/ui';
+import { Select, type SelectOption } from '@doberman-agent/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

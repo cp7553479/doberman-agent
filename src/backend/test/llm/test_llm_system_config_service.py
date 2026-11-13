@@ -11,31 +11,31 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.models.config import ConfigKeyEnum
+from doberman_agent.common.models.config import ConfigKeyEnum
 
 
 # --- _resolve_tenant_id helper ---------------------------------------------
 
 
 def test_resolve_tenant_id_prefers_explicit_arg():
-    from bisheng.llm.domain.services.llm import _resolve_tenant_id
-    with patch('bisheng.llm.domain.services.llm.get_current_tenant_id',
+    from doberman_agent.llm.domain.services.llm import _resolve_tenant_id
+    with patch('doberman_agent.llm.domain.services.llm.get_current_tenant_id',
                return_value=99):
         assert _resolve_tenant_id(5) == 5  # explicit wins
 
 
 def test_resolve_tenant_id_falls_back_to_context_var():
-    from bisheng.llm.domain.services.llm import _resolve_tenant_id
-    with patch('bisheng.llm.domain.services.llm.get_current_tenant_id',
+    from doberman_agent.llm.domain.services.llm import _resolve_tenant_id
+    with patch('doberman_agent.llm.domain.services.llm.get_current_tenant_id',
                return_value=7):
         assert _resolve_tenant_id(None) == 7
 
 
 def test_resolve_tenant_id_falls_back_to_root_and_warns():
-    from bisheng.llm.domain.services.llm import _resolve_tenant_id, ROOT_TENANT_ID
-    with patch('bisheng.llm.domain.services.llm.get_current_tenant_id',
+    from doberman_agent.llm.domain.services.llm import _resolve_tenant_id, ROOT_TENANT_ID
+    with patch('doberman_agent.llm.domain.services.llm.get_current_tenant_id',
                return_value=None), \
-         patch('bisheng.llm.domain.services.llm.logger') as mock_logger:
+         patch('doberman_agent.llm.domain.services.llm.logger') as mock_logger:
         result = _resolve_tenant_id(None)
     assert result == ROOT_TENANT_ID
     mock_logger.warning.assert_called_once()
@@ -47,11 +47,11 @@ def test_resolve_tenant_id_falls_back_to_root_and_warns():
 
 @pytest.mark.asyncio
 async def test_aget_knowledge_llm_routes_to_dao_with_explicit_tenant():
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     payload = {'embedding_model_id': 99}
     aresolve_mock = AsyncMock(return_value=(json.dumps(payload), False, False))
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
                aresolve_mock):
         cfg = await LLMService.aget_knowledge_llm(tenant_id=5)
     assert cfg.embedding_model_id == 99
@@ -62,12 +62,12 @@ async def test_aget_knowledge_llm_routes_to_dao_with_explicit_tenant():
 
 @pytest.mark.asyncio
 async def test_aget_knowledge_llm_with_meta_returns_envelope():
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     aresolve_mock = AsyncMock(
         return_value=(json.dumps({'embedding_model_id': 1}), True, False),
     )
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
                aresolve_mock):
         cfg, inherited, blocked = await LLMService.aget_knowledge_llm_with_meta(
             tenant_id=5,
@@ -81,10 +81,10 @@ async def test_aget_knowledge_llm_with_meta_returns_envelope():
 async def test_get_assistant_llm_returns_typed_config_only():
     """Backward compat: get_assistant_llm still returns a single value
     even though it goes through the with_meta path internally."""
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     aresolve_mock = AsyncMock(return_value=(None, False, False))
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
                aresolve_mock):
         cfg = await LLMService.get_assistant_llm(tenant_id=5)
     # Empty config: AssistantLLMConfig defaults
@@ -94,10 +94,10 @@ async def test_get_assistant_llm_returns_typed_config_only():
 @pytest.mark.asyncio
 async def test_aget_workflow_llm_with_meta_blocked_by_root():
     """AC-06 surface: blocked=True propagates."""
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     aresolve_mock = AsyncMock(return_value=(None, False, True))
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aresolve',
                aresolve_mock):
         cfg, inherited, blocked = await LLMService.aget_workflow_llm_with_meta(
             tenant_id=5,
@@ -110,10 +110,10 @@ async def test_aget_workflow_llm_with_meta_blocked_by_root():
 
 
 def test_sync_get_assistant_llm_routes_to_sync_resolve():
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     resolve_mock = MagicMock(return_value=(json.dumps({'llm_list': []}), False, False))
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.resolve',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.resolve',
                resolve_mock):
         cfg = LLMService.sync_get_assistant_llm(tenant_id=5)
     assert cfg.llm_list == []
@@ -127,12 +127,12 @@ def test_sync_get_assistant_llm_routes_to_sync_resolve():
 
 @pytest.mark.asyncio
 async def test_update_knowledge_llm_writes_via_aupsert():
-    from bisheng.llm.domain.schemas import KnowledgeLLMConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.schemas import KnowledgeLLMConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     payload = KnowledgeLLMConfig(embedding_model_id=42)
     aupsert_mock = AsyncMock()
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
                aupsert_mock):
         result = await LLMService.update_knowledge_llm(payload, tenant_id=5)
     assert result is payload
@@ -145,14 +145,14 @@ async def test_update_knowledge_llm_writes_via_aupsert():
 
 @pytest.mark.asyncio
 async def test_update_assistant_llm_default_tenant_falls_back_to_context():
-    from bisheng.llm.domain.schemas import AssistantLLMConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.schemas import AssistantLLMConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     payload = AssistantLLMConfig(llm_list=[])
     aupsert_mock = AsyncMock()
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
                aupsert_mock), \
-         patch('bisheng.llm.domain.services.llm.get_current_tenant_id',
+         patch('doberman_agent.llm.domain.services.llm.get_current_tenant_id',
                return_value=7):
         await LLMService.update_assistant_llm(payload)  # no tenant_id arg
     assert aupsert_mock.call_args.kwargs['tenant_id'] == 7
@@ -160,12 +160,12 @@ async def test_update_assistant_llm_default_tenant_falls_back_to_context():
 
 @pytest.mark.asyncio
 async def test_update_evaluation_llm_writes_with_tenant():
-    from bisheng.llm.domain.schemas import EvaluationLLMConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.schemas import EvaluationLLMConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     payload = EvaluationLLMConfig(model_id=12)
     aupsert_mock = AsyncMock()
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
                aupsert_mock):
         await LLMService.update_evaluation_llm(payload, tenant_id=8)
     call_kwargs = aupsert_mock.call_args.kwargs
@@ -175,12 +175,12 @@ async def test_update_evaluation_llm_writes_with_tenant():
 
 @pytest.mark.asyncio
 async def test_update_workflow_llm_writes_with_tenant():
-    from bisheng.llm.domain.schemas import EvaluationLLMConfig
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.llm.domain.schemas import EvaluationLLMConfig
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     payload = EvaluationLLMConfig(model_id=13)
     aupsert_mock = AsyncMock()
-    with patch('bisheng.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
+    with patch('doberman_agent.llm.domain.services.llm.TenantSystemModelConfigDao.aupsert',
                aupsert_mock):
         await LLMService.update_workflow_llm(payload, tenant_id=9)
     call_kwargs = aupsert_mock.call_args.kwargs

@@ -55,7 +55,7 @@ it('discards an outstanding template detail response after switching tenants', a
     let resolve!: (value: unknown) => void;
     api.list.mockImplementationOnce(() => new Promise(done => { resolve = done; }));
     renderModal();
-    act(() => { window.dispatchEvent(new Event('bisheng:management-scope-changed')); });
+    act(() => { window.dispatchEvent(new Event('doberman_agent:management-scope-changed')); });
     await act(async () => { resolve([{ id: 205, name: 'Old tenant', data: { prompt: 'Old' } }]); });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue('Old tenant-fixed')).not.toBeInTheDocument();

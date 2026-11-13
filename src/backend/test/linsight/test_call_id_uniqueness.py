@@ -2,7 +2,7 @@
 must not lose execution history.
 
 Session ``8a570723…`` on 114 (kimi-k3 via tokenrouter) issued 156
-``bisheng_code_interpreter`` calls, 9 ``read_file`` and 2 ``write_file`` across 171
+``doberman_agent_code_interpreter`` calls, 9 ``read_file`` and 2 ``write_file`` across 171
 model turns — yet ``linsight_execute_task.history`` ended up holding 4 tool rows,
 and the step flow read "运行代码 1 次 · 编辑 1 个文件".
 
@@ -21,8 +21,8 @@ persistence upsert, which nothing covered end-to-end before.
 
 from langchain_core.messages import AIMessage, ToolMessage
 
-from bisheng.linsight.domain.services.stream_event_mapper import StreamEventMapper
-from bisheng_langchain.linsight.event import ExecStep
+from doberman_agent.linsight.domain.services.stream_event_mapper import StreamEventMapper
+from doberman_agent_langchain.linsight.event import ExecStep
 from test.linsight.test_step_persistence import _make_manager
 
 SVID = "8a570723-0838-47a7-b2c0-df2a3be9879f"
@@ -45,7 +45,7 @@ async def _persist(mgr, steps: list[ExecStep]) -> None:
 
 
 async def test_repeated_provider_id_keeps_one_row_per_call(monkeypatch):
-    """The exact 114 failure: N turns reusing ``bisheng_code_interpreter:0``.
+    """The exact 114 failure: N turns reusing ``doberman_agent_code_interpreter:0``.
 
     Each turn is a start+end pair that must fold into ONE row (that part always
     worked); what regressed is that turn N+1 used to overwrite turn N's row.
@@ -59,8 +59,8 @@ async def test_repeated_provider_id_keeps_one_row_per_call(monkeypatch):
             mgr,
             _call_round(
                 mapper,
-                tool="bisheng_code_interpreter",
-                raw_id="bisheng_code_interpreter:0",  # provider restarts at 0 each turn
+                tool="doberman_agent_code_interpreter",
+                raw_id="doberman_agent_code_interpreter:0",  # provider restarts at 0 each turn
                 args={"python_code": f"print({i})"},
                 output=f"out-{i}",
             ),

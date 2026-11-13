@@ -13,11 +13,11 @@ infra-backed e2e** and tracked in tasks.md §实际偏差记录.
 import pytest
 from fastapi import HTTPException
 
-import bisheng.open_endpoints.api.endpoints.filelib as filelib
-from bisheng.common.errcode.knowledge import KnowledgeTypeNotSupportedError
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, KnowledgeCreate, KnowledgeTypeEnum, KnowledgeUpdate
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+import doberman_agent.open_endpoints.api.endpoints.filelib as filelib
+from doberman_agent.common.errcode.knowledge import KnowledgeTypeNotSupportedError
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, KnowledgeCreate, KnowledgeTypeEnum, KnowledgeUpdate
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 
 class _FakeUser:
@@ -356,8 +356,8 @@ async def test_clear_dispatch_space(monkeypatch):
 
 def _setup_delete_knowledge_mocks(monkeypatch, knowledge, qa_delete_spy):
     """Stub the heavy deps of KnowledgeService.delete_knowledge for unit testing."""
-    from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-    from bisheng.knowledge.domain.models.knowledge_file import QAKnoweldgeDao
+    from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+    from doberman_agent.knowledge.domain.models.knowledge_file import QAKnoweldgeDao
 
     monkeypatch.setattr(KnowledgeDao, "query_by_id", classmethod(lambda cls, kid: knowledge))
     monkeypatch.setattr(KnowledgeDao, "delete_knowledge", classmethod(lambda cls, kid, only_clear=False: None))

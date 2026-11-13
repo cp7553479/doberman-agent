@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.errcode.channel import ArticleSensitiveViolationError
-from bisheng.sensitive_word.domain.services.sensitive_word_policy_service import DEFAULT_AUTO_REPLY
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.errcode.channel import ArticleSensitiveViolationError
+from doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service import DEFAULT_AUTO_REPLY
 
 
 @pytest.mark.parametrize("can_view_sensitive", [False, True])

@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 from minio.error import S3Error
 
-from bisheng.linsight.domain.services.workspace_backend import seed_workspace_from_previous
+from doberman_agent.linsight.domain.services.workspace_backend import seed_workspace_from_previous
 
 SRC = "src-version-1"
 DST = "dst-version-2"
@@ -31,7 +31,7 @@ def _s3(code: str) -> S3Error:
 def _minio(listing: dict[str, list[str]]) -> MagicMock:
     """listing: prefix -> list of object keys returned by list_objects."""
     minio = MagicMock()
-    minio.bucket = "bisheng"
+    minio.bucket = "doberman_agent"
 
     def _list(bucket, prefix="", recursive=True):
         return iter([_Obj(k) for k in listing.get(prefix, [])])

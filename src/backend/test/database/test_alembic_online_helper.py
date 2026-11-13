@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from sqlalchemy import Column, Integer, MetaData, String, Table, create_engine, inspect
 
-from bisheng.core.database.alembic_helpers.online import (
+from doberman_agent.core.database.alembic_helpers.online import (
     create_missing_model_tables,
     finalize_online_migration_connection,
     should_create_model_tables,

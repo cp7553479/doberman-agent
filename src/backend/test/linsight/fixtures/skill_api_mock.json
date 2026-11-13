@@ -72,7 +72,7 @@
         "source": "manual",
         "create_time": "2026-06-11T10:00:00+08:00",
         "preview": "# 季度财报分析\n抽取营收/净利润/同比，输出 Markdown 报告……",
-        "source_text": "---\nname: ji-du-cai-bao-fen-xi\ndescription: 季度财报分析技能：抽取核心指标并生成结构化报告。\nmetadata:\n  display-name: 季度财报分析\nallowed-tools: search_knowledge_base bisheng_code_interpreter\n---\n\n# 季度财报分析\n抽取营收/净利润/同比，输出 Markdown 报告……",
+        "source_text": "---\nname: ji-du-cai-bao-fen-xi\ndescription: 季度财报分析技能：抽取核心指标并生成结构化报告。\nmetadata:\n  display-name: 季度财报分析\nallowed-tools: search_knowledge_base doberman_agent_code_interpreter\n---\n\n# 季度财报分析\n抽取营收/净利润/同比，输出 Markdown 报告……",
         "files": [
           {"path": "SKILL.md", "size": 512},
           {"path": "scripts/calc_ratio.py", "size": 1024},

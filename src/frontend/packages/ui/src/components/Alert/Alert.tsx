@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Filled, Outlined } from 'bisheng-icons';
+import { Filled, Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import { Button } from '../Button/Button';
 
@@ -264,7 +264,7 @@ export function Alert({
   React.useEffect(() => {
     if (extraActions > 0) {
       console.warn(
-        `[@bisheng/ui] Alert takes at most ${MAX_ACTIONS} actions (Alert spec, section 5.3); ignoring ${extraActions} extra.`,
+        `[@doberman-agent/ui] Alert takes at most ${MAX_ACTIONS} actions (Alert spec, section 5.3); ignoring ${extraActions} extra.`,
       );
     }
   }, [extraActions]);

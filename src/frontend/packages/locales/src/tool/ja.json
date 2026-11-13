@@ -94,7 +94,7 @@
       "desc": "個別チャットまたはグループチャットの履歴メッセージを素早く取得できます",
       "name": "指定されたチャットメッセージの取得"
     },
-    "bisheng_code_interpreter": {
+    "doberman_agent_code_interpreter": {
       "params": {
         "python_code": "評価する純粋なPythonスクリプト。\n内容はmain.pyに入ります。\nマークダウン形式ではなく、通常のPythonコードである必要があります。"
       },
@@ -156,7 +156,7 @@
       "desc": "会社名またはIDを使って企業の基本情報、主要人物、株主情報、対外投資、支店などの情報を取得できます。",
       "name": "企業工商情報"
     },
-    "bisheng_knowledge_search": {
+    "doberman_agent_knowledge_search": {
       "name": "$t(tool:categories.知识库检索.name)",
       "desc": "$t(tool:categories.知识库检索.desc)"
     },

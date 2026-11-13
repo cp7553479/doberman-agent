@@ -13,10 +13,10 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from loguru import logger
 
-from bisheng.citation.domain.services.citation_handle_service import HANDLE_TTL_SECONDS, handle_redis_key
-from bisheng.citation.domain.services.linsight_citation_scope import LinsightCitationScope
-from bisheng.linsight.domain.services import citation_source_middleware as mod
-from bisheng.linsight.domain.services.citation_source_middleware import (
+from doberman_agent.citation.domain.services.citation_handle_service import HANDLE_TTL_SECONDS, handle_redis_key
+from doberman_agent.citation.domain.services.linsight_citation_scope import LinsightCitationScope
+from doberman_agent.linsight.domain.services import citation_source_middleware as mod
+from doberman_agent.linsight.domain.services.citation_source_middleware import (
     NUDGE_LOG_PREFIX,
     SOURCE_TABLE_HEADER,
     SOURCE_TABLE_OVERFLOW_LINE,

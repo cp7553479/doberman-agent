@@ -13,7 +13,7 @@
 
 ## 基线与验证
 
-- 仓库：`dataelement/bisheng`，目标：`feat/bisheng-work-120-main`。
+- 仓库：`cp7553479/doberman-agent`，目标：`feat/doberman-agent-work-120-main`。
 - 提交前核对远端基线：`4cc8f565fb5bc8bd918973ce74f876e6fd66af26`。
 - 实现分支：`codex/knowledge-return-tab`。
 - 新增 11 项 jsdom 集成回归使用真实 Knowledge 主页面、MainLayout/AliveScope、列表 Segmented 和详情返回按钮。接口、数据密集子组件及激活回调采用夹具。覆盖三种标签、文件夹逐级返回、浏览器前进后退、直接打开详情、默认标签、查询参数与历史替换、离开模块后重入。
@@ -28,7 +28,7 @@
 
 ## PR #2574 合并冲突处理
 
-- 同步时远端目标 `feat/bisheng-work-120-main@2ebff30cbd5d6be7d100c59f6705443247cfb46d`，PR 远端头 `f3b2dae8513938d10c9c29609d0e340ff5f34b00`。
+- 同步时远端目标 `feat/doberman-agent-work-120-main@2ebff30cbd5d6be7d100c59f6705443247cfb46d`，PR 远端头 `f3b2dae8513938d10c9c29609d0e340ff5f34b00`。
 - 冲突位于 `docs/STATUS.md` 顶部新增记录；整合两侧条目，保留目标分支全部状态记录。6 个知识空间源码与测试文件与原修复提交逐字节一致。
 - 同步后组合回归 8 组 / 59 项通过，涵盖知识空间返回标签、分享导航、访问与错误处理、布局知识问答、应用返回入口及桌面字号。
 - Client 全量 ESLint 与 1507 个严格类型文件检查、Platform ESLint 与 620 个严格类型文件检查、UI/file-viewers ESLint、file-viewers 类型检查、语言资源和差异检查通过。

@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.channel.domain.services.information_knowledge_delivery_service import (
+from doberman_agent.channel.domain.services.information_knowledge_delivery_service import (
     InformationKnowledgeDeliveryService,
 )
-from bisheng.core.config.settings import IntelligenceCenterConf
+from doberman_agent.core.config.settings import IntelligenceCenterConf
 
 
 async def test_route_main_and_sub_channel_without_cross_config_dedup():

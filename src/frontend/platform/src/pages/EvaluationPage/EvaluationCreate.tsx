@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Select, notification } from '@bisheng/ui';
-import { Tooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, Select, notification } from '@doberman-agent/ui';
+import { Tooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { Label } from "@/components/bs-ui/label";

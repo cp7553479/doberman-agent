@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import { FIELD_ACTION } from './shared';
 import { Input, type InputProps } from './Input';
@@ -13,7 +13,7 @@ import { Input, type InputProps } from './Input';
  * two actions the spec allows, and no more.
  *
  * The toggle icons default to the icon package's Eye / EyeClose (基础-图标规范:
- * bisheng-icons is the single source); the props stay for the rare field that
+ * @doberman-agent/icons is the single source); the props stay for the rare field that
  * needs a different glyph.
  */
 export interface PasswordInputProps extends Omit<InputProps, 'type' | 'suffix'> {

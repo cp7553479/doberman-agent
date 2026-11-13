@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Filled } from 'bisheng-icons';
+import { Filled } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 import {
   ADDON_BASE,

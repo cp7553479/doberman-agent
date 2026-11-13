@@ -1,13 +1,13 @@
-# BiSheng 架构文档
+# doberman-agent 架构文档
 
-BiSheng v2.5.0 是面向企业的开源 LLM 应用 DevOps 平台，基于 FastAPI + React + LangGraph 构建，采用 DDD 架构组织 15+ 领域模块，支持工作流编排、知识库/RAG、多 Agent 协作（Linsight）、MCP 集成、模型评测与微调、多租户隔离。
+doberman-agent v2.5.0 是面向企业的开源 LLM 应用 DevOps 平台，基于 FastAPI + React + LangGraph 构建，采用 DDD 架构组织 15+ 领域模块，支持工作流编排、知识库/RAG、多 Agent 协作（Linsight）、MCP 集成、模型评测与微调、多租户隔离。
 
 ## 仓库结构
 
 ```
-bisheng/
-├── src/backend/bisheng/           # FastAPI 后端主应用
-├── src/backend/bisheng_langchain/  # LangChain 扩展包
+doberman-agent/
+├── src/backend/doberman_agent/           # FastAPI 后端主应用
+├── src/backend/doberman_agent_langchain/  # LangChain 扩展包
 ├── src/frontend/platform/          # 管理端前端 (React)
 ├── src/frontend/client/            # 用户端前端 (React)
 ├── docker/                         # Docker Compose 部署

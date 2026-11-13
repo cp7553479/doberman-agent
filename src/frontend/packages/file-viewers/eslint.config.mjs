@@ -1,4 +1,4 @@
-// ESLint 9 flat config — @bisheng/file-viewers shared package.
+// ESLint 9 flat config — @doberman-agent/file-viewers shared package.
 // New code: NO suppressions file, zero tolerance from day one.
 // xlsx/xlsx-populate are allowed here on purpose: this package is the single
 // consolidation point for Excel parsing (ledger #7) — apps must not import them.
@@ -8,7 +8,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**'] },
+  { ignores: ['**/._*', 'dist/**', 'node_modules/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -24,7 +24,7 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
       // Presentation + parsing only — no HTTP client, no state managers.
-      'no-restricted-imports': ['error', { paths: [{ name: 'axios', message: '@bisheng/file-viewers takes URLs via props and uses fetch; no HTTP client deps.' }] }],
+      'no-restricted-imports': ['error', { paths: [{ name: 'axios', message: '@doberman-agent/file-viewers takes URLs via props and uses fetch; no HTTP client deps.' }] }],
       // Copy must come from the shared i18n namespace, never be hardcoded.
       'no-restricted-syntax': [
         'error',

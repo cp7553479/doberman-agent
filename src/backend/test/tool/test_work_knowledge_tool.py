@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from pydantic import ValidationError
 
-from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
-from bisheng.core.context.tenant import current_tenant_id
-from bisheng.tool.domain.langchain import work_knowledge as module
-from bisheng.tool.domain.services.executor import ToolExecutor
+from doberman_agent.common.constants.enums.telemetry import ApplicationTypeEnum
+from doberman_agent.core.context.tenant import current_tenant_id
+from doberman_agent.tool.domain.langchain import work_knowledge as module
+from doberman_agent.tool.domain.services.executor import ToolExecutor
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ def test_sync_invocation_preserves_context_and_empty_result(runtime):
 
 
 def test_executor_binds_caller_instead_of_shared_catalog_identity(runtime, monkeypatch):
-    tool = SimpleNamespace(tool_key="bisheng_knowledge_search", is_preset=1)
+    tool = SimpleNamespace(tool_key="doberman_agent_knowledge_search", is_preset=1)
     category = SimpleNamespace(tenant_id=1, user_id=None, extra='{"user_id":1,"tenant_id":1}')
     wrapper = Mock(side_effect=lambda **kwargs: kwargs["base_tool"])
     monkeypatch.setattr(ToolExecutor, "init_by_tool_instance", wrapper)
@@ -140,7 +140,7 @@ def test_executor_requires_explicit_tenant_context(runtime, monkeypatch):
     try:
         with pytest.raises(PermissionError, match="tenant context"):
             ToolExecutor._init_by_tool_and_type(
-                SimpleNamespace(tool_key="bisheng_knowledge_search", is_preset=1),
+                SimpleNamespace(tool_key="doberman_agent_knowledge_search", is_preset=1),
                 SimpleNamespace(),
                 app_id="cloud-work",
                 app_name="Work",

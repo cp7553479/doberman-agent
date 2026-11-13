@@ -48,7 +48,7 @@
   - 探查脚本：`scripts/check_export_dependencies.sh`（新建，可丢弃）
   - 条件性修改：`docker/Dockerfile`（如缺）
   **逻辑**:
-  - 进入 bisheng-backend 容器，跑：`which pandoc && pandoc --version`、`which soffice && soffice --version`、`fc-list :lang=zh | head -5`。
+  - 进入 doberman-agent-backend 容器，跑：`which pandoc && pandoc --version`、`which soffice && soffice --version`、`fc-list :lang=zh | head -5`。
   - **pandoc 缺失** → `RUN apt-get install -y pandoc`（apt 源若缺需切换 contrib/non-free）。
   - **LibreOffice 缺失** → 不应缺失（知识库 PPT→PDF 已在用）；若真的缺则 `RUN apt-get install -y libreoffice-core libreoffice-writer`。
   - **中文字体缺失** → `RUN apt-get install -y fonts-noto-cjk fonts-wqy-microhei`。
@@ -64,7 +64,7 @@
   **逻辑**:
   - 在测试库（最好生产快照）跑：`SELECT id, message FROM chat_message WHERE category IN ('answer', 'agent_answer') AND (message LIKE '%[1]%' OR message LIKE '%<sup%' OR message LIKE '%【%】%') LIMIT 50;`
   - 人工筛选 ≥5 条含真实 RAG 角标的样本，把原始 message 片段贴进偏差记录。
-  - 对照 bisheng 后端 RAG 渲染代码（如 `bisheng/api/services/llm_callback.py` 或类似）确认角标生成规则。
+  - 对照 doberman-agent 后端 RAG 渲染代码（如 `doberman-agent/api/services/llm_callback.py` 或类似）确认角标生成规则。
   - **额外线索**：前端已有 `src/frontend/client/src/components/Chat/Messages/Content/citationUtils.ts`，封装了角标渲染 / 规范化逻辑；通过它能反推后端存储格式，是较快的入口。
   - 产出最终正则集合，写进 T010 的 `_strip_citation_marks` 实现里。**禁止仅凭"应该是这样"猜测**。
   **结果落档**: 「实际偏差记录」§T002
@@ -72,7 +72,7 @@
   **依赖**: 无
 
 - [ ] **T003**: ChatMessageDao 现状盘点
-  **文件**: 只读 `src/backend/bisheng/chat_session/`（或 `database/models/message.py` 中现有 DAO）
+  **文件**: 只读 `src/backend/doberman_agent/chat_session/`（或 `database/models/message.py` 中现有 DAO）
   **逻辑**:
   - grep `ChatMessageDao` 的所有 classmethod，确认是否已有按 `id IN (...)` + `user_id` 过滤的方法。
   - 若已有等价方法（如 `aget_messages_by_ids`），T008 直接复用；若没有，T008 新增。
@@ -84,7 +84,7 @@
 ### 阶段 2：后端基础设施（无测试配对）
 
 - [ ] **T004**: 工作台错误码扩展（12060-12069）
-  **文件**: `src/backend/bisheng/common/errcode/workstation.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/workstation.py`
   **逻辑**: 沿用现有 12040-12045 的写法，追加 10 个错误类，全部继承 `BaseErrorCode`：
 
     | Code | Class | Msg |
@@ -102,15 +102,15 @@
   **依赖**: 无
 
 - [ ] **T005**: Pydantic DTO schemas
-  **文件**: `src/backend/bisheng/workstation/domain/schemas/conversation_export.py`（新建）
+  **文件**: `src/backend/doberman_agent/workstation/domain/schemas/conversation_export.py`（新建）
   **逻辑**: 定义 `ExportFormat`（Enum）/ `ExportMessagesRequest` / `ImportMessagesToKnowledgeRequest` / `ImportMessagesToKnowledgeResponse` / `UploadableSpaceItem` / `UploadableSpaceListResponse`（spec §5.2）。`message_ids` 加 `min_length=1, max_length=200` Field 约束（与 AC-08 配套，FastAPI 层即拦）。
   **依赖**: 无
 
 - [ ] **T006**: 程序化生成 reference docx 模板
   **文件**:
   - 生成脚本（一次性）：`scripts/gen_conversation_export_template.py`（新建，入仓但不参与运行时）
-  - 模板产物：`src/backend/bisheng/workstation/assets/conversation_export_template.docx`（新建）
-  - 占位 init：`src/backend/bisheng/workstation/assets/__init__.py`
+  - 模板产物：`src/backend/doberman_agent/workstation/assets/conversation_export_template.docx`（新建）
+  - 占位 init：`src/backend/doberman_agent/workstation/assets/__init__.py`
   **逻辑**:
   - 用 `python-docx` 构建 reference 模板：
     - A4 纵向、白底、上下左右 2.5cm 边距
@@ -121,7 +121,7 @@
     - 自定义 character style「BoldLabel」用于标签段（用户名 / 模型名）：加粗 14pt
     - 代码块（`Source Code` style）：等宽字体 10pt + 浅灰背景
     - 表格默认带 1px 灰边框
-  - 脚本支持 `python scripts/gen_conversation_export_template.py --out src/backend/bisheng/workstation/assets/conversation_export_template.docx` 一键再生。
+  - 脚本支持 `python scripts/gen_conversation_export_template.py --out src/backend/doberman_agent/workstation/assets/conversation_export_template.docx` 一键再生。
   - 在 docstring 里说明：UX 后续可手工编辑 .docx 直接替换，重新跑脚本即覆盖。
   **测试**: 跑完脚本后用 `pypandoc.convert_text("**a**\n\n# h1\n\n表格 | b\n--- | ---\n1 | 2", "docx", reference_doc=<path>)` 生成测试 docx，肉眼检查 LibreOffice 打开样式接近 PRD 样式图。
   **依赖**: T001（确保 LibreOffice 可用以肉眼验证）
@@ -152,7 +152,7 @@
   **依赖**: T002（角标样本）、T003（DAO 现状）
 
 - [ ] **T008**: ConversationExportService 取数 / 配对 / turn 构建 实现
-  **文件**: `src/backend/bisheng/workstation/domain/services/conversation_export_service.py`（新建）
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/conversation_export_service.py`（新建）
   **逻辑**: 实现 `_load_and_validate_messages` + `_build_turns` 两个方法（spec §7.1 表格中"取数 + 中间表达"部分）。SQL 过滤必须包含 `user_id` + `chat_id` + 隐式 `tenant_id`（SQLAlchemy 事件已注入）。若 T003 发现 DAO 没有现成方法，本任务一并加 `ChatMessageDao.aget_messages_by_ids(message_ids, user_id, chat_id)`。
   **测试**: T007 全部通过。
   **覆盖 AC**: AC-06, AC-08, AC-09, AC-11, AC-14, AC-15, AC-25, AC-26, AC-27, AC-28
@@ -226,7 +226,7 @@
 - [ ] **T013**: `KnowledgeSpaceService.list_uploadable_spaces` 单元测试 + 实现
   **文件**:
   - 测试：`src/backend/test/knowledge/test_uploadable_spaces.py`（新建）
-  - 实现：`src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`（追加方法）
+  - 实现：`src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`（追加方法）
   **逻辑**:
   - 单元测试 3 条：
     | 测试 | 场景 | AC |
@@ -261,9 +261,9 @@
 
 - [ ] **T015**: 3 个 endpoint 实现 + Router 注册
   **文件**:
-  - 新建：`src/backend/bisheng/workstation/api/endpoints/conversation_export.py`（2 个 POST 端点）
-  - 修改：`src/backend/bisheng/workstation/api/router.py`（注册）
-  - 修改：`src/backend/bisheng/knowledge/api/endpoints/knowledge_space.py`（追加 `GET /uploadable`）
+  - 新建：`src/backend/doberman_agent/workstation/api/endpoints/conversation_export.py`（2 个 POST 端点）
+  - 修改：`src/backend/doberman_agent/workstation/api/router.py`（注册）
+  - 修改：`src/backend/doberman_agent/knowledge/api/endpoints/knowledge_space.py`（追加 `GET /uploadable`）
   **逻辑**:
   - 两个 POST 端点：
     - `POST /api/v1/chat/messages/export` → 接收 `ExportMessagesRequest`，委托 `ConversationExportService.export_messages` → 返回 `StreamingResponse(bytes_io, media_type=mimetype, headers={"Content-Disposition": <RFC5987 编码>})`。
@@ -419,7 +419,7 @@
 **待容器内验证**：smoke test 脚本 `scripts/check_export_dependencies.sh` 已落仓。需要在镜像里跑一次端到端 md → docx → pdf：
 
 ```bash
-docker exec -it bisheng-backend bash scripts/check_export_dependencies.sh
+docker exec -it doberman-agent-backend bash scripts/check_export_dependencies.sh
 ```
 
 期望输出 `=== ALL CHECKS PASSED — F028 export toolchain is ready ===`。任何 `[FAIL]` 行需要补镜像层（pandoc / soffice / 中文字体）。
@@ -428,7 +428,7 @@ docker exec -it bisheng-backend bash scripts/check_export_dependencies.sh
 
 ### §T002 RAG 角标真实样本（2026-05-31）
 
-**存储格式（与 spec 假设有偏差）**：bisheng 用**私有 Unicode 字符**包裹角标，不是 `[1]` / `<sup>` 之类的 Markdown / HTML：
+**存储格式（与 spec 假设有偏差）**：doberman-agent 用**私有 Unicode 字符**包裹角标，不是 `[1]` / `<sup>` 之类的 Markdown / HTML：
 
 ```
  <citation_id>:<item_id>[<更多 ref>]* 
@@ -436,7 +436,7 @@ docker exec -it bisheng-backend bash scripts/check_export_dependencies.sh
 
 三个 marker 定义在：
 
-- 后端：`src/backend/bisheng/citation/domain/services/citation_prompt_helper.py:18-22`
+- 后端：`src/backend/doberman_agent/citation/domain/services/citation_prompt_helper.py:18-22`
   - `CITATION_START_MARKER = ''`
   - `CITATION_SEPARATOR_MARKER = ''`
   - `CITATION_END_MARKER = ''`
@@ -444,7 +444,7 @@ docker exec -it bisheng-backend bash scripts/check_export_dependencies.sh
 - 前端：`src/frontend/client/src/components/Chat/Messages/Content/citationUtils.ts:37-39`
   - 同字符常量，并有 `stripCitationMarkers()` / `normalizeCitationMarkers()` 现成函数
 
-**生成位置**：`bisheng/citation/domain/services/citation_prompt_helper.py:108-136`（`annotate_rag_documents_with_citations` 注入到 LLM prompt），由 RAG 节点 `bisheng/workflow/nodes/rag/rag.py:95-96` 调用；持久化在 `chat_service.py:1617-1626`。
+**生成位置**：`doberman-agent/citation/domain/services/citation_prompt_helper.py:108-136`（`annotate_rag_documents_with_citations` 注入到 LLM prompt），由 RAG 节点 `doberman-agent/workflow/nodes/rag/rag.py:95-96` 调用；持久化在 `chat_service.py:1617-1626`。
 
 **两种 category 的差异**：
 
@@ -471,7 +471,7 @@ def _strip_citation_marks(text: str) -> str:
     return text
 ```
 
-**复用建议**：直接在 `bisheng/citation/domain/services/citation_prompt_helper.py` 里追加 `strip_citation_markers(text: str) -> str`（与前端 `stripCitationMarkers` 同名同语义），让 F028 的 service 从 citation 模块 import，而不是把正则散落在 workstation 内。
+**复用建议**：直接在 `doberman-agent/citation/domain/services/citation_prompt_helper.py` 里追加 `strip_citation_markers(text: str) -> str`（与前端 `stripCitationMarkers` 同名同语义），让 F028 的 service 从 citation 模块 import，而不是把正则散落在 workstation 内。
 
 **对 T007 测试用例的影响**：T007 的 `test_build_turns_strip_citations` 测试样本就用私有 Unicode 字符构造（`"答案前ref1:1答案后"`），不必再依赖真实库快照。T002 已经把"真实形态"勘察清楚，可以直接合成测试 fixture。
 
@@ -479,9 +479,9 @@ def _strip_citation_marks(text: str) -> str:
 
 **ORM 与 DAO 位置**：
 
-- `ChatMessage` ORM：`src/backend/bisheng/database/models/message.py:63`
+- `ChatMessage` ORM：`src/backend/doberman_agent/database/models/message.py:63`
 - `ChatMessageDao` 类：同文件第 152 行
-- `MessageSession` ORM：`src/backend/bisheng/database/models/session.py`（表名 `message_session`，第 50 行）
+- `MessageSession` ORM：`src/backend/doberman_agent/database/models/session.py`（表名 `message_session`，第 50 行）
 
 **关键字段**（与 spec 假设一致或微调）：
 
@@ -534,7 +534,7 @@ def _strip_citation_marks(text: str) -> str:
 
   顺便给 `MessageSession` 类似一个 `aget_by_chat_id(chat_id, user_id)`（如 DAO 没有同等能力），用于取 `name` / `flow_type` / `flow_name`。
 
-**arch-guard 提醒**：endpoint 层不得 `import bisheng.database.models.*`（RULE-3 WARNING）。Service 层调 DAO 是允许的（DAO 就定义在 models 文件中，但 service → dao 是合法层级；endpoint → models 是越层）。本特性 service 直接 import `ChatMessageDao` / `MessageSessionDao` 是 OK 的。
+**arch-guard 提醒**：endpoint 层不得 `import doberman_agent.database.models.*`（RULE-3 WARNING）。Service 层调 DAO 是允许的（DAO 就定义在 models 文件中，但 service → dao 是合法层级；endpoint → models 是越层）。本特性 service 直接 import `ChatMessageDao` / `MessageSessionDao` 是 OK 的。
 
 **对 T008 任务的具体修订**：
 
@@ -567,8 +567,8 @@ def _strip_citation_marks(text: str) -> str:
 
 - **偏差 WF-4（2026-06-03）：docx 导出图片不显示（txt/md 正常）**。
   - **现象**：工作流会话 docx 导出，答案里的图片不显示;txt/md 有图片链接内容。
-  - **根因**：答案图片是 `/bisheng/knowledge/images/...` 根相对路径(前端 nginx 代理路径,后端无此代理)→ `_fetch_image_bytes` 旧逻辑当"不支持 scheme"丢弃；且 MinIO 返回 `application/octet-stream` → 扩展名猜成 `.bin` → pandoc 认不出图片嵌不进。txt/md 只输出链接文本,不抓图,故不受影响。
-  - **改动**：`_fetch_image_bytes` 加 `minio_host` 参数,相对路径补 `get_minio_share_host()`(实测 `http://host:9000/bisheng/...` 直连可取 200);content-type 为泛型(`bin`)时用 URL 后缀兜底扩展名;`_preprocess_images` 先解析 host 传入;新增 `_resolve_minio_host`(best-effort)。
+  - **根因**：答案图片是 `/doberman-agent/knowledge/images/...` 根相对路径(前端 nginx 代理路径,后端无此代理)→ `_fetch_image_bytes` 旧逻辑当"不支持 scheme"丢弃；且 MinIO 返回 `application/octet-stream` → 扩展名猜成 `.bin` → pandoc 认不出图片嵌不进。txt/md 只输出链接文本,不抓图,故不受影响。
+  - **改动**：`_fetch_image_bytes` 加 `minio_host` 参数,相对路径补 `get_minio_share_host()`(实测 `http://host:9000/doberman-agent/...` 直连可取 200);content-type 为泛型(`bin`)时用 URL 后缀兜底扩展名;`_preprocess_images` 先解析 host 传入;新增 `_resolve_minio_host`(best-effort)。
   - **部署**：热补丁到测试机(`.imgbak` 备份在容器内),重启 health 200。持久化在本地分支。
   - **落档**：design.md §5 #14 已加。
 
@@ -618,11 +618,11 @@ def _strip_citation_marks(text: str) -> str:
 | 复用对象 | 路径 | 用途 |
 |---|---|---|
 | ~~`libreoffice_converter._convert_file_extension`~~ | ~~docx → pdf~~ | **已废弃**：pdf 改走 chromium(playwright) md→html→pdf（见偏差 PDF-1） |
-| `KnowledgeSpaceService.add_file` | `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py:2659` | 导入到知识空间 |
+| `KnowledgeSpaceService.add_file` | `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py:2659` | 导入到知识空间 |
 | `KnowledgeSpaceFileDao.async_list_children` | `knowledge_space` 模块 DAO | 同名扫描 |
-| `MinioManager` | `src/backend/bisheng/core/storage/minio/` | 拉内部图片 bytes |
-| `PermissionService.check / list_resources` | `src/backend/bisheng/permission/domain/services/permission_service.py` | 权限校验 / 列可上传空间 |
+| `MinioManager` | `src/backend/doberman_agent/core/storage/minio/` | 拉内部图片 bytes |
+| `PermissionService.check / list_resources` | `src/backend/doberman_agent/permission/domain/services/permission_service.py` | 权限校验 / 列可上传空间 |
 | `AddToKnowledgeModal` | `src/frontend/client/src/pages/Subscription/Article/AddToKnowledgeModal.tsx` | 目标选择器 UI |
-| `UserPayload` | `src/backend/bisheng/common/dependencies/user_deps.py` | 认证注入 |
-| `BaseErrorCode` | `src/backend/bisheng/common/errcode/base.py` | 错误类基类 |
-| `resp_200` | `src/backend/bisheng/common/schemas/api.py` | 统一成功响应 |
+| `UserPayload` | `src/backend/doberman_agent/common/dependencies/user_deps.py` | 认证注入 |
+| `BaseErrorCode` | `src/backend/doberman_agent/common/errcode/base.py` | 错误类基类 |
+| `resp_200` | `src/backend/doberman_agent/common/schemas/api.py` | 统一成功响应 |

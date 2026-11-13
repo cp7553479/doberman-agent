@@ -18,7 +18,7 @@ set -uo pipefail
 
 # 仓库根（脚本一般在 scripts/ 下）
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BACKEND="${ROOT}/src/backend/bisheng"
+BACKEND="${ROOT}/src/backend/doberman_agent"
 
 if [ ! -d "${BACKEND}" ]; then
     echo "ERROR: backend dir not found: ${BACKEND}" >&2
@@ -32,11 +32,11 @@ PATTERN='RoleAccessDao\.(find|judge|afind|ajudge)_role_access\(|RoleAccessDao\.g
 
 # 例外白名单（允许文件路径片段）。任何匹配以下任一片段的文件都被豁免。
 ALLOWLIST=(
-    'bisheng/user/domain/services/auth.py'
-    'bisheng/user/api/user.py'
-    'bisheng/role/domain/services/role_service.py'
-    'bisheng/permission/migration/'
-    'bisheng/database/models/role_access.py'
+    'doberman_agent/user/domain/services/auth.py'
+    'doberman_agent/user/api/user.py'
+    'doberman_agent/role/domain/services/role_service.py'
+    'doberman_agent/permission/migration/'
+    'doberman_agent/database/models/role_access.py'
 )
 
 # 收集所有命中行（path:line:content 形式）

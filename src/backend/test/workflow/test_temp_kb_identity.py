@@ -6,8 +6,8 @@ not need a running InputNode / Milvus.
 
 from langchain_core.documents import Document
 
-from bisheng.workflow.common.knowledge import RagUtils
-from bisheng.workflow.nodes.input.input import InputNode, ParseModeEnum
+from doberman_agent.workflow.common.knowledge import RagUtils
+from doberman_agent.workflow.nodes.input.input import InputNode, ParseModeEnum
 
 
 def test_temp_file_identity_is_unique_per_call_and_has_no_bbox_keys():

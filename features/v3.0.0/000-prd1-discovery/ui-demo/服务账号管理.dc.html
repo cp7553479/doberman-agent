@@ -25,8 +25,8 @@ input,button,select{font-family:inherit}
 
   <div style="display:flex;justify-content:space-between;align-items:center;height:64px;flex-shrink:0;padding:0 24px 0 38px">
     <div style="display:flex;align-items:center;gap:8px">
-      <img src="assets/bisheng-logo.png" alt="BISHENG" style="height:22px;width:auto">
-      <span style="font-size:17px;font-weight:600;letter-spacing:.08em;color:#212121">BISHENG</span>
+      <img src="assets/doberman-agent-logo.png" alt="doberman-agent" style="height:22px;width:auto">
+      <span style="font-size:17px;font-weight:600;letter-spacing:.08em;color:#212121">doberman-agent</span>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
       <div style="height:32px;width:32px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#4E5969">
@@ -218,9 +218,9 @@ input,button,select{font-family:inherit}
                     </button>
                   </div>
                   <div style="display:grid;grid-template-columns:104px 1fr;row-gap:10px;column-gap:12px;font-size:13px;align-items:center">
-                    <span style="color:#86909C">MCP Server</span><span style="font-family:ui-monospace,Menlo,monospace;color:#212121">https://bisheng.cofco.com/mcp</span>
-                    <span style="color:#86909C">模型 base URL</span><span style="font-family:ui-monospace,Menlo,monospace;color:#212121">https://bisheng.cofco.com/v1<span style="font-family:inherit;font-size:12px;color:#86909C;margin-left:8px">OpenAI 兼容 · 本版无 Anthropic 协议面</span></span>
-                    <span style="color:#86909C">CLI</span><span style="color:#212121"><a href="#">下载 bisheng CLI 安装包</a><span style="font-size:12px;color:#86909C;margin-left:8px">安装后执行 <span style="font-family:ui-monospace,Menlo,monospace">bisheng login</span> 粘贴本页签发的密钥</span></span>
+                    <span style="color:#86909C">MCP Server</span><span style="font-family:ui-monospace,Menlo,monospace;color:#212121">https://platform.example.com.com/mcp</span>
+                    <span style="color:#86909C">模型 base URL</span><span style="font-family:ui-monospace,Menlo,monospace;color:#212121">https://platform.example.com.com/v1<span style="font-family:inherit;font-size:12px;color:#86909C;margin-left:8px">OpenAI 兼容 · 本版无 Anthropic 协议面</span></span>
+                    <span style="color:#86909C">CLI</span><span style="color:#212121"><a href="#">下载 doberman-agent CLI 安装包</a><span style="font-size:12px;color:#86909C;margin-left:8px">安装后执行 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent login</span> 粘贴本页签发的密钥</span></span>
                   </div>
                   <div style="font-size:12px;color:#86909C;margin-top:12px;line-height:19px;text-wrap:pretty">一键复制生成一段可直接粘贴的接入说明（企微 / 邮件转交开发者），<span style="color:#212121">不含密钥明文</span>——明文只在签发弹窗出现一次，需管理员另行安全转交。</div>
                 </div>
@@ -368,7 +368,7 @@ input,button,select{font-family:inherit}
         </div>
         <div style="display:flex;gap:8px;margin-top:12px;border:1px solid #FFDCA8;background:#FFF9F0;border-radius:8px;padding:10px 12px">
           <svg style="color:#B54708;flex-shrink:0;margin-top:1px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"></path><path d="M12 9v4M12 17h.01"></path></svg>
-          <div style="font-size:12px;line-height:19px;color:#4E5969;text-wrap:pretty">选错难纠正：该账号首发 <span style="font-family:ui-monospace,Menlo,monospace">bisheng deploy</span> 的应用以此人为 owner，而删除 / 回滚 / 撤回在途审批单与交接改码权仅 owner 可为，平台超管与租户管理员均不可代行。归属在创建时固化、改字段不追溯已有应用，选错只能等归属转移，管理侧兜底手段仅下线。知识库等其它资源无此约束——管理员随时可另授「可管理」给他人。</div>
+          <div style="font-size:12px;line-height:19px;color:#4E5969;text-wrap:pretty">选错难纠正：该账号首发 <span style="font-family:ui-monospace,Menlo,monospace">doberman-agent deploy</span> 的应用以此人为 owner，而删除 / 回滚 / 撤回在途审批单与交接改码权仅 owner 可为，平台超管与租户管理员均不可代行。归属在创建时固化、改字段不追溯已有应用，选错只能等归属转移，管理侧兜底手段仅下线。知识库等其它资源无此约束——管理员随时可另授「可管理」给他人。</div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
           <button onClick="{{ closeModal }}" style="height:34px;padding:0 16px;border:1px solid #E5E6EB;background:#fff;border-radius:7px;font-size:14px;color:#212121;cursor:pointer">取消</button>
@@ -439,7 +439,7 @@ input,button,select{font-family:inherit}
               <span style="{{ delegateCheckStyle }}">{{ delegateCheck }}</span>
               <div>
                 <div style="font-size:13px;color:#212121;font-family:ui-monospace,Menlo,monospace">delegate</div>
-                <div style="font-size:12px;color:#86909C;margin-top:2px">代表平台用户执行 · 独立权限位，不被任何其他权限蕴含；勾选即强制委托，每次调用都必须传 X-Bisheng-On-Behalf-Of，漏传返回 400（26016），不降级执行</div>
+                <div style="font-size:12px;color:#86909C;margin-top:2px">代表平台用户执行 · 独立权限位，不被任何其他权限蕴含；勾选即强制委托，每次调用都必须传 X-doberman-agent-On-Behalf-Of，漏传返回 400（26016），不降级执行</div>
               </div>
             </div>
 
@@ -808,17 +808,17 @@ class Component extends DCLogic {
         (s.copied ? "#B7E1C6;background:#E8F6EE;color:#00873D" : "#E5E6EB;background:#fff;color:#212121"),
       copyAccess: () => {
         const text = [
-          "BiSheng 平台接入信息（服务账号：" + acct.name + "）",
+          "doberman-agent 平台接入信息（服务账号：" + acct.name + "）",
           "",
           "1. MCP Server 地址",
-          "   https://bisheng.cofco.com/mcp",
+          "   https://platform.example.com.com/mcp",
           "",
           "2. 模型调用 base URL（OpenAI 兼容协议）",
-          "   https://bisheng.cofco.com/v1",
+          "   https://platform.example.com.com/v1",
           "",
           "3. CLI",
-          "   下载：https://bisheng.cofco.com/download/bisheng-cli",
-          "   安装后执行：bisheng login",
+          "   下载：https://platform.example.com.com/download/doberman-agent-cli",
+          "   安装后执行：doberman-agent login",
           "   按提示粘贴管理员另行转交给你的 API 密钥即可完成登录。",
           "",
           "说明：以上地址均为内网地址，无公网依赖。密钥明文不随本说明下发，请向管理员单独索取；密钥仅在签发时展示一次，遗失需重新签发。"

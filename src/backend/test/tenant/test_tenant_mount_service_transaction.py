@@ -46,7 +46,7 @@ async def _yield_session(session):
 @pytest.mark.asyncio
 async def test_mount_child_writes_root_dept_id_and_single_commit():
     """Happy path: tenant gets root_dept_id=dept_id and only one commit fires."""
-    from bisheng.tenant.domain.services import tenant_mount_service as svc_mod
+    from doberman_agent.tenant.domain.services import tenant_mount_service as svc_mod
 
     session = MagicMock()
     session.add = MagicMock()
@@ -96,7 +96,7 @@ async def test_mount_child_writes_root_dept_id_and_single_commit():
 async def test_mount_child_rolls_back_when_dept_update_fails():
     """If the dept update raises, commit must NOT fire — INSERT rolls back
     cleanly with the session, leaving no tenant_code-occupied orphan."""
-    from bisheng.tenant.domain.services import tenant_mount_service as svc_mod
+    from doberman_agent.tenant.domain.services import tenant_mount_service as svc_mod
 
     session = MagicMock()
     session.add = MagicMock()

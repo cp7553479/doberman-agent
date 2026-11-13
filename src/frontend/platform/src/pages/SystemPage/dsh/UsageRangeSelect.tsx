@@ -1,4 +1,4 @@
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
 import { useTranslation } from 'react-i18next';
 import { usagePresetRange, type UsagePreset, type UsageRange } from './usageRange';

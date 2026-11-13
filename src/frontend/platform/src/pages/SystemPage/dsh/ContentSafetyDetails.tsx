@@ -5,7 +5,7 @@ import type {
   ContentSafetyState,
   SafetyDetailsStatus,
 } from "@/types/dshContentSafety";
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { dshTime } from "./common";

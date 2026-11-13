@@ -4,9 +4,9 @@ from datetime import timedelta
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeDependencyPlan, RuntimeOperation
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_profile_service import RuntimeDependencyService
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeDependencyPlan, RuntimeOperation
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_profile_service import RuntimeDependencyService
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import MANAGER
 from test.app_runtime.test_runtime_kubernetes_service import control as control
@@ -68,7 +68,7 @@ async def dependencies(materials):
 async def test_selected_cache_is_recorded_in_operation_before_grant_can_download_it(dependencies):
     m, svc, artifact, _ = dependencies
     first = await create(m)
-    from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
+    from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
 
     before = await m.repo.get(RuntimeMaterialDelegation, first["delegation_id"])
     assert artifact.id not in before.allowed_artifacts
@@ -157,7 +157,7 @@ async def test_identical_dependency_bytes_support_a_new_verified_resolution_alia
     from datetime import datetime
     from uuid import uuid4
 
-    from bisheng.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
+    from doberman_agent.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
     from test.app_runtime.test_runtime_artifacts import MemoryObjects
 
     m, svc, artifact, _ = dependencies

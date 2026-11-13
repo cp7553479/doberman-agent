@@ -1,6 +1,6 @@
 # F088 client 最终独立审查
 
-工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/bisheng`；基线 `bc6ca25ba`。对象为共享工作区的未提交实现；只读产品代码、运行精准回归并写报告，未安装依赖、修改产品、执行批量脚本、Git 写入或派生 agent。
+工作区：`/Users/shanghang/.codex/worktrees/request-error-contract/doberman-agent`；基线 `bc6ca25ba`。对象为共享工作区的未提交实现；只读产品代码、运行精准回归并写报告，未安装依赖、修改产品、执行批量脚本、Git 写入或派生 agent。
 
 **Spec verdict：PASS（本报告明确列出的活跃迁移链）。Quality verdict：PASS（相同范围的代码审查与精准回归）。本轮没有未关闭的代码阻断。** 这是限定范围的独立审查结论，不能替代整个 F088 的全量、构建或真实后端 E2E 发布验收；后者仍未验证。
 

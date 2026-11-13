@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { ConversationComposer } from '@bisheng/chat';
+import { ConversationComposer } from '@doberman-agent/chat';
 import { SpeechToTextComponent } from '@/components/voiceFunction/speechToText';
 import ChatFiles, { type ChatFilesHandle } from '@/pages/BuildPage/flow/FlowChat/ChatFiles';
 

@@ -2,14 +2,14 @@
 
 ## 基线与范围
 
-- 目标分支：`dataelement/bisheng:feat/bisheng-work-120-main`。
+- 目标分支：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main`。
 - 实现前与提交前在线核对的基线：`3120e714fa4ed492884cade11a128341d03eb105`。
-- 修复分支：`codex/app-attachment-download`；独立目录：`bisheng-app-attachment-download-20261102`。
+- 修复分支：`codex/app-attachment-download`；独立目录：`doberman-agent-app-attachment-download-20261102`。
 - Client `3.0.0-beta5`，pnpm `9.15.9`，按现有锁文件安装，依赖声明与锁文件保持原内容。
 
 ## 根因与修正
 
-应用消息的 `AppChatFileList` 经 `AppChatFileChip` 将历史文件 URL 交给 `ChatFile`。原下载处理把绝对 URL 的主机名替换为 Client 的 `BASE_URL`，例如存储地址 `/bisheng/chat/...pdf` 被改成 `/workspace/bisheng/chat/...pdf`。请求进入 SPA 路由，前端 catch-all 返回 HTTP 200 的 HTML；下载工具按原文件名保存响应，用户得到带 `.pdf` 扩展名的 HTML。
+应用消息的 `AppChatFileList` 经 `AppChatFileChip` 将历史文件 URL 交给 `ChatFile`。原下载处理把绝对 URL 的主机名替换为 Client 的 `BASE_URL`，例如存储地址 `/doberman-agent/chat/...pdf` 被改成 `/workspace/doberman-agent/chat/...pdf`。请求进入 SPA 路由，前端 catch-all 返回 HTTP 200 的 HTML；下载工具按原文件名保存响应，用户得到带 `.pdf` 扩展名的 HTML。
 
 `ChatFile` 现在复用现有 `resolveKnowledgePreviewUrl`，让已知对象存储路径经 origin 级 bucket 代理访问，兼容历史 Client 前缀及根相对路径，保留原签名查询、编码后的对象名和下载文件名。第三方资源、API URL 与 blob URL 沿用其自身地址。空地址继续保持原处理。
 

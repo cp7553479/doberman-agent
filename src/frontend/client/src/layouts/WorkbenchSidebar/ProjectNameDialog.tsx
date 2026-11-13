@@ -1,4 +1,4 @@
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/Dialog';
@@ -37,7 +37,7 @@ export function ProjectNameDialog({ open, onOpenChange, initialName, onSubmit }:
   };
 
   return (
-    // @bisheng/ui Modal is still `status: draft`, so this follows the client Dialog family.
+    // @doberman-agent/ui Modal is still `status: draft`, so this follows the client Dialog family.
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[calc(100%-40px)] max-w-[400px] rounded-2xl sm:rounded-2xl">
         <form onSubmit={handleSubmit} className="grid gap-4">

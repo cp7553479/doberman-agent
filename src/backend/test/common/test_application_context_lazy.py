@@ -1,5 +1,5 @@
-from bisheng.core.context import FunctionContextManager
-from bisheng.core.context.manager import ApplicationContextManager
+from doberman_agent.core.context import FunctionContextManager
+from doberman_agent.core.context.manager import ApplicationContextManager
 
 
 async def test_lazy_context_initializes_only_on_first_access_and_closes() -> None:

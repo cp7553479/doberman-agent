@@ -2,19 +2,19 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiAuthDependencyUnavailableError,
     OpenApiCredentialInvalidError,
     OpenApiCredentialMissingError,
     ServiceAccountInactiveError,
 )
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT
-from bisheng.open_api.domain.models.service_account import ServiceAccount
-from bisheng.open_api.domain.schemas.credential import KeyIssueRequest
-from bisheng.open_api.domain.services.credential_service import CredentialService, hash_token
-from bisheng.open_api.domain.services.credential_validator import extract_bearer_token, validate_bearer
-from bisheng.user.domain.models.user import User
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_SERVICE_ACCOUNT
+from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest
+from doberman_agent.open_api.domain.services.credential_service import CredentialService, hash_token
+from doberman_agent.open_api.domain.services.credential_validator import extract_bearer_token, validate_bearer
+from doberman_agent.user.domain.models.user import User
 
 
 async def seed_service_account(open_api_db, *, disabled=False):

@@ -1,4 +1,4 @@
-import { workflowStreamForHost, startAssistantForHost, assistantStreamForHost } from '@bisheng/chat/core';
+import { workflowStreamForHost, startAssistantForHost, assistantStreamForHost } from '@doberman-agent/chat/core';
 /**
  * websocket辅助函数
  */
@@ -11,7 +11,7 @@ import { baseMsgItem } from "~/api/apps"
 import { formatDate, generateUUID } from "~/utils"
 import { FLOW_TYPES } from "."
 import { runLogsTypes, SkillMethod } from "./appUtils/skillMethod"
-import { bishengConfState, chatApiVersionState, chatIdState, chatsState, currentChatState, currentRunningState, runningState } from "./store/atoms"
+import { dobermanAgentConfState, chatApiVersionState, chatIdState, chatsState, currentChatState, currentRunningState, runningState } from "./store/atoms"
 import { emitAreaTextEvent, EVENT_TYPE } from "./useAreaText"
 
 // Attachments hung on a sent message. Producers disagree on the field names
@@ -32,7 +32,7 @@ type SentMessageFile = {
 export default function useChatHelpers() {
     const chatState = useRecoilValue(currentChatState)
     const runState = useRecoilValue(currentRunningState)
-    const [bishengConfig] = useRecoilState(bishengConfState)
+    const [dobermanAgentConfig] = useRecoilState(dobermanAgentConfState)
     const [_, setChats] = useRecoilState(chatsState)
     const [__, setRunningState] = useRecoilState(runningState)
     const [chatId] = useRecoilState(chatIdState)
@@ -43,7 +43,7 @@ export default function useChatHelpers() {
 
         const { flow } = chatState;
         const type = Number(flow.flow_type)
-        const host = bishengConfig?.websocket_url || window.location.host;
+        const host = dobermanAgentConfig?.websocket_url || window.location.host;
         const basePath = __APP_ENV__.BASE_URL;
         const v = apiVersion;
 
@@ -54,7 +54,7 @@ export default function useChatHelpers() {
         };
 
         return routeConfig[type] || '';
-    }, [chatState, chatId, bishengConfig, apiVersion])
+    }, [chatState, chatId, dobermanAgentConfig, apiVersion])
 
     const appLost = useMemo(() => {
         return runState?.error?.code

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.workstation.api.endpoints import apps as apps_endpoint
+from doberman_agent.workstation.api.endpoints import apps as apps_endpoint
 
 
 @pytest.mark.asyncio

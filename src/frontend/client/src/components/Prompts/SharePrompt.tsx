@@ -8,7 +8,7 @@ import type {
 } from '~/types/chat';
 import { ShareOutlineIcon } from '~/components/icons';
 import { Button, OGDialog, OGDialogTitle, OGDialogClose, OGDialogContent, OGDialogTrigger } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useUpdatePromptGroup, useGetStartupConfig } from '~/hooks/queries/data-provider';
 import { useToastContext } from '~/Providers';
 import { useLocalize } from '~/hooks';

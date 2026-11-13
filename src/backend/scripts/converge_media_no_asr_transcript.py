@@ -52,23 +52,23 @@ if _BACKEND_ROOT not in sys.path:
 from loguru import logger  # noqa: E402
 from sqlmodel import col, or_, select  # noqa: E402
 
-from bisheng.common.errcode.knowledge import (  # noqa: E402
+from doberman_agent.common.errcode.knowledge import (  # noqa: E402
     KnowledgeMediaNoRecognizableAudioError,
 )
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database.manager import get_sync_db_session  # noqa: E402
-from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync  # noqa: E402
-from bisheng.knowledge.domain.models.knowledge_file import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database.manager import get_sync_db_session  # noqa: E402
+from doberman_agent.core.storage.minio.minio_manager import get_minio_storage_sync  # noqa: E402
+from doberman_agent.knowledge.domain.models.knowledge_file import (  # noqa: E402
     KnowledgeFile,
     KnowledgeFileDao,
     KnowledgeFileStatus,
 )
-from bisheng.knowledge.domain.services.knowledge_utils import KnowledgeUtils  # noqa: E402
+from doberman_agent.knowledge.domain.services.knowledge_utils import KnowledgeUtils  # noqa: E402
 
 MEDIA_EXTENSIONS = (
     "mp3", "wav", "m4a", "aac", "flac", "ogg",
@@ -128,7 +128,7 @@ def _select_candidates(knowledge_id: int | None, file_id: int | None) -> list[Kn
 
 def _converge_file(db_file: KnowledgeFile, preview_object_name: str, minio_client) -> None:
     # Import here: knowledge_imp pulls in the full RAG stack, keep startup lean.
-    from bisheng.api.services.knowledge_imp import delete_knowledge_file_vectors
+    from doberman_agent.api.services.knowledge_imp import delete_knowledge_file_vectors
 
     # Remove Milvus/ES entries so the garbage text can never be recalled;
     # the source media object in MinIO is kept (clear_minio=False) so the

@@ -24,7 +24,7 @@ def docker_stores():
 
     def start(role, image, port, env, *args):
         name = f"e2e-dsh-audit-{role}-{suffix}"
-        command = [docker, "run", "-d", "--name", name, "--label", "bisheng.test=dsh-audit", "-p", f"127.0.0.1::{port}"]
+        command = [docker, "run", "-d", "--name", name, "--label", "doberman_agent.test=dsh-audit", "-p", f"127.0.0.1::{port}"]
         for key, value in env.items():
             command.extend(["-e", f"{key}={value}"])
         try:
@@ -87,7 +87,7 @@ def docker_stores():
                     client.put_object, self.bucket, object_name, io.BytesIO(file), len(file), content_type=content_type
                 )
 
-        from bisheng.core.storage.minio import minio_manager
+        from doberman_agent.core.storage.minio import minio_manager
 
         original = minio_manager.get_minio_storage
 
@@ -120,23 +120,23 @@ def main():
     import uvicorn
     from sqlmodel import SQLModel
 
-    from bisheng.core.database import tenant_filter
-    from bisheng.dsh.domain.schemas.model_audit import AuditModeCommand
-    from bisheng.dsh.infrastructure.model_audit_activity import RedisAuditActivity
-    from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-    from bisheng.dsh.infrastructure.model_audit_storage import BishengMinioAuditObjects, EncryptedAuditStorage
+    from doberman_agent.core.database import tenant_filter
+    from doberman_agent.dsh.domain.schemas.model_audit import AuditModeCommand
+    from doberman_agent.dsh.infrastructure.model_audit_activity import RedisAuditActivity
+    from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+    from doberman_agent.dsh.infrastructure.model_audit_storage import DobermanAgentMinioAuditObjects, EncryptedAuditStorage
     from test.dsh.model_audit_fixtures import AUDIT_MODELS
     from test.dsh.model_audit_harness import AuditHarness
 
     tokens = {secrets.token_hex(24): user for user in (1, 2, 20, 21, 30)}
     with docker_stores() as (engine, redis, stores):
-        from bisheng.user.domain.models.user import User
+        from doberman_agent.user.domain.models.user import User
 
         SQLModel.metadata.create_all(engine, tables=[model.__table__ for model in AUDIT_MODELS] + [User.__table__])
         tenant_filter.register_tenant_filter_events()
         tenant_filter._tenant_aware_tables.update(model.__tablename__ for model in AUDIT_MODELS)
         storage = EncryptedAuditStorage(
-            BishengMinioAuditObjects(),
+            DobermanAgentMinioAuditObjects(),
             AuditKeyRing({"fixture": secrets.token_bytes(32)}, active_id="fixture"),
             max_block_bytes=16384,
         )

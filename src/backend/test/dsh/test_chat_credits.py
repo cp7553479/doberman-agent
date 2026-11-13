@@ -5,8 +5,8 @@ import pytest
 from langchain_core.messages import AIMessage, AIMessageChunk
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 
-from bisheng.dsh.domain.schemas.contracts import DshTokenUsage
-from bisheng.dsh.domain.services import chat_credits
+from doberman_agent.dsh.domain.schemas.contracts import DshTokenUsage
+from doberman_agent.dsh.domain.services import chat_credits
 
 
 @pytest.fixture
@@ -103,7 +103,7 @@ async def test_upstream_failure_is_settled_and_admission_failure_skips_provider(
 
 
 def test_streaming_usage_accumulates_input_and_output_chunks():
-    from bisheng.dsh.infrastructure.chat_adapter import accumulate_usage
+    from doberman_agent.dsh.infrastructure.chat_adapter import accumulate_usage
 
     first = AIMessageChunk(content="", usage_metadata={"input_tokens": 120, "output_tokens": 0, "total_tokens": 120})
     last = AIMessageChunk(content="", usage_metadata={"input_tokens": 0, "output_tokens": 19, "total_tokens": 19})
@@ -113,10 +113,10 @@ def test_streaming_usage_accumulates_input_and_output_chunks():
 
 @pytest.mark.parametrize("requested_id", ["7", 7])
 async def test_chat_admission_uses_loaded_model_id(monkeypatch, requested_id):
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context import tenant
-    from bisheng.dsh import runtime
-    from bisheng.dsh.domain.repositories.identities import CurrentIdentityRecords
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context import tenant
+    from doberman_agent.dsh import runtime
+    from doberman_agent.dsh.domain.repositories.identities import CurrentIdentityRecords
 
     monkeypatch.setattr(tenant, "get_current_tenant_id", lambda: 1)
     monkeypatch.setattr(
@@ -160,8 +160,8 @@ async def test_chat_admission_uses_loaded_model_id(monkeypatch, requested_id):
 async def test_chat_finishes_through_real_shared_settlement(succeeded, known, status):
     from datetime import UTC, datetime
 
-    from bisheng.dsh.domain.schemas.usage import UsageEvent
-    from bisheng.dsh.domain.services.model import DshModelService
+    from doberman_agent.dsh.domain.schemas.usage import UsageEvent
+    from doberman_agent.dsh.domain.services.model import DshModelService
 
     now = datetime(2026, 10, 22, tzinfo=UTC)
     event = UsageEvent(

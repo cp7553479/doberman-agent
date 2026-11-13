@@ -8,17 +8,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidPermissionModeError,
     PermissionInvalidResourceError,
 )
-from bisheng.knowledge.domain.services import knowledge_permission_service as permission_module
-from bisheng.knowledge.domain.services.knowledge_permission_service import (
+from doberman_agent.knowledge.domain.services import knowledge_permission_service as permission_module
+from doberman_agent.knowledge.domain.services.knowledge_permission_service import (
     F048KnowledgeContainerPermissionAdapter,
     KnowledgeContainerDaoPermissionLoader,
     KnowledgeContainerPermissionRecord,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

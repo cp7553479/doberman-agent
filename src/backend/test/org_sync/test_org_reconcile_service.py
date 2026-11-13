@@ -20,10 +20,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO
+from doberman_agent.org_sync.domain.schemas.remote_dto import RemoteDepartmentDTO
 
 
-MODULE = "bisheng.org_sync.domain.services.reconcile_service"
+MODULE = "doberman_agent.org_sync.domain.services.reconcile_service"
 
 
 # ---------------------------------------------------------------------------
@@ -210,7 +210,7 @@ def reconcile_mocks(monkeypatch):
 class TestReconcileHappyBranches:
     async def test_reconcile_new_dept_upserts_preserves_mount(self, reconcile_mocks):
         """AC-02: a remote-only dept triggers upsert without touching mount flags."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -240,10 +240,10 @@ class TestReconcileHappyBranches:
     ):
         """AC-03: remote drops a dept → archive + DepartmentDeletionHandler fires
         with ``DeletionSource.CELERY_RECONCILE``."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
-        from bisheng.tenant.domain.constants import DeletionSource
+        from doberman_agent.tenant.domain.constants import DeletionSource
 
         reconcile_mocks.aget_by_id.return_value = _make_config(id=8)
         # Remote empty; local has E1.
@@ -274,10 +274,10 @@ class TestReconcileHappyBranches:
         """AC-04: a cross-tenant move fires UserTenantSyncService per primary
         member with ``CELERY_RECONCILE`` trigger (so token_version +1 + JWT
         invalidation happens)."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
-        from bisheng.tenant.domain.constants import UserTenantSyncTrigger
+        from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
 
         reconcile_mocks.aget_by_id.return_value = _make_config(id=9)
         mount_a = _make_dept(
@@ -328,7 +328,7 @@ class TestTsGuardBranches:
         monkeypatch,
     ):
         """AC-09: incoming ts older than last_sync_ts → SKIP_TS + stale_ts warn row."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -361,7 +361,7 @@ class TestTsGuardBranches:
     ):
         """AC-10: incoming ts newer than last_sync_ts → APPLY upsert path
         and ``last_sync_ts`` propagated via ``DeptUpsertService``."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -397,7 +397,7 @@ class TestSameTsRemoveWins:
     ):
         """AC-11: Gateway already upserted E1 at T; Celery's same-T archive
         MUST apply + write ``ts_conflict`` event row + audit_log."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -451,8 +451,8 @@ class TestLockingAndSkip:
     ):
         """AC-13 building block: second invocation on the same config_id
         while the lock is held raises 19314."""
-        from bisheng.common.errcode.sso_sync import SsoReconcileLockBusyError
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.common.errcode.sso_sync import SsoReconcileLockBusyError
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -476,7 +476,7 @@ class TestLockingAndSkip:
     ):
         """F014 seed (id=9999, provider='sso_realtime') must never talk to
         a provider — it exists only to anchor HMAC log rows."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -511,7 +511,7 @@ class TestEventRowPersistence:
     ):
         """AC-09 persistence dimension: stale ts → event row has the
         expected level/event_type/external_id/source_ts."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -542,7 +542,7 @@ class TestEventRowPersistence:
     ):
         """AC-11 persistence: ts_conflict row has both external_id and
         source_ts populated so the weekly aggregator can find it."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -578,7 +578,7 @@ class TestEventRowPersistence:
         """One reconcile run produces (a) a batch summary row (via
         flush_log) AND (b) event rows (via acreate_event). The two
         are never conflated."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -612,7 +612,7 @@ class TestEventRowPersistence:
     ):
         """If the first acreate_event raises, subsequent rows still get
         written — the reconcile loop swallows per-row failures."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -657,8 +657,8 @@ class TestLockSemantics:
         """AC-13: overlapping runs on the same config_id — only one holds
         the lock; the other gets 19314."""
         import asyncio
-        from bisheng.common.errcode.sso_sync import SsoReconcileLockBusyError
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.common.errcode.sso_sync import SsoReconcileLockBusyError
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -697,7 +697,7 @@ class TestLockSemantics:
         """Lock is scoped per config_id — two different configs can run
         concurrently."""
         import asyncio
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -738,7 +738,7 @@ class TestLockSemantics:
         """The contextmanager deletes the Redis key in `finally:` even
         when the service body raises — a subsequent reconcile on the
         same config_id must succeed."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 
@@ -758,7 +758,7 @@ class TestLockSemantics:
     async def test_lock_ttl_30min_prevents_stuck_lock(self, reconcile_mocks):
         """The SETNX call must request an explicit ex= (30min by default)
         so a crashed worker cannot hold the lock forever."""
-        from bisheng.org_sync.domain.services.reconcile_service import (
+        from doberman_agent.org_sync.domain.services.reconcile_service import (
             OrgReconcileService,
         )
 

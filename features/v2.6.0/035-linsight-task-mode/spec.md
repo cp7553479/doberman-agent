@@ -9,7 +9,7 @@
 
 ## 1. 用户故事
 
-详见 PRD §2（US-1/US-2 终端用户：勾选 Skill → 流式执行 → 拿到产物；US-3/4/5 管理员：Skill 管理与存量迁移）。一句话：把灵思的自研 ReAct 内核替换为 deepagents，流程知识从动态 SOP 迁移为可热插拔的静态 Skill，全程保留 BiSheng 企业级横切能力。
+详见 PRD §2（US-1/US-2 终端用户：勾选 Skill → 流式执行 → 拿到产物；US-3/4/5 管理员：Skill 管理与存量迁移）。一句话：把灵思的自研 ReAct 内核替换为 deepagents，流程知识从动态 SOP 迁移为可热插拔的静态 Skill，全程保留 doberman-agent 企业级横切能力。
 
 ## 2. 验收标准（AC，与 PRD §2 一字对齐）
 
@@ -22,7 +22,7 @@
 | AC-5 | HITL 中断/恢复正常；现场经持久化 checkpointer 落盘，隔任意时长可续跑，Worker 重启不丢 | PRD §4.4（FR-4.4.x） | design §4（park-and-release） |
 | AC-6 | 知识库/文件/E2B 沙箱在新内核下功能正常 | PRD §4.1.5/§4.2（FR-2.x） | design §5/§9（WorkspaceBackend） |
 | AC-7 | 多租户隔离、权限、DM8 双库回归全部通过 | PRD §4.7（FR-7.x，含 §4.7.7 任务模式菜单权限） | design §6 |
-| AC-8 | 自研 `bisheng_langchain/linsight` ReAct 内核及 SOP 动态生成链路代码下线 | PRD §3.4 | design §1/§8.6 |
+| AC-8 | 自研 `doberman_agent_langchain/linsight` ReAct 内核及 SOP 动态生成链路代码下线 | PRD §3.4 | design §1/§8.6 |
 
 > 📌 **AC-2 运行时现状（2026-06-24）**：Skill **运行时注入**于 2026-06-16 临时禁用——管理链路（AC-3）端到端仍可用，运行时触发（AC-2）待恢复。无架构级阻塞，恢复方案与现状再核查见《[灵思任务模式 Skill 能力恢复方案](../../../docs/PRD/2.6%20灵思%20deepagents%20迁移%20PRD/灵思任务模式%20Skill%20能力恢复方案.md)》。**✅ 2026-06-24 运行时注入已按 Fork X（复制时过滤）恢复（代码+单测绿）**；AC-2 命中率评测待端到端实测后重跑。
 

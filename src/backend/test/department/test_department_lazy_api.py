@@ -36,11 +36,11 @@ premock_import_chain()
 
 from fastapi import FastAPI
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.database.models.department import DepartmentDao
-from bisheng.department.api.router import router as department_router
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.database.models.department import DepartmentDao
+from doberman_agent.department.api.router import router as department_router
 
-_SVC = "bisheng.department.domain.services.department_service"
+_SVC = "doberman_agent.department.domain.services.department_service"
 
 _DDL = """CREATE TABLE IF NOT EXISTS department (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -131,8 +131,8 @@ def _client_for(engine, user):
     app.dependency_overrides[UserPayload.get_login_user] = _get_user
     with (
         patch(f"{_SVC}.get_async_db_session", _factory),
-        patch("bisheng.department.domain.repositories.management_search_repository.get_async_db_session", _factory),
-        patch("bisheng.database.models.department.get_async_db_session", _factory),
+        patch("doberman_agent.department.domain.repositories.management_search_repository.get_async_db_session", _factory),
+        patch("doberman_agent.database.models.department.get_async_db_session", _factory),
     ):
         with TestClient(app) as c:
             yield c
@@ -309,8 +309,8 @@ async def test_search_empty_scope_returns_empty_no_count_leak():
     not an unscoped ``name LIKE``. Short-circuited before the DAO."""
     from unittest.mock import MagicMock
 
-    from bisheng.database.models.department import DepartmentDao
-    from bisheng.department.domain.services.department_service import DepartmentService
+    from doberman_agent.database.models.department import DepartmentDao
+    from doberman_agent.department.domain.services.department_service import DepartmentService
 
     with (
         patch(f"{_SVC}._aget_user_scope", new=AsyncMock(return_value=(False, set()))),
@@ -326,7 +326,7 @@ async def test_search_empty_scope_returns_empty_no_count_leak():
 async def test_aget_by_name_like_empty_scope_returns_no_rows():
     """F038 (review M1): the DAO fails CLOSED — an empty ``path_prefixes`` list
     yields no rows (never an unscoped search), distinct from ``None`` (unscoped)."""
-    from bisheng.database.models.department import DepartmentDao
+    from doberman_agent.database.models.department import DepartmentDao
 
     rows = await DepartmentDao.aget_by_name_like("x", path_prefixes=[])
     assert rows == []

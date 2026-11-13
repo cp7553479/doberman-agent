@@ -1,12 +1,12 @@
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownSub, Input, notification } from '@bisheng/ui';
+import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownSub, Input, notification } from '@doberman-agent/ui';
 
 
 
 import { useComponentEditorStore } from "@/store/dashboardStore";
 import { cn } from "@/utils";
-import { Tooltip as Tip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tooltip as Tip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { GripHorizontalIcon } from "lucide-react";
 import { memo,useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

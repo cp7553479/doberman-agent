@@ -15,9 +15,9 @@
 
 ## 基线与环境
 
-- BISHENG：`upstream/feat/bisheng-work-120-main@725ee5bf38d4ff2d067763fb305817a730b238a4`，交付前再次核对远端一致。
-- 分支：`codex/knowledge-square-navigation`；工作目录：`.worktrees/bisheng-knowledge-square-navigation-20261102`。
-- 原生验证宿主：Desktop `V1.2.0` 基线上的 `011e8e2d0ad3b01941e7b2b39f3b5c4d137ee061`，工作目录 `.worktrees/bisheng-splash-locale-20261102`；Harness `0.2.1-rc.2`，Electron `43.0.0`，macOS。
+- doberman-agent：`upstream/feat/doberman-agent-work-120-main@725ee5bf38d4ff2d067763fb305817a730b238a4`，交付前再次核对远端一致。
+- 分支：`codex/knowledge-square-navigation`；工作目录：`.worktrees/doberman-agent-knowledge-square-navigation-20261102`。
+- 原生验证宿主：Desktop `V1.2.0` 基线上的 `011e8e2d0ad3b01941e7b2b39f3b5c4d137ee061`，工作目录 `.worktrees/doberman-agent-splash-locale-20261102`；Harness `0.2.1-rc.2`，Electron `43.0.0`，macOS。
 - 前端工具版本：pnpm `9.15.9`；沿用已安装依赖，依赖清单和锁文件保持一致。
 
 ## 自动验证
@@ -38,7 +38,7 @@
 复现入口（先构建 Client，Desktop checkout 提供实际宿主源码和 Electron/esbuild 依赖）：
 
 ```sh
-DESKTOP_SOURCE=/absolute/path/to/bisheng-desktop \
+DESKTOP_SOURCE=/absolute/path/to/doberman-agent-desktop \
   node scripts/verify-knowledge-square-navigation.mjs /absolute/path/to/evidence
 ```
 

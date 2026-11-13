@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const notices = vi.hoisted(() => vi.fn());
-vi.mock('@bisheng/ui', () => ({ notification: { open: notices } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: notices } }));
 beforeEach(() => { vi.resetModules(); localStorage.clear(); sessionStorage.clear(); notices.mockClear(); });
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 async function setup(envelope: unknown) {

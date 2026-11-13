@@ -12,21 +12,21 @@ from uuid import uuid4
 import pytest
 from sqlmodel import Session, SQLModel, select
 
-from bisheng.core.context.tenant import strict_tenant_filter
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditManifest, DshModelAuditRequest
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.repositories import content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
-from bisheng.dsh.domain.services.model_audit_capture import AuditCapture
-from bisheng.dsh.domain.services.model_audit_writer import DshModelAuditWriter
-from bisheng.dsh.infrastructure.model_audit_body_buffer import AuditBodyBuffer
-from bisheng.dsh.infrastructure.model_audit_codec import AuditScope, conversation_key
-from bisheng.dsh.infrastructure.model_audit_keys import AuditKeyRing
-from bisheng.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage, StoredAuditBlock
+from doberman_agent.core.context.tenant import strict_tenant_filter
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_content import DshModelAuditContent, DshModelAuditOccurrence
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditManifest, DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.repositories import content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_write import DshModelAuditWriteRepository
+from doberman_agent.dsh.domain.services.model_audit_capture import AuditCapture
+from doberman_agent.dsh.domain.services.model_audit_writer import DshModelAuditWriter
+from doberman_agent.dsh.infrastructure.model_audit_body_buffer import AuditBodyBuffer
+from doberman_agent.dsh.infrastructure.model_audit_codec import AuditScope, conversation_key
+from doberman_agent.dsh.infrastructure.model_audit_keys import AuditKeyRing
+from doberman_agent.dsh.infrastructure.model_audit_storage import EncryptedAuditStorage, StoredAuditBlock
 from test.dsh.model_audit_fixtures import AUDIT_MODELS, ControlledAuditQueue, FaultAuditObjects
 from test.dsh.test_content_safety_merge import committed_merge, output_event
 from test.dsh.test_content_safety_repository import tenant_session

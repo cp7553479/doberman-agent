@@ -41,7 +41,7 @@
 - [~] 端到端 AC-P21 复验:真 Agent(Claude Code)闭环未跑;等价链路已覆盖——技能包 zip 内 search.py 以员工 PAT 实测检索/清单/26044 透出(API S1-S4),「最后使用」时间在管理台账实证更新
 
 ### 已知环境注意
-- mac 本地 platform `tsc-strict` 因 beta1 既有 `ApiRequestExamples.tsx`/`apiRequestExamples.ts` 大小写冲突报错(Linux CI 不受影响);worktree 内 client `tsc-strict` 的 `@bisheng/ui` 解析错误为环境性。两者均非 F066 引入。
+- mac 本地 platform `tsc-strict` 因 beta1 既有 `ApiRequestExamples.tsx`/`apiRequestExamples.ts` 大小写冲突报错(Linux CI 不受影响);worktree 内 client `tsc-strict` 的 `@doberman-agent/ui` 解析错误为环境性。两者均非 F066 引入。
 
 ## 三、真实环境执行记录(2026-09-13,105/DM8)
 

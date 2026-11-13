@@ -46,7 +46,7 @@ from typing import List
 
 from pymilvus import Collection, connections, utility
 
-from bisheng.common.services.config_service import settings
+from doberman_agent.common.services.config_service import settings
 
 
 def _connect() -> str:
@@ -124,7 +124,7 @@ def main() -> int:
 
     names: List[str] = list(args.collection)
     if args.knowledge_id:
-        from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+        from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
 
         for kid in args.knowledge_id:
             kb = KnowledgeDao.query_by_id(kid)

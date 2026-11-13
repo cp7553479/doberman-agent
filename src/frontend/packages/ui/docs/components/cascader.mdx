@@ -5,7 +5,7 @@ component: Cascader
 
 # 级联选择 Cascader
 
-沿着父子层级逐步缩小范围，最后把完整路径作为值交给业务。组件库 `@bisheng/ui` 导出 **`Cascader`**；触发器和 Select 共用同一份实现，桌面端展开多列，手机端自动改为底部下钻面板。
+沿着父子层级逐步缩小范围，最后把完整路径作为值交给业务。组件库 `@doberman-agent/ui` 导出 **`Cascader`**；触发器和 Select 共用同一份实现，桌面端展开多列，手机端自动改为底部下钻面板。
 
 ## 基础用法
 
@@ -13,7 +13,7 @@ component: Cascader
 
 ```tsx
 import React from 'react';
-import { Cascader } from '@bisheng/ui';
+import { Cascader } from '@doberman-agent/ui';
 
 const OPTIONS = [
   {
@@ -70,7 +70,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Cascader } from '@bisheng/ui';
+import { Cascader } from '@doberman-agent/ui';
 
 const OPTIONS = [
   {
@@ -118,7 +118,7 @@ export default () => {
 
 ```tsx
 import React from 'react';
-import { Cascader } from '@bisheng/ui';
+import { Cascader } from '@doberman-agent/ui';
 
 const OPTIONS = [
   {
@@ -150,7 +150,7 @@ export default () => (
 可选节点超过 10 个时自动开启搜索，也可用 `showSearch` 显式控制。懒加载节点写 `isLeaf: false`，`loadData` 返回下一层；请求期间只替换当前行箭头，不冻结整张面板。未加载完整的父项不会提供“全选后代”。
 
 ```tsx
-import { Cascader } from '@bisheng/ui';
+import { Cascader } from '@doberman-agent/ui';
 
 const OPTIONS = [
   { value: 'north', label: '北方区域', isLeaf: false },

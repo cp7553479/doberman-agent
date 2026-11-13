@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useConversationScroll } from '@bisheng/chat';
-import { messagesForPresentation } from '@bisheng/chat/core';
+import { useConversationScroll } from '@doberman-agent/chat';
+import { messagesForPresentation } from '@doberman-agent/chat/core';
 import type { ChatMessageType } from '~/@types/chat';
 import { getChatHistoryApi } from '~/api/apps';
 import { chatApiVersionState, chatIdState, chatsState, currentChatState, currentRunningState } from './store/atoms';

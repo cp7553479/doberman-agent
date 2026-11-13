@@ -17,21 +17,21 @@ import pytest
 from langchain.agents.middleware.types import ModelRequest, ModelResponse
 from langchain_core.messages import AIMessage, HumanMessage
 
-from bisheng.common.services.llm_error_classifier import (
+from doberman_agent.common.services.llm_error_classifier import (
     Behavior,
     ErrorType,
     classify_behavior,
     classify_for_event,
     label_error,
 )
-from bisheng.linsight.domain.services.resilience_middleware import (
+from doberman_agent.linsight.domain.services.resilience_middleware import (
     _DEGRADE_MESSAGE,
     _INCOMPLETE_STREAM_RETRY_LIMIT,
     IncompleteStreamError,
     LinsightModelResilienceMiddleware,
     _is_incomplete_stream_response,
 )
-from bisheng.linsight.domain.task_exec import TaskExecutionError
+from doberman_agent.linsight.domain.task_exec import TaskExecutionError
 
 # The exact shape observed on 114: metadata from the first chunk, one line of
 # narration, no finish_reason, no usage, no tool call.

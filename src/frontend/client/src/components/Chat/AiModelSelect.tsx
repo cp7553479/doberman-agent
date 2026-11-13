@@ -1,4 +1,4 @@
-import { Cascader, type CascaderOption, type CascaderPath } from "@bisheng/ui";
+import { Cascader, type CascaderOption, type CascaderPath } from "@doberman-agent/ui";
 import { memo, useEffect, useMemo } from "react";
 import { useLocalize } from "~/hooks";
 import useSelectCopy from "~/hooks/useSelectCopy";

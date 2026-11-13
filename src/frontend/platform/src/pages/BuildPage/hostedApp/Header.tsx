@@ -6,7 +6,7 @@
  * the knowledge-base detail page, hence the explicit back link here.
  */
 import AppAvator from "@/components/bs-comp/cardComponent/avatar"
-import { Button } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
 import type { HostedAppDetail } from "@/controllers/API/hostedApp"
 import { AppNumType } from "@/types/app"
 import { ChevronLeft } from "lucide-react"

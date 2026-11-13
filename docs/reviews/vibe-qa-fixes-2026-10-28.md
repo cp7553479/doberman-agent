@@ -35,9 +35,9 @@
 ## 代码入口
 
 - 发布操作、版本禁用：[HostedAppCard](../../src/frontend/platform/src/pages/BuildPage/HostedAppCard.tsx)、[useHostedAppActions](../../src/frontend/platform/src/pages/BuildPage/useHostedAppActions.ts)、[ApprovalStatusCard](../../src/frontend/platform/src/pages/BuildPage/hostedApp/publish/ApprovalStatusCard.tsx)。
-- 发布原因及版本审批投影：[version_review_service](../../src/backend/bisheng/app_publish/domain/services/version_review_service.py)、[version_review_repository](../../src/backend/bisheng/app_publish/domain/repositories/version_review_repository.py)、[execution_source](../../src/backend/bisheng/approval/application/execution_source.py)。
-- 数据页：[AppDataService](../../src/backend/bisheng/app_runtime/domain/services/app_data_service.py)。
-- 租户管理：[UserGroupService](../../src/backend/bisheng/user_group/domain/services/user_group_service.py)、[MemberIdentityRepository](../../src/backend/bisheng/user_group/domain/repositories/member_identity_repository.py)、[AuditLogService](../../src/backend/bisheng/api/services/audit_log.py)。
+- 发布原因及版本审批投影：[version_review_service](../../src/backend/doberman_agent/app_publish/domain/services/version_review_service.py)、[version_review_repository](../../src/backend/doberman_agent/app_publish/domain/repositories/version_review_repository.py)、[execution_source](../../src/backend/doberman_agent/approval/application/execution_source.py)。
+- 数据页：[AppDataService](../../src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py)。
+- 租户管理：[UserGroupService](../../src/backend/doberman_agent/user_group/domain/services/user_group_service.py)、[MemberIdentityRepository](../../src/backend/doberman_agent/user_group/domain/repositories/member_identity_repository.py)、[AuditLogService](../../src/backend/doberman_agent/api/services/audit_log.py)。
 - 通知：[notificationContent](../../src/frontend/client/src/components/messageApproval/notificationContent.ts)、[ApprovalPane](../../src/frontend/client/src/components/approval/ApprovalPane.tsx)。
 
 ## 定向验证

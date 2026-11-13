@@ -1,4 +1,4 @@
-from bisheng.core.config.celery_redis import build_celery_redis_config
+from doberman_agent.core.config.celery_redis import build_celery_redis_config
 
 
 def test_build_celery_redis_config_keeps_single_node_url() -> None:

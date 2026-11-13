@@ -1,7 +1,7 @@
 """Error envelope shared by every intent endpoint.
 
 The manager does **not** own the platform's 161xx error codes (those live in
-``bisheng/common/errcode/app_factory.py``); it returns a stable machine code
+``doberman-agent/common/errcode/app_factory.py``); it returns a stable machine code
 that the backend's ``orchestrator_client`` maps onto them:
 
 =========================  ==========================================

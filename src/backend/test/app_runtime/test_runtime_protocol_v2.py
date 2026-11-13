@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def protocol():
-    from bisheng.app_runtime.domain.services import runtime_protocol
+    from doberman_agent.app_runtime.domain.services import runtime_protocol
 
     return runtime_protocol
 

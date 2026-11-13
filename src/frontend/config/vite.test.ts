@@ -8,7 +8,7 @@ import { createFrontendProxy, loadFrontendEnv, resolveApiTarget } from './vite';
 // These cover the cross-app contract: environment precedence and authenticated WS forwarding.
 describe('shared frontend environment and proxy', () => {
   it('loads workspace defaults and lets app-local values override them', () => {
-    const root = mkdtempSync(path.join(os.tmpdir(), 'bisheng-env-'));
+    const root = mkdtempSync(path.join(os.tmpdir(), 'doberman_agent-env-'));
     const app = path.join(root, 'platform');
     mkdirSync(app);
     writeFileSync(
@@ -183,7 +183,7 @@ it('loads both real Vite configs with separate API, license and object-storage r
     expect(platform.server!.proxy!['/api/license']).toMatchObject({
       target: 'http://gateway.example:8180',
     });
-    expect(platform.server!.proxy!['/bisheng']).toMatchObject({
+    expect(platform.server!.proxy!['/doberman_agent']).toMatchObject({
       target: 'http://objects.example:9000/',
     });
     expect(platform.server!.proxy!['/apps/']).toMatchObject({

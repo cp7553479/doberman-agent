@@ -77,13 +77,13 @@ T09 (手工 QA + ac-verification.md)  ← T08
 - [x] **T01**: 错误码注册（194xx）+ release-contract / CLAUDE.md 校验
 
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/tenant_quota.py` — 3 个错误码类
+  - `src/backend/doberman_agent/common/errcode/tenant_quota.py` — 3 个错误码类
 
   **文件（修改）**: 无（release-contract.md 表 3 "194 = tenant_quota F016" 已声明，CLAUDE.md 错误码模块表已同步 —— **仅校验不修改**）
 
   **逻辑**:
   ```python
-  # src/backend/bisheng/common/errcode/tenant_quota.py
+  # src/backend/doberman_agent/common/errcode/tenant_quota.py
   """Tenant quota module error codes, module code: 194 (F016).
 
   Declared in CLAUDE.md + release-contract.md; this file is the authoritative registry.
@@ -116,12 +116,12 @@ T09 (手工 QA + ac-verification.md)  ← T08
 
   **依赖**: —
 
-  **验收**: `python -c "from bisheng.common.errcode.tenant_quota import TenantQuotaExceededError; e=TenantQuotaExceededError(); print(e.return_resp_instance().model_dump())"` 返回 `{status_code: 19401, status_message: 'Tenant quota exceeded', data: None}`
+  **验收**: `python -c "from doberman_agent.common.errcode.tenant_quota import TenantQuotaExceededError; e=TenantQuotaExceededError(); print(e.return_resp_instance().model_dump())"` 返回 `{status_code: 19401, status_message: 'Tenant quota exceeded', data: None}`
 
 - [x] **T02**: `VALID_QUOTA_KEYS` 扩展 + `_RESOURCE_COUNT_TEMPLATES` 新增 3 个 SQL 模板
 
   **文件（修改）**:
-  - `src/backend/bisheng/role/domain/services/quota_service.py`
+  - `src/backend/doberman_agent/role/domain/services/quota_service.py`
 
   **修改位置**:
   - L36 `VALID_QUOTA_KEYS`：
@@ -183,7 +183,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
 - [x] **T03**: `_count_usage_strict` + `_aggregate_root_usage` + 单测
 
   **文件（修改）**:
-  - `src/backend/bisheng/role/domain/services/quota_service.py` — 新增 2 个 `@classmethod`
+  - `src/backend/doberman_agent/role/domain/services/quota_service.py` — 新增 2 个 `@classmethod`
 
   **文件（新建）**:
   - `src/backend/test/test_quota_service_tenant_tree.py` — 单测文件
@@ -200,7 +200,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
       so strict_tenant_filter() is defensive — ORM event listener does not touch
       raw text statements, but semantic clarity for future refactors is worth it.
       """
-      from bisheng.core.context.tenant import strict_tenant_filter
+      from doberman_agent.core.context.tenant import strict_tenant_filter
       with strict_tenant_filter():
           return await cls.get_tenant_resource_count(tenant_id, resource_type)
 
@@ -211,7 +211,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
       Only ``status='active'`` Children count; disabled/archived/orphaned are
       excluded per spec §5. Uses asyncio.gather to avoid N+1.
       """
-      from bisheng.database.models.tenant import TenantDao
+      from doberman_agent.database.models.tenant import TenantDao
       root_self = await cls._count_usage_strict(root_id, resource_type)
       child_ids = await TenantDao.aget_children_ids_active(root_id)
       if not child_ids:
@@ -265,7 +265,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
 - [x] **T04**: `_apply_tenant_chain_cap` 重写 + `check_quota` 异常切换 + 单测
 
   **文件（修改）**:
-  - `src/backend/bisheng/role/domain/services/quota_service.py` — 重写 L96-134
+  - `src/backend/doberman_agent/role/domain/services/quota_service.py` — 重写 L96-134
 
   **文件（新建）**:
   - `src/backend/test/test_quota_service_check_chain.py` — 单测文件
@@ -332,7 +332,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
 
   **`check_quota` (L112-134) 切换异常类型**：
   ```python
-  from bisheng.common.errcode.tenant_quota import (
+  from doberman_agent.common.errcode.tenant_quota import (
       TenantQuotaExceededError, TenantRoleQuotaExceededError, TenantStorageQuotaExceededError,
   )
 
@@ -442,9 +442,9 @@ T09 (手工 QA + ac-verification.md)  ← T08
 - [x] **T05**: TenantQuotaTree DTO + `TenantService.aget_quota_tree` + `GET /tenants/quota/tree`
 
   **文件（修改，3 个）**:
-  - `src/backend/bisheng/tenant/domain/schemas/tenant_schema.py` — 新增 3 个 DTO
-  - `src/backend/bisheng/tenant/domain/services/tenant_service.py` — 新增 `aget_quota_tree`
-  - `src/backend/bisheng/tenant/api/endpoints/tenant_crud.py` — 新增 `GET /quota/tree` 端点
+  - `src/backend/doberman_agent/tenant/domain/schemas/tenant_schema.py` — 新增 3 个 DTO
+  - `src/backend/doberman_agent/tenant/domain/services/tenant_service.py` — 新增 `aget_quota_tree`
+  - `src/backend/doberman_agent/tenant/api/endpoints/tenant_crud.py` — 新增 `GET /quota/tree` 端点
 
   **文件（新建）**: 无 —— API 集成测（`test_quota_tree_returns_root_and_active_children` / `test_quota_tree_forbidden_for_non_super_admin` / `test_put_quota_accepts_storage_gb_key`）合并至 **T07 E2E 测试**（T05 保持 ≤3 文件粒度）
 
@@ -474,7 +474,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
   @classmethod
   async def aget_quota_tree(cls, login_user: UserPayload) -> TenantQuotaTreeResponse:
       """Build the full quota tree (Root + all active Children) for global super admin."""
-      from bisheng.role.domain.services.quota_service import QuotaService, VALID_QUOTA_KEYS
+      from doberman_agent.role.domain.services.quota_service import QuotaService, VALID_QUOTA_KEYS
       root = await TenantDao.aget_by_id(ROOT_TENANT_ID)
       child_ids = await TenantDao.aget_children_ids_active(ROOT_TENANT_ID)
       children = [await TenantDao.aget_by_id(cid) for cid in child_ids]
@@ -522,7 +522,7 @@ T09 (手工 QA + ac-verification.md)  ← T08
   **依赖**: T04
 
   **验收**:
-  - `python -c "from bisheng.tenant.domain.services.tenant_service import TenantService; print(TenantService.aget_quota_tree.__doc__)"` 无 ImportError
+  - `python -c "from doberman_agent.tenant.domain.services.tenant_service import TenantService; print(TenantService.aget_quota_tree.__doc__)"` 无 ImportError
   - 路由注册可见：`curl http://localhost:7860/openapi.json | jq '.paths | keys[] | select(contains("quota/tree"))'`
   - 完整 AC 验证由 T07 承接（覆盖 AC: AC-03, AC-06）
 

@@ -28,15 +28,15 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus
-from bisheng.approval.domain.models.approval_scenario import ApprovalRouteRule, ApprovalScenario
-from bisheng.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
-from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateRequest
-from bisheng.approval.domain.services.approval_gate import ApprovalGate
-from bisheng.approval.domain.services.approval_registry import ApprovalRegistry
-from bisheng.approval.domain.services.approval_scenario_admin_service import ApprovalScenarioAdminService
-from bisheng.common.errcode.approval import ApprovalScenarioForbidsPassRouteError
-from bisheng.core.context.tenant import get_current_tenant_id, set_current_tenant_id
+from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus
+from doberman_agent.approval.domain.models.approval_scenario import ApprovalRouteRule, ApprovalScenario
+from doberman_agent.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
+from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateRequest
+from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
+from doberman_agent.approval.domain.services.approval_registry import ApprovalRegistry
+from doberman_agent.approval.domain.services.approval_scenario_admin_service import ApprovalScenarioAdminService
+from doberman_agent.common.errcode.approval import ApprovalScenarioForbidsPassRouteError
+from doberman_agent.core.context.tenant import get_current_tenant_id, set_current_tenant_id
 
 MANDATORY = "app_publish_request"
 EXEMPTABLE = "menu_access_request"
@@ -59,7 +59,7 @@ async def scenario_db(monkeypatch):
             yield session
 
     monkeypatch.setattr(
-        "bisheng.approval.domain.repositories.approval_scenario_repository.get_async_db_session",
+        "doberman_agent.approval.domain.repositories.approval_scenario_repository.get_async_db_session",
         _factory,
     )
     # The tenant filter raises when multi-tenancy is on and no context is set,
@@ -182,7 +182,7 @@ class TestTheGateRefusesToHonourOne:
 
     async def test_a_pass_route_does_not_auto_approve_a_release(self, monkeypatch):
         monkeypatch.setattr(
-            "bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
+            "doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
             AsyncMock(),
         )
         gate, instance_repository = self._gate(MANDATORY, "pass")
@@ -198,7 +198,7 @@ class TestTheGateRefusesToHonourOne:
 
     async def test_a_pass_route_still_works_for_a_scenario_that_allows_it(self, monkeypatch):
         monkeypatch.setattr(
-            "bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
+            "doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
             AsyncMock(),
         )
         gate, instance_repository = self._gate(EXEMPTABLE, "pass")

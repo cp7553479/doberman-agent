@@ -10,13 +10,13 @@ import json
 
 import pytest
 
-from bisheng.common.errcode.knowledge import (
+from doberman_agent.common.errcode.knowledge import (
     KnowledgeMediaNoRecognizableAudioError,
     KnowledgeMediaTranscriptionError,
 )
-from bisheng.common.errcode.workstation import ChatFileParseError
-from bisheng.utils.exceptions import EtlException
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.common.errcode.workstation import ChatFileParseError
+from doberman_agent.utils.exceptions import EtlException
+from doberman_agent.workstation.domain.services import chat_service
 
 
 @pytest.fixture(autouse=True)
@@ -24,7 +24,7 @@ def configured_image_parser(monkeypatch):
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         type(settings), "async_get_knowledge", AsyncMock(return_value=SimpleNamespace(image_parser_enabled=True))
@@ -103,7 +103,7 @@ async def test_media_without_speech_is_narrated_not_raised(monkeypatch):
             raise KnowledgeMediaNoRecognizableAudioError()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline",
+        "doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline",
         _Pipeline,
     )
     # The suite stubs knowledge_imp; give it back the one call this path makes.
@@ -136,7 +136,7 @@ async def test_transcription_service_failure_still_raises(monkeypatch):
             raise KnowledgeMediaTranscriptionError()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline",
+        "doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline",
         _Pipeline,
     )
 
@@ -152,7 +152,7 @@ async def test_image_without_configured_parser_is_rejected_before_parsing(monkey
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         type(settings), "async_get_knowledge", AsyncMock(return_value=SimpleNamespace(image_parser_enabled=False))
@@ -167,7 +167,7 @@ async def test_image_without_configured_parser_is_rejected_before_parsing(monkey
 
 
 async def test_unsupported_file_is_not_silently_replaced_with_empty_text(monkeypatch):
-    from bisheng.common.errcode.knowledge import KnowledgeFileNotSupportedError
+    from doberman_agent.common.errcode.knowledge import KnowledgeFileNotSupportedError
 
     class Pipeline:
         def __init__(self, **_kwargs):
@@ -176,7 +176,7 @@ async def test_unsupported_file_is_not_silently_replaced_with_empty_text(monkeyp
         async def arun(self):
             raise KnowledgeFileNotSupportedError()
 
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", Pipeline)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", Pipeline)
     with pytest.raises(KnowledgeFileNotSupportedError):
         await chat_service.get_file_content("/tmp/photo.png", "photo.png", 1)
 
@@ -185,7 +185,7 @@ async def test_configured_ocr_timeout_has_terminal_sse_error_envelope(monkeypatc
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         type(settings), "async_get_knowledge", AsyncMock(return_value=SimpleNamespace(image_parser_enabled=True))
@@ -201,7 +201,7 @@ async def test_vision_images_bypass_ocr_even_when_no_parser_is_configured(monkey
     from types import SimpleNamespace
     from unittest.mock import AsyncMock
 
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(
         type(settings), "async_get_knowledge", AsyncMock(return_value=SimpleNamespace(image_parser_enabled=False))

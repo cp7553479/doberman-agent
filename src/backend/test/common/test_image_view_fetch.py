@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock
 import pytest
 from PIL import Image
 
-from bisheng.common.image_view.fetch import _download_wechat, fetch_and_encode
+from doberman_agent.common.image_view.fetch import _download_wechat, fetch_and_encode
 
 
 def _png_bytes(width: int, height: int) -> bytes:
@@ -33,11 +33,11 @@ def _data_uri_size(data_uri: str) -> tuple[int, int]:
 def fetch_env(monkeypatch):
     get_object = AsyncMock()
     download = AsyncMock()
-    monkeypatch.setattr("bisheng.common.image_view.fetch._public_bucket", lambda: "bisheng")
-    monkeypatch.setattr("bisheng.common.image_view.fetch._share_hosts", lambda: {"minio.example:9000"})
-    monkeypatch.setattr("bisheng.common.image_view.fetch._info_hosts", lambda: {"info.example"})
-    monkeypatch.setattr("bisheng.common.image_view.fetch._get_object", get_object)
-    monkeypatch.setattr("bisheng.common.image_view.fetch._async_file_download", download)
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._public_bucket", lambda: "doberman_agent")
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._share_hosts", lambda: {"minio.example:9000"})
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._info_hosts", lambda: {"info.example"})
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._get_object", get_object)
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._async_file_download", download)
     return get_object, download
 
 
@@ -46,12 +46,12 @@ async def test_internal_knowledge_path_uses_minio_get_object(fetch_env):
     get_object, download = fetch_env
     get_object.return_value = _png_bytes(800, 400)
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/2/chart.png")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/2/chart.png")
 
     assert result.ok is True
     assert result.data_uri.startswith("data:image/png;base64,")
     assert _data_uri_size(result.data_uri) == (512, 256)
-    get_object.assert_awaited_once_with("bisheng", "knowledge/images/1/2/chart.png")
+    get_object.assert_awaited_once_with("doberman_agent", "knowledge/images/1/2/chart.png")
     download.assert_not_called()
 
 
@@ -60,7 +60,7 @@ async def test_sharepoint_http_uses_download(fetch_env):
     get_object, download = fetch_env
     download.return_value = _png_bytes(100, 80)
 
-    result = await fetch_and_encode("https://minio.example:9000/bisheng/knowledge/images/1/2/a.png")
+    result = await fetch_and_encode("https://minio.example:9000/doberman_agent/knowledge/images/1/2/a.png")
 
     assert result.ok is True
     assert _data_uri_size(result.data_uri) == (100, 80)
@@ -84,7 +84,7 @@ async def test_signed_relative_path_uses_download(fetch_env):
     _, download = fetch_env
     download.return_value = _png_bytes(32, 32)
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/2/a.png?X-Amz-Algorithm=AWS4-HMAC-SHA256")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/2/a.png?X-Amz-Algorithm=AWS4-HMAC-SHA256")
 
     assert result.ok is True
     download.assert_awaited_once()
@@ -94,7 +94,7 @@ async def test_signed_relative_path_uses_download(fetch_env):
 async def test_wechat_image_hosts_use_wechat_download(fetch_env, monkeypatch):
     _, download = fetch_env
     wechat = AsyncMock(return_value=_png_bytes(80, 60))
-    monkeypatch.setattr("bisheng.common.image_view.fetch._download_wechat", wechat)
+    monkeypatch.setattr("doberman_agent.common.image_view.fetch._download_wechat", wechat)
 
     for url in (
         "https://mmbiz.qpic.cn/mmbiz_jpg/abc/640?wx_fmt=jpeg",
@@ -125,7 +125,7 @@ async def test_wechat_download_sends_mp_referer(monkeypatch):
     client = AsyncMock()
     client.get = AsyncMock(return_value=response)
     monkeypatch.setattr(
-        "bisheng.core.external.http_client.http_client_manager.get_http_client",
+        "doberman_agent.core.external.http_client.http_client_manager.get_http_client",
         AsyncMock(return_value=client),
     )
 
@@ -167,7 +167,7 @@ async def test_smaller_than_512_is_not_upscaled(fetch_env):
     get_object, _ = fetch_env
     get_object.return_value = _png_bytes(200, 100)
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/2/small.png")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/2/small.png")
 
     assert result.ok is True
     assert _data_uri_size(result.data_uri) == (200, 100)
@@ -178,7 +178,7 @@ async def test_tiny_image_is_rejected_without_data_uri(fetch_env):
     get_object, _ = fetch_env
     get_object.return_value = _png_bytes(13, 17)
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/6/icon.jpeg")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/6/icon.jpeg")
 
     assert result.ok is False
     assert result.reason == "too_small"
@@ -190,7 +190,7 @@ async def test_get_object_failure_returns_error(fetch_env):
     get_object, _ = fetch_env
     get_object.side_effect = RuntimeError("NoSuchKey")
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/2/missing.png")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/2/missing.png")
 
     assert result.ok is False
     assert result.reason == "path"
@@ -203,7 +203,7 @@ async def test_decode_failure_returns_error(fetch_env):
     get_object, _ = fetch_env
     get_object.return_value = b"not-an-image"
 
-    result = await fetch_and_encode("/bisheng/knowledge/images/1/2/bad.png")
+    result = await fetch_and_encode("/doberman_agent/knowledge/images/1/2/bad.png")
 
     assert result.ok is False
     assert result.reason == "decode"

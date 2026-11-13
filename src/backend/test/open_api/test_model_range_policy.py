@@ -7,13 +7,13 @@ correction loop gets a different answer on each attempt.
 
 import pytest
 
-from bisheng.common.errcode.model_face import (
+from doberman_agent.common.errcode.model_face import (
     ModelFaceAccessTokenRefusedError,
     ModelFaceCatalogUnavailableError,
     ModelFaceIdentityHeaderRefusedError,
 )
-from bisheng.open_api.domain.services import model_range_policy
-from bisheng.open_api.domain.services.model_range_policy import (
+from doberman_agent.open_api.domain.services import model_range_policy
+from doberman_agent.open_api.domain.services.model_range_policy import (
     ACCESS_TOKEN_HEADER,
     END_USER_HEADER,
     SUBJECT_KIND_APP_SELF,

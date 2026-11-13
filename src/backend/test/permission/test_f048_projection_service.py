@@ -10,24 +10,24 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionMutationTooLargeError,
     PermissionProjectionFailedError,
     PermissionPublishNotReadyError,
     PermissionVersionConflictError,
 )
-from bisheng.permission.domain.models import ProjectionOperationStatus
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.projection_plan import (
+from doberman_agent.permission.domain.models import ProjectionOperationStatus
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.projection_plan import (
     projection_state_expectations,
 )
-from bisheng.permission.domain.services.projection_service import (
+from doberman_agent.permission.domain.services.projection_service import (
     ProjectionCommitUnknownError,
     ProjectionPlan,
     ProjectionService,
     ProjectionTupleDelta,
 )
-from bisheng.permission.domain.services.resource_lifecycle_policy import (
+from doberman_agent.permission.domain.services.resource_lifecycle_policy import (
     build_move_plan,
 )
 

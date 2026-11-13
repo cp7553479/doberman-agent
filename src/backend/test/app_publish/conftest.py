@@ -42,7 +42,7 @@ Seven things this file exists to prevent:
   landing they stood same-named placeholders into ``sys.modules`` instead, which
   meant the pipeline suite asserted against stubs of its own making.
 
-Import discipline: nothing from ``bisheng.app_publish.domain.services`` is
+Import discipline: nothing from ``doberman_agent.app_publish.domain.services`` is
 imported at module level — fixtures import lazily inside their body, which is
 what lets a test file that is written before its service still be collected.
 What they do **not** do is stand a placeholder into ``sys.modules`` when the
@@ -75,7 +75,7 @@ OWNER_USER_ID = 92001
 DEPT_ADMIN_USER_ID = 92002
 TENANT_ADMIN_USER_ID = 92003
 SUPER_ADMIN_USER_ID = 92004
-#: ``service_account.id`` of the key that runs ``bisheng deploy`` — the
+#: ``service_account.id`` of the key that runs ``doberman-agent deploy`` — the
 #: principal's ``actor_id``. Under the beta2 credential model a service account
 #: is **not** a user row (migration plan M4), so this is not a user id and must
 #: never be compared with one; the name keeps its historical spelling because
@@ -88,7 +88,7 @@ SERVICE_ACCOUNT_NAME = "f055-ci-deployer"
 #: real key so beta2's ``extract_bearer_token`` accepts it *before* the patched
 #: lookup runs — a malformed header must still be refused by the real code.
 def _test_bearer_token() -> str:
-    from bisheng.open_api.domain.models.api_credential import KEY_SECRET_LENGTH, SERVICE_ACCOUNT_KEY_PREFIX
+    from doberman_agent.open_api.domain.models.api_credential import KEY_SECRET_LENGTH, SERVICE_ACCOUNT_KEY_PREFIX
 
     return SERVICE_ACCOUNT_KEY_PREFIX + "0" * KEY_SECRET_LENGTH
 
@@ -99,72 +99,72 @@ DEPT_NAME = "研发中心"
 # ``user.password`` is NOT NULL; seeded rows never authenticate.
 SEED_PASSWORD_PLACEHOLDER = "x"
 
-#: Directory holding the baseline package contents (``bisheng-app.yaml`` +
+#: Directory holding the baseline package contents (``doberman-agent-app.yaml`` +
 #: ``main.py`` + ``requirements.txt``). ``tarball_factory`` packs it by default.
 MINIMAL_APP_DIR = Path(__file__).parent / "fixtures" / "minimal_app"
 
 #: Bucket the pipeline stores code snapshots in. Deliberately **not** the
 #: shared public bucket: ``src/frontend/nginx.conf`` proxies the public bucket's
 #: keys anonymously (design K5 / pit 13).
-APPS_BUCKET = "bisheng-apps"
+APPS_BUCKET = "doberman-agent-apps"
 
 # Modules that bind ``get_async_db_session`` by name at import time. Absent
 # ones (not implemented yet) are skipped silently — the tuple is the union of
 # what exists today and what waves 2-3 will add.
 _SESSION_PATCH_TARGETS = (
-    "bisheng.core.database",
-    "bisheng.core.database.manager",
-    "bisheng.database.models.app",
-    "bisheng.database.models.app_version",
-    "bisheng.database.models.app_instance",
-    "bisheng.database.models.audit_log",
-    "bisheng.database.models.department",
-    "bisheng.database.models.department_admin_grant",
-    "bisheng.database.models.resource_tier",
-    "bisheng.database.models.tenant",
-    "bisheng.user.domain.models.user",
-    "bisheng.user.domain.models.user_role",
-    "bisheng.knowledge.domain.models.knowledge",
-    "bisheng.app_publish.domain.models.app_deployment",
-    "bisheng.app_publish.domain.models.app_preview_session",
-    "bisheng.app_publish.domain.models.capability_call_record",
-    "bisheng.app_publish.domain.models.hosted_app_subject",
-    "bisheng.app_publish.domain.services.app_credential_service",
-    "bisheng.app_publish.domain.services.capability_audit",
-    "bisheng.app_publish.domain.services.capability_bus_service",
-    "bisheng.app_publish.domain.services.package_service",
-    "bisheng.app_publish.domain.services.manifest_validator",
-    "bisheng.app_publish.domain.services.secret_scanner",
-    "bisheng.app_publish.domain.services.resource_tier_service",
-    "bisheng.app_publish.domain.services.version_service",
-    "bisheng.app_publish.domain.services.precheck_service",
-    "bisheng.app_publish.domain.services.schema_evolution_service",
-    "bisheng.app_publish.domain.services.publish_pipeline_service",
-    "bisheng.app_publish.domain.services.publish_approval_service",
-    "bisheng.app_publish.domain.services.publish_status_service",
-    "bisheng.app_publish.domain.services.publish_notification_service",
-    "bisheng.app_publish.domain.services.publish_online_service",
-    "bisheng.app_publish.domain.services.publish_terminal_service",
-    "bisheng.app_publish.domain.services.preview_instance_service",
-    "bisheng.app_publish.domain.services.app_publish_scenario_handler",
-    "bisheng.app_runtime.domain.services.app_state_service",
-    "bisheng.app_runtime.domain.services.app_meta_service",
-    "bisheng.app_publish.composition",
-    "bisheng.approval.domain.services.approval_gate",
-    "bisheng.approval.domain.services.approver_resolver",
-    "bisheng.approval.domain.services.approval_center_service",
-    "bisheng.approval.domain.services.approval_notification_service",
+    "doberman_agent.core.database",
+    "doberman_agent.core.database.manager",
+    "doberman_agent.database.models.app",
+    "doberman_agent.database.models.app_version",
+    "doberman_agent.database.models.app_instance",
+    "doberman_agent.database.models.audit_log",
+    "doberman_agent.database.models.department",
+    "doberman_agent.database.models.department_admin_grant",
+    "doberman_agent.database.models.resource_tier",
+    "doberman_agent.database.models.tenant",
+    "doberman_agent.user.domain.models.user",
+    "doberman_agent.user.domain.models.user_role",
+    "doberman_agent.knowledge.domain.models.knowledge",
+    "doberman_agent.app_publish.domain.models.app_deployment",
+    "doberman_agent.app_publish.domain.models.app_preview_session",
+    "doberman_agent.app_publish.domain.models.capability_call_record",
+    "doberman_agent.app_publish.domain.models.hosted_app_subject",
+    "doberman_agent.app_publish.domain.services.app_credential_service",
+    "doberman_agent.app_publish.domain.services.capability_audit",
+    "doberman_agent.app_publish.domain.services.capability_bus_service",
+    "doberman_agent.app_publish.domain.services.package_service",
+    "doberman_agent.app_publish.domain.services.manifest_validator",
+    "doberman_agent.app_publish.domain.services.secret_scanner",
+    "doberman_agent.app_publish.domain.services.resource_tier_service",
+    "doberman_agent.app_publish.domain.services.version_service",
+    "doberman_agent.app_publish.domain.services.precheck_service",
+    "doberman_agent.app_publish.domain.services.schema_evolution_service",
+    "doberman_agent.app_publish.domain.services.publish_pipeline_service",
+    "doberman_agent.app_publish.domain.services.publish_approval_service",
+    "doberman_agent.app_publish.domain.services.publish_status_service",
+    "doberman_agent.app_publish.domain.services.publish_notification_service",
+    "doberman_agent.app_publish.domain.services.publish_online_service",
+    "doberman_agent.app_publish.domain.services.publish_terminal_service",
+    "doberman_agent.app_publish.domain.services.preview_instance_service",
+    "doberman_agent.app_publish.domain.services.app_publish_scenario_handler",
+    "doberman_agent.app_runtime.domain.services.app_state_service",
+    "doberman_agent.app_runtime.domain.services.app_meta_service",
+    "doberman_agent.app_publish.composition",
+    "doberman_agent.approval.domain.services.approval_gate",
+    "doberman_agent.approval.domain.services.approver_resolver",
+    "doberman_agent.approval.domain.services.approval_center_service",
+    "doberman_agent.approval.domain.services.approval_notification_service",
     # The gate reads scenarios / routes / nodes and writes instances through
-    # these; each does ``from bisheng.core.database import get_async_db_session``
+    # these; each does ``from doberman_agent.core.database import get_async_db_session``
     # at import time, so patching the source module alone would leave them
     # pointed at the real engine.
-    "bisheng.approval.domain.repositories.approval_instance_repository",
-    "bisheng.approval.domain.repositories.approval_scenario_repository",
-    "bisheng.approval.domain.repositories.approval_query_repository",
+    "doberman_agent.approval.domain.repositories.approval_instance_repository",
+    "doberman_agent.approval.domain.repositories.approval_scenario_repository",
+    "doberman_agent.approval.domain.repositories.approval_query_repository",
     # T055 issues / revokes through the beta2 credential base, which binds the
     # session factory by name in each repository module.
-    "bisheng.open_api.domain.repositories.credential_repository",
-    "bisheng.open_api.domain.repositories.delegate_scope_repository",
+    "doberman_agent.open_api.domain.repositories.credential_repository",
+    "doberman_agent.open_api.domain.repositories.delegate_scope_repository",
 )
 
 _TABLES = (
@@ -201,22 +201,22 @@ _TABLES = (
 )
 
 _METADATA_MODULES = (
-    "bisheng.database.models.tenant",
-    "bisheng.database.models.audit_log",
-    "bisheng.database.models.department",
-    "bisheng.database.models.department_admin_grant",
-    "bisheng.database.models.resource_tier",
-    "bisheng.database.models.app",
-    "bisheng.database.models.app_version",
-    "bisheng.database.models.app_instance",
-    "bisheng.user.domain.models.user",
-    "bisheng.user.domain.models.user_role",
-    "bisheng.database.models.role",
-    "bisheng.knowledge.domain.models.knowledge",
-    "bisheng.app_publish.domain.models",
-    "bisheng.open_api.domain.models",
-    "bisheng.approval.domain.models.approval_scenario",
-    "bisheng.approval.domain.models.approval_instance",
+    "doberman_agent.database.models.tenant",
+    "doberman_agent.database.models.audit_log",
+    "doberman_agent.database.models.department",
+    "doberman_agent.database.models.department_admin_grant",
+    "doberman_agent.database.models.resource_tier",
+    "doberman_agent.database.models.app",
+    "doberman_agent.database.models.app_version",
+    "doberman_agent.database.models.app_instance",
+    "doberman_agent.user.domain.models.user",
+    "doberman_agent.user.domain.models.user_role",
+    "doberman_agent.database.models.role",
+    "doberman_agent.knowledge.domain.models.knowledge",
+    "doberman_agent.app_publish.domain.models",
+    "doberman_agent.open_api.domain.models",
+    "doberman_agent.approval.domain.models.approval_scenario",
+    "doberman_agent.approval.domain.models.approval_instance",
 )
 
 #: Every method ``orchestrator_client`` exposes (F054 design §4.2 ①). The
@@ -314,10 +314,10 @@ def _isolate_request_contextvars():
     the resolver sets a fresh dict lazily and never resets it, so a test that
     reaches knowledge data scope would hand its memo to the next one.
     """
-    from bisheng.core.context.tenant import _bypass_tenant_filter, current_tenant_id
-    from bisheng.knowledge.domain.services.data_scope_resolver import _memo as knowledge_data_scope_memo
-    from bisheng.open_api.domain.context import current_open_api_principal
-    from bisheng.permission.application.identity import current_permission_actor
+    from doberman_agent.core.context.tenant import _bypass_tenant_filter, current_tenant_id
+    from doberman_agent.knowledge.domain.services.data_scope_resolver import _memo as knowledge_data_scope_memo
+    from doberman_agent.open_api.domain.context import current_open_api_principal
+    from doberman_agent.permission.application.identity import current_permission_actor
 
     tokens = [
         (current_tenant_id, current_tenant_id.set(None)),
@@ -387,7 +387,7 @@ async def publish_db(publish_engine, monkeypatch):
 
 
 def _payload(user_id: int, user_name: str, tenant_id: int, *, is_global_super: bool = False):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     # ``user_role=[]`` skips the UserRoleDao lookup in LoginUser.__init__.
     return UserPayload(
@@ -400,8 +400,8 @@ def _payload(user_id: int, user_name: str, tenant_id: int, *, is_global_super: b
 
 
 async def _seed_user(publish_db, user_id: int, user_name: str, tenant_id: int = ROOT_TENANT_ID):
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.user.domain.models.user import User
 
     async with publish_db() as session:
         user = User(
@@ -444,8 +444,8 @@ async def dept_admin_user(publish_db, owner_user):
     name is Chinese on purpose: it travels through notification copy and
     ``detail_snapshot``.
     """
-    from bisheng.database.models.department import Department, UserDepartment
-    from bisheng.database.models.department_admin_grant import (
+    from doberman_agent.database.models.department import Department, UserDepartment
+    from doberman_agent.database.models.department_admin_grant import (
         DEPARTMENT_ADMIN_GRANT_SOURCE_MANUAL,
         DepartmentAdminGrant,
     )
@@ -486,8 +486,8 @@ async def tenant_admin_user(publish_db, monkeypatch):
     ``[]`` in production too, and that is the whole reason AC-21 needs a
     Root → platform-super-admin fallback.
     """
-    from bisheng.database.models.tenant import Tenant
-    from bisheng.tenant.domain.services.tenant_admin_service import TenantAdminService
+    from doberman_agent.database.models.tenant import Tenant
+    from doberman_agent.tenant.domain.services.tenant_admin_service import TenantAdminService
 
     async with publish_db() as session:
         session.add(
@@ -518,8 +518,8 @@ async def super_admin_user(publish_db):
     "owner only" rule must be a business pre-check rather than a permission
     check (C4) — this fixture is what proves the difference.
     """
-    from bisheng.database.constants import AdminRole
-    from bisheng.user.domain.models.user_role import UserRole
+    from doberman_agent.database.constants import AdminRole
+    from doberman_agent.user.domain.models.user_role import UserRole
 
     user = await _seed_user(publish_db, SUPER_ADMIN_USER_ID, "f055-super-admin")
     async with publish_db() as session:
@@ -553,7 +553,7 @@ def service_account_principal(owner_user):
     real pipeline: a mode-D principal with no delegation header is handed back
     by ``resolve_request_identity`` unchanged and then refused by the marker.
     """
-    from bisheng.open_api.domain.context import OpenApiPrincipal
+    from doberman_agent.open_api.domain.context import OpenApiPrincipal
 
     def _make(
         *,
@@ -597,9 +597,9 @@ async def app_factory(publish_db, owner_user):
     orchestrator. Same shape as ``test/app_runtime/conftest.py`` so a test moved
     between the two packages keeps working.
     """
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.database.models.app import App, AppDao
-    from bisheng.database.models.app_version import VERSION_KIND_INITIAL, AppVersion, AppVersionDao
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.database.models.app import App, AppDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_INITIAL, AppVersion, AppVersionDao
 
     counter = {"n": 0}
 
@@ -659,13 +659,13 @@ async def deployment_factory(publish_db, owner_user):
     Goes through ``AppDeploymentDao`` so the row is shaped exactly as the
     pipeline would leave it at that stage.
     """
-    from bisheng.app_publish.domain.models.app_deployment import (
+    from doberman_agent.app_publish.domain.models.app_deployment import (
         STAGE_RECEIVED,
         STATUS_RUNNING,
         AppDeployment,
         AppDeploymentDao,
     )
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     async def _create(
         *,
@@ -720,8 +720,8 @@ async def knowledge_factory(publish_db, owner_user):
     tests do assert about them is resolution and type support, and both are
     decided from the columns seeded here.
     """
-    from bisheng.core.context.tenant import set_current_tenant_id
-    from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
+    from doberman_agent.core.context.tenant import set_current_tenant_id
+    from doberman_agent.knowledge.domain.models.knowledge import Knowledge, KnowledgeTypeEnum
 
     counter = {"n": 0}
 
@@ -759,8 +759,8 @@ async def tier_seed(publish_db):
     resolves to" must have exactly one definition in the tests, the same way it
     has exactly one in the code (T015).
     """
-    from bisheng.app_publish.domain.services.resource_tier_service import ResourceTierService
-    from bisheng.database.models.resource_tier import ResourceTierDao
+    from doberman_agent.app_publish.domain.services.resource_tier_service import ResourceTierService
+    from doberman_agent.database.models.resource_tier import ResourceTierDao
 
     await ResourceTierService.seed_resource_tiers()
     async with publish_db() as session:
@@ -811,7 +811,7 @@ def tarball_factory(tmp_path):
     Keyword arguments compose, so one call can build "a valid package that also
     contains a symlink". Defaults pack ``fixtures/minimal_app/``.
 
-    * ``include_manifest=False`` — drop ``bisheng-app.yaml`` (16203)
+    * ``include_manifest=False`` — drop ``doberman-agent-app.yaml`` (16203)
     * ``manifest`` — replace the manifest body (str or bytes)
     * ``extra_files={name: content}`` — arbitrary additional members
     * ``symlink`` / ``hardlink`` / ``device`` / ``fifo`` — the four tar-only
@@ -840,15 +840,15 @@ def tarball_factory(tmp_path):
     ) -> Path:
         members: list[tuple[tarfile.TarInfo, bytes | None]] = []
         for source in sorted(MINIMAL_APP_DIR.iterdir()):
-            if source.name == "bisheng-app.yaml" and not include_manifest:
+            if source.name == "doberman-agent-app.yaml" and not include_manifest:
                 continue
             payload = source.read_bytes()
-            if source.name == "bisheng-app.yaml" and manifest is not None:
+            if source.name == "doberman-agent-app.yaml" and manifest is not None:
                 payload = manifest.encode("utf-8") if isinstance(manifest, str) else manifest
             members.append(_file_member(source.name, payload))
-        if include_manifest and manifest is not None and not any(i.name == "bisheng-app.yaml" for i, _ in members):
+        if include_manifest and manifest is not None and not any(i.name == "doberman-agent-app.yaml" for i, _ in members):
             body = manifest.encode("utf-8") if isinstance(manifest, str) else manifest
-            members.append(_file_member("bisheng-app.yaml", body))
+            members.append(_file_member("doberman-agent-app.yaml", body))
 
         for member_name, content in (extra_files or {}).items():
             body = content.encode("utf-8") if isinstance(content, str) else content
@@ -902,7 +902,7 @@ class _FakeMinioStorage:
       and tmp buckets.
     """
 
-    def __init__(self, root: Path, default_bucket: str = "bisheng"):
+    def __init__(self, root: Path, default_bucket: str = "doberman_agent"):
         self._root = root
         self.bucket = default_bucket
         self.calls: list[tuple[str, dict[str, Any]]] = []
@@ -1011,7 +1011,7 @@ def fake_minio(tmp_path, monkeypatch):
     def _get_sync():
         return storage
 
-    from bisheng.core.storage.minio import minio_manager
+    from doberman_agent.core.storage.minio import minio_manager
 
     monkeypatch.setattr(minio_manager, "get_minio_storage", _get_async)
     monkeypatch.setattr(minio_manager, "get_minio_storage_sync", _get_sync)
@@ -1047,7 +1047,7 @@ def fake_orchestrator(monkeypatch):
     flight, which is exactly the shape that lets a suite go green against an
     implementation that does not exist.
     """
-    module = importlib.import_module("bisheng.app_runtime.domain.services.orchestrator_client")
+    module = importlib.import_module("doberman_agent.app_runtime.domain.services.orchestrator_client")
     client = module.orchestrator_client
     public = {
         name
@@ -1069,7 +1069,7 @@ def fake_orchestrator(monkeypatch):
             "stage": "docker_build",
             "message": "",
             "tail": "",
-            "image_ref": "bisheng-app/f055-app-1:1-abcdef12",
+            "image_ref": "doberman-agent-app/f055-app-1:1-abcdef12",
         },
         "deploy": {"instance_id": "inst-1", "phase": "starting"},
         "stop": {"phase": "stopped"},
@@ -1142,8 +1142,8 @@ def fake_orchestrator(monkeypatch):
 #: the ``app`` table itself, so these two calls are the only way a first publish
 #: can create an application.
 F054_SERVICE_METHODS = {
-    "bisheng.app_runtime.domain.services.app_provision_service": ("create_draft",),
-    "bisheng.app_runtime.domain.services.app_meta_service": ("update_meta",),
+    "doberman_agent.app_runtime.domain.services.app_provision_service": ("create_draft",),
+    "doberman_agent.app_runtime.domain.services.app_meta_service": ("update_meta",),
 }
 
 
@@ -1174,8 +1174,8 @@ def fake_f054_services(monkeypatch):
 
             monkeypatch.setattr(target, name, _stub, raising=False)
 
-    _bind("bisheng.app_runtime.domain.services.app_provision_service", "AppProvisionService", ("create_draft",))
-    _bind("bisheng.app_runtime.domain.services.app_meta_service", "AppMetaService", ("update_meta",))
+    _bind("doberman_agent.app_runtime.domain.services.app_provision_service", "AppProvisionService", ("create_draft",))
+    _bind("doberman_agent.app_runtime.domain.services.app_meta_service", "AppMetaService", ("update_meta",))
     return SimpleNamespace(calls=calls, responses=responses)
 
 
@@ -1191,9 +1191,9 @@ def fake_publish_approval(monkeypatch):
     use the real module.
     """
     methods = ("assert_submittable", "submit", "cancel")
-    module = importlib.import_module("bisheng.app_publish.domain.services.publish_approval_service")
+    module = importlib.import_module("doberman_agent.app_publish.domain.services.publish_approval_service")
 
-    from bisheng.approval.domain.schemas.approval_center_schema import ApprovalGateDecision, ApprovalGateResult
+    from doberman_agent.approval.domain.schemas.approval_center_schema import ApprovalGateDecision, ApprovalGateResult
 
     calls: list[tuple[str, dict[str, Any]]] = []
     responses: dict[str, Any] = {
@@ -1230,7 +1230,7 @@ async def approval_env(publish_db):
     accident from a missing fixture — which is why this returns the seed list
     and never skips.
     """
-    from bisheng.approval.domain.services.approval_seed_service import (
+    from doberman_agent.approval.domain.services.approval_seed_service import (
         DEFAULT_APPROVAL_SCENARIO_SEEDS,
         seed_approval_scenarios_in_session,
     )
@@ -1254,7 +1254,7 @@ def audit_sink(monkeypatch):
     ``[call["action"] for call in audit_sink]`` for the ``app.release.*``
     coverage (AC-01).
     """
-    from bisheng.database.models.audit_log import AuditLogDao
+    from doberman_agent.database.models.audit_log import AuditLogDao
 
     captured: list[dict[str, Any]] = []
 
@@ -1277,7 +1277,7 @@ def approval_notifications(monkeypatch):
     failures — an assertion on "the approvers were notified" would pass either
     way (design 坑 5 is precisely a notification that silently never happens).
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     sent: list[dict[str, Any]] = []
 
@@ -1311,8 +1311,8 @@ def no_celery_dispatch(monkeypatch):
     """
     dispatched: list[int] = []
 
-    from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
-    from bisheng.approval.domain.services.approval_gate import ApprovalGate
+    from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
+    from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
 
     monkeypatch.setattr(ApprovalCenterService, "_dispatch_outbox", staticmethod(dispatched.append))
     monkeypatch.setattr(ApprovalGate, "_dispatch_outbox_task", staticmethod(dispatched.append))
@@ -1329,11 +1329,11 @@ def api_app(monkeypatch):
       its own event loop while the in-memory aiosqlite engine and every
       ContextVar these tests set live on the test's loop — the first DB call
       would fail with "attached to a different loop".
-    * **The routers alone, not ``bisheng.main.create_app``.** The full app
+    * **The routers alone, not ``doberman_agent.main.create_app``.** The full app
       brings a middleware chain that re-resolves tenants against a database
       these tests replaced; a failure here should point at F055.
 
-    ``/api/v2`` is mounted exactly as ``bisheng/api/router.py`` mounts it: under
+    ``/api/v2`` is mounted exactly as ``doberman_agent/api/router.py`` mounts it: under
     an ``APIRouter`` whose one router-level dependency is the **real**
     ``verify_open_api_access`` (F053 design K14). ``principal`` does not replace
     that dependency — FastAPI would let it, but then "no marker → refused",
@@ -1347,30 +1347,30 @@ def api_app(monkeypatch):
 
     Passing ``None`` leaves the lookup real too, which is how the "a session
     cookie cannot call /api/v2" case is exercised. The v2 exception handlers
-    are the ones ``bisheng.main`` registers, so an auth refusal arrives as a
+    are the ones ``doberman_agent.main`` registers, so an auth refusal arrives as a
     real 401 / 403 rather than in the 200 envelope business errors use.
     """
     import httpx
     from fastapi import APIRouter, Depends, FastAPI
     from fastapi.responses import JSONResponse
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.base import BaseErrorCode
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.base import BaseErrorCode
 
     def _handle(_request, exc: BaseErrorCode) -> JSONResponse:
-        # Mirrors bisheng.main.handle_http_exception: business errors ride in a
+        # Mirrors doberman_agent.main.handle_http_exception: business errors ride in a
         # 200 envelope, because the platform SPA turns a real 403/404 on a GET
         # into a full-page navigation to /403 (design 坑 22).
         return JSONResponse(status_code=200, content=exc.to_dict())
 
     def _build(principal=None, payload=None, app_runtime_enabled: bool = True):
-        from bisheng.app_publish.api.router import v1_router, v2_router
-        from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-        from bisheng.common.services.config_service import settings
-        from bisheng.open_api.api import dependencies as open_api_dependencies
-        from bisheng.open_api.api.dependencies import verify_open_api_access
-        from bisheng.open_api.api.exception_handlers import register_open_api_exception_handlers
-        from bisheng.open_api.domain.services.credential_validator import extract_bearer_token
+        from doberman_agent.app_publish.api.router import v1_router, v2_router
+        from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+        from doberman_agent.common.services.config_service import settings
+        from doberman_agent.open_api.api import dependencies as open_api_dependencies
+        from doberman_agent.open_api.api.dependencies import verify_open_api_access
+        from doberman_agent.open_api.api.exception_handlers import register_open_api_exception_handlers
+        from doberman_agent.open_api.domain.services.credential_validator import extract_bearer_token
 
         monkeypatch.setattr(settings.app_runtime, "enabled", app_runtime_enabled)
 
@@ -1448,9 +1448,9 @@ def credential_redis(monkeypatch):
         return redis
 
     for module_name in (
-        "bisheng.open_api.domain.services.credential_service",
-        "bisheng.open_api.domain.services.credential_validator",
-        "bisheng.open_api.domain.services.tenant_setting_service",
+        "doberman_agent.open_api.domain.services.credential_service",
+        "doberman_agent.open_api.domain.services.credential_validator",
+        "doberman_agent.open_api.domain.services.tenant_setting_service",
     ):
         module = importlib.import_module(module_name)
         monkeypatch.setattr(module, "get_redis_client", _get_redis)
@@ -1474,12 +1474,12 @@ async def hosted_app_resolver():
     published application (F051 T022); two copies of a teardown this exacting
     would drift.
     """
-    from bisheng.app_publish.composition import register
-    from bisheng.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.services import model_range_policy
-    from bisheng.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS
-    from bisheng.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
+    from doberman_agent.app_publish.composition import register
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.services import model_range_policy
+    from doberman_agent.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS
+    from doberman_agent.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
 
     previous_ports = (
         model_range_policy.get_hosted_app_declaration_port(),
@@ -1511,7 +1511,7 @@ def app_runtime_settings(monkeypatch):
     (T005), so a size-gate test sets a 1 MB ceiling rather than building a
     50 MB tarball.
     """
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     def _apply(**overrides: Any):
         conf = settings.app_runtime

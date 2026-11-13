@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { getDshOperation } from "@/controllers/API/dsh";
 import type { DshOperation, DshOperationRef } from "@/types/dsh";

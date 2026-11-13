@@ -1,5 +1,5 @@
-import { Alert } from '@bisheng/ui';
-import { isApiError } from '@bisheng/api-client';
+import { Alert } from '@doberman-agent/ui';
+import { isApiError } from '@doberman-agent/api-client';
 import { useLocalize } from '~/hooks';
 import { showApiError } from '~/api/request';
 

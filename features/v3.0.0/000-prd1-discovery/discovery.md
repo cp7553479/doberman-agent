@@ -57,7 +57,7 @@
 
 ### 2.5 模型面（DEV-02 模型协议面 / GOV-04）→ research: model-llm
 
-- **可复用**：llm_server / llm_model 双表 + Root 共享 + `BishengLLM`（19 服务商、全链路流式）+ 模型收回错误族（LlmModelOfflineError 等）+ telemetry 每调用全覆盖。
+- **可复用**：llm_server / llm_model 双表 + Root 共享 + `DobermanAgentLLM`（19 服务商、全链路流式）+ 模型收回错误族（LlmModelOfflineError 等）+ telemetry 每调用全覆盖。
 - **缺口**：OpenAI 兼容**入站**端点零现状（现有 `/api/v2/assistant/chat/completions` 是助手外壳、非模型直连）；按名称解析模型不存在（只认数字 model_id，且租户内跨服务商同名 model_name 合法——歧义规则要定义）；持久化用量表 `LLMTokenLog` **无 `app_id` / `api_key_id`**，app 维度只活在 ES 遥测事件里。
 - **PRD v2.0 影响**：① 模型协议面收敛为**仅 OpenAI 兼容**（Anthropic 面本版不做；只讲 Anthropic 的工具如客户自装 Claude Code 只能走自带订阅）；② `model:invoke` 与 `chat:invoke` 互不蕴含（裸透传 vs 平台会话机制）；③ GOV-04 **聚合账单顺延 v3.1**、本版降为逐条调用审计（用量表补 key / app 列即够）；④ 模型名即平台模型管理原名、无逻辑档位转换。
 
@@ -84,9 +84,9 @@
 ### 2.9 运行时基建（RT-01 / RT-07 / RT-08 / DEV-04 托管 / GOV-10）→ research: mcp-runtime-infra, appdb-storage-sdk
 
 - **可复用**：`mcp>=1.27.0` SDK 已在依赖内（server 原语可用，需 POC）；MinioStorage 全套 + 灵思 workspace 前缀隔离 / copy-forward 快照范式（代码快照可照搬）；cookie path=/ host-only → `/apps/{slug}` 同源免二次登录零后端改造；client 401→LOGIN_PATHNAME→登录→回跳链路现成（需补 query/hash）。
-- **绿地（全仓零先例）**：per-app 实例编排（拉起 / 限额 / 健康探测 / ≤5min 自愈）——无 docker SDK、无进程管理器、无 cgroup 操作；`/apps/{slug}` 动态路由（nginx 纯静态 conf；商业版 Java 网关只认 /api，需 app-proxy 统一承接）；per-app 数据库供给（无动态建库代码）；schema diff 引擎与迁移前自动快照；bisheng-sdk / bisheng CLI（无任何可发布包工程、无 [project.scripts]）；安装件分发端点；内网 pip 镜像全仓不存在（托管契约「依赖包经平台内网镜像安装」= 全新建设）。
+- **绿地（全仓零先例）**：per-app 实例编排（拉起 / 限额 / 健康探测 / ≤5min 自愈）——无 docker SDK、无进程管理器、无 cgroup 操作；`/apps/{slug}` 动态路由（nginx 纯静态 conf；商业版 Java 网关只认 /api，需 app-proxy 统一承接）；per-app 数据库供给（无动态建库代码）；schema diff 引擎与迁移前自动快照；doberman-agent-sdk / doberman-agent CLI（无任何可发布包工程、无 [project.scripts]）；安装件分发端点；内网 pip 镜像全仓不存在（托管契约「依赖包经平台内网镜像安装」= 全新建设）。
 - **风险**：单机已合跑全家桶（114 曾因 linsight worker OOM 死机），叠 per-app 实例必须靠档位限额 + 运行环境容量准入强约束，否则与 RT-08「平台必须正常」直接冲突；docker.sock ≈ host root 权限（方案：独立最小权限编排器 runtime-manager 唯一持有、backend 零 docker 依赖）；app 附件不能混入 public bucket（匿名读策略）。
-- **PRD v2.0 影响**：① **k8s 由 v3.1 提前到本版**——第二套执行后端（Deployment / Service reconcile、命名空间 RBAC、档位→requests / limits、RuntimeClass、NetworkPolicy）+ **镜像构建与分发**（多节点 Pod 调度到任意节点，镜像必须进仓库；不交 docker.sock → 无守护进程构建器）+ 三项集群前置探测（CNI NetworkPolicy / StorageClass / RuntimeClass）；k8s 侧 RBAC 反而比 docker.sock 更好收窄，不是额外风险面；② per-app 数据库形态已由方案定为 **SQLite-per-app（小）/ Postgres（中）**、与平台 MySQL / DM8 解耦（`bisheng dev` 本地起 sqlite 注入同名环境变量，DEV-05 / DEV-07）——原 D7「appdb 双库」问题消解，只剩 C2 适用性确认；③ 单应用单实例、无扩缩容；④ RT-08 两个过渡态（发布中 / 应用恢复中）不落报错页，两形态验收口径与时限相同。
+- **PRD v2.0 影响**：① **k8s 由 v3.1 提前到本版**——第二套执行后端（Deployment / Service reconcile、命名空间 RBAC、档位→requests / limits、RuntimeClass、NetworkPolicy）+ **镜像构建与分发**（多节点 Pod 调度到任意节点，镜像必须进仓库；不交 docker.sock → 无守护进程构建器）+ 三项集群前置探测（CNI NetworkPolicy / StorageClass / RuntimeClass）；k8s 侧 RBAC 反而比 docker.sock 更好收窄，不是额外风险面；② per-app 数据库形态已由方案定为 **SQLite-per-app（小）/ Postgres（中）**、与平台 MySQL / DM8 解耦（`doberman-agent dev` 本地起 sqlite 注入同名环境变量，DEV-05 / DEV-07）——原 D7「appdb 双库」问题消解，只剩 C2 适用性确认；③ 单应用单实例、无扩缩容；④ RT-08 两个过渡态（发布中 / 应用恢复中）不落报错页，两形态验收口径与时限相同。
 
 ---
 
@@ -101,7 +101,7 @@
 | F051 | model-protocol-gateway | A | DEV-02 模型协议面（**仅 OpenAI 兼容**、`model:invoke`、按名解析、流式；可用范围 = GOV-05 租户模型配置）+ GOV-04 模型调用逐条审计带 key / 应用维度（聚合账单顺延）+ 入口拒绝 `delegate`（INV-31） | F049 | F102 |
 | F052 | mcp-server-face | A | DEV-02 MCP 六类工具（应用数据 / 状态日志两类随 F054 / F055 接线）+ **统一检索门面**（文件级双层 + fail-closed；伴生 §4.4.6 交付前提；GOV-05 运行时 / F057 共用）+ `identity:read` 组织查询 + 入口拒绝 `delegate` | F049 | F105 |
 | F053 | dev-cli-skills | A 尾 / B | DEV-03 两包 + DEV-04 CLI `login`（自动 sync）/ `skills sync` / `dev` / `logs`（`deploy` 随 F055 启用）+ DEV-05 本地身份注入 + 本地 sqlite 同名注入 + CLI 安装件分发 + **DEV-01 接入信息区与一键复制** + `login` 拒 `delegate` | F049, F051, F052 | F106（部分） |
-| F057 | bisheng-sdk | A 尾 / B | DEV-07 三件套（auth / retrieve / storage）+ 开发者指南；chat / appdb 刻意不进 SDK | F052, F053；storage 依赖 F054 | F106（部分） |
+| F057 | doberman-agent-sdk | A 尾 / B | DEV-07 三件套（auth / retrieve / storage）+ 开发者指南；chat / appdb 刻意不进 SDK | F052, F053；storage 依赖 F054 | F106（部分） |
 | F058 | openapi-responses（**新增，登记项**） | A | 伴生 P1「日常模式会话 Responses 子集契约」——**不在 PRD-1**；补齐版本层归属；是否进 v3.0.0 由产品定（N2） | F050 | F101 |
 | F054 | app-domain-runtime | B | 托管应用领域模型 / 状态机（§3.0.2）+ GOV-01 `app` 资源类型注册 + compose 执行后端（runtime-manager）+ app-proxy + RT-01 入口与四类兜底页 + RT-07 资产持久 / 下线 / 重新上线 / 显式删除 + RT-08 稳定性 + GOV-03 档位→容器限额 + per-app 数据库 / 附件 + 构建页「托管应用」类型 + 应用详情页壳（**WB-13 / WB-06**）+ GOV-10 工场运行时层开关与未部署引导页。**spec 阶段可再拆** | F049 | F103, F107, F104（FGA） |
 | F055 | app-publish-pipeline | B | RT-03 / RT-04 / RT-05 + DEV-04 deploy 管线（预检 / 扫描 / 审批 / 终检）+ **GOV-02 预置审批流 + 三项阻塞前置** + GOV-03 ResourceTier / 管理 tab / 选档 / 终检 / 待上线态 / 手动上线 + GOV-05 能力总线（声明→注入 / 收回错误态）+ 应用运行期凭据自动签发回收 + 审批人审读视图与临时预览实例 + **WB-14 / WB-15** + CLI `deploy` / `logs` 接线。**spec 阶段可再拆** | F054, F049, F051, F052 | F112, F104（审批） |

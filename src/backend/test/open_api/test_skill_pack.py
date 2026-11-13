@@ -11,10 +11,10 @@ from zipfile import ZipFile
 
 import pytest
 
-from bisheng.common.errcode.open_api import ApiCredentialNotFoundError
-from bisheng.open_api.domain.services.skill_pack_service import SkillPackService
+from doberman_agent.common.errcode.open_api import ApiCredentialNotFoundError
+from doberman_agent.open_api.domain.services.skill_pack_service import SkillPackService
 
-SCRIPT_FILE = Path(__file__).resolve().parents[2] / "bisheng/open_api/skill_packs/knowledge-search/scripts/search.py"
+SCRIPT_FILE = Path(__file__).resolve().parents[2] / "doberman_agent/open_api/skill_packs/knowledge-search/scripts/search.py"
 OK_LIST_BODY = b'{"status_code": 200, "status_message": "ok", "data": {"data": [], "page_size": 1, "has_more": false}}'
 KEY = "bs-pat-abcdefgh1234"
 
@@ -36,10 +36,10 @@ def test_pack_is_deterministic_safe_and_instance_rendered():
     assert "https://example.test" in security
     assert "/api/v2/filelib/retrieve" in script
     assert "KNOWLEDGE_API_KEY" in script
-    assert "X-Bisheng" not in first.decode("latin-1")
+    assert "X-Doberman-Agent" not in first.decode("latin-1")
     # White-label guard: no brand strings may ship inside the pack (F066 iter 2).
     whole = first.decode("latin-1")
-    assert "BiSheng" not in whole and "BISHENG" not in whole
+    assert "doberman-agent" not in whole and "DOBERMAN_AGENT" not in whole
     assert "__pycache__" not in whole
 
 
@@ -91,7 +91,7 @@ def _http_error(request, code: int, body: bytes) -> HTTPError:
     return HTTPError(request.full_url, code, "error", None, io.BytesIO(body))
 
 
-def _load_script(path: Path = SCRIPT_FILE, name: str = "bisheng_skill_search"):
+def _load_script(path: Path = SCRIPT_FILE, name: str = "doberman_agent_skill_search"):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -177,7 +177,7 @@ def test_rendered_script_bakes_the_instance_base_url(monkeypatch, tmp_path, caps
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))
     target = tmp_path / "rendered_search.py"
     target.write_text(rendered, encoding="utf-8")
-    module = _load_script(target, name="bisheng_skill_search_rendered")
+    module = _load_script(target, name="doberman_agent_skill_search_rendered")
     assert module._default_base_url() == "https://example.test/base"  # sentinel did not eat itself
 
     monkeypatch.setenv("KNOWLEDGE_API_KEY", KEY)
@@ -370,7 +370,7 @@ def _rendered_module(monkeypatch, tmp_path, baked: str):
         rendered = archive.read("knowledge-search/scripts/search.py").decode()
     target = tmp_path / "rendered_behind_proxy.py"
     target.write_text(rendered, encoding="utf-8")
-    return _load_script(target, name="bisheng_skill_search_behind_proxy")
+    return _load_script(target, name="doberman_agent_skill_search_behind_proxy")
 
 
 def test_saved_browser_address_heals_a_wrongly_baked_pack(monkeypatch, tmp_path, capsys):

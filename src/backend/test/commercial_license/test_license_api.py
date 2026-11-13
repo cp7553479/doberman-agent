@@ -4,13 +4,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from bisheng.common.dependencies.core_deps import get_db_session
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.main import handle_http_exception
+from doberman_agent.common.dependencies.core_deps import get_db_session
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.main import handle_http_exception
 
-ENDPOINT_MOD = "bisheng.commercial_license.api.router"
+ENDPOINT_MOD = "doberman_agent.commercial_license.api.router"
 
 
 def _mk_user(*, is_global_super: bool):
@@ -21,7 +21,7 @@ def _mk_user(*, is_global_super: bool):
 
 
 def _build_app(login_user):
-    from bisheng.commercial_license.api.router import router
+    from doberman_agent.commercial_license.api.router import router
 
     app = FastAPI()
     app.add_exception_handler(BaseErrorCode, handle_http_exception)
@@ -148,7 +148,7 @@ def test_super_post_gateway_pro_with_empty_strings_upserts_null_expiry():
 
 
 def test_unauthenticated_uses_existing_auth():
-    from bisheng.commercial_license.api.router import router
+    from doberman_agent.commercial_license.api.router import router
 
     app = FastAPI()
     app.add_exception_handler(BaseErrorCode, handle_http_exception)

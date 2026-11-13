@@ -1,6 +1,6 @@
 {
   "admin": "Administrator",
-  "bisheng": "{{bisheng}}",
+  "doberman_agent": "{{doberman_agent}}",
   "cancel": "Cancel",
   "chat_direction_left_to_right": "something needs to go here. was empty",
   "chat_direction_right_to_left": "something needs to go here. was empty",
@@ -32,7 +32,7 @@
   "com_account_info_username_suffix": "(username)",
   "com_addAnything": "Add anything",
   "com_agents_allow_editing": "Allow other users to edit your agent",
-  "com_agents_by_librechat": "by BISHENG",
+  "com_agents_by_librechat": "by doberman-agent",
   "com_agents_code_interpreter": "When enabled, allows your agent to leverage the Code Interpreter API to run generated code, including file processing, securely. Requires a valid API key.",
   "com_agents_code_interpreter_title": "Code Interpreter API",
   "com_agents_create_error": "There was an error creating your agent.",
@@ -49,7 +49,7 @@
   "com_agents_update_error": "There was an error updating your agent.",
   "com_app_center_description": "You can choose the intelligent agents you need here for production and work~",
   "com_app_center_title": "App Center",
-  "com_app_center_welcome": "Explore $t(bisheng)'s Intelligent Agents",
+  "com_app_center_welcome": "Explore $t(doberman_agent)'s Intelligent Agents",
   "com_app_explore_end_of_list": "— You've reached the end —",
   "com_app_explore_loading_more": "Loading more agents...",
   "com_app_explore_no_agents": "No agents found",
@@ -376,7 +376,7 @@
   "com_inputfiles_exceed_limit": "File: {{0}} exceeds {{1}}M and has been removed",
   "com_inputfiles_upload_failed": "File upload failed: {{0}}",
   "com_invite_apply_access": "Click here to apply for access",
-  "com_invite_desc": "Enter the invitation code provided by BISHENG to start your $t(linsight) journey.",
+  "com_invite_desc": "Enter the invitation code provided by doberman-agent to start your $t(linsight) journey.",
   "com_invite_no_code_tip": "No invitation code? ",
   "com_invite_placeholder": "Please enter",
   "com_invite_please_input_code": "Please enter invitation code",
@@ -404,7 +404,7 @@
   "com_label_save": "Save",
   "com_linsight_add_skill": "Add Skill",
   "com_linsight_exit_task_mode": "Turn off deep research",
-  "com_linsight_input_placeholder": "Enter your task goal, then leave it to $t(bisheng)$t(linsight)",
+  "com_linsight_input_placeholder": "Enter your task goal, then leave it to $t(doberman_agent)$t(linsight)",
   "com_linsight_awaiting_reply": "Answer the question above to continue the task",
   "com_linsight_skill_empty": "No skills available",
   "com_linsight_skill_search": "Search skills",
@@ -586,7 +586,7 @@
   "com_notifications_action_app_publish_deploy_failed": "Approval for「{{target}}」passed, but it failed to start, so it is not live yet. Check the runtime logs, then publish it manually from the application detail page",
   "com_notifications_action_app_stopped_by_admin": "Your application「{{target}}」was taken offline by an administrator; its entry now shows an offline notice",
   "com_notifications_action_app_resumed_by_admin": "Your application「{{target}}」was brought back online by an administrator",
-  "com_notifications_action_app_publish_iteration_failed": "Approval for「{{target}}」passed, but the new version did not go live. The version already running is unaffected; fix the problem and run bisheng deploy again",
+  "com_notifications_action_app_publish_iteration_failed": "Approval for「{{target}}」passed, but the new version did not go live. The version already running is unaffected; fix the problem and run doberman_agent deploy again",
   "com_notifications_action_approval_instance_cancelled": "Your approval request for「{{target}}」has been cancelled",
   "com_notifications_action_menu_grant_revoked": "Your access to menu「{{target}}」has been revoked",
   "com_notifications_action_revoked_channel_admin": "You are no longer an administrator of channel「{{target}}」",
@@ -2457,7 +2457,7 @@
     "copy_failed": "Copy failed. Please try again.",
     "copy_key": "Copy API Key",
     "copy_send_all": "Copy all and send to your AI assistant",
-    "copy_send_all_body": "Save this key with the $t(bisheng) knowledge-search skill: in the skill directory run\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\nDo not put the key in shell profile or environment files.",
+    "copy_send_all_body": "Save this key with the $t(doberman_agent) knowledge-search skill: in the skill directory run\npython3 scripts/search.py --configure --base-url {{baseUrl}} --api-key {{key}}\nDo not put the key in shell profile or environment files.",
     "copy_send_all_done": "Copied — paste it to your AI assistant to finish setup",
     "delete": "Delete key",
     "delete_confirmation": "Your AI assistant will no longer reach platform knowledge. You can generate a new key at any time.",
@@ -2468,7 +2468,7 @@
     "expires_label": "Expires on",
     "get_key": "Generate my key",
     "guide_title": "Connect an AI assistant",
-    "install_prompt": "Install the $t(bisheng) knowledge-search skill.\nSkill download URL: {{skillPackUrl}}\nAPI Key page: {{tokenPageUrl}}",
+    "install_prompt": "Install the $t(doberman_agent) knowledge-search skill.\nSkill download URL: {{skillPackUrl}}\nAPI Key page: {{tokenPageUrl}}",
     "install_step": "Step 1: Copy the install instruction and send it to your AI assistant",
     "key_label": "API Key",
     "key_step": "Step 2: Generate a key and send it to your AI assistant",
@@ -2830,7 +2830,7 @@
     "tool_enabled_setting": "Enable tool",
     "availability_failed": "Could not save. Try again.",
     "web_search_setting": "Enable web search",
-    "eyebrow": "BISHENG · Enterprise capabilities",
+    "eyebrow": "doberman-agent · Enterprise capabilities",
     "title": "Tools & skills",
     "description": "Bring enterprise tools and expertise into your work. Capabilities follow your account permissions.",
     "all": "All",
@@ -2852,7 +2852,7 @@
     "try_action": "Try it",
     "try_title": "Run a query and inspect the result",
     "demo_explanation": "A real tool request using synthetic business data. Change the example ID to compare results.",
-    "live_explanation": "Query the actual time through a Bisheng built-in tool using your account.",
+    "live_explanation": "Query the actual time through a DobermanAgent built-in tool using your account.",
     "field_timezone": "Time zone",
     "field_order_id": "Order ID",
     "field_product_code": "Product code",
@@ -2867,7 +2867,7 @@
     "setup_title": "Managed by your organization",
     "setup_hint": "An administrator configures and authorizes this capability. It uses your enterprise sign-in.",
     "skill_prompt": "Run an example with this skill, show actual tool calls, and create a results report.",
-    "tool_prompt": "Call this Bisheng enterprise tool:",
+    "tool_prompt": "Call this DobermanAgent enterprise tool:",
     "prompt_title": "Continue in Work",
     "copy_prompt": "Copy prompt",
     "copied": "Copied",
@@ -2882,15 +2882,15 @@
     "scenario_inventory": "Inventory lookup"
   },
   "com_builtin_skills": {
-    "bisheng-docx": {
+    "doberman_agent-docx": {
       "name": "Word document creation",
       "description": "Create, read and edit Word documents (.docx), including reports, proposals, meeting minutes, notices, draft contracts and resumes. Organize content with headings, tables of contents, page numbers, tables and charts, and check the layout before delivery."
     },
-    "bisheng-pptx": {
+    "doberman_agent-pptx": {
       "name": "PowerPoint presentation creation",
       "description": "Create, read and edit PowerPoint presentations (.pptx) for company introductions, work reports, project proposals, product launches and training. Use provided .pptx or .potx templates and check slide layout before delivery."
     },
-    "bisheng-xlsx": {
+    "doberman_agent-xlsx": {
       "name": "Excel spreadsheet creation",
       "description": "Create and edit Excel workbooks (.xlsx), including data tables, summaries, budgets, financial models, quotations and registers. Read and clean .xlsx, .xls and .csv data, apply formulas and formatting, and recalculate and check the workbook before delivery."
     }

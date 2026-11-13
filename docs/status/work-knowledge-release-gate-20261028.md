@@ -16,7 +16,7 @@ worker/frontend 单独更新及现有版本重启继续保持指定范围。
 
 ## 验证
 
-- 基线：`feat/bisheng-work-120-main@5dfb2e7de875f0e1612438a5049a6f87da48ba9a`。
+- 基线：`feat/doberman-agent-work-120-main@5dfb2e7de875f0e1612438a5049a6f87da48ba9a`。
 - 提交前同步 `0856c3e875bcc2aa81f90cc03a9c88737a0fc32c`，保留同期 TXT
   预览测试和状态文档；本次部署逻辑及相关后端代码与组合回归时一致。
 - 原部署脚本运行同组命令边界测试：19 项失败、4 项通过。

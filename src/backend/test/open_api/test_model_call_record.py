@@ -21,12 +21,12 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.config.open_platform import OpenApiConf
-from bisheng.open_api.domain.models.model_call_record import ModelCallRecord
-from bisheng.open_api.domain.repositories.model_call_record_repository import ModelCallRecordRepository
-from bisheng.open_api.domain.services.model_call_record_writer import ModelCallRecordWriter
+from doberman_agent.core.config.open_platform import OpenApiConf
+from doberman_agent.open_api.domain.models.model_call_record import ModelCallRecord
+from doberman_agent.open_api.domain.repositories.model_call_record_repository import ModelCallRecordRepository
+from doberman_agent.open_api.domain.services.model_call_record_writer import ModelCallRecordWriter
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     install_catalog,
@@ -44,7 +44,7 @@ BODY = {"model": "gpt-4o", "messages": [{"role": "user", "content": "the quick b
 @pytest.fixture
 def records(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal()),
     )
     install_catalog(monkeypatch, [server_row(1, "azure-openai")], [model_row(10, 1, "gpt-4o")])
@@ -69,7 +69,7 @@ async def record_db(monkeypatch):
         finally:
             await session.close()
 
-    import bisheng.open_api.domain.repositories.model_call_record_repository as repository_module
+    import doberman_agent.open_api.domain.repositories.model_call_record_repository as repository_module
 
     monkeypatch.setattr(repository_module, "get_async_db_session", session_factory)
     yield session_factory
@@ -85,7 +85,7 @@ async def _post(payload: dict):
 async def test_a_successful_call_records_every_traceable_dimension(monkeypatch, records):
     install_fake_llm(
         monkeypatch,
-        FakeBishengLLM(
+        FakeDobermanAgentLLM(
             invoke_result=AIMessage(
                 content="hi",
                 usage_metadata={"input_tokens": 9, "output_tokens": 2, "total_tokens": 11},
@@ -108,7 +108,7 @@ async def test_a_successful_call_records_every_traceable_dimension(monkeypatch, 
 
 
 async def test_a_call_refused_at_model_resolution_still_gets_a_row(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
 
     await _post({**BODY, "model": "never-configured"})
 
@@ -121,10 +121,10 @@ async def test_a_call_refused_at_model_resolution_still_gets_a_row(monkeypatch, 
 
 
 async def test_a_call_refused_before_model_resolution_gets_no_usage_row(monkeypatch):
-    from bisheng.common.errcode.open_api import OpenApiScopeMissingError
+    from doberman_agent.common.errcode.open_api import OpenApiScopeMissingError
 
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(side_effect=OpenApiScopeMissingError(required="model:invoke")),
     )
     rows = capture_records(monkeypatch)
@@ -139,7 +139,7 @@ async def test_a_call_refused_before_model_resolution_gets_no_usage_row(monkeypa
 
 
 async def test_listing_models_is_not_a_model_call(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM())
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM())
     app = build_model_face_app()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -150,7 +150,7 @@ async def test_listing_models_is_not_a_model_call(monkeypatch, records):
 
 
 async def test_no_message_body_or_credential_plaintext_reaches_the_row(monkeypatch, records):
-    install_fake_llm(monkeypatch, FakeBishengLLM(invoke_result=AIMessage(content="secret answer")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(invoke_result=AIMessage(content="secret answer")))
 
     await _post(BODY)
 
@@ -176,7 +176,7 @@ async def test_rows_are_written_in_batches_and_flushed_on_stop(record_db):
 async def test_the_credential_mask_is_hydrated_per_batch_not_per_call(monkeypatch, record_db):
     from types import SimpleNamespace
 
-    import bisheng.open_api.domain.repositories.credential_repository as credential_module
+    import doberman_agent.open_api.domain.repositories.credential_repository as credential_module
 
     lookups: list = []
 
@@ -199,7 +199,7 @@ async def test_the_credential_mask_is_hydrated_per_batch_not_per_call(monkeypatc
 
 
 def test_a_full_queue_is_reported_rather_than_silently_dropped(monkeypatch):
-    import bisheng.open_api.domain.services.model_call_record_writer as writer_module
+    import doberman_agent.open_api.domain.services.model_call_record_writer as writer_module
 
     emitted: list = []
     monkeypatch.setattr(writer_module, "emit_metric", lambda domain, **fields: emitted.append((domain, fields)))
@@ -268,7 +268,7 @@ async def test_export_walks_every_page(record_db):
 
 
 def test_no_aggregation_or_quota_surface_exists():
-    from bisheng.open_api.api.endpoints.model_gateway import router
+    from doberman_agent.open_api.api.endpoints.model_gateway import router
 
     paths = {route.path for route in router.routes}
     assert paths == {"/model/v1/chat/completions", "/model/v1/models", "/model/v1/{rest:path}"}

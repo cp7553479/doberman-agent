@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.citation.domain.services import linsight_citation_scope as scope_mod
-from bisheng.citation.domain.services.linsight_citation_scope import (
+from doberman_agent.citation.domain.services import linsight_citation_scope as scope_mod
+from doberman_agent.citation.domain.services.linsight_citation_scope import (
     CITE_SEEN_TTL_SECONDS,
     LinsightCitationScope,
 )

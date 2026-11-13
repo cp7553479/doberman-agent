@@ -1,4 +1,4 @@
-"""F111: built-in PPT templates and the ``Deck`` builder of the ``bisheng-pptx`` skill.
+"""F111: built-in PPT templates and the ``Deck`` builder of the ``doberman-agent-pptx`` skill.
 
 Covers AC-01 (five templates, ≥12 editable layouts, the 13 common families),
 AC-05 (native, editable objects), AC-06 (no prototype pages in the delivered file)
@@ -16,9 +16,9 @@ from PIL import Image
 from pptx import Presentation
 from pptx.oxml.ns import qn
 
-from bisheng.linsight.domain.services.builtin_skill_seeder import BUILTIN_SKILLS_DIR
+from doberman_agent.linsight.domain.services.builtin_skill_seeder import BUILTIN_SKILLS_DIR
 
-SKILL_DIR = BUILTIN_SKILLS_DIR / "bisheng-pptx"
+SKILL_DIR = BUILTIN_SKILLS_DIR / "doberman-agent-pptx"
 SCRIPTS = SKILL_DIR / "scripts"
 TEMPLATES = SKILL_DIR / "templates"
 if str(SCRIPTS) not in sys.path:

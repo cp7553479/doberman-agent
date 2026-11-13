@@ -6,9 +6,9 @@ from uuid import uuid4
 
 import pytest
 
-from bisheng.dsh.domain.repositories.usage import UsageEvent
-from bisheng.dsh.infrastructure.quota_redis import QuotaRedis, QuotaRejected
-from bisheng.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
+from doberman_agent.dsh.domain.repositories.usage import UsageEvent
+from doberman_agent.dsh.infrastructure.quota_redis import QuotaRedis, QuotaRejected
+from doberman_agent.dsh.infrastructure.quota_topology import QuotaTopology, create_quota_redis
 
 
 def running(model=4, month="2026-09"):

@@ -3,8 +3,8 @@ import inspect
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 
 def _service() -> KnowledgeSpaceService:
@@ -25,7 +25,7 @@ async def test_batch_delete_normalization_removes_duplicates_and_covered_descend
     ]
 
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aget_file_by_ids",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aget_file_by_ids",
         new_callable=AsyncMock,
         return_value=rows,
     ):
@@ -54,12 +54,12 @@ async def test_clear_space_dispatches_after_delete_commit_before_index_recreate(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=space,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_delete_knowledge",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_delete_knowledge",
             new_callable=AsyncMock,
             side_effect=lambda **kwargs: events.append("delete_commit"),
         ),
@@ -69,16 +69,16 @@ async def test_clear_space_dispatches_after_delete_commit_before_index_recreate(
             new=fake_to_thread,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "KnowledgeService.delete_knowledge_file_in_vector",
             side_effect=lambda *args: events.append("vector_delete"),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService.delete_knowledge_file_in_minio",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService.delete_knowledge_file_in_minio",
             side_effect=lambda *args: events.append("minio_delete"),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeService._init_knowledge_indices_sync",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeService._init_knowledge_indices_sync",
             side_effect=lambda *args: events.append("index_recreate"),
         ),
     ):
@@ -120,12 +120,12 @@ async def test_delete_file_dispatches_only_after_hard_delete_commit():
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=SimpleNamespace(id=1),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "KnowledgeDao.async_update_knowledge_update_time_by_id",
             new_callable=AsyncMock,
         ),

@@ -9,9 +9,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.messages import AIMessageChunk
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
+from doberman_agent.workstation.domain.services import chat_service
 
 AUTO_REPLY = "当前对话内容违反相关规范，请修改后重新输入"  # noqa: RUF001 - Match the localized policy reply.
 HIT = SensitiveWordCheckResult(
@@ -76,9 +76,9 @@ def stream_env(monkeypatch: pytest.MonkeyPatch):
         AsyncMock(return_value=(ws_config, conversation, message, _LLM(), model_info, False)),
     )
     monkeypatch.setattr(chat_service, "_resolve_user_kb_selection", AsyncMock(return_value=[]))
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
     monkeypatch.setattr(
-        "bisheng.citation.domain.services.daily_citation_scope.load_handle_table", AsyncMock(return_value=({}, None))
+        "doberman_agent.citation.domain.services.daily_citation_scope.load_handle_table", AsyncMock(return_value=({}, None))
     )
     monkeypatch.setattr(chat_service, "gen_title", AsyncMock(return_value=None))
     monkeypatch.setattr(chat_service, "_prepare_tools", AsyncMock(return_value=([], [])))
@@ -148,7 +148,7 @@ def _answer_rows(inserted: list):
 
 def _install_scanner(monkeypatch, scanner_cls):
     monkeypatch.setattr(
-        "bisheng.sensitive_word.domain.services.stream_scanner.StreamContentSafetyScanner",
+        "doberman_agent.sensitive_word.domain.services.stream_scanner.StreamContentSafetyScanner",
         scanner_cls,
     )
 

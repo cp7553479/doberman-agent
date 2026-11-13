@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.app_publish import AppNotOwnedBySubjectError
-from bisheng.common.errcode.permission import PermissionDeniedError
+from doberman_agent.common.errcode.app_publish import AppNotOwnedBySubjectError
+from doberman_agent.common.errcode.permission import PermissionDeniedError
 
 
 @pytest.mark.parametrize("kind", ["natural_person", "service_account"])
 async def test_granted_non_owner_can_select_private_materials(monkeypatch, kind):
     """AC-27、AC-35: edit applies to the actual person/SA, never substituted owner."""
-    from bisheng.app_runtime.domain.services import app_authorization_service, runtime_profile_service
+    from doberman_agent.app_runtime.domain.services import app_authorization_service, runtime_profile_service
 
     app = SimpleNamespace(id="app", tenant_id=3, owner_user_id=81)
     row = SimpleNamespace(kind="offline", state="verified", visibility="private", tenant_id=3, app_id="app")

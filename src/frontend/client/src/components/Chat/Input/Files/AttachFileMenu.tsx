@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import * as Ariakit from '@ariakit/react';
 import React, { useRef, useState, useMemo } from 'react';
 import { FileSearch, ImageUpIcon, TerminalSquareIcon } from 'lucide-react';

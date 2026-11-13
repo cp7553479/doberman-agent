@@ -1,12 +1,12 @@
 {
-  "name": "bisheng",
+  "name": "doberman-agent-platform",
   "version": "3.0.0",
   "private": true,
   "dependencies": {
     "@hello-pangea/dnd": "catalog:",
-    "@bisheng/ui": "workspace:*",
-    "@bisheng/diagram-runtime": "workspace:*",
-    "@bisheng/file-viewers": "workspace:*",
+    "@doberman-agent/ui": "workspace:*",
+    "@doberman-agent/diagram-runtime": "workspace:*",
+    "@doberman-agent/file-viewers": "workspace:*",
     "@headlessui/react": "^2.0.4",
     "@radix-ui/react-accordion": "catalog:",
     "@radix-ui/react-alert-dialog": "catalog:",
@@ -32,7 +32,7 @@
     "ansi-to-html": "^0.7.2",
     "axios": "catalog:",
     "base64-js": "^1.5.1",
-    "bisheng-icons": "catalog:",
+    "@doberman-agent/icons": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "cmdk": "^0.2.1",
@@ -74,11 +74,11 @@
     "xlsx": "catalog:",
     "xlsx-populate": "^1.21.0",
     "zustand": "^4.5.2",
-    "@bisheng/chat": "workspace:*",
-    "@bisheng/api-client": "workspace:*"
+    "@doberman-agent/chat": "workspace:*",
+    "@doberman-agent/api-client": "workspace:*"
   },
   "scripts": {
-    "gen:locales": "pnpm --filter @bisheng/locales build",
+    "gen:locales": "pnpm --filter @doberman-agent/locales build",
     "predev:docker": "pnpm gen:locales",
     "prestart": "pnpm gen:locales",
     "prebuild": "pnpm gen:locales",

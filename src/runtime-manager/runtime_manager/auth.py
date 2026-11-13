@@ -1,7 +1,7 @@
 """HMAC-SHA256 request authentication for every runtime-manager RPC.
 
 Signing string is byte-for-byte the one the platform already uses for the F014
-Gateway trust boundary (``bisheng/sso_sync/domain/services/hmac_auth.py``)::
+Gateway trust boundary (``doberman-agent/sso_sync/domain/services/hmac_auth.py``)::
 
     METHOD + "\\n" + PATH + "\\n" + raw_body
 

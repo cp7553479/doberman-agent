@@ -6,7 +6,7 @@ Please report security vulnerabilities to us privately, and **not** through publ
 GitHub issues, discussions or pull requests.
 
 Use GitHub's private reporting:
-[**Report a vulnerability**](https://github.com/dataelement/bisheng/security/advisories/new)
+[**Report a vulnerability**](https://github.com/cp7553479/doberman-agent/security/advisories/new)
 
 This opens a draft advisory visible only to you and the maintainers. We can discuss
 the details, share a patch, and publish the advisory together once a fix is out.

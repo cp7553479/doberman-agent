@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Pagination, Button, SearchInput, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Pagination, Button, SearchInput, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 import { useNavigate,useParams,useSearchParams } from "react-router-dom";
 
 import {
@@ -19,7 +19,7 @@ export { StatusIndicator } from "./KnowledgeFileStatus";
 import { FileIcon } from "@/components/bs-icons/file";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 
 
 import { downloadFile,truncateString } from "@/util/utils";
@@ -529,7 +529,7 @@ export default function Files({ onPreview, canEditKb = false, canDeleteKb = fals
                     </TableBody>
                 </Table>
             </div>
-            <div className="bisheng-table-footer px-6">
+            <div className="doberman_agent-table-footer px-6">
                 <p></p>
                 <div>
                     <Pagination locale={paginationLocale}

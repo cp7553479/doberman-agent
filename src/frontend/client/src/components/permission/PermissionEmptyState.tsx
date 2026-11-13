@@ -1,4 +1,4 @@
-import { StateView } from "@bisheng/ui";
+import { StateView } from "@doberman-agent/ui";
 import { EmptyStateIllustration } from "~/components/illustrations";
 
 interface PermissionEmptyStateProps {

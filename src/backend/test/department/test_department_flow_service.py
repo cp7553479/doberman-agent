@@ -14,7 +14,7 @@ def _dept(dept_id, parent_id=None, limit=0):
 
 @pytest.mark.asyncio
 async def test_resolve_limit_uses_nearest_limited_department():
-    from bisheng.department.domain.services.department_flow_service import (
+    from doberman_agent.department.domain.services.department_flow_service import (
         DepartmentFlowService,
     )
 
@@ -27,11 +27,11 @@ async def test_resolve_limit_uses_nearest_limited_department():
     }
 
     with patch(
-        'bisheng.department.domain.services.department_flow_service.'
+        'doberman_agent.department.domain.services.department_flow_service.'
         'UserDepartmentDao.aget_user_primary_department',
         AsyncMock(return_value=primary),
     ), patch(
-        'bisheng.department.domain.services.department_flow_service.'
+        'doberman_agent.department.domain.services.department_flow_service.'
         'DepartmentDao.aget_by_id',
         AsyncMock(side_effect=lambda dept_id: depts.get(dept_id)),
     ):
@@ -40,13 +40,13 @@ async def test_resolve_limit_uses_nearest_limited_department():
 
 @pytest.mark.asyncio
 async def test_resolve_limit_without_primary_department_is_unlimited():
-    from bisheng.department.domain.services.department_flow_service import (
+    from doberman_agent.department.domain.services.department_flow_service import (
         DepartmentFlowService,
     )
 
     login_user = SimpleNamespace(user_id=10)
     with patch(
-        'bisheng.department.domain.services.department_flow_service.'
+        'doberman_agent.department.domain.services.department_flow_service.'
         'UserDepartmentDao.aget_user_primary_department',
         AsyncMock(return_value=None),
     ):
@@ -55,12 +55,12 @@ async def test_resolve_limit_without_primary_department_is_unlimited():
 
 @pytest.mark.asyncio
 async def test_slot_acquire_fails_open_when_redis_is_unavailable():
-    from bisheng.department.domain.services.department_flow_service import (
+    from doberman_agent.department.domain.services.department_flow_service import (
         DepartmentFlowService,
     )
 
     with patch(
-        'bisheng.department.domain.services.department_flow_service.get_redis_client',
+        'doberman_agent.department.domain.services.department_flow_service.get_redis_client',
         AsyncMock(side_effect=RuntimeError('redis down')),
     ):
         assert await DepartmentFlowService.try_acquire_daily_chat_slot(2, 10, 1) is True

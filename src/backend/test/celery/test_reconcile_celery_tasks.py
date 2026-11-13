@@ -1,6 +1,6 @@
 """Regression coverage for retired organization-reconcile Celery tasks."""
 
-from bisheng.core.config.settings import CeleryConf
+from doberman_agent.core.config.settings import CeleryConf
 
 
 def test_obsolete_organization_tasks_are_not_scheduled():
@@ -19,7 +19,7 @@ def test_user_tenant_reconcile_uses_default_queue():
 
     schedule = conf.beat_schedule["reconcile_user_tenant_assignments"]
     assert "options" not in schedule
-    assert "bisheng.worker.tenant_reconcile.*" not in conf.task_routers
+    assert "doberman_agent.worker.tenant_reconcile.*" not in conf.task_routers
 
 
 def test_admin_scope_cleanup_uses_default_queue():
@@ -27,4 +27,4 @@ def test_admin_scope_cleanup_uses_default_queue():
 
     schedule = conf.beat_schedule["admin_scope_cleanup"]
     assert "options" not in schedule
-    assert "bisheng.worker.admin_scope.*" not in conf.task_routers
+    assert "doberman_agent.worker.admin_scope.*" not in conf.task_routers

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
 
 SKIP_MD = "只选了 html 时跳过，不写 md"
 

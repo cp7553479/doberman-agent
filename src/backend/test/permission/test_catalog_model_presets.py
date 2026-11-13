@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.permission.application.catalog_api import F048CatalogApi
-from bisheng.permission.migration.f048_model_mapper import INITIAL_ACTION_LEVELS
+from doberman_agent.permission.application.catalog_api import F048CatalogApi
+from doberman_agent.permission.migration.f048_model_mapper import INITIAL_ACTION_LEVELS
 
 _PRESETS = {preset["key"]: tuple(preset["action_codes"]) for preset in F048CatalogApi.PRESETS}
 

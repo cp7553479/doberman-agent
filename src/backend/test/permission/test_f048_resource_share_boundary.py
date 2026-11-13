@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionFGAUnavailableError,
     PermissionInvalidResourceError,
 )
-from bisheng.core.context.tenant import is_tenant_filter_bypassed
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.core.context.tenant import is_tenant_filter_bypassed
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
-from bisheng.tenant.domain.repositories.resource_share_repository import (
+from doberman_agent.tenant.domain.repositories.resource_share_repository import (
     SharedResourceRecord,
     SharedResourceRepository,
 )
-from bisheng.tenant.domain.services.resource_share_service import (
+from doberman_agent.tenant.domain.services.resource_share_service import (
     ResourceShareService,
 )
 

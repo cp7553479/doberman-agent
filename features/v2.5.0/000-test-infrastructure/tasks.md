@@ -87,12 +87,12 @@ T009 (前端 Vitest) ── 独立，可与后端并行
   **逻辑**:
   - 从 F001 的 `test_tenant_filter.py` 和 `test_tenant_auth.py` 顶部提取 `sys.modules` 预 mock 列表，合并去重
   - 定义 `PREMOCK_MODULES` 常量列表（包含已知会引发循环依赖的模块路径）：
-    - `bisheng.common.services` 及子模块（config_service, telemetry）
-    - `bisheng.database.models.*`（user_group, role_access, group, role 等）
-    - `bisheng.database.constants`
-    - `bisheng.user.domain.models.*`（user_role, user）
-    - `bisheng.common.errcode.http_error`
-    - `bisheng.common.exceptions.auth`
+    - `doberman_agent.common.services` 及子模块（config_service, telemetry）
+    - `doberman_agent.database.models.*`（user_group, role_access, group, role 等）
+    - `doberman_agent.database.constants`
+    - `doberman_agent.user.domain.models.*`（user_role, user）
+    - `doberman_agent.common.errcode.http_error`
+    - `doberman_agent.common.exceptions.auth`
   - 提供 `premock_import_chain()` 函数：遍历列表，对未在 `sys.modules` 中的模块注入 MagicMock
   - 提供 `create_mock_settings(multi_tenant_enabled=False, ...)` 工厂函数：返回配置好的 MagicMock
   - **关键约束**: 不使用 autouse fixture 调用 premock（会干扰 F001 已有的自包含 pre-mock），而是在 conftest.py 顶部以模块级代码调用
@@ -172,7 +172,7 @@ T009 (前端 Vitest) ── 独立，可与后端并行
   - `src/backend/test/conftest.py` — 新增 `test_client` fixture
   **逻辑**:
   - `test_client`（scope=function）：
-    1. 导入 `bisheng.main:create_app` 创建 FastAPI app（或直接导入 `app`）
+    1. 导入 `doberman_agent.main:create_app` 创建 FastAPI app（或直接导入 `app`）
     2. 通过 `app.dependency_overrides` 覆盖关键依赖：
        - `UserPayload.get_login_user` → 返回固定的 mock UserPayload（user_id=1, tenant_id=1）
        - 数据库 session → 使用 `db_session` fixture 的 session

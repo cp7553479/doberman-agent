@@ -36,7 +36,7 @@ pytestmark = pytest.mark.asyncio
 
 @pytest.fixture(autouse=True)
 def _runtime_layer_on(app_runtime_settings):
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     set_current_tenant_id(ROOT_TENANT_ID)
     app_runtime_settings(enabled=True)
@@ -44,7 +44,7 @@ def _runtime_layer_on(app_runtime_settings):
 
 @pytest.fixture(autouse=True)
 def _no_celery(monkeypatch):
-    from bisheng.app_publish.domain.services import publish_pipeline_service
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service
 
     async def _capture(deployment_id: str) -> None:
         return None
@@ -64,7 +64,7 @@ async def accepted(
     fake_publish_approval,
 ):
     """``accept()`` already ran; return a factory so a test can vary the package."""
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     app_row, _ = await app_factory(with_version=False)
 
@@ -80,13 +80,13 @@ async def accepted(
 
 
 async def _run(deployment_id: str) -> None:
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     await PublishPipelineService.run_pipeline(deployment_id)
 
 
 async def _deployment(publish_db, deployment_id: str):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     async with publish_db() as session:
         return await AppDeploymentDao.aget(session, deployment_id)
@@ -102,7 +102,7 @@ def _actions(audit_sink) -> list[str]:
 
 
 async def test_stage_advances_one_row_update_per_stage(publish_db, accepted, fake_orchestrator, audit_sink):
-    from bisheng.app_publish.domain.models.app_deployment import (
+    from doberman_agent.app_publish.domain.models.app_deployment import (
         STAGE_APPROVAL_CREATED,
         STATUS_WAITING_APPROVAL,
     )
@@ -123,7 +123,7 @@ async def test_stage_advances_one_row_update_per_stage(publish_db, accepted, fak
     # prevents one from ever being written.
     import inspect
 
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     for name in ("aadvance_stage", "aset_failed"):
         params = inspect.signature(getattr(AppDeploymentDao, name)).parameters
@@ -132,7 +132,7 @@ async def test_stage_advances_one_row_update_per_stage(publish_db, accepted, fak
 
 async def test_pipeline_stage_order_is_build_probe_scan(publish_db, accepted, fake_orchestrator, audit_sink):
     """spec AC-01 / F053 AC-31a spell this order out verbatim (design D5's open question)."""
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PIPELINE_STAGES
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PIPELINE_STAGES
 
     assert [stage for stage, _ in PIPELINE_STAGES] == [
         "secret_scan",
@@ -170,7 +170,7 @@ async def test_status_becomes_waiting_approval_after_approval_created(
     publish_db, accepted, fake_orchestrator, audit_sink, fake_publish_approval
 ):
     """The CLI stops here by default (F053 AC-31b); ``--wait`` keeps polling."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_WAITING_APPROVAL
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_WAITING_APPROVAL
 
     _, result = await accepted()
     await _run(result.deployment_id)
@@ -189,8 +189,8 @@ async def test_status_becomes_waiting_approval_after_approval_created(
 async def test_scan_hit_terminates_pipeline_16241_no_version_no_approval(
     publish_db, accepted, fake_orchestrator, audit_sink, fake_publish_approval
 ):
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, result = await accepted(extra_files={"settings.py": 'AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"\n'})
     await _run(result.deployment_id)
@@ -209,8 +209,8 @@ async def test_scan_hit_terminates_pipeline_16241_no_version_no_approval(
 async def test_precheck_failure_terminates_and_persists_failure_tuple(
     publish_db, accepted, fake_orchestrator, audit_sink, fake_publish_approval
 ):
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_FAILED
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_FAILED
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, result = await accepted()
     fake_orchestrator.responses["probe"] = {"ready": False, "reason": "connection refused"}
@@ -220,7 +220,7 @@ async def test_precheck_failure_terminates_and_persists_failure_tuple(
     assert (row.status, row.stage) == (STATUS_FAILED, "precheck_probe")
     assert set(row.failure) == {"stage", "code", "message", "details", "hints"}
     assert row.failure["code"] == 16228
-    assert any("BISHENG_APP_DB_URL" in hint for hint in row.failure["hints"])
+    assert any("DOBERMAN_AGENT_APP_DB_URL" in hint for hint in row.failure["hints"])
     async with publish_db() as session:
         assert await AppVersionDao.alist_by_app(session, app_row.id) == []
     assert "app.release.precheck_failed" in _actions(audit_sink)
@@ -283,7 +283,7 @@ async def test_bad_icon_is_skipped_not_fatal(
     publish_db, accepted, fake_orchestrator, audit_sink, fake_f054_services, icon, extra
 ):
     """An icon is metadata; refusing the publish over it would be out of proportion (design D12)."""
-    from bisheng.app_publish.domain.models.app_deployment import STATUS_WAITING_APPROVAL
+    from doberman_agent.app_publish.domain.models.app_deployment import STATUS_WAITING_APPROVAL
 
     _, result = await accepted(
         manifest=f"name: minimal-app\nruntime: python3.11\nport: 8080\nicon: {icon}\n", extra_files=extra
@@ -298,7 +298,7 @@ async def test_bad_icon_is_skipped_not_fatal(
 
 async def test_tier_and_capabilities_enter_snapshot(publish_db, accepted, fake_orchestrator, audit_sink):
     """AC-48 / F054 AC-02 — code, capabilities, injections and tier are one frozen snapshot."""
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     app_row, result = await accepted()
     await _run(result.deployment_id)
@@ -340,8 +340,8 @@ async def test_worker_tenant_context_restored_from_celery_header(
     audit_sink,
 ):
     """A child tenant's publish must not be able to land in Root because a header went missing."""
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
-    from bisheng.core.context.tenant import get_current_tenant_id, set_current_tenant_id
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.core.context.tenant import get_current_tenant_id, set_current_tenant_id
 
     set_current_tenant_id(SUB_TENANT_ID)
     app_row, _ = await app_factory(tenant_id=SUB_TENANT_ID, with_version=False)

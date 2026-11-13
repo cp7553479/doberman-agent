@@ -4,8 +4,8 @@ from datetime import UTC, datetime, timedelta
 
 from sqlmodel import Session
 
-from bisheng.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
-from bisheng.dsh.domain.services.profile import profile_scope
+from doberman_agent.dsh.domain.repositories.admin_queries import DshAdminQueryRepository
+from doberman_agent.dsh.domain.services.profile import profile_scope
 from test.dsh.test_usage_time_summary import overview_db  # noqa: F401
 
 

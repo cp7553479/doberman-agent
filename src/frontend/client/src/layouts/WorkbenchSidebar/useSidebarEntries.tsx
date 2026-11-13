@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import type { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLocalize } from '~/hooks';

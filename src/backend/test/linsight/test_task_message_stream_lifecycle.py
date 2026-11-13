@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock
 import pytest
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from bisheng.linsight.domain.services import message_stream_handle as stream
+from doberman_agent.linsight.domain.services import message_stream_handle as stream
 
 
 @pytest.fixture

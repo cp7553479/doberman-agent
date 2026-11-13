@@ -12,9 +12,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.llm.domain.const import LLMModelType
-from bisheng.llm.domain.models.llm_server import LLMModel
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.llm.domain.const import LLMModelType
+from doberman_agent.llm.domain.models.llm_server import LLMModel
+from doberman_agent.llm.domain.services.llm import LLMService
 
 STATUS_NORMAL = 0
 STATUS_ABNORMAL = 1
@@ -33,7 +33,7 @@ def _login_user():
 @pytest.fixture
 def status_writes():
     """Capture (model_id, status, remark) instead of touching a DB."""
-    with patch("bisheng.llm.domain.services.llm.LLMDao.update_model_status") as write:
+    with patch("doberman_agent.llm.domain.services.llm.LLMDao.update_model_status") as write:
         yield write
 
 
@@ -41,7 +41,7 @@ class TestProbeWritesStatus:
     async def test_success_marks_model_normal(self, status_writes):
         # AC-03 — the whole point: a recovered model must be able to go green.
         llm = AsyncMock()
-        with patch.object(LLMService, "get_bisheng_llm", AsyncMock(return_value=llm)):
+        with patch.object(LLMService, "get_doberman_agent_llm", AsyncMock(return_value=llm)):
             await LLMService.test_model_status(_model(), _login_user())
 
         status_writes.assert_called_once()
@@ -51,7 +51,7 @@ class TestProbeWritesStatus:
 
     async def test_failure_marks_model_abnormal_with_reason(self, status_writes):
         # AC-04 — the reason is what the list tooltip shows.
-        with patch.object(LLMService, "get_bisheng_llm", AsyncMock(side_effect=RuntimeError("bad api key"))):
+        with patch.object(LLMService, "get_doberman_agent_llm", AsyncMock(side_effect=RuntimeError("bad api key"))):
             await LLMService.test_model_status(_model(), _login_user())
 
         model_id, status, remark = status_writes.call_args[0]
@@ -68,8 +68,8 @@ class TestProbeWritesStatus:
         llm = AsyncMock()
         llm.ainvoke = never_answers
         with (
-            patch("bisheng.llm.domain.services.llm.MODEL_TEST_TIMEOUT", 0.05),
-            patch.object(LLMService, "get_bisheng_llm", AsyncMock(return_value=llm)),
+            patch("doberman_agent.llm.domain.services.llm.MODEL_TEST_TIMEOUT", 0.05),
+            patch.object(LLMService, "get_doberman_agent_llm", AsyncMock(return_value=llm)),
         ):
             await LLMService.test_model_status(_model(), _login_user())
 
@@ -80,7 +80,7 @@ class TestProbeWritesStatus:
     async def test_embedding_success_also_writes_normal(self, status_writes):
         # Every model type shares the write-back, not just chat models.
         embed = AsyncMock()
-        with patch.object(LLMService, "get_bisheng_embedding", AsyncMock(return_value=embed)):
+        with patch.object(LLMService, "get_doberman_agent_embedding", AsyncMock(return_value=embed)):
             await LLMService.test_model_status(_model(LLMModelType.EMBEDDING.value), _login_user())
 
         _, status, _ = status_writes.call_args[0]
@@ -98,8 +98,8 @@ class TestVerifyDefeatsTheInfoCache:
     """
 
     async def test_verify_evicts_the_cached_model_and_server(self):
-        from bisheng.llm.domain.const import LLM_CACHE
-        from bisheng.llm.domain.utils import _scoped_cache_key
+        from doberman_agent.llm.domain.const import LLM_CACHE
+        from doberman_agent.llm.domain.utils import _scoped_cache_key
 
         model = _model()
         model_key = _scoped_cache_key("llm:model:", model.id)
@@ -109,7 +109,7 @@ class TestVerifyDefeatsTheInfoCache:
 
         with (
             patch(
-                "bisheng.llm.domain.services.llm.LLMDao.aget_model_by_id",
+                "doberman_agent.llm.domain.services.llm.LLMDao.aget_model_by_id",
                 AsyncMock(return_value=model),
             ),
             patch.object(LLMService, "test_model_status", AsyncMock()),
@@ -122,8 +122,8 @@ class TestVerifyDefeatsTheInfoCache:
     async def test_eviction_happens_before_the_probe_runs(self):
         # Ordering is the whole fix: evicting after the probe would still have
         # let the probe build its client from the stale row.
-        from bisheng.llm.domain.const import LLM_CACHE
-        from bisheng.llm.domain.utils import _scoped_cache_key
+        from doberman_agent.llm.domain.const import LLM_CACHE
+        from doberman_agent.llm.domain.utils import _scoped_cache_key
 
         model = _model()
         model_key = _scoped_cache_key("llm:model:", model.id)
@@ -135,7 +135,7 @@ class TestVerifyDefeatsTheInfoCache:
 
         with (
             patch(
-                "bisheng.llm.domain.services.llm.LLMDao.aget_model_by_id",
+                "doberman_agent.llm.domain.services.llm.LLMDao.aget_model_by_id",
                 AsyncMock(return_value=model),
             ),
             patch.object(LLMService, "test_model_status", record_cache_state),
@@ -156,7 +156,7 @@ class TestSaveDefeatsTheInfoCache:
     """
 
     def _server_req(self):
-        from bisheng.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
+        from doberman_agent.llm.domain.schemas import LLMModelCreateReq, LLMServerCreateReq
 
         return LLMServerCreateReq(
             id=1,
@@ -177,26 +177,26 @@ class TestSaveDefeatsTheInfoCache:
         """Stub out everything between the request and the probe loop."""
         return (
             patch(
-                "bisheng.llm.domain.services.llm.LLMDao.aget_server_by_id",
+                "doberman_agent.llm.domain.services.llm.LLMDao.aget_server_by_id",
                 AsyncMock(return_value=db_server),
             ),
             patch(
-                "bisheng.llm.domain.services.llm.LLMDao.aget_model_by_server_ids",
+                "doberman_agent.llm.domain.services.llm.LLMDao.aget_model_by_server_ids",
                 AsyncMock(return_value=old_models),
             ),
             patch(
-                "bisheng.llm.domain.services.llm.LLMDao.update_server_with_models",
+                "doberman_agent.llm.domain.services.llm.LLMDao.update_server_with_models",
                 AsyncMock(return_value=db_server),
             ),
             patch.object(LLMService, "get_one_llm", AsyncMock(return_value=new_server_info)),
-            patch("bisheng.llm.domain.services.llm._write_llm_audit", AsyncMock()),
+            patch("doberman_agent.llm.domain.services.llm._write_llm_audit", AsyncMock()),
         )
 
     async def test_save_evicts_before_reprobing_the_renamed_model(self):
-        from bisheng.llm.domain.const import LLM_CACHE
-        from bisheng.llm.domain.models.llm_server import LLMServer
-        from bisheng.llm.domain.schemas import LLMModelInfo, LLMServerInfo
-        from bisheng.llm.domain.utils import _scoped_cache_key
+        from doberman_agent.llm.domain.const import LLM_CACHE
+        from doberman_agent.llm.domain.models.llm_server import LLMServer
+        from doberman_agent.llm.domain.schemas import LLMModelInfo, LLMServerInfo
+        from doberman_agent.llm.domain.utils import _scoped_cache_key
 
         # A child-owned server keeps the Root share_to_children branch out of it.
         db_server = LLMServer(id=1, name="provider", type="openai", config={}, tenant_id=2)
@@ -221,7 +221,7 @@ class TestSaveDefeatsTheInfoCache:
             p3,
             p4,
             p5,
-            patch("bisheng.llm.domain.services.llm.LLMDao.aupdate_model_status", AsyncMock()),
+            patch("doberman_agent.llm.domain.services.llm.LLMDao.aupdate_model_status", AsyncMock()),
             patch.object(LLMService, "test_model_status", record_cache_state),
         ):
             await LLMService.update_llm_server(MagicMock(), _login_user(), self._server_req())
@@ -233,7 +233,7 @@ class TestSaveDefeatsTheInfoCache:
 
 
 async def _drain_background_probes():
-    from bisheng.llm.domain.services import llm as llm_service_module
+    from doberman_agent.llm.domain.services import llm as llm_service_module
 
     pending = list(llm_service_module._background_probes)
     if pending:
@@ -246,9 +246,9 @@ class TestSaveDoesNotWaitForTheProbe:
     finishes in the background."""
 
     async def test_save_returns_while_the_probe_is_still_running(self):
-        from bisheng.llm.domain.const import LLMModelStatus
-        from bisheng.llm.domain.models.llm_server import LLMServer
-        from bisheng.llm.domain.schemas import LLMModelInfo, LLMServerInfo
+        from doberman_agent.llm.domain.const import LLMModelStatus
+        from doberman_agent.llm.domain.models.llm_server import LLMServer
+        from doberman_agent.llm.domain.schemas import LLMModelInfo, LLMServerInfo
 
         db_server = LLMServer(id=1, name="provider", type="openai", config={}, tenant_id=2)
         renamed = LLMModelInfo(
@@ -270,7 +270,7 @@ class TestSaveDoesNotWaitForTheProbe:
             p3,
             p4,
             p5,
-            patch("bisheng.llm.domain.services.llm.LLMDao.aupdate_model_status", status_writes),
+            patch("doberman_agent.llm.domain.services.llm.LLMDao.aupdate_model_status", status_writes),
             patch.object(LLMService, "test_model_status", slow_probe),
         ):
             ret = await asyncio.wait_for(
@@ -287,8 +287,8 @@ class TestSaveDoesNotWaitForTheProbe:
         assert probed == [7]
 
     async def test_unchanged_models_are_not_probed(self):
-        from bisheng.llm.domain.models.llm_server import LLMServer
-        from bisheng.llm.domain.schemas import LLMModelInfo, LLMServerInfo
+        from doberman_agent.llm.domain.models.llm_server import LLMServer
+        from doberman_agent.llm.domain.schemas import LLMModelInfo, LLMServerInfo
 
         db_server = LLMServer(id=1, name="provider", type="openai", config={}, tenant_id=2)
         same = LLMModelInfo(id=7, server_id=1, name="model 1", model_name="gpt-x", model_type="llm", status=0)
@@ -304,7 +304,7 @@ class TestSaveDoesNotWaitForTheProbe:
             p3,
             p4,
             p5,
-            patch("bisheng.llm.domain.services.llm.LLMDao.aupdate_model_status", status_writes),
+            patch("doberman_agent.llm.domain.services.llm.LLMDao.aupdate_model_status", status_writes),
             patch.object(LLMService, "test_model_status", probe),
         ):
             await LLMService.update_llm_server(MagicMock(), _login_user(), req)

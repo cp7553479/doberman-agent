@@ -27,10 +27,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-import bisheng.api.services.workflow as wf_mod
-from bisheng.api.services.workflow import WorkFlowService, _APP_VISIBLE_MAX_RESULTS
-from bisheng.database.models.flow import FlowType
-from bisheng.permission.domain.schemas import (
+import doberman_agent.api.services.workflow as wf_mod
+from doberman_agent.api.services.workflow import WorkFlowService, _APP_VISIBLE_MAX_RESULTS
+from doberman_agent.database.models.flow import FlowType
+from doberman_agent.permission.domain.schemas import (
     VisibilityEnumerationStatus,
     VisibleObjectEnumerationResult,
 )

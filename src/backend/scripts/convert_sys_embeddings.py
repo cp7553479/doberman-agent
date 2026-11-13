@@ -1,7 +1,7 @@
-from bisheng.common.services.config_service import settings
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
-from bisheng.llm.domain.const import LLMServerType, LLMModelType
-from bisheng.llm.domain.models import LLMServer, LLMDao, LLMModel
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao
+from doberman_agent.llm.domain.const import LLMServerType, LLMModelType
+from doberman_agent.llm.domain.models import LLMServer, LLMDao, LLMModel
 
 
 def parse_openai_embedding_conf(name, model_name, embedding_conf):
@@ -51,7 +51,7 @@ def parse_rt_embedding_conf(name, model_name, embedding_conf):
     server = LLMServer(
         name=f"RT",
         description='System upgrade automatically added',
-        type=LLMServerType.BISHENG_RT.value,
+        type=LLMServerType.DOBERMAN_AGENT_RT.value,
         config={
             "host_base_url": embedding_conf.get("host_base_url", ''),
         },
@@ -118,12 +118,12 @@ def convert_sys_embeddings_to_mysql():
     if update_knowledge:
         KnowledgeDao.update_knowledge_list(update_knowledge)
 
-    if not need_add_server_index.get(LLMServerType.BISHENG_RT.value):
+    if not need_add_server_index.get(LLMServerType.DOBERMAN_AGENT_RT.value):
         # Add a defaultRTservice provider
         server = LLMServer(
             name=f"RT_OLD",
             description='The system upgrade is automatically added, and it is not recommended to use it in the future',
-            type=LLMServerType.BISHENG_RT.value,
+            type=LLMServerType.DOBERMAN_AGENT_RT.value,
             config={
                 "host_base_url": 'http://xxxx:8000',
             },

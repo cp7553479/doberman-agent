@@ -46,19 +46,19 @@ jobs:
         run: pnpm test:config && pnpm typecheck:config
 
       - name: Shared locale artifacts in sync (packages/locales)
-        run: pnpm --filter @bisheng/locales check
+        run: pnpm --filter @doberman-agent/locales check
 
       - name: i18n consistency (key parity + backend error-code coverage)
         run: pnpm check-i18n
 
       - name: Lint platform
-        run: pnpm --filter bisheng lint
+        run: pnpm --filter doberman-agent-platform lint
 
       - name: Lint client
-        run: pnpm --filter bishengchat lint
+        run: pnpm --filter doberman-agent-client lint
 
       - name: Typecheck platform (strict, non-exempted files)
-        run: pnpm --filter bisheng typecheck
+        run: pnpm --filter doberman-agent-platform typecheck
 
       - name: Typecheck client (strict, non-exempted files)
-        run: pnpm --filter bishengchat typecheck
+        run: pnpm --filter doberman-agent-client typecheck

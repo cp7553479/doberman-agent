@@ -8,17 +8,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_service import (
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_service import (
     GrantMutationContext,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
 

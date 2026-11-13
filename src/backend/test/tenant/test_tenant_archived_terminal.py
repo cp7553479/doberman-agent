@@ -18,7 +18,7 @@ import pytest
 # Mirror the stub trick from test_tenant_disable_jwt_revoke.py so the lazy
 # import of ``UserService`` inside ``_revoke_active_jwts_for_tenant`` does
 # not pull ``minio`` into the test venv.
-_USER_SERVICE_MODULE = 'bisheng.user.domain.services.user'
+_USER_SERVICE_MODULE = 'doberman_agent.user.domain.services.user'
 if _USER_SERVICE_MODULE not in sys.modules:
     _stub = MagicMock()
     _stub.UserService = MagicMock()
@@ -57,7 +57,7 @@ def fake_super_admin():
 
 @pytest.fixture()
 def patched_status_flow():
-    base = 'bisheng.tenant.domain.services.tenant_service'
+    base = 'doberman_agent.tenant.domain.services.tenant_service'
     with patch(f'{base}.TenantDao.aget_by_id', new_callable=AsyncMock) as aget, \
          patch(f'{base}.TenantDao.aupdate_tenant', new_callable=AsyncMock) as aupd, \
          patch(f'{base}.UserTenantDao.aget_active_user_ids_by_tenant',
@@ -79,9 +79,9 @@ class TestArchivedIsTerminal:
     async def test_archived_to_active_is_rejected(
         self, patched_status_flow, fake_super_admin,
     ):
-        from bisheng.common.errcode.tenant_tree import TenantArchivedNotResumableError
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.common.errcode.tenant_tree import TenantArchivedNotResumableError
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'archived')
 
@@ -98,9 +98,9 @@ class TestArchivedIsTerminal:
     async def test_archived_to_disabled_is_rejected(
         self, patched_status_flow, fake_super_admin,
     ):
-        from bisheng.common.errcode.tenant_tree import TenantArchivedNotResumableError
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.common.errcode.tenant_tree import TenantArchivedNotResumableError
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'archived')
 
@@ -116,8 +116,8 @@ class TestArchivedIsTerminal:
     ):
         """Repeated archive call (e.g. retry on a flaky network) must not
         fire the guard — we only block transitions *out* of archived."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'archived')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'archived')
@@ -136,8 +136,8 @@ class TestArchivedIsTerminal:
         """Sanity: the new guard must not regress the existing
         active → disabled path (covered separately in
         test_tenant_disable_jwt_revoke.py)."""
-        from bisheng.tenant.domain.services.tenant_service import TenantService
-        from bisheng.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
+        from doberman_agent.tenant.domain.services.tenant_service import TenantService
+        from doberman_agent.tenant.domain.schemas.tenant_schema import TenantStatusUpdate
 
         patched_status_flow['aget_by_id'].return_value = _mock_tenant(5, 'active')
         patched_status_flow['aupdate_tenant'].return_value = _mock_tenant(5, 'disabled')

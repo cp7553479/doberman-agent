@@ -1,5 +1,5 @@
 import { truncateString } from "@/util/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import type { KnowledgeTagItem } from "@/controllers/API/knowledgeTags";
 import { useTranslation } from "react-i18next";

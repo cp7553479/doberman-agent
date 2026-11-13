@@ -1,20 +1,20 @@
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.http_error import NotFoundError, UnAuthorizedError
-from bisheng.common.errcode.knowledge_space import SpacePermissionDeniedError
-from bisheng.common.errcode.mcp_face import (
+from doberman_agent.common.errcode.http_error import NotFoundError, UnAuthorizedError
+from doberman_agent.common.errcode.knowledge_space import SpacePermissionDeniedError
+from doberman_agent.common.errcode.mcp_face import (
     KnowledgeCapabilityRevokedError,
     KnowledgeUnreachableError,
     RetrievalIdentityMissingError,
     RetrievalScopeTooLargeError,
 )
-from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+from doberman_agent.common.errcode.permission import (
     PermissionInvalidResourceError,
     PermissionServiceUnavailableError,
 )
-from bisheng.open_api.api.exception_handlers import (
+from doberman_agent.open_api.api.exception_handlers import (
     open_api_http_status,
     register_open_api_exception_handlers,
 )

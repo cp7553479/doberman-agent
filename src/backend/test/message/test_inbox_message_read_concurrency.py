@@ -23,8 +23,8 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.message.domain.models.inbox_message_read import InboxMessageRead
-from bisheng.message.domain.repositories.implementations.inbox_message_read_repository_impl import (
+from doberman_agent.message.domain.models.inbox_message_read import InboxMessageRead
+from doberman_agent.message.domain.repositories.implementations.inbox_message_read_repository_impl import (
     InboxMessageReadRepositoryImpl,
 )
 

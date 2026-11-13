@@ -5,7 +5,7 @@ loop, hit the LangGraph recursion ceiling (L4), and the partial-result salvage
 fell back to ``_last_assistant_text``. That value came from
 ``_extract_last_message_text``, which used to return ``messages[-1]`` WITHOUT
 checking the role. On an abort the trailing message is typically a raw
-``bisheng_code_interpreter`` ``ToolMessage`` — a ``{"exitcode":0,"log":
+``doberman_agent_code_interpreter`` ``ToolMessage`` — a ``{"exitcode":0,"log":
 "\\nError: No module named 'pdfminer'\\n=== PDF文本内容(fitz…) ==="}`` blob — so the
 apology preamble ended up followed by that raw JSON, shown to the user as
 "已完成的分析内容".
@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
-from bisheng.linsight.domain.task_exec import LinsightWorkflowTask
+from doberman_agent.linsight.domain.task_exec import LinsightWorkflowTask
 
 extract = LinsightWorkflowTask._extract_last_message_text
 
@@ -30,7 +30,7 @@ _LEAK_BLOB = (
 )
 
 
-def _tool_msg(content: str, name: str = "bisheng_code_interpreter") -> ToolMessage:
+def _tool_msg(content: str, name: str = "doberman_agent_code_interpreter") -> ToolMessage:
     return ToolMessage(content=content, tool_call_id="call_1", name=name)
 
 
@@ -48,7 +48,7 @@ def test_exact_leak_case_produces_no_raw_json():
     """Replicates the real case; the salvaged text must not contain the raw blob."""
     messages = [
         AIMessage(content="第一章大豆CNF升贴水分析已完成。"),
-        AIMessage(content="", tool_calls=[{"name": "bisheng_code_interpreter", "args": {}, "id": "c1"}]),
+        AIMessage(content="", tool_calls=[{"name": "doberman_agent_code_interpreter", "args": {}, "id": "c1"}]),
         _tool_msg(_LEAK_BLOB),
     ]
     result = extract(messages)
@@ -77,7 +77,7 @@ def test_none_when_no_assistant_text():
     """No AIMessage text at all -> None, so the caller degrades to a friendly fail."""
     messages = [
         HumanMessage(content="做点事"),
-        AIMessage(content="", tool_calls=[{"name": "bisheng_code_interpreter", "args": {}, "id": "c1"}]),
+        AIMessage(content="", tool_calls=[{"name": "doberman_agent_code_interpreter", "args": {}, "id": "c1"}]),
         _tool_msg(_LEAK_BLOB),
     ]
     assert extract(messages) is None
@@ -101,7 +101,7 @@ def test_dict_shaped_messages():
     """Dict-shaped messages: role/type must be honored, tool dict skipped."""
     messages = [
         {"role": "assistant", "content": "字典形态的助手回复"},
-        {"role": "tool", "name": "bisheng_code_interpreter", "content": _LEAK_BLOB},
+        {"role": "tool", "name": "doberman_agent_code_interpreter", "content": _LEAK_BLOB},
     ]
     assert extract(messages) == "字典形态的助手回复"
 

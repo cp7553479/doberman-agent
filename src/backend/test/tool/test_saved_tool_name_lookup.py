@@ -8,21 +8,21 @@ import pytest
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, create_engine
 
-from bisheng.common.errcode.dsh import DshToolNotFoundError, DshToolServiceUnavailableError
-from bisheng.core.context.tenant import (
+from doberman_agent.common.errcode.dsh import DshToolNotFoundError, DshToolServiceUnavailableError
+from doberman_agent.core.context.tenant import (
     get_admin_scope_tenant_id,
     get_current_tenant_id,
     is_strict_tenant_filter,
     set_admin_scope_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsType
-from bisheng.tool.domain.repositories import saved_tools
-from bisheng.tool.domain.repositories.saved_tools import SavedToolRepository
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsType
+from doberman_agent.tool.domain.repositories import saved_tools
+from doberman_agent.tool.domain.repositories.saved_tools import SavedToolRepository
 
 
 def saved_tool_service():
-    from bisheng.tool.domain.services.saved_tools import SavedToolService
+    from doberman_agent.tool.domain.services.saved_tools import SavedToolService
 
     return SavedToolService()
 

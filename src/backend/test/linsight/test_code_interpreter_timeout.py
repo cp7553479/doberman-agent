@@ -29,7 +29,7 @@ import os
 import threading
 import time
 
-from bisheng_langchain.gpts.tools.code_interpreter.local_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import (
     MAX_FAILURE_LOG_CHARS,
     PARTIAL_OUTPUT_HEADER,
     LocalExecutor,

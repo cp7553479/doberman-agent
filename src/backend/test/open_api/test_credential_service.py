@@ -4,19 +4,19 @@ from types import SimpleNamespace
 import pytest
 from sqlmodel import func, select
 
-from bisheng.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
-from bisheng.open_api.domain.models.api_credential import (
+from doberman_agent.common.errcode.open_api import OpenApiDelegateConfigurationInvalidError
+from doberman_agent.open_api.domain.models.api_credential import (
     REVOKE_REASON_MANUAL,
     SUBJECT_KIND_SERVICE_ACCOUNT,
     ApiCredential,
 )
-from bisheng.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
-from bisheng.open_api.domain.schemas.credential import (
+from doberman_agent.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
+from doberman_agent.open_api.domain.schemas.credential import (
     DelegateScopeInput,
     KeyIssueRequest,
     KeyUpdateRequest,
 )
-from bisheng.open_api.domain.services.credential_service import CredentialService, hash_token
+from doberman_agent.open_api.domain.services.credential_service import CredentialService, hash_token
 
 
 async def test_issue_stores_only_hash_and_returns_plaintext_once(open_api_db, fake_redis):
@@ -83,10 +83,10 @@ async def test_last_used_write_is_throttled(open_api_db, fake_redis):
 async def test_last_used_is_written_before_any_tenant_context_exists(open_api_db, fake_redis, monkeypatch):
     # Bearer validation runs before the request's tenant context is bound, so in
     # a multi-tenant deployment the write must not depend on that context.
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.context.tenant import current_tenant_id
-    from bisheng.core.database import tenant_filter
-    from bisheng.open_api.domain.repositories.credential_repository import CredentialRepository
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.context.tenant import current_tenant_id
+    from doberman_agent.core.database import tenant_filter
+    from doberman_agent.open_api.domain.repositories.credential_repository import CredentialRepository
 
     issued = await CredentialService.issue(
         tenant_id=2,
@@ -118,7 +118,7 @@ async def test_removing_delegate_scope_clears_entries_atomically(
         return {user_id: SimpleNamespace(user_id=user_id, tenant_id=1) for user_id in user_ids}
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
+        "doberman_agent.open_api.domain.services.delegate_scope_service.OwnerRepository.get_active_natural_people",
         active_users,
     )
     issued = await CredentialService.issue(

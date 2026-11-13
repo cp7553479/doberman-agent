@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.commercial_license.domain.services.aggregator import list_license_status
+from doberman_agent.commercial_license.domain.services.aggregator import list_license_status
 
 
 def _row(

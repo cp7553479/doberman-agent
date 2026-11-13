@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDialog";
 import { hasResourceAction,useResourceActions } from "@/components/bs-comp/permission/useResourceActions";
@@ -7,8 +7,8 @@ import { hasResourceAction,useResourceActions } from "@/components/bs-comp/permi
 import { Dialog,DialogTrigger } from "@/components/bs-ui/dialog";
 import { useAssistantStore } from "@/store/assistantStore";
 import { OnlineState } from "@/types/flow";
-import { Tabs } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { Shield } from "lucide-react";
 import { useEffect,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -54,7 +54,7 @@ export default function Header({ loca, onSave, onLine, onTabChange, canEdit: can
         <div className="flex items-center gap-2 py-4">
             <Button variant="outlined" size="medium" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/build/apps')} color="default" iconOnly><Outlined.Left className="h-4 w-4" /></Button>
             <AppAvator id={assistantState.name} url={assistantState.viewLogo || assistantState.logo} flowType={5} className="ml-4"></AppAvator>
-            <span id="app-title" className="bisheng-title">{assistantState.name}</span>
+            <span id="app-title" className="doberman_agent-title">{assistantState.name}</span>
             {/* edit dialog */}
             <Dialog open={editShow} onOpenChange={setEditShow}>
                 <DialogTrigger asChild>

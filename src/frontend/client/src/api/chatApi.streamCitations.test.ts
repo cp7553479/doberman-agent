@@ -1,6 +1,6 @@
 import request from './request';
 import { getChannelChatHistory, getFileChatHistory, getFolderChatHistory } from './chatApi';
-import { transformPrivateCitations } from '@bisheng/chat/citations';
+import { transformPrivateCitations } from '@doberman-agent/chat/citations';
 jest.mock('./request', () => ({ __esModule: true, default: { get: jest.fn(), post: jest.fn() } }));
 
 it.each([

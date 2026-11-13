@@ -27,17 +27,17 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
     WebCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_resolve_service import (
+from doberman_agent.citation.domain.services.citation_resolve_service import (
     CitationResolveService,
 )
-from bisheng.common.errcode.http_error import NotFoundError
+from doberman_agent.common.errcode.http_error import NotFoundError
 
 
 def _make_rag_item(citation_id: str, knowledge_id: int, document_id: int) -> CitationRegistryItemSchema:
@@ -88,7 +88,7 @@ def _stub_post_filter(monkeypatch, allowed_by_space: dict[int, set[int]]):
         return {fid for fid in file_ids if fid in allowed_by_space.get(int(space_id), set())}
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_visible_files",
         fake_post,
     )
@@ -182,7 +182,7 @@ async def test_filter_visible_rag_items_anonymous_caller_preserves_all(monkeypat
         raise AssertionError("anonymous caller must not invoke FGA")
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_visible_files",
         fake_post,
     )
@@ -264,7 +264,7 @@ async def test_resolve_citation_single_web_skips_filter(monkeypatch):
         return set()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_visible_files",
         fake_post,
     )
@@ -298,7 +298,7 @@ async def test_resolve_citation_anonymous_caller_is_refused(monkeypatch):
         raise AssertionError("anonymous caller must not invoke FGA")
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_file_visibility_service."
+        "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service."
         "KnowledgeFileVisibilityService.post_filter_visible_files",
         fake_post,
     )

@@ -1,6 +1,6 @@
-import { Pagination, Button, Input, SearchInput } from '@bisheng/ui';
-import { Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Pagination, Button, Input, SearchInput } from '@doberman-agent/ui';
+import { Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 

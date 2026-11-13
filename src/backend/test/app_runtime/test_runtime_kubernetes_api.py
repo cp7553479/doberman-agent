@@ -6,8 +6,8 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
 from test.app_runtime.test_runtime_kubernetes_repository import UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import REF, document
@@ -18,8 +18,8 @@ PREFIX = "/api/v1/internal/app-runtime/v2"
 
 @pytest.fixture
 async def api_client(control, monkeypatch):
-    from bisheng.app_runtime.api.endpoints import runtime_delivery as authentication
-    from bisheng.app_runtime.api.endpoints import runtime_kubernetes as api
+    from doberman_agent.app_runtime.api.endpoints import runtime_delivery as authentication
+    from doberman_agent.app_runtime.api.endpoints import runtime_kubernetes as api
 
     svc, repository, op = control
     keys = {
@@ -67,7 +67,7 @@ async def create(api_client):
 
 
 async def test_registered_routes_are_wired_in_the_production_module_router():
-    from bisheng.app_runtime.api.router import router
+    from doberman_agent.app_runtime.api.router import router
 
     paths = {route.path for route in router.routes}
     assert {

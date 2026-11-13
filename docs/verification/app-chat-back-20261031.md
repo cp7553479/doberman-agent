@@ -2,9 +2,9 @@
 
 ## 基线
 
-- 仓库与版本：`dataelement/bisheng:feat/bisheng-work-120-main@4cc8f565fb5bc8bd918973ce74f876e6fd66af26`，通过远端 fetch 核对。
-- 工作目录：`.worktrees/bisheng-app-chat-back-visible`；分支：`codex/app-chat-back-visible`。
-- 本次修改属于 BISHENG 网页应用会话导航。已安装 BISHENG 包版本 `1.2.0-test.2`，应用包内 `@deepseek-ai/dsh-harness-dev-context` 版本 `0.2.1-rc.2`，通过 asar 元数据读取。
+- 仓库与版本：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@4cc8f565fb5bc8bd918973ce74f876e6fd66af26`，通过远端 fetch 核对。
+- 工作目录：`.worktrees/doberman-agent-app-chat-back-visible`；分支：`codex/app-chat-back-visible`。
+- 本次修改属于 doberman-agent 网页应用会话导航。已安装 doberman-agent 包版本 `1.2.0-test.2`，应用包内 `@deepseek-ai/dsh-harness-dev-context` 版本 `0.2.1-rc.2`，通过 asar 元数据读取。
 
 ## 根因和行为
 

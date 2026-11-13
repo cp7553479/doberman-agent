@@ -10,9 +10,9 @@
 
 ## 1.1 背景与问题
 
-灵思（Linsight）是 BiSheng 的自主智能体（autonomous agent）模块，当前为**纯自研架构**：
+灵思（Linsight）是 doberman-agent 的自主智能体（autonomous agent）模块，当前为**纯自研架构**：
 
-- 执行内核自研中文 ReAct（`bisheng_langchain/linsight/{agent,task,react_task,manage}.py`），不基于任何成熟 agent 框架；
+- 执行内核自研中文 ReAct（`doberman_agent_langchain/linsight/{agent,task,react_task,manage}.py`），不基于任何成熟 agent 框架；
 - 任务规划、子任务拆解、工具调用循环全部靠自定义中文 JSON prompt 驱动（`react_prompt.py`）；
 - 流程知识以 **SOP（标准操作流程）** 形式由 LLM 动态生成、向量化沉淀、检索复用。
 
@@ -31,7 +31,7 @@
 | G1 | 用 `deepagents.create_deep_agent` 替换自研 ReAct 执行内核，提升任务规划与执行的稳定性、工具调用准确率。 |
 | G2 | 把流程知识从"运行时 LLM 动态生成的 SOP"迁移为"可热插拔的静态 Skill 包（`SKILL.md`）"，对齐 deepagents / Anthropic Agent Skills 规范。 |
 | G3 | 提供 Skill 全生命周期管理（列表 / 上传 / 新建 / 编辑 / 删除）与 per-run 白名单激活的前端体验。 |
-| G4 | 完整保留 BiSheng 企业级能力：多租户隔离、OpenFGA 权限、工具/知识库/文件/代码沙箱集成、DM8 双库兼容。 |
+| G4 | 完整保留 doberman-agent 企业级能力：多租户隔离、OpenFGA 权限、工具/知识库/文件/代码沙箱集成、DM8 双库兼容。 |
 | G5 | 存量 SOP 资产一次性转换为 Skill；自研 ReAct 内核下线。 |
 
 ## 1.3 非目标（本期不做）
@@ -50,7 +50,7 @@
 
 | 术语 | 定义 |
 |-|-|
-| Linsight / 灵思 | BiSheng 自主智能体模块 |
+| Linsight / 灵思 | doberman-agent 自主智能体模块 |
 | SOP | 现状：每次提问 LLM 动态生成的标准操作流程，向量化沉淀于 `linsight_sop` 表 |
 | Skill | 目标：静态 `SKILL.md`（YAML frontmatter + Markdown body），磁盘可见、可热插拔 |
 | deepagents | LangChain 开源自主智能体框架，基于 LangGraph 1.0 |
@@ -61,7 +61,7 @@
 | 技能 ID（name） | 技能的系统级唯一标识：小写字母 / 数字 / 单连字符（deepagents frontmatter 硬约束），同时是落盘目录名与 `active_skills` 激活键；新建时由展示名称自动转拼音生成、可修改 |
 | progressive disclosure | 启动只注入 skill frontmatter，body 由模型按需 `read_file` 展开 |
 | HITL | Human-in-the-loop，执行中暂停等待用户输入/审批 |
-| 适配层 | 保留 BiSheng 横切基础设施、仅替换 agent 推理内核的迁移路径 |
+| 适配层 | 保留 doberman-agent 横切基础设施、仅替换 agent 推理内核的迁移路径 |
 
 ## 1.5 范围说明
 
@@ -78,7 +78,7 @@
 | 权限与可见性 | 角色 × Skill 可见/可操作规则 | §4.7 | 技术方案 §6 |
 | 工作台配置合并 | 「灵思」tab 并入「日常」tab：入口开关移除、展示名称/提示语改「任务模式」、可选工具废弃改共用日常「可用工具」、指导手册库升级为技能管理 | §4.8 | 技术方案 §2.7、§7 |
 | Agent 执行引擎 | 自研 ReAct → deepagents `create_deep_agent`（适配层） | — | 技术方案 §1、§2 |
-| 运行时 | 保留 BiSheng Worker / Redis queue / WebSocket | §3.2 | — |
+| 运行时 | 保留 doberman-agent Worker / Redis queue / WebSocket | §3.2 | — |
 
 ---
 
@@ -153,7 +153,7 @@ flowchart TD
 | AC | 验收标准 |
 |-|-|
 | AC-7 | 多租户隔离、权限、DM8 双库回归全部通过。 |
-| AC-8 | 自研 bisheng_langchain/linsight ReAct 内核及 SOP 动态生成链路代码下线。 |
+| AC-8 | 自研 doberman_agent_langchain/linsight ReAct 内核及 SOP 动态生成链路代码下线。 |
 
 ---
 
@@ -161,7 +161,7 @@ flowchart TD
 
 ## 3.1 总体策略
 
-**一句话结论**：在 BiSheng 现有运行时内，仅把灵思的 agent 推理内核从自研 ReAct 替换为 deepagents，**完整保留**多租户、权限、Worker、工具、文件、DM8 双库等全部企业级横切能力；流程知识由"运行时动态生成的 SOP"改为"磁盘上静态、可热插拔的 Skill"；新旧引擎**一次性切换**，不长期共存。
+**一句话结论**：在 doberman-agent 现有运行时内，仅把灵思的 agent 推理内核从自研 ReAct 替换为 deepagents，**完整保留**多租户、权限、Worker、工具、文件、DM8 双库等全部企业级横切能力；流程知识由"运行时动态生成的 SOP"改为"磁盘上静态、可热插拔的 Skill"；新旧引擎**一次性切换**，不长期共存。
 
 **本章导航**：上述结论由三条主线支撑——
 
@@ -173,13 +173,13 @@ flowchart TD
 
 ## 3.2 目标架构
 
-下图为适配层落地后的整体结构：**★ 标注处是唯一被替换的推理内核**，其余均为 BiSheng 现有设施原样保留。
+下图为适配层落地后的整体结构：**★ 标注处是唯一被替换的推理内核**，其余均为 doberman-agent 现有设施原样保留。
 
 ```Plaintext
 ┌─ 前端 client（保留 Vite+Recoil） ──────────────────────┐
 │  Skills 管理页 + 流式执行 UI（引入 deepagents 前端能力）  │
 └───────────────┬────────────────────────────────────────┘
-                │ REST / WebSocket（沿用 BiSheng 协议）
+                │ REST / WebSocket（沿用 doberman-agent 协议）
 ┌───────────────▼────────────────────────────────────────┐
 │  FastAPI /linsight（保留多租户/OpenFGA/JWT）             │
 │  Redis Queue（保留）                                     │
@@ -190,7 +190,7 @@ flowchart TD
 │  LinsightWorkflowTask（task_exec.py，改造）              │
 │    ├─ ★ deepagents.create_deep_agent（替换自研内核）    │
 │    │     + SkillsMiddleware（白名单）                    │
-│    │     + bisheng 工具/知识库/沙箱（注入）              │
+│    │     + doberman-agent 工具/知识库/沙箱（注入）              │
 │    │     + LLMService 模型（注入）                       │
 │    ├─ 事件流映射：LangGraph stream → MessageEventType    │
 │    └─ HITL：interrupt() ↔ WAITING_FOR_USER_INPUT         │
@@ -200,7 +200,7 @@ flowchart TD
 
 ## 3.3 核心范式变更：SOP → Skill
 
-| 维度 | bisheng SOP（现状，下线） | deepagents Skill（目标） |
+| 维度 | doberman-agent SOP（现状，下线） | deepagents Skill（目标） |
 |-|-|-|
 | 来源 | 每次提问 LLM **动态生成** | 预先**静态编写**的 SKILL.md 文件 |
 | 用户编辑 | 执行前改当前会话 SOP（/workbench/sop-modify） | Skill 管理页编辑 .md |
@@ -229,7 +229,7 @@ flowchart TD
 
 | 处置 | 组件 |
 |-|-|
-| **替换** | 自研 ReAct 内核 bisheng_langchain/linsight/{agent,task,react_task,manage,prompt,react_prompt}.py → deepagents |
+| **替换** | 自研 ReAct 内核 doberman_agent_langchain/linsight/{agent,task,react_task,manage,prompt,react_prompt}.py → deepagents |
 | **保留** | worker.py、Redis queue、WebSocket、state_message_manager.py、多租户、OpenFGA、LLMService、工具体系、MinIO、linsight_session_version / linsight_execute_task 数据模型、DM8 双库 |
 | **新增** | Skill 加载与白名单中间件、Skill CRUD API、Skill 多租户存储、SOP→Skill 迁移脚本、前端 Skills 管理页、**Redis checkpointer（HITL 中断现场持久化、可随时续跑）**、**历史消息压缩中间件（对齐 2.0 tool_buffer）** |
 | **下线** | SOP 动态生成 / sop_manage.py 沉淀链路 / col_linsight_sop 写入 / SOP 相关端点 |
@@ -548,7 +548,7 @@ stateDiagram-v2
 | 上传后等待 | 需等正文全部进入对话才能提交 | 上传+解析完成即可提交，体感更快 |
 | 大文件表现 | 容易卡顿、撑爆上下文、对话变慢 | 大文件也不卡、不爆上下文 |
 | 灵思如何用 | 一次性「读完」，抓不住重点 | 先看文件目录/结构，用到哪段翻哪段 |
-| 含图文档 | 图文混杂、理解不可控 | 复用 BiSheng 解析转为图文一体的 markdown，图内文字一并抽取 |
+| 含图文档 | 图文混杂、理解不可控 | 复用 doberman-agent 解析转为图文一体的 markdown，图内文字一并抽取 |
 
 > 实现落点（结合 deepagents 框架）：附件的**解析结果**落入 agent 工作区（deepagents 文件空间）的 `/uploads/<原文件名>/index.md`，含图文档的图片同目录存 `images/`、由 `index.md` 相对引用；原件不进工作区、正文零进对话，模型按需 `read_file` 分页取用。详见技术方案 §9.3.2。
 
@@ -565,7 +565,7 @@ stateDiagram-v2
 | FR-2.7 | 解析状态对用户可见：上传中、解析中**统一以 spinner 呈现**，可用态展示文件类型 icon | 上传/解析以 spinner、可用以文件类型 icon 区分 |
 | FR-2.8 | 上传或解析失败时**自动移除该附件**并以 toast 告知具体原因（不保留失败 chip、不需用户手动重试/删除） | 失败即移除 + toast 原因；失败文件不计入可用资料；不静默失败 |
 | FR-2.9 | 附件正文不进入对话上下文，由灵思按需翻阅（offload-first） | 大文件提交后不卡顿；上传+解析完成即可提交 |
-| FR-2.10 | 含图文档复用 BiSheng 解析为图文一体 markdown（图内文字 OCR 抽取、图片随文保留展示） | 图内文字可被灵思利用；图片可在预览/产物展示 |
+| FR-2.10 | 含图文档复用 doberman-agent 解析为图文一体 markdown（图内文字 OCR 抽取、图片随文保留展示） | 图内文字可被灵思利用；图片可在预览/产物展示 |
 | FR-2.11 | 有附件不跳过必要澄清，含糊问题仍触发追问 | 与 §4.4 联动 |
 | FR-2.12 | 执行中灵思对附件的查阅/检索作为可见步骤呈现 | 呼应 §4.3，过程不黑盒 |
 | FR-2.13 | 产物中引用附件内容按原文件名标注、可溯源点回 | 与 §4.3 产物侧呈现联动 |
@@ -578,7 +578,7 @@ stateDiagram-v2
 | 扫描件 / 加密 / 损坏文件，无法提取文本 | 解析失败：**自动移除该附件 chip**，并 toast 明确原因（如「该文件像是扫描件，未能提取文字」「文件已加密」），不静默吞掉；不阻断其他附件与任务提交 |
 | 文件超过单文件大小上限（默认 50MB） | 上传前即时拦截，提示当前上限 |
 | 上传不支持的格式 | 即时拦截，列出支持的格式清单，不进入上传队列 |
-| 含大量图片的文档 | 复用 BiSheng 解析为图文一体 markdown（图内文字经 OCR 抽取、图片随文保留展示）；解析耗时较长时以「解析中」spinner 告知，不阻塞其它附件 |
+| 含大量图片的文档 | 复用 doberman-agent 解析为图文一体 markdown（图内文字经 OCR 抽取、图片随文保留展示）；解析耗时较长时以「解析中」spinner 告知，不阻塞其它附件 |
 | 多文件上传，部分失败 | 失败文件**各自自动移除并 toast 原因**，**成功文件不受牵连**仍可用；无需用户手动清理失败项 |
 | 解析中用户就点「发送」 | **不支持发起**：发送按钮置灰，提示「附件仍在解析中，请等待解析完成或移除该附件后再发起」；用户可等待解析完成或移除该文件，二选一后方可提交（具体可提交判定见 §4.1 提交规则） |
 | 上传后又把文件 chip 移除 | 该文件不参与本轮任务；若已在「上下文一览」中，同步消失；不影响其余上下文 |
@@ -595,10 +595,10 @@ stateDiagram-v2
 
 - **① deepagents 库原生**：todo 三态清单（`TodoListMiddleware`）、工具调用 name/args/output（`AIMessage.tool_calls` + `ToolMessage`）、子智能体委派信标（`task` 工具）。
 - **② model-dependent（langchain provider 集成层）**：独立的「思考过程」流仅在 Anthropic（thinking 模式开启）或 DeepSeek-R1（需 `langchain-deepseek` 专属包）下成立；通用 LLM 经 ChatOpenAI/DashScope 接入时 `reasoning_content` 被静默丢弃，思考混在正文里。
-- **③ langgraph 平台/SDK 层**：Generative UI 的 `push_ui_message`、子图事件 `subgraphs`——deepagents demo 靠 LangGraph SDK（`useStream`/`LoadExternalComponent`）直连消费，**BiSheng 不接 LangGraph SDK、走自建 WebSocket，这一层须适配层等价自建**。
+- **③ langgraph 平台/SDK 层**：Generative UI 的 `push_ui_message`、子图事件 `subgraphs`——deepagents demo 靠 LangGraph SDK（`useStream`/`LoadExternalComponent`）直连消费，**doberman-agent 不接 LangGraph SDK、走自建 WebSocket，这一层须适配层等价自建**。
 - **④ 适配层自建**：`call_reason` 步骤标题、todo 失败态推断、知识库检索可视化、genUI 卡片注册表、子步骤流 `namespace` 归并。
 
-> 凡 demo 里靠 LangGraph SDK 直连呈现的效果，BiSheng 自建 WS 下都要在适配层重做——这是本节工作量的主要来源。下文各区块以 ·*能力归属* 标注其层级。所有「调用中/失败/检索中」等中间/推断态在框架层多无原生信号，统一约定为「适配层推导态」，经 `task_execute_step.data` 的 `step_type`/`status`/`is_thinking` 标记承载，前端按标记渲染，**不新增 `MessageEventType` 枚举值**（保持既有 10 类事件协议与前端 LPOP 消费侧零改动）。
+> 凡 demo 里靠 LangGraph SDK 直连呈现的效果，doberman-agent 自建 WS 下都要在适配层重做——这是本节工作量的主要来源。下文各区块以 ·*能力归属* 标注其层级。所有「调用中/失败/检索中」等中间/推断态在框架层多无原生信号，统一约定为「适配层推导态」，经 `task_execute_step.data` 的 `step_type`/`status`/`is_thinking` 标记承载，前端按标记渲染，**不新增 `MessageEventType` 枚举值**（保持既有 10 类事件协议与前端 LPOP 消费侧零改动）。
 
 ### 4.3.1 用户可见状态机
 
@@ -1320,10 +1320,10 @@ flowchart TD
 | # | 风险 | 缓解 |
 |-|-|-|
 | R1 | 目标基线模型对（中文）Skill progressive disclosure 可能跳过 `read_file`，不展开 body | POC 先以指定基线模型验证命中率≥95%；prompt 强制语序 + description 强动词；必要时对激活 Skill 全文注入兜底（命中率门槛针对指定基线，多模型适配为后续事项） |
-| R2 | LangGraph stream 事件映射到 BiSheng WebSocket 协议工作量大 | 优先级最高，先打通最小事件集 |
+| R2 | LangGraph stream 事件映射到 doberman-agent WebSocket 协议工作量大 | 优先级最高，先打通最小事件集 |
 | R3 | HITL `interrupt()` ↔ `WAITING_FOR_USER_INPUT` 语义对齐；Redis checkpointer 续跑保真（langgraph 1.2.1 实测 interrupt halt 期间 pending writes 不落 thread state） | 单独验证中断/恢复/Worker 重启续跑；POC 实测 Redis checkpointer 下隔任意时长续跑的保真度 |
 | R4 | E2B 真实沙箱与 deepagents 虚拟 FS 语义冲突 | 明确以 E2B 为产物落地，虚拟 FS 仅 agent 内部状态 |
 | R5 | deepagents 0.6.3 `SkillsMiddleware` 为新特性、demo 未实装；版本快速迭代 | 锁定版本；POC 先验证中间件可用性 |
 | R6 | 纯手动白名单导致用户激活率低/效果回退 | 上线埋点监控；预留 N1 自动挂载演进路径 |
-| R7 | DM8 双库 + 多租户隔离回归 | 复用 BiSheng 现成横切能力，CI/Linux 跑 DM8 验证 |
+| R7 | DM8 双库 + 多租户隔离回归 | 复用 doberman-agent 现成横切能力，CI/Linux 跑 DM8 验证 |
 | 依赖 | deepagents>=0.6.3、LangGraph 1.0、评测集、DM8 CI 环境 | — |

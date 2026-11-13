@@ -1,4 +1,4 @@
-import { Button, Input, notification } from '@bisheng/ui';
+import { Button, Input, notification } from '@doberman-agent/ui';
 // F035: import a skill from a local file (.md or .zip/.skill bundle, archive root
 // must contain SKILL.md) or from a public GitHub directory URL. The size check here
 // covers the uploaded bytes only; the cap comes from 系统配置
@@ -9,11 +9,11 @@ import { Button, Input, notification } from '@bisheng/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 
 import { skillApi, type SkillUploadLimit } from "@/controllers/API/linsight";
 import { FileArchive } from "lucide-react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";

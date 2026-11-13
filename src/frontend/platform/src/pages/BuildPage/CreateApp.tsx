@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, Input, Textarea } from '@bisheng/ui';
+import { Button, Input, Textarea } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { Accordion } from "@/components/bs-ui/accordion";
 
@@ -98,11 +98,11 @@ const CreateApp = forwardRef<ModalRef, ModalProps & { loca?: any }>(
                 setLoading(false);
                 setTemplateLoading(false);
             };
-            window.addEventListener('bisheng:management-scope-changed', reset);
+            window.addEventListener('doberman_agent:management-scope-changed', reset);
             const invalidate = () => { ++generation.current; };
             return () => {
                 invalidate();
-                window.removeEventListener('bisheng:management-scope-changed', reset);
+                window.removeEventListener('doberman_agent:management-scope-changed', reset);
             };
         }, []);
 
@@ -213,7 +213,7 @@ const CreateApp = forwardRef<ModalRef, ModalProps & { loca?: any }>(
                         if (['rag', 'llm', 'agent', 'qa_retriever'].includes(node.data.type)) {
                             node.data.group_params.forEach(group =>
                                 group.params.forEach(param => {
-                                    if (param.type === 'bisheng_model') {
+                                    if (param.type === 'doberman_agent_model') {
                                         param.value = workflowModelId;
                                     } else if (param.type === 'agent_model') {
                                         param.value = assistantModelId;
@@ -280,7 +280,7 @@ const CreateApp = forwardRef<ModalRef, ModalProps & { loca?: any }>(
                     </DialogHeader>
                     <div className="flex flex-col mt-2">
                         <div className="mb-6">
-                            <label htmlFor="name" className="bisheng-label">
+                            <label htmlFor="name" className="doberman_agent-label">
                                 {appType === AppType.ASSISTANT ? t('assistantAvatar') : t('workflowAvatar')}
                             </label>
                             <Avator value={previewAvatar} className="mt-3" onChange={uploadAvator}>
@@ -288,19 +288,19 @@ const CreateApp = forwardRef<ModalRef, ModalProps & { loca?: any }>(
                             </Avator>
                         </div>
                         <div className="mb-6">
-                            <label htmlFor="name" className="bisheng-label">
+                            <label htmlFor="name" className="doberman_agent-label">
                                 {appType === AppType.ASSISTANT ? t('build_assistantName') : t('name')}
-                                <span className="bisheng-tip">*</span>
+                                <span className="doberman_agent-tip">*</span>
                             </label>
                             <Input id="name" name="name" maxLength={50} showCount placeholder={appType === AppType.ASSISTANT ? t('giveAssistantAName') : t('giveWorkflowAName')} value={formData.name} onChange={handleChange} className={"mt-3"} />
-                            {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
+                            {errors.name && <p className="doberman_agent-tip mt-1">{errors.name}</p>}
                         </div>
                         <div className="mb-6">
-                            <label htmlFor="desc" className="bisheng-label">
+                            <label htmlFor="desc" className="doberman_agent-label">
                                 {appType === AppType.ASSISTANT ? t('build_roleAndTasks') : t('description')}
                             </label>
                             <Textarea id="desc" name="desc" placeholder={appType === AppType.ASSISTANT ? assistantRoleExample() : t('enterWorkflowDescription')} maxLength={1000} value={formData.desc} onChange={handleChange} textareaClassName={"mt-3 min-h-32 pt-3"} showCount />
-                            {errors.desc && <p className="bisheng-tip mt-1">{errors.desc}</p>}
+                            {errors.desc && <p className="doberman_agent-tip mt-1">{errors.desc}</p>}
                         </div>
                     </div>
                     {/* Workflow Security Review */}

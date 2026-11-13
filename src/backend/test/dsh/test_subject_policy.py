@@ -4,20 +4,20 @@ import pytest
 from sqlalchemy import Column, DateTime, Integer, MetaData, Table, create_engine, delete, text
 from sqlmodel import Session, select
 
-from bisheng.common.errcode.dsh import DshOperationConflictError
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.role import Role
-from bisheng.database.models.tenant import Tenant, UserTenant
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.models.model_call import DshModelCall
-from bisheng.dsh.domain.models.monthly_usage import DshMonthlyUsage
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
-from bisheng.dsh.domain.repositories.usage import DshUsageRepository
-from bisheng.user.domain.models.user import User
-from bisheng.user.domain.models.user_role import UserRole
+from doberman_agent.common.errcode.dsh import DshOperationConflictError
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.role import Role
+from doberman_agent.database.models.tenant import Tenant, UserTenant
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.model_call import DshModelCall
+from doberman_agent.dsh.domain.models.monthly_usage import DshMonthlyUsage
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicy, DshSubjectPolicyAudit
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
+from doberman_agent.dsh.domain.repositories.usage import DshUsageRepository
+from doberman_agent.user.domain.models.user import User
+from doberman_agent.user.domain.models.user_role import UserRole
 from test.dsh.test_quota_admission import running
 from test.dsh.test_quota_settlement import terminal
 

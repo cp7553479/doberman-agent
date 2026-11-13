@@ -281,7 +281,7 @@ space_{space_id}_file_{id>0}       -> 检查 file
 | `knowledge_space_chat_history_retention_service.py` | 校验服务端 flow chunk 与 source root，编排定向幂等更新 | 不直接写 ORM，不决定资源是否可删除、清空或移动 |
 | `knowledge_space_service.py` | 规范化 batch 父子输入，冻结删除/`clear_space`/移动纳入范围的 flow；在每个硬删除 commit、`clear_space` 子资源删除 commit 或 move metadata commit 后立即 best-effort 分片派发 | 不等待回收完成，不从 session 推导资源权限，不为完整 `delete_space` 建立入口，不建设 outbox |
 | `worker/knowledge/knowledge_chat_history_retention.py` | 短延时消费 flow chunk、调用 retention service、重试与记录终态 | 不重新扫描已删除子树，不回滚资源操作 |
-| `worker/__init__.py` | 显式导入 `rehome_knowledge_chat_sessions` 完成 Celery task 注册；任务名保持在 `bisheng.worker.knowledge.*` 命名空间并由既有 router 投递到 `knowledge_celery` | 不为 F071 新增独立 worker、queue 或 broker 发布配置 |
+| `worker/__init__.py` | 显式导入 `rehome_knowledge_chat_sessions` 完成 Celery task 注册；任务名保持在 `doberman_agent.worker.knowledge.*` 命名空间并由既有 router 投递到 `knowledge_celery` | 不为 F071 新增独立 worker、queue 或 broker 发布配置 |
 | `knowledge_space_chat_service.py` | 列表/打开/继续问答使用 effective entry；消息使用原 flow | 不把 `entry_flow_id` 返回客户端，不动态跟随移回资源 |
 | `chat_session/domain/chat.py` | 使用已验证 session 的真实 flow_id 读取消息 | 不全局放宽 session.flow_id 与 message.flow_id 一致性校验 |
 | `migrate_f068_knowledge_chat_entries.py` | dry-run、校验、仅恢复失联存量、终态对账 | 不恢复消息内容，不访问外部存储或权限引擎 |
@@ -319,7 +319,7 @@ space_{space_id}_file_{id>0}       -> 检查 file
 | single-file history/chat endpoints | 既有 HTTP/SSE，服务端按 effective entry 查找/复用 | `useFileChat` |
 | `KnowledgeSpaceChatHistoryRetentionService.rehome_by_flows(...)` | 内部 async Python API | 定向回收 worker、迁移验证 |
 | `KnowledgeChatSessionRepository` effective-entry/rehome 方法 | 内部 Repository contract | chat service、retention service、migration verification |
-| `bisheng.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions` | 显式注册的 Celery task；source space + flow chunk，默认延时 5 秒，经既有通配 router 投递到 `knowledge_celery` | delete folder/file、batch delete、clear space、cross-space move |
+| `doberman_agent.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions` | 显式注册的 Celery task；source space + flow chunk，默认延时 5 秒，经既有通配 router 投递到 `knowledge_celery` | delete folder/file、batch delete、clear space、cross-space move |
 | `message_session.entry_flow_id` | DB nullable 字段 | 所有 API 副本和维护脚本 |
 
 现有 `FolderSession.flow_id` 继续返回原内容 flow；前端和新代码不得用返回值推断当前入口。内部 `entry_flow_id` 不进入响应。
@@ -347,7 +347,7 @@ space_{space_id}_file_{id>0}       -> 检查 file
 - **单元测试**：effective-entry 条件、原生 root/recovered root 不重复、普通 folder/file、sticky、同空间 no-op、父子重复去重、deleted session 过滤、非知识空间 entry 拒绝、原空间权限。
 - **Repository/Service 集成测试**：单文件/文件夹/多层子树/版本兄弟删除，清空有内容空间、清空空空间、完整删除空间，跨空间移动，`skip_invalid`，batch 混合项和父子重复输入；验证输入先规范化、只更新 session.entry_flow_id，原 flow、消息、引用和 create_time 不变，列表仍按 create_time。`clear_space` 使用提交前 `child_resources` 且只在保留空间时派发；完整 `delete_space` 不新派发、不清旧 session，已排队任务可留下失效 entry，但所有会话接口因空间不存在而拒绝访问。跨空间移动覆盖直接 move rows 内的当前可见文件会话，并验证额外版本 sibling 不进入在线 flow 集合。构造超过 500 个 flow 的影响集合，验证任务正确分片、只处理实际提交项且重复执行零副作用。
 - **历史与继续问答测试**：入口用 root 验证，历史用原 flow 读取；继续问答使用 whole-space retriever，新消息仍写原 flow。负向覆盖“未回收旧 folder/file chat_id 传给 root”“recovered chat 传给旧入口”“其他空间/用户/flow type chat_id”，均须在读写消息和构造 retriever 前拒绝。
-- **异步与并发测试**：每个 `adelete_batch` commit 后立即派发，但不重排各删除路径已有的 commit 前后清理动作；`clear_space` 子资源删除 commit 后、空索引重建前派发；move metadata commit 后且其它 post-commit 副作用前派发。验证任务已由 `worker/__init__.py` 注册、任务名命中 `bisheng.worker.knowledge.*` 并路由到 `knowledge_celery`；后续清理失败不漏掉已提交单元的派发，派发失败不改变资源结果。覆盖任务默认延时、`acks_late`、失败重试与终态日志；任务扫描前提交的并发 session 被回收，扫描后提交的 session 保持已声明的竞态，不为此修改创建链路。标题与消息始终完整，无 lost update。
+- **异步与并发测试**：每个 `adelete_batch` commit 后立即派发，但不重排各删除路径已有的 commit 前后清理动作；`clear_space` 子资源删除 commit 后、空索引重建前派发；move metadata commit 后且其它 post-commit 副作用前派发。验证任务已由 `worker/__init__.py` 注册、任务名命中 `doberman_agent.worker.knowledge.*` 并路由到 `knowledge_celery`；后续清理失败不漏掉已提交单元的派发，派发失败不改变资源结果。覆盖任务默认延时、`acks_late`、失败重试与终态日志；任务扫描前提交的并发 session 被回收，扫描后提交的 session 保持已声明的竞态，不为此修改创建链路。标题与消息始终完整，无 lost update。
 - **回绑测试**：跨空间移出后再移回原空间，旧 recovered session 保持 root；单文件入口创建/选择新的有效 session。
 - **迁移测试**：root/folder/file、missing/moved/deleted space、soft-deleted、空会话、未知 grammar、checksum 变化、部分批次提交后以同一 manifest hash 续跑、第二次 apply 零更新；验证 `recoverable_orphan_remaining` 归零而 `deleted_space_skipped` 非阻断；MySQL 与 DM8 集中验证。
 - **E2E**：页面创建 folder/file 会话 → 单项/批量删除、清空空间内容或跨空间移动 → 等待定向任务完成 → 回原空间根查看、打开、继续、改名、删除；任务完成前允许暂时不可见。完整删除空间后，即使旧 session 或排队任务留下 entry 元数据，列表、历史与继续问答仍不可访问；目标空间始终不可见，无原空间权限用户不可见，存量 fixture 可恢复。
@@ -357,7 +357,7 @@ space_{space_id}_file_{id>0}       -> 检查 file
 升级前从 `src/backend/` 运行 dry-run：
 
 ```bash
-export config=/Users/zhangguoqing/works/bisheng/src/backend/bisheng/config.yaml
+export config=/Users/zhangguoqing/works/doberman-agent/src/backend/doberman_agent/config.yaml
 uv run python scripts/migrate_f068_knowledge_chat_entries.py
 ```
 

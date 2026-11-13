@@ -1,1 +1,1 @@
-export * from '@bisheng/chat/citation-locate-hook';
+export * from '@doberman-agent/chat/citation-locate-hook';

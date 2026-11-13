@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 
-# Bisheng Frontend Development Guide
+# DobermanAgent Frontend Development Guide
 
 ## Tech Stack
 Vite + React 18 + TypeScript + TailwindCSS 3 + Radix UI（shadcn/ui） + Recoil + react-query + react-router-dom v6 + lucide-react + axios (wrapped in `src/api/request.ts`)

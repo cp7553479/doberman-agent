@@ -1,4 +1,4 @@
-import { shouldRetryApiError } from '@bisheng/api-client';
+import { shouldRetryApiError } from '@doberman-agent/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { getLinsightModelConfig } from '@/controllers/API/finetune';
 import { showApiError } from '@/controllers/request';

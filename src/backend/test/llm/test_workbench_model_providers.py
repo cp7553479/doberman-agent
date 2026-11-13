@@ -1,11 +1,11 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.api.v1.schemas import WSModel
-from bisheng.llm.domain.models import LLMDao
-from bisheng.llm.domain.schemas import WorkbenchModelConfig
-from bisheng.llm.domain.services.llm import LLMService
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.api.v1.schemas import WSModel
+from doberman_agent.llm.domain.models import LLMDao
+from doberman_agent.llm.domain.schemas import WorkbenchModelConfig
+from doberman_agent.llm.domain.services.llm import LLMService
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 async def test_picker_projects_providers_only_for_configured_models_without_credentials(monkeypatch):
@@ -40,9 +40,9 @@ async def test_empty_picker_does_not_read_the_provider_catalog(monkeypatch):
 
 
 async def test_public_workstation_config_requests_picker_metadata(monkeypatch):
-    from bisheng.api.v1.schemas import WorkstationConfig
-    from bisheng.dsh.domain.services.capability_catalog import CapabilityCatalogService
-    from bisheng.workstation.api.endpoints import config as endpoint
+    from doberman_agent.api.v1.schemas import WorkstationConfig
+    from doberman_agent.dsh.domain.services.capability_catalog import CapabilityCatalogService
+    from doberman_agent.workstation.api.endpoints import config as endpoint
 
     result = WorkstationConfig(models=[WSModel(id="42", provider_id="7", provider_name="Provider")])
     reader = AsyncMock(return_value=result)
@@ -52,7 +52,7 @@ async def test_public_workstation_config_requests_picker_metadata(monkeypatch):
     monkeypatch.setattr(CapabilityCatalogService, "picker_tools", AsyncMock(return_value=[]))
     monkeypatch.setattr(
         endpoint,
-        "bisheng_settings",
+        "doberman_agent_settings",
         SimpleNamespace(
             dsh=SimpleNamespace(enabled=False),
             async_get_knowledge=AsyncMock(return_value=SimpleNamespace(image_parser_enabled=False)),

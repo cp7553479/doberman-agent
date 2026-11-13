@@ -11,20 +11,20 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import (
+from doberman_agent.common.errcode.knowledge_space import (
     SpacePermissionDeniedError,
     SpaceTenantMismatchError,
 )
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 FILE = 1
 DIR = 0
 
-_SVC = "bisheng.knowledge.domain.services.knowledge_space_service"
+_SVC = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 @pytest.fixture(autouse=True)
@@ -271,7 +271,7 @@ async def test_cross_space_file_name_conflict_allowed(async_db_session, monkeypa
     await async_db_session.commit()
 
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_service.TagDao.aupdate_resource_tags",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.TagDao.aupdate_resource_tags",
         AsyncMock(),
     )
     svc = _svc()
@@ -363,7 +363,7 @@ async def test_cross_space_moves_version_chain_clears_tags_sets_rebuilding(async
 
     cleared_tags, dispatched = [], []
     monkeypatch.setattr(
-        "bisheng.knowledge.domain.services.knowledge_space_service.TagDao.aupdate_resource_tags",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.TagDao.aupdate_resource_tags",
         AsyncMock(side_effect=lambda *a, **k: cleared_tags.append(a)),
     )
 

@@ -1,4 +1,4 @@
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 import { SubjectSearchDepartment } from "@/components/bs-comp/permission/SubjectSearchDepartment"
 import type { SelectedSubject } from "@/components/bs-comp/permission/types"
 

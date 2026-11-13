@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from bisheng.common.errcode.open_api import PersonalTokenHolderInvalidError
-from bisheng.database.models.tenant import UserTenant
-from bisheng.open_api.domain.models.api_credential import ApiCredential
-from bisheng.open_api.domain.services.credential_validator import resolve_natural_person
-from bisheng.user.domain.models.user import User
+from doberman_agent.common.errcode.open_api import PersonalTokenHolderInvalidError
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+from doberman_agent.open_api.domain.services.credential_validator import resolve_natural_person
+from doberman_agent.user.domain.models.user import User
 
 
 async def _seed_holder(open_api_db, *, deleted: int = 0, tenant_id: int = 1, active: int | None = 1):

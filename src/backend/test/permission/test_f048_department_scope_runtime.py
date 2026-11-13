@@ -12,28 +12,28 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
     PermissionVersionConflictError,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.database.models.department import Department
-from bisheng.department.domain.services import (
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.database.models.department import Department
+from doberman_agent.department.domain.services import (
     department_projection_scope as scope_module,
 )
-from bisheng.department.domain.services import (
+from doberman_agent.department.domain.services import (
     department_service as service_module,
 )
-from bisheng.department.domain.services.department_projection_scope import (
+from doberman_agent.department.domain.services.department_projection_scope import (
     DEPARTMENT_PROJECTION_CURRENT,
     DEPARTMENT_PROJECTION_PROJECTING,
     PreparedDepartmentProjection,
     SqlDepartmentProjectionScope,
 )
-from bisheng.department.domain.services.department_service import (
+from doberman_agent.department.domain.services.department_service import (
     DepartmentTopologyProjectionService,
 )
-from bisheng.permission.domain.services.projection_plan import (
+from doberman_agent.permission.domain.services.projection_plan import (
     ProjectionPlan,
     ProjectionTupleDelta,
 )

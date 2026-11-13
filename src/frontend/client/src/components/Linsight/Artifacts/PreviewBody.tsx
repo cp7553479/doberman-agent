@@ -1,4 +1,4 @@
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 import { showApiError } from '~/api/request';
 /**
  * F035: shared file-preview body — resolves the artifact source (text / image)
@@ -6,7 +6,7 @@ import { showApiError } from '~/api/request';
  * Used by both the legacy drawer (FilePreviewPanel) and the inline WorkspacePanel
  * so the two surfaces render identical content.
  */
-import { Colored, Outlined } from 'bisheng-icons';
+import { Colored, Outlined } from '@doberman-agent/icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ChatCitation } from '~/api/chatApi';
 import type { CitationDocumentPreviewState } from '~/components/Chat/Messages/Content/CitationDocumentPreviewDrawer';
@@ -34,7 +34,7 @@ import {
 import { MarkdownOutline } from './MarkdownOutline';
 import { useSlidesPreview } from './useSlidesPreview';
 
-// Placeholder icons (bisheng-icons) for the "can't preview" fallback, by extension.
+// Placeholder icons (@doberman-agent/icons) for the "can't preview" fallback, by extension.
 // Prefer the Colored variant; types without one (pdf / image / unknown) fall back
 // to a 20px Outlined icon (rendered inside an invisible 80×80 box so the footprint
 // matches the colored icons).

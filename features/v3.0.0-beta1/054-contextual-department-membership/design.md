@@ -13,7 +13,7 @@ type department
 
 此片段只列出相关关系；现有 parent、child、admin 和全部资源定义保留。旧定义为 `member or subtree_member from child`。新模型版本为 `f048-v4-contextual-departments`，checksum 为 `1898712aa30c46354edbb1878f3bd9ebb17483926b39e696c1a13c29a6a1e733`。
 
-例：用户 1 在部门 3，路径为 1 → 2 → 3，资源 A 已持有 `department:1#subtree_member` 授权。毕昇发送：
+例：用户 1 在部门 3，路径为 1 → 2 → 3，资源 A 已持有 `department:1#subtree_member` 授权。doberman-agent发送：
 
 ```json
 {
@@ -34,7 +34,7 @@ type department
 - 组织域 `DepartmentPermissionContextRepository` 查询当前用户的 UserDepartment，再按 parent_id 分层批量读取祖先。只查已知 ID，不遍历整棵树，不依赖可能过期的 path 字段。查询为 SQLModel 通用表达式，未引入 MySQL/DM8 专有语法。
 - `DepartmentPermissionContextProvider` 验证 active/CURRENT、完整性和无环，返回只含 user_id 与部门 ID 集合的 `ActorDepartmentContext`。
 - 权限应用层 `DepartmentContextPort` 接收业务事实，统一转换为临时 tuple。权限代码不导入组织 ORM/DAO/Service。API/worker 组合根负责注入，Celery 与 Linsight 沿用共享 worker 装配。
-- core 的 FGAClient 只支持通用 contextual tuples 提供器。部门语义保留在毕昇的模型和应用装配中，OpenFGA 服务不变。
+- core 的 FGAClient 只支持通用 contextual tuples 提供器。部门语义保留在doberman-agent的模型和应用装配中，OpenFGA 服务不变。
 
 用户、部门 ID 是现有 FGA 的全局身份键。读取显式绕过自动租户过滤，但严格限定当前用户及其已知祖先，以保留既有跨租户组织挂载路径和多部门成员关系；不能仅截取登录租户内的祖先。资源租户范围、Grant 主体合法性和共享门禁仍走既有业务校验与 FGA 模型。本改动不新增跨租户 Grant。
 

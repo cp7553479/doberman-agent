@@ -1,6 +1,6 @@
-import { Alert, notification } from '@bisheng/ui';
+import { Alert, notification } from '@doberman-agent/ui';
 import { showApiError } from '@/controllers/request';
-import { isApiError } from '@bisheng/api-client';
+import { isApiError } from '@doberman-agent/api-client';
 // src/pages/BuildPage/bench/ToolsConfig.tsx
 //
 

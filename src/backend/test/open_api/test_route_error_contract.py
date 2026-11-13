@@ -11,13 +11,13 @@ from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 from starlette.websockets import WebSocketDisconnect
 
-from bisheng.common.errcode.http_error import NotFoundError, UnAuthorizedError
-from bisheng.common.errcode.knowledge_space import SpacePermissionDeniedError
-from bisheng.common.errcode.open_api import PersonalTokenDataScopeError
-from bisheng.common.errcode.permission import PermissionDeniedError, PermissionServiceUnavailableError
-from bisheng.main import app
-from bisheng.open_api.domain.models.api_credential import ApiCredential
-from bisheng.open_api.domain.services.credential_service import hash_token
+from doberman_agent.common.errcode.http_error import NotFoundError, UnAuthorizedError
+from doberman_agent.common.errcode.knowledge_space import SpacePermissionDeniedError
+from doberman_agent.common.errcode.open_api import PersonalTokenDataScopeError
+from doberman_agent.common.errcode.permission import PermissionDeniedError, PermissionServiceUnavailableError
+from doberman_agent.main import app
+from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+from doberman_agent.open_api.domain.services.credential_service import hash_token
 from test.open_api.test_dependencies import service_account_principal
 
 HTTP_ROUTES = [
@@ -86,7 +86,7 @@ async def test_file_list_distinguishes_malformed_and_invalid_credentials(
         )
     lookup = AsyncMock(return_value=row)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_validator.CredentialRepository.get_by_hash", lookup
+        "doberman_agent.open_api.domain.services.credential_validator.CredentialRepository.get_by_hash", lookup
     )
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get(
@@ -103,11 +103,11 @@ async def test_file_list_distinguishes_malformed_and_invalid_credentials(
 
 async def test_login_cookie_cannot_override_api_credential_errors(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.utils.http_middleware._decode_jwt_subject",
+        "doberman_agent.utils.http_middleware._decode_jwt_subject",
         lambda _token: {"user_id": 7, "tenant_id": 0, "token_version": 1},
     )
     validate_login_version = AsyncMock(return_value=False)
-    monkeypatch.setattr("bisheng.utils.http_middleware._validate_token_version", validate_login_version)
+    monkeypatch.setattr("doberman_agent.utils.http_middleware._validate_token_version", validate_login_version)
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test",
@@ -132,14 +132,14 @@ async def test_login_cookie_cannot_override_api_credential_errors(monkeypatch):
 )
 async def test_assistant_keeps_authorization_error_before_stream_start(monkeypatch, error, http_status, stream):
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=service_account_principal(scopes=frozenset({"assistant:invoke"}))),
     )
     monkeypatch.setattr(
-        "bisheng.open_endpoints.api.endpoints.assistant.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
+        "doberman_agent.open_endpoints.api.endpoints.assistant.get_open_api_operator", lambda: SimpleNamespace(user_id=12)
     )
     complete = AsyncMock(side_effect=error)
-    monkeypatch.setattr("bisheng.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
+    monkeypatch.setattr("doberman_agent.open_endpoints.api.endpoints.assistant.PublishedAssistantService.complete", complete)
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/v2/assistant/chat/completions",
@@ -151,10 +151,10 @@ async def test_assistant_keeps_authorization_error_before_stream_start(monkeypat
 
 
 async def test_child_tenant_key_is_not_mistaken_for_missing_account(open_api_db, fake_redis, monkeypatch):
-    from bisheng.core.context.tenant import current_tenant_id
-    from bisheng.open_api.domain.models.service_account import ServiceAccount
-    from bisheng.open_api.domain.schemas.credential import KeyIssueRequest
-    from bisheng.open_api.domain.services.credential_service import CredentialService
+    from doberman_agent.core.context.tenant import current_tenant_id
+    from doberman_agent.open_api.domain.models.service_account import ServiceAccount
+    from doberman_agent.open_api.domain.schemas.credential import KeyIssueRequest
+    from doberman_agent.open_api.domain.services.credential_service import CredentialService
 
     # The account belongs to tenant 9 and the tenant filter only shows a session
     # its own tenant's rows, so the setup has to run as tenant 9. Without this the
@@ -178,11 +178,11 @@ async def test_child_tenant_key_is_not_mistaken_for_missing_account(open_api_db,
     finally:
         current_tenant_id.reset(setup_token)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_service.CredentialService.touch_last_used", AsyncMock()
+        "doberman_agent.open_api.domain.services.credential_service.CredentialService.touch_last_used", AsyncMock()
     )
     # CustomMiddleware seeds tenant 1. Authentication must load the account in
     # the credential's tenant before replacing that initial tenant context.
-    from bisheng.open_api.domain.services.credential_validator import validate_bearer
+    from doberman_agent.open_api.domain.services.credential_validator import validate_bearer
 
     token = current_tenant_id.set(1)
     try:

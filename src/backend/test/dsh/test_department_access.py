@@ -11,8 +11,8 @@ from test.dsh.test_subject_policy import subject_store, update  # noqa: F401
 def test_personal_quota_override(subject_store, personal, enabled, expected):  # noqa: F811
     from sqlmodel import Session
 
-    from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-    from bisheng.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
+    from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+    from doberman_agent.dsh.domain.repositories.subject_policy import DshSubjectPolicyRepository
 
     with Session(subject_store) as session, session.begin():
         repository = DshSubjectPolicyRepository(session)
@@ -32,7 +32,7 @@ def test_personal_quota_override(subject_store, personal, enabled, expected):  #
         )
         session.flush()
         assert repository.effective(20).rows[0].monthly_token_limit == expected
-        from bisheng.dsh.domain.schemas.admin import ModelUserPermission
+        from doberman_agent.dsh.domain.schemas.admin import ModelUserPermission
 
         permission = repository.user_permissions([(20, "admin")], model_id=7, limit=10)["items"][0]
         ModelUserPermission.model_validate(permission)
@@ -59,7 +59,7 @@ def test_personal_quota_override(subject_store, personal, enabled, expected):  #
 def test_unassigned_and_numeric_user_search(subject_store):  # noqa: F811
     from sqlmodel import Session
 
-    from bisheng.user.domain.repositories.dsh_profile import UserDshProfileRepository
+    from doberman_agent.user.domain.repositories.dsh_profile import UserDshProfileRepository
 
     with Session(subject_store) as session:
         assert UserDshProfileRepository.access_users(session, keyword="20") == [(20, "admin")]

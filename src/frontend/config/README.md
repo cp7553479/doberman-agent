@@ -4,7 +4,7 @@ The workspace owns shared dependency versions in `pnpm-workspace.yaml` (`catalog
 
 - `tsconfig.base.json`: source-only, no declaration emit, bundler module resolution, shared JSX/target defaults. App configs retain their strict legacy gate and aliases.
 - `eslint.mjs`: shared lint policy. Frozen imports, request-wrapper exemptions and legacy suppressions remain app-local.
-- `postcss.cjs`: shared Tailwind 3 / Autoprefixer pipeline. Each app's content paths and feature plugins stay in its Tailwind config; design tokens/fonts/interactions come from `@bisheng/ui/tailwind-preset`.
+- `postcss.cjs`: shared Tailwind 3 / Autoprefixer pipeline. Each app's content paths and feature plugins stay in its Tailwind config; design tokens/fonts/interactions come from `@doberman-agent/ui/tailwind-preset`.
 - `vite.ts`: workspace env defaults plus app-local overrides, proxy configuration and MinIO diagnostics. Process environment takes precedence; the merged values are also injected into browser code using each app's existing public env prefixes. API configuration prefers `VITE_API_PROXY_TARGET`; legacy platform `VITE_PROXY_TARGET` and client `VITE_DEV_API_TARGET` still work. MinIO prefers `VITE_MINIO_PROXY_TARGET`; client also accepts `VITE_DEV_MINIO_TARGET`. Gateway license traffic keeps its dedicated `VITE_GATEWAY_PROXY_TARGET`.
 - `vitest.config.mts`: node-only configuration tests, without the applications' DOM setup. Run `pnpm test:config` at `src/frontend/`.
 
@@ -18,7 +18,7 @@ installed nginx/gateway/app-proxy entry that serves `/apps/`, for example
 target also routes hosted apps. A FastAPI-only target cannot serve `/apps/`.
 
 SheetJS is pinned to **0.20.3** in the workspace catalog for client, platform and
-`@bisheng/file-viewers`. The unchanged official archive is committed at `vendor/xlsx-0.20.3.tgz`; the root
+`@doberman-agent/file-viewers`. The unchanged official archive is committed at `vendor/xlsx-0.20.3.tgz`; the root
 `pnpm.overrides.xlsx` makes all consumers use it without contacting the external CDN.
 The catalog retains version 0.20.3 because pnpm 9.15.9 does not accept `file:` catalog
 entries. Archive provenance and SHA-512 are recorded in `vendor/README.md` and checked

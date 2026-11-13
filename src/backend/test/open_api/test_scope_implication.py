@@ -6,17 +6,17 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from bisheng.common.errcode.open_api import PersonalTokenDataScopeError
-from bisheng.knowledge.domain.services import knowledge_permission_service
-from bisheng.knowledge.domain.services.knowledge_file_service import KnowledgeFileService
-from bisheng.knowledge.domain.services.knowledge_metadata_service import KnowledgeMetadataService
-from bisheng.open_api.domain.scopes import (
+from doberman_agent.common.errcode.open_api import PersonalTokenDataScopeError
+from doberman_agent.knowledge.domain.services import knowledge_permission_service
+from doberman_agent.knowledge.domain.services.knowledge_file_service import KnowledgeFileService
+from doberman_agent.knowledge.domain.services.knowledge_metadata_service import KnowledgeMetadataService
+from doberman_agent.open_api.domain.scopes import (
     OPEN_API_SCOPE_MAP,
     OPEN_API_SCOPES,
     get_open_api_scope_marker,
     is_scope_granted,
 )
-from bisheng.open_endpoints.api.endpoints import knowledge as knowledge_endpoints
+from doberman_agent.open_endpoints.api.endpoints import knowledge as knowledge_endpoints
 from test.open_api.test_dependencies import build_app, request, service_account_principal
 
 
@@ -24,7 +24,7 @@ def _validate_with(monkeypatch, scopes):
     async def validate(_authorization):
         return service_account_principal(scopes=frozenset(scopes))
 
-    monkeypatch.setattr("bisheng.open_api.api.dependencies.validate_bearer", validate)
+    monkeypatch.setattr("doberman_agent.open_api.api.dependencies.validate_bearer", validate)
 
 
 async def test_write_only_key_can_call_read_endpoint(monkeypatch):

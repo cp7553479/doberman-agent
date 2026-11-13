@@ -1,4 +1,4 @@
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState, type ReactNode, type Ref } from 'react';
 
 export interface ReasoningDetailsProps {
@@ -47,7 +47,7 @@ export interface MessageBubbleProps {
 }
 /** Host actions/resources are slots; one shared message layout owns both apps. */
 export function MessageBubble({ title, logo, sender, selection, reasoning, children, attachments, footer, status, pending, contentRef, hideBody }: MessageBubbleProps) {
-  return <div className="bisheng-message flex w-full py-2 items-start gap-2">
+  return <div className="doberman_agent-message flex w-full py-2 items-start gap-2">
     {selection}
     <div className="w-fit group max-w-[90%]">
       {reasoning}

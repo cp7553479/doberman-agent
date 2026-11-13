@@ -1,5 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import store from '~/store';

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, notification, toast } from '@bisheng/ui';
+import { Button, notification, toast } from '@doberman-agent/ui';
 import { useContext, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 import { useTranslation } from "react-i18next";

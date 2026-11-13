@@ -130,7 +130,7 @@
 
 ## 给实现窗口（技术细节，设计师可跳过）
 
-**壳已落地为组件库组件 `@bisheng/ui` 的 `Modal`**（`packages/ui/src/components/Modal/Modal.tsx`，实时预览见 components/modal.mdx）：本文 §2–§7 的取值——四档宽度与降档表、遮罩、层级、结构与间距、200/160ms 动效、三条关闭路径与提交锁、手机档全屏——全部写死在壳里，业务页只传内容。下列条目是它的实现口径，同时记录尚未收口的部分。
+**壳已落地为组件库组件 `@doberman-agent/ui` 的 `Modal`**（`packages/ui/src/components/Modal/Modal.tsx`，实时预览见 components/modal.mdx）：本文 §2–§7 的取值——四档宽度与降档表、遮罩、层级、结构与间距、200/160ms 动效、三条关闭路径与提交锁、手机档全屏——全部写死在壳里，业务页只传内容。下列条目是它的实现口径，同时记录尚未收口的部分。
 
 - **降档断点用 1024 / 1280**，即 Tailwind 的 `lg:` / `xl:`。二者属桌面档（>768）内部的细分排版，不是新增档位断点，符合[基础-多端适配原则.md](基础-多端适配原则.md)「不自造断点」。档位断点仍只有 576 / 768 两个。
 - 主体区不留上下内边距，但它同时是滚动容器（`overflow-y: auto`），而滚动容器在**内边距盒**处裁切——padding 为 0 时，排在最上 / 最下的输入框那 2px 聚焦环会被削掉半圈。壳里用 `py-0.5 -my-0.5` 解决：内边距给环留出 2px，负外边距把这 2px 从布局里减回去，视觉间距一点不变。
@@ -141,7 +141,7 @@
 - 动效曲线：进出统一 `cubic-bezier(0.2, 0, 0, 1)`；200ms / 160ms。缩放只做入场，出场纯淡出（缩小会让人误以为「收回到某处」）。落地为 `modal-overlay-in/out` + `modal-content-in/out` 四条 keyframes（两份 Tailwind 配置同步）。两个坑：入场缩放写**独立的 `scale` 属性**而不是 `transform: scale()`，否则会和居中用的 `translate(-50%, -50%)` 打架（手机档又是 `inset: 0`，两档不能共用一条 transform）；卡片不能再包一层居中 div——`Dialog.Portal` 会给每个子节点各套一个 `Presence`，没有自己动画的那层 div 一关就整棵卸载，出场动画根本来不及播。
 - 无障碍：`role="dialog"` + `aria-modal="true"` + `aria-labelledby` 指向标题；焦点陷阱在弹窗内，关闭后归还触发元素。全屏档同样带 `aria-modal`。
 - 手机档全屏：`< 576px` 时容器 `inset: 0`、圆角归零、不渲染遮罩层；现有 AlertDialog 底座的「贴底 + 仅顶部圆角」写法在弹窗上作废（抽屉仍保留）。底部操作条的安全区用 `padding-bottom: calc(16px + env(safe-area-inset-bottom))`，需 `viewport-fit=cover`。
-- **原语收敛**：组件库 `Modal` 落地后多出第三条路——业务页逐步迁到 `@bisheng/ui` 的 `Modal`（与 Button / Toast / StateView 同一收敛方式，client 侧保留旧路径的 re-export 壳）。原「改 A 套 `Dialog.tsx` 的壳、业务零改动」仍是成本最低的过渡手段，两者可并行：先改壳止血，再按页迁到组件库。A 套原语直拼 22 处是最大人群（见下方台账 §1.2）；B 套模板 `OGDialogTemplate` 随二次确认收官后退役（[组件-Confirm二次确认.md](组件-Confirm二次确认.md) §4.3 第 4 步）。**client 两套壳一处未动，迁移批次待排。**
+- **原语收敛**：组件库 `Modal` 落地后多出第三条路——业务页逐步迁到 `@doberman-agent/ui` 的 `Modal`（与 Button / Toast / StateView 同一收敛方式，client 侧保留旧路径的 re-export 壳）。原「改 A 套 `Dialog.tsx` 的壳、业务零改动」仍是成本最低的过渡手段，两者可并行：先改壳止血，再按页迁到组件库。A 套原语直拼 22 处是最大人群（见下方台账 §1.2）；B 套模板 `OGDialogTemplate` 随二次确认收官后退役（[组件-Confirm二次确认.md](组件-Confirm二次确认.md) §4.3 第 4 步）。**client 两套壳一处未动，迁移批次待排。**
 - 新页上线：本文已在 `src/frontend/client/rspress.config.ts` 的 `themeConfig.sidebar` 注册；改配置需重启 dev 服务。
 
 ## 待决策清单
@@ -156,7 +156,7 @@
 
 ### 1.1 两套并行的弹窗体系（乱的根源）
 
-BISHENG client 有两套弹窗，都包着同一个 Radix `@radix-ui/react-dialog`，但样式不同：
+doberman-agent client 有两套弹窗，都包着同一个 Radix `@radix-ui/react-dialog`，但样式不同：
 
 - **A 套（标准弹窗原语）**：原语 `src/components/ui/Dialog.tsx`、模板 `DialogTemplate.tsx`；遮罩 `bg-black/40` 半透明、无模糊；层级 `z-[100]`。
 - **B 套（「Original」原语，OG 前缀）**：原语 `src/components/ui/OriginalDialog.tsx`（导出 `OGDialogContent` 等）、模板 `OGDialogTemplate.tsx`（用得最多）；遮罩原为 `bg-black/80`，二次确认期对齐 C 套改为 `bg-gray-500/90`（当时同带毛玻璃，2026-08-04 已清除）；层级 `z-50`。
@@ -200,7 +200,7 @@ BISHENG client 有两套弹窗，都包着同一个 Radix `@radix-ui/react-dialo
 
 七家弹窗定义的关键数值，供后续复核：
 
-| 维度 | 业内区间 | BISHENG v1 取值与理由 |
+| 维度 | 业内区间 | doberman-agent v1 取值与理由 |
 |---|---|---|
 | 宽度 | 15 家里 8 家用档位制、6 家单值；**4 档最常见，无一家超 5 档**。数值聚成五簇：min-width 地板 280–320、小档 380–464、中文体系默认 480–560、跨体系默认 600–640（9 次，最密集）、大档 900–980 | 四档 400 / 600 / 960 / 全屏。400 落在小档簇正中（Spectrum S、Atlassian small 同值），600 是共识最强的默认值；large 原定 800（只有 Atlassian 一家），2026-08-20 二轮调研后加宽到 960 对齐大档簇；全屏档设计师拍板加入（业内仅 TDesign、M3 有，M3 限手机端） |
 | 高度与垂直位置 | **两套配套方案，沿地域线分**：国内四家（antd / Arco / Semi / Element Plus）不设 max-height + 外层页面式滚动 + 距顶固定；西方八家（M3 / Fluent / SLDS / Carbon / Spectrum / Primer / Polaris / shadcn）设 max-height + 主体区内滚 + 垂直居中。Semi 源码注释是唯一写明因果的：垂直居中 + 外层滚动时 `margin:auto` 会按 flexbox 规范塌成 0，弹窗顶部滚不到。上下留白单边：M3 / Fluent 24、Polaris 30、Primer 32、Atlassian 60 | 走西方那一套（居中 + 主体内滚 + 设 max-height），三者配套、内部自洽。上下留白原定 96px（单边 48，比所有人都宽松），2026-08-20 收到 64px（单边 32，与 Primer 同档）。不设 min-height（业内仅 M3 有 140px） |
@@ -229,7 +229,7 @@ BISHENG client 有两套弹窗，都包着同一个 Radix `@radix-ui/react-dialo
 | 2026-08-20 | 设计师批注回填：**手机档（< 576px）弹窗一律走全屏档**，原「从底部上滑、最高 90% 屏高、顶部露一条主内容」那套作废；§2 全屏档补「手机档固定形态」、给实现窗口改为 `inset: 0` + 不渲染遮罩，待决策清单删去已结清的「全屏档首个落地场景」一项 | 本文件、基础-多端适配原则.md、组件-Drawer抽屉.md、00-总纲.md | 待 committer 窗口提交 |
 | 2026-08-20 | **升级为 v1 正式规范**：先调研 antd / Arco / TDesign / Material 3 / Fluent 2 / Apple HIG / SLDS 七家的弹窗定义（存档见台账 §1.4），设计师逐项拍板——尺寸四档 400/600/800/全屏（三档沿用抽屉阶梯、全屏档为设计师加入）、遮罩黑 40% 不加模糊（淘汰灰白毛玻璃）、结构与间距抄抽屉（header 56/body 20/footer 12·20）、标题 16px 字重 500、「×」按有无取消按钮决定、footer 排列与间距沿用《Button 按钮》、层级四档 1000/1100/1200/1300 在本文定稿。骨架改为与抽屉同构的 7 节 + 给实现窗口；原「尚未拍板的点」7 项全部结清，待决策清单收窄为 3 项验收类 | 本文件、01-设计规范.md、组件-Drawer抽屉.md、组件-Toast轻提示.md、基础-多端适配原则.md、00-总纲.md | 待 committer 窗口提交 |
 
-| 2026-08-20 | **v1 规范落地为组件库组件**：`@bisheng/ui` 新增 `Modal`（四档尺寸 + 降档表、黑 40% 无模糊遮罩、结构与间距、三条关闭路径 + `beforeClose` 拦截 + `submitting` 锁、手机档全屏、焦点陷阱与 `aria-modal`），底层沿用 `@radix-ui/react-dialog`；层级四档写成 token（`Z_INDEX` 进 design-token.cjs，两个 CSS 载体 + 两份 Tailwind 配置同步），Toaster 的 `z-[9999]` 归并到 `z-toast`；动效四条 keyframes 落地；文档站 components/modal.mdx 重写为实时预览 + API。**client 两套旧壳未动**（迁移批次见待决策清单） | `packages/ui/src/components/Modal/*`（新）、`packages/ui/src/index.ts`、`packages/ui/design-token.cjs`、`packages/ui/src/styles/tokens.css`、`packages/ui/tailwind-preset.cjs`、`packages/ui/src/components/Toast/Toaster.tsx`、`packages/ui/docs/components/modal.mdx`、`packages/ui/docs/design-token.mdx`、`client/src/style.css`、`client/tailwind.config.cjs`、`packages/ui/package.json` + `pnpm-workspace.yaml`（radix dialog 进 catalog） | 待提交 |
+| 2026-08-20 | **v1 规范落地为组件库组件**：`@doberman-agent/ui` 新增 `Modal`（四档尺寸 + 降档表、黑 40% 无模糊遮罩、结构与间距、三条关闭路径 + `beforeClose` 拦截 + `submitting` 锁、手机档全屏、焦点陷阱与 `aria-modal`），底层沿用 `@radix-ui/react-dialog`；层级四档写成 token（`Z_INDEX` 进 design-token.cjs，两个 CSS 载体 + 两份 Tailwind 配置同步），Toaster 的 `z-[9999]` 归并到 `z-toast`；动效四条 keyframes 落地；文档站 components/modal.mdx 重写为实时预览 + API。**client 两套旧壳未动**（迁移批次见待决策清单） | `packages/ui/src/components/Modal/*`（新）、`packages/ui/src/index.ts`、`packages/ui/design-token.cjs`、`packages/ui/src/styles/tokens.css`、`packages/ui/tailwind-preset.cjs`、`packages/ui/src/components/Toast/Toaster.tsx`、`packages/ui/docs/components/modal.mdx`、`packages/ui/docs/design-token.mdx`、`client/src/style.css`、`client/tailwind.config.cjs`、`packages/ui/package.json` + `pnpm-workspace.yaml`（radix dialog 进 catalog） | 待提交 |
 
 | 2026-08-20 | 设计师对着预览页调整内边距：**三段左右 20 → 16px**、**底部上下 12 → 16px**（底部即四边 16）、**主体上下内边距去掉**（上下空隙交给头部高度和底部内边距）；头部仍靠 56px 定高。§4 表、手机档安全区公式、台账目标值与 §1.4 调研取值同步 | 本文件、`packages/ui/src/components/Modal/Modal.tsx`、`packages/ui/docs/components/modal.mdx` | 待提交 |
 | 2026-08-20 | 设计师对着预览页改嵌套遮罩口径：**弹窗之上的二次确认要自带遮罩叠上去**，原「同一时间只有一层遮罩、嵌套时把第二层置为透明」作废——不叠时确认框和下面弹窗的白底连成一片，读起来像嵌在表单里的一块。两层 40% 实际约 64%，如需更浅再单独定值。§5 与给实现窗口同步，预览页 demo 去掉 `overlayClassName="bg-transparent"` | 本文件、01-设计规范.md、`packages/ui/docs/components/modal.mdx`、`packages/ui/src/components/Modal/Modal.tsx`（注释） | 待提交 |

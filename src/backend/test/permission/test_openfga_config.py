@@ -2,7 +2,7 @@
 
 import pytest
 
-from bisheng.core.config.openfga import OpenFGAConf
+from doberman_agent.core.config.openfga import OpenFGAConf
 
 
 def test_dual_model_mode_default_false():
@@ -19,7 +19,7 @@ def test_existing_defaults_preserved():
     conf = OpenFGAConf()
     assert conf.enabled is True
     assert conf.api_url == "http://openfga:8080"
-    assert conf.store_name == "bisheng"
+    assert conf.store_name == "doberman_agent"
     assert conf.timeout == 5
     assert conf.failed_tuple_succeeded_retention_days == 30
 

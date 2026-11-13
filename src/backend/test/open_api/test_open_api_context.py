@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.open_api.domain.context import (
+from doberman_agent.open_api.domain.context import (
     OpenApiExecutionSnapshot,
     OpenApiPrincipal,
     get_current_open_api_principal,

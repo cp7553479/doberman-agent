@@ -1,10 +1,10 @@
-"""Centralized import chain pre-mocking for BiSheng backend tests.
+"""Centralized import chain pre-mocking for doberman-agent backend tests.
 
-BiSheng's deep module import chains (auth.py, config_service, database models)
+doberman-agent's deep module import chains (auth.py, config_service, database models)
 cause circular dependencies during test discovery. This module provides a
 single function to pre-mock all known problematic modules via sys.modules.
 
-Usage in conftest.py (module-level, before any bisheng imports):
+Usage in conftest.py (module-level, before any doberman_agent imports):
 
     from test.fixtures.mock_services import premock_import_chain
     premock_import_chain()
@@ -25,7 +25,7 @@ from unittest.mock import MagicMock
 # instances.  The ``if _mod not in sys.modules`` guard in the mock loop below
 # will then skip ``redis`` automatically, leaving it as the genuine package.
 # redis.asyncio and redis.exceptions are still mocked because they are
-# reached via bisheng.core.cache.redis_conn, which is itself pre-blocked.
+# reached via doberman_agent.core.cache.redis_conn, which is itself pre-blocked.
 import redis  # noqa: F401  # pre-populate sys.modules["redis"] before the MagicMock loop
 
 _premock_log = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ _premock_log = logging.getLogger(__name__)
 # test that touches KnowledgeSpaceService patches it via monkeypatch /
 # _load_service_class helpers.
 # ---------------------------------------------------------------------------
-_knowledge_utils_mod = types.ModuleType("bisheng.knowledge.domain.services.knowledge_utils")
+_knowledge_utils_mod = types.ModuleType("doberman_agent.knowledge.domain.services.knowledge_utils")
 
 
 class _KnowledgeUtilsPlaceholder:
@@ -108,11 +108,11 @@ class _KnowledgeUtilsPlaceholder:
 
 
 _knowledge_utils_mod.KnowledgeUtils = _KnowledgeUtilsPlaceholder
-sys.modules["bisheng.knowledge.domain.services.knowledge_utils"] = _knowledge_utils_mod
+sys.modules["doberman_agent.knowledge.domain.services.knowledge_utils"] = _knowledge_utils_mod
 
-# Pre-mock celery before any bisheng module can import it (settings.py uses celery.schedules).
+# Pre-mock celery before any doberman_agent module can import it (settings.py uses celery.schedules).
 # Must happen before the MultiTenantConf import below, which traverses the config chain.
-# F011 adds: docstring_parser (pulled in by bisheng.utils.util when tenant_service imports),
+# F011 adds: docstring_parser (pulled in by doberman_agent.utils.util when tenant_service imports),
 # fakeredis (some fixtures), and a defensive list of optional dependencies.
 for _mod in (
     "celery",
@@ -128,52 +128,52 @@ for _mod in (
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
 
-from bisheng.core.config.multi_tenant import MultiTenantConf  # noqa: E402
+from doberman_agent.core.config.multi_tenant import MultiTenantConf  # noqa: E402
 
 # Union of all modules that cause circular dependency issues during test import.
 # Extracted from F001 test files: test_tenant_filter.py and test_tenant_auth.py.
 PREMOCK_MODULES: list[str] = [
     # config_service and telemetry — deepest offenders
-    "bisheng.common.services",
-    "bisheng.common.services.base",
-    "bisheng.common.services.metric_log",
-    "bisheng.common.services.config_service",
-    "bisheng.common.services.telemetry",
-    "bisheng.common.services.telemetry.telemetry_service",
+    "doberman_agent.common.services",
+    "doberman_agent.common.services.base",
+    "doberman_agent.common.services.metric_log",
+    "doberman_agent.common.services.config_service",
+    "doberman_agent.common.services.telemetry",
+    "doberman_agent.common.services.telemetry.telemetry_service",
     # database models that trigger SQLModel registration side effects
-    "bisheng.database.models.user_group",
-    "bisheng.database.models.role_access",
-    "bisheng.database.models.group",
-    "bisheng.database.models.role",
-    "bisheng.database.constants",
+    "doberman_agent.database.models.user_group",
+    "doberman_agent.database.models.role_access",
+    "doberman_agent.database.models.group",
+    "doberman_agent.database.models.role",
+    "doberman_agent.database.constants",
     # user domain models
-    "bisheng.user.domain.models.user_role",
-    "bisheng.user.domain.models.user",
+    "doberman_agent.user.domain.models.user_role",
+    "doberman_agent.user.domain.models.user",
     # error/exception modules
-    "bisheng.common.errcode.http_error",
-    "bisheng.common.exceptions.auth",
+    "doberman_agent.common.errcode.http_error",
+    "doberman_agent.common.exceptions.auth",
     # F011: tenant_service pulls in redis_manager/openfga on import
-    "bisheng.core.cache.redis_conn",
-    "bisheng.core.cache.redis_manager",
+    "doberman_agent.core.cache.redis_conn",
+    "doberman_agent.core.cache.redis_manager",
     # worker/celery modules — run celery setup at import time, break in test env
-    "bisheng.worker",
-    "bisheng.worker.main",
-    "bisheng.worker.knowledge",
-    "bisheng.worker.knowledge.file_worker",
-    "bisheng.worker.approval",
-    "bisheng.worker.approval.tasks",
+    "doberman_agent.worker",
+    "doberman_agent.worker.main",
+    "doberman_agent.worker.knowledge",
+    "doberman_agent.worker.knowledge.file_worker",
+    "doberman_agent.worker.approval",
+    "doberman_agent.worker.approval.tasks",
 ]
 
 # Modules that must be imported for real (not mocked) even though their parent
 # package appears in PREMOCK_MODULES.  Each entry is imported and registered in
 # sys.modules BEFORE the parent package mock is installed, so subsequent
-# `from bisheng.worker.knowledge.scheduler import …` in test files resolves to
+# `from doberman_agent.worker.knowledge.scheduler import …` in test files resolves to
 # the real module rather than a MagicMock attribute.
 _REAL_SUBMODULES: list[str] = [
-    "bisheng.worker.knowledge.scheduler",
+    "doberman_agent.worker.knowledge.scheduler",
     # file_worker defines Celery tasks tested via .run(); must be real so that
     # parse_knowledge_file_celery.run() invokes the actual function body.
-    "bisheng.worker.knowledge.file_worker",
+    "doberman_agent.worker.knowledge.file_worker",
 ]
 
 
@@ -182,7 +182,7 @@ def premock_import_chain() -> None:
 
     Only mocks modules not already present in sys.modules. Safe to call
     multiple times (idempotent). Must be called BEFORE importing modules
-    that trigger the chain (e.g., bisheng.user.domain.services.auth).
+    that trigger the chain (e.g., doberman_agent.user.domain.services.auth).
 
     Does NOT interfere with F001 test files that do their own pre-mocking,
     because those files mock the same modules before this function runs.
@@ -190,18 +190,18 @@ def premock_import_chain() -> None:
     # Step 1: install redis/cache mocks first so that real submodules that
     # depend on redis_manager can be imported without errors.
     _redis_deps = (
-        "bisheng.core.cache.redis_conn",
-        "bisheng.core.cache.redis_manager",
+        "doberman_agent.core.cache.redis_conn",
+        "doberman_agent.core.cache.redis_manager",
     )
     for mod_name in _redis_deps:
         if mod_name not in sys.modules:
             sys.modules[mod_name] = MagicMock()
 
-    # Step 1b: install a task-aware bisheng.worker.main stub so that
-    # @bisheng_celery.task on real submodules (scheduler, file_worker) produces
+    # Step 1b: install a task-aware doberman_agent.worker.main stub so that
+    # @doberman_agent_celery.task on real submodules (scheduler, file_worker) produces
     # objects with a .run attribute pointing at the original function.  This
     # lets tests call task.run(...) to exercise the real function body.
-    if "bisheng.worker.main" not in sys.modules:
+    if "doberman_agent.worker.main" not in sys.modules:
 
         class _FakeCeleryTask:
             """Minimal Celery-task stand-in: exposes .run(), .delay(), .apply_async().
@@ -223,17 +223,17 @@ def premock_import_chain() -> None:
                 return None
 
         def _task_decorator(*deco_args, **deco_kwargs):
-            """Accept @bisheng_celery.task or @bisheng_celery.task(name=…) forms."""
+            """Accept @doberman_agent_celery.task or @doberman_agent_celery.task(name=…) forms."""
             if len(deco_args) == 1 and callable(deco_args[0]) and not deco_kwargs:
-                # bare @bisheng_celery.task
+                # bare @doberman_agent_celery.task
                 return _FakeCeleryTask(deco_args[0])
-            # @bisheng_celery.task(acks_late=True, …)
+            # @doberman_agent_celery.task(acks_late=True, …)
             return lambda fn: _FakeCeleryTask(fn)
 
-        _worker_main_stub = MagicMock(name="bisheng.worker.main")
-        _worker_main_stub.bisheng_celery = MagicMock(name="bisheng_celery")
-        _worker_main_stub.bisheng_celery.task = _task_decorator
-        sys.modules["bisheng.worker.main"] = _worker_main_stub
+        _worker_main_stub = MagicMock(name="doberman_agent.worker.main")
+        _worker_main_stub.doberman_agent_celery = MagicMock(name="doberman_agent_celery")
+        _worker_main_stub.doberman_agent_celery.task = _task_decorator
+        sys.modules["doberman_agent.worker.main"] = _worker_main_stub
 
     # Step 2: pre-load real submodules before their parent package is mocked.
     import importlib
@@ -253,9 +253,9 @@ def premock_import_chain() -> None:
     for mod_name in PREMOCK_MODULES:
         if mod_name not in sys.modules:
             mock = MagicMock()
-            if mod_name == "bisheng.common.services.config_service":
+            if mod_name == "doberman_agent.common.services.config_service":
                 mock.settings = _create_default_mock_settings()
-            elif mod_name == "bisheng.database.constants":
+            elif mod_name == "doberman_agent.database.constants":
                 mock.AdminRole = 1
             sys.modules[mod_name] = mock
 
@@ -264,7 +264,7 @@ def create_mock_settings(
     multi_tenant_enabled: bool = False,
     jwt_secret: str = "test-secret-key",
     jwt_expire: int = 86400,
-    jwt_iss: str = "bisheng",
+    jwt_iss: str = "doberman_agent",
 ) -> MagicMock:
     """Create a configured MagicMock mimicking the global Settings object.
 

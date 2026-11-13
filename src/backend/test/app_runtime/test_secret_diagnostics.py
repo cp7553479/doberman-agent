@@ -6,9 +6,9 @@ from types import SimpleNamespace
 def test_bound_secret_is_redacted_before_tail_and_missing_context_is_omitted(monkeypatch):
     from cryptography.fernet import Fernet
 
-    from bisheng.app_runtime.domain.services.runtime_payload import seal
-    from bisheng.app_runtime.domain.services.runtime_secret_diagnostics import safe_diagnostic_tail
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_runtime.domain.services.runtime_payload import seal
+    from doberman_agent.app_runtime.domain.services.runtime_secret_diagnostics import safe_diagnostic_tail
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.app_runtime, "runtime_payload_key", Fernet.generate_key().decode())
     op = SimpleNamespace(payload={"sensitive_env_names": ["COLOR"], "sealed_env": seal({"COLOR": "xyz"})})

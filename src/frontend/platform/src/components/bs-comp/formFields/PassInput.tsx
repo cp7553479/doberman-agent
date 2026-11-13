@@ -1,4 +1,4 @@
-import { PasswordInput, type InputProps } from '@bisheng/ui';
+import { PasswordInput, type InputProps } from '@doberman-agent/ui';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,12 +20,12 @@ export const PassInput = React.forwardRef<HTMLInputElement, PassInputProps>(func
 ) {
     const { t } = useTranslation('bs');
     return <div className={className}>
-        {label && <label htmlFor={id} className="bisheng-label flex items-center gap-1 mb-2">
+        {label && <label htmlFor={id} className="doberman_agent-label flex items-center gap-1 mb-2">
             {label}
             {tooltip && <QuestionTooltip content={tooltip} />}
-            {required && <span className="bisheng-tip">*</span>}
+            {required && <span className="doberman_agent-tip">*</span>}
         </label>}
         <PasswordInput {...props} ref={ref} id={id} required={required} aria-invalid={Boolean(error) || undefined} revealLabel={t('sharedUi.showPassword')} hideLabel={t('sharedUi.hidePassword')} />
-        {error && <p className="bisheng-tip mt-1">{typeof error === 'string' ? error : t('sharedUi.required')}</p>}
+        {error && <p className="doberman_agent-tip mt-1">{typeof error === 'string' ? error : t('sharedUi.required')}</p>}
     </div>;
 });

@@ -20,7 +20,7 @@ jest.mock('~/hooks', () => ({
 jest.mock('~/components/Chat/desktopEmbedding', () => ({ isDesktopEmbedded: () => mockEmbedded }));
 jest.mock('~/hooks/queries/data-provider', () => ({ useGetBsConfig: () => ({ data: {} }) }));
 jest.mock('~/api/apps', () => ({ getBysConfigApi: async () => ({ data: {} }) }));
-jest.mock('~/pages/appChat/store/atoms', () => ({ bishengConfState: 'config' }));
+jest.mock('~/pages/appChat/store/atoms', () => ({ dobermanAgentConfState: 'config' }));
 jest.mock('~/store', () => ({ __esModule: true, default: { mobileSystemMenuOpenState: 'mobile' } }));
 jest.mock('recoil', () => ({ useRecoilState: (key: string) => jest.requireActual('react').useState(key === 'config' ? {} : false), useSetRecoilState: () => mockSetRecoil, useRecoilValue: () => false }));
 jest.mock('~/components/Chat/Input/AgentToolSelector', () => ({ useAgentToolPreferences: () => {} }));

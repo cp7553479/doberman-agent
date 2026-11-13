@@ -1,6 +1,6 @@
 import { showApiError } from "@/controllers/request";
-import { Outlined } from "bisheng-icons";
-import { Button, Switch, Tag, Tooltip, TooltipProvider } from '@bisheng/ui'
+import { Outlined } from "@doberman-agent/icons";
+import { Button, Switch, Tag, Tooltip, TooltipProvider } from '@doberman-agent/ui'
 
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'

@@ -2,10 +2,10 @@
 
 ## 基线与范围
 
-- 代码仓库：`dataelement/bisheng`，目标 `feat/bisheng-work-120-main@1954f60c4acba5de5cca5e9385b76fc6b21effc0`。提交前远端复核一致。
-- 工作目录：`.worktrees/bisheng-app-chat-header`；分支 `codex/app-chat-header`。
-- 对照桌面源码：`dataelement/bisheng-desktop:V1.2.0@e928c8c3bd5d2f188f17b7d93e0fbd7bc13eaf90`。已安装 BISHENG 应用内 Harness 为 `0.2.1-rc.2`。
-- 早期 DSH `v0.9.0` 远端分支查询为空；其参考集成工作树检查时干净。截图行为归属当前毕昇应用会话页面，本次修复提交到网页代码仓库。
+- 代码仓库：`cp7553479/doberman-agent`，目标 `feat/doberman-agent-work-120-main@1954f60c4acba5de5cca5e9385b76fc6b21effc0`。提交前远端复核一致。
+- 工作目录：`.worktrees/doberman-agent-app-chat-header`；分支 `codex/app-chat-header`。
+- 对照桌面源码：`cp7553479/doberman-agent-desktop:V1.2.0@e928c8c3bd5d2f188f17b7d93e0fbd7bc13eaf90`。已安装 doberman-agent 应用内 Harness 为 `0.2.1-rc.2`。
+- 早期 DSH `v0.9.0` 远端分支查询为空；其参考集成工作树检查时干净。截图行为归属当前doberman-agent应用会话页面，本次修复提交到网页代码仓库。
 
 ## 根因与实现
 

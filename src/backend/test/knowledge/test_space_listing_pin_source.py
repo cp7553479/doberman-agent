@@ -11,9 +11,9 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-_KS = "bisheng.knowledge.domain.services.knowledge_space_service"
+_KS = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 class _User:

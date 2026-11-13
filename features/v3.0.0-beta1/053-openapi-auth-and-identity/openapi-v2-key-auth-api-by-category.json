@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "BiSheng v2 API — 知识库、日常模式会话、工作流、助手",
+    "title": "doberman-agent v2 API — 知识库、日常模式会话、工作流、助手",
     "version": "2.0",
     "description": "四类业务接口：41 个 HTTP operation 和 2 个 WebSocket 连接。所有接口均使用 Bearer API Key。"
   },
@@ -958,7 +958,7 @@
                 "knowledge_id": 123,
                 "data": [
                   {
-                    "question": "什么是毕昇？",
+                    "question": "什么是doberman-agent？",
                     "answer": [
                       "企业级大模型应用平台"
                     ],
@@ -1016,7 +1016,7 @@
                 "data": {
                   "id": "456",
                   "relative_questions": [
-                    "毕昇是什么？"
+                    "doberman-agent是什么？"
                   ]
                 }
               }
@@ -1068,7 +1068,7 @@
               },
               "example": {
                 "id": 456,
-                "question": "什么是毕昇平台？",
+                "question": "什么是doberman-agent平台？",
                 "answer": [
                   "企业级大模型应用平台"
                 ]
@@ -1193,7 +1193,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1250,7 +1250,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1307,7 +1307,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1361,7 +1361,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1415,7 +1415,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1477,7 +1477,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1539,7 +1539,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1598,7 +1598,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1635,7 +1635,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1788,7 +1788,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -1836,7 +1836,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/bisheng__api__v1__schemas__UnifiedResponseModel"
+                  "$ref": "#/components/schemas/doberman_agent__api__v1__schemas__UnifiedResponseModel"
                 }
               }
             }
@@ -4185,7 +4185,7 @@
         ],
         "title": "ValidationError"
       },
-      "bisheng__api__v1__schemas__UnifiedResponseModel": {
+      "doberman_agent__api__v1__schemas__UnifiedResponseModel": {
         "properties": {
           "status_code": {
             "type": "integer",
@@ -4276,7 +4276,7 @@
       "variables": {
         "baseUrl": {
           "default": "http://localhost:7860",
-          "description": "BiSheng 服务地址，不含 /api/v2 后缀"
+          "description": "doberman-agent 服务地址，不含 /api/v2 后缀"
         }
       }
     }

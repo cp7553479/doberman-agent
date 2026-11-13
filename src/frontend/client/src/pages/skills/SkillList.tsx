@@ -1,5 +1,5 @@
-import { Switch, Tag } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Switch, Tag } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import type { ReactNode } from 'react';
 import type { SkillRecord } from '~/components/Skills/types';
 import { useLocalize } from '~/hooks';

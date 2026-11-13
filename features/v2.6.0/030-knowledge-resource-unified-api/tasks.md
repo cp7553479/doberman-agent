@@ -33,7 +33,7 @@
 ### 基础设施（无测试配对）
 
 - [x] **T01**: 错误码定义
-  **文件**: `src/backend/bisheng/common/errcode/knowledge.py`
+  **文件**: `src/backend/doberman_agent/common/errcode/knowledge.py`
   **逻辑**: 新增 `KnowledgeTypeNotSupportedError`（`Code = 10962`，继承 `BaseErrorCode`，msg="不支持的知识资源类型"）。
   复用现有：`KnowledgeExistError`(10900)、`KnowledgeNoEmbeddingError`(10901)、`KnowledgeInvalidCursorError`(10991)；
   空间侧复用 `SpaceLimitError`(18001)、`SpaceFolderNotFoundError`(18010)、`SpacePermissionDeniedError`(18040)。
@@ -42,7 +42,7 @@
   **依赖**: 无
 
 - [x] **T02**: 代用户身份解析封装（user_id → 权限上下文）
-  **文件**: `src/backend/bisheng/open_endpoints/domain/utils.py`（与 `get_default_operator_async` 同处）
+  **文件**: `src/backend/doberman_agent/open_endpoints/domain/utils.py`（与 `get_default_operator_async` 同处）
   **逻辑**: 新增 `async def resolve_operator(user_id: Optional[int]) -> UserPayload`：
   - `user_id` 为空 → 返回 `get_default_operator_async()`（默认操作人，维持现状）；
   - `user_id` 有值 → 按该 user_id 构造 `UserPayload`（查 `UserDao` + 角色/租户），用于后续 `rebac_list_accessible` / `PermissionService` 与 `permission_ids` 计算。
@@ -54,7 +54,7 @@
 ### 后端 Service 适配（Test-First 配对）
 
 - [x] **T03**: 知识库文件列表 cursor 适配方法（伪游标，底层维持现状）
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`
   **逻辑**: 新增 `aget_knowledge_files_cursor(...)`（**不改动现有 `aget_knowledge_files`，避免破坏 v1 调用方**）。
   按 F027 AD-15 伪游标模式实现：
   1. `decode_cursor(cursor, expected_key_len=1, context="filelib_file|kb")` → `page_num`（首页默认 1）；失败抛 `KnowledgeInvalidCursorError`(10991)，**不静默 fallback 首页**。
@@ -68,7 +68,7 @@
   **依赖**: T01
 
 - [x] **T04**: 知识空间列表口径（我创建的 + 我加入的）+ 文件列表 user_id 适配
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
   **逻辑**:
   - 列表：复用 v1 `/mine` + `/joined` 既有路径（`_format_member_spaces` / `async_get_spaces_by_ids` / `async_count_spaces_by_user`），
     合并去重为单一"我创建的 + 我加入的"口径，返回 `PageInfiniteCursorData`（对齐 v1 knowledge 列表的 cursor 形状）。"我"= 传入身份（user_id 或默认操作人）。**不含部门/广场**。
@@ -94,7 +94,7 @@
   **依赖**: T03, T04
 
 - [x] **T06**: 创建 / 更新 / 列表 endpoint facade 分派
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`
   **逻辑**:
   - **创建** `POST /`：请求体 `type` 判别——type 0/1 → `KnowledgeService.acreate_knowledge`（QA 跳过建索引为现有行为）；type=3 → `KnowledgeSpaceService.create_knowledge_space`（忽略 model、忽略 type 0/1 的 auth_type/is_released 入参对 KB 不生效）；type=2 或非法 → `KnowledgeTypeNotSupportedError`(10962)。统一出参 `KnowledgeRead`。
   - **更新** `PUT /`：按 `knowledge_id` 查 row.type 分派——KB → `update_knowledge`；空间 → `update_knowledge_space`；仅 name/description（AD-06、AD-09 不传 description 置空按 doc 语义）。
@@ -105,8 +105,8 @@
   **依赖**: T02, T03, T04, T05
 
 - [x] **T07**: 检索 endpoint —— 新增 user_id（filters 不变）
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`,
-           `src/backend/bisheng/open_endpoints/domain/schemas/filelib.py`
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`,
+           `src/backend/doberman_agent/open_endpoints/domain/schemas/filelib.py`
   **逻辑**: `RetrieveReq` **仅新增 `user_id: Optional[int]`**；`filters.knowledge_base_filters`（每库各自标签）保持不变，**不引入扁平 tags**。
   endpoint 用 T02 `resolve_operator(user_id)` 解析身份后调 `KnowledgeSpaceChatService.aretrieve_chunks`（已多态、已 per-kb 标签过滤）；
   代用户身份下只在可见资源/文件范围检索（对齐 INV-7），无权资源静默跳过。混合知识库/知识空间 id 直接透传（各 id 即各自 collection）。
@@ -115,7 +115,7 @@
   **依赖**: T02, T05
 
 - [x] **T08**: 上传 + 文件列表 endpoint facade 分派
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`
   **逻辑**:
   - **上传** `POST /file/{knowledge_id}`：`parent_id` 作为 Form 入参；按 row.type 分派——KB(0/1) → `KnowledgeService.aprocess_knowledge_file`（**不涉及 parent_id，链路维持现状**）；空间(3) → `KnowledgeSpaceService.add_file(knowledge_id, file_path, parent_id)`（原生校验目录、构造 file_level_path；目录不存在 → 18010）。**不改 `KnowledgeFileProcess`**。
   - **文件列表** `GET /file/list`：入参对齐 v1（`knowledge_id/parent_id/keyword/status/page_size/cursor/user_id`）；身份用 T02。KB(0/1) → **T03 `aget_knowledge_files_cursor`（伪游标，底层 offset 维持现状）**；空间(3) → T04 空间文件列表（`SpaceFileDao.async_list_children` cursor + parent_id 校验）。统一出参 `PageInfiniteCursorData` + `writeable`。

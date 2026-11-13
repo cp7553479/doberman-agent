@@ -123,7 +123,7 @@
 
 ## 8. D1 定向复审关闭（2026-10-23）
 
-- 复审位置：`/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration` 当前工作副本，未提交设计文档；没有修改该仓库。
+- 复审位置：`/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration` 当前工作副本，未提交设计文档；没有修改该仓库。
 - 已读设计文件 SHA256：`9f41bbc3acc64525eb3aedf4c97f4f846a201b520cefd4278844f762b4638dce`。
 - §4.1（当前第120–124行）已改为当前 R32 / Helm32，记录 source `0f2db1f9a29213ca94d4596e64b00ad8fcbac528`、原deadline/同安装UID-CID/240秒自然完成；明确原267/271及追加T274后的268/272，列出T067/T070/T071/T072仍为交付门。R31删除、R11数据、M2恢复已收拢，同时保留未验故障/卸载、ARM/新增109/发行、旧false/unknown围栏边界。过期R29/T069剩删除已不再充作当前快照。
 - §5 已知坑（当前第421行）已加入“旧holder租约尚未到期的正常409不得进入业务失败”，准确记录误清理在途安装后果、`operations.py` 的claim/执行/业务失败处理前controller门，以及T272/T273/R32同UID-CID证据。

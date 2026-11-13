@@ -6,13 +6,13 @@ import pytest
 from fastapi import WebSocketException
 from starlette.websockets import WebSocket
 
-from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-from bisheng.open_api.api.dependencies import (
+from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+from doberman_agent.open_api.api.dependencies import (
     WS_POLICY_VIOLATION,
     verify_open_api_access,
     watch_websocket_credential,
 )
-from bisheng.open_api.domain.context import (
+from doberman_agent.open_api.domain.context import (
     OpenApiPrincipal,
     reset_current_open_api_principal,
     set_current_open_api_principal,
@@ -77,7 +77,7 @@ async def test_connected_websocket_is_closed_when_credential_becomes_invalid(mon
         close=AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_watcher.validate_bearer",
+        "doberman_agent.open_api.domain.services.credential_watcher.validate_bearer",
         AsyncMock(side_effect=OpenApiCredentialInvalidError()),
     )
     token = set_current_open_api_principal(_principal())
@@ -99,7 +99,7 @@ async def test_connected_websocket_rejects_a_different_credential(monkeypatch) -
         close=AsyncMock(),
     )
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.credential_watcher.validate_bearer",
+        "doberman_agent.open_api.domain.services.credential_watcher.validate_bearer",
         AsyncMock(return_value=_principal(credential_id=6)),
     )
     token = set_current_open_api_principal(_principal(credential_id=5))

@@ -19,7 +19,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import (
+from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import (
     SIZE_AUTOPUSH,
     SIZE_INLINE,
     E2bCodeExecutor,

@@ -1,6 +1,6 @@
-import { Pagination, Button, SearchInput, Select, Slider, Textarea } from '@bisheng/ui';
+import { Pagination, Button, SearchInput, Select, Slider, Textarea } from '@doberman-agent/ui';
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger } from "@/components/bs-ui/accordion";
-import { Checkbox,RadioGroup,Radio as RadioGroupItem,Switch,Tag } from "@bisheng/ui";
+import { Checkbox,RadioGroup,Radio as RadioGroupItem,Switch,Tag } from "@doberman-agent/ui";
 
 
 import { Calendar } from "@/components/bs-ui/calendar";

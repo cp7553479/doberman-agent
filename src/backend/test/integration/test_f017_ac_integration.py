@@ -29,8 +29,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.permission.application import PermissionObject, PermissionRelation, PermissionSubject
-from bisheng.tenant.domain.services.resource_share_service import ResourceShareService
+from doberman_agent.permission.application import PermissionObject, PermissionRelation, PermissionSubject
+from doberman_agent.tenant.domain.services.resource_share_service import ResourceShareService
 
 # ── T28 — AC-01 + AC-05 + AC-12: share toggle (revoke preserves derived data) ──
 
@@ -50,11 +50,11 @@ async def test_ac_01_enable_share_writes_tuples_per_active_child():
     permissions.grant = AsyncMock()
     with (
         patch(
-            "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+            "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
             AsyncMock(return_value=permissions),
         ),
         patch(
-            "bisheng.tenant.domain.services.resource_share_service.TenantDao.aget_children_ids_active",
+            "doberman_agent.tenant.domain.services.resource_share_service.TenantDao.aget_children_ids_active",
             AsyncMock(return_value=[5, 7]),
         ),
     ):
@@ -76,7 +76,7 @@ async def test_ac_05_disable_share_deletes_only_shared_with_tuples():
     permissions.list_subject_ids = AsyncMock(return_value=("5",))
     permissions.revoke = AsyncMock()
     with patch(
-        "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+        "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
         AsyncMock(return_value=permissions),
     ):
         revoked = await ResourceShareService.disable_sharing("knowledge_space", "42")
@@ -103,7 +103,7 @@ async def test_ac_12_revoke_share_four_step_sequence():
     permissions.list_subject_ids = AsyncMock(side_effect=[("5",), ()])
     permissions.revoke = AsyncMock()
     with patch(
-        "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+        "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
         AsyncMock(return_value=permissions),
     ):
         await ResourceShareService.disable_sharing("knowledge_space", "42")
@@ -127,7 +127,7 @@ async def test_ac_02_distribute_to_child_writes_tenant_shared_to_tuple():
     """AC-02: new Child mount writes ``tenant:{child}#shared_to → tenant:{root}``."""
     permissions = MagicMock(grant=AsyncMock())
     with patch(
-        "bisheng.tenant.domain.services.resource_share_service.get_permission_relation_api",
+        "doberman_agent.tenant.domain.services.resource_share_service.get_permission_relation_api",
         AsyncMock(return_value=permissions),
     ):
         await ResourceShareService.distribute_to_child(child_id=7, root_tenant_id=1)
@@ -149,14 +149,14 @@ async def test_ac_13_mount_skip_auto_distribute_writes_no_tuple():
     Verified via TenantMountService._on_child_mounted returning an empty
     list (and not calling distribute_to_child at all).
     """
-    from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+    from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
     # Patch ResourceShareService at its canonical module path — it is
     # imported *inside* _on_child_mounted (late import), so the
     # ``tenant_mount_service.ResourceShareService`` attribute does not
     # exist at patch-time.
     with patch(
-        "bisheng.tenant.domain.services.resource_share_service.ResourceShareService.distribute_to_child",
+        "doberman_agent.tenant.domain.services.resource_share_service.ResourceShareService.distribute_to_child",
         AsyncMock(),
     ) as distribute_mock:
         distributed = await TenantMountService._on_child_mounted(
@@ -178,10 +178,10 @@ async def test_ac_03_shared_system_relation_precedes_exact_id_business_load():
     service then performs the narrowly scoped exact-ID load and validates the
     Root-to-Child topology before constructing a verified target.
     """
-    from bisheng.permission.domain.services.permission_action_service import (
+    from doberman_agent.permission.domain.services.permission_action_service import (
         PermissionActor,
     )
-    from bisheng.tenant.domain.repositories.resource_share_repository import (
+    from doberman_agent.tenant.domain.repositories.resource_share_repository import (
         SharedResourceRecord,
         SharedResourceRepository,
     )
@@ -256,7 +256,7 @@ async def test_ac_03_shared_system_relation_precedes_exact_id_business_load():
 
 def test_ac_04_editor_dsl_does_not_include_shared_with_userset():
     """AC-04: editor relation stays Root-only; no shared_with branch."""
-    from bisheng.core.openfga.authorization_model import AUTHORIZATION_MODEL
+    from doberman_agent.core.openfga.authorization_model import AUTHORIZATION_MODEL
 
     types = {t["type"]: t for t in AUTHORIZATION_MODEL["type_definitions"]}
     for resource in ("knowledge_space", "workflow", "assistant", "channel", "tool"):
@@ -284,7 +284,7 @@ def test_ac_10_shared_resource_is_counted_on_root_only():
     ``_RESOURCE_COUNT_TEMPLATES`` is a module-level dict in
     quota_service.py (not a QuotaService class attribute).
     """
-    from bisheng.role.domain.services import quota_service as qs_mod
+    from doberman_agent.role.domain.services import quota_service as qs_mod
 
     # knowledge_space moved off the raw-SQL templates (it needs `type = 3`);
     # its tenant predicate is now built by _count_knowledge_space, so assert on

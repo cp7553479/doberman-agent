@@ -4,7 +4,7 @@
 
 ## 1. 起因
 
-用户反馈任务模式做出的 PPT 效果不好，并判断主要受内置 PPT 技能 `bisheng-pptx` 的影响。用户要求先调研 dsh-desktop 的 PPT 生成做法，再反推当前问题和改进方向。
+用户反馈任务模式做出的 PPT 效果不好，并判断主要受内置 PPT 技能 `doberman-agent-pptx` 的影响。用户要求先调研 dsh-desktop 的 PPT 生成做法，再反推当前问题和改进方向。
 
 ## 2. 调研结论（dsh-desktop `67df671`，2026-10-23）
 
@@ -15,7 +15,7 @@ dsh-desktop 的 PPT 能力在 `packages/ppt-runtime`，做法有四个要点：
 3. 检查是导出门禁。`pptd_check` 返回带文件、页码、元素 ID 的完整诊断，`pptd_render` 不通过就不导出。检查项包含连续页同构图（`layout-repetition`）和封面首读焦点（`cover-focus`）。
 4. 技能正文以内容组织为主，例如"结论—主图—辅助证据—解读"。
 
-对照 bisheng-pptx，根因判断如下：bisheng-pptx 让模型每次用 python-pptx 从零写坐标、现场设计版式，没有可调用的参考版式。因此质量方差大，版式趋于单调。检查脚本只给建议，不是门禁；也没有容量、版面节奏类检查。任务模式结果区不能预览 pptx，用户和模型交付前都看不到成品。
+对照 doberman-agent-pptx，根因判断如下：doberman-agent-pptx 让模型每次用 python-pptx 从零写坐标、现场设计版式，没有可调用的参考版式。因此质量方差大，版式趋于单调。检查脚本只给建议，不是门禁；也没有容量、版面节奏类检查。任务模式结果区不能预览 pptx，用户和模型交付前都看不到成品。
 
 证据等级：上述根因判断来自静态对比，尚未用现网差样本逐份归类。端到端验收（spec AC-30）负责用改造前后对比来检验它。
 
@@ -30,7 +30,7 @@ dsh-desktop 的 PPT 能力在 `packages/ppt-runtime`，做法有四个要点：
 
 ## 4. 模板选型理由
 
-dsh 的 16 套模板大多是欧美杂志风：米色底，使用 Space Grotesk、Playfair Display 等 Windows 上没有的字体。这些模板不贴合 bisheng 的央国企、政企、金融、制造客户。所以本期按客户场景自建 5 套模板，只借鉴 dsh 部分模板的版式结构（MIT 许可）。5 套分别是：
+dsh 的 16 套模板大多是欧美杂志风：米色底，使用 Space Grotesk、Playfair Display 等 Windows 上没有的字体。这些模板不贴合 doberman-agent 的央国企、政企、金融、制造客户。所以本期按客户场景自建 5 套模板，只借鉴 dsh 部分模板的版式结构（MIT 许可）。5 套分别是：
 
 - 红韵：央国企与党政汇报。
 - 蓝图：项目与技术方案。

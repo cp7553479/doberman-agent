@@ -18,13 +18,13 @@ jest.mock('~/hooks/queries/data-provider', () => ({ useGetBsConfig: () => ({ dat
 jest.mock('~/utils', () => ({ cn: (...values: unknown[]) => values.filter(Boolean).join(' ') }));
 jest.mock('~/utils/platformAccess', () => ({ canOpenWorkbench: () => true, canShowPlatformAdminEntry: () => false }));
 jest.mock('~/components/Skills/types', () => ({ skillCenterPath: '/c/skills' }));
-jest.mock('bisheng-icons', () => {
+jest.mock('@doberman-agent/icons', () => {
   const icons = new Proxy({}, { get: () => () => null });
   return { Outlined: icons, Filled: icons, Colored: icons };
 });
 jest.mock('~/api/apps', () => ({ getBysConfigApi: () => Promise.resolve({ data: {} }) }));
 jest.mock('~/store', () => ({ __esModule: true, default: { lang: 'zh-Hans', mobileSystemMenuOpenState: false } }));
-jest.mock('~/pages/appChat/store/atoms', () => ({ bishengConfState: {} }));
+jest.mock('~/pages/appChat/store/atoms', () => ({ dobermanAgentConfState: {} }));
 jest.mock('recoil', () => ({ useRecoilState: (value: unknown) => jest.requireActual('react').useState(value) }));
 jest.mock('./UserPopMenu', () => ({ UserPopMenu: () => null }));
 jest.mock('./WorkbenchAccessGuard', () => () => null);

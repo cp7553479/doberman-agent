@@ -1,6 +1,6 @@
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import "@/style/dsh-content-safety.css";
-import { Button as SafetyButton, Tag } from "@bisheng/ui";
+import { Button as SafetyButton, Tag } from "@doberman-agent/ui";
 import type { ModelAuditRecord } from "@/types/dshModelAudit";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

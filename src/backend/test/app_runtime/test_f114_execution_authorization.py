@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionDeniedError
-from bisheng.permission.application.identity import PermissionActor
+from doberman_agent.common.errcode.permission import PermissionDeniedError
+from doberman_agent.permission.application.identity import PermissionActor
 from test.app_runtime import test_runtime_delivery_repository as ledger_tests
 
 runtime_repo = ledger_tests.runtime_repo
@@ -15,7 +15,7 @@ runtime_repo = ledger_tests.runtime_repo
 
 @pytest.fixture
 def origin(monkeypatch):
-    from bisheng.app_runtime.domain.services import runtime_authorization_service as mod
+    from doberman_agent.app_runtime.domain.services import runtime_authorization_service as mod
 
     app = SimpleNamespace(id="target", tenant_id=3, owner_user_id=81, state="online", current_version_id="approved")
     actor = SimpleNamespace(
@@ -79,11 +79,11 @@ async def test_unknown_or_tampered_user_context_is_denied(origin, mutation):
 
 
 async def test_maintenance_denial_has_no_route_or_fact_side_effect(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact, RuntimeOperation, RuntimeRoute
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
-    from bisheng.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeExecutionFact, RuntimeOperation, RuntimeRoute
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
+    from doberman_agent.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     repo = runtime_repo
     op = await repo.save(
@@ -129,10 +129,10 @@ async def test_maintenance_denial_has_no_route_or_fact_side_effect(runtime_repo,
 
 
 async def test_maintenance_fact_replay_has_no_second_projection(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
-    from bisheng.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation, RuntimeRoute
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
+    from doberman_agent.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     repo = runtime_repo
     op = await repo.save(
@@ -180,10 +180,10 @@ async def test_maintenance_fact_replay_has_no_second_projection(runtime_repo, mo
 
 @pytest.mark.parametrize("kind,allowed", [("probe", True), ("preview", True), ("deploy", False)])
 async def test_admitted_ephemeral_start_does_not_skip_formal_maintenance(runtime_repo, monkeypatch, kind, allowed):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeNode, RuntimeOperation
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeNode, RuntimeOperation
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_authorization_service import RuntimeAuthorizationService
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     node = await runtime_repo.get(RuntimeNode, "node-a")
     node.status = "ready"

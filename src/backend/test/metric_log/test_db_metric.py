@@ -14,14 +14,14 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import TimeoutError as SQLAlchemyTimeoutError
 from sqlalchemy.pool import QueuePool
 
-from bisheng.common.services import metric_log as ml
-from bisheng.common.services.metric_log import (
+from doberman_agent.common.services import metric_log as ml
+from doberman_agent.common.services.metric_log import (
     DbQueryHistogram,
     maybe_emit_pool_gauge,
     record_db_query,
 )
-from bisheng.core.config.settings import MetricLogConf
-from bisheng.core.database.connection import (
+from doberman_agent.core.config.settings import MetricLogConf
+from doberman_agent.core.database.connection import (
     _emit_pool_wait_timeout_if_needed,
     _install_db_metric_events,
 )
@@ -47,7 +47,7 @@ def _line_for(messages, domain):
 
 
 def _patch_conf(monkeypatch, conf):
-    from bisheng.common.services import config_service
+    from doberman_agent.common.services import config_service
 
     monkeypatch.setattr(config_service.settings, "metric_log", conf, raising=False)
 

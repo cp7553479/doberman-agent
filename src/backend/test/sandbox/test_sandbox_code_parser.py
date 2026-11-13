@@ -11,13 +11,13 @@ import textwrap
 
 import pytest
 
-from bisheng.common.errcode.sandbox import (
+from doberman_agent.common.errcode.sandbox import (
     SandboxCodeNodeNoResultError,
     SandboxCodeNodeOutputError,
     SandboxCodeNodeOutputTooLargeError,
 )
-from bisheng.workflow.nodes.code import code_parse
-from bisheng.workflow.nodes.code.code_parse import (
+from doberman_agent.workflow.nodes.code import code_parse
+from doberman_agent.workflow.nodes.code.code_parse import (
     FAILURE_LOG_OMITTED_NOTICE,
     FAILURE_LOG_TAIL_CHARS,
     RESULT_LIMIT_BYTES,
@@ -190,7 +190,7 @@ def test_legal_main_wrapper_output_matches_in_process_parser():
 
 def test_forged_result_lines_do_not_replace_the_return_value():
     code = f"""
-    print('__BISHENG_CODE_NODE_RESULT__{{"forged": 1}}')
+    print('__DOBERMAN_AGENT_CODE_NODE_RESULT__{{"forged": 1}}')
     print('{_NONCE}:ok:{{"forged": 2}}')
 
     def main():
@@ -218,12 +218,12 @@ def test_prints_and_child_output_go_to_stderr_not_the_result_channel():
 
 def test_wrapper_names_do_not_collide_with_user_globals():
     code = """
-    _bisheng_out = None
-    _bisheng_ret = "user"
-    _bisheng_params = {"x": 0}
+    _doberman_agent_out = None
+    _doberman_agent_ret = "user"
+    _doberman_agent_params = {"x": 0}
 
     def main(x):
-        return {"x": x, "ret": _bisheng_ret}
+        return {"x": x, "ret": _doberman_agent_ret}
     """
     assert _run(code, x=7) == {"x": 7, "ret": "user"}
 
@@ -311,7 +311,7 @@ def test_exiting_before_main_returns_is_28008(exit_call):
     [
         "",
         "hello\n",
-        '__BISHENG_CODE_NODE_RESULT__{"a": 1}\n',
+        '__DOBERMAN_AGENT_CODE_NODE_RESULT__{"a": 1}\n',
         'ffff:ok:{"a": 1}\n',
         f'noise\n{_NONCE}:ok:{{"a": 1}}\n',
         f"{_NONCE}:ok:not-json\n",
@@ -427,11 +427,11 @@ def test_local_backend_runs_in_a_fresh_directory(monkeypatch: pytest.MonkeyPatch
         return _Executor()
 
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.code.code_parse.load_code_interpreter_extra",
+        "doberman_agent.workflow.nodes.code.code_parse.load_code_interpreter_extra",
         lambda: {"type": "local", "config": {"local": {"local_sync_path": "/tmp/session"}}},
     )
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
         _build,
     )
     parser = SandboxCodeParser(_MAIN)
@@ -460,11 +460,11 @@ def test_container_backend_does_not_copy_the_worker_cwd(monkeypatch: pytest.Monk
         return _Executor()
 
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.code.code_parse.load_code_interpreter_extra",
+        "doberman_agent.workflow.nodes.code.code_parse.load_code_interpreter_extra",
         lambda: {"type": "container", "config": {"container": {"keep_session": True, "token": "from-extra"}}},
     )
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
         _build,
     )
     parser = SandboxCodeParser(_MAIN)
@@ -494,7 +494,7 @@ def test_e2b_backend_forwards_only_credentials(monkeypatch: pytest.MonkeyPatch):
         return _Executor()
 
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.code.code_parse.load_code_interpreter_extra",
+        "doberman_agent.workflow.nodes.code.code_parse.load_code_interpreter_extra",
         lambda: {
             "type": "e2b",
             "config": {
@@ -509,7 +509,7 @@ def test_e2b_backend_forwards_only_credentials(monkeypatch: pytest.MonkeyPatch):
         },
     )
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
         _build,
     )
     parser = SandboxCodeParser(_MAIN)
@@ -535,7 +535,7 @@ def test_missing_type_defaults_to_local(monkeypatch: pytest.MonkeyPatch):
             return None
 
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.code.code_parse.load_code_interpreter_extra",
+        "doberman_agent.workflow.nodes.code.code_parse.load_code_interpreter_extra",
         lambda: {},
     )
 
@@ -544,7 +544,7 @@ def test_missing_type_defaults_to_local(monkeypatch: pytest.MonkeyPatch):
         return _Executor()
 
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
         _build,
     )
     parser = SandboxCodeParser(_MAIN)
@@ -554,7 +554,7 @@ def test_missing_type_defaults_to_local(monkeypatch: pytest.MonkeyPatch):
 
 def test_unknown_type_raises_and_does_not_run_local(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
-        "bisheng.workflow.nodes.code.code_parse.load_code_interpreter_extra",
+        "doberman_agent.workflow.nodes.code.code_parse.load_code_interpreter_extra",
         lambda: {"type": "cloud"},
     )
 
@@ -562,7 +562,7 @@ def test_unknown_type_raises_and_does_not_run_local(monkeypatch: pytest.MonkeyPa
         raise ValueError(f"Unknown code interpreter type: {kind!r}")
 
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.build_code_executor",
         _build,
     )
     parser = SandboxCodeParser(_MAIN)
@@ -573,8 +573,8 @@ def test_unknown_type_raises_and_does_not_run_local(monkeypatch: pytest.MonkeyPa
 def test_empty_tool_row_reads_category_type(monkeypatch: pytest.MonkeyPatch):
     from types import SimpleNamespace
 
-    from bisheng.tool.domain.models.gpts_tools import GptsToolsDao
-    from bisheng.workflow.nodes.code.code_parse import load_code_interpreter_extra
+    from doberman_agent.tool.domain.models.gpts_tools import GptsToolsDao
+    from doberman_agent.workflow.nodes.code.code_parse import load_code_interpreter_extra
 
     monkeypatch.setattr(
         GptsToolsDao,
@@ -592,8 +592,8 @@ def test_empty_tool_row_reads_category_type(monkeypatch: pytest.MonkeyPatch):
 def test_tool_row_type_wins_over_category(monkeypatch: pytest.MonkeyPatch):
     from types import SimpleNamespace
 
-    from bisheng.tool.domain.models.gpts_tools import GptsToolsDao
-    from bisheng.workflow.nodes.code.code_parse import load_code_interpreter_extra
+    from doberman_agent.tool.domain.models.gpts_tools import GptsToolsDao
+    from doberman_agent.workflow.nodes.code.code_parse import load_code_interpreter_extra
 
     monkeypatch.setattr(
         GptsToolsDao,

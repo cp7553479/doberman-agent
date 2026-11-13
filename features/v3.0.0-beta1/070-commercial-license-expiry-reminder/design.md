@@ -28,13 +28,13 @@
 
 - **授权是部署级的，不是租户级的。** `license_info` 不得带 `tenant_id`，否则租户过滤器会让超管在子租户上下文里读不到行。
 - **三路写入主体已经裁定，不能合并成「后端去拉三源」：**
-  - ETL：BISHENG 调 `GET {etl_origin}/api/license_info`（ETL4LM 2.1.0-beta1 §7）后 upsert。
+  - ETL：doberman-agent 调 `GET {etl_origin}/api/license_info`（ETL4LM 2.1.0-beta1 §7）后 upsert。
   - 看板：商业看板服务定期更新 `license_code='dashboard'` 那一行。
-  - Gateway：前端 `GET /api/license/status`，再 `POST` 给 BISHENG 落库。
+  - Gateway：前端 `GET /api/license/status`，再 `POST` 给 doberman-agent 落库。
 - **ETL 配置地址不是 origin。** `knowledges.etl4lm.url` 形如 `http://host:port/v1/etl4llm/predict`。授权查询必须剥到 origin 再拼 `/api/license_info`。
 - **后端调不到 Gateway。** 商业版拓扑是 `浏览器 → Gateway → Backend`。F037 已否决后端 HMAC 上报；本期仍由前端转发状态。
 - **展示阈值与 F037 的 severity 分档不同。** 本期只保留 `normal / expiring / expired / unknown`，30 天一条线，不再向前端下发 `warning / critical`。
-- **新表走 SQLModel `table=True` + 启动 `create_all`。** 不必为整表创建单独 Alembic revision；`update_time` 用项目统一 server default。实现时错误码模块号登记 **270**（11x 是灵思；11001 是 Gateway 业务码，不是 BISHENG 模块号）。
+- **新表走 SQLModel `table=True` + 启动 `create_all`。** 不必为整表创建单独 Alembic revision；`update_time` 用项目统一 server default。实现时错误码模块号登记 **270**（11x 是灵思；11001 是 Gateway 业务码，不是 doberman-agent 模块号）。
 
 ---
 
@@ -58,11 +58,11 @@
 - **原因**：用户已裁定该路径。A 要新配内部地址，开源 / 配错都会静默失败，且是反向调用。
 - **何时该重新考虑**：出现「无浏览器也要刷新 Gateway 行」的运维需求。
 
-### 决策 3：看板只写表，BISHENG 不拉
+### 决策 3：看板只写表，doberman-agent 不拉
 
 - **备选**：
   - A. 为看板再做一个类似 ETL 的 HTTP 适配器。
-  - B.（选定）看板服务定期 upsert `dashboard` 行；BISHENG 只读。本期不提供看板专用 HTTP 写入口（与用户裁定一致）。
+  - B.（选定）看板服务定期 upsert `dashboard` 行；doberman-agent 只读。本期不提供看板专用 HTTP 写入口（与用户裁定一致）。
 - **选定**：B
 - **原因**：本仓看板在 `telemetry_search` 进程内，但商业授权由看板侧持有，本仓没有到期字段。写表是已确认合同。
 - **何时该重新考虑**：看板无法直连同一 MySQL/DM8，再补内部 HMAC upsert，复用同一 `upsert` 服务。
@@ -122,13 +122,13 @@
 ```
 超管进入 platform MainLayout
   → LicenseBanner 挂载（role === "admin"）
-  → GET /api/license/status          ← Gateway 自处理，BISHENG 不参与
+  → GET /api/license/status          ← Gateway 自处理，doberman-agent 不参与
   → severity ∈ {warning, critical, expired} 才渲染
   → 文案：「软件授权将在 N 天后到期 / 已过期」
      黄 / 红分档，不写授权名，不写到期日
 
 ETL：knowledges.etl4lm.url 只给 Etl4lmLoader POST 解析，无 license 查询
-看板：BISHENG_DASHBOARD_PRO 只是功能开关，telemetry_search 无到期字段
+看板：DOBERMAN_AGENT_DASHBOARD_PRO 只是功能开关，telemetry_search 无到期字段
 ```
 
 锚点：`LicenseBanner.tsx`、`controllers/API/license.ts`、`MainLayout.tsx`、F037 `GET /api/license/status`。
@@ -144,7 +144,7 @@ ETL：knowledges.etl4lm.url 只给 Etl4lmLoader POST 解析，无 license 查询
 
 写入② 看板服务
   定期 UPDATE/INSERT license_code='dashboard'
-  BISHENG 不发起
+  doberman-agent 不发起
 
 写入③ Gateway
   LicenseBanner 挂载
@@ -252,7 +252,7 @@ Gateway 请求/响应示例（已核实）：
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `bisheng/commercial_license/` 新领域模块 | 模型、upsert、ETL 同步、聚合、Gateway 上报 | 不解密、不拦业务、不写看板行 |
+| `doberman-agent/commercial_license/` 新领域模块 | 模型、upsert、ETL 同步、聚合、Gateway 上报 | 不解密、不拦业务、不写看板行 |
 | Beat `refresh_etl_license` | 小时级拉 ETL | 不按租户循环 |
 | 看板服务（仓外） | 写 `dashboard` 行 | 不改 `gateway` / `etl` |
 | `LicenseBanner` + `license.ts` | 上报 Gateway → 读聚合 → 统一文案 | 不再按 Gateway severity 分色 |
@@ -325,7 +325,7 @@ commercial_license/
 
 | 契约 | 形式 | 谁在用 |
 |---|---|---|
-| `license_info` 表 | MySQL/DM8，一行一个 `license_code` | 看板服务写 `dashboard`；BISHENG 写 `etl` / `gateway` 并读聚合 |
+| `license_info` 表 | MySQL/DM8，一行一个 `license_code` | 看板服务写 `dashboard`；doberman-agent 写 `etl` / `gateway` 并读聚合 |
 | `GET /api/v1/commercial-licenses/status` | HTTP | platform `LicenseBanner` |
 | `POST /api/v1/commercial-licenses/gateway` | HTTP，body = Gateway `data` | platform `LicenseBanner` |
 | 错误码模块 270 | `common/errcode/`，实现时写入 constitution C5 | 上报校验失败等 |
@@ -352,7 +352,7 @@ ON DUPLICATE KEY UPDATE
 | 依赖 | 形式 | 风险点 |
 |---|---|---|
 | Gateway `GET /api/license/status` | 前端经网关访问 | 字段改名会破坏上报映射；开源 404 必须静默 |
-| ETL4LM 2.1.0-beta1 `GET /api/license_info` | BISHENG 服务端访问 | 旧 ETL 无此接口 → 失败不覆盖；url 必须能剥 origin |
+| ETL4LM 2.1.0-beta1 `GET /api/license_info` | doberman-agent 服务端访问 | 旧 ETL 无此接口 → 失败不覆盖；url 必须能剥 origin |
 | 看板服务定期写表 | 同库 upsert | 看板未上线则无 `dashboard` 行，属正常 |
 | `knowledges.etl4lm.url` | DB/YAML 知识库配置 | 空 = 不拉 ETL |
 | `UserPayload.is_global_super` | 登录身份 | 闸门不得退回 `role === "admin"` |

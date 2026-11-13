@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceFileDuplicateError, SpaceFileNameDuplicateError
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
-from bisheng.knowledge.domain.services.web_link_import_service import (
+from doberman_agent.common.errcode.knowledge_space import SpaceFileDuplicateError, SpaceFileNameDuplicateError
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.services.web_link_import_service import (
     WEB_LINK_LOGIN_ENTRY_MARKDOWN,
     WebLinkImportResult,
 )
 
-_KS = "bisheng.knowledge.domain.services.knowledge_space_service"
+_KS = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 class _User:

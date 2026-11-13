@@ -26,11 +26,11 @@
 以便 **不再需要在两个 UI（租户用户管理 / 部门成员管理）之间猜哪个真起作用**——当前两个入口语义不等价：部门入口改主部门 → 真改归属；租户入口写 `UserTenant` → 不改归属（用户登录后仍进原 leaf），且下次 sync 还会被回填。
 
 **故事 C（API 契约清理）**：
-作为 **集成 BiSheng API 的外部系统/脚本**，
+作为 **集成 doberman-agent API 的外部系统/脚本**，
 我希望 **能明确判断哪些租户成员管理 API 仍可用**，
 以便 **不再写出"加了用户但用户实际登录进不了"的脚本**——当前 `POST /tenants/{id}/users` 仍返 200 但语义模糊（写入被动 `UserTenant` 行，不影响 leaf 派生），需要明确标记为 deprecated。
 
-**背景**：v2.5.0 F010 落地时按"用户可属多租户、登录选择"模型设计 UI 和 API（AC-3.x 添加/移除用户、AC-5.x 多租户登录选择）。v2.5.1 F011 改向 Tenant 树形 + F012 改向"leaf 由主部门自动派生"+ `switch-tenant` 自 F011 AC-15 起返 410 Gone（`bisheng/tenant/api/endpoints/user_tenant.py:30` `switch_tenant_deprecated`），但 F010 的添加/移除用户 UI 与对应后端 API 未同步收敛，造成：
+**背景**：v2.5.0 F010 落地时按"用户可属多租户、登录选择"模型设计 UI 和 API（AC-3.x 添加/移除用户、AC-5.x 多租户登录选择）。v2.5.1 F011 改向 Tenant 树形 + F012 改向"leaf 由主部门自动派生"+ `switch-tenant` 自 F011 AC-15 起返 410 Gone（`doberman-agent/tenant/api/endpoints/user_tenant.py:30` `switch_tenant_deprecated`），但 F010 的添加/移除用户 UI 与对应后端 API 未同步收敛，造成：
 
 1. **操作员困惑**：刚发现的 P0 修复（`_apply_local_primary_department_change` 漏触发 sync）排查时，需要分清"UI 上看到的成员"和"实际归属"两层语义
 2. **数据漂移**：`tenant_service.aadd_users` 写入的"幽灵 UserTenant 行"无法通过 sync 自然消除（sync 只管 active 行）
@@ -122,7 +122,7 @@
 
 ### Domain 模型 / DTO
 
-无新增。`bisheng/tenant/domain/schemas/tenant_schema.py` 不动。
+无新增。`doberman-agent/tenant/domain/schemas/tenant_schema.py` 不动。
 
 ---
 
@@ -154,7 +154,7 @@ HTTP/1.1 410 Gone
 ### 错误码表
 
 不新增模块错误码。复用：
-- 410 Gone：`{ "error": "410 Gone" }`，与 `switch-tenant` 端点同形态（参见 `bisheng/tenant/api/endpoints/user_tenant.py:30`）
+- 410 Gone：`{ "error": "410 Gone" }`，与 `switch-tenant` 端点同形态（参见 `doberman-agent/tenant/api/endpoints/user_tenant.py:30`）
 
 ---
 
@@ -164,7 +164,7 @@ HTTP/1.1 410 Gone
 
 | 方法 | 文件 | 变更 |
 |------|------|------|
-| `TenantService.aget_tenant_users` | `bisheng/tenant/domain/services/tenant_service.py` | 查询逻辑从 `UserTenantDao.aget_tenant_users` 切到新 DAO 方法 `UserDepartmentDao.aget_users_by_tenant_subtree(tenant_id)`；返回 schema 不变（`{data, total}`） |
+| `TenantService.aget_tenant_users` | `doberman-agent/tenant/domain/services/tenant_service.py` | 查询逻辑从 `UserTenantDao.aget_tenant_users` 切到新 DAO 方法 `UserDepartmentDao.aget_users_by_tenant_subtree(tenant_id)`；返回 schema 不变（`{data, total}`） |
 | `TenantService.aadd_users` | 同上 | 加 `@deprecated` 装饰器 + logger.warning；保留实现给内部脚本用；公开 API 端点改 410 |
 | `TenantService.aremove_user` | 同上 | 同上 |
 
@@ -172,7 +172,7 @@ HTTP/1.1 410 Gone
 
 | 方法 | 文件 | 说明 |
 |------|------|------|
-| `UserDepartmentDao.aget_users_by_tenant_subtree` | `bisheng/database/models/department.py` | 解析 tenant 的 `root_dept` 取得 `path` → JOIN `Department.path LIKE '<root_dept_path>%' AND UserDepartment.is_primary = 1` → JOIN `User`；分页 + keyword 参数；与 `TenantResolver.resolve_user_leaf_tenant` 同源逻辑（避免 UI 显示和 leaf 派生分叉） |
+| `UserDepartmentDao.aget_users_by_tenant_subtree` | `doberman-agent/database/models/department.py` | 解析 tenant 的 `root_dept` 取得 `path` → JOIN `Department.path LIKE '<root_dept_path>%' AND UserDepartment.is_primary = 1` → JOIN `User`；分页 + keyword 参数；与 `TenantResolver.resolve_user_leaf_tenant` 同源逻辑（避免 UI 显示和 leaf 派生分叉） |
 
 伪代码：
 ```python
@@ -247,9 +247,9 @@ TenantPage/
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/database/models/department.py` | 新增 `UserDepartmentDao.aget_users_by_tenant_subtree` |
-| `src/backend/bisheng/tenant/domain/services/tenant_service.py` | `aget_tenant_users` 改用新 DAO；`aadd_users`/`aremove_user` 加 `@deprecated` + logger.warning |
-| `src/backend/bisheng/tenant/api/endpoints/tenant_users.py` | `add_users` / `remove_user` 端点改 410；`get_tenant_users` 行为不变（端点路径不变，service 内部数据源切了） |
+| `src/backend/doberman_agent/database/models/department.py` | 新增 `UserDepartmentDao.aget_users_by_tenant_subtree` |
+| `src/backend/doberman_agent/tenant/domain/services/tenant_service.py` | `aget_tenant_users` 改用新 DAO；`aadd_users`/`aremove_user` 加 `@deprecated` + logger.warning |
+| `src/backend/doberman_agent/tenant/api/endpoints/tenant_users.py` | `add_users` / `remove_user` 端点改 410；`get_tenant_users` 行为不变（端点路径不变，service 内部数据源切了） |
 | `src/frontend/platform/src/pages/TenantPage/components/TenantUserDialog.tsx` | 删「添加用户」picker + 删「移除用户」按钮 + 加跳转 Banner |
 | `src/frontend/platform/src/controllers/API/tenant.ts` | `addTenantUsersApi`/`removeTenantUserApi` 加 `@deprecated` 注释 |
 | `src/frontend/platform/public/locales/{en-US,zh-Hans,ja}/bs.json` | 新增 `tenant.membershipBanner.*` 三个 key |
@@ -260,7 +260,7 @@ TenantPage/
 | 文件 | 说明 |
 |------|------|
 | `UserTenant` ORM / `UserTenantDao` | 保留全部 — `sync_user` 仍依赖；status='legacy' 仅是新枚举 |
-| `bisheng/tenant/api/endpoints/tenant_admin.py` | tenant 管理员 API 不动（仍是租户作用域操作） |
+| `doberman-agent/tenant/api/endpoints/tenant_admin.py` | tenant 管理员 API 不动（仍是租户作用域操作） |
 
 ---
 
@@ -297,5 +297,5 @@ TenantPage/
 - 版本契约：[features/v2.5.1/release-contract.md](../release-contract.md)
 - 被修订 spec：[features/v2.5.0/010-tenant-management-ui/spec.md](../../v2.5.0/010-tenant-management-ui/spec.md)
 - F012 leaf 派生：[features/v2.5.1/012-tenant-resolver/spec.md](../012-tenant-resolver/spec.md)
-- 同模式参考：`switch-tenant` 410 Gone 实现（`bisheng/tenant/api/endpoints/user_tenant.py:30`）
+- 同模式参考：`switch-tenant` 410 Gone 实现（`doberman-agent/tenant/api/endpoints/user_tenant.py:30`）
 - 上游修复：本 Feature 立项的直接触发点是 P0 修复（`_apply_local_primary_department_change`）+ G1（`aadd_members(is_primary=1)` 路由到 `change_primary_department`）+ G2（`acreate_local_member` 补 sync）排查时暴露的 UI/模型漂移。本 Feature 是这些"功能层修复"之上的"模型一致性收敛"，逻辑上独立但动机连贯

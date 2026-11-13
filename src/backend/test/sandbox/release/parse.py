@@ -83,7 +83,7 @@ def workflow_tool_result(frame: dict) -> dict | None:
     if not isinstance(message, dict):
         return None
     for item in walk_log_items(message.get("log_data")):
-        if item.get("type") != "tool" or item.get("key") != "bisheng_code_interpreter":
+        if item.get("type") != "tool" or item.get("key") != "doberman_agent_code_interpreter":
             continue
         value = item.get("value")
         if isinstance(value, str):
@@ -121,7 +121,7 @@ def assistant_tool_result(frame: dict) -> dict | None:
         return None
     message = frame.get("message")
     payload = parse_object(message) if isinstance(message, str) else message if isinstance(message, dict) else None
-    if not payload or payload.get("tool_key") != "bisheng_code_interpreter":
+    if not payload or payload.get("tool_key") != "doberman_agent_code_interpreter":
         return None
     output = payload.get("output")
     return parse_object(output)
@@ -134,7 +134,7 @@ def daily_tool_result(event_name: str, data: dict) -> dict | None:
     if data.get("category") != "agent_tool_call" or data.get("type") != "end":
         return None
     message = data.get("message")
-    if not isinstance(message, dict) or message.get("tool_name") != "bisheng_code_interpreter":
+    if not isinstance(message, dict) or message.get("tool_name") != "doberman_agent_code_interpreter":
         return None
     results = message.get("results")
     found = parse_object(results)
@@ -160,7 +160,7 @@ def history_steps(tasks: list) -> list[dict]:
     return steps
 
 
-def task_tool_results(tasks: list, name: str = "bisheng_code_interpreter") -> list[dict]:
+def task_tool_results(tasks: list, name: str = "doberman_agent_code_interpreter") -> list[dict]:
     found = []
     for step in history_steps(tasks):
         if step.get("name") != name or step.get("status") not in (None, "end"):

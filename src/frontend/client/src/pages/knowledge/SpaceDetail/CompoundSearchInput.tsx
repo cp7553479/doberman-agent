@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
-import { Select } from '@bisheng/ui';
+import { Outlined } from '@doberman-agent/icons';
+import { Select } from '@doberman-agent/ui';
 import { cn } from '~/utils';
 import { SpaceTag, getSpaceTagsApi } from '~/api/knowledge';
 import { showApiError } from '~/api/request';

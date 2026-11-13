@@ -17,7 +17,7 @@ def test_inventory_scope_and_immutable_execution_are_required():
         "app_id": "a",
         "version_id": "v",
         "image_id": "sha256:" + "a" * 64,
-        "labels": {"bisheng.app.id": "a", "bisheng.version.id": "v"},
+        "labels": {"doberman_agent.app.id": "a", "doberman_agent.version.id": "v"},
     }
     document = {"schema_version": 1, "node_id": "node", "engine_id": "engine", "applications": [item]}
     assert upgrade.validate_inventory(document) == document

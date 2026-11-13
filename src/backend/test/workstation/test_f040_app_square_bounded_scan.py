@@ -20,7 +20,7 @@ def _function_source(relative_path: str, function_name: str) -> str:
 
 
 def test_chat_online_default_path_delegates_to_cursor_service():
-    source = _function_source("bisheng/api/v1/chat.py", "get_online_chat")
+    source = _function_source("doberman_agent/api/v1/chat.py", "get_online_chat")
     # Default ranked path is now an F027 cursor waterfall, not an offset scan.
     assert "get_online_flows_cursor" in source
     assert "get_all_flows_envelope" in source
@@ -31,14 +31,14 @@ def test_chat_online_default_path_delegates_to_cursor_service():
     # The offset page helper must be gone from the default path.
     assert "get_online_flows_page" not in source
 
-    cursor_source = _function_source("bisheng/api/services/workflow.py", "get_online_flows_cursor")
+    cursor_source = _function_source("doberman_agent/api/services/workflow.py", "get_online_flows_cursor")
     assert "additional_actions=()" in cursor_source
     assert "writeable_ids=set()" in cursor_source
     assert "_apply_page_can_share" not in cursor_source
 
 
 def test_uncategorized_path_is_cursor_waterfall_without_sync_fetch_all():
-    source = _function_source("bisheng/api/services/workflow.py", "get_uncategorized_flows_envelope")
+    source = _function_source("doberman_agent/api/services/workflow.py", "get_uncategorized_flows_envelope")
     assert "resolve_permission_actor" in source
     assert "_collect_visible_app_ids" in source
     assert "id_list=visible_id_list" in source
@@ -56,7 +56,7 @@ def test_uncategorized_path_is_cursor_waterfall_without_sync_fetch_all():
 
 
 def test_cursor_scan_uses_keyset_batches_and_page_size_bounded_probe():
-    source = _function_source("bisheng/api/services/workflow.py", "_scan_visible_apps_cursor")
+    source = _function_source("doberman_agent/api/services/workflow.py", "_scan_visible_apps_cursor")
     # page_size + 1 probe instead of the old offset target_visible.
     assert "while len(visible) <= normalized_page_size" in source
     assert "cursor=batch_cursor" in source
@@ -69,7 +69,7 @@ def test_cursor_scan_uses_keyset_batches_and_page_size_bounded_probe():
 
 
 def test_ranked_dao_uses_dm8_safe_keyset_helper_with_mixed_directions():
-    source = _function_source("bisheng/database/models/flow.py", "aget_all_apps")
+    source = _function_source("doberman_agent/database/models/flow.py", "aget_all_apps")
     assert "ranking_user_id" in source
     assert "build_keyset_where" in source
     assert "descending=(False, True, True)" in source

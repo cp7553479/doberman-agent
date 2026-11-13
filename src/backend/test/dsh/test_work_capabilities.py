@@ -14,8 +14,8 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Route
 
-from bisheng.dsh.domain.services.work_capabilities import WorkCapabilitiesService
-from bisheng.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime
+from doberman_agent.dsh.domain.services.work_capabilities import WorkCapabilitiesService
+from doberman_agent.dsh.work_mcp import WorkMcpResponse, create_work_mcp_runtime
 
 
 class Publications:
@@ -58,12 +58,12 @@ def service():
 async def test_tool_directory_and_execution_recheck_permission_and_publication():
     app = service()
     catalog = await app.list_tools()
-    assert catalog[0]["name"] == "bisheng_tool_7"
+    assert catalog[0]["name"] == "doberman_agent_tool_7"
     assert catalog[0]["inputSchema"]["required"] == ["query"]
-    assert await app.call_tool("bisheng_tool_7", {"query": "test"}) == {"customer": "Allowed"}
+    assert await app.call_tool("doberman_agent_tool_7", {"query": "test"}) == {"customer": "Allowed"}
     app._tools.return_value = {}
     with pytest.raises(HTTPException) as denied:
-        await app.call_tool("bisheng_tool_7", {"query": "test"})
+        await app.call_tool("doberman_agent_tool_7", {"query": "test"})
     assert denied.value.status_code == 403
     app._executor.return_value.ainvoke.assert_awaited_once()
     assert await app.list_tools() == []
@@ -80,20 +80,20 @@ async def test_publication_control_is_retired_in_favor_of_resource_permissions()
 async def test_arguments_are_validated_before_execution_and_failures_propagate():
     app = service()
     with pytest.raises(ValidationError):
-        await app.call_tool("bisheng_tool_7", {"query": 10})
+        await app.call_tool("doberman_agent_tool_7", {"query": 10})
     app._executor.return_value.ainvoke.assert_not_awaited()
     app._executor.return_value.ainvoke.side_effect = RuntimeError("upstream failure")
     with pytest.raises(RuntimeError):
-        await app.call_tool("bisheng_tool_7", {"query": "test"})
+        await app.call_tool("doberman_agent_tool_7", {"query": "test"})
 
 
 @pytest.mark.parametrize(
     "uri",
     [
-        "bisheng-skill://3/9/" + "a" * 64,
-        "bisheng-skill://2/9/" + "b" * 64,
+        "doberman-agent-skill://3/9/" + "a" * 64,
+        "doberman-agent-skill://2/9/" + "b" * 64,
         "file:///etc/passwd",
-        "bisheng-skill://2/10/" + "a" * 64,
+        "doberman-agent-skill://2/10/" + "a" * 64,
     ],
 )
 async def test_skill_rejects_other_tenants_versions_and_unpublished_ids(uri):
@@ -118,7 +118,7 @@ async def test_skill_rechecks_revocation_after_download():
 
 async def test_real_streamable_http_handshake_discovery_and_error_result(monkeypatch):
     app_service = service()
-    monkeypatch.setattr("bisheng.dsh.work_mcp.WorkCapabilitiesService", lambda user: app_service)
+    monkeypatch.setattr("doberman_agent.dsh.work_mcp.WorkCapabilitiesService", lambda user: app_service)
     manager = create_work_mcp_runtime(
         TransportSecuritySettings(enable_dns_rebinding_protection=True, allowed_hosts=["localhost"])
     )
@@ -146,12 +146,12 @@ async def test_real_streamable_http_handshake_discovery_and_error_result(monkeyp
             "initialize",
             {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}},
         )
-        assert initialized["result"]["serverInfo"]["name"] == "bisheng-enterprise-work"
-        assert (await rpc("tools/list"))["result"]["tools"][0]["name"] == "bisheng_tool_7"
-        result = await rpc("tools/call", {"name": "bisheng_tool_7", "arguments": {"query": "test"}})
+        assert initialized["result"]["serverInfo"]["name"] == "doberman-agent-enterprise-work"
+        assert (await rpc("tools/list"))["result"]["tools"][0]["name"] == "doberman_agent_tool_7"
+        result = await rpc("tools/call", {"name": "doberman_agent_tool_7", "arguments": {"query": "test"}})
         assert result["result"]["structuredContent"]["result"]["customer"] == "Allowed"
         app_service._tools.return_value = {}
-        result = await rpc("tools/call", {"name": "bisheng_tool_7", "arguments": {"query": "test"}})
+        result = await rpc("tools/call", {"name": "doberman_agent_tool_7", "arguments": {"query": "test"}})
         assert result["result"]["isError"] is True
         assert json.loads(result["result"]["content"][0]["text"])["code"] == 403
         assert (await rpc("resources/list"))["result"]["resources"][0]["uri"].endswith("a" * 64)
@@ -161,19 +161,19 @@ async def test_audit_failure_prevents_execution_and_records_only_safe_metadata()
     app = service()
     app.publications.audit.side_effect = RuntimeError("audit storage unavailable")
     with pytest.raises(RuntimeError):
-        await app.call_tool("bisheng_tool_7", {"query": "private customer"})
+        await app.call_tool("doberman_agent_tool_7", {"query": "private customer"})
     app._executor.return_value.ainvoke.assert_not_awaited()
     assert "private customer" not in str(app.publications.audit.call_args)
     app.publications.audit.side_effect = None
     app.publications.audit.reset_mock()
-    await app.call_tool("bisheng_tool_7", {"query": "private customer"})
+    await app.call_tool("doberman_agent_tool_7", {"query": "private customer"})
     records = [call.args[-1] for call in app.publications.audit.call_args_list]
     assert [row["status"] for row in records] == ["STARTED", "SUCCEEDED"]
     assert records[0]["operation_id"] == records[1]["operation_id"]
 
 
 def test_work_transport_uses_platform_origin_independently_of_external_mcp():
-    from bisheng.dsh.work_mcp import work_transport_security
+    from doberman_agent.dsh.work_mcp import work_transport_security
 
     security = work_transport_security("http://192.168.106.119:3007")
     assert security.enable_dns_rebinding_protection is True
@@ -186,9 +186,9 @@ def test_work_transport_uses_platform_origin_independently_of_external_mcp():
 @pytest.mark.parametrize(
     "metadata",
     [
-        {"metadata": {"bisheng-work": {"tool_ids": [True]}}},
+        {"metadata": {"doberman-agent-work": {"tool_ids": [True]}}},
         {"metadata": []},
-        {"metadata": {"bisheng-work": {"tool_ids": [0]}}},
+        {"metadata": {"doberman-agent-work": {"tool_ids": [0]}}},
     ],
 )
 def test_skill_dependencies_require_explicit_positive_tool_ids(metadata):
@@ -198,13 +198,13 @@ def test_skill_dependencies_require_explicit_positive_tool_ids(metadata):
 
 def test_skill_dependencies_preserve_declared_ids_and_default_to_empty():
     assert WorkCapabilitiesService._dependencies({}) == []
-    assert WorkCapabilitiesService._dependencies({"metadata": {"bisheng-work": {"tool_ids": [7, 8]}}}) == [7, 8]
+    assert WorkCapabilitiesService._dependencies({"metadata": {"doberman-agent-work": {"tool_ids": [7, 8]}}}) == [7, 8]
 
 
 def test_personal_bundle_reads_the_owner_namespace(tmp_path, monkeypatch):
     import base64
 
-    from bisheng.linsight.domain.services.skill_store import SkillStore
+    from doberman_agent.linsight.domain.services.skill_store import SkillStore
     from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
     store = SkillStore(root=tmp_path, minio=FakeMinioStorage())
@@ -212,7 +212,7 @@ def test_personal_bundle_reads_the_owner_namespace(tmp_path, monkeypatch):
     personal = {"SKILL.md": b"---\nname: report\ndescription: Personal\n---\nPersonal body", "image.bin": b"\x00\xff"}
     store.write_bundle(2, "report", shared)
     bundle = store.write_bundle(2, "report", personal, owner_user_id=42)
-    monkeypatch.setattr("bisheng.linsight.domain.services.skill_store.SkillStore", lambda: store)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.skill_store.SkillStore", lambda: store)
     row = SimpleNamespace(name="report", content_hash=bundle.content_hash, owner_user_id=42)
     result = service()._read_bundle(row)
     assert "Personal body" in result["content"]

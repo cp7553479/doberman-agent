@@ -4,9 +4,9 @@ import { locationContext } from "@/contexts/locationContext";
 import type { User } from "@/types/api/user";
 import { ServiceAccountRequestScopeContext, useServiceAccountManagementScope } from "./useServiceAccountManagementScope";
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { Button, SearchInput } from '@bisheng/ui';
-import { Tooltip as SharedTooltip, Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, SearchInput } from '@doberman-agent/ui';
+import { Tooltip as SharedTooltip, Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 
@@ -16,7 +16,7 @@ import { handleUiRequest, showApiError } from "@/controllers/request";
 import type { ServiceAccountItem } from "@/types/api/openApi";
 import { displayTenantName } from "@/utils/tenantDisplayName";
 import { formatIsoDateTime } from "@/util/utils";
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";

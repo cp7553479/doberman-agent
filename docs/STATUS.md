@@ -16,7 +16,7 @@
 
 - 修复旧会话恢复空间选择后缺少权限核验的问题。失效空间退出有效标签与计数，输入区显示原因及重新选择引导，发送和重新生成遵循核验结果。
 - 原实现 3 项缺陷回归失败；修复后 6 文件 / 76 项通过。全量前端 lint、类型检查、Client 构建与 i18n 校验通过。
-- 基线 `feat/bisheng-work-120-main@d4ada988a44e82016a3dd427fc6cb6e14ff5e92a`；Client 部署、原账号和 Windows 复测待执行。
+- 基线 `feat/doberman-agent-work-120-main@d4ada988a44e82016a3dd427fc6cb6e14ff5e92a`；Client 部署、原账号和 Windows 复测待执行。
 - 交付记录：`docs/verification/chat-space-access-20261103.md`；关联 TC-120-KSP-038。
 
 ## 2026-11-03 — 应用侧栏移除旧模块导航
@@ -24,7 +24,7 @@
 - 按用户标注，应用侧栏直接使用仅含 Logo 与关闭按钮的共享头部，移除首页、订阅、知识空间、应用四个入口及对应占位行。应用卡片、新建对话、会话历史与返回逻辑继续使用现有实现。
 - 原因是应用侧栏复用的 `MobileSidebarHeaderTabs` 同时包含头部和全局导航，宽度进入 `touch-mobile` 档位时展示四个重复入口。现将头部独立为 `MobileSidebarHeader`，频道及知识空间继续按原组合使用导航。移除零引用的 `SideNavModuleTabs.tsx`。
 - 同步按仓库规则将所编辑文件的两处中文兜底文案迁入中英日资源，并通过 lint:prune 收缩对应存量豁免。
-- 基线 `feat/bisheng-work-120-main@1e495e15a46bcb749a86642e292ff2c35897d847`；分支 `codex/app-sidebar-remove-module-nav`。
+- 基线 `feat/doberman-agent-work-120-main@1e495e15a46bcb749a86642e292ff2c35897d847`；分支 `codex/app-sidebar-remove-module-nav`。
 - 前端全量 lint、typecheck、Client 生产构建、i18n、变更文件架构守卫及差异检查通过；既有导航、返回来源与分享回归 3 文件 / 42 项通过。日志位于外层工作区 `outputs/app-sidebar-remove-module-nav-20261103/`。
 - Client 部署及 Windows 安装版原截图场景验收待执行。部署后核对窄窗口和缩放下四个入口已移除，关闭按钮、应用卡片、新建及历史操作可用。
 
@@ -50,7 +50,7 @@
 
 ## 2026-11-02 — 积分分配列表精简交付复核
 
-- 当前基线：`upstream/feat/bisheng-work-120-main@954f8ba9f7b979d3f2193caa173dbe28356700dd`；分支 `codex/credit-allocation-labels-pr-20261102`。原实现 `ecfccecea` 已完整恢复，业务组件与三语资源的内容与原提交一致；最新服务分支的其他修复完整保留。
+- 当前基线：`upstream/feat/doberman-agent-work-120-main@954f8ba9f7b979d3f2193caa173dbe28356700dd`；分支 `codex/credit-allocation-labels-pr-20261102`。原实现 `ecfccecea` 已完整恢复，业务组件与三语资源的内容与原提交一致；最新服务分支的其他修复完整保留。
 - 用户、部门、角色列表统一为对象、每人每月积分额度、操作三列；额度表头提供信息图标与说明，编辑区域保留“启用此积分分配”，新增分配默认启用，停用状态显示在额度旁。积分校验继续采用每月 100 万上限和最多一位小数。
 - 本轮确定性验证：CreditRulesView、dshPolicyView、dshCreditAmount 共 3 组 / 43 项通过；Platform 与 Client 全量 ESLint、620 / 1515 个严格类型文件检查通过；Platform 生产构建、i18n、共享语言资源同步、变更文件架构守卫和差异检查通过。
 - 交付范围为现有实现的 PR 补交；按用户要求保持 `192.168.106.109:13001` 当前部署。真实账号及浏览器视觉验收继续待执行。
@@ -59,7 +59,7 @@
 
 - 产品确认：移除列表中的配置状态列，积分表头统一为“每人每月积分额度”，添加积分说明入口。
 - 实现：用户、部门、角色三个页签采用三列表格；额度表头使用现有 Tooltip 与信息图标，支持悬停和键盘聚焦。编辑区域保留启停操作，停用配置在额度旁显示灰色标签；新增配置默认启用。中英日文案同步，顶部说明明确每人额度、多条已启用配置取最高值和 Chat / Work 共用。
-- 基线：目标分支 `upstream/feat/bisheng-work-120-main@3950752273b75a120a0f8e25ecd5d903c94f8106`；工作目录 `.worktrees/bisheng-credit-allocation-labels`，分支 `codex/credit-allocation-labels`。已同步目标分支，保留最新每月 100 万积分上限与 1 位小数规则。本轮范围为 BISHENG 后台前端。
+- 基线：目标分支 `upstream/feat/doberman-agent-work-120-main@3950752273b75a120a0f8e25ecd5d903c94f8106`；工作目录 `.worktrees/doberman-agent-credit-allocation-labels`，分支 `codex/credit-allocation-labels`。已同步目标分支，保留最新每月 100 万积分上限与 1 位小数规则。本轮范围为 doberman-agent 后台前端。
 - 验证：现有 CreditRulesView 9 项回归、platform 全量 ESLint、619 个严格类型文件、三语 i18n 检查、变更文件架构检查、差异空白检查通过。使用本地已有依赖，Tooltip 源码与工作区版本一致。workspace 级 pnpm 命令受运行器依赖自动安装及外部依赖目录保护限制，转为直接执行 platform 对应检查。
 - 验收边界：代码与上述本地自动化已完成；部署、真实账号和浏览器视觉验收待执行。
 
@@ -95,7 +95,7 @@
 
 ## 2026-11-02 — 应用历史 PDF 附件下载地址修复
 
-- 根因：应用附件将存储 URL 主机替换成 Client `BASE_URL`，生成 `/workspace/bisheng/...`，请求进入前端路由并把 HTML 保存为 PDF。`ChatFile` 现在复用现有对象存储地址解析器，按桶代理根路径下载，保留签名、编码对象名与原文件名。
+- 根因：应用附件将存储 URL 主机替换成 Client `BASE_URL`，生成 `/workspace/doberman-agent/...`，请求进入前端路由并把 HTML 保存为 PDF。`ChatFile` 现在复用现有对象存储地址解析器，按桶代理根路径下载，保留签名、编码对象名与原文件名。
 - 基线 `3120e714fa4ed492884cade11a128341d03eb105`，分支 `codex/app-attachment-download`；复用共享解析逻辑，卡片展示、权限与下载生命周期沿用原实现。
 - 旧实现初始新增回归 13 项失败；修正后应用、历史附件及预览 URL 共 11 组 / 88 项通过。本地 HTTP 夹具验证旧代码收到 `text/html`，修正后请求正确对象路径并收到 PDF 响应。
 - 前端 workspace 全量 lint/typecheck、Client 生产构建、架构守卫和差异检查通过。详见 [验证记录](verification/app-attachment-download-20261102.md)。网页部署、真实存储与账号、Windows/macOS 安装版下载和 PDF 打开验收待执行。
@@ -134,7 +134,7 @@
 - 页面左右留白自适应为 16–32px，栏目最小宽度由 260px 调整至 320px，并按实际容器宽度收缩；960px 内容窗口呈现两列。
 - 保留原有横线、列间竖线、编号、字体、字号与频道内部间距。业务源码修改集中于订阅首页两处布局参数。
 - 本地比例预览已确认；macOS Electron 调整版 36 组边界和交互检查通过，字体及分隔线样式与原版一致。
-- 提交基线 `feat/bisheng-work-120-main@250fdce4c`。Client 部署、真实账号及 Windows 安装版 DPI 验收待执行。[验证记录与同尺寸截图](status/subscription-layout-20261030.md)。
+- 提交基线 `feat/doberman-agent-work-120-main@250fdce4c`。Client 部署、真实账号及 Windows 安装版 DPI 验收待执行。[验证记录与同尺寸截图](status/subscription-layout-20261030.md)。
 
 ## 2026-10-30 — 应用会话下拉列表与侧栏状态修复
 
@@ -149,9 +149,9 @@
 ## 2026-10-30 — 桌面内弹窗保留页面原色
 
 - 用户确认桌面内弹窗采用透明背景；技能上传、旧版弹窗和二次确认三套 Client 共用壳通过既有 `isDesktopEmbedded()` 识别桌面，统一设置透明背景。Radix 继续负责焦点、滚动隔离和关闭交互，普通浏览器沿用现有展示。
-- 基线 `feat/bisheng-work-120-main@1954f60c4acba5de5cca5e9385b76fc6b21effc0`。新增真实组件回归覆盖两种主题、SPA 跳转、浏览器范围、Tab 焦点与 Esc 关闭；恢复原蒙版行为时 3 项透明背景断言失败，修复后通过。
+- 基线 `feat/doberman-agent-work-120-main@1954f60c4acba5de5cca5e9385b76fc6b21effc0`。新增真实组件回归覆盖两种主题、SPA 跳转、浏览器范围、Tab 焦点与 Esc 关闭；恢复原蒙版行为时 3 项透明背景断言失败，修复后通过。
 - 弹窗相关扩展回归 7 组中 6 组通过，共 47 项通过、1 项失败；失败为现有 `PermissionDraftPickerDialog.test.tsx` 的 `value="department"` 源码字符串断言，对应组件与测试均保持基线内容。
-- Client ESLint、1503 个严格类型文件、生产构建通过；Platform、UI 和 file-viewers ESLint、file-viewers 类型检查通过。Platform 严格类型检查在现有 DSH 内容安全页面报告 6 项缺失 `@bisheng/ui` / `@tanstack/react-query` 的依赖解析错误，全仓类型门禁待验证。
+- Client ESLint、1503 个严格类型文件、生产构建通过；Platform、UI 和 file-viewers ESLint、file-viewers 类型检查通过。Platform 严格类型检查在现有 DSH 内容安全页面报告 6 项缺失 `@doberman-agent/ui` / `@tanstack/react-query` 的依赖解析错误，全仓类型门禁待验证。
 - Desktop 配套变更将知识空间颜色交回网页组件，保留窗口范围与关闭恢复。测试环境部署、真实账号技能上传、Windows 安装客户端验收待执行。
 
 ## 2026-10-30 — 知识空间问答跳转新会话崩溃修复
@@ -159,7 +159,7 @@
 - 知识空间提问跳转新聊天时，模型状态的同步订阅刷新会在准备完成状态提交前重新执行交接逻辑，反复设置模型并触发 `Maximum update depth exceeded`。真实 ChatView、输入框和模型状态组合夹具已复现。
 - 交接现在先同步登记当前问题的准备阶段，再更新知识空间和模型；准备完成后通过 React 状态推进，待会话、模型、知识空间就绪时发送。
 - 新增沿用原模型和切换模型的同步订阅回归，覆盖 StrictMode 与连续知识空间提问。两项在旧实现失败；修复后相关 5 组 62 项回归、客户端与平台 ESLint/严格类型检查、Client 生产构建、语言资源及架构检查通过。
-- 初始复现基线 `8d93affff`，提交前已同步目标 `feat/bisheng-work-120-main@78815c66e`。本次完成源码与本地自动化验证；测试环境部署、真实账号及 macOS/Windows 安装客户端验收待执行。测试环境构建号与反馈截图一致，截图该次异常的精确指纹待现场日志对照。
+- 初始复现基线 `8d93affff`，提交前已同步目标 `feat/doberman-agent-work-120-main@78815c66e`。本次完成源码与本地自动化验证；测试环境部署、真实账号及 macOS/Windows 安装客户端验收待执行。测试环境构建号与反馈截图一致，截图该次异常的精确指纹待现场日志对照。
 
 - PR #2564 同步目标 `ffb2ed186`，整合双方状态记录。同步后 7 组 76 项相关回归、Client 全量 ESLint、1501 个严格类型文件、语言资源及差异检查通过；知识问答实现与已验证修复一致。
 
@@ -173,7 +173,7 @@
 
 ## 2026-10-30 — 授权对象搜索空态文案
 
-- 部门和用户组分别使用对应空态文案，已授权列表按当前对象类型选择提示，中英日同步。基线 `feat/bisheng-work-120-main@06ffc6fba`。
+- 部门和用户组分别使用对应空态文案，已授权列表按当前对象类型选择提示，中英日同步。基线 `feat/doberman-agent-work-120-main@06ffc6fba`。
 - 相关 14 项回归、前端完整 lint/typecheck、Client 构建和 i18n 检查通过；权限模块 57 项通过、2 项已确认的基线失败。部署与 Windows/真实账号验收待执行。见[专项记录](status/permission-search-empty-20261030.md)。
 - PR #2561 同步目标分支 `8d93affff`，合并双方状态记录；同步后 14 项相关回归、三语言一致性与差异检查通过。
 
@@ -187,7 +187,7 @@
 ## 2026-10-29 — 每月积分业务上限与输入精度
 
 - 确认规则：每人每月积分为 0～1,000,000，支持整数或最多 1 位小数，默认值 500。前端输入、保存按钮与后端写入接口按同一范围校验，中英日提示同步更新。
-- 基线：实时获取 `dataelement/bisheng:feat/bisheng-work-120-main@62ad8ecccda06dbfdf8d77b845de1a7fe0af3319`；工作目录 `.worktrees/bisheng-monthly-credit-business-limit`，分支 `codex/monthly-credit-business-limit`。本轮范围为平台管理端与服务端。
+- 基线：实时获取 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@62ad8ecccda06dbfdf8d77b845de1a7fe0af3319`；工作目录 `.worktrees/doberman-agent-monthly-credit-business-limit`，分支 `codex/monthly-credit-business-limit`。本轮范围为平台管理端与服务端。
 - 根因与实现：原上限源自底层 64 位整数存储极限。`CreditRuleInput` 承担管理端业务校验，`CreditRuleValue` 承担历史额度和迁移的精确值校验。实际消耗、余额、倍率和底层账本保留原有精度；已有额度原值保留，编辑保存使用新规则。
 - 自动化：前端输入与保存流程 35 项通过；后端 schema、SQLite 仓储/历史迁移、隔离真实 Redis 账本联合回归 51 项通过。覆盖 0、0.1、999999.9、1000000、1000000.0、超限与多位小数、取消编辑、迁移精确值与幂等、倍率计费、重复结算与 Redis 数据恢复。
 - 静态检查：前端完整 lint/typecheck、中英日 i18n 检查、变更 Python Ruff、架构检查和 diff 检查通过。前端复用本地已有依赖，后端 Python 3.11.15；Redis 8.8.0 临时实例启用 AOF/noeviction，测试后关闭并清理。
@@ -234,15 +234,15 @@
 
 ## 2026-10-27 — Work 工具列表、详情与搜索复用共享翻译
 
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@d2be34458dbfa19c40324f6916dfa75202743cf9`；分支 `codex/work120-tool-localization`，目录 `.worktrees/bisheng-work120-tool-localization`。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@d2be34458dbfa19c40324f6916dfa75202743cf9`；分支 `codex/work120-tool-localization`，目录 `.worktrees/doberman-agent-work120-tool-localization`。
 - 实现：现有工具中英日词典迁入 `packages/locales/src/tool`，生成平台与客户端资源；目录为内置工具提供稳定 `tool_key`。列表、详情、无障碍名称和搜索使用统一显示数据，搜索同时覆盖原始文案和工具标识。自定义 API/MCP/技能保留配置文案，旧接口与未知工具使用原始信息。知识库检索复用已有分类翻译，当前 39 个内置工具均有词典条目。
 - 自动验证：前端 23 项回归、隔离目录服务 5 项测试、1,471 个严格类型文件、变更文件 ESLint、Ruff、词典生成与 i18n 检查、生产构建通过。后端测试加载实际目录服务，提供方、可用性与技能依赖使用夹具；jsdom 将当前环境中缺失原生组件的可选 canvas 视为未安装。
 - 全量 client lint 的 23 项存量错误位于 chatApi.ts、ComposerEditor.test.tsx、CitationReferencesDrawer.tsx，已核对三文件及 lint 配置与目标分支一致；完整后端环境和真实账号网页/原生桌面验收待执行。发布需同步后端目录接口与 client 网页。
-- 本轮交付源码 PR；证据位于主工作区 `outputs/bisheng-work120-tool-localization-20261027/`。
+- 本轮交付源码 PR；证据位于主工作区 `outputs/doberman-agent-work120-tool-localization-20261027/`。
 
 ## 2026-10-27 — Knowledge-space permission role localization
 
-- Baseline: `dataelement/bisheng:feat/bisheng-work-120-main@d2be34458dbfa19c40324f6916dfa75202743cf9`, verified remotely before implementation and PR delivery. Branch: `codex/work-knowledge-permission-locale`.
+- Baseline: `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@d2be34458dbfa19c40324f6916dfa75202743cf9`, verified remotely before implementation and PR delivery. Branch: `codex/work-knowledge-permission-locale`.
 - Root cause: permission components displayed the API model name directly, while the standard role names arrive in Chinese. The protected creator row therefore displayed Chinese in English mode.
 - Implementation: resolve `owner`, `manager`, `editor` and `viewer` through the existing Chinese/English/Japanese locale entries at render time. Draft rows, role menus, member lists, authorization selectors/badges and role-name search share the resolver. Custom role names and submitted role keys retain their original values.
 - Verification: 47 permission tests passed; 3 existing failures were reproduced with baseline production sources (department badge text assertion, source-comment Chinese scan, retired tab-selector assertion). The focused role/authorization suite passed 21 cases. Strict client type checking (1,469 files), changed-file ESLint, i18n parity, architecture guard, diff checks and production client build passed. Full client ESLint reports the same 23 errors against both baseline and modified sources in unrelated chat files.
@@ -253,14 +253,14 @@
 
 - 需求：输入框内技能、工具、知识空间统一显示菜单同款图标与资源名称；每项保留整体选中、删除和撤销。
 - 实现：ComposerReference 明确携带 skill/tool/space 类型，复用 Outlined.Skill、Outlined.Hammer、Outlined.FolderClose；标签与文字共享输入区，长名称省略并保留完整 title，颜色沿用品牌主题。资源名称以文本节点写入，ID、工具 children 与发送关联继续独立保存。
-- 基线：已核对远端 `dataelement/bisheng:feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；工作目录 `.worktrees/bisheng-composer-resource-icons`，分支 `codex/composer-resource-icons`。
+- 基线：已核对远端 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；工作目录 `.worktrees/doberman-agent-composer-resource-icons`，分支 `codex/composer-resource-icons`。
 - 验证：13 项 ComposerEditor 回归通过，1,467 个严格类型文件检查、修改文件 lint、生产构建、三语言一致性、架构检查与 diff 检查通过。全量 client lint 首次检查保留 23 项存量问题，本次已将所修改测试内的 2 处中文输入数据改为引用现有语言资源，其余 21 项位于未改动文件。
 - 隔离 macOS Electron 窗口使用真实 ComposerEditor，确认三类 SVG、完整名称、contenteditable=false、整体删除及撤销恢复；浅深色截图已检查。该证据为实际组件验证，真实账号页面及发布环境验收待执行。
 - 配套 Work 实现位于 `codex/v120-composer-resource-icons`，支持 skill/tool/folder 图标与草稿持久化。
 
 ## 2026-10-27 — 工作台双 Logo 上传修复与 3006 验收
 
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立分支 `codex/workbench-logo-upload`。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立分支 `codex/workbench-logo-upload`。
 - 根因修复：Logo 上传直接使用现有上传 API 和统一错误处理，成功后更新地址；接口拒绝或图片解码失败时保留当前 Logo 并显示原因。文件选择后重置输入值，同文件可再次选择；上传中禁用重复选择和删除。保留 PNG/JPG/JPEG 合同及现有 Work/Chat 共享助手图标配置。
 - 自动验证：6 项组件回归通过，覆盖两处上传入口、错误保留、同文件重试、压缩失败、请求中状态和绝对地址；同组用例在旧代码上有 3 项失败。612 个严格类型文件、变更文件 lint、架构检查、生产构建和 diff 检查通过。全量 platform lint 报告 95 项问题，涉及的 8 个文件均与基线一致。
 - 部署：基于 3006 当前 `tools-skills-auth-20261026-root-membership` 源码合入两个上传组件，发布为 `workbench-logo-upload-20261027-100846`。669 个构建文件及 7,436 个保留文件逐一核验；仅重建 3006 前端，其余 3006 容器保持原实例。原发布目录保留用于回退。
@@ -269,7 +269,7 @@
 
 ## 2026-10-26 — 聊天输入框图片粘贴修复
 
-- 基线：远端 `dataelement/bisheng:feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立修复分支 `codex/chat-image-paste`。
+- 基线：远端 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立修复分支 `codex/chat-image-paste`。
 - 根因：上传格式列表只依据 `enable_etl4lm` 选择图片格式，后台已配置的模型视觉能力在附件接收阶段没有参与判断。当前输入框将图片接收与处理能力分开：PNG/JPG/JPEG/WebP/GIF/BMP 可经粘贴、拖拽、选择文件进入附件区，任务模式切回普通聊天时保留图片。
 - 普通聊天发送时使用所选模型的 `visual` 与服务端图片解析能力判断。视觉模型直接走已有识图链路；具备解析能力时沿用文件解析链路；条件不足时提示用户切换模型或配置解析服务，保留图片和文字。全局附件权限、格式范围、大小限制及普通聊天配文字发送规则继续生效。
 - 自动验证：44 项定向回归通过，包括真实 ComposerEditor / 粘贴 Hook / InputFiles 组件组合（上传接口使用测试响应）；相同新增行为用例在旧代码下有 4 项失败。1,467 个严格类型文件检查、修改文件 lint、三语言一致性、架构检查、生产构建及 diff 检查通过。
@@ -278,7 +278,7 @@
 
 ## 2026-10-27 — 恢复 Work 1.2.0 前端质量检查
 
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@f834aa2b1`；工作目录 `.worktrees/bisheng-work120-frontend-quality`。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@f834aa2b1`；工作目录 `.worktrees/doberman-agent-work120-frontend-quality`。
 - 实现：引用请求与展示组件以明确的错误结构处理失效、权限和传输失败；复用请求层已有的 `silent` 类型；敏感词表单保存始终读取当前值，加载提示补齐中英日翻译；主体搜索保持 Unicode 空白边界规则；测试使用国际化样例文案。
 - 全量前端 ESLint、严格类型检查、语言资源一致性、平台与客户端生产构建通过。64 项定向回归覆盖引用接口失败与成功、Unicode 空白、主体搜索、输入法和授权提示。
 - ESLint 历史豁免由工具自动清理，仅减少计数；质量规则保持原合同。依赖按锁文件安装；客户端 jsdom 测试将本机缺失原生二进制的可选 canvas 作为未安装处理，相关用例覆盖 DOM 与请求逻辑。
@@ -288,13 +288,13 @@
 
 - 工具目录按类型和固定资源标识排序，账户启停只更新可用状态；关闭、重新开启、刷新和重新进入目录时保持同一顺序。
 - 根因：目录原来将 `ready` 放在排序首位，账户关闭工具后进入列表末尾。修复由目录服务直接使用稳定字段排序，客户端继续消费服务端顺序。
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@0d6080902`，工作分支 `codex/work120-stable-tool-order`。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@0d6080902`，工作分支 `codex/work120-stable-tool-order`。
 - 验证：新增 API / 内置 / MCP 三类工具启停与重新加载回归，原实现 3 项失败，修复后 3 项通过；使用实际目录服务及隔离的数据依赖运行相关目录、权限入口、只读试用和可用状态共 10 项通过；架构守卫、F821 静态检查与差异检查通过。
 - 本轮交付服务端代码。运行环境更新与用户界面验收待执行；证据位于主工作区 `outputs/tool-order-20261027/`。
 
 ## 2026-10-27 — 任务模式恢复 local 执行器（定向自动化通过）
 
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@e59b249a3a2fc5672f14aa012f04d867a28f7049`；工作目录 `.worktrees/bisheng-work120-main-integration`。本轮修复后端任务执行链路。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@e59b249a3a2fc5672f14aa012f04d867a28f7049`；工作目录 `.worktrees/doberman-agent-work120-main-integration`。本轮修复后端任务执行链路。
 - 实现：按 `local`、`container`、`e2b` 分别绑定当前任务工作目录和持久化 workspace 路径；缺省类型归一为 `local`，E2B 文件预上传由 E2B 分支处理。自动装配、资源使用权限、账户工具开关与调用审计沿用现有入口。
 - 连续性：local 生成和修改的文件回写当前轮对象存储；追问通过已有工作区继承及文件恢复逻辑装入新目录，并按文件指纹识别本轮修改后的交付物。
 - 验证：324 项测试及 9 个子测试通过，覆盖三类执行器初始化、代码执行超时、工作区边界、文件回传、追问恢复、交付物筛选、工具权限与账户可用性、开放 API 任务模式提交/配置/查询/端点。新增 12 项 local 回归在基线代码上全部失败，在修复后全部通过。两轮连续性测试启动真实 Python 子进程生成 CSV，清除首轮本地目录后通过对象存储继承并修改原文件，验证最终文件内容；对象存储和权限使用测试替身。
@@ -305,7 +305,7 @@
 
 ## 2026-10-27 — Desktop 公开地址统一与 Nginx 转发
 
-- 源码基线：实时核对 `upstream/feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立工作区 `.worktrees/bisheng-work-public-origin`，分支 `codex/work-public-origin`。现场安装包为 BISHENG `1.2.0-test.2`、Harness `0.2.1-rc.2`；本轮修改范围为服务端、部署模板和回归测试。
+- 源码基线：实时核对 `upstream/feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6`；独立工作区 `.worktrees/doberman-agent-work-public-origin`，分支 `codex/work-public-origin`。现场安装包为 doberman-agent `1.2.0-test.2`、Harness `0.2.1-rc.2`；本轮修改范围为服务端、部署模板和回归测试。
 - 部署配置统一使用 `dsh.platform_public_url`。配置加载时按 HTTP URL 规则规范化域名大小写、默认端口、国际化域名与 IPv6；登录授权和 MCP Host/Origin 校验共用规范地址。两个 Nginx 模板以 `$http_host` 保留公开端口；外部代理使用同一通用转发规则。
 - 新增地址回归在修改前为 14 失败 / 9 通过，修复后 23 项通过。真实 Nginx 1.28.0 加载生产模板中的 map/请求头转发指令，覆盖两个入口的单层 HTTP、双层 HTTPS，MCP 初始化、工具列表以及错误 Host、错误 Origin、伪造转发头拒绝，4 项通过；原有 Work 能力回归 15 项通过，合计 42 项。完整生产路由、数据库登录、真实模型聊天和实际工具业务调用属于独立部署验收。
 - 13001 现场已取得认证后 MCP 421；公开登录预请求返回的地址确认为 `http://192.168.106.109:13001`。现有源码已兼容带端口和去端口的 Host，故原 `$host` 丢端口只能证明转发缺陷。具体拒绝层、实际转发 Host 和运行的工具服务版本仍待服务器核验。109 SSH 密钥认证失败，本次通过独立修复分支交付，远端环境和安装包保持原版本。
@@ -326,14 +326,14 @@
 - 根因：每条 WebSocket 直接 BLPOP 同一队列，多个页面和断开的旧连接竞争消费事件。修改为订阅先建立、队列事件原子广播给全部在线连接，再确认移除；工作进程沿用原队列写入，前端事件合同保持。
 - 同时监听客户端断开并取消订阅；空闲连接按 15 秒间隔读取数据库终态，通过原有完成 / 失败 / 终止事件收尾。保留排队事件顺序，避免终态核对提前截断尾部进度。
 - 隔离真实 Redis 与生命周期 14 项回归通过；服务器完整依赖下 19 项通过，含真实双 WebSocket、不同 Redis 客户端、事件顺序、旧工作进程队列格式、断连资源释放、任务隔离、丢失完成通知及传输异常。新增和变更代码 Ruff、逐文件架构检查通过。
-- 功能提交 `359df6ca7df56253e36882baac3c8906d300500f` 已推送平台分支 `feat/bisheng-work-120-main`；3006 发布 `task-stream-sync-20261023-171818`，完整应用导入、三个运行源码文件哈希及 HTTP 健康检查通过。
+- 功能提交 `359df6ca7df56253e36882baac3c8906d300500f` 已推送平台分支 `feat/doberman-agent-work-120-main`；3006 发布 `task-stream-sync-20261023-171818`，完整应用导入、三个运行源码文件哈希及 HTTP 健康检查通过。
 - 发布前活动任务为 0，仅更新 API；任务工作进程、前端、Gateway 与 3007 的容器及启动时间保持。桌面 Chat 复用服务端修复，现有桌面包可继续使用。双 WebSocket 自动验收通过，安装后原生界面的人工验收待执行。
 - 部署与验证证据：主工作区 `outputs/task-stream-sync-20261023/`。
 
 ## 2026-10-23 — 同事提测环境核对
 
 - 用户要求汇总近期桌面 / 网页 / 服务后端功能影响范围，确认 3006 最新运行代码和桌面安装包。Work 保持自动调用平台工具。
-- 本次功能源码基线 `feat/bisheng-work-120-main@ef4e5c0cb6b51391ef7f9b79d4793436f905d907`；API、backend_worker 与 backend_linsight 三进程各核对 1,717 个源码文件，全部一致，包含 47 个近期变更文件。
+- 本次功能源码基线 `feat/doberman-agent-work-120-main@ef4e5c0cb6b51391ef7f9b79d4793436f905d907`；API、backend_worker 与 backend_linsight 三进程各核对 1,717 个源码文件，全部一致，包含 47 个近期变更文件。
 - 客户端从该基线重新生产构建并发布至 `test-handoff-20261023-150004`。客户端与管理端容器入口文件哈希分别为 `99ed764aa00d6d2103e99acc1e9ea08b3e3184eb3e9b34c5681d05eb6a5862dd`、`35bccc46680defc98fb572abc092e64dbaa8044d51453dc6409dd0c64a41c16e`，均与发布文件一致；倍率显示管理端更新保持。
 - 后端健康、技能页、模型页与桌面接入配置接口均 HTTP 200；后台三进程、Gateway 与 3007 容器 ID 及启动时间保持。此次为静态前端更新，无数据库变更。
 - 前轮功能与权限证据保持独立；普通用户真实知识库数据、多账号交叉和 Office 产物验收交由同事补测。桌面最新包验证和 Word 提测说明在主工作区 `outputs/test-handoff-20261023/`。
@@ -374,7 +374,7 @@
 
 ## 2026-10-22 — 3007 能力整合至 3006 / 共享分支
 
-- 用户授权直接合入平台 feat/bisheng-work-120-main 与桌面 V1.2.0，并更新 3006。平台基线 a15826aeb，桌面基线 56dcf4b，Harness 0.2.0-rc.2。
+- 用户授权直接合入平台 feat/doberman-agent-work-120-main 与桌面 V1.2.0，并更新 3006。平台基线 a15826aeb，桌面基线 56dcf4b，Harness 0.2.0-rc.2。
 - 按功能迁移已验收的工具与技能中心精简列表、后台技能归位、输入框二级菜单/行内引用/字体/光标修复，以及账号联网搜索设置和服务端执行约束。保留最新模型、积分、知识空间、任务模式和桌面主题改动。
 - 桌面企业工具通过宿主 MCP 注册与审批；技能复用主线已有 provider 和 ZIP 包，每次加载重新校验依赖并补充原生工具名称。保持单一技能目录，支持完整二进制附件。
 - 自动验证：32 项后端、24 项网页输入/目录回归，1465 个严格类型文件、定向 lint、前后台构建通过；桌面 npm ci 补丁重放、类型检查、构建通过，完整回归 241 文件 / 2047 项通过、2 项条件跳过（含真实 Python MCP 跨运行时检查）。
@@ -384,7 +384,7 @@
 
 ## 2026-10-22 — 内置知识库检索工具
 
-- 工具目录登记 `bisheng_knowledge_search`（知识库检索），通用 ToolExecutor 绑定真实执行用户和当前租户，沿用工具使用授权和调用审计。模型输入限定 query / space_ids。
+- 工具目录登记 `doberman_agent_knowledge_search`（知识库检索），通用 ToolExecutor 绑定真实执行用户和当前租户，沿用工具使用授权和调用审计。模型输入限定 query / space_ids。
 - 桌面检索 API 与平台工具共用检索及结果格式，复用文档知识库、知识空间、文件和主版本过滤。支持同步/异步调用；租户上下文变化或执行用户失效时返回错误。
 - 自动化：59 项定向测试、8 个子测试通过，覆盖身份参数伪造、普通用户绑定、权限拒绝、租户变化、文件可见性、来源及登记幂等。新增代码 Ruff 和架构检查通过；原知识空间 endpoint 的 4 项 Ruff 既有问题与基线一致。
 - 3006 发布到 `knowledge-tool-20261022-221700`，后端健康，发布前运行中任务为 0。存量登记完成（tool_id=40，category_id=18），统一权限投影为 CURRENT；现有前端和其他工具权限保持原值。
@@ -402,14 +402,14 @@
 
 ## 2026-10-22 — 用户可选模型统一配置
 
-- 交付方式按用户确认调整为直接合入 `feat/bisheng-work-120-main`；合并前同步远端 `022aee8cb`，保留 Chat 字体渲染更新，状态文档保留双方记录。
+- 交付方式按用户确认调整为直接合入 `feat/doberman-agent-work-120-main`；合并前同步远端 `022aee8cb`，保留 Chat 字体渲染更新，状态文档保留双方记录。
 
 - 布局微调：可见范围标题与按钮统一左对齐，右侧三列使用固定宽度，支持图片和积分倍率整体右移，显示名称区域获得更多空间。定向 ESLint 与管理端构建通过，已部署 3006 `user-models-6dea932e8-20261022`，实际页面截图确认标题与按钮左侧对齐、支持图片及积分倍率右移。
 
-- 基线 `feat/bisheng-work-120-main@b3fbbd166`。统一工作台与桌面端配置，显示实际模型、服务提供方、显示名称、视觉、积分倍率及“配置可见范围”按钮；其他系统配置保持现有流程。
+- 基线 `feat/doberman-agent-work-120-main@b3fbbd166`。统一工作台与桌面端配置，显示实际模型、服务提供方、显示名称、视觉、积分倍率及“配置可见范围”按钮；其他系统配置保持现有流程。
 - 管理员专用读取入口保留完整原始元数据，保存名称保留隐藏模型、描述和既有默认值。Chat 与桌面目录使用服务提供方及显示名称，调用和授权继续使用原模型 ID。
 - 自动化：后台隔离容器测试 58 项通过、2 项环境用例跳过；管理端相关 28 项通过，严格类型检查 550 文件、定向 ESLint、生产构建及架构检查通过。全局 i18n 检查的两组错误与基线一致（既有日文权限文案及 28001–28009 错误码）。本次新增文案提供中英日三语。
-- 3006 已发布 `user-models-2a309aeff-20261022`，后台健康。实际管理员页面验证合并表格、名称保存与重新加载、用户/部门/角色可见范围弹窗、其他模型配置。实际 BISHENG Dev 刷新后，模型选择器显示“阿里云百炼 / Qwen 名称联动验收”；随后恢复原名称 `qwen`，后台和桌面均确认恢复。权限和倍率沿用原值。设计及验收范围见 [配置说明](product/user-selectable-models-20261022.md)。
+- 3006 已发布 `user-models-2a309aeff-20261022`，后台健康。实际管理员页面验证合并表格、名称保存与重新加载、用户/部门/角色可见范围弹窗、其他模型配置。实际 doberman-agent Dev 刷新后，模型选择器显示“阿里云百炼 / Qwen 名称联动验收”；随后恢复原名称 `qwen`，后台和桌面均确认恢复。权限和倍率沿用原值。设计及验收范围见 [配置说明](product/user-selectable-models-20261022.md)。
 
 ## 2026-10-22 — Chat 与 Work 字体渲染一致
 
@@ -420,17 +420,17 @@
 
 - 文件画布与应用界面采用独立配色边界。Word、Excel、PDF、HTML 和引用文档保留文件内容配色；预览背景、缩放工具栏、加载与错误状态、文本/Markdown、音视频及产物侧栏使用主题色。
 - 文档画布通过 `data-document-canvas` 与桌面宿主约定；宿主为弹出菜单和对话框提供完整深色文字、背景和控件色。
-- 客户端生产构建通过。桌面类型检查及相关回归 28 项通过；按用户要求由用户手动验收视觉效果。源码 `b3fbbd166` 已推送 `feat/bisheng-work-120-main`，3006 前端发布到 `dark-preview-b3fbbd166-20261022`，前端容器已启动。
+- 客户端生产构建通过。桌面类型检查及相关回归 28 项通过；按用户要求由用户手动验收视觉效果。源码 `b3fbbd166` 已推送 `feat/doberman-agent-work-120-main`，3006 前端发布到 `dark-preview-b3fbbd166-20261022`，前端容器已启动。
 
 ## 2026-10-22 — Chat 输入提示及上下文弹窗交互
 
 - 输入提示随编辑器真实空状态显示，聚焦空输入框保留提示；中文输入法组合输入即时隐藏提示，清空后恢复，文字与光标使用相同的内边距。
 - 加号菜单按打开方式恢复焦点：鼠标操作返回编辑器，键盘操作返回触发按钮。知识空间列表采用固定高度，加载与结果变化保持弹窗尺寸。
-- 此前输入提示回归 9 项及构建通过；本轮合入集成分支 `94f6380fc` 后，`646980179` 的 Chat 构建通过并推送 `dataelement/bisheng:feat/bisheng-work-120-main`。3006 前端发布目录为 `knowledge-picker-646980179-20261022`，前端容器已重新启动；按用户要求由用户手动验收界面。
+- 此前输入提示回归 9 项及构建通过；本轮合入集成分支 `94f6380fc` 后，`646980179` 的 Chat 构建通过并推送 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main`。3006 前端发布目录为 `knowledge-picker-646980179-20261022`，前端容器已重新启动；按用户要求由用户手动验收界面。
 
 # DSH 企业后台交付状态
 
-- 2026-10-22：共同开发与后续交付统一使用 `feat/bisheng-work-120-main`；合入任务模式修复 `51baf285f`，保留消息操作样式提交 `cb4b18018`。合并无代码冲突，后端与已发布到 3006 的修复版本一致，前端与共同分支原有版本一致。
+- 2026-10-22：共同开发与后续交付统一使用 `feat/doberman-agent-work-120-main`；合入任务模式修复 `51baf285f`，保留消息操作样式提交 `cb4b18018`。合并无代码冲突，后端与已发布到 3006 的修复版本一致，前端与共同分支原有版本一致。
 
 - 2026-10-22：统一 Chat 消息操作为复制、点赞、点踩、导出，采用 DSH Work 0.2.0-rc.2 的原始图标及 28px 按钮、15px 图标、8px 间距；桌面内嵌 Chat 与网页共用此实现，Work 保留新建分支。参考桌面分支 V1.2.0 b510182。复制回归 2 项、前端类型检查、改动文件 ESLint 与客户端构建通过；前端全量 ESLint 在平台既有文件报 95 项错误。本次源码待部署后的视觉验收。
 
@@ -449,15 +449,15 @@
 
 ## 2026-10-22：Work 120 main 积分与 Chat 集成候选
 
-- 基线：`upstream/feat/bisheng-work-120-main@7c701e86bcdfbafd53a99997f3146097a1497c41`；集成分支：`codex/work120-main-integration`。
-- 迁入旧 Work 120 的 Chat 交互与桌面桥接，以及 3007 的统一积分、模型倍率和可见范围；沿用新基线的原生登录与席位移除实现。桌面配套分支为 `dataelement/bisheng-work:codex/v120-unified-credits`，基于 V1.2.0。
+- 基线：`upstream/feat/doberman-agent-work-120-main@7c701e86bcdfbafd53a99997f3146097a1497c41`；集成分支：`codex/work120-main-integration`。
+- 迁入旧 Work 120 的 Chat 交互与桌面桥接，以及 3007 的统一积分、模型倍率和可见范围；沿用新基线的原生登录与席位移除实现。桌面配套分支为 `cp7553479/doberman-agent-work:codex/v120-unified-credits`，基于 V1.2.0。
 - 自动化：Chat 定向测试 101 项、管理端相关测试 213 项、原生认证及迁移测试 11 项、模型审计测试 24 项通过；双前端生产构建与前端工作区类型检查通过。部分测试按运行环境跳过。
 - 后台全量 DSH 回归仍有失败及环境错误，涉及旧版按模型额度断言、数据库/Redis 等依赖和测试隔离，当前状态为集成候选。真实数据库迁移、登录、Chat/Work 扣分与权限联调待验收。
 - 当前交付为源码分支。3006/3007 部署、共享目标分支合并及桌面安装包发布待后续执行。
 - 迁移范围和数据升级路径见 [集成说明](WORK120_MAIN_INTEGRATION.md)。
 
 
-- 2026-09-22：跟进 #2433 的席位反馈验收。确认“重新分配”后，失败原因以“用户名 + 原因”的单个 toast 展示，约 4 秒自动消失；每次操作的同一失败只提示一次，新操作可再次提示。表格保持原列宽。已撤销席位的管理提示提供明确的重新分配步骤。批量容量错误配套 [Gateway #6](https://github.com/dataelement/bisheng-gateway/pull/6)：新增和待恢复成员统一计入所需席位，容量不足统一返回 seat_limit_reached。
+- 2026-09-22：跟进 #2433 的席位反馈验收。确认“重新分配”后，失败原因以“用户名 + 原因”的单个 toast 展示，约 4 秒自动消失；每次操作的同一失败只提示一次，新操作可再次提示。表格保持原列宽。已撤销席位的管理提示提供明确的重新分配步骤。批量容量错误配套 Gateway #6：新增和待恢复成员统一计入所需席位，容量不足统一返回 seat_limit_reached。
   - 自动化：39 文件 / 333 项 DSH 前端回归、平台全量 lint、467 文件严格类型检查、生产构建、i18n 校验和架构守卫通过。
   - 浏览器：实际 React 组件配合模拟失败回执，确认后显示 toast，随后自动消失；7 列宽度在显示前、显示中和消失后完全一致。
   - 109：此前 Gateway 容量修复已部署，根部门及子部门保存均返回 seat_limit_reached，席位和额度保持原值；本条提交时 toast 前端发布待执行，现场席位为 8/10，真实满席点击复验为 NOT_RUN。
@@ -481,13 +481,13 @@
 
 
 ## 2026-10-22 Select skills before task mode
-- Synced `feat/bisheng-work-120-main@fd153d685` before the change.
+- Synced `feat/doberman-agent-work-120-main@fd153d685` before the change.
 - Chat exposes the enabled skill picker to users with task-mode access while composing ordinary chat. Selecting a skill retains the selection and activates task mode; further skill selection keeps task mode active. Switching back to ordinary chat clears task skills and keeps the picker available.
 - Ten focused composer tests and the client production build passed. Deployed client build to 3006 release `chat-skill-auto-mode-20261022`, preserving the current backend and admin files. Desktop Chat loads this client; visual acceptance remains with the user.
 
 ## 2026-10-23：客户端管理拆分积分设置与用量
 
-- 基于共同分支 `feat/bisheng-work-120-main@448fbad77`，将原“积分与使用数据”拆成“积分设置”和“用量”两个独立页签。默认显示积分设置，已有 `?tab=usage` 链接直接进入用量；按用户、部门及时间筛选归属用量页。
+- 基于共同分支 `feat/doberman-agent-work-120-main@448fbad77`，将原“积分与使用数据”拆成“积分设置”和“用量”两个独立页签。默认显示积分设置，已有 `?tab=usage` 链接直接进入用量；按用户、部门及时间筛选归属用量页。
 - 积分配置、分配优先级及保存接口沿用现有实现，本次调整页面组织和中英日页签文案。
 - 自动化：页面导航、设置与积分保存共 12 项测试通过；平台 550 个严格类型文件、变更文件 lint、生产构建通过。全量 lint 存在 8 个基线文件的 95 项既有错误；全量 i18n 校验与 `448fbad77` 基线输出一致（日文 12 个缺失键与 9 个后端错误码翻译缺失）。
 - 部署：3006 管理前端发布为 `credit-usage-tabs-20261023-r2`，基于并行更新后的 `skills-unified-20261023-111837` 保留其后端和 Chat 客户端。仅重建前端容器，旧发布目录保留用于回滚。管理端入口 SHA-256：`eddd88a6389b10263602affba649ede2cc26b36ff1f2dd5752df5c5c77465259`。
@@ -511,13 +511,13 @@
 
 ## 2026-10-26 — 工具与技能授权
 
-- 基线：dataelement/bisheng feat/bisheng-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6，提交前再次核验远端 SHA 一致。
+- 基线：cp7553479/doberman-agent feat/doberman-agent-work-120-main@d4d60f77e41d58753a76969c6f40465a36054fa6，提交前再次核验远端 SHA 一致。
 - 实现：顶部“工具与技能”中英日同步；内置工具、企业技能复用授权弹窗与 F048 资源授权服务。用户确认保留全员可用，管理员可关闭全员并授权指定人员、部门或用户组。
 - 全员使用采用所属租户成员的普通 Grant；模型升级至 f048-v6，迁移将旧系统全员标记转换为可撤销 Grant。重跑迁移及初始化保留已撤销结果。个人技能持续校验所属账户。
 - 使用边界：工具列表和每次调用、技能目录/直接下载/装载、开放 API 配置/提交按当前使用授权过滤；个人启停在企业授权范围内生效。
 - 自动验证：123 项权限与技能回归通过；隔离提供方实现后，24 项工具业务测试及 9 个子场景通过。前端 4 项回归、611 个严格类型文件、变更 lint、生产构建、i18n 与架构检查通过。
 - 扩大回归：技能业务组基线 69 通过/20 失败，本分支 72 通过/18 失败（补齐 runtime 测试身份与 DAO fixture，增加撤销下载回归）；余下为原有 selectable/provisioning fixture 与业务入口不匹配。授权主体路由组基线和本分支均 9 通过/1 失败，原因是本地 FastAPI 路由结构变化。完整提供方导入、真实 OpenFGA/数据库迁移、普通账号网页及任务端到端验收待上线环境执行。
-- 上线步骤与回退：[upgrade.md](../features/local/tools-skills-authorization/upgrade.md)。已提交 [PR #2518](https://github.com/dataelement/bisheng/pull/2518)，部署与合并单独执行。
+- 上线步骤与回退：[upgrade.md](../features/local/tools-skills-authorization/upgrade.md)。已提交 PR #2518，部署与合并单独执行。
 
 
 ### 2026-10-26 — 3006 授权部署与根租户成员兼容
@@ -531,7 +531,7 @@
 
 ## 2026-10-28 — 知识空间提问模型选择与布局
 
-- 基线：`dataelement/bisheng:feat/bisheng-work-120-main@2a726f5c97be74670d99718cdc475cb1f7331b62`；分支 `codex/knowledge-ask-model`。
+- 基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@2a726f5c97be74670d99718cdc475cb1f7331b62`；分支 `codex/knowledge-ask-model`。
 - 根因：模型触发器基础样式受主聊天页面选择器限制，知识空间按钮失去 flex 对齐；提问栏缺少模型选择回调，跨页交接仅携带问题和知识空间。
 - 实现：共享组件统一提供按钮基础布局，知识输入框限制模型区域宽度并保留全名提示；草稿保存选择，发送携带稳定模型 ID，新对话完成普通聊天模式、配置、模型和知识空间准备后发送。模型失效时恢复问题草稿并提示重新选择。
 - 自动验证：5 组 / 48 项相关回归通过，覆盖真实发送 Hook 的请求参数、模型记录、缓存任务页回到新对话、配置延迟、重复激活、失效模型和文章附件交接。将新增用例运行于原始实现，复现 5 项失败。客户端 1,480 个严格类型文件、全量 ESLint、生产构建、三语言一致性、架构守卫和差异检查通过。
@@ -550,7 +550,7 @@
 - 根因：介绍访问绑定广场发布状态，与加入接口按开放／审批设置处理的规则存在差异。
 - 已在 `codex/knowledge-share-preview` 修正介绍访问条件；广场筛选与内容权限沿用各自原有规则。
 - 修复前复现 2 项失败，修复后 58 项相关回归通过；Ruff、格式、架构与差异检查通过。
-- 本次按用户要求直接交付 `feat/bisheng-work-120-main`；测试环境部署与 macOS 真实账号验收待执行。
+- 本次按用户要求直接交付 `feat/doberman-agent-work-120-main`；测试环境部署与 macOS 真实账号验收待执行。
 - 记录：[分享介绍修复](status/knowledge-share-preview-20261028.md)。
 
 ## 2026-10-28 — 应用对话简介字段统一
@@ -567,14 +567,14 @@
 ## 2026-10-28 — 发现广场应用卡片暗色主题
 
 - 应用卡片及其操作区统一使用主题表面颜色，暗色沿用知识空间配色。同步目标 `9a077fdce` 后，Client 静态检查与构建、18 项权限与导航组合回归通过；卡片保持已通过 12 组组件渲染验证的代码。
-- 已创建 [PR #2544](https://github.com/dataelement/bisheng/pull/2544)，发布位置为 Client 网页资源。环境发布、13001 真实账号及 Windows 验收待执行。[修复记录](status/app-square-dark-theme-20261028.md)。
+- 已创建 PR #2544，发布位置为 Client 网页资源。环境发布、13001 真实账号及 Windows 验收待执行。[修复记录](status/app-square-dark-theme-20261028.md)。
 
 ## 2026-10-28 — 订阅审批、关注列表与访问状态一致性
 
-- 归属：毕昇平台共用的频道服务和网页客户端；桌面端呈现内嵌页面。初始基线 `1a8ac45e1`，构建验证基线 `c8ae351ee`，合入前保留 `8821e490d` 的应用描述更新，独立分支 `codex/channel-state-consistency`。
+- 归属：doberman-agent平台共用的频道服务和网页客户端；桌面端呈现内嵌页面。初始基线 `1a8ac45e1`，构建验证基线 `c8ae351ee`，合入前保留 `8821e490d` 的应用描述更新，独立分支 `codex/channel-state-consistency`。
 - 实现：详情、广场和关注列表统一使用有效访问权限；授权投影成功后激活成员；自动审批统一交给持久化审批任务。前端采用服务端返回的订阅结果，并在页面恢复、窗口切回和可见状态每 30 秒刷新；广场刷新保留已加载页面，访问撤回收起内容。
 - 验证：后端 55 项通过；相同用例在初始基线产生 12 项失败、43 项通过。前端 15 项组件与 Hook 回归通过。client/platform 全量 ESLint、严格类型、共享包检查、i18n、Ruff、架构与差异检查、客户端生产构建通过。
-- 交付：用户授权直接合入 `dataelement/bisheng:feat/bisheng-work-120-main`；13100 部署、真实审批记录与权限数据核验、原生 macOS 验收待执行。
+- 交付：用户授权直接合入 `cp7553479/doberman-agent:feat/doberman-agent-work-120-main`；13100 部署、真实审批记录与权限数据核验、原生 macOS 验收待执行。
 - [修复与验证记录](status/channel-state-consistency-20261028.md)。
 
 
@@ -585,7 +585,7 @@
 
 ## 2026-10-28 — Work 知识检索旧库升级
 
-- 测试环境内置目录缺少 `bisheng_knowledge_search`；Work 检索前的工具门禁会拒绝缺项。升级命令现在一并完成工具登记和该分类的权限校准，并以 CURRENT 状态报告完成。
+- 测试环境内置目录缺少 `doberman_agent_knowledge_search`；Work 检索前的工具门禁会拒绝缺项。升级命令现在一并完成工具登记和该分类的权限校准，并以 CURRENT 状态报告完成。
 - 源码与 Docker 入口统一支持 `upgrade-work-knowledge`；命令默认预览，Apply 绑定权限 Store 和审计操作人，重复执行保留管理员配置及个人开关。
 - 84 项相关回归及 17 个参数子项通过，包含 SQLite 登记、实际权限校准器的受控验证、双空间资料来源和缺项拒绝；静态与差异检查通过。
 - 后端代码与升级命令交付；环境数据升级及 test3 / dsh-sara5 的 K1/K2 真实验收待执行。[修复与部署说明](status/work-knowledge-upgrade-20261028.md)。

@@ -4,10 +4,10 @@
 
 ## 范围与基线
 
-- 仓库：`dataelement/bisheng`，目标分支 `feat/bisheng-work-120-main`。
+- 仓库：`cp7553479/doberman-agent`，目标分支 `feat/doberman-agent-work-120-main`。
 - 开始基线：`fd6c95ca1b7986c60ea72d16d896a3de0ed4e9c2`，已读取远端分支确认。
 - 交付同步基线：`e468e2f2bcfe3c855e159193c0f96e18aec1453d`，含频道路由、知识分享和工作流修复。
-- 修复分支：`codex/knowledge-ask-submit`，工作目录 `.worktrees/bisheng-knowledge-ask-submit`。
+- 修复分支：`codex/knowledge-ask-submit`，工作目录 `.worktrees/doberman-agent-knowledge-ask-submit`。
 - 本次修改平台网页客户端。Desktop 安装包与 Harness 保持原版本。
 
 ## 复现与根因

@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 import { showApiError } from '@/controllers/request';
 
 import {

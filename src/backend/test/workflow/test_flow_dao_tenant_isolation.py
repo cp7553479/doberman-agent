@@ -17,17 +17,17 @@ listener's bypass / visible-ids / single-tenant semantics.
 from sqlalchemy.sql import false as sql_false
 from sqlmodel import select
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.core.database.tenant_filter import build_tenant_filter_clause
-from bisheng.database.models.app import App
-from bisheng.database.models.assistant import Assistant
-from bisheng.database.models.flow import Flow, FlowDao
+from doberman_agent.core.database.tenant_filter import build_tenant_filter_clause
+from doberman_agent.database.models.app import App
+from doberman_agent.database.models.assistant import Assistant
+from doberman_agent.database.models.flow import Flow, FlowDao
 
 
 def _compiled_sql(stmt) -> str:

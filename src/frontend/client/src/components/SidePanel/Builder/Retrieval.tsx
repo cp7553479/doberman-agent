@@ -3,7 +3,7 @@ import { Capabilities } from '~/types/chat';
 import type { AssistantsEndpoint } from '~/types/chat';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '~/components/ui';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import OptionHover from '~/components/SidePanel/Parameters/OptionHover';
 import { CircleHelpIcon } from '~/components/svg';
 import type { AssistantForm } from '~/common';

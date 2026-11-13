@@ -1,5 +1,5 @@
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
@@ -35,20 +35,20 @@ export default function InputItem({ type = 'text', char = false, linefeed = fals
             className={`node-item mb-4 ${!linefeed ? 'flex items-center justify-between' : ''}`}
             data-key={data.key}
         >
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {label || data.label && t(`${i18nPrefix}label`)}
                 {data.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}
             </Label>
             <div className={`nodrag ${char ? 'w-32 flex items-center gap-3' : ''} ${linefeed ? 'mt-2' : ''}`}>
                 <Input value={value} type={type} min={data.min} max={data.max} onChange={(e) => handleChange(e.target.value)} className={"min-w-24"} />
-                <Label className="bisheng-label">{t('character')}</Label>
+                <Label className="doberman_agent-label">{t('character')}</Label>
             </div>
         </div>
     );
 
     return (
         <div className='node-item mb-4' data-key={data.key}>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {data.label && t(`${i18nPrefix}label`)}
                 {data.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}
             </Label>

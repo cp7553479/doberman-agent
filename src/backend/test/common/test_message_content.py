@@ -5,7 +5,7 @@ from copy import deepcopy
 import pytest
 from langchain_core.messages import AIMessageChunk
 
-from bisheng.common.utils.message_content import extract_message_reasoning, extract_message_text
+from doberman_agent.common.utils.message_content import extract_message_reasoning, extract_message_text
 
 
 @pytest.mark.parametrize(

@@ -1,9 +1,9 @@
 import { knowledgePathWithTab } from "../knowledgeListNavigation";
-import { Dropdown, DropdownItem, DropdownSeparator } from "@bisheng/ui";
+import { Dropdown, DropdownItem, DropdownSeparator } from "@doberman-agent/ui";
 
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
 import { CircleHelp, FolderPlus, FolderUp, Link2 } from "lucide-react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeSpace, SpaceRole, VisibilityType } from "~/api/knowledge";
 
 
@@ -15,7 +15,7 @@ import { CopyShareLinkButton } from "~/components/CopyShareLinkButton";
 import { useLocalize, usePrefersMobileLayout } from "~/hooks";
 import { knowledgeUploadCapabilities } from "../knowledgeUploadCapabilities";
 import { useRecoilValue } from "recoil";
-import { bishengConfState } from "~/pages/appChat/store/atoms";
+import { dobermanAgentConfState } from "~/pages/appChat/store/atoms";
 
 /**
  * Space header: location trail (space anchor + folder path, with the space action
@@ -110,7 +110,7 @@ export function KnowledgeSpaceHeader({
   const localize = useLocalize();
   const navigate = useNavigate();
   const location = useLocation();
-  const bishengConfig = useRecoilValue(bishengConfState);
+  const dobermanAgentConfig = useRecoilValue(dobermanAgentConfState);
   const isH5 = usePrefersMobileLayout();
 
   const isAdmin = space.role === SpaceRole.CREATOR || space.role === SpaceRole.ADMIN;
@@ -218,7 +218,7 @@ export function KnowledgeSpaceHeader({
                       <span className="min-w-0 truncate">{localize("com_knowledge.upload_file")}</span>
                       <SharedTooltip
                         content={localize(
-                          bishengConfig?.enable_media_upload
+                          dobermanAgentConfig?.enable_media_upload
                             ? "com_knowledge.upload_file_types_tip"
                             : "com_knowledge.upload_file_types_tip_without_media",
                         )}

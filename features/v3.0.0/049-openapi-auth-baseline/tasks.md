@@ -3,7 +3,7 @@
 **关联规格**: [spec.md](./spec.md)（65 条 AC，What 的唯一真相）· [design.md](./design.md)（How 的唯一真相，D1–D13 / 坑 1–27 / §4.2 契约）
 **版本**: v3.0.0
 **纵切**: [mvp-114-path.md](../mvp-114-path.md) §2 F049 行——Wave 1–2 全部为 `[MVP-114]` 任务，其后 Wave 为 release 必做
-**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe` HEAD `b63a320f2`，2026-08-17 核实，路径以 `src/backend/bisheng/` 为根；前端另注 `platform/` = `src/frontend/platform/src/`、`client/` = `src/frontend/client/src/`）。行号会漂移，符号名不会——落地前以符号名重定位。
+**代码事实口径**: 本文所有 `文件:行号` 沿用 design.md（`3.0-vibe` HEAD `b63a320f2`，2026-08-17 核实，路径以 `src/backend/doberman_agent/` 为根；前端另注 `platform/` = `src/frontend/platform/src/`、`client/` = `src/frontend/client/src/`）。行号会漂移，符号名不会——落地前以符号名重定位。
 
 ---
 
@@ -34,7 +34,7 @@
 
 **编号 ≠ 执行顺序**（评审修订）：Wave 1 内 validator 测试需要真实服务账号主体，故实际执行顺序为 T009 → T010 → T013 → T014 → T011 → T012（`依赖:` 已登记，编号保留不重排）；T047（`share_link.share_scope` Alembic）是无依赖的基础设施任务，实际与 T001 同批执行（Wave 1），编号保留在 Wave 4 只为与 share-token 通道叙事相邻。
 
-**跨 Feature 副作用登记**（release-contract 表 1 / 检查项 17）：T001（`User` 表加列，ServiceAccount 对象归 F049 但 `User` 表本身不归）· T016 / T019 / T058 / T059 / T064（改 `user` DAO 默认过滤、`grant_subject_service` / `canonical_source` / F048 runtime / `permission.application`——PermissionGrant 归 F048，本 Feature 只增显式参数与新来源值）· T024（`MANAGEMENT_API_PREFIXES` 加项 = F019 元组扩展）· T040（`open_endpoints` router 挂全局依赖 + 删 `chat.py`）· T042（`worker/workflow/redis_callback.py set_workflow_status` 状态载荷加 `owner_user_id / tenant_id`——workflow worker 写 / `stop` 端点读的共享载荷，加键不删键、老读者无感）· T047 / T049（ShareLink 写增量，表 1 已登记归 F049）· T050（`bisheng/api/router.py` 新增 `app_shares_router` 直接挂接）· T069（`tenant_reconcile` / `quota_service` 加类型条件）。
+**跨 Feature 副作用登记**（release-contract 表 1 / 检查项 17）：T001（`User` 表加列，ServiceAccount 对象归 F049 但 `User` 表本身不归）· T016 / T019 / T058 / T059 / T064（改 `user` DAO 默认过滤、`grant_subject_service` / `canonical_source` / F048 runtime / `permission.application`——PermissionGrant 归 F048，本 Feature 只增显式参数与新来源值）· T024（`MANAGEMENT_API_PREFIXES` 加项 = F019 元组扩展）· T040（`open_endpoints` router 挂全局依赖 + 删 `chat.py`）· T042（`worker/workflow/redis_callback.py set_workflow_status` 状态载荷加 `owner_user_id / tenant_id`——workflow worker 写 / `stop` 端点读的共享载荷，加键不删键、老读者无感）· T047 / T049（ShareLink 写增量，表 1 已登记归 F049）· T050（`doberman-agent/api/router.py` 新增 `app_shares_router` 直接挂接）· T069（`tenant_reconcile` / `quota_service` 加类型条件）。
 
 ---
 
@@ -43,40 +43,40 @@
 ### Wave 1 · `[MVP-114]` 基础设施（无测试配对，排最前）
 
 - [x] **T001**: `[MVP-114]` Alembic：`user.user_type` 列
-  **文件**: `src/backend/bisheng/core/database/alembic/versions/v3_0_0_f049_user_user_type.py`（新，模板 `v2_5_1_f012_user_token_version.py`）, `src/backend/bisheng/user/domain/models/user.py`（`User` 模型加 `user_type: str = Field(default='human', max_length=16, index=True)`）
+  **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f049_user_user_type.py`（新，模板 `v2_5_1_f012_user_token_version.py`）, `src/backend/doberman_agent/user/domain/models/user.py`（`User` 模型加 `user_type: str = Field(default='human', max_length=16, index=True)`）
   **逻辑**: `upgrade()`：`ALTER TABLE user ADD COLUMN user_type VARCHAR(16) NOT NULL DEFAULT 'human'` + `ix_user_user_type` 索引；`VARCHAR` 不用 `CHAR`（K5 DM8）；`server_default` 是 revision 允许的唯一数据效果（AC-51 零迁移：不 UPDATE 任何存量行、存量全部按缺省 `human`）。
   **回滚**: `downgrade()` 删索引 + 删列；服务账号行（`user_type='service'`）在 downgrade 后退化为普通用户行——因此 downgrade 前须先删全部服务账号（T014 delete）或接受其变为可见普通用户；说明写在 revision docstring。
   **跨 Feature**: `User` 表加列，自然人侧行为不变（缺省 `human`）；影响面 = 全部 `User` 查询无感、`_filter_users_statement` 默认过滤在 T016 才生效。
   **依赖**: 无
 
 - [x] **T002**: `[MVP-114]` ORM `api_credential` / `service_account` 模型 + DAO + 租户感知注册
-  **文件**: `src/backend/bisheng/open_api/domain/models/api_credential.py`（新）, `src/backend/bisheng/open_api/domain/models/service_account.py`（新）, `src/backend/bisheng/core/database/tenant_filter.py`（`_TENANT_AWARE_MODEL_MODULES` 登记 `bisheng.open_api.domain.models`）
+  **文件**: `src/backend/doberman_agent/open_api/domain/models/api_credential.py`（新）, `src/backend/doberman_agent/open_api/domain/models/service_account.py`（新）, `src/backend/doberman_agent/core/database/tenant_filter.py`（`_TENANT_AWARE_MODEL_MODULES` 登记 `doberman_agent.open_api.domain.models`）
   **逻辑**: 按 design §4.2 建两表（继承 `SQLModelSerializable`，含 `tenant_id / create_time / update_time`）：`api_credential`（`subject_kind VARCHAR(32)` / `subject_id VARCHAR(64)` / `key_prefix VARCHAR(16)` / `last4 VARCHAR(4)` / `token_hash VARCHAR(64) unique` / `scopes JsonType` / `expires_at` / `revoked_at` / `last_used_at` / `revoke_reason VARCHAR(32)` / `created_by`；**无 status 枚举列**，K3）；`service_account`（`user_id` PK FK user / `tenant_id` / `resource_owner_user_id` / `description` / `created_by` / `disabled_at` / `deleted_at`）。DAO 只提供**单行 ORM**读写：`ApiCredentialDao.aget_by_hash(session)`（调用方负责 `bypass_tenant_filter()`）/ `alist_by_subject` / `aupdate_row`；`ServiceAccountDao.acreate_with_user(session, ...)`（接受外部 session、不在 DAO 内开会话，D1 建号事务）/ `aget` / `alist_page` / `aset_timestamps`。**禁**批量 UPDATE / DELETE 与 `text()`（K6）。新表靠 `create_all(checkfirst=True)`（K5）。
   **回滚**: 新表无 Alembic；回滚 = 删两表（本 Feature 之前无数据、无外部依赖）；`api_credential` 撤销记录是审计资产，删表前 dump。
   **依赖**: T001
 
 - [x] **T003**: `[MVP-114]` 错误码 260 段 + C5 登记 + 三语
-  **文件**: `src/backend/bisheng/common/errcode/open_api.py`（新）, `docs/constitution.md`（C5 登记表 260 段由 reserved 改 implemented）, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（三语视为一组）
+  **文件**: `src/backend/doberman_agent/common/errcode/open_api.py`（新）, `docs/constitution.md`（C5 登记表 260 段由 reserved 改 implemented）, `src/frontend/packages/locales/src/api_errors/{zh-Hans,en,ja}.json`（三语视为一组）
   **逻辑**: 按 design D10 定义 `OpenApiAuthError(BaseErrorCode)` 基类（携带 `http_status`）与本期启用码：`26001`(401) / `26002`(401) / `26003`(403，`data.required` 指明缺哪位) / `26004`(403) / `26012`(403) / `26020`–`26031`（含 `26030` 503、`26031` 500）。`26013 / 26014` 不复用；`26005–26007 / 26010 / 26016` 留 F050。三语文案落 `packages/locales`（K12：缺任一语 CI `check-i18n` 失败）；生成物 `platform/public/locales/*/api_errors.json` / `client/src/locales/*/api_errors.gen.json` 由脚本生成、不手改。
   **依赖**: 无
 
 - [x] **T004**: `[MVP-114]` 开放能力层开关三段式（后端两段）+ `open_api` Settings
-  **文件**: `src/backend/bisheng/core/config/open_platform.py`（新：`OpenPlatformConf(enabled: bool = False)`）, `src/backend/bisheng/core/config/settings.py`（`:782` `multi_tenant` 旁加 `open_platform: OpenPlatformConf` 与 `open_api: OpenApiConf(service_account_idle_days=90, credential_cache_ttl_seconds=3 上限 5)`）, `src/backend/bisheng/api/v1/endpoints.py`（`get_env :60-108` 增 `open_platform_enabled`）
+  **文件**: `src/backend/doberman_agent/core/config/open_platform.py`（新：`OpenPlatformConf(enabled: bool = False)`）, `src/backend/doberman_agent/core/config/settings.py`（`:782` `multi_tenant` 旁加 `open_platform: OpenPlatformConf` 与 `open_api: OpenApiConf(service_account_idle_days=90, credential_cache_ttl_seconds=3 上限 5)`）, `src/backend/doberman_agent/api/v1/endpoints.py`（`get_env :60-108` 增 `open_platform_enabled`）
   **逻辑**: 进程级 config.yaml、非 DB 热配置（K8 / D9 S2，先例 `multi_tenant.enabled`）。**部署顺序坑 22**：`load_settings_from_yaml` 对未知顶层键拒启 → 先发代码再加 yaml 键（写进 T033）。
   **依赖**: 无
 
 - [x] **T005**: `[MVP-114]` `OPEN_API_SCOPES` 注册表 + `@open_api_scope` 标记 + ContextVar
-  **文件**: `src/backend/bisheng/open_api/domain/scopes.py`（新）, `src/backend/bisheng/open_api/domain/context.py`（新）
+  **文件**: `src/backend/doberman_agent/open_api/domain/scopes.py`（新）, `src/backend/doberman_agent/open_api/domain/context.py`（新）
   **逻辑**: `OPEN_API_SCOPES`：每位 `code / group / label_key / desc_key / endpoints[] / requires_open_platform / pending_note_key`（D9）——基础位 `workflow:invoke/read`、`knowledge:read/write`、`assistant:invoke/read`、`chat:invoke`（`endpoints=()` + `pending_note_key`「端点随后续版本开放」）+ 三扩展位 `model:invoke / identity:read / app:manage`（`group='local_dev_toolkit'`，`requires_open_platform=True`）；**不登记 `delegate`**（AC-14）。端点映射表按 D3（38 个：`workflow:invoke` 3 / `workflow:read` 1 / `assistant:invoke` 4 / `assistant:read` 2 / `knowledge:read` 7 / `knowledge:write` 21）。`@open_api_scope(scope: str | None, allow_share_token=False)` 纯标记装饰器（只设函数属性、无 FastAPI 依赖，v2 端点文件 import 它不触 RULE-5）；`visible_scopes(open_platform_enabled)` 供 `/scopes` 端点与签发校验。`context.py`：`current_open_api_principal: ContextVar[OpenApiPrincipal | None]`（`credential_id / subject_kind / subject_user_id / resource_owner_user_id / share_link_id / scopes`，§4.2 `UserPayload.open_api_principal` 形状）。
   **依赖**: 无
 
 - [x] **T006**: `[MVP-114]` 请求 / 响应 schemas
-  **文件**: `src/backend/bisheng/open_api/domain/schemas/service_account.py`（新）, `src/backend/bisheng/open_api/domain/schemas/credential.py`（新）
+  **文件**: `src/backend/doberman_agent/open_api/domain/schemas/service_account.py`（新）, `src/backend/doberman_agent/open_api/domain/schemas/credential.py`（新）
   **逻辑**: pydantic：`ServiceAccountCreate(name, description, resource_owner_user_id)` / `ServiceAccountUpdate` / `ServiceAccountItem`（列表列：名称 / 状态 / 有效密钥数 / 归属人（含 `owner_disabled`）/ 最后调用 / 创建人 / 创建时间；分页 `PageData` + meta `idle_days`）；`KeyIssueRequest(name, scopes, expires_at?)` / `KeyUpdateRequest` / `KeyItem`（掩码 = `bs-sak-********` + 末四位）/ `KeyIssuedResponse`（唯一含 `plaintext` 的模型）/ `WhoamiResponse`（`subject_kind / service_account{id,name} / tenant_id / scopes / key_mask / expires_at`）。
   **依赖**: T005
 
 - [x] **T007**: `[MVP-114]` 审计动作后端 lockstep 登记
-  **文件**: `src/backend/bisheng/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS :178-201` + `_V2_NAMESPACE_TO_ACTION_PREFIX :207-211` 加 `open_api.`）
+  **文件**: `src/backend/doberman_agent/database/models/audit_log.py`（`_UI_VISIBLE_V2_ACTIONS :178-201` + `_V2_NAMESPACE_TO_ACTION_PREFIX :207-211` 加 `open_api.`）
   **逻辑**: 登记 D11 全部 action：`open_api.service_account.{create,update,enable,disable,delete}`、`open_api.api_key.{issue,update,revoke,revoke_all,expire,invalidate_by_subject}`、`open_api.grant.{add,update,remove,remove_all}`、`open_api.share_link.{revoke,expire}`、`open_api.ws.connect`（后三族 Wave 4–5 才产生事件，登记一次到位避免二次改同一处）。前端两处 lockstep 见 T032。
   **依赖**: 无
 
@@ -94,7 +94,7 @@
   **依赖**: T002, T003, T005, T008
 
 - [x] **T010**: `[MVP-114]` `CredentialService` 实现
-  **文件**: `src/backend/bisheng/open_api/domain/services/credential_service.py`（新）
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/credential_service.py`（新）
   **逻辑**: `issue(subject_kind, subject_id, tenant_id, name, scopes, expires_at, created_by)`：`secrets.token_urlsafe(32)`（坑 17：不用 `generate_short_high_entropy_string`）→ 明文 `'bs-sak-' + 43 位` → `sha256` → 单行写 → 审计 `open_api.api_key.issue`（`AuditLogDao.ainsert_v2`，`metadata` 只掩码）→ 返回明文（唯一出口）。`update / revoke(reason) / revoke_by_subject(reason) / list_by_subject / touch_last_used`；每次写后 `invalidate_cache(hashes)`（按 DB 清单逐个 `adelete('oapi:cred:{hash}')`，不 `SCAN`，K1 / K7；每次调用累加 `open_api.cache.invalidate` 计数 / 结构化日志，D11 指标由此产生）；`touch_last_used`：`asetNx('oapi:cred:lastused:{id}', 1, ex=60)` 成功才做带主键单行 UPDATE（坑 20 DM8 写放大）；`mark_expired_lazy(id)`：`UPDATE ... SET revoke_reason='expired' WHERE id=:id AND revoke_reason IS NULL`，`rowcount==1` 才审计 `open_api.api_key.expire`（`operator_id=0` → `system`）。scopes 校验：`∉ OPEN_API_SCOPES` → 26025；含 `delegate` → 26024；三扩展位而 `settings.open_platform.enabled` 为 False → 26023。
   **测试**: T009 全部通过
   **覆盖 AC**: AC-02, AC-03, AC-05, AC-06, AC-08, AC-09, AC-10, AC-11, AC-12
@@ -107,7 +107,7 @@
   **依赖**: T010, T014, T008（`service_account_factory` 需 T014 建号 Service，见「编号 ≠ 执行顺序」）
 
 - [x] **T012**: `[MVP-114]` `credential_validator` 实现
-  **文件**: `src/backend/bisheng/open_api/domain/services/credential_validator.py`（新）, `src/backend/bisheng/user/domain/services/auth.py`（`LoginUser :196` 加可选字段 `open_api_principal: 'OpenApiPrincipal | None' = None`——`UserPayload(LoginUser)`（`common/dependencies/user_deps.py:8`）自动继承、该文件不改；类型经 `TYPE_CHECKING` 前向引用或把 `OpenApiPrincipal` 定义为不 import `user` 域的独立 pydantic 模型（`open_api/domain/context.py`，T005），避免 `user ↔ open_api` 循环 import）
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/credential_validator.py`（新）, `src/backend/doberman_agent/user/domain/services/auth.py`（`LoginUser :196` 加可选字段 `open_api_principal: 'OpenApiPrincipal | None' = None`——`UserPayload(LoginUser)`（`common/dependencies/user_deps.py:8`）自动继承、该文件不改；类型经 `TYPE_CHECKING` 前向引用或把 `OpenApiPrincipal` 定义为不 import `user` 域的独立 pydantic 模型（`open_api/domain/context.py`，T005），避免 `user ↔ open_api` 循环 import）
   **逻辑**: 纯 domain 函数 `validate_bearer(token: str) -> OpenApiPrincipal + UserPayload`，校验顺序固定为 D2：提取 Bearer → `bypass_tenant_filter()` 下 `aget_by_hash(sha256)`（K6）→ 恒时比较（先例 `sso_sync/domain/services/hmac_auth.py:103`）→ 未撤销 → 未过期（过期则 `mark_expired_lazy` + 拒 26002）→ 按 `subject_kind` 分派 `SUBJECT_RESOLVERS`（F049 只注册 `service_account`：`user_type=='service'` ∧ 伴生表两时间戳皆空 ∧ `UserTenant.status=='active' ∧ is_active==1` 且 == 密钥租户；`hosted_app` 无解析器 → 26002）→ 回填 Redis `oapi:cred:{sha256}`（最小载荷、TTL = `settings.open_api.credential_cache_ttl_seconds`）→ **每请求（含命中）**：`expires_at` 比对 + `DISABLED_TENANT_KEY` 黑名单（`tenant/domain/services/tenant_service.py:44`）→ `set_current_tenant_id(密钥租户)`（K9 无条件覆盖）+ `set_visible_tenant_ids`（复刻 `http_middleware.py:210-231 _compute_visible_tenant_ids`）→ 直接构造 `UserPayload(user_id, user_name, user_role=[], tenant_id, token_version=0, is_global_super=False, open_api_principal=...)`（坑 4：不调 `init_login_user` / `init_login_user_sync`）→ 写 `current_open_api_principal`。任何 Redis / DB 异常 → `26030`（503，K2 fail-closed）。`open_api_principal` 字段位置见上文文件清单（`LoginUser :196`，缺省 `None`）。
   **测试**: T011 全部通过
   **覆盖 AC**: AC-01, AC-03, AC-05, AC-21, AC-32, AC-34, AC-47
@@ -120,7 +120,7 @@
   **依赖**: T010, T008
 
 - [x] **T014**: `[MVP-114]` `ServiceAccountService` 实现
-  **文件**: `src/backend/bisheng/open_api/domain/services/service_account_service.py`（新）
+  **文件**: `src/backend/doberman_agent/open_api/domain/services/service_account_service.py`（新）
   **逻辑**: `create(admin, name, description, resource_owner_user_id)`（D1 建号事务：`async with get_async_db_session()` 内三 add + 一次 commit；**不复用** `UserDao.create_user` / `aactivate_user_tenant` / `user_register` / `add_user_and_default_role`（坑 6：后者会把它塞进 guest 部门）；`external_id=NULL` 固定，坑 5）；`update(name/description/owner)`（归属人校验同 create）；`enable / disable`（写伴生表时间戳 + 同事务写穿 `user.delete` 投影 + `CredentialService.invalidate_cache(名下全部)` + 审计）；`delete`（Wave 1 形态：`revoke_by_subject('subject_deleted')` → `deleted_at` → 投影 → 审计；T065 前插反查 REMOVE）；`list_page(tenant, q, page)`（伴生表自动租户过滤兜住 AC-07；水合：`user_name` 走 `aget_user_by_ids`、有效密钥数、归属人名 + `owner_disabled`、`last_used_at = max(名下密钥)`、`idle_days` 阈值随 meta）；`get(id)`；读侧状态只读伴生表两列不读 `user.delete`（D1「读侧口径统一」）。归属人校验：`aget_user` 存在 ∧ `delete==0` ∧ `user_type=='human'` ∧ 活跃租户 == 当前租户，否则 26021。
   **测试**: T013 全部通过
   **覆盖 AC**: AC-12, AC-19, AC-21, AC-23, AC-27, AC-28, AC-47, AC-48
@@ -133,7 +133,7 @@
   **依赖**: T014, T008
 
 - [x] **T016**: `[MVP-114]` 用户域守卫与 DAO 排除实现
-  **文件**: `src/backend/bisheng/user/domain/services/user.py`（`_reject_login_if_user_has_no_usable_access :373`：**最前**（`:388 bypass` 之前）`if user.user_type == 'service': raise ServiceAccountLoginForbiddenError()`（26012）；新增 **同步** `assert_natural_persons(user_ids: list[int]) -> None`（`UserDao.get_user_by_ids`，供同步调用方 T071 `role_group_service` 三方法）与 **异步** `aassert_natural_persons(user_ids)`（`aget_user_by_ids`，供 async 端点 / Service：T017 `/user/update` `:664` 等三端点均 `async def`、`grant_tenant_admin :37` async、T071 `aadd_members :1749` / `aset_admins :1986` async）；两者语义相同：任一目标 `user_type=='service'` → 26022）, `src/backend/bisheng/user/domain/models/user.py`（`_filter_users_statement :259-264` 增 `user_type: str | None = 'human'` 默认参数并透传到 `filter_users :267` / `afilter_users :279`；`aget_login_candidates_by_account :212-223` 加 `User.user_type == 'human'` 第二道锁）
+  **文件**: `src/backend/doberman_agent/user/domain/services/user.py`（`_reject_login_if_user_has_no_usable_access :373`：**最前**（`:388 bypass` 之前）`if user.user_type == 'service': raise ServiceAccountLoginForbiddenError()`（26012）；新增 **同步** `assert_natural_persons(user_ids: list[int]) -> None`（`UserDao.get_user_by_ids`，供同步调用方 T071 `role_group_service` 三方法）与 **异步** `aassert_natural_persons(user_ids)`（`aget_user_by_ids`，供 async 端点 / Service：T017 `/user/update` `:664` 等三端点均 `async def`、`grant_tenant_admin :37` async、T071 `aadd_members :1749` / `aset_admins :1986` async）；两者语义相同：任一目标 `user_type=='service'` → 26022）, `src/backend/doberman_agent/user/domain/models/user.py`（`_filter_users_statement :259-264` 增 `user_type: str | None = 'human'` 默认参数并透传到 `filter_users :267` / `afilter_users :279`；`aget_login_candidates_by_account :212-223` 加 `User.user_type == 'human'` 第二道锁）
   **逻辑**: 见 D7 / 坑 3 / 坑 5 / 坑 10（`get_all_users / search_user_by_name / get_user_with_group_role / get_user_by_ids / aget_user_by_ids / get_unique_user_by_name / aget_users_by_username / aget_by_source` 旁路**逐个判定不动**：名称水合保持不过滤）。`raise` 而非 `return`（`tenant_service.py:663-665` / `login_sync_service.py:228-230` 会把非 `UserNoRoleForLoginError` 返回值压成「无菜单」）。
   **跨 Feature**: `_filter_users_statement` 是 `/user/list` 全部 8 处 platform 消费点的共同底座（E2 §1.3）——默认排除即全部生效；影响面 = 用户管理 / 审批人 / 部门加成员 / 用户组加成员 / 创建租户选管理员等选人框不再显示服务账号（AC-16 预期行为）。
   **测试**: T015 守卫 / DAO / `assert_natural_persons` 部分通过
@@ -141,7 +141,7 @@
   **依赖**: T015
 
 - [x] **T017**: `[MVP-114]` 管理接口拒绝（用户 API + 租户管理员）
-  **文件**: `src/backend/bisheng/user/api/user.py`（`/user/update :663-724`（含 `:709` 直写 `delete` 位）、`/user/reset_password :1032-1066`、`/user/role_add :874-965` 入口调 `assert_natural_persons`）, `src/backend/bisheng/tenant/domain/services/tenant_admin_service.py`（`grant_tenant_admin :37-58` 入口调 `assert_natural_persons`）
+  **文件**: `src/backend/doberman_agent/user/api/user.py`（`/user/update :663-724`（含 `:709` 直写 `delete` 位）、`/user/reset_password :1032-1066`、`/user/role_add :874-965` 入口调 `assert_natural_persons`）, `src/backend/doberman_agent/tenant/domain/services/tenant_admin_service.py`（`grant_tenant_admin :37-58` 入口调 `assert_natural_persons`）
   **逻辑**: 三个用户 API 与租户管理员授予（均 async）在做任何写之前调 `aassert_natural_persons` 断言目标为自然人，否则 26022（AC-20 / AC-22 的「管理员身份 / 角色」部分；部门 / 用户组其余矩阵项 Wave 6 T071）。`/user/change_password :1067`（改自己）与 `change_password_public :1095`（按 `external_id`）对服务账号结构性不可达，不加。
   **测试**: T015 管理接口部分通过
   **覆盖 AC**: AC-20, AC-22
@@ -154,7 +154,7 @@
   **依赖**: T014, T008
 
 - [x] **T019**: `[MVP-114]` 授权候选过滤 + `canonical_source` 拒绝 实现
-  **文件**: `src/backend/bisheng/permission/domain/services/grant_subject_service.py`（`list_candidate_users :70-121`，条件 `:90` 加 `User.user_type == 'human'`）, `src/backend/bisheng/tenant/domain/services/f048_permission_subject.py`（`canonical_source :53-71` 对 `user` 主体查到 `user_type=='service'` → 26029，除非 `allow_service_account_subject=True`）, `src/backend/bisheng/permission/application/resource_api.py`（`PermissionSubjectDirectoryPort.canonical_source :45` 协议签名加 keyword-only `allow_service_account_subject: bool = False`；`mutate_grants :288` 加同名 kw（缺省 False）并在 `:308` 调用处透传）
+  **文件**: `src/backend/doberman_agent/permission/domain/services/grant_subject_service.py`（`list_candidate_users :70-121`，条件 `:90` 加 `User.user_type == 'human'`）, `src/backend/doberman_agent/tenant/domain/services/f048_permission_subject.py`（`canonical_source :53-71` 对 `user` 主体查到 `user_type=='service'` → 26029，除非 `allow_service_account_subject=True`）, `src/backend/doberman_agent/permission/application/resource_api.py`（`PermissionSubjectDirectoryPort.canonical_source :45` 协议签名加 keyword-only `allow_service_account_subject: bool = False`；`mutate_grants :288` 加同名 kw（缺省 False）并在 `:308` 调用处透传）
   **逻辑**: D7 三处结构性封口的后两处（第一处在 T016）。`allow_service_account_subject` 经 application 层显式参数传入（D6 W2）：`resource_api.mutate_grants(allow_service_account_subject=...)` → Port → `canonical_source`；资源侧端点永不设置，主体侧端点 T065 传 True。`channel/domain/services/f048_channel_permission.py:292` 也有同名 `canonical_source` 但签名不同（带 `actor`、无 `tenant_id / userset_relation`，非该 Port 的实现）——落地时核实：若它被当作 `PermissionSubjectDirectoryPort` 注入则同步加缺省参数，否则不动。
   **跨 Feature**: 改 F048 主体校验层（PermissionGrant 归 F048）——只加拒绝条件与显式放行参数，不改判定链；资源侧授权弹窗与 `grants:mutate` 对自然人行为不变。
   **测试**: T018 全部通过
@@ -165,19 +165,19 @@
 
 - [x] **T020**: `[MVP-114]` 鉴权依赖 + 专属 handler + `whoami` 集成测试
   **文件**: `src/backend/test/open_api/test_open_api_auth_api.py`（新）
-  **逻辑**: 对 `GET /api/v2/auth/whoami` 断言**真 HTTP 状态**：无头 → 401 `26001`、改一位 → 401 `26002`（信封 `{status_code,status_message,data}` 形状不变）→ AC-01；`test_scope_none_marker_skips_scope_check`（`whoami` 标 `@open_api_scope(None)`，无位也通过）；`test_unregistered_endpoint_26031`（临时挂一个无标记路由到带依赖的 router → 500 `26031`，结构性 fail-closed）；`test_missing_scope_403_with_required`（临时挂 `@open_api_scope('assistant:read')` 路由，密钥无该位 → 403 `26003` `data.required=='assistant:read'`）→ AC-04；`test_app_manage_scope_check_via_factory`（`Depends(open_api_subject('app:manage'))` 工厂：有位通过 / 无位 403——F053 / F055 复用面）→ AC-04 / AC-13；`test_extension_scope_issue_rejected_when_platform_off`（`open_platform.enabled=False` 下签发含 `app:manage` → 26023；开后放行且 `whoami.scopes` 含之）→ AC-13；`test_identity_headers_rejected_26004`（`X-Bisheng-On-Behalf-Of` / `X-Bisheng-End-User` 任一存在 → 403 `26004`，且业务未执行）→ AC-33；`test_no_header_runs_as_key_subject`（`whoami.service_account.id == 主体`、`tenant_id == 密钥租户`）→ AC-32；`test_only_two_outcomes_no_silent_downgrade`（同一端点：无头 = 模式 S 结果；有头 = 26004；不存在返回空集 / 公开子集的第三种响应）→ AC-35；`test_fga_unavailable_503`（`fga_down` fixture + 临时路由内调 `require_business_action` → HTTP 503，无业务数据）与 `test_redis_down_503_26030` → AC-34；`test_v1_envelope_unchanged`（`/api/v1` 任一错误仍 HTTP 200 + 信封，K4 只对 v2 真实化）。
+  **逻辑**: 对 `GET /api/v2/auth/whoami` 断言**真 HTTP 状态**：无头 → 401 `26001`、改一位 → 401 `26002`（信封 `{status_code,status_message,data}` 形状不变）→ AC-01；`test_scope_none_marker_skips_scope_check`（`whoami` 标 `@open_api_scope(None)`，无位也通过）；`test_unregistered_endpoint_26031`（临时挂一个无标记路由到带依赖的 router → 500 `26031`，结构性 fail-closed）；`test_missing_scope_403_with_required`（临时挂 `@open_api_scope('assistant:read')` 路由，密钥无该位 → 403 `26003` `data.required=='assistant:read'`）→ AC-04；`test_app_manage_scope_check_via_factory`（`Depends(open_api_subject('app:manage'))` 工厂：有位通过 / 无位 403——F053 / F055 复用面）→ AC-04 / AC-13；`test_extension_scope_issue_rejected_when_platform_off`（`open_platform.enabled=False` 下签发含 `app:manage` → 26023；开后放行且 `whoami.scopes` 含之）→ AC-13；`test_identity_headers_rejected_26004`（`X-doberman-agent-On-Behalf-Of` / `X-doberman-agent-End-User` 任一存在 → 403 `26004`，且业务未执行）→ AC-33；`test_no_header_runs_as_key_subject`（`whoami.service_account.id == 主体`、`tenant_id == 密钥租户`）→ AC-32；`test_only_two_outcomes_no_silent_downgrade`（同一端点：无头 = 模式 S 结果；有头 = 26004；不存在返回空集 / 公开子集的第三种响应）→ AC-35；`test_fga_unavailable_503`（`fga_down` fixture + 临时路由内调 `require_business_action` → HTTP 503，无业务数据）与 `test_redis_down_503_26030` → AC-34；`test_v1_envelope_unchanged`（`/api/v1` 任一错误仍 HTTP 200 + 信封，K4 只对 v2 真实化）。
   **覆盖 AC**: AC-01, AC-04, AC-13, AC-32, AC-33, AC-34, AC-35
   **依赖**: T012, T008
 
 - [x] **T021**: `[MVP-114]` `open_api/api/dependencies.py` + `whoami` 端点
-  **文件**: `src/backend/bisheng/open_api/api/dependencies.py`（新）, `src/backend/bisheng/open_api/api/endpoints/auth.py`（新：`GET /auth/whoami`，`@open_api_scope(None)`）
+  **文件**: `src/backend/doberman_agent/open_api/api/dependencies.py`（新）, `src/backend/doberman_agent/open_api/api/endpoints/auth.py`（新：`GET /auth/whoami`，`@open_api_scope(None)`）
   **逻辑**: `verify_open_api_access(conn: HTTPConnection)`（router 级依赖，HTTP + WS 同一函数；`isinstance(conn, WebSocket)` 分流——WS 分支的 share-token 解析随 T052 填入，本任务 WS 只走密钥分支）：调 `credential_validator.validate_bearer` → 读 `conn.scope['endpoint']` 上的 `@open_api_scope` 标记：**无标记 → 26031**；`scope=None` → 跳过位判定；有位 → `scope ∉ principal.scopes` → 26003（`data.required`）→ 身份传递头存在 → 26004（AC-33）→ `CredentialService.touch_last_used`。**可观测（design D11 / §7）**：依赖出口统一写一条结构化日志 `open_api.call`（`credential_id / subject_kind / subject_user_id / tenant_id / path / scope / outcome(ok|错误码) / latency_ms`，`logger.bind(event=...)`，成功与拒绝都写、不写明文）；拒绝路径累加计数 `open_api.auth.reject{code}`（沿用仓内既有 metrics 出口，若无则先只落结构化日志、指标名保留）；`open_api.cache.invalidate` 计数由 T010 `invalidate_cache` 内累加（本任务不重复）。`open_api_subject(scope: str | None) -> Depends` 工厂（供 F053 / F055 新 router：等价于「router 级依赖 + 端点级位判定」一体化）；`get_service_account_admin`（管理端点依赖：内部调 `UserPayload.get_tenant_admin_user`（`common/dependencies/user_deps.py:50-75`），把它抛出的 `LLMModelSharedReadonlyError`（19801）**改抛 `UnAuthorizedError`**（信封 403，§4.2）。`whoami` 返回 `WhoamiResponse`。
   **测试**: T020 通过（与 T022 合并验证）
   **覆盖 AC**: AC-01, AC-04, AC-13, AC-32, AC-33, AC-34, AC-35
   **依赖**: T020
 
 - [x] **T022**: `[MVP-114]` 专属异常 handler + 路由注册
-  **文件**: `src/backend/bisheng/main.py`（仿 `:165-167` 注册 `OpenApiAuthError` handler：路径以 `/api/v2` 开头 → `JSONResponse(status_code=http_status, content=信封)`；同 handler 把 `PermissionServiceUnavailableError`（19002）/ `PermissionBackendUnavailableError`（19201）在 `/api/v2` 上映射 HTTP 503；**不改** `handle_http_exception :22-36` 全局语义）, `src/backend/bisheng/open_api/api/router.py`（新：`/service-accounts` 子 router 挂 `/api/v1`；`/auth` 子 router **自带** `dependencies=[Depends(verify_open_api_access)]` 挂 `/api/v2`）, `src/backend/bisheng/api/router.py`（`include_router` 两处；`router_rpc :94` **本任务不改**）
+  **文件**: `src/backend/doberman_agent/main.py`（仿 `:165-167` 注册 `OpenApiAuthError` handler：路径以 `/api/v2` 开头 → `JSONResponse(status_code=http_status, content=信封)`；同 handler 把 `PermissionServiceUnavailableError`（19002）/ `PermissionBackendUnavailableError`（19201）在 `/api/v2` 上映射 HTTP 503；**不改** `handle_http_exception :22-36` 全局语义）, `src/backend/doberman_agent/open_api/api/router.py`（新：`/service-accounts` 子 router 挂 `/api/v1`；`/auth` 子 router **自带** `dependencies=[Depends(verify_open_api_access)]` 挂 `/api/v2`）, `src/backend/doberman_agent/api/router.py`（`include_router` 两处；`router_rpc :94` **本任务不改**）
   **逻辑**: **顺序说明（不改 design 口径，只定挂接时点）**：design D2 的挂接点是 `router_rpc :94`；MVP-114 阶段先把依赖挂在 `open_api` 自己的 v2 子 router 上（`whoami` 立即受保护、`Depends` 工厂立即可用），全局 `router_rpc` 的挂接与 38 端点标记在同一任务 T040 落地——否则 Wave 2 部署 114 后既有 v2 端点全部 26031、guest 分享页白屏（design §7 步 4 亦标「Wave 2 后」）。
   **测试**: T020 全部通过
   **覆盖 AC**: AC-01, AC-04, AC-13, AC-32, AC-33, AC-34, AC-35
@@ -190,7 +190,7 @@
   **依赖**: T014, T021, T022, T017
 
 - [x] **T024**: `[MVP-114]` 服务账号管理端点实现 + admin-scope 前缀
-  **文件**: `src/backend/bisheng/open_api/api/endpoints/service_account.py`（新：`GET /` 分页 · `POST /` · `GET /{id}` · `PATCH /{id}` · `POST /{id}/enable` · `POST /{id}/disable` · `DELETE /{id}`，全部 `Depends(get_service_account_admin)`，`resp_200` / `PageData` 包装）, `src/backend/bisheng/common/middleware/admin_scope.py`（`MANAGEMENT_API_PREFIXES :63-71` 加 `/api/v1/service-accounts`）
+  **文件**: `src/backend/doberman_agent/open_api/api/endpoints/service_account.py`（新：`GET /` 分页 · `POST /` · `GET /{id}` · `PATCH /{id}` · `POST /{id}/enable` · `POST /{id}/disable` · `DELETE /{id}`，全部 `Depends(get_service_account_admin)`，`resp_200` / `PageData` 包装）, `src/backend/doberman_agent/common/middleware/admin_scope.py`（`MANAGEMENT_API_PREFIXES :63-71` 加 `/api/v1/service-accounts`）
   **逻辑**: 端点只做参数校验 + 委托 `ServiceAccountService`；`DELETE` 响应 `data` 含被删账号当前授权清单（Wave 1 恒空，T065 起反查填充）供前端二次确认（AC-48）。
   **跨 Feature**: `MANAGEMENT_API_PREFIXES` 是 F019 元组，加项 = 可审计扩展（坑 23）；影响面 = 该前缀下超管 ScopeBar 切租户生效。
   **测试**: T023 全部通过
@@ -204,7 +204,7 @@
   **依赖**: T024
 
 - [x] **T026**: `[MVP-114]` 密钥管理端点 + `scopes` 端点实现
-  **文件**: `src/backend/bisheng/open_api/api/endpoints/service_account_keys.py`（新：`GET /{id}/keys` · `POST /{id}/keys`（唯一返回明文处）· `PATCH /{id}/keys/{key_id}` · `POST /{id}/keys/{key_id}/revoke` · `POST /{id}/keys/revoke-all` · `GET /scopes`）, `src/backend/bisheng/open_api/api/router.py`（T022 建的 `/service-accounts` 子 router 追加 include：**`GET /scopes` 所在 router 必须先于 T024 的 `service_account.py` router 注册**——FastAPI 按注册顺序匹配，否则 `/service-accounts/scopes` 被 `GET /{id}` 吃掉、`"scopes"` 解析 int 失败返回 422；实现上把 `GET /scopes` 单独放 `scopes_router` 并第一个 include，keys router 其次，`service_account.py` router 最后）
+  **文件**: `src/backend/doberman_agent/open_api/api/endpoints/service_account_keys.py`（新：`GET /{id}/keys` · `POST /{id}/keys`（唯一返回明文处）· `PATCH /{id}/keys/{key_id}` · `POST /{id}/keys/{key_id}/revoke` · `POST /{id}/keys/revoke-all` · `GET /scopes`）, `src/backend/doberman_agent/open_api/api/router.py`（T022 建的 `/service-accounts` 子 router 追加 include：**`GET /scopes` 所在 router 必须先于 T024 的 `service_account.py` router 注册**——FastAPI 按注册顺序匹配，否则 `/service-accounts/scopes` 被 `GET /{id}` 吃掉、`"scopes"` 解析 int 失败返回 422；实现上把 `GET /scopes` 单独放 `scopes_router` 并第一个 include，keys router 其次，`service_account.py` router 最后）
   **逻辑**: 委托 `CredentialService`；`key_id` 不属该账号 → 26026；账号已停用 / 删除时签发 → 26027；`GET /scopes` 返回 `visible_scopes(settings.open_platform.enabled)`（含 `group / label_key / desc_key / endpoints / pending_note_key`，供签发表单悬停与分组）。
   **测试**: T025 全部通过
   **覆盖 AC**: AC-02, AC-06, AC-07, AC-08, AC-09, AC-12, AC-13, AC-14, AC-44, AC-46, AC-49
@@ -256,7 +256,7 @@
 
 - [x] **T033**: `[MVP-114]` 114 部署步骤 + 首波手动验证清单
   **文件**: `features/v3.0.0/049-openapi-auth-baseline/tasks.md`（本文「实际偏差记录」上方追加「114 部署记录」小节）
-  **逻辑**: 部署顺序（坑 22）：① `bash /opt/bisheng-ops/deploy.sh`（代码 + Alembic upgrade + create_all）→ ② `config.yaml` 加 `open_platform: {enabled: true}`（可选 `open_api: {service_account_idle_days: 90}`）→ ③ 重启后端 → `curl -s /api/v1/env | jq .open_platform_enabled` == `true`。手动验证 = design §7 步 1–3 与步 5（用普通用户看用户管理 / 审批人 / 部门加成员 / 资源授权弹窗搜不到服务账号；服务账号密码登录 → 26012；F048 验证用非 admin）。
+  **逻辑**: 部署顺序（坑 22）：① `bash /opt/doberman-agent-ops/deploy.sh`（代码 + Alembic upgrade + create_all）→ ② `config.yaml` 加 `open_platform: {enabled: true}`（可选 `open_api: {service_account_idle_days: 90}`）→ ③ 重启后端 → `curl -s /api/v1/env | jq .open_platform_enabled` == `true`。手动验证 = design §7 步 1–3 与步 5（用普通用户看用户管理 / 审批人 / 部门加成员 / 资源授权弹窗搜不到服务账号；服务账号密码登录 → 26012；F048 验证用非 admin）。
   **依赖**: T022, T024, T026, T029, T030, T031, T032
 
 ### Wave 3 · 既有 v2 面接入（38 端点标记 + 6 端点关闭 + 缺陷修复 + 配置移除）
@@ -274,35 +274,35 @@
   **依赖**: T012, T008
 
 - [ ] **T036**: `open_endpoints/domain/utils.py` 重写 + 死函数删除
-  **文件**: `src/backend/bisheng/open_endpoints/domain/utils.py`（删 `get_default_operator :26` / `get_default_operator_async :53`（AC-52 读取点）；新增 `get_open_api_login_user() -> UserPayload`（读 `current_open_api_principal` 对应 `UserPayload`，供 `Depends`）；`resolve_operator :77` 收紧：读 ContextVar 主体 → `user_id` 空即返回主体；非空 → `aget_user` + `delete==0` + 目标活跃租户 == 密钥租户 → 否则 403）, `src/backend/bisheng/open_endpoints/api/dependencies.py`（删 `:61-70 get_knowledge_space_chat_service_for_openapi` 死函数——`endpoints/knowledge.py:11` 仍 import 该模块，删函数不删 import 处即模块导入失败，随 T037 一并改）
-  **逻辑**: D3；`utils.py` 不 import `open_api/api/*`（RULE-5），只 import `bisheng.open_api.domain.context`。
+  **文件**: `src/backend/doberman_agent/open_endpoints/domain/utils.py`（删 `get_default_operator :26` / `get_default_operator_async :53`（AC-52 读取点）；新增 `get_open_api_login_user() -> UserPayload`（读 `current_open_api_principal` 对应 `UserPayload`，供 `Depends`）；`resolve_operator :77` 收紧：读 ContextVar 主体 → `user_id` 空即返回主体；非空 → `aget_user` + `delete==0` + 目标活跃租户 == 密钥租户 → 否则 403）, `src/backend/doberman_agent/open_endpoints/api/dependencies.py`（删 `:61-70 get_knowledge_space_chat_service_for_openapi` 死函数——`endpoints/knowledge.py:11` 仍 import 该模块，删函数不删 import 处即模块导入失败，随 T037 一并改）
+  **逻辑**: D3；`utils.py` 不 import `open_api/api/*`（RULE-5），只 import `doberman_agent.open_api.domain.context`。
   **测试**: T035 全部通过
   **覆盖 AC**: AC-35, AC-39
   **依赖**: T035
 
 - [ ] **T037**: 标记接入：`knowledge.py` + `citation.py` + `llm.py`
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/knowledge.py`（8 个 `*metadata*` 端点 `@open_api_scope('knowledge:write')`；`Depends(get_default_operator_async)` ×8（`:21/42/65/90/111/136/162/188`）→ `Depends(get_open_api_login_user)`；`:11` 对 `dependencies` 的 import 按 T036 调整）, `src/backend/bisheng/open_endpoints/api/endpoints/citation.py`（`GET /citation/{id}` `knowledge:read`；`:23` 依赖替换）, `src/backend/bisheng/open_endpoints/api/endpoints/llm.py`（`/llm/workbench/asr` / `tts` `assistant:invoke`；`:13/:21` 内联调用替换）
-  **逻辑**: 只 import `bisheng.open_api.domain.scopes`（domain 常量，RULE-5 不触发）；端点体逻辑不动。
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/knowledge.py`（8 个 `*metadata*` 端点 `@open_api_scope('knowledge:write')`；`Depends(get_default_operator_async)` ×8（`:21/42/65/90/111/136/162/188`）→ `Depends(get_open_api_login_user)`；`:11` 对 `dependencies` 的 import 按 T036 调整）, `src/backend/doberman_agent/open_endpoints/api/endpoints/citation.py`（`GET /citation/{id}` `knowledge:read`；`:23` 依赖替换）, `src/backend/doberman_agent/open_endpoints/api/endpoints/llm.py`（`/llm/workbench/asr` / `tts` `assistant:invoke`；`:13/:21` 内联调用替换）
+  **逻辑**: 只 import `doberman_agent.open_api.domain.scopes`（domain 常量，RULE-5 不触发）；端点体逻辑不动。
   **测试**: T034 相关端点通过（`pytest -k "knowledge or citation or llm"`）
   **覆盖 AC**: AC-04, AC-29
   **依赖**: T036
 
 - [ ] **T038**: 标记接入：`filelib.py`（19 端点：6 读 + 13 写；`knowledge:write` 位总数 21 = 本文件 13 + `knowledge.py` 8）
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`
   **逻辑**: 按 D3 映射：`knowledge:read` = `GET /filelib/`（`:157`）、`file/list`（`:362`）、`retrieve`（`:623`）、`download_statistic`（`:496`）、`detail_qa` / `query_qa`（`:614` / `:676` 之读端点，以函数名核）；其余 13 个写端点 + `chunks` / `chunks_string` 等 = `knowledge:write`。全部 `get_default_operator*` 内联调用（`:88/132/211/241/301/349/357/444/475/515/539/557/590/618/680`）→ `get_open_api_login_user()`；`resolve_operator(user_id)` 三处（`:176/381/640`）保留（K11，F050 移除）。`POST /filelib/retrieve` 只加鉴权、过滤强度维持现状（spec §3；文件级双层过滤归 F052）。
   **测试**: T034 相关端点通过（`pytest -k filelib`）
   **覆盖 AC**: AC-04, AC-29
   **依赖**: T036
 
 - [ ] **T039**: 标记接入：`workflow.py` + `flow.py` + `assistant.py`（HTTP + WS 标记）
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/workflow.py`（`invoke :31` / `stop :144` `workflow:invoke`；WS `:157` `@open_api_scope('workflow:invoke', allow_share_token=True)`；`:41/149/167` 身份改 `get_open_api_login_user()`；WS 端点内旧的 `close(1011) before accept` 身份分支删除——身份已在依赖里判定，坑 16）, `src/backend/bisheng/open_endpoints/api/endpoints/flow.py`（`GET /flows/{id}` `workflow:read`；`:8` 从 `endpoints.assistant` 转导入 `get_default_operator` 删除、`:21-23` guest 开关读取删除）, `src/backend/bisheng/open_endpoints/api/endpoints/assistant.py`（`chat/completions :30` `assistant:invoke`，**端点体 `:48` 内联 `get_default_operator()` 一并改为 `get_open_api_login_user()`**；`list :256` / `info :271` `assistant:read`（`:262-286` `enable_guest_access` 读取删除）；WS `:298` `assistant:invoke` + `allow_share_token=True`，`:304 get_default_operator()` 删除；`:24` 的 `get_default_operator` import 删除——共 4 处调用 `:48/:266/:286/:304`，漏一处即 T036 删函数后模块 import 失败）
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py`（`invoke :31` / `stop :144` `workflow:invoke`；WS `:157` `@open_api_scope('workflow:invoke', allow_share_token=True)`；`:41/149/167` 身份改 `get_open_api_login_user()`；WS 端点内旧的 `close(1011) before accept` 身份分支删除——身份已在依赖里判定，坑 16）, `src/backend/doberman_agent/open_endpoints/api/endpoints/flow.py`（`GET /flows/{id}` `workflow:read`；`:8` 从 `endpoints.assistant` 转导入 `get_default_operator` 删除、`:21-23` guest 开关读取删除）, `src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py`（`chat/completions :30` `assistant:invoke`，**端点体 `:48` 内联 `get_default_operator()` 一并改为 `get_open_api_login_user()`**；`list :256` / `info :271` `assistant:read`（`:262-286` `enable_guest_access` 读取删除）；WS `:298` `assistant:invoke` + `allow_share_token=True`，`:304 get_default_operator()` 删除；`:24` 的 `get_default_operator` import 删除——共 4 处调用 `:48/:266/:286/:304`，漏一处即 T036 删函数后模块 import 失败）
   **逻辑**: WS 端点体保留 `accept` 后的 `dispatch_client` 逻辑；share-token 分支与 watchdog 由 T052 / T053 接入（本任务后 WS 只接受密钥）。
   **测试**: T034 相关端点通过（`pytest -k "workflow or flow or assistant"`）
   **覆盖 AC**: AC-04, AC-29
   **依赖**: T036
 
 - [ ] **T040**: `chat.py` 删除 + 全局 `router_rpc` 挂依赖
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/chat.py`（**删除**，含 `:7-9` 无用 `a = WSGIMiddleware`）, `src/backend/bisheng/open_endpoints/api/router.py`（去 `chat_router_rpc` import / `__all__`）, `src/backend/bisheng/api/router.py`（`:94` `router_rpc = APIRouter(prefix='/api/v2', dependencies=[Depends(verify_open_api_access)])`；`include_router(chat_router_rpc)` 删除；`open_api` v2 子 router 的自带依赖去重（避免同一请求跑两次校验））
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/chat.py`（**删除**，含 `:7-9` 无用 `a = WSGIMiddleware`）, `src/backend/doberman_agent/open_endpoints/api/router.py`（去 `chat_router_rpc` import / `__all__`）, `src/backend/doberman_agent/api/router.py`（`:94` `router_rpc = APIRouter(prefix='/api/v2', dependencies=[Depends(verify_open_api_access)])`；`include_router(chat_router_rpc)` 删除；`open_api` v2 子 router 的自带依赖去重（避免同一请求跑两次校验））
   **逻辑**: D4 真 404、不留 410 桩；与 T037–T039 同 wave 落地（顺序：T037–T039 先、本任务最后合并），保证挂全局依赖那一刻不存在未标记端点。
   **跨 Feature**: `open_endpoints` 全部路由从此经同一凭据路径（INV-27）；`docs/api` 与发布说明（T045 / T074）同步 6 端点清单。
   **测试**: T034 全部通过（含 `test_every_v2_route_has_scope_marker` / `test_six_chat_routes_absent_404`）
@@ -316,7 +316,7 @@
   **依赖**: T040, T039, T038, T008（T040 之前全局 `router_rpc` 依赖未挂，v2 端点全部 26001，本测试的有效密钥请求打不到业务逻辑）
 
 - [ ] **T042**: `invoke` 上线守卫 + `stop` 归属校验
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/workflow.py`（`invoke_workflow :43-49` 取到 `workflow_info` 后、构造 `RedisCallback` 前 `if workflow_info.status != FlowStatus.ONLINE.value: raise WorkflowOfflineError.http_exception()`（`common/errcode/chat.py:29` 13010，已有三语）；`stop :144` 读 `RedisCallback` 状态载荷 `owner_user_id / tenant_id`，≠ 当前主体 → 403）, `src/backend/bisheng/worker/workflow/redis_callback.py`（`set_workflow_status :118-123` 状态载荷加 `owner_user_id / tenant_id`）
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py`（`invoke_workflow :43-49` 取到 `workflow_info` 后、构造 `RedisCallback` 前 `if workflow_info.status != FlowStatus.ONLINE.value: raise WorkflowOfflineError.http_exception()`（`common/errcode/chat.py:29` 13010，已有三语）；`stop :144` 读 `RedisCallback` 状态载荷 `owner_user_id / tenant_id`，≠ 当前主体 → 403）, `src/backend/doberman_agent/worker/workflow/redis_callback.py`（`set_workflow_status :118-123` 状态载荷加 `owner_user_id / tenant_id`）
   **逻辑**: `/workflow/stop` **不加**上线守卫（停未上线流的会话是幂等空操作）。
   **跨 Feature**: `set_workflow_status` 状态载荷是 workflow worker（写）与 `stop` 端点（读）的共享结构——只加 `owner_user_id / tenant_id` 两键、不删不改既有键，worker 侧其它读者无感（已登记顶部跨 Feature 表）。
   **测试**: T041 前两项通过
@@ -324,7 +324,7 @@
   **依赖**: T041, T040
 
 - [ ] **T043**: `download_statistic` 收口
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/filelib.py`（`download_statistic_file :496-507`：入参 `file_path` → `file_name`；`os.path.basename(file_name) == file_name` 且不含 `..` 否则 400 `ServerError`；`STATISTIC_DIR = <data_dir>/statistic`（既有配置根，不新增 Settings 键）；`os.path.realpath(join)` 须以 `realpath(STATISTIC_DIR) + os.sep` 开头否则 404）
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/filelib.py`（`download_statistic_file :496-507`：入参 `file_path` → `file_name`；`os.path.basename(file_name) == file_name` 且不含 `..` 否则 400 `ServerError`；`STATISTIC_DIR = <data_dir>/statistic`（既有配置根，不新增 Settings 键）；`os.path.realpath(join)` 须以 `realpath(STATISTIC_DIR) + os.sep` 开头否则 404）
   **逻辑**: D3「AC-40 收口」；契约变化（`file_path → file_name`）进 T045 文档与 T074 发布说明。
   **测试**: T041 第三项通过
   **覆盖 AC**: AC-40
@@ -337,7 +337,7 @@
   **依赖**: T040, T001, T047（「F049 两个 revision」含 T047 的 `share_link.share_scope`）
 
 - [ ] **T045**: `initdb_config.yaml` 删键 + `docs/api` 修订与前缀模式公开
-  **文件**: `src/backend/bisheng/initdb_config.yaml`（`:35-38` `default_operator` 块含 `enable_guest_access` 删除）, `docs/api/filelib-retrieve.md`（`:25-28` / `:297-298` 两处错误引导改为「持 `bs-sak-` 密钥 + `knowledge:read`，租户取密钥所属租户」；说明「知识资源级一次校验 + fail-closed，文件级过滤随 F052」）, `docs/api/开放 API 接口方案.md`（新增「凭据格式与前缀模式」小节：`Authorization: Bearer bs-sak-<43>`、正则 `\bbs-sak-[A-Za-z0-9_-]{43}\b`、掩码格式；`download_statistic` 入参 `file_path → file_name`；6 个 `/chat/*` 不再提供；**订正 `:1594-1596`**「该用户会被转为服务账号并降权 / 升级后该身份会被降权」两句——与 AC-51 / AC-52 零迁移决议相悖，改为「原默认操作员用户**不做任何变更**（仍是普通用户、名下资源归属与权限原样），只是不再被任何 v2 调用当作兜底身份；请新建服务账号并授权」；同表 `:1592` 裸 `user_id` 行注明随 F050 移除、`delegate` 位随 F050）
+  **文件**: `src/backend/doberman_agent/initdb_config.yaml`（`:35-38` `default_operator` 块含 `enable_guest_access` 删除）, `docs/api/filelib-retrieve.md`（`:25-28` / `:297-298` 两处错误引导改为「持 `bs-sak-` 密钥 + `knowledge:read`，租户取密钥所属租户」；说明「知识资源级一次校验 + fail-closed，文件级过滤随 F052」）, `docs/api/开放 API 接口方案.md`（新增「凭据格式与前缀模式」小节：`Authorization: Bearer bs-sak-<43>`、正则 `\bbs-sak-[A-Za-z0-9_-]{43}\b`、掩码格式；`download_statistic` 入参 `file_path → file_name`；6 个 `/chat/*` 不再提供；**订正 `:1594-1596`**「该用户会被转为服务账号并降权 / 升级后该身份会被降权」两句——与 AC-51 / AC-52 零迁移决议相悖，改为「原默认操作员用户**不做任何变更**（仍是普通用户、名下资源归属与权限原样），只是不再被任何 v2 调用当作兜底身份；请新建服务账号并授权」；同表 `:1592` 裸 `user_id` 行注明随 F050 移除、`delegate` 位随 F050）
   **逻辑**: D12；存量 DB `config` 残留键无害、不写清理脚本（AC-51）；测试注释 `test/e2e/test_e2e_knowledge_resource_unified.py:4` 顺带改。
   **测试**: T044 全部通过 + T044 登记的 `grep` 审阅命令为空 / 非空（含「转为服务账号」「会被降权」两词）
   **覆盖 AC**: AC-52, AC-53, AC-54
@@ -355,7 +355,7 @@
 > **前置 ★**：design D8 登记了两处需回写 spec 的口径（决议-1「实际受影响面只有两个 WS」的核实基础已过时——guest 页另打 4 个 v2 HTTP，改由 3 个 `/api/v1/share-link/{token}/*` 端点承接；AC-55「单一资源」在 history 端点上按「资源 = flow」解释）。这两处**不改 AC 文字**，但开工 T047 前须经用户确认并回写 spec 决议-1（design 修订历史「需回写上游」）。
 
 - [ ] **T047**: Alembic：`share_link.share_scope` 列 + 模型
-  **文件**: `src/backend/bisheng/core/database/alembic/versions/v3_0_0_f049_share_link_share_scope.py`（新）, `src/backend/bisheng/share_link/domain/models/share_link.py`（`ShareLink` 加 `share_scope: str = Field(default='session', max_length=16)`；`resource_type` `SQLEnum` **不加枚举值**（K5）；`expire_time` 注释改为「自 `create_time` 起相对秒，0 = 永不」）
+  **文件**: `src/backend/doberman_agent/core/database/alembic/versions/v3_0_0_f049_share_link_share_scope.py`（新）, `src/backend/doberman_agent/share_link/domain/models/share_link.py`（`ShareLink` 加 `share_scope: str = Field(default='session', max_length=16)`；`resource_type` `SQLEnum` **不加枚举值**（K5）；`expire_time` 注释改为「自 `create_time` 起相对秒，0 = 永不」）
   **逻辑**: `ALTER TABLE share_link ADD COLUMN share_scope VARCHAR(16) NOT NULL DEFAULT 'session'`；`app` = 应用级分享（`resource_id` = flow / assistant id）。现状 6 个会话级消费点与 2 个 flow 级消费点逻辑不改（D8「资源类型表达」）。
   **回滚**: `downgrade()` 删列；`app` 行 downgrade 后会被 flow 级消费点按兜底分支读、被会话级消费点当会话 id 读——因此 downgrade 前先经 T050 revoke 全部 `app` 行（写在 docstring）。
   **跨 Feature**: ShareLink 写增量已在 release-contract 表 1 登记归 F049。
@@ -369,14 +369,14 @@
   **依赖**: T047, T008
 
 - [ ] **T049**: `ShareLinkService` 增量实现
-  **文件**: `src/backend/bisheng/share_link/domain/services/share_link_service.py`（`get_share_link_by_token :52-58`：删「有效期刻意不生效」注释、统一强制相对秒过期；过期首次命中时惰性 `UPDATE share_link SET status=INACTIVE WHERE id=:id AND status=ACTIVE`，`rowcount==1` 才写审计 `open_api.share_link.expire`（`operator_id=0` → `system`）——T007 登记的该动作由此产生事件（同 T010 密钥惰性到期的幂等闸），不另起 Beat；新增 `revoke(share_id, actor)`（创建者或管理员，写 `status=INACTIVE` + 审计 `open_api.share_link.revoke`）/ `list_app_shares(resource_type, resource_id)` / `generate` 支持 `share_scope`（`app` 必填 `expire_time>0`，`resource_id` = flow / assistant id）/ `resolve_guest_principal(token, expected_resource_type, expected_resource_id) -> UserPayload`（以创建者**直接构造** `UserPayload(is_global_super=False, user_role=[], open_api_principal(subject_kind='share_link', share_link_id))` + `set_current_tenant_id(share.tenant_id)`；创建者禁用 / 删除 / 租户不活跃 → 26028））
+  **文件**: `src/backend/doberman_agent/share_link/domain/services/share_link_service.py`（`get_share_link_by_token :52-58`：删「有效期刻意不生效」注释、统一强制相对秒过期；过期首次命中时惰性 `UPDATE share_link SET status=INACTIVE WHERE id=:id AND status=ACTIVE`，`rowcount==1` 才写审计 `open_api.share_link.expire`（`operator_id=0` → `system`）——T007 登记的该动作由此产生事件（同 T010 密钥惰性到期的幂等闸），不另起 Beat；新增 `revoke(share_id, actor)`（创建者或管理员，写 `status=INACTIVE` + 审计 `open_api.share_link.revoke`）/ `list_app_shares(resource_type, resource_id)` / `generate` 支持 `share_scope`（`app` 必填 `expire_time>0`，`resource_id` = flow / assistant id）/ `resolve_guest_principal(token, expected_resource_type, expected_resource_id) -> UserPayload`（以创建者**直接构造** `UserPayload(is_global_super=False, user_role=[], open_api_principal(subject_kind='share_link', share_link_id))` + `set_current_tenant_id(share.tenant_id)`；创建者禁用 / 删除 / 租户不活跃 → 26028））
   **逻辑**: D8；`share_link` 继续用 `generate_short_high_entropy_string`（坑 17 只影响密钥）；`access_count` 不动。
   **测试**: T048 service 部分通过
   **覆盖 AC**: AC-55, AC-56, AC-57
   **依赖**: T048
 
 - [ ] **T050**: share-link 匿名作用域端点 + `/app-shares` 管理端点
-  **文件**: `src/backend/bisheng/share_link/api/endpoints/share_link.py`（新增 3 个匿名端点 `GET /{token}/resource` · `GET /{token}/chat/history` · `POST /{token}/chat/gen_title`，复用 `api/dependencies.py:30-48 header_share_token_parser`；留在豁免前缀 `/api/v1/share-link` 下——匿名端点正需要 bypass）, `src/backend/bisheng/share_link/api/endpoints/share_link_manage.py`（新：`app_shares_router = APIRouter(prefix='/app-shares', tags=['ShareLink'])`：`GET /` · `POST /{id}/revoke`，`Depends(get_login_user)`，**非豁免前缀**，租户自动过滤 + token_version + 租户状态检查全部生效）, `src/backend/bisheng/share_link/api/router.py`（现有 `router = APIRouter(prefix='/share-link')` `:4` 只 include 3 个匿名端点；`app_shares_router` **不得** include 进它——否则最终路径变成 `/api/v1/share-link/app-shares`，`startswith` 命中 `TENANT_CHECK_EXEMPT_PATHS`（`utils/http_middleware.py:39`，匹配在 `:311`），正是坑 26 要规避的 bypass + 跳过 token_version；此文件只 `export` `app_shares_router`）, `src/backend/bisheng/api/router.py`（`:76` `include_router(share_link_router)` 旁**独立** `router.include_router(app_shares_router)`，直接挂 `/api/v1`）
+  **文件**: `src/backend/doberman_agent/share_link/api/endpoints/share_link.py`（新增 3 个匿名端点 `GET /{token}/resource` · `GET /{token}/chat/history` · `POST /{token}/chat/gen_title`，复用 `api/dependencies.py:30-48 header_share_token_parser`；留在豁免前缀 `/api/v1/share-link` 下——匿名端点正需要 bypass）, `src/backend/doberman_agent/share_link/api/endpoints/share_link_manage.py`（新：`app_shares_router = APIRouter(prefix='/app-shares', tags=['ShareLink'])`：`GET /` · `POST /{id}/revoke`，`Depends(get_login_user)`，**非豁免前缀**，租户自动过滤 + token_version + 租户状态检查全部生效）, `src/backend/doberman_agent/share_link/api/router.py`（现有 `router = APIRouter(prefix='/share-link')` `:4` 只 include 3 个匿名端点；`app_shares_router` **不得** include 进它——否则最终路径变成 `/api/v1/share-link/app-shares`，`startswith` 命中 `TENANT_CHECK_EXEMPT_PATHS`（`utils/http_middleware.py:39`，匹配在 `:311`），正是坑 26 要规避的 bypass + 跳过 token_version；此文件只 `export` `app_shares_router`）, `src/backend/doberman_agent/api/router.py`（`:76` `include_router(share_link_router)` 旁**独立** `router.include_router(app_shares_router)`，直接挂 `/api/v1`）
   **逻辑**: 坑 26：撤销 / 列表绝不能落 `share-link*` 前缀——最终路径必须恰为 `/api/v1/app-shares*`（T048 以 `app.routes` 最终路径断言）；既有 `generate_share_link :12-17` 的豁免暴露只登记不搬。history / gen_title 端点内部复用 chat_session 既有 Service，以创建者身份 + `flow_id == share.resource_id` 收窄。
   **测试**: T048 全部通过
   **覆盖 AC**: AC-55, AC-56, AC-57
@@ -389,14 +389,14 @@
   **依赖**: T050, T039, T008
 
 - [ ] **T052**: `verify_open_api_access` WS 分支 + watchdog
-  **文件**: `src/backend/bisheng/open_api/api/dependencies.py`（WS 分支：`Authorization` 头（密钥）或 `?share_token=` 二选一（同时给以密钥为准、share_token 忽略并记日志）；share-token 分支要求端点标记 `allow_share_token=True`，调 `ShareLinkService.resolve_guest_principal(token, 资源类型, 路径 id)`；任何失败一律 `raise WebSocketException(code=1008, reason=str(错误码))`——**禁止** `HTTPException` / `BaseErrorCode.http_exception`（坑 16）；成功后写 ContextVar 主体）, `src/backend/bisheng/open_api/domain/services/ws_watchdog.py`（新：`start_watchdog(ws, principal) -> asyncio.Task`，每 3 秒复查同一 Redis 键 `oapi:cred:{hash}` 或 share_link 状态（revoke / 过期 / 主体停用），失败即 `close(1008)`；连接关闭时取消 task）
+  **文件**: `src/backend/doberman_agent/open_api/api/dependencies.py`（WS 分支：`Authorization` 头（密钥）或 `?share_token=` 二选一（同时给以密钥为准、share_token 忽略并记日志）；share-token 分支要求端点标记 `allow_share_token=True`，调 `ShareLinkService.resolve_guest_principal(token, 资源类型, 路径 id)`；任何失败一律 `raise WebSocketException(code=1008, reason=str(错误码))`——**禁止** `HTTPException` / `BaseErrorCode.http_exception`（坑 16）；成功后写 ContextVar 主体）, `src/backend/doberman_agent/open_api/domain/services/ws_watchdog.py`（新：`start_watchdog(ws, principal) -> asyncio.Task`，每 3 秒复查同一 Redis 键 `oapi:cred:{hash}` 或 share_link 状态（revoke / 过期 / 主体停用），失败即 `close(1008)`；连接关闭时取消 task）
   **逻辑**: D2「WS 连接期失效」；不动 `common/chat/manager.py dispatch_client` 的按消息校验（F048 `use` 校验仍以执行主体为 actor）。
   **测试**: T051 握手 / 双凭据部分通过
   **覆盖 AC**: AC-03, AC-09, AC-21, AC-29, AC-31, AC-47, AC-55, AC-56, AC-58
   **依赖**: T051
 
 - [ ] **T053**: 两个 WS 端点接 watchdog + 建连审计
-  **文件**: `src/backend/bisheng/open_endpoints/api/endpoints/workflow.py`（WS `:157`：`accept` 后 `start_watchdog` + 审计 `open_api.ws.connect`；`finally` 取消 watchdog）, `src/backend/bisheng/open_endpoints/api/endpoints/assistant.py`（WS `:298` 同上；`:305` 原 `try` 内不再有身份解析）
+  **文件**: `src/backend/doberman_agent/open_endpoints/api/endpoints/workflow.py`（WS `:157`：`accept` 后 `start_watchdog` + 审计 `open_api.ws.connect`；`finally` 取消 watchdog）, `src/backend/doberman_agent/open_endpoints/api/endpoints/assistant.py`（WS `:298` 同上；`:305` 原 `try` 内不再有身份解析）
   **逻辑**: 端点体只做 `accept → 审计 → watchdog → dispatch_client`；身份全部来自依赖。
   **测试**: T051 全部通过
   **覆盖 AC**: AC-31, AC-56, AC-58
@@ -432,14 +432,14 @@
   **依赖**: T014, T008
 
 - [ ] **T058**: `grant_source_service` 新来源值 + `OwnerProjectionContext.extra_grants`
-  **文件**: `src/backend/bisheng/permission/domain/services/grant_source_service.py`（`SOURCE_TYPES :16-26` 加 `SERVICE_ACCOUNT_AUTOGRANT`；`_validate_source_subject :178` 允许 `user`；`_source_locator :193`）, `src/backend/bisheng/permission/domain/services/owner_service.py`（`OwnerProjectionContext :38-53` 加 `extra_grants / extra_deltas`；`project_created :113-166` 把 extra deltas 与 owner protected deltas 一起进 `build_create_plan(protected_deltas=...)`；**不复用** `copy_grants / copy_deltas`（坑 27））
+  **文件**: `src/backend/doberman_agent/permission/domain/services/grant_source_service.py`（`SOURCE_TYPES :16-26` 加 `SERVICE_ACCOUNT_AUTOGRANT`；`_validate_source_subject :178` 允许 `user`；`_source_locator :193`）, `src/backend/doberman_agent/permission/domain/services/owner_service.py`（`OwnerProjectionContext :38-53` 加 `extra_grants / extra_deltas`；`project_created :113-166` 把 extra deltas 与 owner protected deltas 一起进 `build_create_plan(protected_deltas=...)`；**不复用** `copy_grants / copy_deltas`（坑 27））
   **跨 Feature**: PermissionGrant 归 F048——只增来源值与显式上下文字段，不改既有来源语义；`sync_business_source_model` 白名单（`runtime.py:647-649`）与之无关。
   **测试**: T057 来源值 / context 部分通过
   **覆盖 AC**: AC-24, AC-63
   **依赖**: T057
 
 - [ ] **T059**: `runtime.authorize_created` `autogrant_user_id` + `control_state` 落账本
-  **文件**: `src/backend/bisheng/permission/application/runtime.py`（`authorize_created :206-260` 新增显式 kwarg `autogrant_user_id: int | None = None`：校验 `== actor.user_id ∧ != owner_user_id ∧ 资源版本 0`；目标起始 `INHERIT` → 忽略并 debug；否则组回授 delta 进 `OwnerProjectionContext.extra_grants`；`:216-223` 对 owner 行的硬拒不变）, `src/backend/bisheng/permission/application/control_state.py`（`_owner_projection_grants :956-963` 与 `_state.prepare / finalize` 把 extra grant 的 assignee 行一并落账本；`:355 protected_only` 逻辑不动）
+  **文件**: `src/backend/doberman_agent/permission/application/runtime.py`（`authorize_created :206-260` 新增显式 kwarg `autogrant_user_id: int | None = None`：校验 `== actor.user_id ∧ != owner_user_id ∧ 资源版本 0`；目标起始 `INHERIT` → 忽略并 debug；否则组回授 delta 进 `OwnerProjectionContext.extra_grants`；`:216-223` 对 owner 行的硬拒不变）, `src/backend/doberman_agent/permission/application/control_state.py`（`_owner_projection_grants :956-963` 与 `_state.prepare / finalize` 把 extra grant 的 assignee 行一并落账本；`:355 protected_only` 逻辑不动）
   **逻辑**: D5 输入契约：`PermissionActor` / `resolve_permission_actor` **不改、不读 `user_type`**（C4）；回授行进创建计划而非事后 `mutate`（失败即整个创建 `FAILED_CLOSED`）。
   **跨 Feature**: F048 runtime 公共入口加可选 kwarg，缺省行为零变化。
   **测试**: T057 全部通过
@@ -453,14 +453,14 @@
   **依赖**: T059, T040, T008
 
 - [ ] **T061**: `knowledge_service.py` 三处硬写参数化 + 回授字段
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`（`acreate_knowledge_base :795-799` / `create_knowledge_base :741-749`：`login_user.open_api_principal` 存在且 `subject_kind=='service_account'` → `db_knowledge.user_id = principal.resource_owner_user_id`；`_new_library_permission_record :194-208` 带 `creator_autogrant_user_id = login_user.user_id`（经 `_project_library_created :212-223` 透传）；`process_one_file :1483-1544` `KnowledgeFile.user_id` 同规则改归属人、`updater_id` 保持服务账号；`_new_library_file_permission_record :242-254` 不带回授（INHERIT））
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`（`acreate_knowledge_base :795-799` / `create_knowledge_base :741-749`：`login_user.open_api_principal` 存在且 `subject_kind=='service_account'` → `db_knowledge.user_id = principal.resource_owner_user_id`；`_new_library_permission_record :194-208` 带 `creator_autogrant_user_id = login_user.user_id`（经 `_project_library_created :212-223` 透传）；`process_one_file :1483-1544` `KnowledgeFile.user_id` 同规则改归属人、`updater_id` 保持服务账号；`_new_library_file_permission_record :242-254` 不带回授（INHERIT））
   **逻辑**: D5 路径 1 与 3；`create_knowledge :674` 只是上层入口不改。
   **测试**: T060 知识库 / 文件用例通过
   **覆盖 AC**: AC-24, AC-25, AC-26, AC-27
   **依赖**: T060
 
 - [ ] **T062**: `knowledge_space_service.py` + adapter 透传
-  **文件**: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`（`create_knowledge_space :1100` `user_id` 同规则参数化；`:1110-1117 authorize_created(owner_user_id=…)` 记录带 `autogrant_user_id`）, `src/backend/bisheng/knowledge/domain/services/knowledge_permission_service.py`（`:995-1000` adapter 把记录上的 `creator_autogrant_user_id` 透传为 `authorize_created(autogrant_user_id=…)`）
+  **文件**: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`（`create_knowledge_space :1100` `user_id` 同规则参数化；`:1110-1117 authorize_created(owner_user_id=…)` 记录带 `autogrant_user_id`）, `src/backend/doberman_agent/knowledge/domain/services/knowledge_permission_service.py`（`:995-1000` adapter 把记录上的 `creator_autogrant_user_id` 透传为 `authorize_created(autogrant_user_id=…)`）
   **逻辑**: D5 路径 2；QA 问答对与 `knowledge/*metadata*` 不是 F048 资源、不经接缝。
   **测试**: T060 全部通过
   **覆盖 AC**: AC-24, AC-61
@@ -473,7 +473,7 @@
   **依赖**: T059, T024, T008
 
 - [ ] **T064**: `permission.application.subject_api.list_subject_grants`
-  **文件**: `src/backend/bisheng/permission/application/subject_api.py`（新：`list_subject_grants(subject_type='user', subject_id, tenant_id, resource_type=None, cursor=None)`：单条 `select` + join `permission_grant_assignee a JOIN permission_grant g WHERE a.subject_type='user' AND a.subject_id=:sa AND a.state='ACTIVE'`（命中 `ix_perm_assignee_subject_state`，`tenant_id` 由自动过滤注入）；资源名水合走 registry 白名单 `api/services/f048_permission_runtime.py:171-195`（不照抄前端 union）；返回行形状 = `PermissionGrantAssignee` + `source_type`）
+  **文件**: `src/backend/doberman_agent/permission/application/subject_api.py`（新：`list_subject_grants(subject_type='user', subject_id, tenant_id, resource_type=None, cursor=None)`：单条 `select` + join `permission_grant_assignee a JOIN permission_grant g WHERE a.subject_type='user' AND a.subject_id=:sa AND a.state='ACTIVE'`（命中 `ix_perm_assignee_subject_state`，`tenant_id` 由自动过滤注入）；资源名水合走 registry 白名单 `api/services/f048_permission_runtime.py:171-195`（不照抄前端 union）；返回行形状 = `PermissionGrantAssignee` + `source_type`）
   **逻辑**: D6 备选 C；只读 API，不改 F048 写路径。
   **跨 Feature**: `permission.application` 新增只读入口，供 F050 授权页「delegate 提示」复用。
   **测试**: T063 反查用例通过
@@ -481,7 +481,7 @@
   **依赖**: T063
 
 - [ ] **T065**: 授权端点 + 删除流程升级
-  **文件**: `src/backend/bisheng/open_api/api/endpoints/service_account_grants.py`（新：`GET /{id}/grants`（分页、按 `resource_type` 筛、`source_label` 映射：`DIRECT`→管理员授予 / `SERVICE_ACCOUNT_AUTOGRANT`→创建时自动回授 / 其它→异常来源+日志；meta 含名下密钥位与 AC-64 缺口列表）· `POST /{id}/grants:mutate`（`{changes:[{resource_type,resource_id,op,model_key,expected_assignee_version?}]}`：校验管理员 + 账号存在 → 逐资源取 context → 调同一 `resource_api.mutate_grants` / runtime，携带 `allow_service_account_subject=True`；N 次 mutate 逐条结果、不做事务；审计 `open_api.grant.*` 含前后档位）· `POST /{id}/grants:revoke-all`（反查后过滤掉 `SERVICE_ACCOUNT_AUTOGRANT` 再逐条 REMOVE）), `src/backend/bisheng/open_api/domain/services/service_account_service.py`（`delete` 升级：反查 → 逐资源 REMOVE（含回授）→ `revoke_by_subject('subject_deleted')` → `deleted_at` → 审计；`DELETE` 预检返回授权清单）
+  **文件**: `src/backend/doberman_agent/open_api/api/endpoints/service_account_grants.py`（新：`GET /{id}/grants`（分页、按 `resource_type` 筛、`source_label` 映射：`DIRECT`→管理员授予 / `SERVICE_ACCOUNT_AUTOGRANT`→创建时自动回授 / 其它→异常来源+日志；meta 含名下密钥位与 AC-64 缺口列表）· `POST /{id}/grants:mutate`（`{changes:[{resource_type,resource_id,op,model_key,expected_assignee_version?}]}`：校验管理员 + 账号存在 → 逐资源取 context → 调同一 `resource_api.mutate_grants` / runtime，携带 `allow_service_account_subject=True`；N 次 mutate 逐条结果、不做事务；审计 `open_api.grant.*` 含前后档位）· `POST /{id}/grants:revoke-all`（反查后过滤掉 `SERVICE_ACCOUNT_AUTOGRANT` 再逐条 REMOVE）), `src/backend/doberman_agent/open_api/domain/services/service_account_service.py`（`delete` 升级：反查 → 逐资源 REMOVE（含回授）→ `revoke_by_subject('subject_deleted')` → `deleted_at` → 审计；`DELETE` 预检返回授权清单）
   **逻辑**: D6 W2；管理员对目标资源无需另持权限（`_system_authorized`，`runtime.py:1077-1083`）；assignee 外键 `ondelete=RESTRICT` 指向 grant 非主体（`grant.py:137`），故必须显式 REMOVE。
   **测试**: T063 全部通过
   **覆盖 AC**: AC-16, AC-19, AC-48, AC-59, AC-60, AC-61, AC-62, AC-63, AC-64, AC-65
@@ -509,7 +509,7 @@
   **依赖**: T014, T008
 
 - [ ] **T069**: 对账 / 配额 实现
-  **文件**: `src/backend/bisheng/user/domain/models/user.py`（`alist_users_after_id :541-556` 加 `User.user_type == 'human'`）, `src/backend/bisheng/tenant/domain/services/user_tenant_sync_service.py`（`sync_user :76` 入口：目标 `user_type=='service'` → return，日志 debug）, `src/backend/bisheng/role/domain/services/quota_service.py`（`_count_user_count :622-651` 加类型条件）
+  **文件**: `src/backend/doberman_agent/user/domain/models/user.py`（`alist_users_after_id :541-556` 加 `User.user_type == 'human'`）, `src/backend/doberman_agent/tenant/domain/services/user_tenant_sync_service.py`（`sync_user :76` 入口：目标 `user_type=='service'` → return，日志 debug）, `src/backend/doberman_agent/role/domain/services/quota_service.py`（`_count_user_count :622-651` 加类型条件）
   **逻辑**: 坑 7 / 坑 11；不改 `TenantResolver`、不改 guest 兜底三条路径（坑 6）。
   **跨 Feature**: `worker/tenant_reconcile/tasks.py:68` 经 `alist_users_after_id` 自动生效；自然人对账行为不变。
   **测试**: T068 全部通过
@@ -523,7 +523,7 @@
   **依赖**: T017, T008
 
 - [ ] **T071**: 部门 / 用户组管理接口拒绝 + 全局搜索纵深
-  **文件**: `src/backend/bisheng/department/domain/services/department_service.py`（`aadd_members :1749` / `aset_admins :1986` 调 `assert_natural_persons`；全局成员搜索 `:2255-2330` 加 `User.user_type=='human'`）, `src/backend/bisheng/api/services/role_group_service.py`（`replace_user_groups :175` / `set_group_admin :238` / `set_group_members :271` 均为**同步**方法 → 调同步版 `assert_natural_persons`（T016 提供双版本）；department 两处 async → `aassert_natural_persons`）
+  **文件**: `src/backend/doberman_agent/department/domain/services/department_service.py`（`aadd_members :1749` / `aset_admins :1986` 调 `assert_natural_persons`；全局成员搜索 `:2255-2330` 加 `User.user_type=='human'`）, `src/backend/doberman_agent/api/services/role_group_service.py`（`replace_user_groups :175` / `set_group_admin :238` / `set_group_members :271` 均为**同步**方法 → 调同步版 `assert_natural_persons`（T016 提供双版本）；department 两处 async → `aassert_natural_persons`）
   **测试**: T070 全部通过
   **覆盖 AC**: AC-16, AC-22
   **依赖**: T070
@@ -535,7 +535,7 @@
   **依赖**: T010, T008
 
 - [ ] **T073**: Worker `expire_credentials` Beat 任务
-  **文件**: `src/backend/bisheng/worker/open_api/tasks.py`（新，含 `__init__.py`：`expire_credentials`，默认队列、每小时）, `src/backend/bisheng/core/config/settings.py`（`celery_task.beat_schedule :167-189` 缺省注入 `open_api_expire_credentials`）
+  **文件**: `src/backend/doberman_agent/worker/open_api/tasks.py`（新，含 `__init__.py`：`expire_credentials`，默认队列、每小时）, `src/backend/doberman_agent/core/config/settings.py`（`celery_task.beat_schedule :167-189` 缺省注入 `open_api_expire_credentials`）
   **约束（tenant_id 传递）**: Beat 触发无租户上下文——任务体在 `bypass_tenant_filter()` 下枚举 `expires_at <= now AND revoke_reason IS NULL`，**逐行 `set_current_tenant_id(row.tenant_id)`** 后调 `CredentialService.mark_expired_lazy(row.id)`（同一条单行 UPDATE + 审计幂等闸）；写法同 `worker/tenant_reconcile/tasks.py:55-80`（backend AGENTS.md「Beat × 多租户」陷阱）。不删缓存（到期靠每请求比对）。114 若未起 Beat，惰性通道仍保证被拒时有记录。
   **测试**: T072 全部通过
   **覆盖 AC**: AC-05, AC-12
@@ -605,7 +605,7 @@
 
 ### 部署顺序（坑 22：`config.yaml` 顶层未知键会让后端拒绝启动，所以先发代码、再加键、再重启）
 
-1. **发代码 + 建表**：`bash /opt/bisheng-ops/deploy.sh`
+1. **发代码 + 建表**：`bash /opt/doberman-agent-ops/deploy.sh`
    - 该脚本内含 `alembic upgrade head`（带上 T001 的 `user.user_type` revision）与 `create_all(checkfirst=True)`（建 `api_credential` / `service_account` 两张新表）。
    - 校验：`SHOW COLUMNS FROM user LIKE 'user_type'` 有行；`SHOW TABLES LIKE 'api_credential'` / `'service_account'` 各有行。
 2. **前端产物**：platform 需重新 build（新增 `serviceAccount` i18n 命名空间 + 新 tab）。⚠️外网 50071 是静态 build 快照，需手动重建，否则页面上看不到「服务账号」tab。
@@ -686,7 +686,7 @@
 
 | 请求方 | 请求内容 | 状态 | 交付物 |
 |---|---|---|---|
-| **F053 T034 ①** | `WhoamiResponse` 增 `resource_owner: {user_id, user_name}` —— 服务端 `OpenApiPrincipal.resource_owner_user_id` 早就有（`open_api/domain/context.py:37-39`），但 `whoami` 不吐，于是 `bisheng login` 那一刻**看不见这把 key 的资源归属人是谁**。而资源归属人正是此后 `deploy` 出的应用 owner，选错要等到 deploy 之后甚至换人接手才暴露——F049 自己在签发表单上加的那条风险提示，说的就是这个错 | ✅ **已交付**（commit `874bd688b`，2026-08-18） | `open_api/domain/schemas/credential.py` 新增 `WhoamiResourceOwner` + `WhoamiResponse.resource_owner`（可选，`None` 表示该主体无归属人）；CLI 侧 `login` 输出随之解除降级（F053 AC-06 的 `[受阻于 F049 回写]` 标记可撤） |
+| **F053 T034 ①** | `WhoamiResponse` 增 `resource_owner: {user_id, user_name}` —— 服务端 `OpenApiPrincipal.resource_owner_user_id` 早就有（`open_api/domain/context.py:37-39`），但 `whoami` 不吐，于是 `doberman-agent login` 那一刻**看不见这把 key 的资源归属人是谁**。而资源归属人正是此后 `deploy` 出的应用 owner，选错要等到 deploy 之后甚至换人接手才暴露——F049 自己在签发表单上加的那条风险提示，说的就是这个错 | ✅ **已交付**（commit `874bd688b`，2026-08-18） | `open_api/domain/schemas/credential.py` 新增 `WhoamiResourceOwner` + `WhoamiResponse.resource_owner`（可选，`None` 表示该主体无归属人）；CLI 侧 `login` 输出随之解除降级（F053 AC-06 的 `[受阻于 F049 回写]` 标记可撤） |
 | **F053 T034 ④** | 裁定 F053 spec AC-05 的措辞冲突：「`login` 校验入口在开放能力层未部署时不可达」与本 Feature「服务账号模块恒在 + `whoami` 恒在注册」（`api/router.py:123-126`；`core/config/open_platform.py:17-18` 注释逐字 "the service-account module is always on"）矛盾 | ✅ **已裁定**（同 commit `874bd688b`） | **改 F053 spec，不改 F049**——把 `whoami` 也置于开关下等于让 F049 的显式设计破例，并波及已落码的鉴权面。F053 改为「CLI 的 `login` 在该环境不可用并给出可读原因」，由其 T008 的前置探测 + exit 8 兑现 |
 
 （2026-08-19 由收口批登记；本表不影响上方任务勾选状态。）

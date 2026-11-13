@@ -4,7 +4,7 @@
 
 ## 1. Project Identity
 
-**BiSheng (毕昇)** — Enterprise LLM application DevOps platform. Monorepo, three sub-projects:
+**doberman-agent (doberman-agent)** — Enterprise LLM application DevOps platform. Monorepo, three sub-projects:
 
 | Path | Project | Stack |
 |------|---------|-------|
@@ -90,6 +90,6 @@ Subsystem pitfalls live in the nearest AGENTS.md (backend / client / platform §
 - **Architecture docs** → `docs/architecture/` (overview, permission, gateway, multi-tenant, data-models, …)
 - **Skills**: `/sdd-review`, `/task-review`, `/sdd-code-review`, `/e2e-test`, `/i18n-localizer`, `/react-component-refactor`. Single source in `.claude/skills/`; `.cursor/skills` and `.agents/skills` are symlinks to it — never add a copy there. `/sdd-code-review` is the project checklist review; Claude Code's built-in `/code-review` is a different tool.
 
-**Instruction files (AGENTS.md map).** Root = this file, loaded every session. Auto-loaded on top when editing the matching directory: `src/backend/`, `src/frontend/` (rules shared by both apps), `src/frontend/platform/`, `src/frontend/client/`, `src/frontend/packages/ui/` (shared component library + design-token SSOT), plus deep-dir specials `src/backend/bisheng/core/database/alembic/` (migrations), `src/backend/scripts/` (one-off scripts), `src/backend/bisheng/linsight/` (agent-framework contracts) and `src/backend/bisheng/linsight/builtin_skills/` (skill-pack authoring). Every `CLAUDE.md` is a symlink to its sibling `AGENTS.md` — edit `AGENTS.md` only. Put a new rule in the deepest file covering its scope (cross-module → this file; cross-frontend-app → `src/frontend/AGENTS.md`; app- or dir-specific → the nearest file); never duplicate a rule across levels — it *will* drift.
+**Instruction files (AGENTS.md map).** Root = this file, loaded every session. Auto-loaded on top when editing the matching directory: `src/backend/`, `src/frontend/` (rules shared by both apps), `src/frontend/platform/`, `src/frontend/client/`, `src/frontend/packages/ui/` (shared component library + design-token SSOT), plus deep-dir specials `src/backend/doberman_agent/core/database/alembic/` (migrations), `src/backend/scripts/` (one-off scripts), `src/backend/doberman_agent/linsight/` (agent-framework contracts) and `src/backend/doberman_agent/linsight/builtin_skills/` (skill-pack authoring). Every `CLAUDE.md` is a symlink to its sibling `AGENTS.md` — edit `AGENTS.md` only. Put a new rule in the deepest file covering its scope (cross-module → this file; cross-frontend-app → `src/frontend/AGENTS.md`; app- or dir-specific → the nearest file); never duplicate a rule across levels — it *will* drift.
 
 **Only write verified behaviour into an AGENTS.md entry, and say how it was verified** (a measurement, a repro script, a test). If something is plausible but unproven, keep it in memory marked as a hypothesis (why → `docs/agent-pitfalls.md`).

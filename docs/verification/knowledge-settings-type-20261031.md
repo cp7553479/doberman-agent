@@ -2,16 +2,16 @@
 
 ## 基线与范围
 
-- BISHENG 网页仓库，版本分支 `feat/bisheng-work-120-main@6d5651ad4849964cd587fee5e53ee4a8df3bc9d5`；提交前远端核对一致。
-- 工作目录 `.worktrees/bisheng-knowledge-settings-desktop-type`，分支 `codex/knowledge-settings-desktop-type`。
-- 已安装 BISHENG 包版本 `1.2.0-test.2`；同会话读取应用包元数据确认 Harness 包 `@deepseek-ai/dsh-harness-dev-context@0.2.1-rc.2`。
+- doberman-agent 网页仓库，版本分支 `feat/doberman-agent-work-120-main@6d5651ad4849964cd587fee5e53ee4a8df3bc9d5`；提交前远端核对一致。
+- 工作目录 `.worktrees/doberman-agent-knowledge-settings-desktop-type`，分支 `codex/knowledge-settings-desktop-type`。
+- 已安装 doberman-agent 包版本 `1.2.0-test.2`；同会话读取应用包元数据确认 Harness 包 `@deepseek-ai/dsh-harness-dev-context@0.2.1-rc.2`。
 - 本次变更属于网页前端。知识空间设置页面及共享控件继续使用原有文字层级、交互和业务逻辑；桌面窄内容区使用桌面字号。
 
 ## 根因及修正
 
 - 桌面宿主侧栏占用窗口宽度后，内嵌网页的内容宽度可能落入 ≤768px 的移动断点。布局 Hook 已通过 `embed=dsh` 和会话标记识别桌面身份，CSS 仅按宽度选择移动字号。
 - 字体语义变量把正文 14/22 切为 16/24；两处移动输入控件规则还会放大输入框及文本域。截图中的局部字号差异可由这一组合稳定复现。
-- 网页启动时把既有桌面身份同步到根元素 `data-bisheng-surface`。移动字体映射、共享输入控件防缩放规则和客户端旧输入控件防缩放规则共同使用该身份，桌面内容区沿用原始桌面字阶。
+- 网页启动时把既有桌面身份同步到根元素 `data-doberman-agent-surface`。移动字体映射、共享输入控件防缩放规则和客户端旧输入控件防缩放规则共同使用该身份，桌面内容区沿用原始桌面字阶。
 - 浏览器/H5 保留原有窄屏字阶与 16px 输入体验。桌面窗口尺寸和页面排版断点仍参与原有布局适配。
 - 此处修复作用于使用同一身份与字阶的桌面嵌入页面；字号数值与组件样式定义保持原值。
 

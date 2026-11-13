@@ -66,7 +66,7 @@ MySQL/DM8 中可审计、可版本化的 Action/Model/Grant 控制面，以及�
     进程可保持 `MIGRATION_REQUIRED/NOT_READY` 以供容器内运维，沿用现有 Store，重启后
     只允许新 model ID。
 - 本文严格区分两类“迁移”：
-  - **Schema Migration**：`bisheng/core/database/alembic/versions/` 下的 Alembic revision，
+  - **Schema Migration**：`doberman-agent/core/database/alembic/versions/` 下的 Alembic revision，
     只负责 MySQL/DM8 DDL；不得读取旧业务数据、回填/清理数据或访问 OpenFGA。
   - **Permission Data Migration**：`src/backend/scripts/migrate_f048_permission_data.py`
     在已启动但 F048 未就绪的 backend 容器内执行的一次性数据升级；负责旧 Config/业务事实/

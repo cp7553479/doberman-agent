@@ -8,7 +8,7 @@ Two things do need controlling, and both are process-level state:
 
 * ``settings.open_platform.enabled`` decides whether the router is registered at
   all (AC-05 lands as *no route*, not as an error code). The include happens at
-  import time of ``bisheng.api.router``, so switching it means reloading that
+  import time of ``doberman_agent.api.router``, so switching it means reloading that
   module and handing the freshly built router to ``create_app``.
 * ``ARTIFACTS_DIR`` points at build output that a plain checkout does not have
   (``scripts/pack_cli_wheel.sh`` produces it). Tests that need artifacts stage
@@ -32,12 +32,12 @@ import pytest
 
 _PROXY_KEYS = ("ALL_PROXY", "all_proxy", "HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy")
 
-# Deliberately different from ``bisheng.__version__`` ('2.6.0-fix', hardcoded in
+# Deliberately different from ``doberman_agent.__version__`` ('2.6.0-fix', hardcoded in
 # source) so a test can prove the payload does not fall back to it (pit 21).
 MANIFEST_PLATFORM_VERSION = "3.0.0-from-manifest"
 CLI_VERSION = "3.0.0"
 CLI_MIN_COMPATIBLE = "3.0.0"
-WHEEL_NAME = f"bisheng_cli-{CLI_VERSION}-py3-none-any.whl"
+WHEEL_NAME = f"doberman_agent_cli-{CLI_VERSION}-py3-none-any.whl"
 WHEEL_BYTES = b"PK\x03\x04 not a real wheel, only its bytes matter for Content-Length"
 
 # F057: the SDK rides the same staging directory and the same manifest, written
@@ -46,7 +46,7 @@ WHEEL_BYTES = b"PK\x03\x04 not a real wheel, only its bytes matter for Content-L
 # that used the same number could not tell the two apart.
 SDK_VERSION = "0.1.0"
 SDK_MIN_COMPATIBLE = "0.1.0"
-SDK_WHEEL_NAME = f"bisheng_sdk-{SDK_VERSION}-py3-none-any.whl"
+SDK_WHEEL_NAME = f"doberman_agent_sdk-{SDK_VERSION}-py3-none-any.whl"
 SDK_WHEEL_BYTES = b"PK\x03\x04 not a real sdk wheel either"
 
 
@@ -63,7 +63,7 @@ async def _noop_lifespan(app):
 
 
 def _artifact_service():
-    return importlib.import_module("bisheng.dev_toolkit.domain.services.artifact_service")
+    return importlib.import_module("doberman_agent.dev_toolkit.domain.services.artifact_service")
 
 
 def _cli_section() -> dict:
@@ -130,14 +130,14 @@ def absent_artifacts(monkeypatch, tmp_path) -> Path:
 def build_app(monkeypatch):
     """Factory building the **real** application with the F053 switches under control.
 
-    ``bisheng.api.router`` decides on the dev-toolkit include at import time, and
-    ``bisheng.main`` bound that router object when it was first imported. So the
+    ``doberman_agent.api.router`` decides on the dev-toolkit include at import time, and
+    ``doberman_agent.main`` bound that router object when it was first imported. So the
     factory reloads the aggregate router under the requested settings and points
-    ``bisheng.main.router`` at the fresh object before calling ``create_app`` —
+    ``doberman_agent.main.router`` at the fresh object before calling ``create_app`` —
     the app then carries the real middleware stack, which is what makes the
     tenant-exemption assertion meaningful.
     """
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.common.services.config_service import settings
 
     original_open_platform = settings.open_platform.enabled
 
@@ -146,10 +146,10 @@ def build_app(monkeypatch):
         monkeypatch.setattr(settings.app_runtime, "enabled", app_runtime_enabled)
         monkeypatch.setattr(settings.multi_tenant, "enabled", multi_tenant)
 
-        router_module = importlib.import_module("bisheng.api.router")
+        router_module = importlib.import_module("doberman_agent.api.router")
         importlib.reload(router_module)
 
-        main_module = importlib.import_module("bisheng.main")
+        main_module = importlib.import_module("doberman_agent.main")
         monkeypatch.setattr(main_module, "lifespan", _noop_lifespan)
         monkeypatch.setattr(main_module, "router", router_module.router)
         return main_module.create_app()
@@ -160,7 +160,7 @@ def build_app(monkeypatch):
     # This runs before monkeypatch's own undo, so put the switch back by hand
     # first — otherwise the reload would bake the test's value into the router.
     settings.open_platform.enabled = original_open_platform
-    importlib.reload(importlib.import_module("bisheng.api.router"))
+    importlib.reload(importlib.import_module("doberman_agent.api.router"))
 
 
 @pytest.fixture()
@@ -203,7 +203,7 @@ def _isolate_tenant_contextvars():
     Resetting only the tenant id (as `test/open_api` does) is not enough — the
     bypass flag is the one that decides whether the filter runs at all.
     """
-    from bisheng.core.context.tenant import _bypass_tenant_filter, current_tenant_id
+    from doberman_agent.core.context.tenant import _bypass_tenant_filter, current_tenant_id
 
     tenant_token = current_tenant_id.set(None)
     bypass_token = _bypass_tenant_filter.set(False)

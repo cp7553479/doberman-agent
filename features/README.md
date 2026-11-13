@@ -1,4 +1,4 @@
-# SDD (Spec-Driven Development) — BiSheng 适配版
+# SDD (Spec-Driven Development) — doberman-agent 适配版
 
 > **完整方法论指南**: [`docs/SDD-Guide.md`](../docs/SDD-Guide.md)
 >
@@ -46,8 +46,8 @@ features/
 ├── README.md                    # 本文件
 ├── _templates/                  # 可复用模板
 │   ├── release-contract.md      # 版本契约模板
-│   ├── spec.md                  # 规格文档模板（BiSheng 适配版）
-│   └── tasks.md                 # 任务清单模板（BiSheng 适配版）
+│   ├── spec.md                  # 规格文档模板（doberman-agent 适配版）
+│   └── tasks.md                 # 任务清单模板（doberman-agent 适配版）
 └── v2.5.0/                      # v2.5.0 版本产物
     ├── release-contract.md      # 版本契约（预填）
     ├── README.md                # Feature 索引

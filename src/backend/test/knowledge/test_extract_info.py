@@ -1,4 +1,4 @@
-from bisheng_langchain.rag import extract_info
+from doberman_agent_langchain.rag import extract_info
 
 
 class _FakeLLMChain:

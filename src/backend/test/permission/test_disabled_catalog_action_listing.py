@@ -14,8 +14,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.common.errcode.permission import InvalidCatalogActionError
-from bisheng.permission.application import business_authorization
+from doberman_agent.common.errcode.permission import InvalidCatalogActionError
+from doberman_agent.permission.application import business_authorization
 
 
 def _target(resource_id: str) -> SimpleNamespace:

@@ -1,14 +1,14 @@
 from types import SimpleNamespace
 
-from bisheng.permission.application.control_state import RuntimeCatalogSnapshot, RuntimeModelSnapshot
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.application.control_state import RuntimeCatalogSnapshot, RuntimeModelSnapshot
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 class State:

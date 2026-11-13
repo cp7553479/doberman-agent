@@ -88,7 +88,7 @@ def test_canary_never_authorizes_application_code_credentials_or_production_data
     elif mutation == "command":
         pod["spec"]["containers"][0]["command"] = ["python", "-c", "print('arbitrary')"]
     elif mutation == "operation":
-        pod["metadata"]["annotations"]["runtime.bisheng.io/operation"] = "business-operation"
+        pod["metadata"]["annotations"]["runtime.doberman-agent.io/operation"] = "business-operation"
     elif mutation == "uid":
         plan["allow_update"] = True
     else:

@@ -29,7 +29,7 @@ from runtime_manager.operations import OperationExecutor
 from runtime_manager.platform_client import PREFIX, PlatformClient, PlatformError
 from tests.test_kubernetes_executor import runtime as runtime
 
-_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "backend/bisheng/app_runtime/domain/schemas/runtime_delivery.py"
+_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "backend/doberman_agent/app_runtime/domain/schemas/runtime_delivery.py"
 _SCHEMA_SPEC = importlib.util.spec_from_file_location("_f059_real_backend_delivery_schema", _SCHEMA_PATH)
 _SCHEMA = importlib.util.module_from_spec(_SCHEMA_SPEC)
 sys.modules[_SCHEMA_SPEC.name] = _SCHEMA
@@ -163,7 +163,7 @@ def destroy(runtime, tmp_path):
         document = json.loads(next(row["value"] for row in container["env"] if row["name"] == "MATERIAL_PLAN"))
         assert container["name"] == "maintenance" and document["action"] == "purge"
         helper_runs.append(document["operation"]["operation_id"])
-        return "BISHENG_RUNTIME_RESULT " + json.dumps(run_maintenance(document, None, volume=volume))
+        return "DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(run_maintenance(document, None, volume=volume))
 
     cluster.create, cluster.logs = finished, logs
     executors, transports = [], []

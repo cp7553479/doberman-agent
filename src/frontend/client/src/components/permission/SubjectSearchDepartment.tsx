@@ -1,9 +1,9 @@
 import { SubjectIdentity } from "./SubjectIdentity";
-import { Checkbox } from "@bisheng/ui";
-import { Button, SearchInput, Tag } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
+import { Button, SearchInput, Tag } from "@doberman-agent/ui";
 import { getDepartmentChildren, searchDepartments } from "~/api/permission";
 import type { GrantDepartmentNode, ResourceType, SelectedSubject } from "~/api/permission";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocalize } from "~/hooks";
 import { cn } from "~/utils";

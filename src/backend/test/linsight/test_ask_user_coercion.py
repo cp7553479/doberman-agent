@@ -18,8 +18,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.agent_factory import (
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.agent_factory import (
     _EMPTY_QUESTIONS_RETRY_HINT,
     _EMPTY_QUESTIONS_RETRY_MARKER,
     _coerce_options,
@@ -453,7 +453,7 @@ def test_system_prompt_contains_filled_questions_example():
     prose rather than a literal call: weaker models (qwen-max) copied the old
     ``questions=[{...}]`` block verbatim into the reply text instead of calling
     ask_user, so no clarify card was ever raised."""
-    from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+    from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
 
     for has_kb in (True, False):
         prompt = _build_linsight_system_prompt(has_knowledge_base=has_kb)

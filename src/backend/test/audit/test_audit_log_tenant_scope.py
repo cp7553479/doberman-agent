@@ -23,7 +23,7 @@ predicate without spinning up the full service stack.
 # Pre-mock the modules audit_log eagerly imports that aren't available in the
 # unit-test environment (a stale ``telemetry_search`` .pyc with bad magic
 # number; the v1 router chain that drags in heavy ML deps). Conftest's own
-# pre-mocks for ``bisheng.common.services`` etc. remain untouched and let
+# pre-mocks for ``doberman_agent.common.services`` etc. remain untouched and let
 # the auth → user_deps chain resolve via MagicMock.
 import sys as _sys
 from unittest.mock import MagicMock as _MagicMock
@@ -32,21 +32,21 @@ _router_stub = _MagicMock()
 _router_stub.router = _MagicMock()
 _router_stub.router_rpc = _MagicMock()
 # Taken back out below, once this module's own imports are done — see the same
-# note in ``conftest.py``: ``bisheng.telemetry_search`` is a real package, and a
+# note in ``conftest.py``: ``doberman_agent.telemetry_search`` is a real package, and a
 # MagicMock left standing in for it makes every later suite's
-# ``from bisheng.main import app`` fail with "not a package".
+# ``from doberman_agent.main import app`` fail with "not a package".
 _stubbed: list[str] = []
 for _m in (
-    "bisheng.api.router",
-    "bisheng.api.v1",
-    "bisheng.api.v1.assistant",
-    "bisheng.api.v1.schema",
-    "bisheng.api.v1.schema.chat_schema",
-    "bisheng.api.v1.schema.workflow",
-    "bisheng.api.v1.schemas",
-    "bisheng.telemetry_search",
-    "bisheng.telemetry_search.api",
-    "bisheng.telemetry_search.api.router",
+    "doberman_agent.api.router",
+    "doberman_agent.api.v1",
+    "doberman_agent.api.v1.assistant",
+    "doberman_agent.api.v1.schema",
+    "doberman_agent.api.v1.schema.chat_schema",
+    "doberman_agent.api.v1.schema.workflow",
+    "doberman_agent.api.v1.schemas",
+    "doberman_agent.telemetry_search",
+    "doberman_agent.telemetry_search.api",
+    "doberman_agent.telemetry_search.api.router",
 ):
     if _m not in _sys.modules:
         _sys.modules[_m] = _router_stub
@@ -61,10 +61,10 @@ from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 from sqlmodel import Session, and_, func, select  # noqa: E402
 
-from bisheng.api.services.audit_log import AuditLogService  # noqa: E402
-from bisheng.common.errcode.http_error import UnAuthorizedError  # noqa: E402
-from bisheng.database.models.audit_log import AuditLog, AuditLogDao  # noqa: E402
-from bisheng.database.models.session import MessageSession  # noqa: E402
+from doberman_agent.api.services.audit_log import AuditLogService  # noqa: E402
+from doberman_agent.common.errcode.http_error import UnAuthorizedError  # noqa: E402
+from doberman_agent.database.models.audit_log import AuditLog, AuditLogDao  # noqa: E402
+from doberman_agent.database.models.session import MessageSession  # noqa: E402
 
 for _m in _stubbed:
     del _sys.modules[_m]
@@ -127,15 +127,15 @@ def patch_dao_session(monkeypatch, session):
         yield session
 
     monkeypatch.setattr(
-        "bisheng.database.models.audit_log.get_sync_db_session",
+        "doberman_agent.database.models.audit_log.get_sync_db_session",
         _fake_get_sync,
     )
     monkeypatch.setattr(
-        "bisheng.database.models.audit_log.bypass_tenant_filter",
+        "doberman_agent.database.models.audit_log.bypass_tenant_filter",
         lambda: nullcontext(),
     )
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.resp_200",
+        "doberman_agent.api.services.audit_log.resp_200",
         lambda data=None: {"data": data},
     )
 
@@ -396,11 +396,11 @@ class TestGetAuditTenantScopeHelper:
         mock_user.is_global_super = True
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=1,
             ),
         ):
@@ -413,11 +413,11 @@ class TestGetAuditTenantScopeHelper:
         mock_user.is_global_super = True
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=5,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=5,
             ),
         ):
@@ -429,11 +429,11 @@ class TestGetAuditTenantScopeHelper:
         mock_user.is_global_super = False
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=7,
             ),
         ):
@@ -448,11 +448,11 @@ class TestGetAuditTenantScopeHelper:
         mock_user.is_global_super = False
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=9,
             ),
         ):
@@ -502,15 +502,15 @@ class TestAlwaysBypassesAutoTenantFilter:
             yield session
 
         monkeypatch.setattr(
-            "bisheng.database.models.audit_log.bypass_tenant_filter",
+            "doberman_agent.database.models.audit_log.bypass_tenant_filter",
             _spy,
         )
         monkeypatch.setattr(
-            "bisheng.database.models.audit_log.get_sync_db_session",
+            "doberman_agent.database.models.audit_log.get_sync_db_session",
             _fake_get_sync,
         )
         monkeypatch.setattr(
-            "bisheng.api.services.audit_log.resp_200",
+            "doberman_agent.api.services.audit_log.resp_200",
             lambda data=None: {"data": data},
         )
         return calls
@@ -618,10 +618,10 @@ class TestAutoTenantFilterSimulationEndToEnd:
         """
         from sqlalchemy import event
 
-        from bisheng.core.context.tenant import (
+        from doberman_agent.core.context.tenant import (
             bypass_tenant_filter as real_bypass,
         )
-        from bisheng.core.context.tenant import (
+        from doberman_agent.core.context.tenant import (
             current_tenant_id,
             get_current_tenant_id,
             is_tenant_filter_bypassed,
@@ -649,11 +649,11 @@ class TestAutoTenantFilterSimulationEndToEnd:
             yield session
 
         monkeypatch.setattr(
-            "bisheng.database.models.audit_log.get_sync_db_session",
+            "doberman_agent.database.models.audit_log.get_sync_db_session",
             _fake_get_sync,
         )
         monkeypatch.setattr(
-            "bisheng.api.services.audit_log.resp_200",
+            "doberman_agent.api.services.audit_log.resp_200",
             lambda data=None: {"data": data},
         )
 
@@ -881,11 +881,11 @@ class TestGetAuditLogServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=2,
             ),
         ):
@@ -917,11 +917,11 @@ class TestGetAuditLogServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=1,
             ),
         ):
@@ -945,8 +945,8 @@ class TestGetAuditLogServiceEndToEnd:
 
     async def _query(self, user, current_tenant, tenant_id):
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=current_tenant),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=current_tenant),
         ):
             return await AuditLogService.get_audit_log(
                 user,
@@ -1022,11 +1022,11 @@ class TestGetAllOperatorsServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=2,
             ),
         ):
@@ -1058,30 +1058,30 @@ def _patch_session_dao_helpers(monkeypatch, session):
         return session.exec(stmt).one()
 
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.MessageSessionDao.get_statement_results",
+        "doberman_agent.api.services.audit_log.MessageSessionDao.get_statement_results",
         staticmethod(_results),
     )
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.MessageSessionDao.get_statement_count",
+        "doberman_agent.api.services.audit_log.MessageSessionDao.get_statement_count",
         staticmethod(_count),
     )
     # AppChatList is a MagicMock under the v1.schema premock. Replace it
     # with a passthrough so test assertions can introspect ``.chat_id``.
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.AppChatList",
+        "doberman_agent.api.services.audit_log.AppChatList",
         _appchat_passthrough,
     )
     # Enrichment lookups → empty lists; we focus on the tenant-scope filter.
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.UserDao.aget_user_by_ids",
+        "doberman_agent.api.services.audit_log.UserDao.aget_user_by_ids",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.FlowDao.aget_flow_by_ids",
+        "doberman_agent.api.services.audit_log.FlowDao.aget_flow_by_ids",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.api.services.audit_log.AssistantDao.aget_assistants_by_ids",
+        "doberman_agent.api.services.audit_log.AssistantDao.aget_assistants_by_ids",
         AsyncMock(return_value=[]),
     )
 
@@ -1113,11 +1113,11 @@ class TestGetSessionListServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=2,
             ),
         ):
@@ -1155,11 +1155,11 @@ class TestGetSessionListServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=1,
             ),
         ):
@@ -1196,11 +1196,11 @@ class TestGetSessionListServiceEndToEnd:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=2,  # F019 override
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=2,
             ),
         ):
@@ -1230,7 +1230,7 @@ class TestGetSessionMessagesExportInherits:
     def patch_session_dao(self, monkeypatch, session):
         _patch_session_dao_helpers(monkeypatch, session)
         monkeypatch.setattr(
-            "bisheng.api.services.audit_log.ChatMessageDao.get_all_message_by_chat_ids",
+            "doberman_agent.api.services.audit_log.ChatMessageDao.get_all_message_by_chat_ids",
             AsyncMock(return_value=[]),
         )
 
@@ -1251,11 +1251,11 @@ class TestGetSessionMessagesExportInherits:
 
         with (
             patch(
-                "bisheng.api.services.audit_log.get_admin_scope_tenant_id",
+                "doberman_agent.api.services.audit_log.get_admin_scope_tenant_id",
                 return_value=None,
             ),
             patch(
-                "bisheng.api.services.audit_log.get_current_tenant_id",
+                "doberman_agent.api.services.audit_log.get_current_tenant_id",
                 return_value=2,
             ),
         ):

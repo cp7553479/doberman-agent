@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.channel.domain.models.channel_info_source import ChannelInfoSource
-from bisheng.channel.domain.services.article_es_service import ArticleBulkWriteResult
-from bisheng.channel.domain.services.information_article_sync_service import InformationArticleSyncService
-from bisheng.core.external.bisheng_information_client.response_schema import (
+from doberman_agent.channel.domain.models.channel_info_source import ChannelInfoSource
+from doberman_agent.channel.domain.services.article_es_service import ArticleBulkWriteResult
+from doberman_agent.channel.domain.services.information_article_sync_service import InformationArticleSyncService
+from doberman_agent.core.external.doberman_agent_information_client.response_schema import (
     ArticleInfo,
     InformationArticlesResponse,
     InformationSubscriptionItem,

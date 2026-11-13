@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.open_api import (
+from doberman_agent.common.errcode.open_api import (
     OpenApiDelegationHeaderRequiredError,
     OpenApiDelegationNotAllowedError,
     OpenApiDelegationTargetInvalidError,
@@ -11,8 +11,8 @@ from bisheng.common.errcode.open_api import (
     OpenApiPrivilegedTargetError,
     OpenApiRemovedIdentityInputError,
 )
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.services.identity_service import (
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.services.identity_service import (
     assert_no_removed_identity_headers,
     parse_identity_headers,
     resolve_request_identity,
@@ -49,7 +49,7 @@ def test_new_headers_have_strict_syntax_and_conflict_rules():
 
 def test_removed_branded_identity_headers_are_not_aliases():
     with pytest.raises(OpenApiRemovedIdentityInputError):
-        assert_no_removed_identity_headers([("X-Bisheng-On-Behalf-Of", "2")])
+        assert_no_removed_identity_headers([("X-Doberman-Agent-On-Behalf-Of", "2")])
     assert_no_removed_identity_headers([("X-On-Behalf-Of", "2"), ("X-End-User", "external")])
 
 
@@ -65,7 +65,7 @@ async def test_delegate_missing_header_and_pat_delegation_fail_first(monkeypatch
         raise AssertionError("target lookup must not run for PAT delegation")
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
+        "doberman_agent.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
         must_not_resolve,
     )
     with pytest.raises(OpenApiDelegationNotAllowedError):
@@ -81,7 +81,7 @@ async def test_delegation_checks_target_privilege_then_scope(monkeypatch):
         return None
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
+        "doberman_agent.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
         missing,
     )
     with pytest.raises(OpenApiDelegationTargetInvalidError):
@@ -98,10 +98,10 @@ async def test_delegation_checks_target_privilege_then_scope(monkeypatch):
         return True
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
+        "doberman_agent.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
         target,
     )
-    monkeypatch.setattr("bisheng.open_api.domain.services.identity_service._is_privileged_target", privileged)
+    monkeypatch.setattr("doberman_agent.open_api.domain.services.identity_service._is_privileged_target", privileged)
     with pytest.raises(OpenApiPrivilegedTargetError):
         await resolve_request_identity(
             principal(scopes=frozenset({"delegate"})),
@@ -115,9 +115,9 @@ async def test_delegation_checks_target_privilege_then_scope(monkeypatch):
     async def denied(_credential, _user):
         return False
 
-    monkeypatch.setattr("bisheng.open_api.domain.services.identity_service._is_privileged_target", ordinary)
+    monkeypatch.setattr("doberman_agent.open_api.domain.services.identity_service._is_privileged_target", ordinary)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
+        "doberman_agent.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
         denied,
     )
     with pytest.raises(OpenApiDelegationNotAllowedError):
@@ -139,12 +139,12 @@ async def test_successful_delegation_replaces_every_authorization_identity(monke
         return True
 
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
+        "doberman_agent.open_api.domain.services.identity_service.OwnerRepository.get_active_natural_person",
         target,
     )
-    monkeypatch.setattr("bisheng.open_api.domain.services.identity_service._is_privileged_target", ordinary)
+    monkeypatch.setattr("doberman_agent.open_api.domain.services.identity_service._is_privileged_target", ordinary)
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
+        "doberman_agent.open_api.domain.services.identity_service.DelegateScopeService.target_allowed",
         allowed,
     )
     resolved = await resolve_request_identity(

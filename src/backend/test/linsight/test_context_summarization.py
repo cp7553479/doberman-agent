@@ -1,4 +1,4 @@
-"""F087 P1: BishengSummarizationMiddleware replaces deepagents' summarization per task.
+"""F087 P1: DobermanAgentSummarizationMiddleware replaces deepagents' summarization per task.
 
 Covers the budgets (spec AC-21, AC-24), the summary retry/failure contract
 (AC-17, AC-18), the unknown-window equivalence with the framework (AC-08) and
@@ -20,11 +20,11 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 
-from bisheng.common.errcode.linsight import LinsightContextCompressFailedError
-from bisheng.common.services.llm_error_classifier import classify_for_event
-from bisheng.linsight.domain.services.context_budget import (
-    BishengSummarizationMiddleware,
-    bisheng_summarization,
+from doberman_agent.common.errcode.linsight import LinsightContextCompressFailedError
+from doberman_agent.common.services.llm_error_classifier import classify_for_event
+from doberman_agent.linsight.domain.services.context_budget import (
+    DobermanAgentSummarizationMiddleware,
+    doberman_agent_summarization,
     estimate_tokens,
 )
 
@@ -67,7 +67,7 @@ def _model(replies=(), summaries=(), profile=None) -> _SummaryProbeModel:
 
 def test_unknown_window_matches_the_framework_defaults():
     model = _model()
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=None)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=None)
     framework = create_summarization_middleware(model, StateBackend())
 
     assert ours._lc_helper.trigger == framework._lc_helper.trigger
@@ -79,7 +79,7 @@ def test_unknown_window_matches_the_framework_defaults():
 
 def test_known_window_budgets():
     model = _model(profile={"max_input_tokens": 100_000})
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
 
     assert ours._lc_helper.trigger == ("fraction", 0.85)
     assert ours._lc_helper.keep == ("fraction", 0.10)
@@ -89,7 +89,7 @@ def test_known_window_budgets():
 
 def test_known_window_counts_from_the_usage_base():
     model = _model(profile={"max_input_tokens": 100_000})
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
     messages = [
         HumanMessage(content="q"),
         AIMessage(
@@ -107,8 +107,8 @@ def test_known_window_counts_from_the_usage_base():
 
 
 def test_name_survives_the_framework_exclusion():
-    ours = BishengSummarizationMiddleware(_model(), StateBackend(), usable_input=None)
-    assert ours.name == "BishengSummarizationMiddleware"
+    ours = DobermanAgentSummarizationMiddleware(_model(), StateBackend(), usable_input=None)
+    assert ours.name == "DobermanAgentSummarizationMiddleware"
     assert create_summarization_middleware(_model(), StateBackend()).name == "SummarizationMiddleware"
 
 
@@ -119,7 +119,7 @@ def test_name_survives_the_framework_exclusion():
 
 async def test_summary_failure_is_retried_once():
     model = _model(summaries=[RuntimeError("timeout"), "recovered summary"])
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=None)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=None)
 
     summary = await ours._acreate_summary([HumanMessage(content="old step")])
 
@@ -129,7 +129,7 @@ async def test_summary_failure_is_retried_once():
 
 async def test_summary_failing_twice_raises():
     model = _model(summaries=[RuntimeError("timeout"), RuntimeError("timeout")])
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=None)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=None)
 
     with pytest.raises(LinsightContextCompressFailedError):
         await ours._acreate_summary([HumanMessage(content="old step")])
@@ -137,7 +137,7 @@ async def test_summary_failing_twice_raises():
 
 def test_sync_summary_failing_twice_raises():
     model = _model(summaries=[RuntimeError("x"), RuntimeError("x")])
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=None)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=None)
 
     with pytest.raises(LinsightContextCompressFailedError):
         ours._create_summary([HumanMessage(content="old step")])
@@ -157,18 +157,18 @@ def fetch(page: int) -> str:
 def _build(model, usable_input):
     """Mirror agent_factory: ours first in the main and the subagent middleware lists."""
     backend = StateBackend()
-    with bisheng_summarization(model):
+    with doberman_agent_summarization(model):
         return create_deep_agent(
             model=model,
             tools=[fetch],
-            middleware=[BishengSummarizationMiddleware(model, backend, usable_input)],
+            middleware=[DobermanAgentSummarizationMiddleware(model, backend, usable_input)],
             subagents=[
                 {
                     "name": "general-purpose",
                     "description": "r",
                     "system_prompt": "r",
                     "tools": [fetch],
-                    "middleware": [BishengSummarizationMiddleware(model, backend, usable_input)],
+                    "middleware": [DobermanAgentSummarizationMiddleware(model, backend, usable_input)],
                 }
             ],
             state_schema=DeepAgentState,
@@ -181,7 +181,7 @@ def _build(model, usable_input):
 def instances(monkeypatch):
     created: list = []
     framework_calls = {"n": 0}
-    original_init = BishengSummarizationMiddleware.__init__
+    original_init = DobermanAgentSummarizationMiddleware.__init__
 
     def recording_init(self, *args, **kwargs):
         original_init(self, *args, **kwargs)
@@ -190,16 +190,16 @@ def instances(monkeypatch):
     original_awrap = SummarizationMiddleware.awrap_model_call
 
     async def counting_awrap(self, request, handler):
-        if not isinstance(self, BishengSummarizationMiddleware):
+        if not isinstance(self, DobermanAgentSummarizationMiddleware):
             framework_calls["n"] += 1
         return await original_awrap(self, request, handler)
 
-    monkeypatch.setattr(BishengSummarizationMiddleware, "__init__", recording_init)
+    monkeypatch.setattr(DobermanAgentSummarizationMiddleware, "__init__", recording_init)
     monkeypatch.setattr(SummarizationMiddleware, "awrap_model_call", counting_awrap)
     return created, framework_calls
 
 
-async def test_main_and_subagent_get_bisheng_summarization(instances):
+async def test_main_and_subagent_get_doberman_agent_summarization(instances):
     created, framework_calls = instances
     delegate = AIMessage(
         "", tool_calls=[{"name": "task", "args": {"description": "d", "subagent_type": "general-purpose"}, "id": "t"}]
@@ -243,10 +243,10 @@ async def test_compression_with_failing_summary_fails_as_compress_failed(instanc
 
 def test_assembling_outside_the_block_fails_loudly():
     model = _model()
-    with bisheng_summarization(model):
+    with doberman_agent_summarization(model):
         pass  # registers the provider
 
-    with pytest.raises(RuntimeError, match="outside bisheng_summarization"):
+    with pytest.raises(RuntimeError, match="outside doberman_agent_summarization"):
         create_deep_agent(model=model, tools=[], checkpointer=InMemorySaver())
 
 
@@ -266,7 +266,7 @@ def _history(steps: int, chars_per_result: int) -> list:
 def test_real_scale_history_produces_a_real_summary():
     """40 steps, ~80K tokens, usable 100K: the summary model must actually be called."""
     model = _model(summaries=["真实摘要"], profile={"max_input_tokens": 100_000})
-    ours = BishengSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
+    ours = DobermanAgentSummarizationMiddleware(model, StateBackend(), usable_input=100_000)
 
     summary = ours._create_summary(_history(40, 1000))
 
@@ -275,7 +275,7 @@ def test_real_scale_history_produces_a_real_summary():
 
 
 def test_trimmed_summary_input_keeps_the_instruction_and_the_newest_steps():
-    ours = BishengSummarizationMiddleware(_model(profile={"max_input_tokens": 100_000}), StateBackend(), 100_000)
+    ours = DobermanAgentSummarizationMiddleware(_model(profile={"max_input_tokens": 100_000}), StateBackend(), 100_000)
     history = _history(40, 1000)
 
     trimmed = ours._trim_for_summary(history)
@@ -287,7 +287,7 @@ def test_trimmed_summary_input_keeps_the_instruction_and_the_newest_steps():
 
 
 def test_a_single_oversized_step_is_clipped_not_dropped():
-    ours = BishengSummarizationMiddleware(_model(profile={"max_input_tokens": 10_000}), StateBackend(), 10_000)
+    ours = DobermanAgentSummarizationMiddleware(_model(profile={"max_input_tokens": 10_000}), StateBackend(), 10_000)
     history = _history(1, 20_000)  # one tool result ~20K tokens > the 5K summary budget
 
     trimmed = ours._trim_for_summary(history)
@@ -296,7 +296,7 @@ def test_a_single_oversized_step_is_clipped_not_dropped():
 
 
 def test_too_long_to_summarize_counts_as_a_failure():
-    class _Empty(BishengSummarizationMiddleware):
+    class _Empty(DobermanAgentSummarizationMiddleware):
         def _trim_for_summary(self, messages):
             return []
 
@@ -311,8 +311,8 @@ def test_too_long_to_summarize_counts_as_a_failure():
 async def test_subagent_summary_failure_fails_the_task_as_compress_failed():
     """SubagentContextOverflowMiddleware only absorbs overflows; a compression failure
     inside the researcher must still end the whole task as context_compress_failed."""
-    from bisheng.core.config.settings import LinsightConf
-    from bisheng.linsight.domain.services.resilience_middleware import (
+    from doberman_agent.core.config.settings import LinsightConf
+    from doberman_agent.linsight.domain.services.resilience_middleware import (
         SubagentContextOverflowMiddleware,
         build_resilience_middleware,
     )
@@ -329,12 +329,12 @@ async def test_subagent_summary_failure_fails_the_task_as_compress_failed():
     backend = StateBackend()
     conf = LinsightConf()
     researcher_resilience = build_resilience_middleware(conf, is_subagent=True)
-    with bisheng_summarization(model):
+    with doberman_agent_summarization(model):
         agent = create_deep_agent(
             model=model,
             tools=[fetch],
             middleware=[
-                BishengSummarizationMiddleware(model, backend, 12_000),
+                DobermanAgentSummarizationMiddleware(model, backend, 12_000),
                 build_resilience_middleware(conf, is_subagent=False),
                 SubagentContextOverflowMiddleware(researcher_resilience, {}),
             ],
@@ -344,7 +344,7 @@ async def test_subagent_summary_failure_fails_the_task_as_compress_failed():
                     "description": "r",
                     "system_prompt": "r",
                     "tools": [fetch],
-                    "middleware": [BishengSummarizationMiddleware(model, backend, 12_000), researcher_resilience],
+                    "middleware": [DobermanAgentSummarizationMiddleware(model, backend, 12_000), researcher_resilience],
                 }
             ],
             state_schema=DeepAgentState,

@@ -9,8 +9,8 @@ from hashlib import sha256
 import pytest
 from sqlalchemy import event, text
 
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.repositories.model_audit_maintenance import backfill_name_digests
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.repositories.model_audit_maintenance import backfill_name_digests
 from test.dsh.model_audit_fixtures import NOW, audit_database, audit_session
 from test.dsh.test_model_audit_flow import BASE, LOCAL_ADMIN, call, fixture
 

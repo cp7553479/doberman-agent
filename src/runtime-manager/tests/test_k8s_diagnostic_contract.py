@@ -21,7 +21,7 @@ def diagnostic(tmp_path):
     token = tmp_path / "token"
     token.write_text("test.diagnostic.token")
     settings = KubernetesConfig(
-        namespace="bisheng-runtime-apps",
+        namespace="doberman-agent-runtime-apps",
         cluster_id="cluster-a",
         descriptor_file=tmp_path / "descriptor.json",
         token_file=token,
@@ -81,7 +81,7 @@ def diagnostic(tmp_path):
         "kind": "prepare",
         "status": "running",
         "deadline": datetime.fromtimestamp(1792555200 + 1800, UTC).isoformat(),
-        "payload": {"runtime_env": {"BISHENG_APP_TOKEN": "fixture-business-secret"}},
+        "payload": {"runtime_env": {"DOBERMAN_AGENT_APP_TOKEN": "fixture-business-secret"}},
     }
     executor.platform = SimpleNamespace(resource=lambda _: copy.deepcopy(row), operation=lambda _: operation)
     executor.clock = SimpleNamespace(time=lambda: 1792555200)

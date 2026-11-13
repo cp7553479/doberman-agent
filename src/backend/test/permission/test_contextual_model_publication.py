@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.openfga.client import FGAClient
+from doberman_agent.core.openfga.client import FGAClient
 from scripts.publish_authorization_model_change import (
     AuthorizationModelPublishBlockedError,
     _assert_no_persisted_department_context,

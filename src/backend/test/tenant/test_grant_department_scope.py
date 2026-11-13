@@ -12,18 +12,18 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.permission import PermissionDeniedError, PermissionInvalidResourceError
-from bisheng.database.models.department import Department
-from bisheng.database.models.tenant import Tenant
-from bisheng.permission.api.endpoints import grant_subjects
-from bisheng.permission.application.resource_api import F048ResourcePermissionApi
-from bisheng.permission.domain.schemas import GrantMutationRequest, VerifiedPermissionTarget
-from bisheng.permission.domain.services import grant_subject_service
-from bisheng.permission.domain.services.grant_subject_service import GrantSubjectScope
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.tenant.domain.repositories import grant_department_repository as queries
-from bisheng.tenant.domain.services.f048_permission_subject import TenantPermissionSubjectDirectory
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.permission import PermissionDeniedError, PermissionInvalidResourceError
+from doberman_agent.database.models.department import Department
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.permission.api.endpoints import grant_subjects
+from doberman_agent.permission.application.resource_api import F048ResourcePermissionApi
+from doberman_agent.permission.domain.schemas import GrantMutationRequest, VerifiedPermissionTarget
+from doberman_agent.permission.domain.services import grant_subject_service
+from doberman_agent.permission.domain.services.grant_subject_service import GrantSubjectScope
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.tenant.domain.repositories import grant_department_repository as queries
+from doberman_agent.tenant.domain.services.f048_permission_subject import TenantPermissionSubjectDirectory
 
 
 def scope(tenant_id=11, path=None):

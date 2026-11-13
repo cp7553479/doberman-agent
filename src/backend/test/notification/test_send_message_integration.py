@@ -9,11 +9,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 
 @pytest.mark.asyncio
-@patch("bisheng.message.domain.services.message_service.maybe_forward_external")
+@patch("doberman_agent.message.domain.services.message_service.maybe_forward_external")
 async def test_send_message_calls_forwarder_at_the_end(mock_forward):
     """send_message() must call maybe_forward_external(saved_message) at the end."""
-    from bisheng.message.domain.services.message_service import MessageService
-    from bisheng.message.domain.models.inbox_message import MessageTypeEnum, MessageStatusEnum
+    from doberman_agent.message.domain.services.message_service import MessageService
+    from doberman_agent.message.domain.models.inbox_message import MessageTypeEnum, MessageStatusEnum
 
     # Build a minimal service instance bypassing __init__
     svc = MessageService.__new__(MessageService)
@@ -37,11 +37,11 @@ async def test_send_message_calls_forwarder_at_the_end(mock_forward):
 
 
 @pytest.mark.asyncio
-@patch("bisheng.message.domain.services.message_service.maybe_forward_external")
+@patch("doberman_agent.message.domain.services.message_service.maybe_forward_external")
 async def test_forwarder_exception_does_not_break_send_message(mock_forward):
     """If forwarder raises, send_message must still return the saved message."""
-    from bisheng.message.domain.services.message_service import MessageService
-    from bisheng.message.domain.models.inbox_message import MessageTypeEnum, MessageStatusEnum
+    from doberman_agent.message.domain.services.message_service import MessageService
+    from doberman_agent.message.domain.models.inbox_message import MessageTypeEnum, MessageStatusEnum
 
     svc = MessageService.__new__(MessageService)
     svc.message_repository = MagicMock()

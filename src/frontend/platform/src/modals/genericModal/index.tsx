@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button, Textarea } from '@bisheng/ui';
+import { Button, Textarea } from '@doberman-agent/ui';
 import { FileText, Variable } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import SanitizedHTMLWrapper from "../../components/SanitizedHTMLWrapper";
-import { Tooltip as ShadTooltip } from '@bisheng/ui';
-import { Tag } from '@bisheng/ui';
+import { Tooltip as ShadTooltip } from '@doberman-agent/ui';
+import { Tag } from '@doberman-agent/ui';
 
 import { DialogTitle } from "../../components/bs-ui/dialog";
 

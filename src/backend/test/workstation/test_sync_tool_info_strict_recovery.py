@@ -19,9 +19,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import is_strict_tenant_filter
-from bisheng.tool.domain.models.gpts_tools import GptsToolsDao
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.core.context.tenant import is_strict_tenant_filter
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsDao
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 ROOT = 1
 OTHER = 36
@@ -32,7 +32,7 @@ TYPES = {
 }
 CHILDREN = {
     38: SimpleNamespace(id=38, type=16, name="联网搜索", tool_key="web_search", desc="联网检索"),
-    6: SimpleNamespace(id=6, type=6, name="代码执行器", tool_key="bisheng_code_interpreter", desc="执行 Python"),
+    6: SimpleNamespace(id=6, type=6, name="代码执行器", tool_key="doberman_agent_code_interpreter", desc="执行 Python"),
 }
 
 STORED = [
@@ -41,7 +41,7 @@ STORED = [
         "id": 6,
         "name": "代码执行器",
         "default_checked": False,
-        "children": [{"id": 6, "tool_key": "bisheng_code_interpreter"}],
+        "children": [{"id": 6, "tool_key": "doberman_agent_code_interpreter"}],
     },
 ]
 
@@ -86,7 +86,7 @@ def test_visible_set_excluding_the_owner_no_longer_clears_the_pool(monkeypatch):
     assert _group_ids(synced) == [16, 6], "a filtered read must not look like a deleted tool pool"
     assert [c["tool_key"] for t in synced for c in t["children"]] == [
         "web_search",
-        "bisheng_code_interpreter",
+        "doberman_agent_code_interpreter",
     ]
 
 

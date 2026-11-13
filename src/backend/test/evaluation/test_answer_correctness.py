@@ -4,7 +4,7 @@ import math
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, LLMResult
 
-from bisheng.evaluation.domain.services.answer_correctness import compute_answer_correctness
+from doberman_agent.evaluation.domain.services.answer_correctness import compute_answer_correctness
 
 
 class _StubLLM:

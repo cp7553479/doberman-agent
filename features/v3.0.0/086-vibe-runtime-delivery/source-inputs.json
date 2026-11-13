@@ -8,8 +8,8 @@
     "vibe-app-open-source-technical-design.html": "36e131d491a8afbf769c695a0f2acefaa51a82e9def2fcf1a203403afc46411e",
     "vibe-app-hosting-commercialization-review.md": "528d3e7c1f1898711a3cdb34bc14b9ca4786306a8e98074d9d387b09f6326066",
     "vibe-app-hosting-commercialization-review.html": "082b550f7abc9c4f8b7d85572565abc5d0487f451d6edd086dba0047c331963d",
-    "bisheng-gateway-runtime-manager-implementation-plan.md": "c9c87e983023b858fe35dce701855d9e7ae340ceee84d49f3270db7c9fc19182",
-    "bisheng-gateway-runtime-manager-implementation-plan.html": "b393e3ad7e59bd98847690c3fed786f56361f385f818227eb51f9c2478e308f7"
+    "doberman-agent-gateway-runtime-manager-implementation-plan.md": "c9c87e983023b858fe35dce701855d9e7ae340ceee84d49f3270db7c9fc19182",
+    "doberman-agent-gateway-runtime-manager-implementation-plan.html": "b393e3ad7e59bd98847690c3fed786f56361f385f818227eb51f9c2478e308f7"
   },
   "state": "integration_verification_pending",
   "runtime_changes": true,

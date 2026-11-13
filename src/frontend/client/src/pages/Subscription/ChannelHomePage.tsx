@@ -1,5 +1,5 @@
-import { Badge, Button } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Badge, Button } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import type { Channel } from "~/api/channels";
 import { MODULE_HOME_COLUMN, MODULE_HOME_FRAME, ModuleHomeHeader } from "~/components/ModuleHome";
 import { useLocalize, useWorkbenchMenuNames } from "~/hooks";

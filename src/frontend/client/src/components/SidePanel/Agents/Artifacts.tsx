@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form';
 import { ArtifactModes, AgentCapabilities } from '~/types/chat';
 import type { AgentForm } from '~/common';
 import { HoverCard, HoverCardPortal, HoverCardContent, HoverCardTrigger } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { CircleHelpIcon } from '~/components/svg';
 import { ESide } from '~/common';

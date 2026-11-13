@@ -17,9 +17,9 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.database.models.audit_log import AuditLogDao
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.database.models.audit_log import AuditLogDao
 from test.audit.conftest import insert_audit, make_app, make_user_payload
 
 APP_A = "app-aaaa"
@@ -106,8 +106,8 @@ class TestObjectAppPredicateDialects:
     def test_mysql_branch_uses_json_extract(self):
         from sqlalchemy.dialects import mysql
 
-        from bisheng.core.database.dialect_helpers import json_object_field_equals
-        from bisheng.database.models.audit_log import AuditLog
+        from doberman_agent.core.database.dialect_helpers import json_object_field_equals
+        from doberman_agent.database.models.audit_log import AuditLog
 
         expr = json_object_field_equals(AuditLog.audit_metadata, "app_id", APP_A, "mysql")
         sql = str(expr.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}))
@@ -117,8 +117,8 @@ class TestObjectAppPredicateDialects:
     def test_dm_branch_matches_the_quoted_pair_only(self):
         from sqlalchemy.dialects import sqlite
 
-        from bisheng.core.database.dialect_helpers import json_object_field_equals
-        from bisheng.database.models.audit_log import AuditLog
+        from doberman_agent.core.database.dialect_helpers import json_object_field_equals
+        from doberman_agent.database.models.audit_log import AuditLog
 
         expr = json_object_field_equals(AuditLog.audit_metadata, "app_id", APP_A, "dm")
         sql = str(expr.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
@@ -159,8 +159,8 @@ class TestServiceTenantBoundary:
 
     async def _call(self, user, **kwargs):
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=2),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=2),
         ):
             return await AuditLogService.get_audit_log(
                 user,
@@ -212,8 +212,8 @@ class TestDeletedAppSnapshot:
         user = make_user_payload(user_id=1, is_admin=True, is_global_super=True)
 
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=1),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=1),
         ):
             resp = await AuditLogService.get_audit_log(user, [], [], None, None, None, None, 1, 20, target_app_id=APP_A)
 
@@ -238,8 +238,8 @@ class TestDeletedAppSnapshot:
         user = make_user_payload(user_id=1, is_admin=True, is_global_super=True)
 
         with (
-            patch("bisheng.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
-            patch("bisheng.api.services.audit_log.get_current_tenant_id", return_value=1),
+            patch("doberman_agent.api.services.audit_log.get_admin_scope_tenant_id", return_value=None),
+            patch("doberman_agent.api.services.audit_log.get_current_tenant_id", return_value=1),
         ):
             resp = await AuditLogService.get_audit_log(user, [], [], None, None, None, None, 1, 20)
 

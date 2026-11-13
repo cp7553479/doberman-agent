@@ -11,10 +11,10 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.exc import OperationalError
 
-from bisheng.knowledge.rag.preview_file_pipeline import PreviewFilePipeline
-from bisheng.knowledge.rag.temp_file_pipeline import TempFilePipeline
+from doberman_agent.knowledge.rag.preview_file_pipeline import PreviewFilePipeline
+from doberman_agent.knowledge.rag.temp_file_pipeline import TempFilePipeline
 
-GET_USER = "bisheng.knowledge.rag.base_file_pipeline.UserDao.get_user"
+GET_USER = "doberman_agent.knowledge.rag.base_file_pipeline.UserDao.get_user"
 
 
 def _too_many_connections(*_args, **_kwargs):

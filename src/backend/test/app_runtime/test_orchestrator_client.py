@@ -1,7 +1,7 @@
 """T046 — the orchestrator facade contract, plus the zero-orchestration proof.
 
 The last test in this file is not about the client at all: it walks
-``src/backend/bisheng/**`` and asserts backend holds no orchestration access
+``src/backend/doberman_agent/**`` and asserts backend holds no orchestration access
 surface. That is AC-14's automated half (arch-guard RULE-10 is the other), and
 it lives next to the facade on purpose — the day someone "just imports docker
 here for a quick fix", this is the file that explains why they cannot.
@@ -19,7 +19,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from bisheng.common.errcode.app_factory import (
+from doberman_agent.common.errcode.app_factory import (
     AppCapacityInsufficientError,
     AppNotFoundError,
     AppOrchestratorUnavailableError,
@@ -29,12 +29,12 @@ from bisheng.common.errcode.app_factory import (
 SECRET = "f054-test-secret"
 BASE_URL = "http://runtime-manager.test"
 
-BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 BACKEND_PYPROJECT = Path(__file__).resolve().parents[2] / "pyproject.toml"
 
 
 def _client(handler, *, secret: str = SECRET):
-    from bisheng.app_runtime.domain.services.orchestrator_client import OrchestratorClient
+    from doberman_agent.app_runtime.domain.services.orchestrator_client import OrchestratorClient
 
     return OrchestratorClient(base_url=BASE_URL, secret=secret, transport=httpx.MockTransport(handler))
 
@@ -167,7 +167,7 @@ class TestFailureTranslation:
 
         assert result == payload
 
-        from bisheng.app_runtime.domain.services.orchestrator_client import build_failure_error
+        from doberman_agent.app_runtime.domain.services.orchestrator_client import build_failure_error
 
         assert build_failure_error(result).code == 16122
 
@@ -280,7 +280,7 @@ class TestDataPlane:
     )
     async def test_data_plane_codes_are_their_own(self, manager_code, status_code, expected_code):
         """A missing table must never read as "the orchestrator is unavailable" (16121)."""
-        from bisheng.common.errcode.app_factory import AppFactoryError
+        from doberman_agent.common.errcode.app_factory import AppFactoryError
 
         client = _client(_error(manager_code, status_code=status_code))
         with pytest.raises(AppFactoryError) as excinfo:
@@ -289,7 +289,7 @@ class TestDataPlane:
 
     async def test_failed_export_is_an_error_not_a_csv(self):
         client = _client(_error("table_not_found", status_code=404))
-        from bisheng.common.errcode.app_factory import AppDataTableNotFoundError
+        from doberman_agent.common.errcode.app_factory import AppDataTableNotFoundError
 
         with pytest.raises(AppDataTableNotFoundError):
             await client.db_export(app_id="a", table="ghost")
@@ -304,7 +304,7 @@ class TestFormAgnostic:
         """
         import inspect
 
-        from bisheng.app_runtime.domain.services.orchestrator_client import orchestrator_client
+        from doberman_agent.app_runtime.domain.services.orchestrator_client import orchestrator_client
 
         banned = re.compile(r"container|compose|docker|pod|kubelet|namespace|image_pull", re.IGNORECASE)
         methods = [name for name in dir(orchestrator_client) if not name.startswith("_")]
@@ -343,7 +343,7 @@ class TestFormAgnostic:
                 assert not banned.search(parameter), f"{name}({parameter})"
 
     async def test_phase_values_are_the_shape_neutral_set(self):
-        from bisheng.database.models import app_instance
+        from doberman_agent.database.models import app_instance
 
         phases = {value for name, value in vars(app_instance).items() if name.startswith("PHASE_")}
         assert phases == {"pending", "building", "starting", "running", "unhealthy", "stopped", "failed"}

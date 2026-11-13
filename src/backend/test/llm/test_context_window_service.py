@@ -6,11 +6,11 @@ and the three usable-input rules from spec.md's glossary.
 
 import pytest
 
-from bisheng.llm.domain.services.context_window import (
+from doberman_agent.llm.domain.services.context_window import (
     ContextWindowService,
     ModelSnapshot,
 )
-from bisheng.llm.domain.services.context_window_probes import ProbeResult
+from doberman_agent.llm.domain.services.context_window_probes import ProbeResult
 
 
 class _NoCache:
@@ -42,7 +42,7 @@ def probe_calls(monkeypatch):
         calls.append(snapshot.model_id)
         return ProbeResult(window=133120, kind="total", source="deployed")
 
-    monkeypatch.setattr("bisheng.llm.domain.services.context_window.probe_context_window", fake_probe)
+    monkeypatch.setattr("doberman_agent.llm.domain.services.context_window.probe_context_window", fake_probe)
     return calls
 
 
@@ -105,7 +105,7 @@ async def test_input_only_limit_is_not_reduced_again(monkeypatch):
     async def fake_probe(snapshot):
         return ProbeResult(window=200000, kind="input", source="published")
 
-    monkeypatch.setattr("bisheng.llm.domain.services.context_window.probe_context_window", fake_probe)
+    monkeypatch.setattr("doberman_agent.llm.domain.services.context_window.probe_context_window", fake_probe)
     result = await ContextWindowService.resolve_snapshot(
         _snapshot(server_type="anthropic", client_params={"max_tokens": 8192}), cache=_NoCache()
     )
@@ -130,7 +130,7 @@ async def test_no_probe_for_the_server_type_means_unknown(monkeypatch):
     async def fake_probe(snapshot):
         return None
 
-    monkeypatch.setattr("bisheng.llm.domain.services.context_window.probe_context_window", fake_probe)
+    monkeypatch.setattr("doberman_agent.llm.domain.services.context_window.probe_context_window", fake_probe)
     result = await ContextWindowService.resolve_snapshot(_snapshot(server_type="zhipu"), cache=_NoCache())
 
     assert (result.window, result.usable_input, result.source) == (None, None, "unknown")

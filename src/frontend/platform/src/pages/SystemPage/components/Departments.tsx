@@ -1,5 +1,5 @@
 import { departmentDisplayName } from "@/components/bs-comp/department/departmentDisplayName";
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { LazyDepartmentTree, useLazyDepartmentTree } from "@/components/bs-comp/department";
 
 import { locationContext } from "@/contexts/locationContext";
@@ -12,8 +12,8 @@ import { DepartmentTrafficControl } from "@/pages/DepartmentPage/components/Depa
 import { MemberTable } from "@/pages/DepartmentPage/components/MemberTable";
 import { MountTenantDialog } from "@/pages/DepartmentPage/components/MountTenantDialog";
 import { DepartmentTreeNode } from "@/types/api/department";
-import { Tabs, Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tabs, Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

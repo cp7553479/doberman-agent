@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light" />
 <title data-i18n="title">托管应用部署教程</title>
 <!-- Runtime app config (APP_CONFIG.disableJa) shared with the platform app. -->
-<script src="/assets/bisheng/config.js"></script>
+<script src="/assets/doberman-agent/config.js"></script>
 <style>
   /* Colors follow BRAND.blue / gray in packages/ui/design-token.cjs. */
   :root{
@@ -264,8 +264,8 @@
 <header class="topbar">
   <div class="topbar-in">
     <div class="brand">
-      <img class="brand-logo js-brand-logo" src="/assets/bisheng/login-logo-small.png" alt="BISHENG" height="24" />
-      <span class="brand-name js-brand-name" hidden>BISHENG</span>
+      <img class="brand-logo js-brand-logo" src="/assets/doberman-agent/login-logo-small.png" alt="doberman-agent" height="24" />
+      <span class="brand-name js-brand-name" hidden>doberman-agent</span>
       <span class="brand-sep" aria-hidden="true"></span>
       <span data-i18n="product">应用工场</span>
     </div>
@@ -320,7 +320,7 @@
             <span class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAABMlBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADEAmovAAAAZnRSTlMAxn70+rAC/YAk5+X+vF4J+a/82ffkDDjxN9x6vwrCu6Ft6BLMNgQq84kzmWmzK2pSUy0sjtXWB2t/bEX440e6dmiudRNl6gsUYOvbP2JAZNob7Zqg7JI6kTmYHN/exYxxtHCNxP/pK7erAAABF0lEQVQokZ2QV1fCUBCELyQQSA+99yqiohQ79t577/P//4LxZjkn8uRxH2Y2892H2TD239ldb0fN5RXfdvZ3vn8Amh3dFQczcE0mOMr3lEQ6HsueAsdGLJ5ORLcIbEpJ7v0et6S6RqCQctzjcTy1QSBPgSzTA41A7ozbFFDny2GOOklq1bbBO9Ae2EtVlXivjgJZsLqffXy8offatQQZygxjqxLw2HoyhS/7o/MimM8P54C0xML2SeP/x47CP8LBrG+OhDnZCHjhJSEQIhBAgISDkL07YBqTJBwsMLYYQdFgzD/hJzGKiMzzi/O4vruvOYVqtzcXGNap3olPREO7ajYLWgOideRqXtYvKyVRLFVaenn8qr/ON1btOi6BSz8DAAAAAElFTkSuQmCC" alt="" width="18" height="18" />Copilot</span>
             <span class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAA7VBMVEVHcEwAtNcAtNcAtNgAtNgAtNcAs9gAf/8AttoAtNgAtNcAtNcAtNcAstgA//8As9gAv98As9gAtNgAtNcAtNgAs9gAt9YAqv8AtNcAtdcAs9gAttoAtNcAtNcAs9gAtdgAs9gAtNcAsswAudwAtNgAtNcAtNgAs9cAs9gAstgAs9cAs9cAs9gAs9gAs9cAtNgAtNcAs9kAtNcAs9gAs9cAtNgAstgAs9gAtNgAtNQAtNcAttoAs9cAtdYAs9gAtNcAtNcAtNkAtNgAs9kAs9cAs9cAtdcAsdgAs9cAs9gAtNgAttoAtNcAs9kAtNhiuwwKAAAAT3RSTlMAtd6doKjSAgfTe4nKcgGLCMtxjZ6EGQPdWuYOOqGDSaYzChaZp7Lq+lD+nJLf43f8G67tlKQUn5MY/TG9Jop00DCQL/j3LS7BmO4c9lj/tGTGlQAAANFJREFUKJHFkGdTAlEMRUNxd+mwIFUE6UU6KiqKFFGK9///HLLZt8A3PjlkJvPOnTOTvAnRNWvjQLnWCaQUG+0u4U8FD4B7xSGAsN3ZIciif2fziyXwq0uIsYA7J+xlsQfMk4DnKOLA91pGheaPbJoiJh8U1YAvg8Mn9xCov/IbsKb/rIAIUZibnrOAK0wUl4Ez4M2/XNxYXGgBlXdTE6FPZa0IGgv77F8PRicR9Z0JylihavNDg1lz7lTk0FPsZ35yRCmfThiK9Vu3K3nh8v9dB9LDJB4b1ULFAAAAAElFTkSuQmCC" alt="" width="18" height="18" />Windsurf</span>
           </div>
-          <p data-i18n="prep.agentP1">登录 bisheng 命令行时，它会把平台的技能包放进 Claude Code 和 Codex 的技能目录。技能包是一组写给 AI 看的开发和部署规则。</p>
+          <p data-i18n="prep.agentP1">登录 doberman_agent 命令行时，它会把平台的技能包放进 Claude Code 和 Codex 的技能目录。技能包是一组写给 AI 看的开发和部署规则。</p>
           <p data-i18n="prep.agentP2">使用 Cursor、Trae 等其他工具时，第一次部署会在项目里写入 <code>AGENTS.md</code>，告诉 AI 技能包在哪里。</p>
           <label class="check"><input type="checkbox" data-need-check="agent" /><span data-i18n="prep.agentCheck">我已装好其中一个</span></label>
         </div>
@@ -345,16 +345,16 @@
           <div class="turn-h"><span class="num">1</span><h3 data-i18n="step.s1">安装并登录</h3></div>
           <div class="msg you">
             <div class="msg-who" data-i18n="who.you">你发给 AI</div>
-<pre class="msg-body" id="say-1" data-i18n="say1.body">帮我安装并登录 bisheng 命令行。安装与登录指引见：
+<pre class="msg-body" id="say-1" data-i18n="say1.body">帮我安装并登录 doberman_agent 命令行。安装与登录指引见：
 <span class="addr js-guide-url">http://你的平台地址/api/v1/dev-toolkit/install-guide.md</span>
 登录地址用 <span class="addr js-platform-addr">http://你的平台地址</span>，我的密钥是 <span class="key">bs-sak-把这里换成你的密钥</span>
-装好后确认 bisheng --help 能运行，并告诉我接入了哪些 AI 编程工具。</pre>
+装好后确认 doberman_agent --help 能运行，并告诉我接入了哪些 AI 编程工具。</pre>
             <div class="msg-foot"><button class="copy" type="button" data-copy="say-1"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="copy">复制</span></button></div>
           </div>
           <p class="aside" data-i18n="say1.aside">平台地址已按本页地址填好。你只需把带下划线的部分换成自己的密钥。</p>
           <div class="msg reply">
             <div class="msg-who" data-i18n="who.ai">AI 会做</div>
-            <p class="msg-body" data-i18n="say1.reply">AI 从平台下载并安装 bisheng 命令行，再用你的密钥登录。登录时，命令行会把技能包放进你的 AI 编程工具。最后 AI 会告诉你接入了哪些工具。</p>
+            <p class="msg-body" data-i18n="say1.reply">AI 从平台下载并安装 doberman_agent 命令行，再用你的密钥登录。登录时，命令行会把技能包放进你的 AI 编程工具。最后 AI 会告诉你接入了哪些工具。</p>
           </div>
           <div class="tip warn">
             <svg aria-hidden="true"><use href="#i-warn"/></svg>
@@ -366,15 +366,15 @@
               <div class="term-bar"><span data-i18n="manual.term">终端</span><button class="copy" type="button" data-copy="manual-cmds" data-strip="shell"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="manual.copy">复制命令</span></button></div>
 <pre id="manual-cmds" data-i18n="manual.cmds"><span class="c"># 下载安装包。-OJ 让 curl 使用平台返回的文件名，pip 只认这个文件名</span>
 <span class="p">$ </span>curl -OJ <span class="js-platform-addr">http://你的平台地址</span>/api/v1/dev-toolkit/cli/download
-<span class="c"># 用 pipx 安装到用户目录。新开的终端也能运行 bisheng</span>
+<span class="c"># 用 pipx 安装到用户目录。新开的终端也能运行 doberman_agent</span>
 <span class="p">$ </span>python3 -m pip install --user pipx
 <span class="p">$ </span>python3 -m pipx ensurepath
-<span class="p">$ </span>python3 -m pipx install ./bisheng_cli-*.whl --force
+<span class="p">$ </span>python3 -m pipx install ./doberman_agent_cli-*.whl --force
 <span class="c"># 用管理员给的密钥登录。凭据保存在本机，以后不用再输入</span>
-<span class="p">$ </span>bisheng login <span class="js-platform-addr">http://你的平台地址</span> <span class="k">--api-key bs-sak-…</span></pre>
+<span class="p">$ </span>doberman_agent login <span class="js-platform-addr">http://你的平台地址</span> <span class="k">--api-key bs-sak-…</span></pre>
             </div>
             <p class="aside left" data-i18n="manual.windows">以上是 macOS 和 Linux 的命令。Windows 用户在 PowerShell 里执行，把 <code>curl</code> 换成 <code>curl.exe</code>，把 <code>python3</code> 换成 <code>py</code>。</p>
-            <p class="aside left" data-i18n="manual.offline">安装包从你们的<span class="js-brand"> BISHENG </span>平台下载，不需要访问公网。安装后新开一个终端，运行 <code>bisheng --help</code>。能看到 login 和 deploy 两个命令，就说明安装成功。</p>
+            <p class="aside left" data-i18n="manual.offline">安装包从你们的<span class="js-brand"> doberman-agent </span>平台下载，不需要访问公网。安装后新开一个终端，运行 <code>doberman_agent --help</code>。能看到 login 和 deploy 两个命令，就说明安装成功。</p>
           </details>
         </article>
 
@@ -392,7 +392,7 @@
           </div>
           <div class="msg reply">
             <div class="msg-who" data-i18n="who.ai">AI 会做</div>
-            <p class="msg-body" data-i18n="say2.reply">AI 按技能包里的规则编写应用代码和配置文件 <code>bisheng-app.yaml</code>，然后在你的电脑上运行应用。你可以先在本地查看效果。</p>
+            <p class="msg-body" data-i18n="say2.reply">AI 按技能包里的规则编写应用代码和配置文件 <code>doberman_agent-app.yaml</code>，然后在你的电脑上运行应用。你可以先在本地查看效果。</p>
           </div>
           <div class="tip">
             <svg aria-hidden="true"><use href="#i-info"/></svg>
@@ -405,7 +405,7 @@
           <div class="turn-h"><span class="num">3</span><h3 data-i18n="step.s3">部署</h3></div>
           <div class="msg you">
             <div class="msg-who" data-i18n="who.you">你发给 AI</div>
-<pre class="msg-body" id="say-3" data-i18n="say3.body">帮我把这个应用部署到<span class="js-brand"> BISHENG </span>平台。</pre>
+<pre class="msg-body" id="say-3" data-i18n="say3.body">帮我把这个应用部署到<span class="js-brand"> doberman-agent </span>平台。</pre>
             <div class="msg-foot"><button class="copy" type="button" data-copy="say-3"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="copy">复制</span></button></div>
           </div>
           <div class="msg reply">
@@ -500,13 +500,13 @@
           <summary><span data-i18n="help.q3">登录时提示「未接入任何 AI 编程工具」</span><svg aria-hidden="true"><use href="#i-chev"/></svg></summary>
           <div class="ans">
             <p data-i18n="help.a3p1">本机没有检测到 Claude Code 或 Codex。</p>
-            <p data-i18n="help.a3p2">如果你用的是这两个工具，让 AI 运行一次 <code>bisheng skills sync</code>。如果你用的是 Cursor、Trae 等其他工具，可以忽略这条提示。第一次部署时，命令行会在项目里写入 <code>AGENTS.md</code>，AI 读取它就能找到技能包。</p>
+            <p data-i18n="help.a3p2">如果你用的是这两个工具，让 AI 运行一次 <code>doberman_agent skills sync</code>。如果你用的是 Cursor、Trae 等其他工具，可以忽略这条提示。第一次部署时，命令行会在项目里写入 <code>AGENTS.md</code>，AI 读取它就能找到技能包。</p>
           </div>
         </details>
         <details>
           <summary><span data-i18n="help.q4">平台升级后，更新技能包</span><svg aria-hidden="true"><use href="#i-chev"/></svg></summary>
           <div class="ans">
-            <p data-i18n="help.a4">让 AI 运行一次 <code>bisheng skills sync</code>。这个命令会下载新版技能包。输出的最后一行列出接入了哪些 AI 编程工具。</p>
+            <p data-i18n="help.a4">让 AI 运行一次 <code>doberman_agent skills sync</code>。这个命令会下载新版技能包。输出的最后一行列出接入了哪些 AI 编程工具。</p>
           </div>
         </details>
       </div>
@@ -515,7 +515,7 @@
   </main>
 </div>
 
-<footer class="foot"><div class="foot-in" data-i18n="footer"><span class="js-brand">BISHENG </span>应用工场：托管应用部署教程</div></footer>
+<footer class="foot"><div class="foot-in" data-i18n="footer"><span class="js-brand">doberman-agent </span>应用工场：托管应用部署教程</div></footer>
 
 <script>
   // ---------- i18n ----------
@@ -594,7 +594,7 @@
       'hero.lede': 'The AI writes the code and deploys it. The platform builds and runs it.<br />You send the AI three messages, then take two steps in the UI.',
       'prep.title': 'Before you start, get two things ready',
       'prep.agentTitle': 'An AI coding tool',
-      'prep.agentP1': 'When you log in with the bisheng CLI, it puts the platform\'s skill bundle into the skill folders of Claude Code and Codex. A skill bundle is a set of development and deployment rules written for the AI to read.',
+      'prep.agentP1': 'When you log in with the doberman_agent CLI, it puts the platform\'s skill bundle into the skill folders of Claude Code and Codex. A skill bundle is a set of development and deployment rules written for the AI to read.',
       'prep.agentP2': 'If you use another tool such as Cursor or Trae, your first deployment writes an <code>AGENTS.md</code> file into the project. This file tells the AI where the skill bundle is.',
       'prep.agentCheck': 'I have one of these installed',
       'prep.keyTitle': 'A platform key',
@@ -608,22 +608,22 @@
       'who.ai': 'What the AI does',
       'who.platform': 'What the platform does',
       'copy': 'Copy',
-      'say1.body': 'Install the bisheng CLI and log me in. The install and login guide is at:\n<span class="addr js-guide-url">http://your-platform-address/api/v1/dev-toolkit/install-guide.md</span>\nUse <span class="addr js-platform-addr">http://your-platform-address</span> as the login address. My key is <span class="key">bs-sak-replace-with-your-key</span>\nAfter installing, check that bisheng --help runs, and tell me which AI coding tools are connected.',
+      'say1.body': 'Install the doberman_agent CLI and log me in. The install and login guide is at:\n<span class="addr js-guide-url">http://your-platform-address/api/v1/dev-toolkit/install-guide.md</span>\nUse <span class="addr js-platform-addr">http://your-platform-address</span> as the login address. My key is <span class="key">bs-sak-replace-with-your-key</span>\nAfter installing, check that doberman_agent --help runs, and tell me which AI coding tools are connected.',
       'say1.aside': 'The platform address is already filled in from the address of this page. Replace only the underlined part with your own key.',
-      'say1.reply': 'The AI downloads the bisheng CLI from the platform, installs it and logs in with your key. During login, the CLI puts the skill bundle into your AI coding tools. At the end, the AI tells you which tools are connected.',
+      'say1.reply': 'The AI downloads the doberman_agent CLI from the platform, installs it and logs in with your key. During login, the CLI puts the skill bundle into your AI coding tools. At the end, the AI tells you which tools are connected.',
       'say1.warn': '<b>After installation, restart your AI coding tool and start a new session.</b> A session that is already open cannot read the newly installed skill bundle.',
       'manual.summary': 'Install it yourself in a terminal, without the AI',
       'manual.term': 'Terminal',
       'manual.copy': 'Copy commands',
-      'manual.cmds': '<span class="c"># Download the package. -OJ makes curl keep the file name the platform returns; pip accepts only that name</span>\n<span class="p">$ </span>curl -OJ <span class="js-platform-addr">http://your-platform-address</span>/api/v1/dev-toolkit/cli/download\n<span class="c"># Install with pipx into your user folder, so new terminals can also run bisheng</span>\n<span class="p">$ </span>python3 -m pip install --user pipx\n<span class="p">$ </span>python3 -m pipx ensurepath\n<span class="p">$ </span>python3 -m pipx install ./bisheng_cli-*.whl --force\n<span class="c"># Log in with the key from your admin. The credential is saved on this computer, so you enter it only once</span>\n<span class="p">$ </span>bisheng login <span class="js-platform-addr">http://your-platform-address</span> <span class="k">--api-key bs-sak-…</span>',
+      'manual.cmds': '<span class="c"># Download the package. -OJ makes curl keep the file name the platform returns; pip accepts only that name</span>\n<span class="p">$ </span>curl -OJ <span class="js-platform-addr">http://your-platform-address</span>/api/v1/dev-toolkit/cli/download\n<span class="c"># Install with pipx into your user folder, so new terminals can also run doberman_agent</span>\n<span class="p">$ </span>python3 -m pip install --user pipx\n<span class="p">$ </span>python3 -m pipx ensurepath\n<span class="p">$ </span>python3 -m pipx install ./doberman_agent_cli-*.whl --force\n<span class="c"># Log in with the key from your admin. The credential is saved on this computer, so you enter it only once</span>\n<span class="p">$ </span>doberman_agent login <span class="js-platform-addr">http://your-platform-address</span> <span class="k">--api-key bs-sak-…</span>',
       'manual.windows': 'These commands are for macOS and Linux. On Windows, run them in PowerShell, replace <code>curl</code> with <code>curl.exe</code>, and replace <code>python3</code> with <code>py</code>.',
-      'manual.offline': 'The package downloads from your own <span class="js-brand">BISHENG</span> platform, so you do not need internet access. After installation, open a new terminal and run <code>bisheng --help</code>. If you see the login and deploy commands, the installation succeeded.',
+      'manual.offline': 'The package downloads from your own <span class="js-brand">doberman-agent</span> platform, so you do not need internet access. After installation, open a new terminal and run <code>doberman_agent --help</code>. If you see the login and deploy commands, the installation succeeded.',
       'say2.examplesAria': 'Choose an example',
       'say2.example0Label': 'Expense tool',
       'say2.example1Label': 'Satisfaction survey',
-      'say2.reply': 'The AI follows the rules in the skill bundle to write the app code and the config file <code>bisheng-app.yaml</code>. Then the AI runs the app on your computer, so you can check it locally first.',
+      'say2.reply': 'The AI follows the rules in the skill bundle to write the app code and the config file <code>doberman_agent-app.yaml</code>. Then the AI runs the app on your computer, so you can check it locally first.',
       'say2.tip': '<b>To change something, keep telling the AI,</b> for example "make the button blue" or "add a notes column". Changes on your computer do not use platform resources.',
-      'say3.body': 'Deploy this app to the <span class="js-brand">BISHENG</span> platform.',
+      'say3.body': 'Deploy this app to the <span class="js-brand">doberman-agent</span> platform.',
       'say3.pipelineAria': 'Deployment steps',
       'say3.pipe1': 'Package and upload',
       'say3.pipe2': 'Scan for secrets',
@@ -673,10 +673,10 @@
       'help.a2p2': 'Ask the AI to make the page reconnect automatically, then deploy again.',
       'help.q3': 'Login warns that no AI coding tool is connected',
       'help.a3p1': 'The CLI did not find Claude Code or Codex on this computer.',
-      'help.a3p2': 'If you use one of these two tools, ask the AI to run <code>bisheng skills sync</code> once. If you use another tool such as Cursor or Trae, you can ignore this warning. On your first deployment, the CLI writes an <code>AGENTS.md</code> file into the project, and the AI reads it to find the skill bundle.',
+      'help.a3p2': 'If you use one of these two tools, ask the AI to run <code>doberman_agent skills sync</code> once. If you use another tool such as Cursor or Trae, you can ignore this warning. On your first deployment, the CLI writes an <code>AGENTS.md</code> file into the project, and the AI reads it to find the skill bundle.',
       'help.q4': 'Update the skill bundle after a platform upgrade',
-      'help.a4': 'Ask the AI to run <code>bisheng skills sync</code> once. This command downloads the new skill bundle. The last line of its output lists the connected AI coding tools.',
-      'footer': '<span class="js-brand">BISHENG</span> App factory: hosted app deployment tutorial'
+      'help.a4': 'Ask the AI to run <code>doberman_agent skills sync</code> once. This command downloads the new skill bundle. The last line of its output lists the connected AI coding tools.',
+      'footer': '<span class="js-brand">doberman-agent</span> App factory: hosted app deployment tutorial'
     },
     'ja': {
       'title': 'ホスティングアプリのデプロイ手順',
@@ -696,7 +696,7 @@
       'hero.lede': 'コードの作成とデプロイは AI が行い、ビルドと実行はプラットフォームが行います。<br />あなたは AI に 3 つのメッセージを送り、画面で 2 つの操作をするだけです。',
       'prep.title': '始める前に、2 つ用意してください',
       'prep.agentTitle': 'AI コーディングツール',
-      'prep.agentP1': 'bisheng コマンドラインでログインすると、コマンドラインがプラットフォームのスキルバンドルを Claude Code と Codex のスキルフォルダーに配置します。スキルバンドルは、AI が読むための開発・デプロイのルール集です。',
+      'prep.agentP1': 'doberman_agent コマンドラインでログインすると、コマンドラインがプラットフォームのスキルバンドルを Claude Code と Codex のスキルフォルダーに配置します。スキルバンドルは、AI が読むための開発・デプロイのルール集です。',
       'prep.agentP2': 'Cursor や Trae などほかのツールを使う場合は、初回のデプロイでプロジェクトに <code>AGENTS.md</code> が書き込まれます。このファイルが AI にスキルバンドルの場所を伝えます。',
       'prep.agentCheck': 'いずれかをインストール済み',
       'prep.keyTitle': 'プラットフォームのキー',
@@ -710,22 +710,22 @@
       'who.ai': 'AI が行うこと',
       'who.platform': 'プラットフォームが行うこと',
       'copy': 'コピー',
-      'say1.body': 'bisheng コマンドラインをインストールして、ログインしてください。インストールとログインの手順はこちらです：\n<span class="addr js-guide-url">http://プラットフォームのアドレス/api/v1/dev-toolkit/install-guide.md</span>\nログイン先は <span class="addr js-platform-addr">http://プラットフォームのアドレス</span>、キーは <span class="key">bs-sak-ここを自分のキーに置き換える</span> です。\nインストール後、bisheng --help が実行できることを確認し、接続された AI コーディングツールを教えてください。',
+      'say1.body': 'doberman_agent コマンドラインをインストールして、ログインしてください。インストールとログインの手順はこちらです：\n<span class="addr js-guide-url">http://プラットフォームのアドレス/api/v1/dev-toolkit/install-guide.md</span>\nログイン先は <span class="addr js-platform-addr">http://プラットフォームのアドレス</span>、キーは <span class="key">bs-sak-ここを自分のキーに置き換える</span> です。\nインストール後、doberman_agent --help が実行できることを確認し、接続された AI コーディングツールを教えてください。',
       'say1.aside': 'プラットフォームのアドレスは、このページのアドレスで入力済みです。下線部分だけを自分のキーに置き換えてください。',
-      'say1.reply': 'AI はプラットフォームから bisheng コマンドラインをダウンロードしてインストールし、あなたのキーでログインします。ログイン時に、コマンドラインがスキルバンドルを AI コーディングツールに配置します。最後に、接続されたツールを AI が報告します。',
+      'say1.reply': 'AI はプラットフォームから doberman_agent コマンドラインをダウンロードしてインストールし、あなたのキーでログインします。ログイン時に、コマンドラインがスキルバンドルを AI コーディングツールに配置します。最後に、接続されたツールを AI が報告します。',
       'say1.warn': '<b>インストール後、AI コーディングツールを再起動し、新しいセッションを開いてください。</b>すでに開いているセッションは、新しくインストールしたスキルバンドルを読み込めません。',
       'manual.summary': 'AI を使わず、ターミナルで自分でインストールする',
       'manual.term': 'ターミナル',
       'manual.copy': 'コマンドをコピー',
-      'manual.cmds': '<span class="c"># パッケージをダウンロードします。-OJ で curl はプラットフォームが返すファイル名を使います。pip はこのファイル名しか受け付けません</span>\n<span class="p">$ </span>curl -OJ <span class="js-platform-addr">http://プラットフォームのアドレス</span>/api/v1/dev-toolkit/cli/download\n<span class="c"># pipx でユーザーフォルダーにインストールします。新しく開いたターミナルでも bisheng を実行できます</span>\n<span class="p">$ </span>python3 -m pip install --user pipx\n<span class="p">$ </span>python3 -m pipx ensurepath\n<span class="p">$ </span>python3 -m pipx install ./bisheng_cli-*.whl --force\n<span class="c"># 管理者から受け取ったキーでログインします。認証情報はこのパソコンに保存されるため、次回から入力は不要です</span>\n<span class="p">$ </span>bisheng login <span class="js-platform-addr">http://プラットフォームのアドレス</span> <span class="k">--api-key bs-sak-…</span>',
+      'manual.cmds': '<span class="c"># パッケージをダウンロードします。-OJ で curl はプラットフォームが返すファイル名を使います。pip はこのファイル名しか受け付けません</span>\n<span class="p">$ </span>curl -OJ <span class="js-platform-addr">http://プラットフォームのアドレス</span>/api/v1/dev-toolkit/cli/download\n<span class="c"># pipx でユーザーフォルダーにインストールします。新しく開いたターミナルでも doberman_agent を実行できます</span>\n<span class="p">$ </span>python3 -m pip install --user pipx\n<span class="p">$ </span>python3 -m pipx ensurepath\n<span class="p">$ </span>python3 -m pipx install ./doberman_agent_cli-*.whl --force\n<span class="c"># 管理者から受け取ったキーでログインします。認証情報はこのパソコンに保存されるため、次回から入力は不要です</span>\n<span class="p">$ </span>doberman_agent login <span class="js-platform-addr">http://プラットフォームのアドレス</span> <span class="k">--api-key bs-sak-…</span>',
       'manual.windows': '上記は macOS と Linux のコマンドです。Windows では PowerShell で実行し、<code>curl</code> を <code>curl.exe</code> に、<code>python3</code> を <code>py</code> に置き換えてください。',
-      'manual.offline': 'パッケージは自社の<span class="js-brand"> BISHENG </span>プラットフォームからダウンロードするため、インターネット接続は不要です。インストール後、新しいターミナルで <code>bisheng --help</code> を実行します。login と deploy の 2 つのコマンドが表示されれば、インストールは成功です。',
+      'manual.offline': 'パッケージは自社の<span class="js-brand"> doberman-agent </span>プラットフォームからダウンロードするため、インターネット接続は不要です。インストール後、新しいターミナルで <code>doberman_agent --help</code> を実行します。login と deploy の 2 つのコマンドが表示されれば、インストールは成功です。',
       'say2.examplesAria': '例を選ぶ',
       'say2.example0Label': '経費精算ツール',
       'say2.example1Label': '満足度アンケート',
-      'say2.reply': 'AI はスキルバンドルのルールに従って、アプリのコードと設定ファイル <code>bisheng-app.yaml</code> を書きます。その後、AI があなたのパソコンでアプリを実行するので、まずローカルで動作を確認できます。',
+      'say2.reply': 'AI はスキルバンドルのルールに従って、アプリのコードと設定ファイル <code>doberman_agent-app.yaml</code> を書きます。その後、AI があなたのパソコンでアプリを実行するので、まずローカルで動作を確認できます。',
       'say2.tip': '<b>修正したいときは、そのまま AI に伝えてください。</b>たとえば「ボタンを青にして」「備考の列を追加して」などです。ローカルでの修正はプラットフォームのリソースを使いません。',
-      'say3.body': 'このアプリを<span class="js-brand"> BISHENG </span>プラットフォームにデプロイしてください。',
+      'say3.body': 'このアプリを<span class="js-brand"> doberman-agent </span>プラットフォームにデプロイしてください。',
       'say3.pipelineAria': 'デプロイの流れ',
       'say3.pipe1': 'パッケージ化してアップロード',
       'say3.pipe2': '機密情報のスキャン',
@@ -775,10 +775,10 @@
       'help.a2p2': '切断時に自動で再接続する処理をページに追加するよう AI に頼み、再デプロイしてください。',
       'help.q3': 'ログイン時に、AI コーディングツールが接続されていないと表示される',
       'help.a3p1': 'コマンドラインが、このパソコンで Claude Code も Codex も見つけられませんでした。',
-      'help.a3p2': 'この 2 つのツールのどちらかを使っている場合は、AI に <code>bisheng skills sync</code> を 1 回実行させてください。Cursor や Trae などほかのツールを使っている場合は、この警告を無視して構いません。初回のデプロイで、コマンドラインがプロジェクトに <code>AGENTS.md</code> を書き込みます。AI はこのファイルを読んでスキルバンドルを見つけます。',
+      'help.a3p2': 'この 2 つのツールのどちらかを使っている場合は、AI に <code>doberman_agent skills sync</code> を 1 回実行させてください。Cursor や Trae などほかのツールを使っている場合は、この警告を無視して構いません。初回のデプロイで、コマンドラインがプロジェクトに <code>AGENTS.md</code> を書き込みます。AI はこのファイルを読んでスキルバンドルを見つけます。',
       'help.q4': 'プラットフォームのアップグレード後にスキルバンドルを更新する',
-      'help.a4': 'AI に <code>bisheng skills sync</code> を 1 回実行させてください。このコマンドが新しいスキルバンドルをダウンロードします。出力の最後の行に、接続された AI コーディングツールが表示されます。',
-      'footer': '<span class="js-brand">BISHENG </span>アプリ工場：ホスティングアプリのデプロイ手順'
+      'help.a4': 'AI に <code>doberman_agent skills sync</code> を 1 回実行させてください。このコマンドが新しいスキルバンドルをダウンロードします。出力の最後の行に、接続された AI コーディングツールが表示されます。',
+      'footer': '<span class="js-brand">doberman-agent </span>アプリ工場：ホスティングアプリのデプロイ手順'
     }
   };
 
@@ -894,7 +894,7 @@
 
   // Prerequisite checklist. Stored per viewer; the page works without storage.
   (function(){
-    var KEY = 'bisheng-hosted-app-tutorial-ready';
+    var KEY = 'doberman_agent-hosted-app-tutorial-ready';
     var state = {};
     try{ state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }catch(e){ state = {}; }
     document.querySelectorAll('[data-need-check]').forEach(function(box){

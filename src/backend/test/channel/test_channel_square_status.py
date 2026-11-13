@@ -9,11 +9,11 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-import bisheng.channel.domain.services.channel_service as mod
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import SubscriptionStatusEnum
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.models.space_channel_member import MembershipStatusEnum
+import doberman_agent.channel.domain.services.channel_service as mod
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import SubscriptionStatusEnum
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.models.space_channel_member import MembershipStatusEnum
 
 
 def _async(value):

@@ -12,7 +12,7 @@ happened in this bundle family:
   specific rule's wording) AND a good sample must be *accepted* (``结论: 通过``).
   Testing only the bad direction lets a checker degrade into "always shouts",
   which is worse than no checker — the model learns to ignore the report.
-* **``returncode == 0``, always**, including on a corrupt file. The BiSheng code
+* **``returncode == 0``, always**, including on a corrupt file. The doberman-agent code
   executor is either/or: on a non-zero exit it returns *stderr* and throws the
   whole stdout report away. A script that "correctly" exits 1 on findings makes
   its own report invisible.
@@ -47,7 +47,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.util import Inches, Pt
 
-from bisheng.linsight.domain.services.builtin_skill_seeder import BUILTIN_SKILLS_DIR
+from doberman_agent.linsight.domain.services.builtin_skill_seeder import BUILTIN_SKILLS_DIR
 
 PASS = "结论: 通过"
 FAIL = "结论: 不通过"
@@ -226,7 +226,7 @@ def build_cjk_xlsx(path: Path) -> Path:
 
 def _docx_helpers():
     """Import the bundle's docx_helpers by path, without polluting sys.path."""
-    source = BUILTIN_SKILLS_DIR / "bisheng-docx" / "scripts" / "docx_helpers.py"
+    source = BUILTIN_SKILLS_DIR / "doberman-agent-docx" / "scripts" / "docx_helpers.py"
     spec = importlib.util.spec_from_file_location("builtin_docx_helpers", source)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -235,7 +235,7 @@ def _docx_helpers():
 
 def _style_profiles():
     """Import the bundle's style_profiles by path, without polluting sys.path."""
-    source = BUILTIN_SKILLS_DIR / "bisheng-docx" / "scripts" / "style_profiles.py"
+    source = BUILTIN_SKILLS_DIR / "doberman-agent-docx" / "scripts" / "style_profiles.py"
     spec = importlib.util.spec_from_file_location("builtin_style_profiles", source)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -349,7 +349,7 @@ def no_soffice_path(tmp_path_factory) -> str:
 # pptx
 # --------------------------------------------------------------------------- #
 def test_pptx_bad_deck_is_rejected_with_the_reason(samples):
-    out = run_script("bisheng-pptx", "inspect_deck.py", samples["bad.pptx"], "--checks-only").stdout
+    out = run_script("doberman-agent-pptx", "inspect_deck.py", samples["bad.pptx"], "--checks-only").stdout
 
     assert FAIL in out
     assert_mentions(
@@ -366,20 +366,20 @@ def test_pptx_bad_deck_is_rejected_with_the_reason(samples):
 
 def test_pptx_good_deck_passes(samples):
     """The checker must be satisfiable — otherwise the model learns to ignore it."""
-    out = run_script("bisheng-pptx", "inspect_deck.py", samples["good.pptx"], "--checks-only").stdout
+    out = run_script("doberman-agent-pptx", "inspect_deck.py", samples["good.pptx"], "--checks-only").stdout
 
     assert PASS in out, out
     assert "合计: 0 ERROR" in out
 
 
 def test_pptx_content_dump_prints_slide_text(samples):
-    out = run_script("bisheng-pptx", "inspect_deck.py", samples["good.pptx"]).stdout
+    out = run_script("doberman-agent-pptx", "inspect_deck.py", samples["good.pptx"]).stdout
 
     assert_mentions(out, "=== 内容 ===", "二零二五年度电力工程经营复盘", "=== 体检 ===")
 
 
 def test_pptx_probe_template_reads_a_deck(samples):
-    out = run_script("bisheng-pptx", "probe_template.py", samples["good.pptx"]).stdout
+    out = run_script("doberman-agent-pptx", "probe_template.py", samples["good.pptx"]).stdout
 
     assert_mentions(out, "=== 画布 ===", "13.33", "16:9", "版式清单")
 
@@ -388,7 +388,7 @@ def test_pptx_probe_template_reads_a_deck(samples):
 # xlsx
 # --------------------------------------------------------------------------- #
 def test_xlsx_bad_workbook_is_rejected_with_the_reason(samples):
-    out = run_script("bisheng-xlsx", "inspect_workbook.py", samples["bad.xlsx"], "--check-only").stdout
+    out = run_script("doberman-agent-xlsx", "inspect_workbook.py", samples["bad.xlsx"], "--check-only").stdout
 
     assert FAIL in out
     assert_mentions(
@@ -411,7 +411,7 @@ def test_xlsx_bad_workbook_is_rejected_with_the_reason(samples):
 
 
 def test_xlsx_good_workbook_passes(samples):
-    out = run_script("bisheng-xlsx", "inspect_workbook.py", samples["good.xlsx"], "--check-only").stdout
+    out = run_script("doberman-agent-xlsx", "inspect_workbook.py", samples["good.xlsx"], "--check-only").stdout
 
     assert PASS in out, out
     assert "合计: 0 ERROR / 0 WARN / 0 INFO" in out
@@ -420,7 +420,7 @@ def test_xlsx_good_workbook_passes(samples):
 def test_xlsx_cjk_sheet_names_do_not_false_positive(samples):
     """Regression: pure-CJK sheet names are legal unquoted, and they exist in the
     workbook — neither the quoting rule nor the unknown-sheet rule may fire."""
-    out = run_script("bisheng-xlsx", "inspect_workbook.py", samples["cjk.xlsx"], "--check-only").stdout
+    out = run_script("doberman-agent-xlsx", "inspect_workbook.py", samples["cjk.xlsx"], "--check-only").stdout
 
     assert "没加单引号" not in out, out
     assert "但工作簿里没有这个表名" not in out, out
@@ -430,13 +430,13 @@ def test_xlsx_cjk_sheet_names_do_not_false_positive(samples):
 
 
 def test_xlsx_content_dump_prints_cells(samples):
-    out = run_script("bisheng-xlsx", "inspect_workbook.py", samples["good.xlsx"], "--content-only").stdout
+    out = run_script("doberman-agent-xlsx", "inspect_workbook.py", samples["good.xlsx"], "--content-only").stdout
 
     assert_mentions(out, "营收明细", "A1=产品线")
 
 
 def test_xlsx_recalc_degrades_without_libreoffice(samples, no_soffice_path):
-    out = run_script("bisheng-xlsx", "recalc_check.py", samples["cjk.xlsx"], path_env=no_soffice_path).stdout
+    out = run_script("doberman-agent-xlsx", "recalc_check.py", samples["cjk.xlsx"], path_env=no_soffice_path).stdout
 
     assert_mentions(out, "[未重算]", "没有 soffice", "降级方案")
     # Formulas without cached values are a real delivery blocker, so this must
@@ -452,7 +452,7 @@ def test_xlsx_recalc_degrades_without_libreoffice(samples, no_soffice_path):
 # docx
 # --------------------------------------------------------------------------- #
 def test_docx_bad_document_is_rejected_with_the_reason(samples):
-    out = run_script("bisheng-docx", "inspect_docx.py", samples["bad.docx"], "--check-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", samples["bad.docx"], "--check-only").stdout
 
     assert FAIL in out
     assert_mentions(
@@ -470,7 +470,7 @@ def test_docx_missing_east_asia_font_is_an_error(samples):
     """``doc.add_heading("中文标题", 1)`` writes no run font and the stock Heading
     style carries no CJK face, so every Chinese glyph falls back to the theme
     font. Invisible in extracted text; this is the bundle's headline check."""
-    out = run_script("bisheng-docx", "inspect_docx.py", samples["eastasia.docx"], "--check-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", samples["eastasia.docx"], "--check-only").stdout
 
     assert FAIL in out, out
     # The precise ERROR wording, not just the substring "w:eastAsia" — the Normal
@@ -481,14 +481,14 @@ def test_docx_missing_east_asia_font_is_an_error(samples):
 def test_docx_good_document_passes(samples):
     """Built with the bundle's own docx_helpers: the helpers' output must satisfy
     the bundle's own checker, or one of the two is wrong."""
-    out = run_script("bisheng-docx", "inspect_docx.py", samples["good.docx"], "--check-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", samples["good.docx"], "--check-only").stdout
 
     assert PASS in out, out
     assert "合计: 0 ERROR" in out
 
 
 def test_docx_content_dump_prints_paragraphs_and_tables(samples):
-    out = run_script("bisheng-docx", "inspect_docx.py", samples["good.docx"], "--content-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", samples["good.docx"], "--content-only").stdout
 
     assert_mentions(out, "=== 内容 ===", "电力工程年度经营报告", "## 表 1")
 
@@ -541,7 +541,7 @@ def test_docx_content_dump_shows_direct_formatting(tmp_path):
     """Both 106 sessions rebuilt the document in GB/T 9704 because the dump showed
     the template's text and nothing of its layout."""
     path = build_customer_template(tmp_path / "template.docx")
-    out = run_script("bisheng-docx", "inspect_docx.py", path, "--content-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", path, "--content-only").stdout
 
     assert_mentions(
         out,
@@ -557,7 +557,7 @@ def test_docx_upload_is_never_graded_against_the_profile(tmp_path):
     uploads = tmp_path / "uploads"
     uploads.mkdir()
     build_customer_template(uploads / "template.docx")
-    out = run_script("bisheng-docx", "inspect_docx.py", "uploads/template.docx", cwd=tmp_path).stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", "uploads/template.docx", cwd=tmp_path).stdout
 
     assert "跳过：uploads/ 下是用户原件" in out
     assert "结论:" not in out
@@ -583,7 +583,7 @@ def test_docx_reference_mode_passes_a_cloned_build(tmp_path):
 
     saved = Document(out_path)
     assert [p.text for p in saved.paragraphs][1] == "                    主办部门：科技部"  # leading spaces kept
-    out = run_script("bisheng-docx", "inspect_docx.py", out_path, "--check-only", "--reference", template).stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", out_path, "--check-only", "--reference", template).stdout
     assert PASS in out, out
     assert "合计: 0 ERROR / 0 WARN" in out, out  # incl. no table-overflow ERROR: copy_table fitted it
 
@@ -601,7 +601,7 @@ def test_docx_reference_mode_flags_a_profile_rebuild(tmp_path):
     out_path = tmp_path / "rebuilt.docx"
     doc.save(out_path)
 
-    out = run_script("bisheng-docx", "inspect_docx.py", out_path, "--check-only", "--reference", template).stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", out_path, "--check-only", "--reference", template).stdout
     assert_mentions(out, "页边距和参照文档不一致", "在参照文档里找不到", "clone_paragraph")
     assert "GB/T 9704" not in out  # the profile is not the spec in this mode
 
@@ -736,7 +736,7 @@ def test_gongwen_document_built_with_generic_fonts_is_warned(tmp_path):
     path = tmp_path / "gongwen_in_yahei.docx"
     doc.save(path)
 
-    out = run_script("bisheng-docx", "inspect_docx.py", path, "--check-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", path, "--check-only").stdout
 
     assert_mentions(out, "按「公文」版式档校验", "看着是公文，却用到了通用字体", "微软雅黑")
     # WARN, never ERROR: a unit template legitimately overrides the standard, and
@@ -755,7 +755,7 @@ def test_a_corporate_document_is_not_judged_as_gongwen(tmp_path):
     path = tmp_path / "weekly.docx"
     doc.save(path)
 
-    out = run_script("bisheng-docx", "inspect_docx.py", path, "--check-only").stdout
+    out = run_script("doberman-agent-docx", "inspect_docx.py", path, "--check-only").stdout
 
     assert "按「非公文」版式档校验" in out, out
     assert "通用字体" not in out, out
@@ -764,7 +764,7 @@ def test_a_corporate_document_is_not_judged_as_gongwen(tmp_path):
 
 def test_docx_render_degrades_without_libreoffice(samples, no_soffice_path):
     out = run_script(
-        "bisheng-docx",
+        "doberman-agent-docx",
         "render_docx.py",
         samples["good.docx"],
         "--outdir",
@@ -777,7 +777,7 @@ def test_docx_render_degrades_without_libreoffice(samples, no_soffice_path):
 
 def test_pptx_render_degrades_without_libreoffice(samples, no_soffice_path):
     out = run_script(
-        "bisheng-pptx",
+        "doberman-agent-pptx",
         "render_deck.py",
         samples["good.pptx"],
         "--outdir",
@@ -794,10 +794,10 @@ def test_pptx_render_degrades_without_libreoffice(samples, no_soffice_path):
 @pytest.mark.parametrize(
     ("bundle", "script", "sample"),
     [
-        ("bisheng-pptx", "inspect_deck.py", "corrupt.pptx"),
-        ("bisheng-pptx", "probe_template.py", "corrupt.pptx"),
-        ("bisheng-xlsx", "inspect_workbook.py", "corrupt.xlsx"),
-        ("bisheng-docx", "inspect_docx.py", "corrupt.docx"),
+        ("doberman-agent-pptx", "inspect_deck.py", "corrupt.pptx"),
+        ("doberman-agent-pptx", "probe_template.py", "corrupt.pptx"),
+        ("doberman-agent-xlsx", "inspect_workbook.py", "corrupt.xlsx"),
+        ("doberman-agent-docx", "inspect_docx.py", "corrupt.docx"),
     ],
 )
 def test_a_corrupt_file_still_produces_a_report_on_stdout(samples, bundle, script, sample):
@@ -814,7 +814,7 @@ def test_recalc_on_a_corrupt_file_never_crashes(samples, no_soffice_path):
     LibreOffice a corrupt workbook produces the degradation notice, not a zip
     error. Both branches are exit-0 with a Chinese explanation — pin the one that
     is deterministic everywhere."""
-    proc = run_script("bisheng-xlsx", "recalc_check.py", samples["corrupt.xlsx"], path_env=no_soffice_path)
+    proc = run_script("doberman-agent-xlsx", "recalc_check.py", samples["corrupt.xlsx"], path_env=no_soffice_path)
 
     assert "[未重算]" in proc.stdout, proc.stdout
     assert not proc.stderr.strip(), proc.stderr
@@ -823,13 +823,13 @@ def test_recalc_on_a_corrupt_file_never_crashes(samples, no_soffice_path):
 @pytest.mark.parametrize(
     ("bundle", "script"),
     [
-        ("bisheng-pptx", "inspect_deck.py"),
-        ("bisheng-pptx", "probe_template.py"),
-        ("bisheng-pptx", "render_deck.py"),
-        ("bisheng-xlsx", "inspect_workbook.py"),
-        ("bisheng-xlsx", "recalc_check.py"),
-        ("bisheng-docx", "inspect_docx.py"),
-        ("bisheng-docx", "render_docx.py"),
+        ("doberman-agent-pptx", "inspect_deck.py"),
+        ("doberman-agent-pptx", "probe_template.py"),
+        ("doberman-agent-pptx", "render_deck.py"),
+        ("doberman-agent-xlsx", "inspect_workbook.py"),
+        ("doberman-agent-xlsx", "recalc_check.py"),
+        ("doberman-agent-docx", "inspect_docx.py"),
+        ("doberman-agent-docx", "render_docx.py"),
     ],
 )
 def test_a_missing_file_is_explained_not_crashed(bundle, script):
@@ -892,7 +892,7 @@ def test_docx_helpers_read_faces_from_the_profile_not_from_literals():
     The module-level compat constants may stay (build scripts reference them);
     what may not come back is a *helper* reading one, or inlining a face name.
     """
-    source = (BUILTIN_SKILLS_DIR / "bisheng-docx" / "scripts" / "docx_helpers.py").read_text(encoding="utf-8")
+    source = (BUILTIN_SKILLS_DIR / "doberman-agent-docx" / "scripts" / "docx_helpers.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
 
     offenders: list[str] = []
@@ -929,7 +929,7 @@ def test_warnings_alone_do_not_block_xlsx_delivery(tmp_path):
     path = tmp_path / "warn_only.xlsx"
     workbook.save(path)
 
-    out = run_script("bisheng-xlsx", "inspect_workbook.py", path, "--check-only").stdout
+    out = run_script("doberman-agent-xlsx", "inspect_workbook.py", path, "--check-only").stdout
 
     total = re.search(r"合计: (\d+) ERROR / (\d+) WARN", out)
     assert total, out

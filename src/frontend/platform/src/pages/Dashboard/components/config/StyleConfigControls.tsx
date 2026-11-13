@@ -1,8 +1,8 @@
-import { Button, Select } from '@bisheng/ui';
+import { Button, Select } from '@doberman-agent/ui';
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/bs-ui/popover";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { AlignCenter,AlignLeft,AlignRight,Bold,Italic } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

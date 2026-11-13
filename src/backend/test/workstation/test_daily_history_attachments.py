@@ -24,8 +24,8 @@ from datetime import datetime
 import pytest
 from langchain_core.messages import HumanMessage
 
-from bisheng.database.models.message import ChatMessage, ChatMessageDao
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.database.models.message import ChatMessage, ChatMessageDao
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 
 def _question(message: str, extra: str = "{}") -> ChatMessage:

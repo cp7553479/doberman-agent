@@ -119,13 +119,13 @@ PRD 的核心不是“删除目录时删除会话”，而是相反：**目录�
 
 ## 7. 代码证据锚点（供后续 Design 使用）
 
-- `src/backend/bisheng/knowledge/domain/services/knowledge_space_chat_service.py`
+- `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_chat_service.py`
   - `generate_flow_id_for_file` / `generate_flow_id_for_folder`
   - `get_chat_folder_session` / `get_chat_folder_history` / `chat_folder`
   - `single_file_history`
-- `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`
+- `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`
   - `delete_folder` / `delete_file` / `batch_delete` / `clear_space` / `move_items`
-- `src/backend/bisheng/database/models/session.py`
+- `src/backend/doberman_agent/database/models/session.py`
   - `MessageSession` / `MessageSessionDao.afilter_session`
 - `src/frontend/client/src/hooks/useFolderChat.ts`
 - `src/frontend/client/src/api/chatApi.ts`

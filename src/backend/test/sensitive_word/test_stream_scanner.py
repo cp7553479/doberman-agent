@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from bisheng.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
-from bisheng.sensitive_word.domain.services.sensitive_word_policy_service import (
+from doberman_agent.sensitive_word.domain.schemas import SensitiveWordCheckResult, SensitiveWordHit
+from doberman_agent.sensitive_word.domain.services.sensitive_word_policy_service import (
     SensitiveWordPolicyService,
 )
-from bisheng.sensitive_word.domain.services.stream_scanner import StreamContentSafetyScanner
+from doberman_agent.sensitive_word.domain.services.stream_scanner import StreamContentSafetyScanner
 
 AUTO_REPLY = "当前对话内容违反相关规范，请修改后重新输入"
 

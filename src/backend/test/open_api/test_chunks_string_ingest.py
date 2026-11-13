@@ -22,17 +22,17 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.api.services import knowledge_imp
-from bisheng.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
-from bisheng.common.errcode.knowledge import KnowledgeFileEmptyError, KnowledgeFileFailedError
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
-from bisheng.knowledge.domain.services.knowledge_service import KnowledgeService
-from bisheng.knowledge.rag import knowledge_file_pipeline
-from bisheng.knowledge.rag.knowledge_file_pipeline import KnowledgeFilePipeline
-from bisheng.knowledge.rag.pipeline.loader.txt import BishengTextLoader
-from bisheng.knowledge.rag.pipeline.transformer import abstract as abstract_module
-from bisheng.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
-from bisheng.open_endpoints.api.endpoints import filelib
+from doberman_agent.api.services import knowledge_imp
+from doberman_agent.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
+from doberman_agent.common.errcode.knowledge import KnowledgeFileEmptyError, KnowledgeFileFailedError
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileStatus
+from doberman_agent.knowledge.domain.services.knowledge_service import KnowledgeService
+from doberman_agent.knowledge.rag import knowledge_file_pipeline
+from doberman_agent.knowledge.rag.knowledge_file_pipeline import KnowledgeFilePipeline
+from doberman_agent.knowledge.rag.pipeline.loader.txt import DobermanAgentTextLoader
+from doberman_agent.knowledge.rag.pipeline.transformer import abstract as abstract_module
+from doberman_agent.knowledge.rag.pipeline.transformer.splitter import SplitterTransformer
+from doberman_agent.open_endpoints.api.endpoints import filelib
 from test.open_api.test_filelib_param_errors import AUTH
 from test.open_api.test_filelib_param_errors import api as api
 
@@ -96,7 +96,7 @@ def _upload_reference_metadata(db_file: KnowledgeFile, tmp_path) -> dict:
     upload = KnowledgeFilePipeline(invoke_user_id=12, db_file=db_file)
     path = tmp_path / "faq.txt"
     path.write_text("first\n\nsecond", encoding="utf-8")
-    loader = BishengTextLoader(
+    loader = DobermanAgentTextLoader(
         file_path=str(path), file_metadata=upload.file_metadata, file_extension="txt", tmp_dir=str(tmp_path)
     )
     chunks = SplitterTransformer(**upload.get_splitter_kwargs()).transform_documents(loader.load())
@@ -190,7 +190,7 @@ def cleanup(monkeypatch):
         projection=AsyncMock(),
         db=AsyncMock(),
     )
-    from bisheng.knowledge.domain.services import knowledge_service
+    from doberman_agent.knowledge.domain.services import knowledge_service
 
     monkeypatch.setattr(knowledge_service, "delete_vector_files", calls.vectors)
     monkeypatch.setattr(knowledge_service, "delete_minio_files", calls.minio)
@@ -200,7 +200,7 @@ def cleanup(monkeypatch):
 
 
 async def test_ingest_failure_raises_business_error_and_removes_the_file(monkeypatch, cleanup):
-    from bisheng.knowledge.domain.services import knowledge_service
+    from doberman_agent.knowledge.domain.services import knowledge_service
 
     monkeypatch.setattr(knowledge_service, "text_knowledge", Mock(side_effect=RuntimeError("insert failed")))
     knowledge, db_file, login_user = SimpleNamespace(id=128), _db_file(), SimpleNamespace(user_id=12)
@@ -216,7 +216,7 @@ async def test_ingest_failure_raises_business_error_and_removes_the_file(monkeyp
 
 
 async def test_ingest_failure_keeps_business_error_code(monkeypatch, cleanup):
-    from bisheng.knowledge.domain.services import knowledge_service
+    from doberman_agent.knowledge.domain.services import knowledge_service
 
     monkeypatch.setattr(knowledge_service, "text_knowledge", Mock(side_effect=KnowledgeFileEmptyError()))
 
@@ -226,7 +226,7 @@ async def test_ingest_failure_keeps_business_error_code(monkeypatch, cleanup):
 
 
 async def test_ingest_cleanup_continues_after_a_step_fails(monkeypatch, cleanup):
-    from bisheng.knowledge.domain.services import knowledge_service
+    from doberman_agent.knowledge.domain.services import knowledge_service
 
     monkeypatch.setattr(knowledge_service, "text_knowledge", Mock(side_effect=RuntimeError("boom")))
     cleanup.vectors.side_effect = RuntimeError("milvus down")

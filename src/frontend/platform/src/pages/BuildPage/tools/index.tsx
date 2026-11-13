@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Button, SearchInput, notification, toast } from '@bisheng/ui';
+import { Button, SearchInput, notification, toast } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { PermissionDialog } from "@/components/bs-comp/permission/PermissionDialog";

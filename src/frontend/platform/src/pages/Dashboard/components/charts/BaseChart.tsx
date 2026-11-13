@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 "use client"
 
-import { loadDiagramLibrary } from '@bisheng/diagram-runtime';
+import { loadDiagramLibrary } from '@doberman-agent/diagram-runtime';
 import { ChartType, ComponentConfig, ComponentStyleConfig } from '@/pages/Dashboard/types/dataConfig'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'

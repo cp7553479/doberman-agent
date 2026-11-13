@@ -13,11 +13,11 @@ import uvicorn
 from fastapi import FastAPI
 from langchain_openai import ChatOpenAI
 
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import models as endpoints
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities
-from bisheng.dsh.domain.schemas.reasoning import reasoning_declaration
-from bisheng.dsh.domain.schemas.responses import DshResponsesRequest
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import models as endpoints
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities
+from doberman_agent.dsh.domain.schemas.reasoning import reasoning_declaration
+from doberman_agent.dsh.domain.schemas.responses import DshResponsesRequest
 from test.dsh.test_enterprise_protocol import DECLARATION
 from test.dsh.test_model_service import principal, service_setup
 

@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionVersionConflictError
-from bisheng.permission.application import runtime as module
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.projection_plan import build_projection_operation, projection_request_checksum
-from bisheng.permission.domain.services.resource_lifecycle_policy import build_create_plan
+from doberman_agent.common.errcode.permission import PermissionVersionConflictError
+from doberman_agent.permission.application import runtime as module
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.projection_plan import build_projection_operation, projection_request_checksum
+from doberman_agent.permission.domain.services.resource_lifecycle_policy import build_create_plan
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ async def test_finalized_rollback_can_repeat_sql_cleanup(rollback):
 
 
 async def test_inverse_projection_removes_all_created_tuples_and_is_idempotent(rollback):
-    from bisheng.permission.domain.services.projection_service import ProjectionService
+    from doberman_agent.permission.domain.services.projection_service import ProjectionService
     from test.permission.test_f048_projection_service import (
         FakeFGAProjection,
         FakeProjectionRepository,

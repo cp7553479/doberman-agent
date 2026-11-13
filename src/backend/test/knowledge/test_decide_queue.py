@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from bisheng.core.config.settings import KnowledgeConf, KnowledgeFileWorkerConf
-from bisheng.worker.knowledge.scheduler import (
+from doberman_agent.core.config.settings import KnowledgeConf, KnowledgeFileWorkerConf
+from doberman_agent.worker.knowledge.scheduler import (
     KNOWLEDGE_QUEUE,
     decide_queue,
     needs_ocr_queue,
@@ -15,7 +15,7 @@ _OCR_QUEUE_DEFAULT = KnowledgeFileWorkerConf().ocr_queue
 @pytest.fixture
 def loader_configured():
     with patch(
-        "bisheng.worker.knowledge.scheduler._loader_configured",
+        "doberman_agent.worker.knowledge.scheduler._loader_configured",
         return_value=True,
     ) as m:
         yield m
@@ -24,7 +24,7 @@ def loader_configured():
 @pytest.fixture
 def loader_not_configured():
     with patch(
-        "bisheng.worker.knowledge.scheduler._loader_configured",
+        "doberman_agent.worker.knowledge.scheduler._loader_configured",
         return_value=False,
     ) as m:
         yield m
@@ -53,7 +53,7 @@ def test_other_extensions_never_need_ocr(loader_configured):
 
 def test_decide_queue_disabled_returns_knowledge_celery(loader_configured):
     with patch(
-        "bisheng.worker.knowledge.scheduler._ocr_queue_enabled",
+        "doberman_agent.worker.knowledge.scheduler._ocr_queue_enabled",
         return_value=False,
     ):
         assert decide_queue("a.pdf") == KNOWLEDGE_QUEUE
@@ -63,7 +63,7 @@ def test_decide_queue_disabled_returns_knowledge_celery(loader_configured):
 
 def test_decide_queue_enabled_routes_by_extension(loader_configured):
     with patch(
-        "bisheng.worker.knowledge.scheduler._ocr_queue_enabled",
+        "doberman_agent.worker.knowledge.scheduler._ocr_queue_enabled",
         return_value=True,
     ):
         assert decide_queue("invoice.pdf") == _OCR_QUEUE_DEFAULT

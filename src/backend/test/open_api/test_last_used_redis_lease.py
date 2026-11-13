@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 
 async def exercise_real_adapter():
-    from bisheng.core.cache.redis_conn import RedisClient
+    from doberman_agent.core.cache.redis_conn import RedisClient
 
     writes = []
     clock = [0]

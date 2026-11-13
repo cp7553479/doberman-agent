@@ -71,11 +71,11 @@ def _deploy(config, fake_docker, **env) -> str:
         slug=SLUG,
         version_id=VERSION_ID,
         version_no=3,
-        image_ref="bisheng-app/sales-report:3-ver-0123",
+        image_ref="doberman-agent-app/sales-report:3-ver-0123",
         tier=TierIn(cpu=0.5, mem=512),
         port=8080,
         env=env,
-        platform_api_base="https://bisheng.example.com/api",
+        platform_api_base="https://doberman-agent.example.com/api",
     )
     LifecycleService(
         config,
@@ -194,7 +194,7 @@ def test_logs_redact_known_injected_secrets(rtm_client, rtm_config, fake_docker)
     passed by the caller, so it is read back from the record rather than set.
     """
     name = _deploy(rtm_config, fake_docker)
-    secret = get_store(rtm_config).get(APP_ID).env["BISHENG_APP_STORAGE_TOKEN"]
+    secret = get_store(rtm_config).get(APP_ID).env["DOBERMAN_AGENT_APP_STORAGE_TOKEN"]
     assert len(secret) >= 32
     fake_docker.get(name).logs = f"INFO uploading with token={secret}\n"
 
@@ -261,7 +261,7 @@ def test_runtime_status_shape(rtm_client, rtm_config, fake_docker):
 
 
 def test_runtime_status_flags_a_missing_application_network(rtm_client, fake_docker):
-    """The 114 failure that costs an afternoon: ``bisheng-apps`` was never created.
+    """The 114 failure that costs an afternoon: ``doberman-agent-apps`` was never created.
 
     Without it *every* deploy fails at create time with a daemon error nobody
     reads as "run one ``docker network create``", so the pre-flight has to say it
@@ -273,7 +273,7 @@ def test_runtime_status_flags_a_missing_application_network(rtm_client, fake_doc
 
     check = next(item for item in body["preflight"] if item["name"] == "application_network")
     assert check["ok"] is False
-    assert "bisheng-apps" in check["detail"]
+    assert "doberman-agent-apps" in check["detail"]
 
 
 def test_runtime_status_base_images_names_every_runtime_to_pull(rtm_client, fake_docker):

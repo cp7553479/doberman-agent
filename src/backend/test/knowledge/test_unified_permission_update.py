@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.models.knowledge import AuthTypeEnum, Knowledge, KnowledgeState, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
 
 @pytest.fixture(autouse=True)
 def normal_space_binding():
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_space_id",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.DepartmentKnowledgeSpaceDao.aget_by_space_id",
         new=AsyncMock(return_value=None),
     ):
         yield
@@ -47,16 +47,16 @@ async def test_business_save_failure_does_not_touch_grants_or_memberships() -> N
     clear = AsyncMock()
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new=AsyncMock(return_value=_space()),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
             new=AsyncMock(side_effect=RuntimeError("save failed")),
         ),
         patch.object(KnowledgeSpaceService, "clear_space_authorization_for_private", new=clear),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "SpaceChannelMemberDao.async_delete_non_creator_members",
             new_callable=AsyncMock,
         ) as remove_members,
@@ -89,20 +89,20 @@ async def test_private_projection_commits_before_membership_cleanup() -> None:
     service._send_space_event_notification = AsyncMock()
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new=AsyncMock(return_value=space),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
             new=AsyncMock(side_effect=save),
         ),
         patch.object(KnowledgeSpaceService, "clear_space_authorization_for_private", new=clear),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_get_members_by_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_get_members_by_space",
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "SpaceChannelMemberDao.async_delete_non_creator_members",
             new=AsyncMock(side_effect=remove_members),
         ),
@@ -119,11 +119,11 @@ async def test_private_projection_failure_preserves_membership_rows() -> None:
     service._list_space_child_resources = AsyncMock(return_value=[])
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new=AsyncMock(return_value=_space()),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_update_space",
             new=AsyncMock(side_effect=lambda value: value),
         ),
         patch.object(
@@ -132,11 +132,11 @@ async def test_private_projection_failure_preserves_membership_rows() -> None:
             new=AsyncMock(side_effect=RuntimeError("projection failed")),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_get_members_by_space",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_get_members_by_space",
             new=AsyncMock(return_value=[]),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "SpaceChannelMemberDao.async_delete_non_creator_members",
             new_callable=AsyncMock,
         ) as remove_members,

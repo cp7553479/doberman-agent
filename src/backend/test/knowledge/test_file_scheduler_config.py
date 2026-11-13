@@ -1,6 +1,6 @@
 import pytest
 
-from bisheng.core.config.settings import (
+from doberman_agent.core.config.settings import (
     FairSchedulerConf,
     KnowledgeFileWorkerConf,
 )

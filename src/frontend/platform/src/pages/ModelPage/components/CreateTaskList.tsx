@@ -1,15 +1,15 @@
 // @ts-strict-ignore
 import { isNumberDraftWithinBounds } from '@/utils/fieldValidation';
-import { Button, Input } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Tag, Checkbox } from "@bisheng/ui";
+import { Tag, Checkbox } from "@doberman-agent/ui";
 
 
 import { Label } from "../../../components/bs-ui/label";
-import { Tooltip } from "@bisheng/ui";
+import { Tooltip } from "@doberman-agent/ui";
 import { PopUpContext } from "../../../contexts/popUpContext";
 import { getFileUrlApi, getPresetFileApi, uploadTaskFileApi } from "../../../controllers/API/finetune";
 import { downloadFile, downloadJson } from "../../../util/utils";

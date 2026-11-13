@@ -1,4 +1,4 @@
-import { InlineCitation as SharedCitation, useCitationDetails, type InlineCitationProps } from '@bisheng/chat/citation-inline';
+import { InlineCitation as SharedCitation, useCitationDetails, type InlineCitationProps } from '@doberman-agent/chat/citation-inline';
 import { usePlatformCitationServices } from '@/components/bs-comp/chatComponent/usePlatformCitationServices';
 import { CitationSourceIcon } from '@/components/bs-comp/chatComponent/CitationSourceIcon';
 function Citation(props:Omit<InlineCitationProps,'citationPreviewUsesHover'>){const services=usePlatformCitationServices();return <SharedCitation key={services.scopeKey+props.data.ref} {...props} citationPreviewUsesHover presentation={{localize:services.localize,SourceIcon:CitationSourceIcon}}/>;}
@@ -72,7 +72,7 @@ const MessageMarkDown = React.memo(function MessageMarkDown({ message, version, 
         const normalizedMessage = filterMermaidBlocks(String(message || ""))
             // .replaceAll(/(\n\s{4,})/g, '\n   ') // 禁止4空格转代码
             .replaceAll(/(^\n\s{4,})/g, '\n   ') // ^只处理开头情况，否则影响代码无法缩进
-            .replaceAll('(bisheng/', '(/bisheng/') // TODO 临时处理方案,以后需要改为markdown插件方式处理
+            .replaceAll('(doberman_agent/', '(/doberman_agent/') // TODO 临时处理方案,以后需要改为markdown插件方式处理
             .replace(/\\[\[\]]/g, '$$$$') // 处理`\[...\]`包裹的公式（四个$会被解释为两个$$）
         const { transformedContent, citationMap } = transformPrivateCitations(normalizedMessage);
         return {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { Button, SearchInput, StateView, Switch, Tabs } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, SearchInput, StateView, Switch, Tabs } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { Wrench } from 'lucide-react';
 import { getCapabilities, setCapabilityAvailability, type Capability } from '~/api/capabilities';
 import { getSkillScope } from '~/api/skillCenter';
@@ -38,7 +38,7 @@ export function CapabilityCenterPage() {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries(['capability-center']),
-        queryClient.invalidateQueries([QueryKeys.bishengConfig]),
+        queryClient.invalidateQueries([QueryKeys.dobermanAgentConfig]),
       ]);
     },
   });

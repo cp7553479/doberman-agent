@@ -1,6 +1,6 @@
-import { Alert, Button } from "@bisheng/ui";
+import { Alert, Button } from "@doberman-agent/ui";
 
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/bs-ui/dialog";
-import { Tabs } from "@bisheng/ui";
+import { Tabs } from "@doberman-agent/ui";
 import {
   getResourcePermissionContextApi,
   type ApplyPermissionModeDraftResult,

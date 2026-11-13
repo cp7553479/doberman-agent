@@ -25,7 +25,7 @@ def _stub_tenant_filter():
     real symbol with a no-op context so the orchestration runs DB-free.
     """
     with patch(
-        "bisheng.core.context.tenant.bypass_tenant_filter",
+        "doberman_agent.core.context.tenant.bypass_tenant_filter",
         new=lambda: contextlib.nullcontext(),
     ):
         yield
@@ -33,7 +33,7 @@ def _stub_tenant_filter():
 
 def _patch_root(root):
     return patch(
-        "bisheng.database.models.department.DepartmentDao.aget_tenant_root_via_pointer",
+        "doberman_agent.database.models.department.DepartmentDao.aget_tenant_root_via_pointer",
         new_callable=AsyncMock,
         return_value=root,
     )
@@ -41,7 +41,7 @@ def _patch_root(root):
 
 def _patch_reparent():
     return patch(
-        "bisheng.database.models.department.DepartmentDao.areparent_root_under",
+        "doberman_agent.database.models.department.DepartmentDao.areparent_root_under",
         new_callable=AsyncMock,
         return_value=3,
     )

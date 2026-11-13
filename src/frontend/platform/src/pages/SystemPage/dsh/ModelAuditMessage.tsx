@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pagination, Tag } from "@bisheng/ui";
+import { Pagination, Tag } from "@doberman-agent/ui";
 import { usePaginationLocale } from "@/hooks/usePaginationLocale";
 import {
   auditTextPage,

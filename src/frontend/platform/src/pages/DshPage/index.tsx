@@ -1,9 +1,9 @@
 import { locationContext } from "@/contexts/locationContext";
 import { userContext } from "@/contexts/userContext";
 import { useDshBrowserConfig } from "@/hooks/useDshBrowserConfig";
-import { Tabs } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
-// TODO(bisheng-icons): Replace these fallbacks when credit, content moderation, and plugin icons are available.
+import { Tabs } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
+// TODO(@doberman-agent/icons): Replace these fallbacks when credit, content moderation, and plugin icons are available.
 import { Coins, Plug, ShieldAlert } from "lucide-react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState, type ReactNode } from "react";

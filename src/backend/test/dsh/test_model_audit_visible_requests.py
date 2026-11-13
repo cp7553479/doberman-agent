@@ -4,8 +4,8 @@ from datetime import timedelta
 
 import pytest
 
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.infrastructure.model_audit_codec import conversation_key
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.infrastructure.model_audit_codec import conversation_key
 from test.dsh.model_audit_fixtures import NOW, audit_session
 from test.dsh.test_model_audit_flow import BASE, LOCAL_ADMIN, fixture
 from test.dsh.test_model_audit_groups import row

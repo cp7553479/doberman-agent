@@ -2,11 +2,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.notification.forwarder import maybe_forward_external, resolve_eplus_recipient
+from doberman_agent.notification.forwarder import maybe_forward_external, resolve_eplus_recipient
 
 # ---- resolve_eplus_recipient ----
 
-@patch("bisheng.notification.forwarder.UserDao")
+@patch("doberman_agent.notification.forwarder.UserDao")
 def test_resolve_returns_none_when_user_missing(UserDao):
     UserDao.get_user.return_value = None
     rid, reason = resolve_eplus_recipient(123)
@@ -14,8 +14,8 @@ def test_resolve_returns_none_when_user_missing(UserDao):
     assert reason == "user_not_found"
 
 
-@patch("bisheng.notification.forwarder.settings")
-@patch("bisheng.notification.forwarder.UserDao")
+@patch("doberman_agent.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder.UserDao")
 def test_resolve_returns_none_when_source_not_in_allowed(UserDao, mock_settings):
     mock_settings.get_cofco_forwarding_conf.return_value.user_sources = ["cofco_eplus", "wecom"]
     user = MagicMock(source="local", external_id="X1")
@@ -25,8 +25,8 @@ def test_resolve_returns_none_when_source_not_in_allowed(UserDao, mock_settings)
     assert "not_in_allowed_sources" in reason
 
 
-@patch("bisheng.notification.forwarder.settings")
-@patch("bisheng.notification.forwarder.UserDao")
+@patch("doberman_agent.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder.UserDao")
 def test_resolve_returns_none_when_external_id_empty(UserDao, mock_settings):
     mock_settings.get_cofco_forwarding_conf.return_value.user_sources = ["cofco_eplus", "wecom"]
     user = MagicMock(source="cofco_eplus", external_id="")
@@ -36,8 +36,8 @@ def test_resolve_returns_none_when_external_id_empty(UserDao, mock_settings):
     assert reason == "external_id_empty"
 
 
-@patch("bisheng.notification.forwarder.settings")
-@patch("bisheng.notification.forwarder.UserDao")
+@patch("doberman_agent.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder.UserDao")
 def test_resolve_returns_external_id_for_cofco_eplus(UserDao, mock_settings):
     mock_settings.get_cofco_forwarding_conf.return_value.user_sources = ["cofco_eplus", "wecom"]
     user = MagicMock(source="cofco_eplus", external_id="EMP001")
@@ -47,8 +47,8 @@ def test_resolve_returns_external_id_for_cofco_eplus(UserDao, mock_settings):
     assert reason == ""
 
 
-@patch("bisheng.notification.forwarder.settings")
-@patch("bisheng.notification.forwarder.UserDao")
+@patch("doberman_agent.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder.UserDao")
 def test_resolve_returns_external_id_for_wecom_source(UserDao, mock_settings):
     """The real production case: cofco customer's users have source='wecom'."""
     mock_settings.get_cofco_forwarding_conf.return_value.user_sources = ["cofco_eplus", "wecom"]
@@ -72,16 +72,16 @@ def fake_msg():
     return m
 
 
-@patch("bisheng.notification.forwarder._fire_and_forget")
-@patch("bisheng.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder._fire_and_forget")
+@patch("doberman_agent.notification.forwarder.settings")
 def test_forward_skipped_when_disabled(mock_settings, mock_fire, fake_msg):
     mock_settings.get_cofco_forwarding_conf.return_value.enabled = False
     maybe_forward_external(fake_msg)
     mock_fire.assert_not_called()
 
 
-@patch("bisheng.notification.forwarder._fire_and_forget")
-@patch("bisheng.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder._fire_and_forget")
+@patch("doberman_agent.notification.forwarder.settings")
 def test_forward_skipped_when_action_code_not_forwardable(mock_settings, mock_fire, fake_msg):
     mock_settings.get_cofco_forwarding_conf.return_value.enabled = True
     fake_msg.action_code = "some_other_code"
@@ -89,9 +89,9 @@ def test_forward_skipped_when_action_code_not_forwardable(mock_settings, mock_fi
     mock_fire.assert_not_called()
 
 
-@patch("bisheng.notification.forwarder._fire_and_forget")
-@patch("bisheng.notification.forwarder.resolve_eplus_recipient")
-@patch("bisheng.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder._fire_and_forget")
+@patch("doberman_agent.notification.forwarder.resolve_eplus_recipient")
+@patch("doberman_agent.notification.forwarder.settings")
 def test_forward_skipped_when_all_recipients_unresolved(
     mock_settings, mock_resolve, mock_fire, fake_msg,
 ):
@@ -101,18 +101,18 @@ def test_forward_skipped_when_all_recipients_unresolved(
     mock_fire.assert_not_called()
 
 
-@patch("bisheng.notification.external._payload.settings")
-@patch("bisheng.notification.forwarder._fire_and_forget")
-@patch("bisheng.notification.forwarder._extract_payload_fields")
-@patch("bisheng.notification.forwarder.resolve_eplus_recipient")
-@patch("bisheng.notification.forwarder.settings")
+@patch("doberman_agent.notification.external._payload.settings")
+@patch("doberman_agent.notification.forwarder._fire_and_forget")
+@patch("doberman_agent.notification.forwarder._extract_payload_fields")
+@patch("doberman_agent.notification.forwarder.resolve_eplus_recipient")
+@patch("doberman_agent.notification.forwarder.settings")
 def test_forward_schedules_fire_and_forget(
     mock_settings, mock_resolve, mock_extract, mock_fire, mock_payload_settings, fake_msg,
 ):
     mock_settings.get_cofco_forwarding_conf.return_value.enabled = True
     mock_resolve.return_value = ("EMP001", "")
     mock_extract.return_value = ("张三", "技术频道", "", "")
-    mock_payload_settings.get_cofco_forwarding_conf.return_value.bisheng_inbox_url = "https://bisheng.cofco.com"
+    mock_payload_settings.get_cofco_forwarding_conf.return_value.doberman_agent_inbox_url = "https://doberman-agent.cofco.com"
 
     maybe_forward_external(fake_msg)
 
@@ -123,8 +123,8 @@ def test_forward_schedules_fire_and_forget(
     coro.close()
 
 
-@patch("bisheng.notification.forwarder.resolve_eplus_recipient")
-@patch("bisheng.notification.forwarder.settings")
+@patch("doberman_agent.notification.forwarder.resolve_eplus_recipient")
+@patch("doberman_agent.notification.forwarder.settings")
 def test_skipped_logs_include_message_id_and_reason(
     mock_settings, mock_resolve, fake_msg, caplog,
 ):

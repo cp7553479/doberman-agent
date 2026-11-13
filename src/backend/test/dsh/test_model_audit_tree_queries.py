@@ -2,7 +2,7 @@
 
 import pytest
 
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
 from test.dsh.model_audit_fixtures import audit_database, audit_session
 from test.dsh.test_model_audit_groups import row
 from test.dsh.test_model_audit_tree import add, finish

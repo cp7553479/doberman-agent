@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.core.cache.utils import resolve_inside, save_download_file
+from doberman_agent.core.cache.utils import resolve_inside, save_download_file
 
 TRAVERSALS = [
     "../../../tmp/pwned.php",
@@ -61,23 +61,23 @@ def test_a_name_that_only_looks_like_traversal_is_kept(root):
 @pytest.mark.parametrize("name", TRAVERSALS + NOT_TRAVERSAL_ON_POSIX)
 def test_an_uploaded_file_cannot_be_written_outside_the_cache(monkeypatch, name):
     """The name arrives from the upload's multipart header, unfiltered."""
-    cache = tempfile.mkdtemp(prefix="bisheng_cache_")
-    monkeypatch.setattr("bisheng.core.cache.utils.CACHE_DIR", cache)
+    cache = tempfile.mkdtemp(prefix="doberman_agent_cache_")
+    monkeypatch.setattr("doberman_agent.core.cache.utils.CACHE_DIR", cache)
 
-    stored = Path(save_download_file(b"payload", "bisheng", name))
+    stored = Path(save_download_file(b"payload", "doberman_agent", name))
 
     assert stored.resolve().is_relative_to(Path(cache).resolve())
     # Separators collapse into the single stored segment rather than failing the
     # write, which is what the bare hash prefix used to do.
-    assert stored.parent.resolve() == (Path(cache) / "bisheng").resolve()
+    assert stored.parent.resolve() == (Path(cache) / "doberman_agent").resolve()
     assert stored.read_bytes() == b"payload"
 
 
 def test_an_ordinary_upload_keeps_its_name(monkeypatch):
-    cache = tempfile.mkdtemp(prefix="bisheng_cache_")
-    monkeypatch.setattr("bisheng.core.cache.utils.CACHE_DIR", cache)
+    cache = tempfile.mkdtemp(prefix="doberman_agent_cache_")
+    monkeypatch.setattr("doberman_agent.core.cache.utils.CACHE_DIR", cache)
 
-    stored = Path(save_download_file(b"payload", "bisheng", "委托书.pdf"))
+    stored = Path(save_download_file(b"payload", "doberman_agent", "委托书.pdf"))
 
     assert stored.name.endswith("_委托书.pdf")
 

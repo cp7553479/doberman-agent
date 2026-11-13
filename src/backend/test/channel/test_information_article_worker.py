@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.core.config.settings import IntelligenceCenterConf
-from bisheng.core.external.bisheng_information_client.response_schema import InformationSubscriptionItem
-from bisheng.worker.information import article as article_mod
+from doberman_agent.core.config.settings import IntelligenceCenterConf
+from doberman_agent.core.external.doberman_agent_information_client.response_schema import InformationSubscriptionItem
+from doberman_agent.worker.information import article as article_mod
 
 
 def _item(source_id: str):
@@ -30,7 +30,7 @@ async def test_public_article_worker_processes_each_remote_source_once_and_isola
     client = AsyncMock()
     client.list_all_subscriptions.return_value = [_item("A"), _item("B")]
     with (
-        patch.object(article_mod, "get_bisheng_information_client", new=AsyncMock(return_value=client)),
+        patch.object(article_mod, "get_doberman_agent_information_client", new=AsyncMock(return_value=client)),
         patch.object(article_mod, "_sync_one_source", new=AsyncMock(side_effect=[RuntimeError("A"), None])) as sync,
     ):
         await article_mod._sync_information_articles_async()
@@ -41,7 +41,7 @@ async def test_public_article_worker_processes_each_remote_source_once_and_isola
 async def test_disabled_knowledge_delivery_does_not_publish_route_task():
     client = SimpleNamespace(conf=IntelligenceCenterConf(information_knowledge_delivery_enabled=False))
     with patch(
-        "bisheng.worker.information.knowledge_delivery.route_new_information_articles.apply_async"
+        "doberman_agent.worker.information.knowledge_delivery.route_new_information_articles.apply_async"
     ) as apply_async:
         await article_mod._dispatch_new_articles(client, "source-A", ["article-A"], 1)
 

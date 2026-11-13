@@ -3,12 +3,12 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.dsh.domain.repositories.identities import CurrentIdentityRecords
+from doberman_agent.dsh.domain.repositories.identities import CurrentIdentityRecords
 
 
 async def test_current_membership_and_deleted_user_are_not_cached(monkeypatch):
-    from bisheng.database.models.tenant import TenantDao, UserTenantDao
-    from bisheng.user.domain.models.user import UserDao
+    from doberman_agent.database.models.tenant import TenantDao, UserTenantDao
+    from doberman_agent.user.domain.models.user import UserDao
 
     user = SimpleNamespace(user_id=1001, user_name="alice", delete=0, dsh_profile_version=3)
     membership = SimpleNamespace(tenant_id=2, status="active", is_active=1)

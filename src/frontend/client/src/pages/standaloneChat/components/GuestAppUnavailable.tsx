@@ -1,4 +1,4 @@
-import { StateView } from '@bisheng/ui';
+import { StateView } from '@doberman-agent/ui';
 import { EmptyStateIllustration, NoPermissionIllustration } from '~/components/illustrations';
 import { useLocalize } from '~/hooks';
 import type { GuestAccessState } from '../guestAccessError';

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, notification } from '@bisheng/ui';
+import { Button, Input, notification } from '@doberman-agent/ui';
 import type { DepartmentUserOption } from "@/components/bs-comp/selectComponent/DepartmentUsersSelect";
 import UsersSelect from "@/components/bs-comp/selectComponent/Users";
 
@@ -15,7 +15,7 @@ updateUserGroupV2,
 UserGroupMemberRow,
 UserGroupV2,
 } from "@/controllers/API/userGroups";
-import { RadioGroup,Radio as RadioGroupItem } from "@bisheng/ui";
+import { RadioGroup,Radio as RadioGroupItem } from "@doberman-agent/ui";
 import { useContext,useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";
 

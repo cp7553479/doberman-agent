@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 export type FileType='pdf'|'doc'|'docx'|'ppt'|'pptx'|'md'|'html'|'txt'|'jpg'|'jpeg'|'png'|'bmp'|'csv'|'xls'|'xlsx';
-import cn from '@bisheng/ui/cn';
+import cn from '@doberman-agent/ui/cn';
 import { createCitationUtilities } from './preview';
 import type { ChatLocalize } from './types';
 import type { ChatCitation, CitationPreview, CitationReferenceItem } from './types';
@@ -197,7 +197,7 @@ type FileTypeIconConfig = {
   colorClassName: string;
 };
 
-// bisheng-icons Outlined file icons stroke with currentColor; each type pins its
+// @doberman-agent/icons Outlined file icons stroke with currentColor; each type pins its
 // legacy palette here. These are file-format colors (Word blue / PDF red / Excel
 // green), not brand colors — they must NOT follow the blue⇄green theme.
 const fileTypeIconConfigs: Partial<Record<FileType, FileTypeIconConfig>> = {

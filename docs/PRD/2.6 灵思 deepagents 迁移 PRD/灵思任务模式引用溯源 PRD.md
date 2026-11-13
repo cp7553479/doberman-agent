@@ -165,11 +165,11 @@
 
 | 位置 | 现状 | 改动 |
 |---|---|---|
-| `src/backend/bisheng/tool/domain/langchain/linsight_knowledge.py` `base_search` | 只返回片段文本，丢弃来源元数据（第 92 行） | 保留元数据、补知识库标识、登记来源并写缓存；异常回退为原结果 |
-| `src/backend/bisheng/linsight/domain/services/agent_factory.py` | 系统与子代理提示词无引用规则 | 追加引用规则（复用 `core/prompts/yaml/citation.yaml`）；包装网页检索工具登记来源 |
-| `src/backend/bisheng/linsight/domain/task_exec.py` 三个完成处理器 | `persist_task_turn_message` 返回值被丢弃 | 捕获返回，解析报告引用并保存来源 |
+| `src/backend/doberman_agent/tool/domain/langchain/linsight_knowledge.py` `base_search` | 只返回片段文本，丢弃来源元数据（第 92 行） | 保留元数据、补知识库标识、登记来源并写缓存；异常回退为原结果 |
+| `src/backend/doberman_agent/linsight/domain/services/agent_factory.py` | 系统与子代理提示词无引用规则 | 追加引用规则（复用 `core/prompts/yaml/citation.yaml`）；包装网页检索工具登记来源 |
+| `src/backend/doberman_agent/linsight/domain/task_exec.py` 三个完成处理器 | `persist_task_turn_message` 返回值被丢弃 | 捕获返回，解析报告引用并保存来源 |
 
-复用不改：`bisheng/citation/` 的 `annotate_*`、`collect_*`、`cache_citation_registry_items`、`extract_citation_ids_from_text`、`save_message_citations`、`/api/v1/citations/resolve` 及其权限过滤。
+复用不改：`doberman-agent/citation/` 的 `annotate_*`、`collect_*`、`cache_citation_registry_items`、`extract_citation_ids_from_text`、`save_message_citations`、`/api/v1/citations/resolve` 及其权限过滤。
 
 一期前端：无改动。报告预览 `PreviewBody.tsx` 已走 `Chat/Messages/Content/Markdown`，具备角标渲染、悬浮卡、点击预览、PDF 高亮、无权限灰化。
 

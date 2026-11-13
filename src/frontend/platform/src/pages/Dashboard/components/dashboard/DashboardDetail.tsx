@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Input, notification } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Input, notification } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import type React from "react";
 
@@ -9,7 +9,7 @@ import { ButtonGroup } from "@/components/bs-ui/button/group";
 
 
 import { locationContext } from "@/contexts/locationContext";
-import { Tooltip as Tip } from "@bisheng/ui";
+import { Tooltip as Tip } from "@doberman-agent/ui";
 
 import { LoadingIcon } from "@/components/bs-icons/loading";
 import { useContext,useEffect,useRef,useState } from "react";

@@ -2,9 +2,9 @@
 
 ## 来源与配套
 
-后台基于 `feat/bisheng-work-120-main@7c701e86bcdfbafd53a99997f3146097a1497c41`，迁入旧 `feat/bisheng-work-120` 中的 Chat 交互与桌面桥接，以及 `codex/unified-model-access@c555c807bfb3aeb61adc4edffcb56f23adb0a849` 中的积分和权限功能。
+后台基于 `feat/doberman-agent-work-120-main@7c701e86bcdfbafd53a99997f3146097a1497c41`，迁入旧 `feat/doberman-agent-work-120` 中的 Chat 交互与桌面桥接，以及 `codex/unified-model-access@c555c807bfb3aeb61adc4edffcb56f23adb0a849` 中的积分和权限功能。
 
-桌面配套分支：`dataelement/bisheng-work:codex/v120-unified-credits`，基于 `V1.2.0@a1ce7bf83c1d3f98dda0802f197e906669de167f`，保留该版本知识空间及引用协议，并迁入本地积分、V1.1 原生认证和模型恢复改动。
+桌面配套分支：`cp7553479/doberman-agent-work:codex/v120-unified-credits`，基于 `V1.2.0@a1ce7bf83c1d3f98dda0802f197e906669de167f`，保留该版本知识空间及引用协议，并迁入本地积分、V1.1 原生认证和模型恢复改动。
 
 ## 最终行为
 

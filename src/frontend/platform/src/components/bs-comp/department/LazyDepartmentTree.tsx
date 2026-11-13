@@ -1,9 +1,9 @@
 import { departmentDisplayName } from "./departmentDisplayName";
-import { SearchInput } from '@bisheng/ui';
+import { SearchInput } from '@doberman-agent/ui';
 
 import { DepartmentTreeNode } from "@/types/api/department";
 import { cn } from "@/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { SubjectSearchStatus } from "../selectComponent/SubjectSearchStatus";
 
 import { ReactNode,useMemo } from "react";

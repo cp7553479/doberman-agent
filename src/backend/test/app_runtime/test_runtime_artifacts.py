@@ -25,8 +25,8 @@ async def chunks(data):
 
 async def test_upload_requires_content_and_metadata_confirmation(runtime_repo):
     """AC-05, AC-42, AC-43: incomplete uploads never become restoreable."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
 
     service = RuntimeArtifactService(runtime_repo, MemoryObjects())
     op = await runtime_repo.create_operation(operation())
@@ -47,8 +47,8 @@ async def test_upload_requires_content_and_metadata_confirmation(runtime_repo):
 
 async def test_hash_and_ticket_scope_rejected(runtime_repo):
     """AC-06, AC-07: wrong content or another transfer ticket cannot publish data."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
 
     service = RuntimeArtifactService(runtime_repo, MemoryObjects())
     op = await runtime_repo.create_operation(operation())
@@ -62,8 +62,8 @@ async def test_hash_and_ticket_scope_rejected(runtime_repo):
 
 async def test_chunk_response_loss_is_idempotent(runtime_repo):
     """AC-36: resending one confirmed chunk does not duplicate snapshot bytes."""
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-    from bisheng.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
 
     service = RuntimeArtifactService(runtime_repo, MemoryObjects())
     op = await runtime_repo.create_operation(operation())
@@ -79,8 +79,8 @@ async def test_chunk_response_loss_is_idempotent(runtime_repo):
 
 async def test_delete_removes_snapshot_transfer_replicas_only_for_target_app(runtime_repo):
     """AC-10: deleting a registered snapshot also removes its upload chunk copies."""
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeTransfer
-    from bisheng.app_runtime.domain.services.runtime_cleanup_service import RuntimeCleanupService
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeArtifact, RuntimeTransfer
+    from doberman_agent.app_runtime.domain.services.runtime_cleanup_service import RuntimeCleanupService
     from test.app_runtime.test_runtime_storage_api import StorageObjects
 
     op = operation("delete", "app-a")

@@ -3,8 +3,8 @@
 User-approved cadence (2026-10-19): finish one whole module for user acceptance. Since 2026-10-19, develop the
 next module while the user tests the previous one; acceptance fixes take priority. Do not pause for acceptance after individual pages.
 Use finalized shared components, preserve explicit library gaps, and replace
-business-owned icons with bisheng-icons equivalents; keep an old icon only when
-no suitable equivalent exists. As updated on2026-10-20, buttons/inputs/notices import @bisheng/ui directly;
+business-owned icons with doberman-agent-icons equivalents; keep an old icon only when
+no suitable equivalent exists. As updated on2026-10-20, buttons/inputs/notices import @doberman-agent/ui directly;
 the temporary compatibility entry points have been removed. Business-specific
 field compositions remain under bs-comp/formFields.
 
@@ -30,7 +30,7 @@ field compositions remain under bs-comp/formFields.
 The library has no finalized Table, Select/Cascader/Combobox, ordinary Dialog,
 DropdownMenu, Pagination, Progress or Card replacement. Keep these and their
 internal controls/icons, plus the existing confirmation service (the finalized
-Confirm is client-context-bound, not exported by @bisheng/ui). Keep the chart's
+Confirm is client-context-bound, not exported by @doberman-agent/ui). Keep the chart's
 own Recharts tooltip. They are gaps, not completed shared-library migrations.
 Desktop administration components under ModelPage/manage/dsh belong to module 12;
 their shared model-selection dependencies receive regression checks here.

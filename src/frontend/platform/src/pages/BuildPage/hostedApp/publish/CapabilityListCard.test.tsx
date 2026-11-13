@@ -88,7 +88,7 @@ describe("CapabilityListCard", () => {
   })
 
   it("test_the_card_offers_no_way_to_change_a_declaration", () => {
-    // AC-54 / AC-61: capabilities are declared in bisheng-app.yaml and take
+    // AC-54 / AC-61: capabilities are declared in doberman_agent-app.yaml and take
     // effect through a publish. A control here would be a second, unapproved
     // way to change what an application may call.
     const { container } = render(

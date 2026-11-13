@@ -17,18 +17,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_publish.domain.schemas.app_manifest import CapabilityDeclaration
-from bisheng.app_publish.domain.services.capability_bus_service import (
+from doberman_agent.app_publish.domain.schemas.app_manifest import CapabilityDeclaration
+from doberman_agent.app_publish.domain.services.capability_bus_service import (
     capability_status,
     validate_capability_refs,
 )
-from bisheng.common.errcode.app_publish import AppCapabilityUnresolvableError
-from bisheng.common.errcode.model_face import (
+from doberman_agent.common.errcode.app_publish import AppCapabilityUnresolvableError
+from doberman_agent.common.errcode.model_face import (
     ModelFaceModelAmbiguousError,
     ModelFaceModelNotFoundError,
     ModelFaceModelOfflineError,
 )
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
 
 TENANT_ID = 1
 OWNER_ID = 92001
@@ -43,7 +43,7 @@ def _declaration(models=(), knowledge_refs=()):
 @pytest.fixture()
 def catalog(monkeypatch):
     """Stand in for F051's catalog, raising exactly the codes it raises."""
-    import bisheng.llm.domain.services.model_catalog as module
+    import doberman_agent.llm.domain.services.model_catalog as module
 
     known = {"qwen-max"}
     offline = {"下线了的模型"}
@@ -65,8 +65,8 @@ def catalog(monkeypatch):
 @pytest.fixture()
 def reachable(monkeypatch):
     """Stand in for the facade's owner-side reachability report."""
-    from bisheng.knowledge.domain.schemas.retrieval_facade import ReachabilityReport, RetrievalIdentity
-    from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import ReachabilityReport, RetrievalIdentity
+    from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
 
     state = {"unreachable": [], "revoked": []}
 
@@ -121,7 +121,7 @@ async def test_a_model_that_is_absent_or_disabled_is_refused(catalog, reachable,
 
 async def test_the_verdict_comes_from_f051_not_from_a_second_query(monkeypatch, reachable):
     """The point of T060: one definition of "callable", shared with the face."""
-    import bisheng.llm.domain.services.model_catalog as module
+    import doberman_agent.llm.domain.services.model_catalog as module
 
     asked = []
 
@@ -221,9 +221,9 @@ async def test_a_knowledge_base_the_owner_cannot_reach_is_refused(catalog, reach
 
 async def test_a_declaration_is_refused_when_its_scope_cannot_be_issued_here(monkeypatch, tier_seed):
     """16231 keeps its meaning: "this environment cannot honour that declaration"."""
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
-    from bisheng.common.errcode.app_publish import AppCapabilityBusDisabledError
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.common.errcode.app_publish import AppCapabilityBusDisabledError
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.open_platform, "enabled", False)
     manifest = (
@@ -239,8 +239,8 @@ async def test_a_declaration_is_refused_when_its_scope_cannot_be_issued_here(mon
 
 
 async def test_a_knowledge_only_declaration_is_accepted_without_the_extension_scope(monkeypatch, tier_seed):
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
-    from bisheng.common.services.config_service import settings
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.common.services.config_service import settings
 
     monkeypatch.setattr(settings.open_platform, "enabled", False)
     manifest = (
@@ -257,8 +257,8 @@ async def test_a_knowledge_only_declaration_is_accepted_without_the_extension_sc
 
 async def test_a_secret_reference_is_still_refused_before_anything_else(tier_seed):
     """决议-1: secret references wait for PRD-2, and 16230 says so (AC-56)."""
-    from bisheng.app_publish.domain.services.manifest_validator import validate_manifest
-    from bisheng.common.errcode.app_publish import AppSecretReferenceUnsupportedError
+    from doberman_agent.app_publish.domain.services.manifest_validator import validate_manifest
+    from doberman_agent.common.errcode.app_publish import AppSecretReferenceUnsupportedError
 
     manifest = (
         "manifest_version: 1\nname: demo\nruntime: python3.11\nport: 8080\n"

@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.linsight.domain.models.linsight_sop import LinsightSOP
+from doberman_agent.linsight.domain.models.linsight_sop import LinsightSOP
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
-from bisheng.linsight.domain.services.skill_store import SkillStore, parse_skill_md
+from doberman_agent.linsight.domain.services.skill_store import SkillStore, parse_skill_md
 from test.linsight.test_skill_service import FakeSkillDao
 
 _SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "migrate_sop_to_skill.py"

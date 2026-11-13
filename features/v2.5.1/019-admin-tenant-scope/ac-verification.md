@@ -2,8 +2,8 @@
 
 **生成时间**: 2026-04-21
 **分支**: `feat/v2.5.1/019-admin-tenant-scope`（base=`2.5.0-PM`，commit `81e597690`）
-**Worktree**: `/Users/lilu/Projects/bisheng-worktrees/019-admin-tenant-scope`
-**114 回归验证**: `/opt/bisheng-f019/`（独立 worktree，2026-04-21 通过）
+**Worktree**: `/Users/lilu/Projects/doberman-agent-worktrees/019-admin-tenant-scope`
+**114 回归验证**: `/opt/doberman-agent-f019/`（独立 worktree，2026-04-21 通过）
 **F019 测试套件（新增）**: 6 个文件，**37/37 全部通过** ✅
   - `test_admin_tenant_scope_service.py` — 10 用例（Service 单测）
   - `test_admin_tenant_scope_api.py` — 9 用例（HTTP 集成）
@@ -14,7 +14,7 @@
 **回归结果**:
   - **F012 回归**: 71/71 ✅（user_tenant_sync / department / auth_jwt / middleware / current_tenant / tenant_reconcile / context_vars / tenant_resolver）
   - **F011/F013 回归**: 53/53 ✅（f011_migration / f013_tenant_fga_tree / department_dao / tenant_mount_api / audit_log_v2）
-  - **其他失败均为预存 flakiness**：permission_enrichment / role_service / f017_chat_message_service 在 `/opt/bisheng` 2.5.0-PM baseline **相同失败**（非 F019 引入）；minimax_provider 1 条预存内容 mismatch
+  - **其他失败均为预存 flakiness**：permission_enrichment / role_service / f017_chat_message_service 在 `/opt/doberman-agent` 2.5.0-PM baseline **相同失败**（非 F019 引入）；minimax_provider 1 条预存内容 mismatch
 
 ---
 
@@ -70,22 +70,22 @@
 
 | 类别 | 文件 | 改动 |
 |------|------|------|
-| 新建 | `bisheng/common/errcode/admin_scope.py` | 19701/19702 |
-| 新建 | `bisheng/admin/__init__.py` + `api/`, `api/endpoints/`, `domain/`, `domain/services/` | 模块骨架 |
-| 新建 | `bisheng/admin/domain/services/tenant_scope.py` | `TenantScopeService` |
-| 新建 | `bisheng/admin/api/endpoints/tenant_scope.py` | POST/GET endpoints |
-| 新建 | `bisheng/admin/api/router.py` | admin router |
-| 新建 | `bisheng/common/middleware/__init__.py` + `admin_scope.py` | `AdminScopeMiddleware` |
-| 新建 | `bisheng/worker/admin_scope/__init__.py` + `tasks.py` | Celery `admin_scope_cleanup` |
+| 新建 | `doberman-agent/common/errcode/admin_scope.py` | 19701/19702 |
+| 新建 | `doberman-agent/admin/__init__.py` + `api/`, `api/endpoints/`, `domain/`, `domain/services/` | 模块骨架 |
+| 新建 | `doberman-agent/admin/domain/services/tenant_scope.py` | `TenantScopeService` |
+| 新建 | `doberman-agent/admin/api/endpoints/tenant_scope.py` | POST/GET endpoints |
+| 新建 | `doberman-agent/admin/api/router.py` | admin router |
+| 新建 | `doberman-agent/common/middleware/__init__.py` + `admin_scope.py` | `AdminScopeMiddleware` |
+| 新建 | `doberman-agent/worker/admin_scope/__init__.py` + `tasks.py` | Celery `admin_scope_cleanup` |
 | 新建 | `src/frontend/platform/src/controllers/API/admin.ts` | axios `setTenantScope` / `getTenantScope` |
-| 修改 | `bisheng/core/config/multi_tenant.py` | `admin_scope_ttl_seconds=14400` |
-| 修改 | `bisheng/core/config/settings.py` | beat schedule + task_routers |
-| 修改 | `bisheng/core/cache/redis_conn.py` | 加 `attl(key)` helper |
-| 修改 | `bisheng/tenant/domain/constants.py` | `TenantAuditAction.ADMIN_SCOPE_SWITCH` |
-| 修改 | `bisheng/main.py` | 注册 `AdminScopeMiddleware`（在 `CustomMiddleware` **之前** 添加，使其入站顺序在 Custom 之后） |
-| 修改 | `bisheng/api/router.py` | `include_router(admin_router)` |
-| 修改 | `bisheng/user/api/user.py` | `logout` 调 `clear_on_logout` |
-| 修改 | `bisheng/tenant/domain/services/user_tenant_sync_service.py` | `sync_user` 成功路径调 `clear_on_token_version_bump` |
+| 修改 | `doberman-agent/core/config/multi_tenant.py` | `admin_scope_ttl_seconds=14400` |
+| 修改 | `doberman-agent/core/config/settings.py` | beat schedule + task_routers |
+| 修改 | `doberman-agent/core/cache/redis_conn.py` | 加 `attl(key)` helper |
+| 修改 | `doberman-agent/tenant/domain/constants.py` | `TenantAuditAction.ADMIN_SCOPE_SWITCH` |
+| 修改 | `doberman-agent/main.py` | 注册 `AdminScopeMiddleware`（在 `CustomMiddleware` **之前** 添加，使其入站顺序在 Custom 之后） |
+| 修改 | `doberman-agent/api/router.py` | `include_router(admin_router)` |
+| 修改 | `doberman-agent/user/api/user.py` | `logout` 调 `clear_on_logout` |
+| 修改 | `doberman-agent/tenant/domain/services/user_tenant_sync_service.py` | `sync_user` 成功路径调 `clear_on_token_version_bump` |
 | 文档 | `features/v2.5.1/019-admin-tenant-scope/role-revoke-hook.md` | T10 方案 2 调研笔记 |
 
 ---
@@ -108,7 +108,7 @@
 # 以 admin 登录取 Cookie
 curl -b jar -c jar -X POST http://192.168.106.114:7860/api/v1/user/login \
   -H 'Content-Type: application/json' \
-  -d '{"user_name": "admin", "password": "Bisheng@top1"}'
+  -d '{"user_name": "admin", "password": "doberman-agent@top1"}'
 
 # POST scope=5
 curl -b jar -X POST http://192.168.106.114:7860/api/v1/admin/tenant-scope \
@@ -226,7 +226,7 @@ curl -b jar -X POST http://192.168.106.114:7860/api/v1/admin/tenant-scope \
 
 ```bash
 # 单独 F019 专项
-ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && \
+ssh root@192.168.106.114 "cd /opt/doberman-agent/src/backend && \
   /root/.local/bin/uv run pytest \
     test/test_admin_tenant_scope_service.py \
     test/test_admin_tenant_scope_api.py \
@@ -236,7 +236,7 @@ ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && \
     test/test_admin_scope_cleanup_task.py -v"
 
 # 全量（F011/F012/F013/F016/F017 回归）
-ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && \
+ssh root@192.168.106.114 "cd /opt/doberman-agent/src/backend && \
   /root/.local/bin/uv run pytest -q"
 ```
 
@@ -245,11 +245,11 @@ ssh root@192.168.106.114 "cd /opt/bisheng/src/backend && \
 ## 开发实际偏差
 
 - **T04 service 测试 — `_FakeRedis` 替代真实 pickle 往返**：`RedisClient.aget/aset` 真实实现对 value 做 pickle，`_FakeRedis` 直存字符串。Service 代码层与两种实现的契约都是 "存的是 `str(tenant_id)`，读出来是同值"，测试以 mock 的 aget/aset 为准未做 pickle 验证；产线行为由 F012 的 Redis 同异步测试矩阵已覆盖。
-- **T08 logout 测试改 AST 源码检查 + Service 行为测试**：原计划 importlib 动态导入 `bisheng.user.api.user`，但该模块在测试 env 下有预存 import chain 脆性（`bisheng.common.services` 被 conftest pre-mock 后 `audit_log.py` 的子模块 import 失败 + FastAPI response-model validation error）。改为 AST 读源码断言钩子存在（`TenantScopeService.clear_on_logout` 调用 + try/except 包裹 + 局部 import）+ 重新验证 Service DEL 行为。语义等价，更抗 future import chain 变化。
+- **T08 logout 测试改 AST 源码检查 + Service 行为测试**：原计划 importlib 动态导入 `doberman_agent.user.api.user`，但该模块在测试 env 下有预存 import chain 脆性（`doberman_agent.common.services` 被 conftest pre-mock 后 `audit_log.py` 的子模块 import 失败 + FastAPI response-model validation error）。改为 AST 读源码断言钩子存在（`TenantScopeService.clear_on_logout` 调用 + try/except 包裹 + 局部 import）+ 重新验证 Service DEL 行为。语义等价，更抗 future import chain 变化。
 - **T10 role-revoke 钩子采方案 2**：调研发现 `system:global#super_admin` 无公开撤销 API（`user_addrole` / `user_delete` 都显式拒绝操作超管）。`clear_on_role_revoke` 方法已就位但未挂接；AC-12 的可观察行为由中间件 `_check_is_global_super` 每请求再校验兜底（详见 `role-revoke-hook.md`）。
-- **T11 Celery 测试 importlib 路径**：最初 hard-code `/opt/bisheng/...` 路径，worktree 下路径不对；改为从 `__file__.resolve().parent.parent` 派生，支持任意 checkout root。
+- **T11 Celery 测试 importlib 路径**：最初 hard-code `/opt/doberman-agent/...` 路径，worktree 下路径不对；改为从 `__file__.resolve().parent.parent` 派生，支持任意 checkout root。
 - **`RedisClient.attl` 新增**：spec §5.2 `get_scope` 需要精确 TTL 读。`RedisClient` 之前无 `attl`，添加一个一行封装（`async_connection.ttl(key)`）作为通用基础设施扩展；非 F019 专有，对其他模块也可用。
-- **F013 `LoginUser.is_global_super()` 缺失兜底**：本应由 F013 提供的公开方法在 /opt/bisheng 现版无实现。F019 endpoint 改为直接调用 `utils.http_middleware._check_is_global_super(user_id)`（同一套 FGA + Redis 缓存逻辑），保证行为一致；属于 F013 合约缺口的临时补丁，F020 落地时可一并抽公共 helper。
+- **F013 `LoginUser.is_global_super()` 缺失兜底**：本应由 F013 提供的公开方法在 /opt/doberman-agent 现版无实现。F019 endpoint 改为直接调用 `utils.http_middleware._check_is_global_super(user_id)`（同一套 FGA + Redis 缓存逻辑），保证行为一致；属于 F013 合约缺口的临时补丁，F020 落地时可一并抽公共 helper。
 
 ---
 

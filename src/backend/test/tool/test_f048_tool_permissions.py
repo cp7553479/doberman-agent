@@ -8,23 +8,23 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.common.errcode.http_error import UnAuthorizedError
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.errcode.http_error import UnAuthorizedError
+from doberman_agent.common.errcode.permission import (
     InvalidCatalogActionError,
     PermissionFGAUnavailableError,
     PermissionInvalidResourceError,
 )
-from bisheng.common.errcode.tool import ToolTypeIsPresetError
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.common.errcode.tool import ToolTypeIsPresetError
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
-from bisheng.tool.domain.models.gpts_tools import GptsToolsType
-from bisheng.tool.domain.services.f048_tool_permission import (
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsType
+from doberman_agent.tool.domain.services.f048_tool_permission import (
     F048ToolPermissionAdapter,
     ToolPermissionRecord,
 )
-from bisheng.tool.domain.services.tool import (
+from doberman_agent.tool.domain.services.tool import (
     ToolResourceAuthorizationPort,
     ToolServices,
 )
@@ -255,15 +255,15 @@ async def test_refresh_mcp_requires_exact_edit_action(monkeypatch) -> None:
     require_action = AsyncMock()
     refresh = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_user_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_user_tool_type",
         AsyncMock(return_value=[tool_type]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.require_business_action",
+        "doberman_agent.tool.domain.services.tool.require_business_action",
         require_action,
     )
     monkeypatch.setattr(ToolServices, "refresh_mcp_tools", refresh)
@@ -306,19 +306,19 @@ async def test_visible_tool_list_enumerates_ids_before_database_query(
     runtime = SimpleNamespace(list_visible_objects=list_visible)
     load_types = AsyncMock(return_value=[preset_tool_type, tool_type])
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
         load_types,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.get_f048_runtime",
+        "doberman_agent.tool.domain.services.tool.get_f048_runtime",
         AsyncMock(return_value=runtime),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.resolve_permission_actor",
+        "doberman_agent.tool.domain.services.tool.resolve_permission_actor",
         AsyncMock(return_value=_actor(tenant_id=1)),
     )
     login_user = UserPayload(
@@ -328,7 +328,7 @@ async def test_visible_tool_list_enumerates_ids_before_database_query(
     )
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.batch_check_business_actions",
+        "doberman_agent.tool.domain.services.tool.batch_check_business_actions",
         AsyncMock(return_value={"10": {"visible"}, "20": {"visible"}}),
     )
     result = await ToolServices(login_user=login_user).get_tool_list(action="visible")
@@ -354,21 +354,21 @@ async def test_visible_preset_tool_list_is_visible_to_regular_users(monkeypatch)
     runtime = SimpleNamespace(list_visible_objects=list_visible)
     load_types = AsyncMock(return_value=[preset_tool_type])
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
         load_types,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.get_f048_runtime",
+        "doberman_agent.tool.domain.services.tool.get_f048_runtime",
         AsyncMock(return_value=runtime),
     )
     login_user = UserPayload(user_id=7, tenant_id=1, user_role=[])
 
     decisions = AsyncMock(return_value={"20": {"visible"}})
-    monkeypatch.setattr("bisheng.tool.domain.services.tool.batch_check_business_actions", decisions)
+    monkeypatch.setattr("doberman_agent.tool.domain.services.tool.batch_check_business_actions", decisions)
     result = await ToolServices(login_user=login_user).get_tool_list(is_preset=1, action="visible")
     decisions.return_value = {}
     assert await ToolServices(login_user=login_user).get_tool_list(is_preset=1, action="visible") == []
@@ -391,15 +391,15 @@ async def test_use_tool_list_checks_only_requested_action(monkeypatch) -> None:
     )
     batch_actions = AsyncMock(return_value={"10": frozenset({"use"})})
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_tenant_tool_type",
         AsyncMock(return_value=[tool_type]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_list_by_type",
         AsyncMock(return_value=[]),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.batch_check_business_actions",
+        "doberman_agent.tool.domain.services.tool.batch_check_business_actions",
         batch_actions,
     )
     login_user = UserPayload(user_id=7, tenant_id=1, user_role=[])
@@ -414,7 +414,7 @@ async def test_use_tool_list_checks_only_requested_action(monkeypatch) -> None:
 async def test_only_global_super_can_update_preset_tool_config(monkeypatch) -> None:
     load_tool = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_one_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_one_tool_type",
         load_tool,
     )
     login_user = UserPayload(user_id=7, tenant_id=1, user_role=[])
@@ -443,23 +443,23 @@ async def test_delete_tool_checks_delete_then_projects_lifecycle(
     )
     delete_row = AsyncMock()
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.aget_one_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.aget_one_tool_type",
         AsyncMock(return_value=tool_type),
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.GptsToolsDao.delete_tool_type",
+        "doberman_agent.tool.domain.services.tool.GptsToolsDao.delete_tool_type",
         delete_row,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.require_business_action",
+        "doberman_agent.tool.domain.services.tool.require_business_action",
         require_action,
     )
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.tool.get_f048_resource_adapter",
+        "doberman_agent.tool.domain.services.tool.get_f048_resource_adapter",
         AsyncMock(return_value=adapter),
     )
     monkeypatch.setattr(
-        "bisheng.permission.application.relation_api.is_tenant_admin",
+        "doberman_agent.permission.application.relation_api.is_tenant_admin",
         AsyncMock(return_value=False),
     )
     monkeypatch.setattr(ToolServices, "delete_tool_hook", AsyncMock())

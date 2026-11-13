@@ -2,8 +2,8 @@ import re
 import unittest
 from unittest import TestCase
 
-from bisheng.workflow.nodes.report.text_classification import Patterns
-from bisheng.workflow.nodes.report.text_classification import TextClassificationReport
+from doberman_agent.workflow.nodes.report.text_classification import Patterns
+from doberman_agent.workflow.nodes.report.text_classification import TextClassificationReport
 
 sample_text = """
 # Sample Report
@@ -30,7 +30,7 @@ http://example.com/image.bmp
 http://example.com/image.gif
 http://example.com/image.webp
 
-/bisheng/tmp1.png?dadsaa=adas /bisheng/tmp2.png
+/doberman_agent/tmp1.png?dadsaa=adas /doberman_agent/tmp2.png
 
 你好吗？这是**重点**
 你好？这也是__重点__
@@ -42,7 +42,7 @@ http://example.com/image.webp
 
 class TestDocxStringClassification(TestCase):
     def setUp(self):
-        self.text_classification = TextClassificationReport("/tmp/bisheng")
+        self.text_classification = TextClassificationReport("/tmp/doberman_agent")
 
     def test_patterns(self):
         for one in Patterns:

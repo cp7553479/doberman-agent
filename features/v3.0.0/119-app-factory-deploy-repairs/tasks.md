@@ -10,7 +10,7 @@
 
 ## 路径和执行约定
 
-表中路径均相对仓库：`BE=src/backend/bisheng`、`BT=src/backend/test/app_publish`、`RM=src/runtime-manager/runtime_manager`、`RT=src/runtime-manager/tests`、`CLI=src/bisheng-cli`。后端类型分 Domain/API/Worker；运行适配器归 Domain，官方材料/制品归基础设施；本次无前端业务组件。不新建 ORM/错误码/配置，故无数据库迁移或基础设施先置依赖。
+表中路径均相对仓库：`BE=src/backend/doberman_agent`、`BT=src/backend/test/app_publish`、`RM=src/runtime-manager/runtime_manager`、`RT=src/runtime-manager/tests`、`CLI=src/doberman-agent-cli`。后端类型分 Domain/API/Worker；运行适配器归 Domain，官方材料/制品归基础设施；本次无前端业务组件。不新建 ORM/错误码/配置，故无数据库迁移或基础设施先置依赖。
 
 每行是独立任务，`测试→实现` 必须先写并观察失败再编码，完成后执行 task-review 并记录证据。实现依赖的测试任务完成表示测试已写/已观察基线，不表示未实现前应当通过。所有测试行逐项标注 AC。共享文件只改本任务落点，保留上游后续增强。Worker 不新增调度入口，沿用 Celery headers→ContextVar，历史 deployment 恢复租户后读冻结清单。
 
@@ -21,8 +21,8 @@
 | [x] | T001 测试/Domain | `BT/test_manifest_intake_defaults.py`：新提交缺版本→2/bundle，显式1→source-image，存储缺版本→1；null/未知版本拒绝。覆盖 AC: AC-02, AC-03, AC-04, AC-05 | 无；T002 |
 | [x] | T002 Domain | `BE/app_publish/domain/services/manifest_validator.py`：仅新提交加载字典后 setdefault 2；不改 AppManifest 存储缺省，不改 worker 历史解析 | T001 |
 | [x] | T003 测试/基础设施 | `BT/test_official_deploy_contract.py`：三份官方 YAML 为2/bundle、示例写库使用注入路径，技能包默认口径一致。覆盖 AC: AC-01, AC-06, AC-35 | T001；T004/T005/T006 |
-| [x] | T004 基础设施 | `BE/dev_toolkit/skills/deploy-hosting/example/bisheng-app.yaml`、`example/main.py`：显式2/bundle，缺数据库配置明确失败而非源码写库 | T003 |
-| [x] | T005 基础设施 | `BE/dev_toolkit/skills/platform-wiring/example/bisheng-app.yaml`、`example-sdk/bisheng-app.yaml`：显式2/bundle，保留原能力和数据库声明 | T003 |
+| [x] | T004 基础设施 | `BE/dev_toolkit/skills/deploy-hosting/example/doberman-agent-app.yaml`、`example/main.py`：显式2/bundle，缺数据库配置明确失败而非源码写库 | T003 |
+| [x] | T005 基础设施 | `BE/dev_toolkit/skills/platform-wiring/example/doberman-agent-app.yaml`、`example-sdk/doberman-agent-app.yaml`：显式2/bundle，保留原能力和数据库声明 | T003 |
 | [x] | T006 基础设施 | `BE/dev_toolkit/skills/deploy-hosting/SKILL.md`、`platform-wiring/SKILL.md`：新默认/历史兼容、运行变量、入口、离线精确材料，保留身份和权限红线 | T004/T005 |
 | [x] | T007 测试/Domain | `RT/test_runtime_contract_environment.py`、`RT/test_bundle_launch.py`、`RT/test_k8s_delivery.py`、`src/backend/test/app_runtime/test_runtime_k8s_delivery_coordinator.py`：DB两变量一致、真实标识/序号、预览隔离、Python/Node别名，完整镜像不替换PATH。覆盖 AC: AC-06, AC-07, AC-08, AC-09, AC-10, AC-11 | 无；T008/T009/T010 |
 | [x] | T008 Domain | `RM/runtime_environment.py`：纯函数生成平台保留变量与语言别名；实际预检序号未知为空，不接触凭据签发/存储 | T007 |
@@ -48,7 +48,7 @@
 | [x] | T023 Domain | `BE/app_runtime/domain/services/runtime_delivery_coordinator.py`、`runtime_management_service.py`、`runtime_secret_diagnostics.py`、`runtime_operation_service.py`（同目录）：kind/stage分类/到期剔除/安全镜像上下文、具体reason/hints、安全元数据；新旧prepare恢复分支错误一致 | T021 |
 | [x] | T024 Domain/API | `BE/app_publish/domain/services/publish_pipeline_service.py`、`publish_status_service.py`：存储去tail、合法读取补tail，基础轮询不扩大权限，不回填历史 | T022/T023 |
 | [x] | T025 测试/基础设施 | `CLI/tests/test_errors.py`：原code/reason在终端和JSON一致，旧16124提示、无日志不谎称有日志。覆盖 AC: AC-24, AC-26, AC-27 | 无；T026 |
-| [x] | T026 基础设施 | `CLI/bisheng_cli/errors.py`：旧码兼容、准备/启动按真实原因显示操作建议及tail，保持退出码 | T025 |
+| [x] | T026 基础设施 | `CLI/doberman_agent_cli/errors.py`：旧码兼容、准备/启动按真实原因显示操作建议及tail，保持退出码 | T025 |
 
 ## Wave 3：镜像准入和网络不变量
 
@@ -74,7 +74,7 @@ T037 三个独立语言小编辑共享同一逻辑任务；T038 为不可拆的�
 | 状态 | ID/类型 | 文件与自包含任务 | 依赖/配对 |
 | --- | --- | --- | --- |
 | [x] | T039 测试/基础设施 | `CLI/tests/test_distribution_contract.py`：wheel源码版本/metadata/hash/平台manifest一致，不覆盖SDK，安装件包含新错误行为。覆盖 AC: AC-01, AC-27 | T026；T040 |
-| [x] | T040 基础设施 | CLI `pyproject.toml`、`bisheng_cli/__init__.py`递增修订版；既有pack脚本生成并检查CLI wheel/manifest，SDK内容不变 | T039 |
+| [x] | T040 基础设施 | CLI `pyproject.toml`、`doberman_agent_cli/__init__.py`递增修订版；既有pack脚本生成并检查CLI wheel/manifest，SDK内容不变 | T039 |
 | [x] | T041 测试/Domain | `features/v3.0.0/119-app-factory-deploy-repairs/e2e-checklist.md`、`src/backend/test/e2e/test_e2e_f119_deploy_contract.py`（只读真实API）：Python官方示例预检→审批→写库→临时应用停启数据保留、Node和static定向主流程，核对116原服务与策略，仅专用资源；镜像烟测不冒充发布。覆盖 AC: AC-01, AC-06, AC-07, AC-08, AC-09, AC-10, AC-11, AC-17, AC-20, AC-23, AC-24, AC-25, AC-27, AC-28, AC-30, AC-33, AC-37, AC-38, AC-39, AC-42 | Wave 1–3完成 |
 | [ ] | T042 基础设施 | 本Feature `verification.md`：依e2e-test运行本地定向验证/制品检查；真实116按实际授权更新，不越权操作其它环境；记录清理和未验限制 | T040/T041 |
 | [ ] | T043 基础设施 | 本Feature `code-review.md`：sdd-code-review对照spec/design/tasks，复核原Owner/权限、无迁移/重建、无遗留TODO；必要arch-guard/ruff通过后交付 | T042 |

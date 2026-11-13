@@ -10,15 +10,15 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel
 
-from bisheng.core.context.tenant import set_current_tenant_id, strict_tenant_filter
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models import model_audit_content, model_audit_request, model_audit_setting
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-from bisheng.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath, DshAuditTreeState
-from bisheng.dsh.infrastructure.model_audit_body_buffer import AuditBodyBuffer
-from bisheng.user.domain.models.user import User
+from doberman_agent.core.context.tenant import set_current_tenant_id, strict_tenant_filter
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models import model_audit_content, model_audit_request, model_audit_setting
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+from doberman_agent.dsh.domain.models.model_audit_title import DshModelAuditConversationTitle
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath, DshAuditTreeState
+from doberman_agent.dsh.infrastructure.model_audit_body_buffer import AuditBodyBuffer
+from doberman_agent.user.domain.models.user import User
 
 NOW = datetime(2026, 10, 14, tzinfo=UTC)
 AUDIT_MODELS = (

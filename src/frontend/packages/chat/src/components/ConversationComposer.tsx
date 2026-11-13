@@ -1,5 +1,5 @@
-import { Button, Textarea, Tooltip } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, Textarea, Tooltip } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { useRef, useState, type ClipboardEventHandler, type CompositionEventHandler, type FormEventHandler, type ReactNode, type RefObject } from 'react';
 export interface ConversationComposerProps {
   inputRef: RefObject<HTMLTextAreaElement>;

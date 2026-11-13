@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import { ArrowLeftRight, Loader2, Search, Pin } from 'lucide-react';
 import type { AppItem } from '~/@types/app';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/Popover';

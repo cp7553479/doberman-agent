@@ -12,13 +12,13 @@ import pytest
 from sqlalchemy import event
 from sqlmodel import select
 
-from bisheng.database.models.tenant import Tenant
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeNode as Node
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState as State
-from bisheng.dsh.domain.repositories import content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
-from bisheng.dsh.domain.schemas.model_audit_status import refresh_audit_status
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest as Request
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeNode as Node
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState as State
+from doberman_agent.dsh.domain.repositories import content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository as Repository
+from doberman_agent.dsh.domain.schemas.model_audit_status import refresh_audit_status
 from test.dsh.test_content_safety_groups import native, project
 from test.dsh.test_content_safety_merge import committed_merge, output_event
 from test.dsh.test_content_safety_repository import tenant_session

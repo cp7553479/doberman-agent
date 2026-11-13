@@ -1,4 +1,4 @@
-import { Button, Radio, RadioGroup } from "@bisheng/ui";
+import { Button, Radio, RadioGroup } from "@doberman-agent/ui";
 import type { SubjectType } from "~/api/permission";
 import { useLocalize } from "~/hooks";
 import { PermissionEmptyState } from "./PermissionEmptyState";

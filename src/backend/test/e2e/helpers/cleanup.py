@@ -1,4 +1,4 @@
-"""E2E data cleanup helpers for BiSheng.
+"""E2E data cleanup helpers for DobermanAgent.
 
 Provides safe cleanup with prefix filtering to prevent accidental deletion
 of production data.

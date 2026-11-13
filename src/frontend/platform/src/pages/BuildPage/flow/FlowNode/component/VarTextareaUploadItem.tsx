@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 import { uploadFileWithProgress } from "@/modals/UploadModal/upload";
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -39,7 +39,7 @@ export default function VarTextareaUploadItem({ nodeId, data, onChange, onValida
     return (
         <div className='node-item mb-4 nodrag' data-key={data.key}>
             <div className="flex justify-between items-center">
-                <Label className="flex items-center bisheng-label">
+                <Label className="flex items-center doberman_agent-label">
                     {t('messageContentVariable')}
                 </Label>
                 <Tag size="small" color="brand" className="">{data.key}</Tag>

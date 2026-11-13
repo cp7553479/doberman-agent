@@ -233,5 +233,5 @@ export function buildLogFile(d: ErrorDiagnostics): string {
 }
 
 export function buildLogFileName(d: ErrorDiagnostics): string {
-  return `bisheng-error-${d.errorCode}-${d.traceId.slice(0, 8)}.json`;
+  return `doberman_agent-error-${d.errorCode}-${d.traceId.slice(0, 8)}.json`;
 }

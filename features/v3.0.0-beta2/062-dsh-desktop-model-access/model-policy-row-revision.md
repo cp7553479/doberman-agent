@@ -7,14 +7,14 @@
 - 仍使用 dsh_user_policy，不增加用户主表或明细表。删除 model_configs，增加 model_id、monthly_token_limit、enabled。唯一键为 (tenant_id,user_id,model_id)，模型检索索引为 (tenant_id,model_id,enabled,user_id)。
 - 每条记录独立 version、pending_operation_id 和 quota_sync_state。禁用仍保留记录及递增版本，防止删除重建导致旧请求重新授权；保留所有调用、月度用量及操作审计。
 - 管理保存只提交一个模型：PUT /api/v1/dsh/admin/users/{user_id}/models/{model_id}/policy，正文 {operation_id,expected_version,enabled,monthly_token_limit}。同路径 GET 返回当前模型的版本、启用状态、额度、待处理操作。原整份用户策略 PUT 不再支持；原用户策略 GET 仅聚合只读用量信息。
-- GET /api/v1/dsh/admin/models/{model_id}/users 默认列出有效毕昇用户，标注当前模型配置；authorized_only=true 走模型索引分页，再由用户模块检查有效性及用户名。无配置不是未登录，不查询席位、部门。
+- GET /api/v1/dsh/admin/models/{model_id}/users 默认列出有效doberman-agent用户，标注当前模型配置；authorized_only=true 走模型索引分页，再由用户模块检查有效性及用户名。无配置不是未登录，不查询席位、部门。
 - Redis 保留用户槽内的真实用量账本；策略版本、所有者、同步阻塞按 model_id 分开。更新 A 只替换 A 的授权字段；不删除 B 的额度、计数或历史。SQL 与 Redis 单模型版本一致后结束操作；旧 worker/旧请求不能覆盖新配置。
 - 模型列表和恢复需要的聚合对象仅在内存构造。恢复清单包括全部记录的 model_versions（含禁用及占位行），policy_version 是这些版本的和，仅用于用户用量账本的完整性校验，不作为管理写入版本。quota_epoch 仍表示同一用户用量账本的恢复代次，恢复时校验整份行快照后更新全部行。
 - 公开客户端登录、换票、Token、模型调用和 usage 协议不变。仅管理前端配套接口调整；不恢复部门、用户组、限流、默认额度或缺用量冻结。
 
 ## 109 转换边界
 
-只处理 /opt/server/dsh 对应独立 MySQL 的 bisheng.dsh_user_policy，先导出原表及配置备份并检查无未完成策略操作。当前检查结果为一条空策略、无模型授权、无调用明细。结构切换后旧应用镜像不能继续读取该表，需用户部署新版恢复 DSH 额度功能。不部署、不重启应用，不修改旧达梦实例。
+只处理 /opt/server/dsh 对应独立 MySQL 的 doberman_agent.dsh_user_policy，先导出原表及配置备份并检查无未完成策略操作。当前检查结果为一条空策略、无模型授权、无调用明细。结构切换后旧应用镜像不能继续读取该表，需用户部署新版恢复 DSH 额度功能。不部署、不重启应用，不修改旧达梦实例。
 
 ## 验证
 

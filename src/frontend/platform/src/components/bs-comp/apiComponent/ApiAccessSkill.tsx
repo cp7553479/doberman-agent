@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { toast } from '@bisheng/ui';
-import { Tag } from '@bisheng/ui';
+import { toast } from '@doberman-agent/ui';
+import { Tag } from '@doberman-agent/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/bs-ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/bs-ui/table';
-import { Tabs } from '@bisheng/ui';
+import { Tabs } from '@doberman-agent/ui';
 
 import { getCurlCode, getPythonApiCode } from '@/constants';
 import { TabsContext } from '@/contexts/tabsContext';
@@ -120,7 +120,7 @@ const ApiAccessSkill = ({ }) => {
     },
     "ChatOpenAI-7f49c": {},
     "ElasticKeywordsSearch-0d2c8": {},
-    "BishengRetrievalQA-7e0ae": {}
+    "DobermanAgentRetrievalQA-7e0ae": {}
   },
   "history_count": 10,
   "clear_cache": false

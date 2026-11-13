@@ -37,10 +37,10 @@ class TestCurrentTenantHandler:
     def test_root_user_is_child_false(self):
         """When leaf tenant_id == Root, is_child=False and mounted dept None."""
         with patch(
-            'bisheng.tenant.domain.services.tenant_resolver.TenantResolver.resolve_user_leaf_tenant',
+            'doberman_agent.tenant.domain.services.tenant_resolver.TenantResolver.resolve_user_leaf_tenant',
             new=AsyncMock(return_value=_tenant(1, parent_tenant_id=None)),
         ):
-            from bisheng.user.api.current_tenant import get_current_tenant_handler
+            from doberman_agent.user.api.current_tenant import get_current_tenant_handler
 
             result = asyncio.run(get_current_tenant_handler(_login_user(100)))
 
@@ -67,12 +67,12 @@ class TestCurrentTenantHandler:
             yield _FakeSession()
 
         with patch(
-            'bisheng.tenant.domain.services.tenant_resolver.TenantResolver.resolve_user_leaf_tenant',
+            'doberman_agent.tenant.domain.services.tenant_resolver.TenantResolver.resolve_user_leaf_tenant',
             new=AsyncMock(return_value=_tenant(5, parent_tenant_id=1)),
         ), patch(
-            'bisheng.user.api.current_tenant.get_async_db_session', _fake_session,
+            'doberman_agent.user.api.current_tenant.get_async_db_session', _fake_session,
         ):
-            from bisheng.user.api.current_tenant import get_current_tenant_handler
+            from doberman_agent.user.api.current_tenant import get_current_tenant_handler
             result = asyncio.run(get_current_tenant_handler(_login_user(200)))
 
         payload = result.data
@@ -90,7 +90,7 @@ class TestSwitchTenantDeprecated:
 
     def test_switch_tenant_returns_410(self):
         """The F011 T07 410 Gone handler is still in place."""
-        from bisheng.tenant.api.endpoints.user_tenant import (
+        from doberman_agent.tenant.api.endpoints.user_tenant import (
             switch_tenant_deprecated,
         )
         response = asyncio.run(switch_tenant_deprecated())

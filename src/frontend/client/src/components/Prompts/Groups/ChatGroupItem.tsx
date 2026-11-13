@@ -2,7 +2,7 @@ import { useState, useMemo, memo } from 'react';
 import { Menu as MenuIcon, Edit as EditIcon, EarthIcon, TextSearch } from 'lucide-react';
 import type { TPromptGroup } from '~/types/chat';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Dropdown, DropdownItem } from '@bisheng/ui';
+import { Dropdown, DropdownItem } from '@doberman-agent/ui';
 import { useLocalize, useSubmitMessage, useAuthContext } from '~/hooks';
 import VariableDialog from '~/components/Prompts/Groups/VariableDialog';
 import PreviewPrompt from '~/components/Prompts/PreviewPrompt';

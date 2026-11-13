@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { applyMenuAccessApi } from '~/api/approval';
 import MenuUnavailablePage from './MenuUnavailablePage';
 const mockToast = jest.fn();

@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from bisheng.dsh.api.endpoints import identity
-from bisheng.dsh.config import DshSettings
+from doberman_agent.dsh.api.endpoints import identity
+from doberman_agent.dsh.config import DshSettings
 from test.dsh import test_model_service, test_models_api
 
 service_setup = test_model_service.service_setup
@@ -55,7 +55,7 @@ async def test_optional_extension_never_rejects_or_replays_legal_request(app_set
             "/api/v1/dsh/chat/completions",
             headers={"Authorization": "Bearer test"},
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "synthetic"}],
                 "audit_context": audit_context,
             },
@@ -66,7 +66,7 @@ async def test_optional_extension_never_rejects_or_replays_legal_request(app_set
     assert observed[0]["audit_context"] is not None
 
 
-@pytest.mark.parametrize("body", ["}{", "[]", "null", '{"model":"bisheng:42","messages":"invalid"}'])
+@pytest.mark.parametrize("body", ["}{", "[]", "null", '{"model":"doberman_agent:42","messages":"invalid"}'])
 async def test_malformed_json_or_business_data_remains_invalid(app_setup, body):
     app, _runtime, _model, llm, ledger = app_setup
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://example.test") as client:

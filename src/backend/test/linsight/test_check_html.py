@@ -14,7 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.tool.domain.langchain import linsight_html_check as hc
+from doberman_agent.tool.domain.langchain import linsight_html_check as hc
 
 GOOD = """<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

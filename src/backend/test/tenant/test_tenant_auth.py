@@ -17,39 +17,39 @@ from unittest.mock import MagicMock, patch
 # Pre-mock modules in the import chain that cause version issues
 import jwt as pyjwt
 
-from bisheng.core.context.tenant import DEFAULT_TENANT_ID
+from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID
 
 # Pre-mock modules that trigger ondelete/config_service import chain issues.
 # This allows importing auth.py in isolation for JWT testing.
 _MOCKS_NEEDED = [
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services.telemetry.telemetry_service',
-    'bisheng.database.models.user_group',
-    'bisheng.database.models.role_access',
-    'bisheng.database.models.group',
-    'bisheng.user.domain.models.user_role',
-    'bisheng.user.domain.models.user',
-    'bisheng.database.models.role',
-    'bisheng.database.constants',
-    'bisheng.common.errcode.http_error',
-    'bisheng.common.exceptions.auth',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services.telemetry.telemetry_service',
+    'doberman_agent.database.models.user_group',
+    'doberman_agent.database.models.role_access',
+    'doberman_agent.database.models.group',
+    'doberman_agent.user.domain.models.user_role',
+    'doberman_agent.user.domain.models.user',
+    'doberman_agent.database.models.role',
+    'doberman_agent.database.constants',
+    'doberman_agent.common.errcode.http_error',
+    'doberman_agent.common.exceptions.auth',
 ]
 for _mod_name in _MOCKS_NEEDED:
     if _mod_name not in sys.modules:
         _mock = MagicMock()
-        if _mod_name == 'bisheng.common.services.config_service':
+        if _mod_name == 'doberman_agent.common.services.config_service':
             _mock.settings = MagicMock()
             _mock.settings.jwt_secret = 'test-secret-key'
             _mock.settings.cookie_conf = MagicMock()
             _mock.settings.cookie_conf.jwt_token_expire_time = 86400
-            _mock.settings.cookie_conf.jwt_iss = 'bisheng'
-        elif _mod_name == 'bisheng.database.constants':
+            _mock.settings.cookie_conf.jwt_iss = 'doberman_agent'
+        elif _mod_name == 'doberman_agent.database.constants':
             _mock.AdminRole = 1
         sys.modules[_mod_name] = _mock
 
-from bisheng.user.domain.services.auth import AuthJwt, LoginUser
+from doberman_agent.user.domain.services.auth import AuthJwt, LoginUser
 
 
 @pytest.fixture(autouse=True)
@@ -57,7 +57,7 @@ def _pin_jwt_secret(monkeypatch):
     """F072: settings no longer ships a default secret. Pin one so AuthJwt does
     not try the config table when config_service is the real module (combined
     runs) rather than the pre-mock above (isolated runs)."""
-    from bisheng.common.services import config_service as cs
+    from doberman_agent.common.services import config_service as cs
 
     monkeypatch.setattr(cs.settings, 'jwt_secret', 'test-secret-key', raising=False)
 
@@ -100,7 +100,7 @@ class TestJwtTenantId:
 class TestLoginUserTenantId:
     """AC-08: LoginUser should expose tenant_id field."""
 
-    @patch('bisheng.user.domain.services.auth.UserRoleDao')
+    @patch('doberman_agent.user.domain.services.auth.UserRoleDao')
     def test_login_user_has_tenant_id(self, mock_dao):
         """LoginUser constructed with tenant_id should expose it."""
         mock_dao.get_user_roles.return_value = []
@@ -108,7 +108,7 @@ class TestLoginUserTenantId:
         user = LoginUser(user_id=1, user_name='test', tenant_id=3)
         assert user.tenant_id == 3
 
-    @patch('bisheng.user.domain.services.auth.UserRoleDao')
+    @patch('doberman_agent.user.domain.services.auth.UserRoleDao')
     def test_login_user_default_tenant_id(self, mock_dao):
         """LoginUser without explicit tenant_id defaults to DEFAULT_TENANT_ID."""
         mock_dao.get_user_roles.return_value = []
@@ -116,7 +116,7 @@ class TestLoginUserTenantId:
         user = LoginUser(user_id=1, user_name='test')
         assert user.tenant_id == DEFAULT_TENANT_ID
 
-    @patch('bisheng.user.domain.services.auth.UserRoleDao')
+    @patch('doberman_agent.user.domain.services.auth.UserRoleDao')
     def test_login_user_create_access_token_with_tenant(self, mock_dao):
         """create_access_token should include tenant_id in the JWT payload."""
         mock_dao.get_user_roles.return_value = []

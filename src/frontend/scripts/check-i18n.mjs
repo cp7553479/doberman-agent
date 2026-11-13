@@ -9,7 +9,7 @@
  *    language (reference language: zh-Hans). Files in packages/locales are
  *    held to zero drift (no baseline): they were born clean.
  * 2. Error-code reconciliation — every backend error code declared in
- *    src/backend/bisheng/common/errcode must have copy in the shared
+ *    src/backend/doberman_agent/common/errcode must have copy in the shared
  *    api_errors domain, otherwise users see the backend's raw English Msg.
  *    (Frontend-only codes are reported as dead-key candidates, info only —
  *    they may belong to the commercial gateway.)
@@ -29,8 +29,8 @@ import { fileURLToPath } from 'node:url';
 
 const WS = path.dirname(path.dirname(fileURLToPath(import.meta.url))); // src/frontend
 const BASELINE_FILE = path.join(WS, 'scripts', 'i18n-baseline.json');
-const BACKEND_ERRCODE_DIR = path.resolve(WS, '..', 'backend', 'bisheng', 'common', 'errcode');
-const BACKEND_AUDIT_FILE = path.resolve(WS, '..', 'backend', 'bisheng', 'database', 'models', 'audit_log.py');
+const BACKEND_ERRCODE_DIR = path.resolve(WS, '..', 'backend', 'doberman_agent', 'common', 'errcode');
+const BACKEND_AUDIT_FILE = path.resolve(WS, '..', 'backend', 'doberman_agent', 'database', 'models', 'audit_log.py');
 const FRONTEND_LOG_API = path.join(WS, 'platform', 'src', 'controllers', 'API', 'log.ts');
 const PLATFORM_BS_LOCALES = ['zh-Hans', 'en-US', 'ja'];
 
@@ -41,7 +41,7 @@ const SCOPES = [
     base: 'zh-Hans',
     others: ['en-US', 'ja'],
     // one entry per namespace file found in the reference language
-    files: () => fs.readdirSync(path.join(WS, 'platform/public/locales/zh-Hans')).filter((f) => f.endsWith('.json')),
+    files: () => fs.readdirSync(path.join(WS, 'platform/public/locales/zh-Hans')).filter((f) => !f.startsWith('._') && f.endsWith('.json')),
     path: (lang, file) => path.join(WS, 'platform/public/locales', lang, file),
     ratcheted: true,
   },
@@ -57,7 +57,7 @@ const SCOPES = [
     id: 'shared',
     base: 'zh-Hans',
     others: ['en', 'ja'],
-    files: () => fs.readdirSync(path.join(WS, 'packages/locales/src')).map((domain) => `${domain}`),
+    files: () => fs.readdirSync(path.join(WS, 'packages/locales/src')).filter((domain) => !domain.startsWith('._')).map((domain) => `${domain}`),
     path: (lang, domain) => path.join(WS, 'packages/locales/src', domain, `${lang}.json`),
     ratcheted: false, // single source of truth stays perfectly aligned, always
   },
@@ -100,7 +100,7 @@ function collectErrorCodes() {
   }
   const source = fs
     .readdirSync(BACKEND_ERRCODE_DIR)
-    .filter((f) => f.endsWith('.py'))
+    .filter((f) => !f.startsWith('._') && f.endsWith('.py'))
     .map((f) => fs.readFileSync(path.join(BACKEND_ERRCODE_DIR, f), 'utf8'))
     .join('\n');
   const backend = new Set([...source.matchAll(/Code:\s*int\s*=\s*(\d+)/g)].map((m) => m[1]));

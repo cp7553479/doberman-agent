@@ -5,7 +5,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, FolderClosedIcon, Loader2, Plus
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { NotificationSeverity } from "~/common";
-import { SearchInput } from "@bisheng/ui";
+import { SearchInput } from "@doberman-agent/ui";
 import { Button } from "~/components/ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/Dialog";
 import { useToastContext } from "~/Providers";

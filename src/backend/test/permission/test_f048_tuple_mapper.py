@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.permission.migration.f048_source_inventory import (
+from doberman_agent.permission.migration.f048_source_inventory import (
     LegacyTupleSource,
     PermissionMigrationResourceDTO,
 )
-from bisheng.permission.migration.f048_tuple_mapper import (
+from doberman_agent.permission.migration.f048_tuple_mapper import (
     LegacyGrantBinding,
     compile_department_child_mirrors,
     map_legacy_tuples,

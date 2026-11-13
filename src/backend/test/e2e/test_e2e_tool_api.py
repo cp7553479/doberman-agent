@@ -8,14 +8,14 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
-from bisheng.dsh.api.dependencies import get_runtime
-from bisheng.dsh.api.endpoints import tools
-from bisheng.dsh.domain.services.tools import ToolInvocationService
-from bisheng.dsh.tool_runtime import get_tool_service
-from bisheng.tool.domain.models.gpts_tools import GptsToolsDao
-from bisheng.tool.domain.repositories.saved_tools import SavedToolRepository
-from bisheng.tool.domain.services import bounded_openapi, executor
-from bisheng.tool.domain.services.saved_tools import SavedToolService
+from doberman_agent.dsh.api.dependencies import get_runtime
+from doberman_agent.dsh.api.endpoints import tools
+from doberman_agent.dsh.domain.services.tools import ToolInvocationService
+from doberman_agent.dsh.tool_runtime import get_tool_service
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsDao
+from doberman_agent.tool.domain.repositories.saved_tools import SavedToolRepository
+from doberman_agent.tool.domain.services import bounded_openapi, executor
+from doberman_agent.tool.domain.services.saved_tools import SavedToolService
 from test.dsh.test_access import service as access_service
 from test.dsh.test_access import token
 
@@ -66,7 +66,7 @@ def api(monkeypatch):
     state.permission = permission
 
     async def user(user_id, tenant_id):
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         return UserPayload(
             user_id=user_id, user_name="tester", user_role=[], tenant_id=tenant_id, is_global_super=False

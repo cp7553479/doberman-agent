@@ -85,9 +85,9 @@ async def _collect_extra_roots(root):
     """
     from sqlmodel import select
 
-    from bisheng.core.database import get_async_db_session
-    from bisheng.database.models.department import Department
-    from bisheng.database.models.tenant import ROOT_TENANT_ID
+    from doberman_agent.core.database import get_async_db_session
+    from doberman_agent.database.models.department import Department
+    from doberman_agent.database.models.tenant import ROOT_TENANT_ID
 
     async with get_async_db_session() as session:
         rows = (
@@ -104,9 +104,9 @@ async def _collect_extra_roots(root):
 
 
 async def run(apply: bool) -> int:
-    from bisheng.core.context.tenant import bypass_tenant_filter
-    from bisheng.database.models.department import DepartmentDao
-    from bisheng.database.models.tenant import ROOT_TENANT_ID
+    from doberman_agent.core.context.tenant import bypass_tenant_filter
+    from doberman_agent.database.models.department import DepartmentDao
+    from doberman_agent.database.models.tenant import ROOT_TENANT_ID
 
     with bypass_tenant_filter():
         root = await DepartmentDao.aget_tenant_root_via_pointer(ROOT_TENANT_ID)

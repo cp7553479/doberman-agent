@@ -8,11 +8,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.ai.asr import realtime
-from bisheng.llm.domain.llm.asr import BishengASR
-from bisheng.llm.domain.schemas import WorkbenchModelConfig, WSModel
-from bisheng.llm.domain.services import asr_realtime
-from bisheng.llm.domain.services.llm import LLMService
+from doberman_agent.core.ai.asr import realtime
+from doberman_agent.llm.domain.llm.asr import DobermanAgentASR
+from doberman_agent.llm.domain.schemas import WorkbenchModelConfig, WSModel
+from doberman_agent.llm.domain.services import asr_realtime
+from doberman_agent.llm.domain.services.llm import LLMService
 
 
 class ProviderSocket:
@@ -149,18 +149,18 @@ def test_explicit_model_registry_and_region():
 async def test_model_config_selects_streaming_and_preserves_file_asr():
     server = SimpleNamespace(type="qwen", config={"openai_api_key": "test-key"})
     model = SimpleNamespace(model_name="paraformer-realtime-v2", model_type="asr_rt", config={})
-    assert isinstance(await BishengASR.init_asr_client(model, server), realtime.RealtimeASRClient)
+    assert isinstance(await DobermanAgentASR.init_asr_client(model, server), realtime.RealtimeASRClient)
     model.model_name = "paraformer-v2"
     model.model_type = "asr"
-    assert (await BishengASR.init_asr_client(model, server)).__class__.__name__ == "AliyunASRClient"
+    assert (await DobermanAgentASR.init_asr_client(model, server)).__class__.__name__ == "AliyunASRClient"
     model.model_name = "arbitrary-realtime"
     model.model_type = "asr_rt"
     with pytest.raises(ValueError, match="no registered protocol adapter"):
-        await BishengASR.init_asr_client(model, server)
+        await DobermanAgentASR.init_asr_client(model, server)
     server.type = "openai"
     model.model_name = "whisper-1"
     with pytest.raises(ValueError, match="no realtime ASR client"):
-        await BishengASR.init_asr_client(model, server)
+        await DobermanAgentASR.init_asr_client(model, server)
 
 
 class BrowserSocket:
@@ -195,7 +195,7 @@ def setup_service(monkeypatch):
     monkeypatch.setattr(
         LLMService, "get_workbench_llm", AsyncMock(return_value=SimpleNamespace(asr_model=SimpleNamespace(id="1")))
     )
-    monkeypatch.setattr(LLMService, "get_bisheng_asr", resolve)
+    monkeypatch.setattr(LLMService, "get_doberman_agent_asr", resolve)
     return resolve
 
 
@@ -260,7 +260,7 @@ async def test_effective_config_derives_capability_from_model_type(monkeypatch, 
     monkeypatch.setattr(LLMService, "_aget_typed_with_meta", typed)
     monkeypatch.setattr(LLMService, "_sanitize_workbench_config_refs", AsyncMock(return_value=config))
     monkeypatch.setattr(
-        BishengASR,
+        DobermanAgentASR,
         "get_model_server_info",
         AsyncMock(
             return_value=(

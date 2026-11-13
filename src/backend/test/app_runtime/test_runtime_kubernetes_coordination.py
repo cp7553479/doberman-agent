@@ -9,11 +9,11 @@ import pytest
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
-from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.schemas.runtime_delivery import ExecutionFactInput
+from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
 from test.app_runtime.test_runtime_kubernetes_repository import NOW, UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import ADMISSION, HELPER, MANAGER, REF, document
@@ -23,7 +23,7 @@ P = "/api/v1/internal/app-runtime/v2"
 
 
 def heartbeat(**changes):
-    from bisheng.app_runtime.api.endpoints.runtime_delivery import Heartbeat
+    from doberman_agent.app_runtime.api.endpoints.runtime_delivery import Heartbeat
 
     document = {
         "engine_id": "cluster-a/namespace-a",
@@ -52,7 +52,7 @@ def heartbeat(**changes):
 
 @pytest.fixture
 async def coordination(control):
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 
     ctrl, repository, op = control
     op.kind = "prepare"
@@ -107,8 +107,8 @@ async def test_heartbeat_freezes_executor_domain_and_publishes_controller_state(
 
 
 async def test_old_docker_heartbeat_without_new_fields_remains_compatible(coordination):
-    from bisheng.app_runtime.api.endpoints.runtime_delivery import Heartbeat
-    from bisheng.app_runtime.domain.services.runtime_protocol import ServiceIdentity
+    from doberman_agent.app_runtime.api.endpoints.runtime_delivery import Heartbeat
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import ServiceIdentity
 
     c = coordination
     body = Heartbeat(
@@ -249,7 +249,7 @@ async def test_legacy_docker_facts_do_not_require_a_controller_receipt(coordinat
 
 
 async def test_runtime_route_masks_unknown_errors_before_the_global_business_handler(monkeypatch):
-    from bisheng.app_runtime.api.endpoints import runtime_delivery as api
+    from doberman_agent.app_runtime.api.endpoints import runtime_delivery as api
 
     settings = SimpleNamespace(
         enabled=True,
@@ -314,8 +314,8 @@ async def test_ready_fact_requires_and_accepts_the_registered_service_address(co
 
 
 async def test_failed_prerequisites_are_not_reported_as_a_capacity_wait(coordination):
-    from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
-    from bisheng.common.errcode.app_factory import AppOrchestratorUnavailableError
+    from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
+    from doberman_agent.common.errcode.app_factory import AppOrchestratorUnavailableError
 
     c = coordination
     node = await c.repo.get(RuntimeNode, "node-a")
@@ -341,7 +341,7 @@ async def test_failed_prerequisites_are_not_reported_as_a_capacity_wait(coordina
 
 
 async def test_entry_route_stops_allowing_a_node_with_failed_mandatory_probes(coordination):
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeRoute
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeRoute
 
     c = coordination
     await c.repo.save(

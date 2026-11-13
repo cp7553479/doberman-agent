@@ -6,13 +6,13 @@ from typing import List
 import openpyxl
 from pymilvus import Collection
 
-from bisheng.api.services.knowledge_imp import QA_save_knowledge, delete_vector_data
-from bisheng.knowledge.domain.knowledge_rag import KnowledgeRag
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao, Knowledge, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import QAKnoweldgeDao, KnowledgeFileDao, QAKnowledge, KnowledgeFile, \
+from doberman_agent.api.services.knowledge_imp import QA_save_knowledge, delete_vector_data
+from doberman_agent.knowledge.domain.knowledge_rag import KnowledgeRag
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao, Knowledge, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import QAKnoweldgeDao, KnowledgeFileDao, QAKnowledge, KnowledgeFile, \
     QAStatus, KnowledgeFileStatus
-from bisheng.llm.domain import LLMService
-from bisheng.worker.knowledge.file_worker import insert_milvus
+from doberman_agent.llm.domain import LLMService
+from doberman_agent.worker.knowledge.file_worker import insert_milvus
 
 _output_path = os.path.join(os.path.dirname(__file__), 'output')
 os.makedirs(_output_path, exist_ok=True)
@@ -350,7 +350,7 @@ def scan_knowledge_error_data():
 
 def _sync_milvus_new_collection_name(knowledge: Knowledge, milvus_obj) -> bool:
     """ copy knowledge data to new milvus collection name """
-    embedding = LLMService.get_bisheng_knowledge_embedding_sync(0, model_id=int(knowledge.model))
+    embedding = LLMService.get_doberman_agent_knowledge_embedding_sync(0, model_id=int(knowledge.model))
     new_collection_name = knowledge.index_name or knowledge.collection_name
     if new_collection_name == knowledge.collection_name:
         return milvus_obj

@@ -1,5 +1,5 @@
 """Tests for the version_management config schema in KnowledgeConf."""
-from bisheng.core.config.settings import KnowledgeConf, VersionManagementConf
+from doberman_agent.core.config.settings import KnowledgeConf, VersionManagementConf
 
 
 def test_version_management_default_values():

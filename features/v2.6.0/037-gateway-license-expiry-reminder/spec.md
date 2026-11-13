@@ -3,11 +3,11 @@
 **关联 PRD**: [2.6 release · §Gateway 到期提醒功能](https://dataelem.feishu.cn/wiki/NEtywYou0iJYfhka6RwcXkGAnpd)
 **优先级**: P1
 **所属版本**: v2.6.0
-**依赖**: 无（仅商业版 bisheng-gateway 生效）
+**依赖**: 无（仅商业版 doberman-agent-gateway 生效）
 
 > **范围边界**
 > - **本次纳入**：
->   - License 到期不再强制停服：trial 过期 / license 配置异常时 Gateway 进入「降级模式」——**只拦截网关自处理的付费接口**（SSO/oauth2、敏感词、用户组、getkey 等网关增值能力），**透传给 bisheng 后端的接口（`/api/v1`、`/api/v2`）照常放行**（核心产品免费、不拦），而非 `System.exit(0)`。
+>   - License 到期不再强制停服：trial 过期 / license 配置异常时 Gateway 进入「降级模式」——**只拦截网关自处理的付费接口**（SSO/oauth2、敏感词、用户组、getkey 等网关增值能力），**透传给 doberman-agent 后端的接口（`/api/v1`、`/api/v2`）照常放行**（核心产品免费、不拦），而非 `System.exit(0)`。
 >   - Gateway 暴露 license 状态查询接口，platform 管理台超级管理员登录后顶部常驻 Banner 按到期等级提示。
 > - **本次明确排除**：
 >   - 后端 license 模块 / Redis 缓存 / Gateway→后端 HMAC 上报（采用简化方案，状态由前端经 Gateway 直接获取，见 design §3 决策 1）。
@@ -24,7 +24,7 @@
 以便 **及时续期，避免业务在毫无征兆的情况下中断。**
 
 作为 **使用商业版的终端用户 / 调用方**，
-我希望 **license 过期后系统不是直接「进程消失 / 全线 502」，而是仅停用网关的付费能力、核心产品（透传 bisheng）照常可用，且访问付费接口时给出明确的「授权已过期」提示**，
+我希望 **license 过期后系统不是直接「进程消失 / 全线 502」，而是仅停用网关的付费能力、核心产品（透传 doberman-agent）照常可用，且访问付费接口时给出明确的「授权已过期」提示**，
 以便 **快速定位是授权问题而非系统故障。**
 
 ---
@@ -37,7 +37,7 @@
 |----|------|------|---------|
 | AC-01 | 系统 | trial license 到期后 Gateway 运行 | Gateway 进程**不退出**，进入降级模式 |
 | AC-02 | 终端用户 | 降级模式下访问**网关自处理的付费接口**（`/api/oauth2`、`/api/sensitive`、`/api/group`、`/api/getkey` 等） | 返回统一的「license 已过期」错误体（错误码 11001 + 文案），非 502 / 连接拒绝 |
-| AC-03 | 终端用户 / 管理员 | 降级模式下访问**透传 bisheng 后端的接口**（`/api/v1/**`、`/api/v2/**`）、`/api/license/status`、静态 / 健康检查 | 正常放行，核心产品照常可用、管理员可登录后台 |
+| AC-03 | 终端用户 / 管理员 | 降级模式下访问**透传 doberman-agent 后端的接口**（`/api/v1/**`、`/api/v2/**`）、`/api/license/status`、静态 / 健康检查 | 正常放行，核心产品照常可用、管理员可登录后台 |
 | AC-04 | 系统 | license 解密失败或未配置 | 与到期同样进入降级模式（不 `System.exit`），状态标记为过期/未知 |
 
 ### 2.2 状态查询与等级映射

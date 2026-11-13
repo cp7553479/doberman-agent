@@ -1,10 +1,10 @@
-"""F053 T045 — a `bisheng dev` capability call is judged exactly like a hosted one.
+"""F053 T045 — a `doberman-agent dev` capability call is judged exactly like a hosted one.
 
 AC-28's promise is not "the CLI enforces the right things"; it is that the CLI
 enforces *nothing*, because there is only one judge. A local application calls
 the same `/api/v2` faces with the same bearer as a hosted one, so the scope
 check, the visibility filter and the fail-closed behaviour are literally the
-same code — and `bisheng dev` deliberately does not check scopes before starting
+same code — and `doberman-agent dev` deliberately does not check scopes before starting
 (AC-29), which is only safe while that stays true.
 
 What could break the promise is a *branch*: a face that treats a
@@ -24,14 +24,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.mcp_face import RetrievalIdentityMissingError
-from bisheng.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
-from bisheng.open_api.api import dependencies as v2_dependencies
-from bisheng.open_api.api.endpoints.model_gateway import router as model_gateway_router
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.scopes import get_open_api_scope_marker
-from bisheng.open_mcp import auth as mcp_auth
-from bisheng.open_mcp.registry import TOOL_DEFINITIONS, list_tools_for
+from doberman_agent.common.errcode.mcp_face import RetrievalIdentityMissingError
+from doberman_agent.knowledge.domain.services.retrieval_facade_service import RetrievalFacadeService
+from doberman_agent.open_api.api import dependencies as v2_dependencies
+from doberman_agent.open_api.api.endpoints.model_gateway import router as model_gateway_router
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.scopes import get_open_api_scope_marker
+from doberman_agent.open_mcp import auth as mcp_auth
+from doberman_agent.open_mcp.registry import TOOL_DEFINITIONS, list_tools_for
 
 
 def _principal(*scopes: str) -> OpenApiPrincipal:
@@ -76,12 +76,12 @@ def test_the_model_face_has_no_notion_of_where_the_caller_runs():
     guarded is a future edit, and a behavioural test would only catch it on the
     one path it happens to exercise.
     """
-    from bisheng.open_api.api.endpoints import model_gateway
-    from bisheng.open_api.domain.services import model_gateway_service
+    from doberman_agent.open_api.api.endpoints import model_gateway
+    from doberman_agent.open_api.domain.services import model_gateway_service
 
     for module in (model_gateway, model_gateway_service):
         source = inspect.getsource(module).lower()
-        for token in ("is_dev", "bisheng dev", "local_dev_call", "skip_scope"):
+        for token in ("is_dev", "doberman-agent dev", "local_dev_call", "skip_scope"):
             assert token not in source, f"{module.__name__} branches on {token!r}"
 
 
@@ -95,7 +95,7 @@ def test_the_mcp_transport_reuses_the_v2_admission_context():
     "editing the key's scopes takes effect on the next call" true for a local
     developer without anybody re-implementing them.
     """
-    shared = "from bisheng.open_api.domain.services.access_context import"
+    shared = "from doberman_agent.open_api.domain.services.access_context import"
     assert shared in inspect.getsource(mcp_auth)
     assert shared in inspect.getsource(v2_dependencies)
 
@@ -108,7 +108,7 @@ def test_every_mcp_tool_refuses_a_credential_without_its_scope(definition):
 
 def test_a_credential_sees_only_the_tools_its_scopes_cover(monkeypatch):
     """`tools/list` and the call-time check agree — listing is not a wider door."""
-    from bisheng.open_mcp import registry
+    from doberman_agent.open_mcp import registry
 
     monkeypatch.setattr(registry.settings.app_runtime, "enabled", True)
     principal = _principal("knowledge:read")
@@ -127,7 +127,7 @@ async def test_the_retrieval_facade_refuses_rather_than_falling_back_to_everythi
     account as the visitor, so an application that forwards no visitor identity
     has to be refused here rather than quietly retrieving as nobody.
     """
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalRequest
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalRequest
 
     request = RetrievalRequest(query="任意问题")
     no_actor = SimpleNamespace(actor=None, login_user=None)

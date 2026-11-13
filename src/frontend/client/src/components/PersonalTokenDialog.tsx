@@ -1,5 +1,5 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect, useRef, useState } from "react";
 import {
   deletePersonalTokenApi,
@@ -12,7 +12,7 @@ import {
   type PersonalTokenStatus,
 } from "~/api/personalToken";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/components/ui";
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { useConfirm } from "~/Providers/ConfirmContext";
 import { useToastContext } from "~/Providers/ToastContext";
 import { useLocalize } from "~/hooks";

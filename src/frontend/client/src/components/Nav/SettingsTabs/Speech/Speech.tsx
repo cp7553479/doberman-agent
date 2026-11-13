@@ -1,6 +1,6 @@
 import { useRecoilState } from 'recoil';
-import { Tabs } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Tabs } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useGetCustomConfigSpeechQuery } from '~/hooks/queries';
 import {

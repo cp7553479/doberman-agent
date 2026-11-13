@@ -18,7 +18,7 @@ import {
 } from "@/controllers/API/hostedApp"
 import { getAppsApi } from "@/controllers/API/flow"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { normalizeApiError } from "@bisheng/api-client"
+import { normalizeApiError } from "@doberman-agent/api-client"
 
 const requestMocks = vi.hoisted(() => ({
   get: vi.fn(),

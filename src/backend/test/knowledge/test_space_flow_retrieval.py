@@ -9,9 +9,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from langchain_core.documents import Document
 
-from bisheng.core.context.tenant import get_current_tenant_id, set_current_tenant_id
-from bisheng.knowledge.domain.services import space_flow_retrieval
-from bisheng.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
+from doberman_agent.core.context.tenant import get_current_tenant_id, set_current_tenant_id
+from doberman_agent.knowledge.domain.services import space_flow_retrieval
+from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import IndexFilter
 
 
 async def test_scoped_login_user_no_tenant_switch():
@@ -87,7 +87,7 @@ async def test_aretrieve_returns_empty_when_no_identity_or_spaces():
 def _mock_retrieval(
     vis_instance,
     docs,
-    retriever_cls_target="bisheng.knowledge.domain.services.space_flow_retrieval.KnowledgeRetrieverTool",
+    retriever_cls_target="doberman_agent.knowledge.domain.services.space_flow_retrieval.KnowledgeRetrieverTool",
 ):
     """Patch the heavy retrieval deps of _aretrieve_one_space (Milvus/ES = 测试降级)."""
     vector = MagicMock()
@@ -98,7 +98,7 @@ def _mock_retrieval(
     tool_instance = MagicMock()
     tool_instance.ainvoke = AsyncMock(return_value=docs)
     return (
-        patch("bisheng.knowledge.domain.knowledge_rag.KnowledgeRag", rag),
+        patch("doberman_agent.knowledge.domain.knowledge_rag.KnowledgeRag", rag),
         patch(retriever_cls_target, MagicMock(return_value=tool_instance)),
     )
 
@@ -123,9 +123,9 @@ async def test_space_filter_open_runtime_drops_unauthorized():
 
     rag_patch, tool_patch = _mock_retrieval(vis, [doc_ok, doc_no])
     with (
-        patch("bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id", AsyncMock(return_value=space)),
+        patch("doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id", AsyncMock(return_value=space)),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_file_visibility_service.KnowledgeFileVisibilityService",
+            "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service.KnowledgeFileVisibilityService",
             vis_cls,
         ),
         rag_patch,
@@ -158,9 +158,9 @@ async def test_space_filter_close_author_identity():
 
     rag_patch, tool_patch = _mock_retrieval(vis, [doc])
     with (
-        patch("bisheng.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id", AsyncMock(return_value=space)),
+        patch("doberman_agent.knowledge.domain.models.knowledge.KnowledgeDao.aquery_by_id", AsyncMock(return_value=space)),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_file_visibility_service.KnowledgeFileVisibilityService",
+            "doberman_agent.knowledge.domain.services.knowledge_file_visibility_service.KnowledgeFileVisibilityService",
             vis_cls,
         ),
         rag_patch,

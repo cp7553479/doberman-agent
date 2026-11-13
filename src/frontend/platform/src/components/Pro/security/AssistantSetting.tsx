@@ -1,5 +1,5 @@
-import { Button, Switch, Tooltip, notification, toast } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, Switch, Tooltip, notification, toast } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/bs-ui/accordion';
 import { Sheet, SheetContent, SheetTitle } from '@/components/bs-ui/sheet';
 import { getSensitiveApi, sensitiveSaveApi } from '@/controllers/API/pro';

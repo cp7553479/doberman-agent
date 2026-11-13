@@ -1,4 +1,4 @@
-import { Button, Textarea } from '@bisheng/ui';
+import { Button, Textarea } from '@doberman-agent/ui';
 import { useRef, useState, type ReactNode } from 'react';
 
 export interface ChoiceOption { id: string; label: ReactNode }

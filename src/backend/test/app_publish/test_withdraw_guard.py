@@ -47,7 +47,7 @@ TERMINAL_STATUSES = ("approved", "rejected", "cancelled")
 
 
 def _guard_error():
-    from bisheng.common.errcode.approval import ApprovalInstanceNotPendingError
+    from doberman_agent.common.errcode.approval import ApprovalInstanceNotPendingError
 
     return ApprovalInstanceNotPendingError
 
@@ -60,8 +60,8 @@ async def _make_instance(
     payload_snapshot: dict[str, Any] | None = None,
     business_name: str = "F055 app",
 ):
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstance
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstance
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     return await ApprovalInstanceRepository.create_instance(
         ApprovalInstance(
@@ -84,8 +84,8 @@ async def _make_instance(
 
 
 async def _make_pending_task(instance, approver_user_id: int = 90501):
-    from bisheng.approval.domain.models.approval_instance import ApprovalTask, ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalTask, ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     return await ApprovalInstanceRepository.create_task(
         ApprovalTask(
@@ -110,7 +110,7 @@ async def _hook_spy(monkeypatch):
     The factory is imported *inside* ``withdraw_instance``, so the patch has to
     land on the factory module rather than on the service's namespace.
     """
-    from bisheng.approval.domain.services import approval_runtime_handler_factory as factory
+    from doberman_agent.approval.domain.services import approval_runtime_handler_factory as factory
 
     calls: list[tuple[int, dict, str | None]] = []
 
@@ -133,7 +133,7 @@ def withdraw_service(monkeypatch, publish_db):
     status guard, the task cancellation loop, the instance UPDATE and the action
     log all run for real — those are what the tests below assert on.
     """
-    from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
+    from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
 
     monkeypatch.setattr(ApprovalCenterService, "_write_audit_log", AsyncMock(return_value=None))
     monkeypatch.setattr(ApprovalCenterService, "_send_approval_notify", AsyncMock(return_value=None))
@@ -152,8 +152,8 @@ def withdraw_service(monkeypatch, publish_db):
 
 async def test_pending_instance_can_still_be_withdrawn(withdraw_service, monkeypatch):
     """The happy path must survive the tightening — otherwise 撤回 is simply broken."""
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     instance = await _make_instance(status=ApprovalInstanceStatus.PENDING)
     task = await _make_pending_task(instance)
@@ -179,7 +179,7 @@ async def test_pending_instance_can_still_be_withdrawn(withdraw_service, monkeyp
 @pytest.mark.parametrize("status", TERMINAL_STATUSES)
 async def test_terminal_instance_cannot_be_withdrawn(withdraw_service, monkeypatch, status):
     """approved / rejected / cancelled — each refused with 18118, each leaving no trace."""
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     instance = await _make_instance(status=status)
 
@@ -210,8 +210,8 @@ async def test_pending_tasks_survive_a_refused_withdraw(withdraw_service, monkey
     guard placed one line too late would leave an approved instance with all of
     its tasks silently cancelled.
     """
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus, ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     instance = await _make_instance(status=ApprovalInstanceStatus.APPROVED)
     task = await _make_pending_task(instance)
@@ -231,7 +231,7 @@ async def test_applicant_check_still_runs_first(withdraw_service, monkeypatch):
     """Ordering matters: a stranger hitting a terminal instance still gets the
     permission refusal, not a status one. Swapping the two checks would let an
     attacker probe which requests are still open."""
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus
 
     instance = await _make_instance(status=ApprovalInstanceStatus.APPROVED)
 
@@ -256,7 +256,7 @@ async def test_online_version_terminal_state_survives_a_late_withdraw(
     The real hook runs here (no spy): if the guard were missing, this is the
     exact call chain that would try to rewrite a live release's outcome.
     """
-    from bisheng.database.models.app_version import TERMINAL_STATE_ONLINE, AppVersionDao
+    from doberman_agent.database.models.app_version import TERMINAL_STATE_ONLINE, AppVersionDao
 
     app, version = await app_factory(state="online", with_version=True, terminal_state=TERMINAL_STATE_ONLINE)
     instance = await _make_instance(
@@ -291,8 +291,8 @@ async def test_online_version_terminal_state_survives_a_late_withdraw(
 @pytest.mark.parametrize("scenario_code", [CHANNEL_SCENARIO, KNOWLEDGE_SPACE_SCENARIO])
 async def test_existing_scenarios_keep_a_working_withdraw(withdraw_service, monkeypatch, scenario_code):
     """Channel subscription / knowledge-space join: pending is still withdrawable."""
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     instance = await _make_instance(status=ApprovalInstanceStatus.PENDING, scenario_code=scenario_code)
     await _make_pending_task(instance)
@@ -318,7 +318,7 @@ async def test_existing_scenarios_also_refuse_a_terminal_withdraw(withdraw_servi
     into a state where the membership row says joined and the approval row says
     withdrawn.
     """
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     instance = await _make_instance(status=status, scenario_code=scenario_code)
 

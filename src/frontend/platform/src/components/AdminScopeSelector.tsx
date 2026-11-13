@@ -2,7 +2,7 @@
 // `useAdminScope` and render only for the global super admin.
 
 import * as React from "react"
-import { Tabs } from '@bisheng/ui';
+import { Tabs } from '@doberman-agent/ui';
 
 // `'global'` represents no scope (full tree); numbers are tenant ids.
 export type AdminScopeValue = number | "global"

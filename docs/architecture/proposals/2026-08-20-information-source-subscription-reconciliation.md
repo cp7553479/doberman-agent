@@ -1,12 +1,12 @@
-# 毕昇侧信息源订阅对账与新增文章同步轻量改造方案
+# doberman-agent侧信息源订阅对账与新增文章同步轻量改造方案
 
 - 日期：2026-08-20
 - 修订日期：2026-08-21
 - 状态：技术方案已确认，已进入 SDD（Spec、Design 已确认，Tasks 自审通过待确认）
 - 目标分支：`feat/3.0.0-beta1-information`
 - 基线：`feat/3.0.0-beta1`，commit `e9ac9cecc`
-- 上游协议：`bisheng-information/docs/information-source-sync-api.md`
-- 改造系统：`bisheng`；本文不修改 `bisheng-information` 服务端实现
+- 上游协议：`doberman-agent-information/docs/information-source-sync-api.md`
+- 改造系统：`doberman-agent`；本文不修改 `doberman-agent-information` 服务端实现
 
 ## 1. 方案结论
 
@@ -69,7 +69,7 @@
 
 ### 3.1 远端未完成但本地提前完成
 
-当前文章任务使用 `channel_info_source.update_time` 判断当天是否已同步。毕昇如果在 Information 当天抓取完成前执行，即使没有拉到最新文章，也可能更新本地时间，导致后续周期跳过。
+当前文章任务使用 `channel_info_source.update_time` 判断当天是否已同步。doberman-agent如果在 Information 当天抓取完成前执行，即使没有拉到最新文章，也可能更新本地时间，导致后续周期跳过。
 
 修复原则是：
 
@@ -234,7 +234,7 @@ GET /information/articles/{information_id}
 - 固定按 `(create_time DESC, id DESC)` 排序；
 - 同一时间边界的文章会重复返回。
 
-毕昇处理：
+doberman-agent处理：
 
 - 使用外部稳定 `article.id` 作为 ES 文档 ID，重复边界幂等覆盖；
 - 正常增量拉取全部分页，校验累计唯一 ID 数、`totalCount` 和排序；
@@ -362,12 +362,12 @@ Worker 只处理 Celery 调度、Redis 锁、tenant Context 和调用领域服�
 本方案不新增 Information 专用 Celery 队列或专用 Worker，也不修改 `task_routes`。订阅、文章以及知识路由/投递任务全部使用默认 `celery` queue；知识空间接受文件后触发的解析与向量化任务继续使用知识模块既有的 `knowledge_celery`，不属于本方案新增队列。
 
 ```text
-src/backend/bisheng/worker/information/
+src/backend/doberman_agent/worker/information/
   reconcile.py            # 订阅对账 dispatcher/入口
   article.py              # 公共文章 dispatcher/入口
   knowledge_delivery.py   # 新文章路由和单配置一次投递
 
-src/backend/bisheng/channel/domain/
+src/backend/doberman_agent/channel/domain/
   models/
     channel_info_source.py
     channel_knowledge_sync.py
@@ -379,7 +379,7 @@ src/backend/bisheng/channel/domain/
     information_article_sync_service.py
     information_knowledge_delivery_service.py
 
-src/backend/bisheng/core/external/bisheng_information_client/
+src/backend/doberman_agent/core/external/doberman_agent_information_client/
   client.py
 ```
 
@@ -424,12 +424,12 @@ src/backend/bisheng/core/external/bisheng_information_client/
 
 ### 11.2 指标与告警
 
-- `bisheng_information_reconcile_runs_total{result}`
-- `bisheng_information_reconcile_drift{direction}`
-- `bisheng_information_article_sources_processed_total{result}`
-- `bisheng_information_article_sync_lag_seconds`
-- `bisheng_information_knowledge_delivery_total{result}`
-- `bisheng_information_knowledge_delivery_dispatch_failed_total`
+- `doberman_agent_information_reconcile_runs_total{result}`
+- `doberman_agent_information_reconcile_drift{direction}`
+- `doberman_agent_information_article_sources_processed_total{result}`
+- `doberman_agent_information_article_sync_lag_seconds`
+- `doberman_agent_information_knowledge_delivery_total{result}`
+- `doberman_agent_information_knowledge_delivery_dispatch_failed_total`
 
 连续订阅对账失败、临近业务日结束仍有来源未完成、公共文章游标延迟超阈值、知识投递消息发送失败或 `system_failed` 持续增长时告警。文件重名等明确业务失败进入统计，不触发自动重试。
 
@@ -493,7 +493,7 @@ src/backend/bisheng/core/external/bisheng_information_client/
 - 两个租户共享来源时远端只订阅和拉取一次。
 - 删除一个租户引用不会取消其他租户仍使用的来源。
 - 公共 ES 文章可被不同租户的知识配置分别导入，权限和数据不串租户。
-- 毕昇先于 Information 执行时保持待检查；Information 完成后一个轮询周期内同步文章。
+- doberman-agent先于 Information 执行时保持待检查；Information 完成后一个轮询周期内同步文章。
 - Information 当天零新增时记录远端水位，后续不重复拉取。
 - 上游包含边界重复返回旧文章时不产生第二次知识投递。
 - 同一新增文章可分别投递到不同租户、知识空间和目录，tenant Context 不串租户。
@@ -516,28 +516,28 @@ src/backend/bisheng/core/external/bisheng_information_client/
 
 ### 修改
 
-- `src/backend/bisheng/core/external/bisheng_information_client/client.py`
+- `src/backend/doberman_agent/core/external/doberman_agent_information_client/client.py`
   - subscriptions 完整分页、远端水位和错误分类。
-- `src/backend/bisheng/channel/domain/models/channel_info_source.py`
+- `src/backend/doberman_agent/channel/domain/models/channel_info_source.py`
   - 明确公共目录语义。
-- `src/backend/bisheng/core/database/tenant_filter.py`
+- `src/backend/doberman_agent/core/database/tenant_filter.py`
   - 移除 `channel_info_source` 的租户自动过滤注册。
-- `src/backend/bisheng/tenant/domain/services/tenant_mount_service.py`
+- `src/backend/doberman_agent/tenant/domain/services/tenant_mount_service.py`
   - 租户删除不再清理共享来源目录。
-- `src/backend/bisheng/channel/domain/services/`、`repositories/`
+- `src/backend/doberman_agent/channel/domain/services/`、`repositories/`
   - 平台订阅对账、公共文章同步、新文章识别和知识配置路由。
-- `src/backend/bisheng/worker/information/reconcile.py`
+- `src/backend/doberman_agent/worker/information/reconcile.py`
   - 全租户快照和随机 dispatcher。
-- `src/backend/bisheng/worker/information/article.py`
+- `src/backend/doberman_agent/worker/information/article.py`
   - 公共来源单次拉取、ES 新增识别和公共游标。
-- `src/backend/bisheng/worker/information/knowledge_delivery.py`
+- `src/backend/doberman_agent/worker/information/knowledge_delivery.py`
   - 全租户路由和单配置逐篇一次投递。
-- `src/backend/bisheng/core/config/settings.py`
+- `src/backend/doberman_agent/core/config/settings.py`
   - 首次 20 篇、调度周期、随机窗口、业务时区、Information 请求重试和知识投递开关。
 
 ### 新增
 
-- `src/backend/bisheng/channel/domain/models/information_article_sync_state.py`
+- `src/backend/doberman_agent/channel/domain/models/information_article_sync_state.py`
   - 平台公共来源文章游标和远端水位。
 - 对应 Repository、Service 和测试。
 

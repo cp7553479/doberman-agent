@@ -385,7 +385,7 @@ CREATE TABLE IF NOT EXISTS channel (
 )"""
 
 # F018 requires the assistant table for the "assistant" transfer type.
-# Production schema (src/backend/bisheng/database/models/assistant.py) uses
+# Production schema (src/backend/doberman_agent/database/models/assistant.py) uses
 # UUID string ids.
 TABLE_ASSISTANT = """\
 CREATE TABLE IF NOT EXISTS assistant (

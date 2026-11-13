@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { AppNumType } from "@/types/app";
 import { cn } from "@/utils";

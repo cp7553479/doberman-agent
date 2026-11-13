@@ -19,15 +19,15 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.database.models.tenant import ROOT_TENANT_ID, Tenant  # noqa: E402
-from bisheng.workstation.domain.services.workstation_service import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID, Tenant  # noqa: E402
+from doberman_agent.workstation.domain.services.workstation_service import (  # noqa: E402
     WorkStationService,
 )
 
@@ -86,10 +86,10 @@ if __name__ == "__main__":
     async def _main() -> int:
         try:
             await initialize_app_context(settings, instance_role="script")
-            from bisheng.api.services.f048_permission_runtime import (
+            from doberman_agent.api.services.f048_permission_runtime import (
                 initialize_f048_worker_runtime,
             )
-            from bisheng.permission.application.process_runtime import (
+            from doberman_agent.permission.application.process_runtime import (
                 register_f048_permission_runtime_context,
             )
 

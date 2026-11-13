@@ -18,13 +18,13 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel
 
-from bisheng.core.context.tenant import set_current_tenant_id, strict_tenant_filter
-from bisheng.core.database import tenant_filter
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
-from bisheng.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
-from bisheng.dsh.domain.models.model_audit_setting import DshModelAuditSetting
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath, DshAuditTreeState
+from doberman_agent.core.context.tenant import set_current_tenant_id, strict_tenant_filter
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.model_audit_conversation import DshModelAuditConversation
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_audit_setting import DshModelAuditSetting
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeNode, DshAuditTreePath, DshAuditTreeState
 
 NOW = datetime(2026, 10, 23, 2, tzinfo=UTC)
 SAFETY_MODELS = (

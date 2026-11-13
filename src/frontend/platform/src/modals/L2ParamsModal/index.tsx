@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import { PenLine } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,7 @@ import {
     DialogTrigger,
 } from "../../components/bs-ui/dialog";
 import { Label } from "../../components/bs-ui/label";
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { TemplateVariableType } from "../../types/api";
 import { FlowType } from "../../types/flow";
 import { classNames } from "../../utils";

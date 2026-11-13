@@ -29,13 +29,13 @@
 ### Wave 1 — 存储层基建
 
 - [x] **T001**: 会话附件对象名生成 + 单元测试
-  **文件**: `src/backend/bisheng/core/storage/chat_attachment.py`、`test/core/test_chat_attachment_object_name.py`
+  **文件**: `src/backend/doberman_agent/core/storage/chat_attachment.py`、`test/core/test_chat_attachment_object_name.py`
   **逻辑**: `build_chat_object_name(user_id, filename)` → `chat/{user_id}/{uuid}{ext}`。只从用户文件名取扩展名；路径分隔符与 `..` 一律丢弃；对象名必须纯 ASCII（design §5 坑 10）
   **覆盖 AC**: AC-02
   **依赖**: 无
 
 - [x] **T002**: 附件「转正」逻辑 + 单元测试
-  **文件**: `src/backend/bisheng/core/storage/chat_attachment.py`、`test/core/test_promote_chat_attachments.py`
+  **文件**: `src/backend/doberman_agent/core/storage/chat_attachment.py`、`test/core/test_promote_chat_attachments.py`
   **逻辑**: `promote_chat_attachments(files, user_id)` —— 从上传时签发的链接反解临时对象名 → 服务端 copy 到主桶 → 把永久对象名写回 files。**已有 object_name 的跳过**（任务模式本就落主桶）；**单个失败不影响其他附件与消息本身**
   **覆盖 AC**: AC-01, AC-02
   **依赖**: T001
@@ -45,19 +45,19 @@
 > 上传接口**一个都不改**（design 决策 1 选 B）。日常模式前端改用共用上传接口即可获得 uuid 命名。
 
 - [x] **T003**: 日常模式消息落库接入
-  **文件**: `src/backend/bisheng/workstation/domain/services/chat_service.py`（两处 `files=json.dumps(data.files)`）
+  **文件**: `src/backend/doberman_agent/workstation/domain/services/chat_service.py`（两处 `files=json.dumps(data.files)`）
   **逻辑**: 存库前调 `promote_chat_attachments(data.files, login_user.user_id)`
   **覆盖 AC**: AC-01
   **依赖**: T002
 
 - [x] **T004**: 工作流会话消息落库接入
-  **文件**: `src/backend/bisheng/worker/workflow/redis_callback.py`（`files=json.dumps(chat_response.files…)`）
+  **文件**: `src/backend/doberman_agent/worker/workflow/redis_callback.py`（`files=json.dumps(chat_response.files…)`）
   **逻辑**: 同上；注意此处在 Celery worker 内，需确认用户上下文可取
   **覆盖 AC**: AC-01
   **依赖**: T002
 
 - [x] **T005**: 任务模式消息落库确认
-  **文件**: `src/backend/bisheng/linsight/domain/utils.py`（`files=json.dumps(files)`）
+  **文件**: `src/backend/doberman_agent/linsight/domain/utils.py`（`files=json.dumps(files)`）
   **逻辑**: 实测灵思是第三种架构——上传落**后端本地磁盘**，执行时才进对象存储。但其入库流程**已经**为图片预览把原始字节提升到了正式桶（`entry["original_file_path"]`），只需在 `_annotate_display_files` 里把它带进消息的 `object_name`；另对走共用上传接口的附件在持久化前统一调 `promote_chat_attachments`
   **覆盖 AC**: AC-01, AC-11
   **依赖**: T002
@@ -71,7 +71,7 @@
 ### Wave 3 — 换发链接与清理
 
 - [x] **T007**: 换发链接的鉴权逻辑 + 单元测试
-  **文件**: `src/backend/bisheng/chat_session/domain/chat.py`（或同模块 service）
+  **文件**: `src/backend/doberman_agent/chat_session/domain/chat.py`（或同模块 service）
   `src/backend/test/chat_session/test_attachment_link.py`（新建）
   **逻辑**: `resolve_attachment_url(chat_id, file_id, login_user)` —— ①载入会话 ②校验请求者为会话所属用户 ③在该会话消息的 files 中查 `file_id` 取**对象名** ④签发短时效链接。**对象名只从服务端数据取，绝不使用入参**（design §3 决策 3、§5 坑 6）
   **测试**: 非所属用户 → 拒绝；file_id 不存在 → 拒绝；会话不存在 → 拒绝；正常 → 返回链接；**入参伪造对象名不影响结果**
@@ -79,13 +79,13 @@
   **依赖**: 无
 
 - [x] **T008**: 换发链接端点
-  **文件**: `src/backend/bisheng/chat_session/api/endpoints/chat.py`
+  **文件**: `src/backend/doberman_agent/chat_session/api/endpoints/chat.py`
   **逻辑**: 新增端点，入参 `chat_id` + `file_id`，委托 T007；不新增错误码，复用既有未授权 / 未找到响应
   **覆盖 AC**: AC-04, AC-08
   **依赖**: T006
 
 - [x] **T009**: 会话删除时清理附件
-  **文件**: `src/backend/bisheng/chat_session/domain/chat.py`（`delete_session`）
+  **文件**: `src/backend/doberman_agent/chat_session/domain/chat.py`（`delete_session`）
   **逻辑**: 软删会话后，从该会话的消息 files 中取出 `object_name` 并逐个删除（上传时拿不到会话 ID，无法按前缀清扫——design §5 坑 8）。**清理失败只记日志，不得让删除会话失败**（spec §3）
   **覆盖 AC**: AC-03
   **依赖**: T002
@@ -108,7 +108,7 @@
 
 - [x] **T012**: 失效占位组件（独立组件）
   **文件**: `src/frontend/client/src/components/Chat/Messages/Content/InvalidImagePlaceholder.tsx`（新建）
-  **逻辑**: 浅灰圆角卡片，居中 `Outlined.FileImage`（bisheng-icons，已确认存在）+ 下方文字「图片已失效，无法查看」。尺寸与图片缩略图一致，避免消息布局跳动
+  **逻辑**: 浅灰圆角卡片，居中 `Outlined.FileImage`（doberman-agent-icons，已确认存在）+ 下方文字「图片已失效，无法查看」。尺寸与图片缩略图一致，避免消息布局跳动
   **覆盖 AC**: AC-09
   **依赖**: 无
 

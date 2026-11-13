@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import type { Table as TTable } from '@tanstack/react-table';
 import { Button, Table, TableRow, TableBody, TableCell, TableHead, TableHeader, AnimatedSearchInput } from './';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 import { TrashIcon, Spinner } from '~/components/svg';
 import { useLocalize, usePrefersMobileLayout } from '~/hooks';
 import { cn } from '~/utils';

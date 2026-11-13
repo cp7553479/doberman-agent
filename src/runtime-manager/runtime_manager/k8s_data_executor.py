@@ -41,7 +41,7 @@ def _digest(parameters):
 class KubernetesDataExecutor:
     def __init__(self, runtime, *, transport=None):
         self.runtime = runtime
-        self.cache_root = Path(gettempdir()) / "bisheng-data-exports"
+        self.cache_root = Path(gettempdir()) / "doberman-agent-data-exports"
         self.http = httpx.Client(transport=transport, trust_env=False, follow_redirects=False, timeout=2)
 
     def close(self):
@@ -129,7 +129,7 @@ class KubernetesDataExecutor:
             target["key_ids"] = self._health(current, target)
             return target
         # Only a volume already assigned by a prior lifecycle may be reused.
-        volume_ref = str(uuid5(NAMESPACE_URL, "bisheng-volume:" + current["node_id"] + ":" + current["app_id"]))
+        volume_ref = str(uuid5(NAMESPACE_URL, "doberman-agent-volume:" + current["node_id"] + ":" + current["app_id"]))
         try:
             volume = self.runtime.platform.resource(volume_ref)
             if (

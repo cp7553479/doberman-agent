@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.core.vectorstore import milvus as milvus_module
-from bisheng.core.vectorstore.milvus import Milvus
+from doberman_agent.core.vectorstore import milvus as milvus_module
+from doberman_agent.core.vectorstore.milvus import Milvus
 
 
 def _raise_no_index_params(self):

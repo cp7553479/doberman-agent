@@ -1,6 +1,6 @@
 # F062 部署与回退操作说明
 
-本文交付运行接线，不表示已部署。BiSheng 分支 `feat/3.0.0-beta2-pre`；Gateway 分支 `feat/dsh-access`。执行前使用正式发布制品与本环境自己的 Secret；以下均为配置结构，不含真实凭据。
+本文交付运行接线，不表示已部署。doberman-agent 分支 `feat/3.0.0-beta2-pre`；Gateway 分支 `feat/dsh-access`。执行前使用正式发布制品与本环境自己的 Secret；以下均为配置结构，不含真实凭据。
 
 ## 入口与相互信任
 
@@ -10,14 +10,14 @@
 
 | Python 配置 | Gateway 配置 | 约束 |
 |---|---|---|
-| dsh.platform_public_url | bisheng.home-url | Gateway 提取 home-url 的协议、主机与端口，生成客户端可访问的授权页地址 |
-| dsh.gateway_internal_url | bisheng.bisheng-api-url | 分别指向 Gateway 与 Python 的内部 HTTP/HTTPS origin |
-| sso_sync.gateway_hmac_secret | bisheng.gateway-hmac-secret | 现有共享 Secret |
+| dsh.platform_public_url | doberman_agent.home-url | Gateway 提取 home-url 的协议、主机与端口，生成客户端可访问的授权页地址 |
+| dsh.gateway_internal_url | doberman_agent.doberman-agent-api-url | 分别指向 Gateway 与 Python 的内部 HTTP/HTTPS origin |
+| sso_sync.gateway_hmac_secret | doberman_agent.gateway-hmac-secret | 现有共享 Secret |
 | settings.redis_url | Gateway 原 Redis 配置 | 不新增 DSH Redis 地址 |
 | dsh.billing_timezone | — | 默认 Asia/Shanghai |
 | — | dsh.license-verification-keys | 既有 License 扩展验证，与 HMAC 分离 |
 
-Gateway 升级前删除旧 `dsh.public-origin`、`dsh.python-origin`；DSH 配置采用严格绑定，遗留字段会导致启动失败。原 `bisheng.home-url` 的页面路径、查询参数与片段不进入 DSH 授权链接；SSO 原有使用方式不变。客户端接口无变化。
+Gateway 升级前删除旧 `dsh.public-origin`、`dsh.python-origin`；DSH 配置采用严格绑定，遗留字段会导致启动失败。原 `doberman_agent.home-url` 的页面路径、查询参数与片段不进入 DSH 授权链接；SSO 原有使用方式不变。客户端接口无变化。
 
 移除旧 quota_evidence_bucket、quota_approval_object、quota_approval_sha256 配置；DSH 不再依赖 MinIO 恢复材料，严格配置绑定不接受旧字段。dsh.enabled 默认关闭。
 
@@ -25,9 +25,9 @@ Gateway 升级前删除旧 `dsh.public-origin`、`dsh.python-origin`；DSH 配�
 
 1. 备份两个业务库。Gateway 按方言执行 `docker/db/update_dsh_mysql.sql` 或 `update_dsh_dm.sql`，仅新增四张 DSH 表及索引；脚本遇到已有对象会失败，必须先核对已部署 schema，不能通过删表重跑解决。未发布的本次草案投影列由 128 扩为 MySQL 510 字符 / DM8 2040 字节；DM device_label 由 128 扩为 400 字节以容纳 100 Unicode 码点；如果先前手工执行过草案，先只读核对两个姓名字段与索引，再做保留数据的扩列迁移。
 2. Python 四张独立表进入既有模型发现/create_all 流程；原 User 表通过正式 `v3_0_0_f062_profile_version` revision 增加版本列。按现有 Alembic 发布流程执行，保留版本链；不重置已有资料版本或配额历史。
-3. 复用毕昇既有 Redis 连接配置。当前 DSH 受控连接支持单实例/Sentinel，不支持 Cluster。不要为 DSH 修改共享实例的淘汰策略；首次开通与丢账恢复自动读取 SQL，并合并尚存 Redis 记录。
+3. 复用doberman-agent既有 Redis 连接配置。当前 DSH 受控连接支持单实例/Sentinel，不支持 Cluster。不要为 DSH 修改共享实例的淘汰策略；首次开通与丢账恢复自动读取 SQL，并合并尚存 Redis 记录。
 4. 保留现有 SQL/Redis 数据；不需要创建 DSH MinIO 桶或确认对象。历史对象可留存备份，应用不会删除。
-5. 在毕昇模型管理中配置供应商及模型，再通过 DSH 界面配置用户每模型授权和月额度。不再填写模型部署白名单。
+5. 在doberman-agent模型管理中配置供应商及模型，再通过 DSH 界面配置用户每模型授权和月额度。不再填写模型部署白名单。
 
 6. 部署 `dsh.enabled` 默认 false；部署者开启后，超级管理员进入 DSH 管理页启用业务开关，并保存本组织受控的无凭证 HTTP(S) 下载地址。业务开关默认关闭，旧部署开关为 true 不会自动开启业务。未配置时页面保留联系管理员和手动填写平台地址，不能交付虚构链接。下载包和自定义协议注册由 DSH Desktop 项目提供。
 
@@ -62,4 +62,4 @@ Redis 不可用期间返回额度不可用；连接恢复后自动核对/重建�
 - 主配置使用 `Settings.dsh: DshSettings`；字段含类型、含义与边界校验，密钥复用用户同步配置。`ChatCapabilities` 由供应商适配器生成，不是部署配置。用户策略为 `models: [{model_id, monthly_token_limit}]`，同一用户可有多个模型，每个模型仅一份配置。一期不配置 RPM、TPM 或并发限流。
 - 未发版结构已按用户确认改为 dsh_user_policy 一行一条用户模型授权，取消 model_configs JSON，不新增 Alembic。新安装由 ORM 建表；109 独立联调库单独备份并转换结构，旧镜像必须与新结构配套升级。详见 [单行授权修订](./model-policy-row-revision.md)。
 - Gateway 使用现有 `mybatis-plus.db-type`；DM 环境必须设为 `DM`，使席位短事务使用 READ_COMMITTED＋首条 EXCLUSIVE 表锁。锁在提交/回滚时释放；不可仅切换 JDBC URL 却保留 MYSQL 类型。DM 实机本轮暂缓，静态兼容检查不代表部署吞吐量已验证。
-- 发布前向客户端同步 [接口文档](./client-api.md) 的逐模型额度修订。模型选择/切换、调用结束、额度拒绝后查询 `GET /api/v1/dsh/usage?model=bisheng:<id>`；无参数只作汇总展示，汇总额度不能决定某个模型可调用。
+- 发布前向客户端同步 [接口文档](./client-api.md) 的逐模型额度修订。模型选择/切换、调用结束、额度拒绝后查询 `GET /api/v1/dsh/usage?model=doberman-agent:<id>`；无参数只作汇总展示，汇总额度不能决定某个模型可调用。

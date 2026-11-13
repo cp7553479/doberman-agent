@@ -22,7 +22,7 @@ jest.mock('~/hooks', () => ({
     useLocalize: () => (key: string) => key,
 }));
 
-jest.mock('bisheng-icons', () => ({
+jest.mock('@doberman-agent/icons', () => ({
     Outlined: new Proxy(
         {},
         {

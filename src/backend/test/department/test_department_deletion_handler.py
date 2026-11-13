@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.permission.application import PermissionObject
+from doberman_agent.permission.application import PermissionObject
 
 
 def _mk_dept(mounted_tenant_id, dept_id=7, name="Engineering"):
@@ -31,7 +31,7 @@ def _mk_dept(mounted_tenant_id, dept_id=7, name="Engineering"):
 @pytest.mark.asyncio
 class TestOnDeletedNoopForOrdinaryDept:
     async def test_non_mounted_dept_does_not_touch_tenant(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
@@ -39,20 +39,20 @@ class TestOnDeletedNoopForOrdinaryDept:
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ) as tenant_update,
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
                 new_callable=AsyncMock,
             ) as audit,
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler._notify_super_admins",
+                "doberman_agent.tenant.domain.services.department_deletion_handler._notify_super_admins",
                 new_callable=AsyncMock,
             ) as notify,
         ):
@@ -65,18 +65,18 @@ class TestOnDeletedNoopForOrdinaryDept:
         notify.assert_not_awaited()
 
     async def test_missing_dept_is_noop(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=None,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ) as tenant_update,
         ):
@@ -90,7 +90,7 @@ class TestOnDeletedNoopForOrdinaryDept:
 @pytest.mark.asyncio
 class TestOnDeletedOrphansMountedTenant:
     async def test_tenant_moved_to_orphaned(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
@@ -98,20 +98,20 @@ class TestOnDeletedOrphansMountedTenant:
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ) as tenant_update,
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler._notify_super_admins",
+                "doberman_agent.tenant.domain.services.department_deletion_handler._notify_super_admins",
                 new_callable=AsyncMock,
             ),
         ):
@@ -131,7 +131,7 @@ class TestOnDeletedOrphansMountedTenant:
         assert status == "orphaned"
 
     async def test_audit_log_records_source(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
@@ -139,20 +139,20 @@ class TestOnDeletedOrphansMountedTenant:
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
                 new_callable=AsyncMock,
             ) as audit,
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler._notify_super_admins",
+                "doberman_agent.tenant.domain.services.department_deletion_handler._notify_super_admins",
                 new_callable=AsyncMock,
             ),
         ):
@@ -169,7 +169,7 @@ class TestOnDeletedOrphansMountedTenant:
         assert md["dept_id"] == 7
 
     async def test_notification_fanned_out_to_super_admins(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
@@ -177,20 +177,20 @@ class TestOnDeletedOrphansMountedTenant:
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler._notify_super_admins",
+                "doberman_agent.tenant.domain.services.department_deletion_handler._notify_super_admins",
                 new_callable=AsyncMock,
             ) as notify,
         ):
@@ -208,7 +208,7 @@ class TestOnDeletedOrphansMountedTenant:
 class TestFailureIsolation:
     async def test_audit_failure_does_not_skip_notification(self):
         """audit_log write failure is logged but must not block the notify."""
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             DepartmentDeletionHandler,
         )
 
@@ -216,21 +216,21 @@ class TestFailureIsolation:
 
         with (
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.DepartmentDao.aget_by_id",
                 new_callable=AsyncMock,
                 return_value=dept,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.TenantDao.aupdate_tenant",
                 new_callable=AsyncMock,
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
+                "doberman_agent.tenant.domain.services.department_deletion_handler.AuditLogDao.ainsert_v2",
                 new_callable=AsyncMock,
                 side_effect=RuntimeError("audit down"),
             ),
             patch(
-                "bisheng.tenant.domain.services.department_deletion_handler._notify_super_admins",
+                "doberman_agent.tenant.domain.services.department_deletion_handler._notify_super_admins",
                 new_callable=AsyncMock,
             ) as notify,
         ):
@@ -250,14 +250,14 @@ class TestFailureIsolation:
 @pytest.mark.asyncio
 class TestListGlobalSuperAdminIds:
     async def test_permission_service_returns_user_ids(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             _list_global_super_admin_ids,
         )
 
         permissions = MagicMock()
         permissions.list_subject_ids = AsyncMock(return_value=("1", "42"))
         with patch(
-            "bisheng.permission.application.get_permission_relation_api",
+            "doberman_agent.permission.application.get_permission_relation_api",
             new_callable=AsyncMock,
             return_value=permissions,
         ):
@@ -270,12 +270,12 @@ class TestListGlobalSuperAdminIds:
         )
 
     async def test_permission_service_unavailable_falls_back_to_empty(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             _list_global_super_admin_ids,
         )
 
         with patch(
-            "bisheng.permission.application.get_permission_relation_api",
+            "doberman_agent.permission.application.get_permission_relation_api",
             new_callable=AsyncMock,
             side_effect=RuntimeError("permission down"),
         ):
@@ -283,12 +283,12 @@ class TestListGlobalSuperAdminIds:
         assert result == []
 
     async def test_permission_exception_falls_back_to_empty(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             _list_global_super_admin_ids,
         )
 
         with patch(
-            "bisheng.permission.application.get_permission_relation_api",
+            "doberman_agent.permission.application.get_permission_relation_api",
             new_callable=AsyncMock,
             side_effect=ConnectionError("permission down"),
         ):
@@ -296,14 +296,14 @@ class TestListGlobalSuperAdminIds:
         assert result == []
 
     async def test_non_numeric_subject_ids_are_skipped(self):
-        from bisheng.tenant.domain.services.department_deletion_handler import (
+        from doberman_agent.tenant.domain.services.department_deletion_handler import (
             _list_global_super_admin_ids,
         )
 
         permissions = MagicMock()
         permissions.list_subject_ids = AsyncMock(return_value=("5", "invalid", "7"))
         with patch(
-            "bisheng.permission.application.get_permission_relation_api",
+            "doberman_agent.permission.application.get_permission_relation_api",
             new_callable=AsyncMock,
             return_value=permissions,
         ):

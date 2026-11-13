@@ -1,11 +1,11 @@
-import { messagesForTransport } from '@bisheng/chat/core';
+import { messagesForTransport } from '@doberman-agent/chat/core';
 // @ts-strict-ignore
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import ChatComponent from "@/components/bs-comp/chatComponent";
 import { useMessageStore } from "@/components/bs-comp/chatComponent/messageStore";
 import { useAssistantStore } from "@/store/assistantStore";
-import { Button } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 

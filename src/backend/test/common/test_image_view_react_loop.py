@@ -14,8 +14,8 @@ from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage, Huma
 from langchain_core.outputs import ChatGeneration, ChatResult
 from pydantic import ConfigDict
 
-from bisheng.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, annotate
-from bisheng.common.image_view.react_loop import (
+from doberman_agent.common.image_view import IMAGE_VIEW_PROMPT_RULES, ImageRegistry, annotate
+from doberman_agent.common.image_view.react_loop import (
     REACT_RECURSION_LIMIT,
     _strip_picture_citations,
     cited_ids_on_shown_lines,
@@ -23,20 +23,20 @@ from bisheng.common.image_view.react_loop import (
     strip_picture_handles,
     strip_view_narration,
 )
-from bisheng.common.image_view.vision_llm import VisionToolBindWrapper
+from doberman_agent.common.image_view.vision_llm import VisionToolBindWrapper
 
 _DATA_URI = "data:image/png;base64,aaa"
 
 _OPENING_HANDBOOK = """
 首钢集团司库系统账户管理模块用户操作手册
-![cover](/bisheng/knowledge/images/1/6/image_1_3.jpeg)⟦img#1⟧
+![cover](/doberman_agent/knowledge/images/1/6/image_1_3.jpeg)⟦img#1⟧
 1.1.1.开户申请
 操作路径：司库管理 银行账户 开户申请（查看已审批的账户开户申请单）
-![list](/bisheng/knowledge/images/1/6/image_4_10.jpeg)⟦img#9⟧
+![list](/doberman_agent/knowledge/images/1/6/image_4_10.jpeg)⟦img#9⟧
 点击单据号可查看开户申请详情：
-![form](/bisheng/knowledge/images/1/6/image_4_8.jpeg)⟦img#10⟧
+![form](/doberman_agent/knowledge/images/1/6/image_4_8.jpeg)⟦img#10⟧
 1.3.1.销户申请
-![close](/bisheng/knowledge/images/1/6/image_10_28.jpeg)⟦img#28⟧
+![close](/doberman_agent/knowledge/images/1/6/image_10_28.jpeg)⟦img#28⟧
 """
 
 
@@ -88,21 +88,21 @@ class _SkipGraphLLM:
 
 def _registry_one() -> ImageRegistry:
     registry = ImageRegistry()
-    annotate("see ![chart](/bisheng/knowledge/images/1/2/chart.png)", registry)
+    annotate("see ![chart](/doberman_agent/knowledge/images/1/2/chart.png)", registry)
     return registry
 
 
 def _trend_messages() -> list:
     return [
         SystemMessage(content="base system"),
-        HumanMessage(content="这张图的走势 see ![chart](/bisheng/knowledge/images/1/2/chart.png)⟦img#1⟧"),
+        HumanMessage(content="这张图的走势 see ![chart](/doberman_agent/knowledge/images/1/2/chart.png)⟦img#1⟧"),
     ]
 
 
 def _numbered_registry(count: int) -> ImageRegistry:
     registry = ImageRegistry()
     for index in range(1, count + 1):
-        registry.register(f"/bisheng/knowledge/images/1/6/image_{index}.png")
+        registry.register(f"/doberman_agent/knowledge/images/1/6/image_{index}.png")
     return registry
 
 
@@ -125,15 +125,15 @@ def _bind_vision(monkeypatch, model: _VisionStream) -> None:
         del args, kwargs
         return model
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.resolve_image_view_llm", _resolve)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.resolve_image_view_llm", _resolve)
 
 
 @pytest.fixture
 def mock_fetch(monkeypatch):
     result = type("R", (), {"ok": True, "data_uri": _DATA_URI, "error": None, "reason": None})()
     fetch = AsyncMock(return_value=result)
-    monkeypatch.setattr("bisheng.common.image_view.tool.fetch_and_encode", fetch)
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.tool.fetch_and_encode", fetch)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.fetch_and_encode", fetch)
     return fetch
 
 
@@ -145,7 +145,7 @@ async def test_visual_false_skips_graph(monkeypatch):
     def _boom(*args, **kwargs):
         raise AssertionError("should not build graph")
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.create_react_agent", _boom)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.create_react_agent", _boom)
     llm = _SkipGraphLLM()
     yielded: list[str] = []
     async for chunk in run_react_vision_stream(llm, _trend_messages(), _registry_one(), visual=False):
@@ -158,7 +158,7 @@ async def test_empty_registry_skips_graph(monkeypatch):
     def _boom(*args, **kwargs):
         raise AssertionError("should not build graph")
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.create_react_agent", _boom)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.create_react_agent", _boom)
     llm = _SkipGraphLLM()
     async for _ in run_react_vision_stream(
         llm, [SystemMessage(content="sys"), HumanMessage(content="hi")], ImageRegistry(), visual=True
@@ -173,7 +173,7 @@ async def test_unconfigured_tool_streams_chat_model(mock_fetch, monkeypatch):
         del args, kwargs
         return None
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.resolve_image_view_llm", _none)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.resolve_image_view_llm", _none)
     llm = _SkipGraphLLM()
     yielded: list[str] = []
     async for chunk in run_react_vision_stream(llm, _trend_messages(), _registry_one(), visual=True):
@@ -197,7 +197,7 @@ def _view_call(image_id: str = "img#1") -> AIMessage:
 
 
 async def test_react_loop_image_model_reads_pixels_chat_model_answers(mock_fetch, monkeypatch):
-    vision = _VisionStream(["画面是一张走势图。\n![](/bisheng/knowledge/images/1/2/chart.png)"])
+    vision = _VisionStream(["画面是一张走势图。\n![](/doberman_agent/knowledge/images/1/2/chart.png)"])
     _bind_vision(monkeypatch, vision)
     llm = _FakeChatModel(first=_view_call(), second=AIMessage(content="走势向上。"))
     yielded: list[str] = []
@@ -268,7 +268,7 @@ async def test_answer_denial_is_not_overridden(mock_fetch, monkeypatch):
 
 
 async def test_claim_without_picture_line_is_not_filled_in(mock_fetch, monkeypatch):
-    vision = _VisionStream(["一张表单。\n![](/bisheng/knowledge/images/1/2/chart.png)"])
+    vision = _VisionStream(["一张表单。\n![](/doberman_agent/knowledge/images/1/2/chart.png)"])
     _bind_vision(monkeypatch, vision)
     llm = _FakeChatModel(first=_view_call(), second=AIMessage(content="根据您的请求，这里是相关的图片展示："))
     messages = [
@@ -283,7 +283,7 @@ async def test_claim_without_picture_line_is_not_filled_in(mock_fetch, monkeypat
 
 
 async def test_id_line_chosen_by_chat_model_renders_the_picture(mock_fetch, monkeypatch):
-    vision = _VisionStream(["一张表单。\n![](/bisheng/knowledge/images/1/2/chart.png)"])
+    vision = _VisionStream(["一张表单。\n![](/doberman_agent/knowledge/images/1/2/chart.png)"])
     _bind_vision(monkeypatch, vision)
     llm = _FakeChatModel(first=_view_call(), second=AIMessage(content="这是第一张图片：\nimg#1"))
     messages = [
@@ -294,7 +294,7 @@ async def test_id_line_chosen_by_chat_model_renders_the_picture(mock_fetch, monk
     async for chunk in run_react_vision_stream(llm, messages, _registry_one(), visual=True):
         yielded.append(getattr(chunk, "content", "") or "")
     joined = "".join(yielded)
-    assert joined == "这是第一张图片：\n![chart.png](/bisheng/knowledge/images/1/2/chart.png)"
+    assert joined == "这是第一张图片：\n![chart.png](/doberman_agent/knowledge/images/1/2/chart.png)"
     assert "img#1" not in joined
 
 
@@ -341,9 +341,9 @@ async def test_stream_deltas_are_not_repeated_by_chain_end(monkeypatch):
         del args, kwargs
         return object()
 
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.resolve_image_view_llm", _vision)
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.create_react_agent", lambda *args, **kwargs: _FakeAgent())
-    monkeypatch.setattr("bisheng.common.image_view.react_loop.ToolNode", lambda *args, **kwargs: object())
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.resolve_image_view_llm", _vision)
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.create_react_agent", lambda *args, **kwargs: _FakeAgent())
+    monkeypatch.setattr("doberman_agent.common.image_view.react_loop.ToolNode", lambda *args, **kwargs: object())
     yielded: list[str] = []
     async for chunk in run_react_vision_stream(_SkipGraphLLM(), _trend_messages(), _registry_one(), visual=True):
         yielded.append(getattr(chunk, "content", "") or "")
@@ -355,11 +355,11 @@ async def test_stream_deltas_are_not_repeated_by_chain_end(monkeypatch):
 def test_view_narration_catalog_is_stripped():
     preamble = (
         "我需要查看您提到的风景图片。根据提供的参考资料，其中包含以下图片标识：\n"
-        "- [img#1] → /bisheng/knowledge/images/1/12/image1.png\n"
-        "- [img#3] → /bisheng/knowledge/images/1/12/image3.png\n"
+        "- [img#1] → /doberman_agent/knowledge/images/1/12/image1.png\n"
+        "- [img#3] → /doberman_agent/knowledge/images/1/12/image3.png\n"
         "但当前没有明确说明哪张是风景图；为了准确判断并显示，请允许我先查看这些图片。\n"
     )
-    answer = "其中包含一张明确为风景的图片（img#3）：\n![](/bisheng/knowledge/images/1/12/image3.png)\n[img#3]\n其余图片为人物肖像。"
+    answer = "其中包含一张明确为风景的图片（img#3）：\n![](/doberman_agent/knowledge/images/1/12/image3.png)\n[img#3]\n其余图片为人物肖像。"
     question = "这张图的走势"
     joined = strip_picture_handles(
         _strip_picture_citations(strip_view_narration(preamble + answer), question),
@@ -370,7 +370,7 @@ def test_view_narration_catalog_is_stripped():
     assert "[img#3]" not in joined
     assert "一张明确为风景的图片" in joined
     assert "img#" not in joined
-    assert "![](/bisheng/knowledge/images/1/12/image3.png)" in joined
+    assert "![](/doberman_agent/knowledge/images/1/12/image3.png)" in joined
     assert "其余图片" not in joined
 
 
@@ -466,7 +466,7 @@ def test_strip_ticket_answer_keeps_image_and_drops_catalog():
     text = (
         "是的，文档中包含一张火车票的图片。\n"
         "根据参考资料中的图片信息：\n"
-        "• `img#2` 对应的图片为： `![](/bisheng/knowledge/images/1/12/image2.png)`\n"
+        "• `img#2` 对应的图片为： `![](/doberman_agent/knowledge/images/1/12/image2.png)`\n"
         "其描述为“火车票”，属于明确的票据类图片。\n"
         "• `img#1`：人物照（含AI变清晰水印）\n"
         "• ''：保修证或类似纸质证书（含印章与文字）\n"
@@ -484,7 +484,7 @@ def test_strip_ticket_answer_keeps_image_and_drops_catalog():
     assert "其余图片" not in cleaned
     assert "''" not in cleaned
     assert "img#" not in cleaned
-    assert "![](/bisheng/knowledge/images/1/12/image2.png)" in cleaned
+    assert "![](/doberman_agent/knowledge/images/1/12/image2.png)" in cleaned
     assert "`![]" not in cleaned
     assert "车次：Z35Z052135" in cleaned
     assert "是的，文档中包含一张火车票的图片。" in cleaned
@@ -549,7 +549,7 @@ def test_rejection_catalog_and_citations_do_not_survive():
         "• 一张“危险化学品经营许可证”封面，无美女\n"
         "所有图片均未显示女性人物，因此没有美女的图片。\n"
         f"{cite}是的，有美女的图片。\n"
-        "![](/bisheng/knowledge/images/1/12/image1.png)"
+        "![](/doberman_agent/knowledge/images/1/12/image1.png)"
     )
     cleaned = _strip_picture_citations(strip_view_narration(text), "是否有美女的图片？")
     assert "电冰箱" not in cleaned
@@ -557,7 +557,7 @@ def test_rejection_catalog_and_citations_do_not_survive():
     assert "因此没有" not in cleaned
     assert "\ue200" not in cleaned
     assert "是的，有美女的图片。" in cleaned
-    assert "![](/bisheng/knowledge/images/1/12/image1.png)" in cleaned
+    assert "![](/doberman_agent/knowledge/images/1/12/image1.png)" in cleaned
     raw = "• img#1：无美女\n• img#2：无美女\n是的，有美女的图片 img#1。"
     assert cited_ids_on_shown_lines(raw) == ["img#1"]
 
@@ -572,16 +572,16 @@ def test_wrapper_bind_tools_returns_self():
 
 def test_daily_picture_answer_drops_short_handles():
     """F075 AC-19: the daily chat cites with [Sn]; a picture answer must not keep them."""
-    from bisheng.common.image_view.react_loop import strip_picture_handles
+    from doberman_agent.common.image_view.react_loop import strip_picture_handles
 
-    text = "有一张冰箱结构图。[S3][S7]\n![](/bisheng/knowledge/images/1/12/image1.png)"
+    text = "有一张冰箱结构图。[S3][S7]\n![](/doberman_agent/knowledge/images/1/12/image1.png)"
     cleaned = strip_picture_handles(text, "展示图片：冰箱结构")
     assert "[S3]" not in cleaned and "[S7]" not in cleaned
-    assert "![](/bisheng/knowledge/images/1/12/image1.png)" in cleaned
+    assert "![](/doberman_agent/knowledge/images/1/12/image1.png)" in cleaned
 
 
 def test_non_picture_answer_keeps_short_handles():
-    from bisheng.common.image_view.react_loop import strip_picture_handles
+    from doberman_agent.common.image_view.react_loop import strip_picture_handles
 
     text = "冰箱容量为 500L。[S3]"
     assert strip_picture_handles(text, "冰箱容量多大？") == text

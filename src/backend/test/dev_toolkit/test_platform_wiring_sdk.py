@@ -22,7 +22,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from bisheng.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
+from doberman_agent.dev_toolkit.domain.services.artifact_service import SKILLS_DIR
 
 WIRING = SKILLS_DIR / "platform-wiring"
 SKILL_MD = WIRING / "SKILL.md"
@@ -86,12 +86,12 @@ def test_retrieve_chapter_states_per_user_semantics_and_the_local_difference():
     assert "knowledge_base_ids=" in chapter
     # Both credentials are named, and so is the rule that makes them unswappable
     # — the settled F055 contract, which the chapter must not simplify away.
-    assert "BISHENG_APP_TOKEN" in chapter
+    assert "DOBERMAN_AGENT_APP_TOKEN" in chapter
     assert "没有 owner 兜底" in chapter
-    # The honest note is about `bisheng dev`, not about the hosted half: hosted
+    # The honest note is about `doberman-agent dev`, not about the hosted half: hosted
     # retrieval is merged, and saying otherwise sends the developer chasing a
     # platform that is working.
-    assert "本地 `bisheng dev` 还不能" in chapter and "换密钥没有用" in chapter
+    assert "本地 `doberman-agent dev` 还不能" in chapter and "换密钥没有用" in chapter
     assert "尚未上线" not in chapter, "hosted retrieval is live; that claim is stale"
     # And the error the developer actually meets first under `dev` is listed.
     assert "AppCredentialMissingError" in chapter
@@ -105,7 +105,7 @@ def test_storage_chapter_states_the_local_online_difference_and_the_quota_rule()
     for fn in ("storage.put", "storage.get", "storage.stat", "storage.list", "storage.delete", "storage.open"):
         assert fn in chapter, fn
     assert "没有「清空" in chapter
-    assert "BISHENG_APP_STORAGE_MAX_FILE_MB" in chapter
+    assert "DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB" in chapter
 
 
 def test_model_chapter_teaches_the_injected_names_and_no_literal_address():
@@ -119,19 +119,19 @@ def test_model_chapter_teaches_the_injected_names_and_no_literal_address():
     """
     chapter = _chapter("模型")
     assert "暂未提供" not in chapter
-    for env_name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "BISHENG_MODEL_BASE_URL"):
+    for env_name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "DOBERMAN_AGENT_MODEL_BASE_URL"):
         assert env_name in chapter, env_name
     # The declaration is the range hosted, and an undeclared model is refused.
     assert "capabilities" in chapter and "26515" in chapter
     # Forwarding the visitor credential, and the local case where it is refused.
-    assert "X-BiSheng-Access-Token" in chapter and "26504" in chapter
+    assert "X-Doberman-Agent-Access-Token" in chapter and "26504" in chapter
     assert not re.search(r"https?://", chapter)
 
 
 def test_no_sdk_wrapper_is_taught_for_models_or_the_app_database():
     """AC-30: the SDK has three capability modules and gains no fourth by prose."""
     text = SKILL_MD.read_text(encoding="utf-8")
-    for invented in ("bisheng_sdk.chat", "bisheng_sdk.appdb", "bisheng_sdk.llm", "bisheng_sdk.db"):
+    for invented in ("doberman_agent_sdk.chat", "doberman_agent_sdk.appdb", "doberman_agent_sdk.llm", "doberman_agent_sdk.db"):
         assert invented not in text
     # And the reason is stated, so the next person does not "helpfully" add one.
     assert "平台特有" in text
@@ -159,9 +159,9 @@ def test_example_sdk_manifest_is_valid_and_declares_a_knowledge_base():
     """The SDK example declares the capability it uses — that is what the whitelist is."""
     import yaml
 
-    from bisheng.app_publish.domain.schemas.app_manifest import SUPPORTED_RUNTIMES, AppManifest
+    from doberman_agent.app_publish.domain.schemas.app_manifest import SUPPORTED_RUNTIMES, AppManifest
 
-    manifest = AppManifest(**yaml.safe_load((EXAMPLE_SDK / "bisheng-app.yaml").read_text(encoding="utf-8")))
+    manifest = AppManifest(**yaml.safe_load((EXAMPLE_SDK / "doberman-agent-app.yaml").read_text(encoding="utf-8")))
 
     assert manifest.runtime in SUPPORTED_RUNTIMES
     assert not manifest.capabilities.is_empty()
@@ -172,7 +172,7 @@ def test_example_sdk_requirements_carry_the_sdk():
     """A hosted build resolves this line from the platform's own index (AC-02)."""
     requirements = (EXAMPLE_SDK / "requirements.txt").read_text(encoding="utf-8")
     lines = [line.strip() for line in requirements.splitlines() if line.strip() and not line.startswith("#")]
-    assert "bisheng-sdk" in lines
+    assert "doberman-agent-sdk" in lines
     # The stdlib-only example next door stays stdlib-only; this is the other one.
     stdlib_example = (WIRING / "example" / "requirements.txt").read_text(encoding="utf-8")
     assert not [line for line in stdlib_example.splitlines() if line.strip() and not line.startswith("#")]
@@ -192,18 +192,18 @@ def test_example_sdk_requirements_cover_form_parsing():
 
 
 def test_example_sdk_separates_a_missing_app_credential_from_a_platform_outage():
-    """An un-injected ``BISHENG_APP_TOKEN`` is an environment fault, not a 502.
+    """An un-injected ``DOBERMAN_AGENT_APP_TOKEN`` is an environment fault, not a 502.
 
     Folded into the catch-all it would read as "the platform is down" — which is
     exactly the wrong thing to chase, since the fix is to redeploy the app (or,
-    locally, to wait for `bisheng dev` to inject it).
+    locally, to wait for `doberman-agent dev` to inject it).
     """
     source = (EXAMPLE_SDK / "main.py").read_text(encoding="utf-8")
     ask = source.split('@app.post("/ask")', 1)[1].split("@app.", 1)[0]
 
     assert "errors.AppCredentialMissingError" in ask
     # Declared before the catch-all, or Python never reaches it.
-    assert ask.index("errors.AppCredentialMissingError") < ask.index("errors.BishengSdkError")
+    assert ask.index("errors.AppCredentialMissingError") < ask.index("errors.DobermanAgentSdkError")
 
 
 def test_example_sdk_healthz_does_not_call_auth():
@@ -220,7 +220,7 @@ def test_example_sdk_keeps_the_manifest_and_the_code_on_one_knowledge_base_id():
     """Two places, one fact — the example says so and must itself be consistent."""
     import yaml
 
-    manifest = yaml.safe_load((EXAMPLE_SDK / "bisheng-app.yaml").read_text(encoding="utf-8"))
+    manifest = yaml.safe_load((EXAMPLE_SDK / "doberman-agent-app.yaml").read_text(encoding="utf-8"))
     declared = [str(ref.get("id") or ref.get("name")) for ref in manifest["capabilities"]["knowledge_bases"]]
     source = (EXAMPLE_SDK / "main.py").read_text(encoding="utf-8")
     used = re.search(r"KNOWLEDGE_BASE_IDS = \[([^\]]*)\]", source).group(1)
@@ -243,39 +243,39 @@ def _selfcheck_module():
 def test_selfcheck_probes_the_dev_entry_not_the_app_port(tmp_path, monkeypatch):
     """The one address that proves nothing is the app's own port.
 
-    ``bisheng dev`` listens twice: the mini proxy (the local entry, which injects
-    the ``X-BiSheng-*`` headers) and the application process. ``PORT`` /
-    ``BISHENG_APP_PORT`` name the **second** one, so a probe sent there arrives
+    ``doberman-agent dev`` listens twice: the mini proxy (the local entry, which injects
+    the ``X-Doberman-Agent-*`` headers) and the application process. ``PORT`` /
+    ``DOBERMAN_AGENT_APP_PORT`` name the **second** one, so a probe sent there arrives
     with no injected header at all — the check would fail for every developer
     and then blame them for "connecting straight to the app port".
     """
     selfcheck = _selfcheck_module()
-    (tmp_path / "bisheng-app.yaml").write_text("name: x\nruntime: python3.11\nport: 8080\n", encoding="utf-8")
+    (tmp_path / "doberman-agent-app.yaml").write_text("name: x\nruntime: python3.11\nport: 8080\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("BISHENG_APP_PORT", "54321")
+    monkeypatch.setenv("DOBERMAN_AGENT_APP_PORT", "54321")
     monkeypatch.setenv("PORT", "54321")
     monkeypatch.delenv(selfcheck.DEV_ENTRY_ENV, raising=False)
 
     resolved = selfcheck.dev_entry_url(None)
 
     # The proxy serves the app under the same prefix as hosted; without a slug
-    # in the manifest or in .bisheng/app.json that is `bisheng dev`'s `dev`.
+    # in the manifest or in .doberman_agent/app.json that is `doberman-agent dev`'s `dev`.
     assert resolved == "http://127.0.0.1:8080/apps/dev"
     assert "54321" not in resolved
 
 
-def test_selfcheck_entry_url_uses_the_slug_bisheng_dev_uses(tmp_path, monkeypatch):
+def test_selfcheck_entry_url_uses_the_slug_doberman_agent_dev_uses(tmp_path, monkeypatch):
     """Same order as ``devdb.dev_slug``: the manifest's slug, then the one the platform assigned."""
     import json
 
     selfcheck = _selfcheck_module()
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv(selfcheck.DEV_ENTRY_ENV, raising=False)
-    manifest = tmp_path / "bisheng-app.yaml"
+    manifest = tmp_path / "doberman-agent-app.yaml"
 
     manifest.write_text("name: x\nport: 8080\n", encoding="utf-8")
-    (tmp_path / ".bisheng").mkdir()
-    (tmp_path / ".bisheng" / "app.json").write_text(
+    (tmp_path / ".doberman_agent").mkdir()
+    (tmp_path / ".doberman_agent" / "app.json").write_text(
         json.dumps({"apps": {"http://platform.test": {"app_id": "a1", "slug": "assigned"}}}), encoding="utf-8"
     )
     assert selfcheck.dev_entry_url(None) == "http://127.0.0.1:8080/apps/assigned"
@@ -285,9 +285,9 @@ def test_selfcheck_entry_url_uses_the_slug_bisheng_dev_uses(tmp_path, monkeypatc
 
 
 def test_selfcheck_entry_url_prefers_the_explicit_address(tmp_path, monkeypatch):
-    """``bisheng dev --port`` makes the manifest's port wrong, so it can be overridden."""
+    """``doberman-agent dev --port`` makes the manifest's port wrong, so it can be overridden."""
     selfcheck = _selfcheck_module()
-    (tmp_path / "bisheng-app.yaml").write_text("port: 8080\n", encoding="utf-8")
+    (tmp_path / "doberman-agent-app.yaml").write_text("port: 8080\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
 
     assert selfcheck.dev_entry_url("http://127.0.0.1:3000") == "http://127.0.0.1:3000"
@@ -305,12 +305,12 @@ def test_selfcheck_skips_the_sdk_trio_when_there_is_no_dev_session(tmp_path, mon
     from a plain shell) can never exit 0, which trains developers to ignore it.
     """
     selfcheck = _selfcheck_module()
-    monkeypatch.chdir(tmp_path)  # no bisheng-app.yaml anywhere above it
+    monkeypatch.chdir(tmp_path)  # no doberman-agent-app.yaml anywhere above it
     monkeypatch.delenv(selfcheck.DEV_ENTRY_ENV, raising=False)
 
     assert selfcheck.check_sdk_auth(selfcheck.dev_entry_url(None)) is None
     printed = capsys.readouterr().out
-    assert "跳过" in printed and "bisheng dev" in printed
+    assert "跳过" in printed and "doberman-agent dev" in printed
 
 
 def _run_selfcheck(home: Path, extra_env: dict | None = None) -> subprocess.CompletedProcess:
@@ -368,8 +368,8 @@ def test_selfcheck_reports_an_incompatible_sdk_with_both_versions(tmp_path):
 
     try:
         home = tmp_path / "home"
-        (home / ".bisheng").mkdir(parents=True)
-        (home / ".bisheng" / "credentials.json").write_text(
+        (home / ".doberman_agent").mkdir(parents=True)
+        (home / ".doberman_agent" / "credentials.json").write_text(
             json.dumps(
                 {
                     "current": "local",
@@ -381,8 +381,8 @@ def test_selfcheck_reports_an_incompatible_sdk_with_both_versions(tmp_path):
         # A stand-in package: the backend venv does not (and must not) depend on
         # the SDK, and the version comparison is all this branch reads.
         stub = tmp_path / "stub"
-        (stub / "bisheng_sdk").mkdir(parents=True)
-        (stub / "bisheng_sdk" / "__init__.py").write_text(
+        (stub / "doberman_agent_sdk").mkdir(parents=True)
+        (stub / "doberman_agent_sdk" / "__init__.py").write_text(
             textwrap.dedent('''
                 """Stand-in for the real package; only __version__ is read here."""
 
@@ -411,8 +411,8 @@ def test_selfcheck_says_which_command_installs_the_sdk_when_it_is_absent(tmp_pat
 
     try:
         home = tmp_path / "home"
-        (home / ".bisheng").mkdir(parents=True)
-        (home / ".bisheng" / "credentials.json").write_text(
+        (home / ".doberman_agent").mkdir(parents=True)
+        (home / ".doberman_agent" / "credentials.json").write_text(
             json.dumps(
                 {
                     "current": "local",
@@ -432,6 +432,6 @@ def test_selfcheck_says_which_command_installs_the_sdk_when_it_is_absent(tmp_pat
 
 def test_sdk_guide_endpoint_serves_this_very_file():
     """决议-7: one source for the guide and the pack, asserted from both ends."""
-    from bisheng.dev_toolkit.domain.services import artifact_service
+    from doberman_agent.dev_toolkit.domain.services import artifact_service
 
     assert artifact_service.read_sdk_guide() == SKILL_MD.read_text(encoding="utf-8")

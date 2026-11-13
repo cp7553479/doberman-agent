@@ -1,4 +1,4 @@
-import { ApiError } from '@bisheng/api-client';
+import { ApiError } from '@doberman-agent/api-client';
 import request, { showApiError, translateApiErrorMessage } from './request';
 
 jest.mock('axios', () => {

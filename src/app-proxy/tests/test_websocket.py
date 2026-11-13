@@ -105,10 +105,10 @@ class TestInvariantOneHeaders:
 
     def test_forged_platform_headers_are_stripped_and_identity_injected(self, logged_in, ws_upstream):
         forged = {
-            "X-BiSheng-User-Id": "1",
-            "X_BiSheng_User_Id": "1",
-            "x-bisheng-tenant-id": "999",
-            "X-BiSheng-App-Id": "app-evil",
+            "X-Doberman-Agent-User-Id": "1",
+            "X_Doberman_Agent_User_Id": "1",
+            "x-doberman-agent-tenant-id": "999",
+            "X-Doberman-Agent-App-Id": "app-evil",
             "X-Forwarded-Host": "evil.example",
             "X-Forwarded-Prefix": "/evil",
         }
@@ -116,20 +116,20 @@ class TestInvariantOneHeaders:
             pass
 
         record = _handshake(ws_upstream)
-        assert _header(record, "X-BiSheng-User-Id") == "42"
-        assert _header(record, "X-BiSheng-Tenant-Id") == "1"
-        assert _header(record, "X-BiSheng-App-Id") == DEFAULT_APP_ID
-        assert _header(record, "X-BiSheng-Access-Token") == "obo.jwt.token"
-        assert _header(record, "X-BiSheng-Subject-Kind") == "human"
-        assert _header(record, "X-BiSheng-Request-Id"), "the proxy mints the request id"
+        assert _header(record, "X-Doberman-Agent-User-Id") == "42"
+        assert _header(record, "X-Doberman-Agent-Tenant-Id") == "1"
+        assert _header(record, "X-Doberman-Agent-App-Id") == DEFAULT_APP_ID
+        assert _header(record, "X-Doberman-Agent-Access-Token") == "obo.jwt.token"
+        assert _header(record, "X-Doberman-Agent-Subject-Kind") == "human"
+        assert _header(record, "X-Doberman-Agent-Request-Id"), "the proxy mints the request id"
         assert _header(record, "X-Forwarded-Prefix") == "/apps/foo"
         assert _header(record, "X-Forwarded-Host") != "evil.example"
         # Exactly one of each platform header — the client's copies are gone.
         names = _header_names(record)
-        assert names.count("x-bisheng-user-id") == 1
-        assert names.count("x-bisheng-app-id") == 1
-        assert "x-bisheng-user-name" in names, "percent-encoded Chinese name survives the handshake"
-        assert _header(record, "X-BiSheng-User-Name") == "%E5%BC%A0%E4%B8%89"
+        assert names.count("x-doberman-agent-user-id") == 1
+        assert names.count("x-doberman-agent-app-id") == 1
+        assert "x-doberman-agent-user-name" in names, "percent-encoded Chinese name survives the handshake"
+        assert _header(record, "X-Doberman-Agent-User-Name") == "%E5%BC%A0%E4%B8%89"
 
     def test_platform_session_cookie_does_not_reach_the_app(self, logged_in, ws_upstream):
         logged_in.cookies.set("theme", "dark")

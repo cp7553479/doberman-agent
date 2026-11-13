@@ -1,8 +1,8 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
-import { Button } from "@bisheng/ui";
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
+import { Button } from "@doberman-agent/ui";
 import { useLocalize } from "~/hooks";
 import { sanitizeHtml } from "~/utils/sanitizeHtml";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useEffect, useState } from "react";
 import { Article } from "~/api/channels";

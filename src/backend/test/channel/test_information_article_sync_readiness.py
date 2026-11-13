@@ -1,10 +1,10 @@
 from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.channel.domain.models.channel_info_source import ChannelInfoSource
-from bisheng.channel.domain.services.information_article_sync_service import InformationArticleSyncService
-from bisheng.core.config.settings import IntelligenceCenterConf
-from bisheng.core.external.bisheng_information_client.response_schema import InformationSubscriptionItem
+from doberman_agent.channel.domain.models.channel_info_source import ChannelInfoSource
+from doberman_agent.channel.domain.services.information_article_sync_service import InformationArticleSyncService
+from doberman_agent.core.config.settings import IntelligenceCenterConf
+from doberman_agent.core.external.doberman_agent_information_client.response_schema import InformationSubscriptionItem
 
 
 def _subscription(*, last_sync_at: int | None, article_updated_at: int | None):

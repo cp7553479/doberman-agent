@@ -1,4 +1,4 @@
-import type { PreviewResource, PreviewPdfBBox } from '@bisheng/file-viewers/types';
+import type { PreviewResource, PreviewPdfBBox } from '@doberman-agent/file-viewers/types';
 import type { ChatCitation, ChatLocalize, CitationDisplayData, CitationPreview, CitationDocumentPreviewState } from '../content/types';
 export type { ChatCitation, ChatCitationPayload, ChatCitationItem, ChatLocalize, CitationDisplayData, CitationPreview, CitationDocumentPreviewState, CitationDetailLoader } from '../content/types';
 export type CitationPdfBBox = PreviewPdfBBox;

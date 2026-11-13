@@ -41,7 +41,7 @@ pytestmark = pytest.mark.asyncio
 SAMPLES: dict[str, tuple[str, str]] = {
     "bs_sak": (
         'KEY = "bs-sak-Ab3dEf6hIj9lMn2pQr5tUv8xYz1cDe4gHi7kLm0nOp3"',
-        'KEY = os.environ["BISHENG_SAK"]  # bs-sak- keys are read from the environment',
+        'KEY = os.environ["DOBERMAN_AGENT_SAK"]  # bs-sak- keys are read from the environment',
     ),
     # 43-character body, like a real personal token (伴生 PRD §4.10 shares the
     # secret shape with §4.2.5). The negative sample is one character short
@@ -75,13 +75,13 @@ SAMPLES: dict[str, tuple[str, str]] = {
 
 
 def _rules():
-    from bisheng.app_publish.domain.services.secret_scanner import SECRET_SCAN_RULES
+    from doberman_agent.app_publish.domain.services.secret_scanner import SECRET_SCAN_RULES
 
     return SECRET_SCAN_RULES
 
 
 def _scan(tmp_path, files: dict[str, str]):
-    from bisheng.app_publish.domain.services.secret_scanner import scan_package
+    from doberman_agent.app_publish.domain.services.secret_scanner import scan_package
 
     root = tmp_path / "pkg"
     for name, content in files.items():
@@ -151,7 +151,7 @@ async def test_platform_credential_rules_follow_the_model_constants(rule_id, pre
     credential of exactly the shape the platform issues matches, one a
     character short does not, and a look-alike prefix does not.
     """
-    from bisheng.open_api.domain.models import api_credential
+    from doberman_agent.open_api.domain.models import api_credential
 
     prefix = getattr(api_credential, prefix_name)
     length = api_credential.KEY_SECRET_LENGTH
@@ -170,7 +170,7 @@ async def test_the_two_platform_prefixes_do_not_cross_match(tmp_path):
     both as the same finding, so they are two rules, and neither may fire on
     the other's sample.
     """
-    from bisheng.open_api.domain.models.api_credential import (
+    from doberman_agent.open_api.domain.models.api_credential import (
         KEY_SECRET_LENGTH,
         PERSONAL_TOKEN_PREFIX,
         SERVICE_ACCOUNT_KEY_PREFIX,
@@ -235,7 +235,7 @@ async def test_generic_high_entropy_skips_placeholders(tmp_path):
 
 
 async def test_binary_file_skipped_by_null_byte_sniff(tmp_path):
-    from bisheng.app_publish.domain.services.secret_scanner import scan_package
+    from doberman_agent.app_publish.domain.services.secret_scanner import scan_package
 
     root = tmp_path / "pkg"
     root.mkdir(parents=True)
@@ -248,7 +248,7 @@ async def test_binary_file_skipped_by_null_byte_sniff(tmp_path):
 
 async def test_large_file_marked_skipped_not_silent(tmp_path):
     """A silently skipped file is indistinguishable from a clean one — that is a false pass."""
-    from bisheng.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES, scan_package
+    from doberman_agent.app_publish.domain.services.secret_scanner import MAX_SCAN_FILE_BYTES, scan_package
 
     root = tmp_path / "pkg"
     root.mkdir(parents=True)

@@ -20,7 +20,7 @@ import {
   tabsState,
 } from "./store/atoms";
 import { showApiError } from "~/api/request";
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 
 const API_VERSION = "v1";
 export const enum FLOW_TYPES {

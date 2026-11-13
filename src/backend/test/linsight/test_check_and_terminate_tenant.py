@@ -18,9 +18,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.core.context.tenant import is_tenant_filter_bypassed
-from bisheng.linsight.domain import utils
-from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+from doberman_agent.core.context.tenant import is_tenant_filter_bypassed
+from doberman_agent.linsight.domain import utils
+from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
 
 class _StubNodeManager:
@@ -39,12 +39,12 @@ def patched_worker(monkeypatch):
     """Fake redis (no task owner) + stub NodeManager + no invite-code rollback.
 
     The worker module is injected via ``sys.modules`` rather than imported, so the
-    function-local ``from bisheng.linsight.worker import NodeManager`` resolves to
+    function-local ``from doberman_agent.linsight.worker import NodeManager`` resolves to
     the stub without pulling in the heavy worker import chain (ollama/httpx etc.).
     """
-    fake_worker = ModuleType("bisheng.linsight.worker")
+    fake_worker = ModuleType("doberman_agent.linsight.worker")
     fake_worker.NodeManager = _StubNodeManager
-    monkeypatch.setitem(sys.modules, "bisheng.linsight.worker", fake_worker)
+    monkeypatch.setitem(sys.modules, "doberman_agent.linsight.worker", fake_worker)
 
     fake_redis = SimpleNamespace(aget=AsyncMock(return_value=None))
     monkeypatch.setattr(utils, "get_redis_client", AsyncMock(return_value=fake_redis))

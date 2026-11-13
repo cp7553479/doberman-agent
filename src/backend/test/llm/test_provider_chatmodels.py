@@ -1,5 +1,5 @@
 """Behavioral tests for the provider-specific ChatModels extracted out of
-BishengLLM: ChatQwen (VL content flattening), ChatMinimax / ChatMoonshot
+DobermanAgentLLM: ChatQwen (VL content flattening), ChatMinimax / ChatMoonshot
 (builtin web-search), and ChatMoonshot's web-search tool-call feedback loop.
 
 These run fully offline — payload assembly and the loop are tested without any
@@ -13,8 +13,8 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_openai import ChatOpenAI
 
-from bisheng.core.ai import ChatMinimax, ChatMoonshot, ChatQwen
-from bisheng.core.ai.llm.chat_qwen import _flatten_qwen_content
+from doberman_agent.core.ai import ChatMinimax, ChatMoonshot, ChatQwen
+from doberman_agent.core.ai.llm.chat_qwen import _flatten_qwen_content
 
 _COMMON = dict(model="test-model", api_key="k", base_url="http://localhost/v1", streaming=False)
 

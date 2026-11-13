@@ -22,8 +22,8 @@ helper ``_assert_can_write_system_config`` and is covered by
 ``test_llm_system_config_router_authz.py``.
 """
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.llm.api.router import router
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.llm.api.router import router
 
 
 def _endpoint_deps(path: str, method: str) -> list[str]:

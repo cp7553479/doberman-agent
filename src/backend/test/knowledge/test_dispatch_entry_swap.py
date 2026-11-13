@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 def test_process_knowledge_file_uses_enqueue_or_dispatch(monkeypatch):
     """Upload entrypoint must go through scheduler.enqueue_or_dispatch."""
-    from bisheng.knowledge.domain.services import knowledge_service as svc
+    from doberman_agent.knowledge.domain.services import knowledge_service as svc
 
     monkeypatch.setattr(
         svc.KnowledgeService,
@@ -27,7 +27,7 @@ def test_process_knowledge_file_uses_enqueue_or_dispatch(monkeypatch):
     def fake(**kwargs):
         captured.append(kwargs)
 
-    monkeypatch.setattr("bisheng.worker.knowledge.scheduler.enqueue_or_dispatch", fake)
+    monkeypatch.setattr("doberman_agent.worker.knowledge.scheduler.enqueue_or_dispatch", fake)
 
     req = MagicMock(callback_url="cb")
     svc.KnowledgeService.process_knowledge_file(
@@ -46,7 +46,7 @@ def test_process_knowledge_file_uses_enqueue_or_dispatch(monkeypatch):
 
 
 async def test_aprocess_knowledge_file_uses_enqueue_or_dispatch(monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_service as svc
+    from doberman_agent.knowledge.domain.services import knowledge_service as svc
 
     async def fake_save(cls, *a, **kw):
         return (MagicMock(), [], [MagicMock(id=5, user_id=20, file_name="img.png")], ["pk"])
@@ -56,7 +56,7 @@ async def test_aprocess_knowledge_file_uses_enqueue_or_dispatch(monkeypatch):
 
     captured = []
     monkeypatch.setattr(
-        "bisheng.worker.knowledge.scheduler.enqueue_or_dispatch",
+        "doberman_agent.worker.knowledge.scheduler.enqueue_or_dispatch",
         lambda **kw: captured.append(kw),
     )
 

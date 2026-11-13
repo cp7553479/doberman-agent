@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { Button, Input, toast, notification } from '@bisheng/ui';
+import { Button, Input, toast, notification } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
-import { Checkbox } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { GithubIcon } from "@/components/bs-icons/github";
 
@@ -251,12 +251,12 @@ export const LoginPage = ({ forceLocal = false }: LoginPageProps) => {
             <div className="relative z-10 sm:w-[1280px] w-full sm:h-[720px] h-full sm:shrink-0 border rounded-lg shadow-xl overflow-hidden bg-background-login">
                 <div className="w-[420px] h-[704px] m-[8px] hidden sm:block relative z-20">
                     <img
-                        src={getBrandAssetUrl("loginHeroLight", "/assets/bisheng/login-logo-big.png")}
+                        src={getBrandAssetUrl("loginHeroLight", "/assets/doberman-agent/login-logo-big.png")}
                         alt="logo_picture"
                         className="w-full h-full dark:hidden"
                     />
                     <img
-                        src={getBrandAssetUrl("loginHeroDark", "/assets/bisheng/login-logo-dark.png")}
+                        src={getBrandAssetUrl("loginHeroDark", "/assets/doberman-agent/login-logo-dark.png")}
                         alt="logo_picture"
                         className="w-full h-full hidden dark:block"
                     />
@@ -266,12 +266,12 @@ export const LoginPage = ({ forceLocal = false }: LoginPageProps) => {
                     <div className="w-[852px] sm:px-[266px] px-[20px] pyx-[200px] bg-background-login relative">
                         <div>
                             <img
-                                src={getBrandAssetUrl("headerLogoLight", "/assets/bisheng/login-logo-small.png")}
+                                src={getBrandAssetUrl("headerLogoLight", "/assets/doberman-agent/login-logo-small.png")}
                                 className="block w-[114px] h-[36px] m-auto mt-[96px] dark:w-[124px] dark:pr-[10px] dark:hidden"
                                 alt=""
                             />
                             <img
-                                src={getBrandAssetUrl("headerLogoDark", "/assets/bisheng/logo-small-dark.png")}
+                                src={getBrandAssetUrl("headerLogoDark", "/assets/doberman-agent/logo-small-dark.png")}
                                 className="w-[114px] h-[36px] m-auto mt-[96px] dark:w-[124px] dark:pr-[10px] dark:block hidden"
                                 alt=""
                             />
@@ -356,7 +356,7 @@ export const LoginPage = ({ forceLocal = false }: LoginPageProps) => {
                             <span className="mr-4 text-sm text-gray-400 relative top-2">v{json.version}</span>
                             {!appConfig.noFace && (
                                 <div className="help flex">
-                                    <a href={"https://github.com/dataelement/bisheng"} target="_blank">
+                                    <a href={"https://github.com/cp7553479/doberman-agent"} target="_blank">
                                         <GithubIcon className="block h-[40px] w-[40px] gap-1 border p-[10px] rounded-[8px] mx-[8px] hover:bg-[#1b1f23] hover:text-[white] hover:cursor-pointer" />
                                     </a>
                                     <a

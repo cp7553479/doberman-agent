@@ -9,7 +9,7 @@ import pytest
 
 @pytest.fixture
 def policy(monkeypatch):
-    from bisheng.knowledge.domain.services import knowledge_creation_policy as module
+    from doberman_agent.knowledge.domain.services import knowledge_creation_policy as module
 
     ref = {
         "kind": "web_session",
@@ -37,7 +37,7 @@ async def test_tenant_admin_can_create_without_a_menu(policy):
 
 
 async def test_foreign_expected_tenant_does_not_select_a_write_target(policy):
-    from bisheng.common.errcode.knowledge import KnowledgeCreationScopeChangedError
+    from doberman_agent.common.errcode.knowledge import KnowledgeCreationScopeChangedError
 
     module, viewer = policy
     with pytest.raises(KnowledgeCreationScopeChangedError):
@@ -45,7 +45,7 @@ async def test_foreign_expected_tenant_does_not_select_a_write_target(policy):
 
 
 async def test_revoked_admin_requires_the_original_menu_at_revalidation(policy, monkeypatch):
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     module, viewer = policy
     context = await module.KnowledgeCreationPolicy.prepare(viewer, expected_tenant_id=60)

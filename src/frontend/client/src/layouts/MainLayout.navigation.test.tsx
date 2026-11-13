@@ -20,7 +20,7 @@ jest.mock('~/hooks', () => ({
 jest.mock('~/components/Chat/desktopEmbedding', () => ({ isDesktopEmbedded: () => mockEmbedded }));
 jest.mock('~/hooks/queries/data-provider', () => ({ useGetBsConfig: () => ({ data: {} }) }));
 jest.mock('~/api/apps', () => ({ getBysConfigApi: async () => ({ data: {} }) }));
-jest.mock('~/pages/appChat/store/atoms', () => ({ bishengConfState: 'config' }));
+jest.mock('~/pages/appChat/store/atoms', () => ({ dobermanAgentConfState: 'config' }));
 jest.mock('~/store', () => ({ __esModule: true, default: { mobileSystemMenuOpenState: 'mobile' } }));
 jest.mock('recoil', () => ({ useRecoilState: (key: string) => jest.requireActual('react').useState(key === 'config' ? {} : false), useSetRecoilState: () => mockSetRecoil, useRecoilValue: () => false }));
 jest.mock('~/components/Chat/Input/AgentToolSelector', () => ({ useAgentToolPreferences: () => {} }));
@@ -53,7 +53,7 @@ jest.mock('~/pages/Subscription/ChannelSquareTabs', () => ({ ChannelSquareTabs: 
 jest.mock('~/pages/Subscription/ChannelPreviewDrawer', () => ({ ChannelPreviewDrawer: () => null }));
 jest.mock('~/pages/Subscription/Article/FullScreenArticle', () => ({ __esModule: true, default: () => null }));
 jest.mock('~/pages/Subscription/Sidebar/ChannelSidebar', () => ({ ChannelSidebar: () => null }));
-jest.mock('@bisheng/ui', () => ({ Button: () => null, Tooltip: () => null }));
+jest.mock('@doberman-agent/ui', () => ({ Button: () => null, Tooltip: () => null }));
 
 function Controls() {
   const location = useLocation(); const navigate = useNavigate();

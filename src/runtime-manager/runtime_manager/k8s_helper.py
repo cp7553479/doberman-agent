@@ -30,7 +30,7 @@ from runtime_manager.bundle_inputs import (
 from runtime_manager.material_client import MaterialClient, MaterialClientError
 from runtime_manager.static_inputs import has_static_build, select_static_root
 
-_RESULT = "BISHENG_RUNTIME_RESULT "
+_RESULT = "DOBERMAN_AGENT_RUNTIME_RESULT "
 _LANGUAGES = {"python3.11", "node20", "static"}
 
 
@@ -62,7 +62,7 @@ def verify_volume(volume=Path("/volume"), *, guard):
     if type(requested) is not int or requested <= 0 or not 0.8 * requested <= volume_capacity(root) <= 1.1 * requested:
         raise ValueError("volume_capacity_unbounded")
     if guard["marker_required"]:
-        marker = root / ".bisheng-volume.json"
+        marker = root / ".doberman-agent-volume.json"
         if marker.is_symlink() or not marker.is_file() or marker.stat().st_size > 4096:
             raise ValueError("volume_marker_missing")
         try:
@@ -131,7 +131,7 @@ export PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
 python -I -m venv --system-site-packages /opt/venv
 /opt/venv/bin/python -I -m pip install --no-index --find-links=/materials/wheels --require-hashes -r /materials/runtime.lock
 /opt/venv/bin/python -I -m pip check
-/opt/venv/bin/python -I -c 'import bisheng_sdk'
+/opt/venv/bin/python -I -c 'import doberman_agent_sdk'
 """
     if language in {"node20", "static"}:
         # Compiled Node bundles contain their exact node_modules; static is HTML.
@@ -178,21 +178,21 @@ def _input_key(document, original):
 
 
 def _source_root(root):
-    if (root / "bisheng-app.yaml").is_file():
+    if (root / "doberman-agent-app.yaml").is_file():
         return root
     children = list(root.iterdir())
     if (
         len(children) == 1
         and children[0].is_dir()
         and not children[0].is_symlink()
-        and (children[0] / "bisheng-app.yaml").is_file()
+        and (children[0] / "doberman-agent-app.yaml").is_file()
     ):
         return children[0]
     raise ValueError("helper_source_manifest_missing")
 
 
 def _load_download_tool():
-    spec = importlib.util.spec_from_file_location("bisheng_download_tool", "/opt/bisheng/prepare.py")
+    spec = importlib.util.spec_from_file_location("doberman_agent_download_tool", "/opt/doberman-agent/prepare.py")
     if spec is None or spec.loader is None:
         raise ValueError("helper_download_tool_missing")
     module = importlib.util.module_from_spec(spec)
@@ -223,15 +223,15 @@ def resolve_download(document, source, offline, output):
         subprocess.run(args, cwd=cwd or source, env=env, check=True)
 
     module.run = run
-    previous = os.environ.get("BISHENG_DEPENDENCY_LOCK")
-    os.environ["BISHENG_DEPENDENCY_LOCK"] = lock
+    previous = os.environ.get("DOBERMAN_AGENT_DEPENDENCY_LOCK")
+    os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] = lock
     try:
         module.download(document["profile"]["language"])
     finally:
         if previous is None:
-            os.environ.pop("BISHENG_DEPENDENCY_LOCK", None)
+            os.environ.pop("DOBERMAN_AGENT_DEPENDENCY_LOCK", None)
         else:
-            os.environ["BISHENG_DEPENDENCY_LOCK"] = previous
+            os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] = previous
 
 
 def _inputs_marker(document, original, key):

@@ -24,7 +24,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.dialects import sqlite
 
-from bisheng.knowledge.domain.models.knowledge_space_file import (
+from doberman_agent.knowledge.domain.models.knowledge_space_file import (
     _EXT_PRIORITIES,
     _EXT_RANK_FALLBACK,
     _compute_ext_rank_case_when,
@@ -34,7 +34,7 @@ from bisheng.knowledge.domain.models.knowledge_space_file import (
 
 def _read(rel: str) -> str:
     return (
-        Path(__file__).resolve().parents[2] / "bisheng" / rel
+        Path(__file__).resolve().parents[2] / "doberman_agent" / rel
     ).read_text(encoding="utf-8")
 
 

@@ -9,9 +9,9 @@
  * Unparseable payloads degrade to a plain textarea (legacy UserInput shape).
  */
 import { ArrowRight, Check, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Textarea } from '@bisheng/ui';
+import { Textarea } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import type { ClarifyQuestion, ExecStepEventData } from './stepUtils';

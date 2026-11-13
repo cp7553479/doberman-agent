@@ -34,14 +34,14 @@
 - SpaceChannelMember 模型重构（保留用于订阅审批流）
 
 **关键文件（预判）**:
-- 修改: `src/backend/bisheng/user/domain/services/auth.py`（LoginUser 适配器层）
-- 修改: `src/backend/bisheng/permission/domain/services/owner_service.py`（新增 delete_resource_tuples）
-- 修改: `src/backend/bisheng/knowledge/domain/services/knowledge_service.py`（最大改动）
-- 修改: `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py`（双写适配）
-- 修改: `src/backend/bisheng/api/services/flow.py`、`workflow.py`、`assistant.py`
-- 修改: `src/backend/bisheng/tool/domain/services/tool.py`
-- 修改: `src/backend/bisheng/channel/domain/services/channel_service.py`
-- 修改: `src/backend/bisheng/api/services/audit_log.py`
+- 修改: `src/backend/doberman_agent/user/domain/services/auth.py`（LoginUser 适配器层）
+- 修改: `src/backend/doberman_agent/permission/domain/services/owner_service.py`（新增 delete_resource_tuples）
+- 修改: `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`（最大改动）
+- 修改: `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py`（双写适配）
+- 修改: `src/backend/doberman_agent/api/services/flow.py`、`workflow.py`、`assistant.py`
+- 修改: `src/backend/doberman_agent/tool/domain/services/tool.py`
+- 修改: `src/backend/doberman_agent/channel/domain/services/channel_service.py`
+- 修改: `src/backend/doberman_agent/api/services/audit_log.py`
 
 **关联不变量**: INV-2, INV-3, INV-11, INV-15
 
@@ -287,22 +287,22 @@ Workflow/Assistant 列表响应移除 `group_ids` 字段（v2.4 遗留）。
 
 | 文件 | 变更内容 | 涉及任务 |
 |------|---------|---------|
-| `bisheng/user/domain/services/auth.py` | LoginUser 适配器层 | T01 |
-| `bisheng/permission/domain/services/owner_service.py` | 新增 delete_resource_tuples | T02 |
-| `bisheng/knowledge/domain/services/knowledge_service.py` | owner 元组/quota/列表过滤/移除 GroupResource | T03 |
-| `bisheng/knowledge/domain/services/knowledge_file_service.py` | access_check 自动适配 | T03 |
-| `bisheng/knowledge/domain/services/knowledge_permission_service.py` | access_check 自动适配 | T03 |
-| `bisheng/knowledge/domain/services/knowledge_space_service.py` | 双写适配 | T04 |
-| `bisheng/knowledge/domain/services/subscribe_handler.py` | 审批通过写 FGA 元组 | T04 |
-| `bisheng/api/services/flow.py` | owner 元组/移除 GroupResource | T05 |
-| `bisheng/api/services/workflow.py` | 列表过滤/移除 GroupResource/group_ids | T05 |
-| `bisheng/api/v1/workflow.py` | access_check 自动适配 | T05 |
-| `bisheng/api/services/assistant.py` | owner 元组/列表过滤/移除 GroupResource/group_ids | T06 |
-| `bisheng/tool/domain/services/tool.py` | owner 元组/列表过滤/移除 GroupResource | T07 |
-| `bisheng/channel/domain/services/channel_service.py` | 双写适配 | T08 |
-| `bisheng/channel/domain/services/channel_subscribe_approval_handler.py` | 审批写 FGA 元组 | T08 |
-| `bisheng/api/services/audit_log.py` | GroupResourceDao → PermissionService | T10 |
-| `bisheng/api/services/tag.py` | GroupResourceDao 替换 | T10 |
+| `doberman-agent/user/domain/services/auth.py` | LoginUser 适配器层 | T01 |
+| `doberman-agent/permission/domain/services/owner_service.py` | 新增 delete_resource_tuples | T02 |
+| `doberman-agent/knowledge/domain/services/knowledge_service.py` | owner 元组/quota/列表过滤/移除 GroupResource | T03 |
+| `doberman-agent/knowledge/domain/services/knowledge_file_service.py` | access_check 自动适配 | T03 |
+| `doberman-agent/knowledge/domain/services/knowledge_permission_service.py` | access_check 自动适配 | T03 |
+| `doberman-agent/knowledge/domain/services/knowledge_space_service.py` | 双写适配 | T04 |
+| `doberman-agent/knowledge/domain/services/subscribe_handler.py` | 审批通过写 FGA 元组 | T04 |
+| `doberman-agent/api/services/flow.py` | owner 元组/移除 GroupResource | T05 |
+| `doberman-agent/api/services/workflow.py` | 列表过滤/移除 GroupResource/group_ids | T05 |
+| `doberman-agent/api/v1/workflow.py` | access_check 自动适配 | T05 |
+| `doberman-agent/api/services/assistant.py` | owner 元组/列表过滤/移除 GroupResource/group_ids | T06 |
+| `doberman-agent/tool/domain/services/tool.py` | owner 元组/列表过滤/移除 GroupResource | T07 |
+| `doberman-agent/channel/domain/services/channel_service.py` | 双写适配 | T08 |
+| `doberman-agent/channel/domain/services/channel_subscribe_approval_handler.py` | 审批写 FGA 元组 | T08 |
+| `doberman-agent/api/services/audit_log.py` | GroupResourceDao → PermissionService | T10 |
+| `doberman-agent/api/services/tag.py` | GroupResourceDao 替换 | T10 |
 | Platform 前端列表组件 | 移除 group_ids 展示 | T11 |
 
 ### 不新建文件

@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.linsight.domain.services.agent_factory import _build_linsight_system_prompt
+from doberman_agent.linsight.domain.services.agent_factory import _build_linsight_system_prompt
 
 PLACEHOLDERS = ("__SKILL_EXEC_LINE__", "__SKILL_DELIVERABLE_LINE__", "__KB_EXEC_LINE__", "__KB_DELEGATE_LINE__")
 
@@ -67,7 +67,7 @@ def test_export_fallback_is_forbidden_when_a_code_executor_is_bound(has_kb):
     # Note: a generic "禁止" also appears in the base template (the "don't claim a
     # file you never wrote" rule), so match the export ban itself.
     assert "**禁止**调用 export_docx" in prompt
-    assert "bisheng_code_interpreter" in prompt
+    assert "doberman_agent_code_interpreter" in prompt
     # The ban is not absolute — a repeatedly failing executor may still fall back.
     assert "兜底" in prompt
     # Successful execution establishes file creation; content acceptance remains
@@ -89,7 +89,7 @@ def test_export_fallback_stays_allowed_without_a_code_executor(has_kb):
     prompt = _build_linsight_system_prompt(has_kb, skills_present=True, has_code_interpreter=False)
     assert "没有可用的代码执行工具" in prompt
     assert "**禁止**调用 export_docx" not in prompt
-    assert "bisheng_code_interpreter" not in prompt
+    assert "doberman_agent_code_interpreter" not in prompt
 
 
 @pytest.mark.parametrize("has_kb", [True, False])

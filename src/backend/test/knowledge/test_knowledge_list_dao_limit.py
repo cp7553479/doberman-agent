@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager
 
 import pytest
 
-from bisheng.knowledge.domain.models import knowledge as knowledge_module
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models import knowledge as knowledge_module
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
 
 
 class _EmptyResult:

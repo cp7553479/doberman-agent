@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalException,
     ApprovalExceptionType,
     ApprovalInstance,
@@ -15,10 +15,10 @@ from bisheng.approval.domain.models.approval_instance import (
     ApprovalTask,
     ApprovalTaskStatus,
 )
-from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-from bisheng.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
-from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
-from bisheng.approval.domain.services.approval_exception_service import ApprovalExceptionService
+from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+from doberman_agent.approval.domain.repositories.approval_scenario_repository import ApprovalScenarioRepository
+from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
+from doberman_agent.approval.domain.services.approval_exception_service import ApprovalExceptionService
 
 
 @dataclass

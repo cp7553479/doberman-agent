@@ -13,13 +13,13 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from bisheng.tool.domain.services.executor import ToolExecutor
+from doberman_agent.tool.domain.services.executor import ToolExecutor
 
 _BACKEND = Path(__file__).resolve().parents[2]
-_SEED = _BACKEND / "bisheng" / "database" / "data" / "t_gpts_tools.json"
-_TYPE_SEED = _BACKEND / "bisheng" / "database" / "data" / "t_gpts_tools_type.json"
-_INIT = _BACKEND / "bisheng" / "common" / "init_data.py"
-_TOOL_KEY = "bisheng_code_interpreter"
+_SEED = _BACKEND / "doberman_agent" / "database" / "data" / "t_gpts_tools.json"
+_TYPE_SEED = _BACKEND / "doberman_agent" / "database" / "data" / "t_gpts_tools_type.json"
+_INIT = _BACKEND / "doberman_agent" / "common" / "init_data.py"
+_TOOL_KEY = "doberman_agent_code_interpreter"
 
 
 def _seed_items() -> list[dict]:

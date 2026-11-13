@@ -6,12 +6,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import bisheng.channel.domain.services.channel_service as mod
-from bisheng.approval.domain.services.channel_subscribe_scenario_handler import ChannelSubscribeScenarioHandler
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import SubscribeChannelRequest
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
+import doberman_agent.channel.domain.services.channel_service as mod
+from doberman_agent.approval.domain.services.channel_subscribe_scenario_handler import ChannelSubscribeScenarioHandler
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import SubscribeChannelRequest
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.models.space_channel_member import MembershipStatusEnum, UserRoleEnum
 
 
 @pytest.fixture(autouse=True)
@@ -191,7 +191,7 @@ async def test_stale_active_member_can_resubscribe_with_current_approval_rules(m
     sync = AsyncMock()
     monkeypatch.setattr(ChannelService, "sync_direct_channel_user_permissions", sync)
     monkeypatch.setattr(
-        "bisheng.database.models.department.UserDepartmentDao.aget_user_primary_department",
+        "doberman_agent.database.models.department.UserDepartmentDao.aget_user_primary_department",
         AsyncMock(return_value=None),
     )
     result = await service.subscribe_channel(
@@ -243,7 +243,7 @@ async def test_public_subscribe_failure_preserves_retryable_progress(monkeypatch
 
 
 async def test_legacy_approval_failure_keeps_pending(monkeypatch):
-    from bisheng.channel.domain.services.channel_subscribe_approval_handler import ChannelSubscribeApprovalHandler
+    from doberman_agent.channel.domain.services.channel_subscribe_approval_handler import ChannelSubscribeApprovalHandler
 
     member = SimpleNamespace(id=1, status=MembershipStatusEnum.PENDING, user_id=42, user_role=UserRoleEnum.MEMBER)
     repo = SimpleNamespace(find_membership=AsyncMock(return_value=member), update=AsyncMock())
@@ -293,7 +293,7 @@ async def test_public_transition_activates_each_member_after_grant(monkeypatch):
 
 
 async def test_subscription_preserves_a_restricted_administrator_role(monkeypatch):
-    from bisheng.common.errcode.channel import ChannelAccessDeniedError
+    from doberman_agent.common.errcode.channel import ChannelAccessDeniedError
 
     member = SimpleNamespace(status=MembershipStatusEnum.ACTIVE, user_role=UserRoleEnum.ADMIN)
     repo = SimpleNamespace(find_membership=AsyncMock(return_value=member), update=AsyncMock())

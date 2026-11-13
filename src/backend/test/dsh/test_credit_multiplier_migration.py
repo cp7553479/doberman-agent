@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, text
 
 
 def test_multiplier_migration_preserves_legacy_usage_and_repeats_safely():
-    migration = import_module("bisheng.core.database.alembic.versions.f062_credit_multiplier")
+    migration = import_module("doberman_agent.core.database.alembic.versions.f062_credit_multiplier")
     engine = create_engine("sqlite://")
     with engine.begin() as connection:
         connection.execute(text("CREATE TABLE dsh_model_visibility (model_id BIGINT)"))

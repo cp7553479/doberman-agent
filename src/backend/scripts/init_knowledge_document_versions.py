@@ -20,12 +20,12 @@ from typing import Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.context.tenant import bypass_tenant_filter
-from bisheng.core.database import get_async_db_session
-from bisheng.knowledge.domain.models.knowledge import Knowledge
-from bisheng.knowledge.domain.models.knowledge_document import KnowledgeDocument
-from bisheng.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.database import get_async_db_session
+from doberman_agent.knowledge.domain.models.knowledge import Knowledge
+from doberman_agent.knowledge.domain.models.knowledge_document import KnowledgeDocument
+from doberman_agent.knowledge.domain.models.knowledge_document_version import KnowledgeDocumentVersion
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
 
 # Constants — mirror the enum values without coupling the script to enum imports.
 # KnowledgeTypeEnum: 0=NORMAL, 1=QA, 2=PRIVATE, 3=SPACE — version management is for SPACE only.

@@ -10,11 +10,11 @@
 
 ## 1. 总体策略（适配层）
 
-采用**适配层**路径：在 BiSheng 现有运行时内，仅把灵思的 agent 推理内核从自研 ReAct 替换为 deepagents `create_deep_agent`，**完整保留**多租户、权限、独立 Worker、Redis queue、WebSocket、状态双写、工具体系、E2B 沙箱、LLMService、DM8 双库等全部企业级横切能力。改造收敛在 `task_exec.py` 的"内核装配 + 事件适配"两点。
+采用**适配层**路径：在 doberman-agent 现有运行时内，仅把灵思的 agent 推理内核从自研 ReAct 替换为 deepagents `create_deep_agent`，**完整保留**多租户、权限、独立 Worker、Redis queue、WebSocket、状态双写、工具体系、E2B 沙箱、LLMService、DM8 双库等全部企业级横切能力。改造收敛在 `task_exec.py` 的"内核装配 + 事件适配"两点。
 
 | 处置 | 组件 |
 |------|------|
-| **替换** | 自研 ReAct 内核 `bisheng_langchain/linsight/{agent,task,react_task,manage,prompt,react_prompt}.py` → deepagents `create_deep_agent` |
+| **替换** | 自研 ReAct 内核 `doberman_agent_langchain/linsight/{agent,task,react_task,manage,prompt,react_prompt}.py` → deepagents `create_deep_agent` |
 | **保留** | `worker.py`、Redis queue、WebSocket、`state_message_manager.py`、多租户、OpenFGA、`LLMService`、工具体系、MinIO、`linsight_session_version`/`linsight_execute_task` 数据模型、DM8 双库 |
 | **新增** | `_normalize_chunk` 事件归一层、Skill 加载/白名单中间件、Skill CRUD API、Skill 多租户存储、SOP→Skill 迁移脚本、前端 Skills 管理页、**Redis checkpointer（HITL 中断现场持久化、可随时续跑，见 §2.3/§4）**、**历史消息压缩中间件（对齐 2.0 `tool_buffer`，见 §3.8）**、**工作区 `WorkspaceBackend`（MinIO 真相 + `file_dir` 写穿缓存，见 §9）** |
 | **下线** | 自研文件工具 `add_text_to_file/replace_file_lines/read_text_file`（→ deepagents 原生 `write_file/read_file/edit_file/ls`，见 §9） |
@@ -34,7 +34,7 @@
 async def _create_agent(self, session_model: LinsightSessionVersion, tools: List) -> CompiledStateGraph:
     linsight_conf = settings.get_linsight_conf()
     # model 必须经 LLMService 注入（见 2.2），禁止 demo 的 ChatOpenAI 直连 DashScope
-    model = self.llm  # 已由 _get_llm → get_bisheng_linsight_llm 产出（line158/224）
+    model = self.llm  # 已由 _get_llm → get_doberman-agent_linsight_llm 产出（line158/224）
     return create_deep_agent(                          # deepagents/graph.py:217
         model=model,
         tools=tools,                                   # LangChain BaseTool 列表，复用既有工具体系（见 §4 工具章）
@@ -52,7 +52,7 @@ async def _create_agent(self, session_model: LinsightSessionVersion, tools: List
 
 ### 2.2 model 注入：强制走 LLMService
 
-deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。BiSheng 侧 model 必须经 `LLMService.get_bisheng_linsight_llm`（`task_exec.py::_get_llm` line215-226 已建立此链路），它承担两项横切职责：
+deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。doberman-agent 侧 model 必须经 `LLMService.get_doberman-agent_linsight_llm`（`task_exec.py::_get_llm` line215-226 已建立此链路），它承担两项横切职责：
 
 - **多租户解析**：`get_workbench_llm(tenant_id=...)`（line222）在独立 Linsight Worker 子进程内显式按 `session_model.tenant_id` 取配置（INV-T18：admin-scope ContextVar 在 Worker 子进程内未设置，必须显式透传 tenant）。
 - **share fallback**：租户无私有模型时回落共享模型。
@@ -63,7 +63,7 @@ deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。BiSheng �
 
 > 对应 PRD §4.1.10。目标：灵思执行模型收敛到「工作台对话模型」同一份模型池，管理端用单选标记**灵思默认模型**，用户在发起任务时可切换为列表内任一模型，按本轮任务注入内核——即「无需重建代理」。原 `task_model` 与执行模式 `linsight_executor_mode` **迁移并彻底移除**。
 
-**(1) 配置 schema 变更**（`bisheng/llm/domain/schemas.py::WorkbenchModelConfig`，存储于 `tenant_system_model_config(key='linsight_llm')`）：
+**(1) 配置 schema 变更**（`doberman-agent/llm/domain/schemas.py::WorkbenchModelConfig`，存储于 `tenant_system_model_config(key='linsight_llm')`）：
 
 | 字段 | 变更 | 说明 |
 |---|---|---|
@@ -80,7 +80,7 @@ deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。BiSheng �
        └─ 仍缺省 → 配置缺失错误（不静默回退到任意模型）
 ```
 
-最终 id 仍经 `LLMService.get_bisheng_linsight_llm(invoke_user_id, model_id, temperature)` 产出 `BaseChatModel`，**多租户解析 + share fallback + 模型可访问性校验全部复用既有链路**（INV-T18：Worker 内显式透传 `tenant_id`）。即把原本写死的 `workbench_conf.task_model.id`（line225）替换为「按上述优先级解析出的 model_id」。
+最终 id 仍经 `LLMService.get_doberman-agent_linsight_llm(invoke_user_id, model_id, temperature)` 产出 `BaseChatModel`，**多租户解析 + share fallback + 模型可访问性校验全部复用既有链路**（INV-T18：Worker 内显式透传 `tenant_id`）。即把原本写死的 `workbench_conf.task_model.id`（line225）替换为「按上述优先级解析出的 model_id」。
 
 **(3) 提交链路透传 model**（`linsight/api/endpoints/linsight.py` + `LinsightQuestionSubmitSchema`）：用户在 `LinsightChatInput` 选择的 model id 经提交端点持久化到 `LinsightSessionVersion`（既有 `model` 字段，当前前端硬编码 `'gpt-4'`、后端忽略——本期改为真实透传）；Worker 执行时从 session 取出传入 `_get_llm(model_id=...)`。
 
@@ -98,9 +98,9 @@ deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。BiSheng �
 
 ### 2.3 checkpointer 取舍：用 Redis checkpointer 绕开 DM8，换取"可随时续跑"
 
-> **结论先行**：本期为 deepagents 内核挂 **Redis 持久化 checkpointer**（`langgraph-checkpoint-redis`），把 HITL 中断现场、graph thread state 落到 BiSheng 已有的 Redis，从而支持「用户隔任意时长回来续跑、Worker 重启不丢」（对应 PRD §4.4 / AC-5 / 决策）。`store` 留空（无跨 thread 共享需求）。
+> **结论先行**：本期为 deepagents 内核挂 **Redis 持久化 checkpointer**（`langgraph-checkpoint-redis`），把 HITL 中断现场、graph thread state 落到 doberman-agent 已有的 Redis，从而支持「用户隔任意时长回来续跑、Worker 重启不丢」（对应 PRD §4.4 / AC-5 / 决策）。`store` 留空（无跨 thread 共享需求）。
 
-**为什么不是 `checkpointer=None`**：deepagents demo 默认挂 `AsyncSqliteSaver`/`AsyncPostgresSaver`，二者均不兼容 DM8（违反双库 P0）。若据此简单留空 `checkpointer=None`，graph 在进程内就是无 checkpoint 的纯执行体——中断现场只活在 Worker 协程内存里，**用户离开超过某时长（或 Worker 重启）即无法精确回到 interrupt 点续跑**，这正是 2.0 自研引擎"Redis key TTL=3600s 被动失活、1 小时超时终止"的根因。本期产品决策要"可随时回来续跑"，故不能留空，必须挂一个 BiSheng 跑得起的持久化 checkpointer。
+**为什么不是 `checkpointer=None`**：deepagents demo 默认挂 `AsyncSqliteSaver`/`AsyncPostgresSaver`，二者均不兼容 DM8（违反双库 P0）。若据此简单留空 `checkpointer=None`，graph 在进程内就是无 checkpoint 的纯执行体——中断现场只活在 Worker 协程内存里，**用户离开超过某时长（或 Worker 重启）即无法精确回到 interrupt 点续跑**，这正是 2.0 自研引擎"Redis key TTL=3600s 被动失活、1 小时超时终止"的根因。本期产品决策要"可随时回来续跑"，故不能留空，必须挂一个 doberman-agent 跑得起的持久化 checkpointer。
 
 **为什么是 Redis 而非自建 DM8 saver**：
 
@@ -108,18 +108,18 @@ deepagents demo 用 `ChatOpenAI` 直连 DashScope，**严禁照搬**。BiSheng �
 |------|-------------|--------|----------|------|
 | `checkpointer=None` | — | 最小 | ❌ 仅同进程内存，有限等待窗 | 不满足"随时续跑" |
 | 官方 Sqlite/Postgres saver | ❌ 不兼容 DM8 | 小 | ✅ | 违反双库 P0，否决 |
-| **Redis checkpointer**（选用） | ✅ 完全绕开 | 中（引入依赖 + 装配） | ✅ 跨进程/不限时长 | BiSheng 已有 Redis，最优 |
+| **Redis checkpointer**（选用） | ✅ 完全绕开 | 中（引入依赖 + 装配） | ✅ 跨进程/不限时长 | doberman-agent 已有 Redis，最优 |
 | 自研 DM8/MySQL `BaseCheckpointSaver` | ✅ 纯双库 | 大（自建自维护） | ✅ | 工作量最大，留作后续 |
 
 **装配要点**：
-- 依赖 `langgraph-checkpoint-redis` 的 `AsyncRedisSaver`，连接复用 BiSheng `RedisManager` 的连接配置；`thread_id` 取 `session_version_id`，保证同一任务恢复到同一 thread。
+- 依赖 `langgraph-checkpoint-redis` 的 `AsyncRedisSaver`，连接复用 doberman-agent `RedisManager` 的连接配置；`thread_id` 取 `session_version_id`，保证同一任务恢复到同一 thread。
 - checkpoint key 设较长或不过期 TTL（"可随时回来"语义），并制定**容量治理**：任务终态（completed/failed/terminated）后清理对应 thread 的 checkpoint，避免无界增长；非终态保留。
 - `LinsightStateMessageManager` 的 Redis+MySQL 双写**仍保留**，职责不变（它存的是业务事件/步骤实体，供前端 LPOP 消费与回拉对账）；checkpointer 与它是两层：checkpointer 存"图怎么续跑"，message manager 存"前端展示什么"。
 - ⚠️ POC 必验（R3）：langgraph 1.2.1 实测 `interrupt()` halt 期间 pending writes 不落 thread state（`deepagents/tools.py` 注释），需实测 Redis checkpointer 下"隔任意时长 + Worker 重启"续跑的保真度。
 
 ### 2.4 system_prompt 中文化
 
-deepagents 内置英文 system prompt。BiSheng 面向中文企业场景，须替换为中文 system prompt 常量 `LINSIGHT_SYSTEM_PROMPT_ZH`，覆盖：任务规划语气、工具调用约定、HITL 触发话术（与 `NeedUserInput.call_reason` 对齐）、产物交付须落 E2B 真实沙箱（而非虚拟 FS）的指令。SkillsMiddleware 的 progressive disclosure 提示词亦须中文化。该常量集中放置，便于与 PRD 话术对账。
+deepagents 内置英文 system prompt。doberman-agent 面向中文企业场景，须替换为中文 system prompt 常量 `LINSIGHT_SYSTEM_PROMPT_ZH`，覆盖：任务规划语气、工具调用约定、HITL 触发话术（与 `NeedUserInput.call_reason` 对齐）、产物交付须落 E2B 真实沙箱（而非虚拟 FS）的指令。SkillsMiddleware 的 progressive disclosure 提示词亦须中文化。该常量集中放置，便于与 PRD 话术对账。
 
 ### 2.5 执行预算：max_steps / retry_num
 
@@ -141,7 +141,7 @@ sequenceDiagram
     participant HE as _handle_event(line405)
     participant SM as StateMessageManager(Redis+MySQL)
 
-    WF->>LLM: get_bisheng_linsight_llm(tenant_id,user_id)
+    WF->>LLM: get_doberman-agent_linsight_llm(tenant_id,user_id)
     LLM-->>WF: model (多租户+share fallback)
     WF->>CA: _create_agent(session, tools)
     CA->>DA: create_deep_agent(model, tools, prompt_zh,<br/>checkpointer=Redis, store=None,<br/>recursion_limit=200)
@@ -163,7 +163,7 @@ sequenceDiagram
 
 - **管理端（租户管理员）**：「模型 → 系统模型配置 → 工作台模型 → 工作台对话模型」列表每行新增「灵思默认模型」单选，**整列只能选一个**，选中者即灵思任务默认执行模型。原「灵思任务执行模型」配置区（模型 + 执行模式）**整体移除**。
 - **终端用户**：发起任务的统一输入区提供模型选择器，候选 = 工作台对话模型列表，**默认选中**管理员标记的「灵思默认模型」，可发起前切换为列表任一模型、按本轮生效。
-- **落地**：用户选择经 `config.configurable.model_id` 注入；`_get_llm`（line215）改为按 per-task `model_id`（缺省取「灵思默认模型」）调用 `LLMService.get_bisheng_linsight_llm`，多租户解析 + share fallback 不变（§2.2）。移除 `workbench_conf.linsight_executor_mode` 分支——`task_mode` 不再由配置驱动，§2.1 装配的 `create_deep_agent` 自带执行模式。
+- **落地**：用户选择经 `config.configurable.model_id` 注入；`_get_llm`（line215）改为按 per-task `model_id`（缺省取「灵思默认模型」）调用 `LLMService.get_doberman-agent_linsight_llm`，多租户解析 + share fallback 不变（§2.2）。移除 `workbench_conf.linsight_executor_mode` 分支——`task_mode` 不再由配置驱动，§2.1 装配的 `create_deep_agent` 自带执行模式。
 - **数据**：「灵思默认模型」标记存于既有工作台 llm 配置的一个按租户单选字段，无需新表。
 
 ---
@@ -313,7 +313,7 @@ flowchart TD
 
 ### 4.1 现状与目标差异
 
-现状（自研 ReAct）：HITL 由 agent 内部把控制权交还给执行框架——`NeedUserInput` 事件触发后，`task_exec.py:_handle_need_user_input(line457)` 起一个 `_wait_for_user_input` 协程，调用 `_wait_for_input_completion(line530)` 1s 轮询 MySQL 任务状态，拿到用户输入后调用 `agent.continue_task(task_id, user_input)` 续跑。整个"挂起→等待→续跑"由 BiSheng 在 agent 之外编排。
+现状（自研 ReAct）：HITL 由 agent 内部把控制权交还给执行框架——`NeedUserInput` 事件触发后，`task_exec.py:_handle_need_user_input(line457)` 起一个 `_wait_for_user_input` 协程，调用 `_wait_for_input_completion(line530)` 1s 轮询 MySQL 任务状态，拿到用户输入后调用 `agent.continue_task(task_id, user_input)` 续跑。整个"挂起→等待→续跑"由 doberman-agent 在 agent 之外编排。
 
 目标（deepagents）：deepagents 内核用 LangGraph 原生 `interrupt()` 实现 HITL——agent 在子图节点内调用 `interrupt(payload)`，LangGraph 抛出 `GraphInterrupt`，`astream` 自然停止并在最后一个 chunk 暴露 `__interrupt__`。续跑必须用 `graph.astream(Command(resume=user_input), config)` 投喂同一 `thread_id`。
 
@@ -335,7 +335,7 @@ stateDiagram-v2
 
 映射对照表：
 
-| LangGraph / deepagents | BiSheng BaseEvent | ExecuteTaskStatusEnum | MessageEventType |
+| LangGraph / deepagents | doberman-agent BaseEvent | ExecuteTaskStatusEnum | MessageEventType |
 |---|---|---|---|
 | 节点内 `interrupt(payload)` → chunk `__interrupt__` | `NeedUserInput(step_type="call_user_input")` | `WAITING_FOR_USER_INPUT` | `user_input` |
 | 用户调 `POST /workbench/user-input` | — (写 `history` + 状态) | `USER_INPUT_COMPLETED` | `user_input_completed` |
@@ -346,7 +346,7 @@ stateDiagram-v2
 `__interrupt__` 出现在 `astream(..., stream_mode=["updates","messages","values"])` 的 `updates` 流末尾，结构为 `{"__interrupt__": (Interrupt(value=<payload>, ...),)}`。`_normalize_chunk()` 负责把它翻译成既有 `NeedUserInput`：
 
 要点：
-- **call_id 路由（单点）**：deepagents 的 interrupt payload 必须携带触发任务的 `task_id`（注入 system_prompt / subagent 上下文，或从 `config["configurable"]` 取当前执行任务）。`_normalize_chunk` 用该 `task_id` 构造 `NeedUserInput(task_id=..., call_reason=payload["reason"], params=payload.get("params"))`。BiSheng 单 graph 单 interrupt 串行执行，**同一时刻只有一个待输入点**，故 `task_id` 是唯一路由键，无需多路复用。
+- **call_id 路由（单点）**：deepagents 的 interrupt payload 必须携带触发任务的 `task_id`（注入 system_prompt / subagent 上下文，或从 `config["configurable"]` 取当前执行任务）。`_normalize_chunk` 用该 `task_id` 构造 `NeedUserInput(task_id=..., call_reason=payload["reason"], params=payload.get("params"))`。doberman-agent 单 graph 单 interrupt 串行执行，**同一时刻只有一个待输入点**，故 `task_id` 是唯一路由键，无需多路复用。
 - `_handle_event` 既有 `NeedUserInput → _handle_need_user_input` 分发逻辑（line412 映射表）完全不变。
 
 ### 4.4 续跑：Command(resume) 替换 continue_task 内核
@@ -412,7 +412,7 @@ async for chunk in agent.astream(Command(resume=user_input), config,
 ```
 tools = await self._prepare_tools(session_model)   # List[BaseTool]，不变
 agent = create_deep_agent(
-    model=model,            # 必经 LLMService.get_bisheng_linsight_llm
+    model=model,            # 必经 LLMService.get_doberman-agent_linsight_llm
     tools=tools,            # BaseTool 直传
     system_prompt=...,
     subagents=...,
@@ -447,7 +447,7 @@ agent = create_deep_agent(
 | 文件空间 | 载体 | 职责 | 是否交付物 |
 |---|---|---|---|
 | **工作区**（§9） | **MinIO `workspace/{svid}/`（真相）+ `file_dir` 写穿缓存**，经自定义 `WorkspaceBackend` 收口 | 上传附件 markdown/图片、agent 中间文件、产物；deepagents 原生 `read/write/edit/ls` 与 E2B 都经它读写 | `output/` 区 = 交付物（产物区）；`scratch/` = 中间态（同样持久，不进产物区） |
-| **E2B 真实沙箱** | `bisheng_code_interpreter` 远程容器 | 真实执行代码；瞬态计算镜像 | 产出经 copy-out 摄入工作区（§9），不单独成交付物 |
+| **E2B 真实沙箱** | `doberman_agent_code_interpreter` 远程容器 | 真实执行代码；瞬态计算镜像 | 产出经 copy-out 摄入工作区（§9），不单独成交付物 |
 | **Skill 磁盘**（§7） | `FilesystemBackend(SKILLS_ROOT)`，磁盘 | 只读静态 SKILL.md，progressive disclosure | 否 |
 
 > **与原方案的差异**：旧稿用 deepagents 虚拟 FS（`state.files`）承载 agent 内部态、附件走独立本地 `file_dir`（路径 A）。现方案**取消 `state.files` 作为文件载体**（大 markdown/二进制不挂 graph state）——附件/中间/产物统一收敛到**一个工作区**（MinIO 真相 + `file_dir` 写穿缓存），E2B 经工作区 copy-in/out，Skill 独立走磁盘。详见 §9。
@@ -496,9 +496,9 @@ Linsight 全部领域表（`linsight_session_version`/`linsight_execute_task`/`l
 ### 6.4 DDD 分层与 arch-guard
 
 新增 Skill 模块严格 `Router → Endpoint → Service → Repository → DB`：
-- endpoint 不得 `import bisheng.database.models.*`（RULE-3 WARNING）；
+- endpoint 不得 `import doberman_agent.database.models.*`（RULE-3 WARNING）；
 - Service 不写 ORM，Repository 收口 DB 访问；
-- router 注册进 `bisheng/api/router.py`（前缀 `/api/v1/linsight`，复用现有 linsight router 分组）。
+- router 注册进 `doberman-agent/api/router.py`（前缀 `/api/v1/linsight`，复用现有 linsight router 分组）。
 
 ### 6.5 Worker 子进程租户上下文重建（关键陷阱）
 
@@ -522,9 +522,9 @@ Linsight 独立 Worker 多进程，**子进程不继承 API 进程的租户上�
 
 > 对应 PRD §4.7.7。新增工作台子菜单键 `linsight`（任务模式），归属「首页」，复用既有 RBAC 菜单（`AccessType.WEB_MENU=99`）与孤儿清理机制，**不引入新权限机制**。
 
-**(1) 后端菜单键**（`bisheng/database/models/role_access.py::WebMenuResource`）：在工作台子菜单段新增 `LINSIGHT = 'linsight'`（注释归属 home）。`WebMenuResource` 已含 `HOME='home'`/`APPS='apps'`，新键与之同级。
+**(1) 后端菜单键**（`doberman-agent/database/models/role_access.py::WebMenuResource`）：在工作台子菜单段新增 `LINSIGHT = 'linsight'`（注释归属 home）。`WebMenuResource` 已含 `HOME='home'`/`APPS='apps'`，新键与之同级。
 
-**(2) auth.py 菜单集合改动**（`bisheng/user/domain/services/auth.py`）：把 `'linsight'` 加入以下集合：
+**(2) auth.py 菜单集合改动**（`doberman-agent/user/domain/services/auth.py`）：把 `'linsight'` 加入以下集合：
 
 | 集合 | 作用 | 改动 |
 |---|---|---|
@@ -759,7 +759,7 @@ flowchart TD
     B --> C["LinsightWorkbenchImpl._parse_file<br/>workbench_impl.py:775"]
     C --> D["TempFilePipeline.arun()<br/>chunk_size=1000 / overlap=100"]
     D --> E["texts join 为 markdown<br/>put_object_tmp 落 MinIO 临时桶"]
-    D --> F["_process_vector_storage line846<br/>Milvus + ES 双写<br/>embedding=get_bisheng_linsight_embedding"]
+    D --> F["_process_vector_storage line846<br/>Milvus + ES 双写<br/>embedding=get_doberman-agent_linsight_embedding"]
     E --> G["文件对象写 Redis FILE_INFO 前缀<br/>+ session_version.files JSON"]
     F --> G
     G --> H["执行前 _init_file_directory<br/>task_exec.py:231 并发下载到 CACHE_DIR"]
@@ -881,11 +881,11 @@ flowchart LR
 
 #### 9.3.5 含图文档
 
-图文档（含图片的 PDF/Word/PPT）**直接复用 BiSheng 现有文档解析能力**（`TempFilePipeline` / 知识库解析管线，含 OCR、版面分析、表格抽取，PDF 支持 ETL4LM / MineRU / PaddleOCR 多引擎），产出**图文一体的 markdown**——无需另起 deepagents `file-upload.md` 里基于 `pymupdf4llm`/`mammoth` 的抽取实现：
+图文档（含图片的 PDF/Word/PPT）**直接复用 doberman-agent 现有文档解析能力**（`TempFilePipeline` / 知识库解析管线，含 OCR、版面分析、表格抽取，PDF 支持 ETL4LM / MineRU / PaddleOCR 多引擎），产出**图文一体的 markdown**——无需另起 deepagents `file-upload.md` 里基于 `pymupdf4llm`/`mammoth` 的抽取实现：
 
 - **图内文字经 OCR / 表格抽取进入 markdown 文本**：图表、扫描页中的文字成为可被模型按需读取的正文，不再是"模型读不到的图"。
 - 图片在解析阶段**抽取为独立文件**，落入该附件目录的 `/uploads/<name>/images/`（base64 内容），写入文件空间时**必须显式 `encoding=base64`**（二进制内容硬约束，否则落空/乱码）；`index.md` 正文以 `![](images/…)` **相对引用**，保留图文位置关系，供前端展示。
-- **模型主要消费解析后的 markdown 文本**（含 OCR 抽取的图内文字）；指针块的 `images: N` 标示图片数量供前端展示。本期**不额外引入视觉模型直接读原图**——图内信息以 BiSheng 解析抽取的文本/图注为准。
+- **模型主要消费解析后的 markdown 文本**（含 OCR 抽取的图内文字）；指针块的 `images: N` 标示图片数量供前端展示。本期**不额外引入视觉模型直接读原图**——图内信息以 doberman-agent 解析抽取的文本/图注为准。
 
 #### 9.3.6 子智能体共享文件空间
 
@@ -981,7 +981,7 @@ on after_code_run():
 ```
 
 要点：
-- **入沙箱（required_files 机制）**：≤`SIZE_AUTOPUSH` 自动 delta push（模型零负担）；大文件由模型在 **`bisheng_code_interpreter` 工具入参 `required_files: list[str]`** 中声明，工具实现 worker 中转流式写入沙箱（hash 命中 no-op，`keep_sandbox` 多次 run 重复声明零成本）。**不加独立 load 工具**——「带着这些文件跑这段代码」一步原子，避免两步时序错；schema 是 BiSheng 自有 `CodeInterpreterToolArguments`（`tool.py:47`），非 deepagents 内置工具（PRD N4 不用 `CodeInterpreterMiddleware`），加参数无框架约束。**兜底**：脚本因未声明报 FileNotFoundError → run 结果附「该文件需在 required_files 中声明」提示，模型补声明重试。system_prompt + 工具 description 写明「超阈值文件须声明」。本地 executor（cwd=file_dir 天然可见）不受影响，按 executor 类型分支。
+- **入沙箱（required_files 机制）**：≤`SIZE_AUTOPUSH` 自动 delta push（模型零负担）；大文件由模型在 **`doberman_agent_code_interpreter` 工具入参 `required_files: list[str]`** 中声明，工具实现 worker 中转流式写入沙箱（hash 命中 no-op，`keep_sandbox` 多次 run 重复声明零成本）。**不加独立 load 工具**——「带着这些文件跑这段代码」一步原子，避免两步时序错；schema 是 doberman-agent 自有 `CodeInterpreterToolArguments`（`tool.py:47`），非 deepagents 内置工具（PRD N4 不用 `CodeInterpreterMiddleware`），加参数无框架约束。**兜底**：脚本因未声明报 FileNotFoundError → run 结果附「该文件需在 required_files 中声明」提示，模型补声明重试。system_prompt + 工具 description 写明「超阈值文件须声明」。本地 executor（cwd=file_dir 天然可见）不受影响，按 executor 类型分支。
 - **出沙箱**：全树扫描捕获（脚本不调 write 也能抓）；小文本走 cache+写穿，大/二进制**沙箱直传 MinIO + 指针**，绝不过 cache/state/上下文。
 - **告知模型**：`run` 结果**枚举本次新增/改动文件**（path+size），否则 agent 不知脚本产出了啥（现状 E2B 仅回图片 URL，须补全）。
 - **分类**：路径前缀 `output/` vs `scratch/`，不依赖 `file_name∈answer`。
@@ -1012,7 +1012,7 @@ on after_code_run():
 | 文件空间 | 载体 | 职责 |
 |---|---|---|
 | **工作区**（本章主体） | MinIO `workspace/{svid}/`（真相）+ `file_dir`（写穿缓存），`WorkspaceBackend` 收口 | 附件 markdown/图片、agent 中间文件、产物；deepagents 工具 + E2B 都经它 |
-| **E2B 真实沙箱** | `bisheng_code_interpreter` 远程容器 | 真实代码执行；瞬态计算镜像，经工作区 copy-in/out（§9.3.9） |
+| **E2B 真实沙箱** | `doberman_agent_code_interpreter` 远程容器 | 真实代码执行；瞬态计算镜像，经工作区 copy-in/out（§9.3.9） |
 | **Skill 磁盘**（§7） | `FilesystemBackend(SKILLS_ROOT)` | 只读静态 SKILL.md，progressive disclosure |
 
 三条铁律：
@@ -1044,11 +1044,11 @@ on after_code_run():
 
 | 职责 | 文件路径 |
 |------|----------|
-| 解析与指针块实现 | `src/backend/bisheng/linsight/domain/services/workbench_impl.py` |
-| 文件目录初始化与清理、内核装配、事件适配 | `src/backend/bisheng/linsight/domain/task_exec.py` |
-| 上传 / user-input 端点 | `src/backend/bisheng/linsight/api/endpoints/linsight.py` |
-| agent 文件列表注入 | `src/backend/bisheng_langchain/linsight/agent.py` |
-| 配置常量（max_file_num / file_content_length / max_file_content_num） | `src/backend/bisheng_langchain/linsight/const.py` |
-| 文件工具注入 | `src/backend/bisheng/tool/domain/services/tool.py` |
-| 向量召回工具 | `src/backend/bisheng/tool/domain/langchain/linsight_knowledge.py` |
-| 状态/消息双写 | `src/backend/bisheng/linsight/domain/services/state_message_manager.py` |
+| 解析与指针块实现 | `src/backend/doberman_agent/linsight/domain/services/workbench_impl.py` |
+| 文件目录初始化与清理、内核装配、事件适配 | `src/backend/doberman_agent/linsight/domain/task_exec.py` |
+| 上传 / user-input 端点 | `src/backend/doberman_agent/linsight/api/endpoints/linsight.py` |
+| agent 文件列表注入 | `src/backend/doberman_agent_langchain/linsight/agent.py` |
+| 配置常量（max_file_num / file_content_length / max_file_content_num） | `src/backend/doberman_agent_langchain/linsight/const.py` |
+| 文件工具注入 | `src/backend/doberman_agent/tool/domain/services/tool.py` |
+| 向量召回工具 | `src/backend/doberman_agent/tool/domain/langchain/linsight_knowledge.py` |
+| 状态/消息双写 | `src/backend/doberman_agent/linsight/domain/services/state_message_manager.py` |

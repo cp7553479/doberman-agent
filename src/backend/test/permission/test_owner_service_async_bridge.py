@@ -2,10 +2,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.permission.domain.services.owner_service import OwnerService
+from doberman_agent.permission.domain.services.owner_service import OwnerService
 
 
-_PERM_SVC = 'bisheng.permission.domain.services.permission_service.PermissionService'
+_PERM_SVC = 'doberman_agent.permission.domain.services.permission_service.PermissionService'
 
 
 @pytest.mark.asyncio

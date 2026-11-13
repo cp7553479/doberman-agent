@@ -426,7 +426,7 @@ def main():
         return
     else:
         raise ValueError("probe_action_invalid")
-    print("BISHENG_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
+    print("DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
 
 
 if __name__ == "__main__":

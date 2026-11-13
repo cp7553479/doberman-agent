@@ -10,7 +10,7 @@
  * the existing input/output sections (no MergedStep→AgentToolCall adapter, so a
  * bare-string output never degrades into a single result chip).
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { memo, useState, type FC } from 'react';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';

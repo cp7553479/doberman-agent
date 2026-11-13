@@ -3,7 +3,7 @@ import { changeCurrentVersion } from "@/controllers/API/flow";
 import { changeWorkflowCurrentVersion } from "@/controllers/API/workflow";
 import { showApiError } from "@/controllers/request";
 import { AppNumType } from "@/types/app";
-import { Select, Tooltip } from "@bisheng/ui";
+import { Select, Tooltip } from "@doberman-agent/ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

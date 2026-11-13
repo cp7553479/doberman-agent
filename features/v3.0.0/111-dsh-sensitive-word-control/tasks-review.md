@@ -60,6 +60,6 @@ LGTM
 
 ## 5. 分支准备记录（2026-10-23）
 
-按用户后续要求，Gateway 与 Desktop 分别获取并核对远端 main，在独立 worktree 创建同名分支 feat/bisheng-work-dsh-guardrails；具体工作目录及完整提交号见 tasks §2。新分支 HEAD 与所列 main 提交一致，工作区干净，未提交或推送。Gateway 原工作区仍在 feat/remove-dsh-seat，Desktop 原工作区仍在 V1.1.0，已有未跟踪内容和其他 worktree 保留。
+按用户后续要求，Gateway 与 Desktop 分别获取并核对远端 main，在独立 worktree 创建同名分支 feat/doberman-agent-work-dsh-guardrails；具体工作目录及完整提交号见 tasks §2。新分支 HEAD 与所列 main 提交一致，工作区干净，未提交或推送。Gateway 原工作区仍在 feat/remove-dsh-seat，Desktop 原工作区仍在 V1.1.0，已有未跟踪内容和其他 worktree 保留。
 
 Gateway 新基线与原核查提交的文件树相同。Desktop 新基线相对原核查版本有变化，已确认现有 Chat content_filter 与 Responses UPSTREAM_ERROR 处理仍在；本次只完成分支准备和任务元数据更新，未进行完整设计重审或运行测试。后续任务按新基线重新核对调用、插件契约和测试，不能将原静态评审当作新 main 的运行验证。任务仍为完成 0 / 132，未修改业务代码。

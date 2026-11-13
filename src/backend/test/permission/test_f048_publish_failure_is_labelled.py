@@ -12,12 +12,12 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionProjectionFailedError,
     PermissionPublishNotReadyError,
 )
-from bisheng.core.openfga.exceptions import FGAClientError
-from bisheng.permission.application.process_runtime import (
+from doberman_agent.core.openfga.exceptions import FGAClientError
+from doberman_agent.permission.application.process_runtime import (
     register_f048_permission_runtime_context,
 )
 
@@ -44,7 +44,7 @@ class _RecordingState:
 
 
 def _service(projector: _StubProjector, state: _RecordingState):
-    from bisheng.permission.domain.services.catalog_service import CatalogService
+    from doberman_agent.permission.domain.services.catalog_service import CatalogService
 
     service = CatalogService.__new__(CatalogService)
     service._projector = projector
@@ -100,7 +100,7 @@ class _StubManager:
 def _capture_initializer(monkeypatch, manager: _StubManager):
     """Register the runtime context against a stub manager and return its init."""
 
-    from bisheng.core.context.manager import app_context
+    from doberman_agent.core.context.manager import app_context
 
     def get_context(name: str):
         if name == "openfga":

@@ -4,7 +4,7 @@ import type {
   DshSensitivePolicy,
   DshSensitivePolicyCommand,
 } from "@/types/dshContentSafety";
-import { Button, Checkbox, CheckboxGroup, Textarea } from "@bisheng/ui";
+import { Button, Checkbox, CheckboxGroup, Textarea } from "@doberman-agent/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

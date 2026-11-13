@@ -1,4 +1,4 @@
-import { Select } from '@bisheng/ui';
+import { Select } from '@doberman-agent/ui';
 import { getGroupsApi } from '@/controllers/API/log';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

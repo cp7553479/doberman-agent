@@ -11,27 +11,27 @@ from test.app_runtime.test_runtime_delivery_repository import runtime_repo as ru
 async def secret_runtime(runtime_repo, monkeypatch):
     from cryptography.fernet import Fernet
 
-    from bisheng.app_publish.domain.models.app_deployment import AppDeployment
-    from bisheng.app_publish.domain.models.app_secret_config import AppSecretConfig
-    from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubject
-    from bisheng.app_publish.domain.repositories import release_tenancy_repository
-    from bisheng.app_runtime.domain.models.runtime_delivery import (
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeployment
+    from doberman_agent.app_publish.domain.models.app_secret_config import AppSecretConfig
+    from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubject
+    from doberman_agent.app_publish.domain.repositories import release_tenancy_repository
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import (
         RuntimeAssignment,
         RuntimeDelivery,
         RuntimeOperation,
         RuntimeRoute,
     )
-    from bisheng.app_runtime.domain.services.runtime_payload import seal
-    from bisheng.common.services.config_service import settings
-    from bisheng.database.models.app import App
-    from bisheng.database.models.app_instance import AppInstance
-    from bisheng.database.models.app_version import AppVersion
-    from bisheng.database.models.audit_log import AuditLog
-    from bisheng.database.models.tenant import UserTenant
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
-    from bisheng.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
-    from bisheng.open_api.domain.repositories import owner_repository
-    from bisheng.user.domain.models.user import User
+    from doberman_agent.app_runtime.domain.services.runtime_payload import seal
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.database.models.app import App
+    from doberman_agent.database.models.app_instance import AppInstance
+    from doberman_agent.database.models.app_version import AppVersion
+    from doberman_agent.database.models.audit_log import AuditLog
+    from doberman_agent.database.models.tenant import UserTenant
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.open_api.domain.models.credential_delegate_scope import ApiCredentialDelegateScope
+    from doberman_agent.open_api.domain.repositories import owner_repository
+    from doberman_agent.user.domain.models.user import User
     from test.app_publish.conftest import _sqlite_ddl_quirks
 
     # F113 keeps the approved release and membership real. SQLite uses one
@@ -151,8 +151,8 @@ async def secret_runtime(runtime_repo, monkeypatch):
 
 
 async def test_snapshot_requires_current_route_instance_and_operation(secret_runtime):
-    from bisheng.app_runtime.application.runtime_secrets import running_environment_snapshot
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeRoute
+    from doberman_agent.app_runtime.application.runtime_secrets import running_environment_snapshot
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeRoute
 
     repo, app, _ = secret_runtime
     async with repo.transaction() as session:
@@ -168,8 +168,8 @@ async def test_snapshot_requires_current_route_instance_and_operation(secret_run
 
 
 async def test_completed_deploy_keeps_comparison_available(secret_runtime):
-    from bisheng.app_runtime.application.runtime_secrets import running_environment_snapshot
-    from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeOperation
+    from doberman_agent.app_runtime.application.runtime_secrets import running_environment_snapshot
+    from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeOperation
 
     repo, app, _ = secret_runtime
     operation = await repo.get(RuntimeOperation, "origin")

@@ -15,18 +15,18 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlmodel import Session, select
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError, DshSessionRevokedError, DshUserDisabledError
-from bisheng.dsh.access_runtime import DshRuntime, get_logout_runtime, get_runtime
-from bisheng.dsh.api.endpoints.local_auth import router
-from bisheng.dsh.domain.models.local_session import DshRefreshToken, DshSession
-from bisheng.dsh.domain.repositories.local_session import DshSessionRepository
-from bisheng.dsh.domain.repositories.tickets import TicketRepository
-from bisheng.dsh.domain.schemas.contracts import DshIdentitySnapshot, DshTenantDisplay, DshUserDisplay
-from bisheng.dsh.domain.services.access import DshAccessService, DshPrincipal, principal_scope
-from bisheng.dsh.domain.services.authorization import DshAuthorizationService
-from bisheng.dsh.domain.services.identity import IdentityService
-from bisheng.dsh.domain.services.local_session import DshLocalSessionService
-from bisheng.dsh.infrastructure.token_keys import ISSUER, LocalTokenKeys
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError, DshSessionRevokedError, DshUserDisabledError
+from doberman_agent.dsh.access_runtime import DshRuntime, get_logout_runtime, get_runtime
+from doberman_agent.dsh.api.endpoints.local_auth import router
+from doberman_agent.dsh.domain.models.local_session import DshRefreshToken, DshSession
+from doberman_agent.dsh.domain.repositories.local_session import DshSessionRepository
+from doberman_agent.dsh.domain.repositories.tickets import TicketRepository
+from doberman_agent.dsh.domain.schemas.contracts import DshIdentitySnapshot, DshTenantDisplay, DshUserDisplay
+from doberman_agent.dsh.domain.services.access import DshAccessService, DshPrincipal, principal_scope
+from doberman_agent.dsh.domain.services.authorization import DshAuthorizationService
+from doberman_agent.dsh.domain.services.identity import IdentityService
+from doberman_agent.dsh.domain.services.local_session import DshLocalSessionService
+from doberman_agent.dsh.infrastructure.token_keys import ISSUER, LocalTokenKeys
 
 
 class RedisStore:
@@ -70,7 +70,7 @@ def snapshot(user="20", tenant="2", active=True):
 
 @pytest.fixture
 def native(tmp_path):
-    from bisheng.core.database.tenant_filter import register_tenant_filter_events
+    from doberman_agent.core.database.tenant_filter import register_tenant_filter_events
 
     register_tenant_filter_events()
     engine = create_engine(f"sqlite:///{tmp_path / 'native.db'}", connect_args={"check_same_thread": False})
@@ -125,7 +125,7 @@ async def test_native_tokens_validate_and_replay_revokes_the_family(native):
         rotated = await runtime.sessions.refresh(result["refresh_token"])
     assert rotated["session_id"] == result["session_id"]
     assert rotated["refresh_token"] != result["refresh_token"]
-    from bisheng.common.errcode.dsh import DshRefreshTokenReusedError
+    from doberman_agent.common.errcode.dsh import DshRefreshTokenReusedError
 
     with pytest.raises(DshRefreshTokenReusedError):
         await runtime.sessions.refresh(result["refresh_token"])
@@ -156,7 +156,7 @@ async def test_disabled_identity_and_cross_tenant_ownership(native):
     with pytest.raises(DshInvalidAccessTokenError):
         await runtime.sessions.revoke(3, 20, result["session_id"])
     runtime.identity.identities.get.return_value.active = False
-    from bisheng.common.errcode.dsh import DshUserDisabledError
+    from doberman_agent.common.errcode.dsh import DshUserDisabledError
 
     with pytest.raises(DshUserDisabledError):
         await runtime.access.authenticate("Bearer " + result["access_token"])
@@ -165,8 +165,8 @@ async def test_disabled_identity_and_cross_tenant_ownership(native):
 @pytest.mark.parametrize("path", ["/api/dsh", "/api/v1/dsh"])
 def test_pkce_browser_ticket_exchange_and_refresh_end_to_end(native, path):
     runtime, _ = native
-    from bisheng.dsh.api.endpoints.identity import browser_user
-    from bisheng.dsh.api.endpoints.identity import router as browser_router
+    from doberman_agent.dsh.api.endpoints.identity import browser_user
+    from doberman_agent.dsh.api.endpoints.identity import router as browser_router
 
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
@@ -243,13 +243,13 @@ async def test_token_contract_rejects_wrong_purpose_identity_or_shape(native, ch
     token = (await login(runtime))["access_token"]
     claims = jwt.decode(token, options={"verify_signature": False})
     claims.update(change)
-    from bisheng.dsh.infrastructure.token_keys import KEY_ID
+    from doberman_agent.dsh.infrastructure.token_keys import KEY_ID
 
     token = jwt.encode(
         claims,
         await runtime.access.keys.resolve(KEY_ID),
         algorithm="HS256",
-        headers={"kid": KEY_ID, "typ": "bisheng-dsh-access+jwt"},
+        headers={"kid": KEY_ID, "typ": "doberman-agent-dsh-access+jwt"},
     )
     with pytest.raises(DshUserDisabledError if "tenant_id" in change else DshInvalidAccessTokenError):
         await runtime.access.authenticate("Bearer " + token)

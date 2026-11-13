@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import bisheng.user.domain.services.auth as auth_module
+import doberman_agent.user.domain.services.auth as auth_module
 
 LoginUser = auth_module.LoginUser
 
@@ -23,7 +23,7 @@ def _patch_roles(quota_configs):
     user_roles = [SimpleNamespace(role_id=_ROLE_ID + i) for i in range(len(quota_configs))]
     roles = [SimpleNamespace(quota_config=qc) for qc in quota_configs]
     return patch.multiple(
-        "bisheng.user.domain.services.auth",
+        "doberman_agent.user.domain.services.auth",
         UserRoleDao=SimpleNamespace(aget_user_roles=AsyncMock(return_value=user_roles)),
         RoleDao=SimpleNamespace(aget_role_by_ids=AsyncMock(return_value=roles)),
     )
@@ -84,7 +84,7 @@ async def test_union_across_multiple_roles():
 async def test_no_roles_returns_false():
     user = SimpleNamespace(user_id=7)
     with patch.multiple(
-        "bisheng.user.domain.services.auth",
+        "doberman_agent.user.domain.services.auth",
         UserRoleDao=SimpleNamespace(aget_user_roles=AsyncMock(return_value=[])),
         RoleDao=SimpleNamespace(aget_role_by_ids=AsyncMock(return_value=[])),
     ):

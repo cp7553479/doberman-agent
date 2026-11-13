@@ -24,8 +24,8 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppAuditAction
-from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
+from doberman_agent.app_runtime.domain.constants import AppAuditAction
+from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS
 
 _FRONTEND = Path(__file__).resolve().parents[3] / "frontend" / "platform"
 _LOG_CONTROLLER = _FRONTEND / "src" / "controllers" / "API" / "log.ts"

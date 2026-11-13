@@ -83,7 +83,7 @@ def test_volume_snapshot_migration_and_restart_are_idempotent(tmp_path):
     assert list((volume / "platform/protected-backups/app-a").glob("*.sqlite"))
     with sqlite3.connect(path) as connection:
         assert connection.execute("SELECT name FROM sqlite_master WHERE name='data'").fetchone() is None
-        assert connection.execute("SELECT COUNT(*) FROM _bisheng_runtime_migrations").fetchone()[0] == 1
+        assert connection.execute("SELECT COUNT(*) FROM _doberman_agent_runtime_migrations").fetchone()[0] == 1
     with pytest.raises(ExecutionError, match="maintenance_plan_conflict"):
         run(volume, operation, client, "migrate", plan=[], snapshot=snapshot)
 
@@ -155,7 +155,7 @@ def test_manager_maintenance_persists_result_before_cleanup_and_reuses_it(runtim
             if document["action"] == "backup"
             else {"applied": ["data"], "skipped": []}
         )
-        return "BISHENG_RUNTIME_RESULT " + json.dumps(result)
+        return "DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps(result)
 
     cluster.create, cluster.logs = completed, logs
     driver = KubernetesDataExecutor(executor)
@@ -235,7 +235,7 @@ def test_destroy_maintenance_uses_no_application_or_material_identity_and_replay
         return obj
 
     cluster.create = finished
-    cluster.logs = lambda *args, **kwargs: "BISHENG_RUNTIME_RESULT " + json.dumps({"purged": True})
+    cluster.logs = lambda *args, **kwargs: "DOBERMAN_AGENT_RUNTIME_RESULT " + json.dumps({"purged": True})
     driver = KubernetesDataExecutor(executor)
     assert driver.request(operation, "purge", {}) == {"purged": True}
     assert not platform.delegations

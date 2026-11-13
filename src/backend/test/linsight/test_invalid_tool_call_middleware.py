@@ -18,8 +18,8 @@ Covers:
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from bisheng.linsight.domain.services import agent_factory
-from bisheng.linsight.domain.services.invalid_tool_call_middleware import (
+from doberman_agent.linsight.domain.services import agent_factory
+from doberman_agent.linsight.domain.services.invalid_tool_call_middleware import (
     INVALID_ARGS_MARKER,
     LinsightInvalidToolCallRepairMiddleware,
     _repair_args,

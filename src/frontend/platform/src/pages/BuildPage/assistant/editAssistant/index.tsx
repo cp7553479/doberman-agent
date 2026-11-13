@@ -1,6 +1,6 @@
 // @ts-strict-ignore
 import { MessageStoreProvider as AssistantMessageStoreProvider } from '@/components/bs-comp/chatComponent/messageStore';
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import ApiMainPage from "@/components/bs-comp/apiComponent";
 import { useMessageStore } from "@/components/bs-comp/chatComponent/messageStore";
 import { hasResourceAction, useResourceActions } from "@/components/bs-comp/permission/useResourceActions";

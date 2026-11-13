@@ -18,8 +18,8 @@ describe("ASR websocket deployment routes", () => {
   });
 
   it("uses encrypted websockets on HTTPS deployments", () => {
-    expect(getAsrWebSocketUrl("/workspace", "https://bisheng.example:8443")).toBe(
-      "wss://bisheng.example:8443/workspace/api/v1/llm/workbench/asr/ws",
+    expect(getAsrWebSocketUrl("/workspace", "https://doberman-agent.example:8443")).toBe(
+      "wss://doberman_agent.example:8443/workspace/api/v1/llm/workbench/asr/ws",
     );
   });
 });

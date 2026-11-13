@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.dialects import sqlite
 
-from bisheng.knowledge.domain.models.knowledge_space_file import SpaceFileDao
+from doberman_agent.knowledge.domain.models.knowledge_space_file import SpaceFileDao
 
 
 class _FakeListResult:
@@ -48,7 +48,7 @@ async def test_async_list_children_treats_null_root_path_as_root_level():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(knowledge_id=123, parent_id=None)
@@ -63,7 +63,7 @@ async def test_first_cursor_scan_is_bounded_and_stably_ordered():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -87,7 +87,7 @@ async def test_async_count_children_treats_null_root_path_as_root_level():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_count_children(knowledge_id=123, parent_id=None)
@@ -102,7 +102,7 @@ async def test_async_list_children_allows_root_status_filter():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_list_children(
@@ -123,7 +123,7 @@ async def test_async_count_children_allows_root_status_filter():
     session = _FakeAsyncSession()
 
     with patch(
-        "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+        "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
         return_value=session,
     ):
         await SpaceFileDao.async_count_children(
@@ -146,11 +146,11 @@ async def test_async_list_children_status_filter_uses_nested_parent_path():
 
     with (
         patch(
-            "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+            "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
             return_value=session,
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge_space_file.KnowledgeFileDao.query_by_id",
+            "doberman_agent.knowledge.domain.models.knowledge_space_file.KnowledgeFileDao.query_by_id",
             return_value=parent,
         ),
     ):
@@ -172,11 +172,11 @@ async def test_async_count_children_status_filter_uses_nested_parent_path():
 
     with (
         patch(
-            "bisheng.knowledge.domain.models.knowledge_space_file.get_async_db_session",
+            "doberman_agent.knowledge.domain.models.knowledge_space_file.get_async_db_session",
             return_value=session,
         ),
         patch(
-            "bisheng.knowledge.domain.models.knowledge_space_file.KnowledgeFileDao.query_by_id",
+            "doberman_agent.knowledge.domain.models.knowledge_space_file.KnowledgeFileDao.query_by_id",
             return_value=parent,
         ),
     ):

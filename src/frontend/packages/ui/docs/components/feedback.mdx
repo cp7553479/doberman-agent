@@ -13,7 +13,7 @@ demo 只把回调打到旁边的文本上，不落库，可任意点；轻提示
 ```tsx
 import { useState } from 'react';
 import { RecoilRoot } from 'recoil';
-import { Toaster } from '@bisheng/ui';
+import { Toaster } from '@doberman-agent/ui';
 import '~/locales/i18n';
 import { ToastProvider } from '~/Providers';
 import store from '~/store';
@@ -70,7 +70,7 @@ export default () => (
 
 ### 视觉
 
-- 按钮视觉与 AI 消息操作行一致：`size-6` 热区、14px bisheng-icons Outlined 字形、`#818181` 常态 / 品牌色激活。
+- 按钮视觉与 AI 消息操作行一致：`size-6` 热区、14px @doberman-agent/icons Outlined 字形、`#818181` 常态 / 品牌色激活。
 - 弹窗规格（CommentDialog）：圆角 12 / 边距 20 / 按钮 32 高 · 14px · 字重 400 · 圆角 6。
 
 > demo 里的 `RecoilRoot` + `import '~/locales/i18n'` + `ToastProvider` + `<Toaster />` 只是文档站的挂载脚手架；业务页在 App 全局已具备。缺 `ToastProvider` 时 `useToastContext()` 拿到的是空实现，按钮照常工作但**静默不弹提示**——排查「提示没出来」先看这一层。

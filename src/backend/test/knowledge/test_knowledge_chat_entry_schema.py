@@ -2,7 +2,7 @@ from pathlib import Path
 
 from sqlalchemy import String
 
-from bisheng.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
 
 
 def test_message_session_declares_nullable_entry_flow_and_index():
@@ -27,7 +27,7 @@ def test_legacy_message_session_dao_has_no_f068_entry_points():
 
 def test_f068_migration_is_ddl_only_and_mounted_on_f066():
     backend_root = Path(__file__).resolve().parents[2]
-    migration = backend_root / ("bisheng/core/database/alembic/versions/v3_0_0_beta1_f068_knowledge_chat_entry.py")
+    migration = backend_root / ("doberman_agent/core/database/alembic/versions/v3_0_0_beta1_f068_knowledge_chat_entry.py")
     source = migration.read_text(encoding="utf-8")
 
     assert 'down_revision: str | Sequence[str] | None = "f066_pat_data_scope"' in source

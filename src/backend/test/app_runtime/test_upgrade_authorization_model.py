@@ -38,14 +38,14 @@ from sqlalchemy import BigInteger
 from sqlalchemy.ext.compiler import compiles
 from sqlmodel import select
 
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.core.openfga.authorization_model_f048 import (
     MODEL_VERSION,
     authorization_model_checksum,
     build_authorization_model_f048,
     canonicalize_authorization_model,
     required_relations_checksum,
 )
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     ACTION_RESOURCE_SCOPES,
     REGISTERED_ACTION_CODES,
 )
@@ -134,8 +134,8 @@ async def control_plane_db():
     from sqlmodel import SQLModel
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    importlib.import_module("bisheng.permission.domain.models.catalog")
-    importlib.import_module("bisheng.permission.domain.models.migration")
+    importlib.import_module("doberman_agent.permission.domain.models.catalog")
+    importlib.import_module("doberman_agent.permission.domain.models.migration")
 
     tables = [SQLModel.metadata.tables[name] for name in _CONTROL_PLANE_TABLES]
     engine = create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
@@ -161,12 +161,12 @@ async def _seed_m1_world(session_factory, *, include_app_scopes: bool = False) -
     the actions exist with their pre-F054 resource scopes and nothing mentions
     ``app``.
     """
-    from bisheng.permission.domain.models.catalog import (
+    from doberman_agent.permission.domain.models.catalog import (
         PermissionAction,
         PermissionActionResourceScope,
         PermissionCatalogRelease,
     )
-    from bisheng.permission.domain.models.migration import AuthorizationModelRelease
+    from doberman_agent.permission.domain.models.migration import AuthorizationModelRelease
 
     m1 = _m1_model()
     async with session_factory() as session:
@@ -218,7 +218,7 @@ async def _seed_m1_world(session_factory, *, include_app_scopes: bool = False) -
 
 
 async def _scope_rows(session_factory, resource_type: str) -> set[str]:
-    from bisheng.permission.domain.models.catalog import (
+    from doberman_agent.permission.domain.models.catalog import (
         PermissionAction,
         PermissionActionResourceScope,
     )
@@ -233,7 +233,7 @@ async def _scope_rows(session_factory, resource_type: str) -> set[str]:
 
 
 async def _releases(session_factory) -> list:
-    from bisheng.permission.domain.models.migration import AuthorizationModelRelease
+    from doberman_agent.permission.domain.models.migration import AuthorizationModelRelease
 
     async with session_factory() as session:
         rows = await session.exec(select(AuthorizationModelRelease).order_by(AuthorizationModelRelease.id))
@@ -241,7 +241,7 @@ async def _releases(session_factory) -> list:
 
 
 async def _catalog(session_factory):
-    from bisheng.permission.domain.models.catalog import PermissionCatalogRelease
+    from doberman_agent.permission.domain.models.catalog import PermissionCatalogRelease
 
     async with session_factory() as session:
         rows = await session.exec(select(PermissionCatalogRelease).where(PermissionCatalogRelease.status == "CURRENT"))
@@ -292,7 +292,7 @@ async def test_noop_when_checksum_matches(control_plane_db) -> None:
     await _seed_m1_world(control_plane_db, include_app_scopes=True)
     target = build_authorization_model_f048()
     async with control_plane_db() as session:
-        from bisheng.permission.domain.models.migration import AuthorizationModelRelease
+        from doberman_agent.permission.domain.models.migration import AuthorizationModelRelease
 
         rows = await session.exec(select(AuthorizationModelRelease))
         row = rows.first()

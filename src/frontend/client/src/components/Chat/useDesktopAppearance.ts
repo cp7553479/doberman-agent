@@ -44,7 +44,7 @@ export function useDesktopAppearance() {
     window.addEventListener('dsh:appearance', receiveNative);
     window.addEventListener('message', receive);
     media.addEventListener('change', apply);
-    if (embedded) window.parent.postMessage({ type: 'bisheng:ready' }, parentOrigin);
+    if (embedded) window.parent.postMessage({ type: 'doberman_agent:ready' }, parentOrigin);
     return () => {
       observer.disconnect();
       delete document.body.dataset.dshChatTheme;

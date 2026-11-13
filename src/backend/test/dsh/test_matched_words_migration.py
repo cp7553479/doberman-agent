@@ -9,11 +9,11 @@ from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateColumn
 
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent
 
 
 def test_snapshot_migration_preserves_legacy_rows_and_is_idempotent():
-    migration = import_module("bisheng.core.database.alembic.versions.v3_0_0_f111_matched_words")
+    migration = import_module("doberman_agent.core.database.alembic.versions.v3_0_0_f111_matched_words")
     engine = create_engine("sqlite://")
     with engine.begin() as connection:
         connection.execute(text("CREATE TABLE dsh_content_safety_event (id VARCHAR(36) PRIMARY KEY)"))

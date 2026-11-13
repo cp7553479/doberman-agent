@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.services import f048_preset_dashboard_bootstrap as bootstrap
-from bisheng.common.errcode.permission import PermissionPublishNotReadyError
-from bisheng.telemetry_search.domain.models.dashboard import Dashboard
-from bisheng.user.domain.services.user import UserService
+from doberman_agent.api.services import f048_preset_dashboard_bootstrap as bootstrap
+from doberman_agent.common.errcode.permission import PermissionPublishNotReadyError
+from doberman_agent.telemetry_search.domain.models.dashboard import Dashboard
+from doberman_agent.user.domain.services.user import UserService
 
 
 def _dashboard(resource_id: int, *, owner_user_id: int | None = 1) -> Dashboard:
@@ -93,7 +93,7 @@ async def test_only_first_user_creation_triggers_sample_projection(monkeypatch) 
     reconcile = AsyncMock()
     monkeypatch.setattr(bootstrap, "reconcile_preset_dashboard_permissions", reconcile)
     monkeypatch.setattr(
-        "bisheng.user.domain.services.user.settings.openfga.enabled",
+        "doberman_agent.user.domain.services.user.settings.openfga.enabled",
         True,
     )
 
@@ -104,7 +104,7 @@ async def test_only_first_user_creation_triggers_sample_projection(monkeypatch) 
 
 
 async def test_first_admin_dashboard_projection_has_a_tenant_without_request_context(monkeypatch):
-    from bisheng.core.context import tenant
+    from doberman_agent.core.context import tenant
 
     dashboards = (_dashboard(10),)
     current_modes = {"10": SimpleNamespace(resource_id="10", projection_state="CURRENT")}

@@ -1,6 +1,6 @@
 """Tests for F014 payload Pydantic schemas.
 
-The schemas are the contract between Gateway and bisheng — a mistake in
+The schemas are the contract between Gateway and doberman_agent — a mistake in
 required/optional flags translates directly into 500s in production. Keep
 this suite exhaustive about *what is required*, *what defaults to what*,
 and *how fallbacks behave*.
@@ -9,7 +9,7 @@ and *how fallbacks behave*.
 import pytest
 from pydantic import ValidationError
 
-from bisheng.sso_sync.domain.schemas.payloads import (
+from doberman_agent.sso_sync.domain.schemas.payloads import (
     BatchResult,
     DepartmentUpsertItem,
     DepartmentsSyncRequest,

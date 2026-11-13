@@ -12,9 +12,9 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import select
 
-from bisheng.chat_session.domain.session_subject import SessionSubject
-from bisheng.database.models.session import MessageSession, MessageSessionDao
-from bisheng.workstation.api.endpoints import apps
+from doberman_agent.chat_session.domain.session_subject import SessionSubject
+from doberman_agent.database.models.session import MessageSession, MessageSessionDao
+from doberman_agent.workstation.api.endpoints import apps
 
 OPERATOR_ID = 41
 

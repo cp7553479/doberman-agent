@@ -6,9 +6,9 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionMigrationBlockedError
-from bisheng.permission.migration.f048_coordinator import MigrationRunState
-from bisheng.permission.migration.f048_verifier import (
+from doberman_agent.common.errcode.permission import PermissionMigrationBlockedError
+from doberman_agent.permission.migration.f048_coordinator import MigrationRunState
+from doberman_agent.permission.migration.f048_verifier import (
     F048MigrationVerifier,
     InstancePinEvidence,
     MigrationVerificationEvidence,

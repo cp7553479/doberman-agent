@@ -7,8 +7,8 @@ jest.mock('~/Providers', () => ({ useConfirm: () => mockConfirm }));
 jest.mock('~/hooks', () => ({ useLocalize: () => (key: string) => key }));
 jest.mock('~/hooks/queries/data-provider', () => ({ useGetBsConfig: () => ({ data: {} }) }));
 jest.mock('react-router-dom', () => ({ useNavigate: () => jest.fn(), useParams: () => ({}) }));
-jest.mock('bisheng-icons', () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/icons', () => ({ Outlined: new Proxy({}, { get: () => () => null }) }));
+jest.mock('@doberman-agent/ui', () => ({
   Dropdown: ({ menu, children, open }: { menu: React.ReactNode; children: React.ReactNode; open?: boolean }) => <>{children}{open === false ? null : menu}</>,
   DropdownItem: ({ onSelect, children }: { onSelect: () => void; children: React.ReactNode }) => <button onClick={onSelect}>{children}</button>,
   DropdownSeparator: () => null,

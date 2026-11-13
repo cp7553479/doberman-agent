@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.testclient import TestClient
 
-from bisheng import main
-from bisheng.dsh.domain.schemas.unified_policy import CreditRuleInput
+from doberman_agent import main
+from doberman_agent.dsh.domain.schemas.unified_policy import CreditRuleInput
 
 
 def test_unhandled_exception_uses_http_500() -> None:

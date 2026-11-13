@@ -23,7 +23,7 @@
 
 - [x] **T001**：Web 新建前置 DTO 与错误码
 
-**文件**：`src/backend/bisheng/common/errcode/knowledge.py`；`src/backend/bisheng/knowledge/domain/schemas/knowledge_create_schema.py`。\
+**文件**：`src/backend/doberman_agent/common/errcode/knowledge.py`；`src/backend/doberman_agent/knowledge/domain/schemas/knowledge_create_schema.py`。\
 **逻辑/上下文**：定义未占用10993及仅Web使用的expected_tenant_id请求，原KnowledgeCreate不扩展目标租户。\
 **依赖**：无。\
 
@@ -89,7 +89,7 @@
 
 - [x] **T008**：实例响应去掉历史事实回退
 
-**文件**：`src/backend/bisheng/app_runtime/domain/services/app_query_service.py`。\
+**文件**：`src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py`。\
 **逻辑/上下文**：增加observation_state，只转发真实字段，旧模糊404报无法确认，保留原状态阅读门禁。\
 **依赖**：T006,T007。\
 
@@ -106,7 +106,7 @@
 
 - [x] **T010**：人员事实和新建身份薄入口
 
-**文件**：`src/backend/bisheng/user/domain/repositories/runtime_identity.py`；`src/backend/bisheng/user/application/runtime_identity.py`。\
+**文件**：`src/backend/doberman_agent/user/domain/repositories/runtime_identity.py`；`src/backend/doberman_agent/user/application/runtime_identity.py`。\
 **逻辑/上下文**：新增批量当前人员事实和Web创建用途身份，原runtime/preview入口严格语义不改；SQL只在仓储。\
 **依赖**：T009。\
 
@@ -123,7 +123,7 @@
 
 - [x] **T012**：主体批量只读解析
 
-**文件**：`src/backend/bisheng/tenant/domain/repositories/permission_subject_repository.py`；`src/backend/bisheng/tenant/domain/services/f048_permission_subject.py`。\
+**文件**：`src/backend/doberman_agent/tenant/domain/repositories/permission_subject_repository.py`；`src/backend/doberman_agent/tenant/domain/services/f048_permission_subject.py`。\
 **逻辑/上下文**：批量解析有效/失效/不可确认并保留userset；通过user应用读取人员事实，不改授权写入。\
 **依赖**：T011。\
 
@@ -140,7 +140,7 @@
 
 - [x] **T041**：来源一致性仓储读取
 
-**文件**：`src/backend/bisheng/permission/domain/repositories/grant_repository.py`。\
+**文件**：`src/backend/doberman_agent/permission/domain/repositories/grant_repository.py`。\
 **逻辑/上下文**：精确资源及严格租户内读取最多5001条Grant，用于前后版本复核；不改授权写入。\
 **依赖**：T013。\
 
@@ -148,7 +148,7 @@
 
 - [x] **T014**：F048可信来源读取
 
-**文件**：`src/backend/bisheng/permission/application/runtime.py`；`src/backend/bisheng/permission/application/control_state.py`。\
+**文件**：`src/backend/doberman_agent/permission/application/runtime.py`；`src/backend/doberman_agent/permission/application/control_state.py`。\
 **逻辑/上下文**：添加read_effective_action_sources，复用目录与投影，每页500条/最多5000来源，前后版本复核；原通用roster仍manage_permission。\
 **依赖**：T013,T041。\
 
@@ -165,7 +165,7 @@
 
 - [x] **T016**：应用当前摘要协调
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/app_publish_current_visibility_service.py`；`src/backend/bisheng/app_publish/domain/schemas/current_visibility.py`。\
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/app_publish_current_visibility_service.py`；`src/backend/doberman_agent/app_publish/domain/schemas/current_visibility.py`。\
 **逻辑/上下文**：只在已验证审批阅读上下文内核对app/tenant，调用permission应用及目录；预算与异常显式unavailable，owner不用reader缓存。\
 **依赖**：T015。\
 
@@ -182,7 +182,7 @@
 
 - [x] **T018**：审批场景补充接线
 
-**文件**：`src/backend/bisheng/approval/domain/services/approval_center_service.py`；`src/backend/bisheng/approval/domain/services/approval_runtime_handler_factory.py`。\
+**文件**：`src/backend/doberman_agent/approval/domain/services/approval_center_service.py`；`src/backend/doberman_agent/approval/domain/services/approval_runtime_handler_factory.py`。\
 **逻辑/上下文**：在原校验通过后用场景Handler可选只读补充；原场景决策/路由/outbox不动。\
 **依赖**：T017。\
 
@@ -190,7 +190,7 @@
 
 - [x] **T019**：发布Handler与审批参考同步
 
-**文件**：`src/backend/bisheng/app_publish/domain/services/app_publish_scenario_handler.py`；`.claude/skills/approval-module/SKILL.md`。\
+**文件**：`src/backend/doberman_agent/app_publish/domain/services/app_publish_scenario_handler.py`；`.claude/skills/approval-module/SKILL.md`。\
 **逻辑/上下文**：新增read_current_detail，使用服务器上下文而非请求app_id；同步详情增量参考。\
 **依赖**：T018。\
 
@@ -207,7 +207,7 @@
 
 - [x] **T021**：知识库新建策略
 
-**文件**：`src/backend/bisheng/knowledge/domain/services/knowledge_creation_policy.py`。\
+**文件**：`src/backend/doberman_agent/knowledge/domain/services/knowledge_creation_policy.py`。\
 **逻辑/上下文**：服务端真实会话与expected所属租户比较，原菜单或当前租管资格，只产生短时服务器上下文。\
 **依赖**：T020。\
 
@@ -224,7 +224,7 @@
 
 - [x] **T023**：Web新建与原异步创建复用
 
-**文件**：`src/backend/bisheng/knowledge/api/endpoints/knowledge.py`；`src/backend/bisheng/knowledge/domain/services/knowledge_service.py`。\
+**文件**：`src/backend/doberman_agent/knowledge/api/endpoints/knowledge.py`；`src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py`。\
 **逻辑/上下文**：Web DTO接线至已有acreate_knowledge，写前重验上下文；严格所属tenant scope，原模型/投影/索引继续。\
 **依赖**：T022。\
 

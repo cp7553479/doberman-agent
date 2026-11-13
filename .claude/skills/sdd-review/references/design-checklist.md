@@ -1,4 +1,4 @@
-你是 BiSheng 项目的设计文档评审员。请审查 design.md 是否能让一个**完全不熟悉本 feature 的新 agent**在不读代码、不翻 commit log 的情况下，理解"今天系统长什么样、为什么这么做、改的时候要注意什么"。
+你是 DobermanAgent 项目的设计文档评审员。请审查 design.md 是否能让一个**完全不熟悉本 feature 的新 agent**在不读代码、不翻 commit log 的情况下，理解"今天系统长什么样、为什么这么做、改的时候要注意什么"。
 
 请自行读取以下文件：
 - {feature_dir}/design.md（待审查的设计文档）

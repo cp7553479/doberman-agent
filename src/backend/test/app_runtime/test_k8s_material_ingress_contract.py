@@ -18,8 +18,8 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from bisheng.app_runtime.domain.services import runtime_material_protocol as wire
-from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json
+from doberman_agent.app_runtime.domain.services import runtime_material_protocol as wire
+from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json
 from test.app_runtime.test_runtime_kubernetes_repository import UID
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 from test.app_runtime.test_runtime_kubernetes_service import control as control

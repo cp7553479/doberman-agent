@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator", "fake_permission_projection", "tenant_admins")
 
@@ -30,7 +30,7 @@ def _data(response):
 
 async def _add_versions(app_db, app, version_nos):
     """Append iteration versions ``version_nos`` to ``app`` straight through the DAO."""
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     async with app_db() as session:
         for version_no in version_nos:
@@ -114,7 +114,7 @@ class TestVersions:
 class TestStateActions:
     async def test_stop_resume_happy_path_and_audit(self, api_app, app_factory, app_owner, audit_sink):
         """AC-41 — both directions, and both leave an audit row naming the operator."""
-        from bisheng.app_runtime.domain.constants import AppAuditAction
+        from doberman_agent.app_runtime.domain.constants import AppAuditAction
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
         client = api_app(app_owner.payload)
@@ -155,7 +155,7 @@ class TestStateActions:
 
     async def test_delete_non_owner_returns_16105(self, api_app, app_factory, tenant_admins):
         """AC-44 — owner only, and a tenant administrator is *not* the owner."""
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         app, _ = await app_factory(state=AppState.STOPPED.value)
         admin = UserPayload(user_id=90888, user_name="admin", user_role=[], tenant_id=1, is_global_super=False)
@@ -166,7 +166,7 @@ class TestStateActions:
 
     async def test_delete_owner_success_and_hook_called(self, api_app, app_factory, app_owner):
         """AC-43 — deletion fans out to F055's "cancel the in-flight approval" hook."""
-        from bisheng.app_runtime.domain.services import lifecycle_hooks
+        from doberman_agent.app_runtime.domain.services import lifecycle_hooks
 
         seen = []
 
@@ -188,7 +188,7 @@ class TestStateActions:
 class TestReads:
     async def test_meta_patch_no_version_no_state_change(self, api_app, app_db, app_factory, app_owner):
         """AC-06 — the PATCH and F055's pipeline share one implementation."""
-        from bisheng.database.models.app_version import AppVersionDao
+        from doberman_agent.database.models.app_version import AppVersionDao
 
         app, _ = await app_factory(state=AppState.ONLINE.value)
 
@@ -231,7 +231,7 @@ class TestReads:
     async def test_runtime_status_path_wins_over_the_app_id_pattern(self, api_app):
         """Starlette matches in declaration order: the static path must be declared
         first, or this page becomes a lookup for an app named "runtime-status"."""
-        from bisheng.common.dependencies.user_deps import UserPayload
+        from doberman_agent.common.dependencies.user_deps import UserPayload
 
         superuser = UserPayload(user_id=90999, user_name="root", user_role=[], tenant_id=1, is_global_super=True)
         body = _data(await api_app(superuser).get("/api/v1/apps/runtime-status"))

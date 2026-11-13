@@ -2,7 +2,7 @@
 
 import asyncio
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     DEFAULT_TENANT_ID,
     bypass_tenant_filter,
     current_tenant_id,

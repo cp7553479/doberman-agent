@@ -1,7 +1,7 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Atom } from 'lucide-react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';

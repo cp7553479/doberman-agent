@@ -1,4 +1,4 @@
-import { Button, Input, notification } from '@bisheng/ui';
+import { Button, Input, notification } from '@doberman-agent/ui';
 
 import {
 Dialog,
@@ -20,7 +20,7 @@ import type { BrandAsset,BrandAssetCategory,BrandAssetOption } from "@/controlle
 import { deleteBrandAssetApi,uploadBrandAssetApi } from "@/controllers/API";
 import { showApiError } from "@/controllers/request";
 import { withBrandBaseUrl } from "@/utils/brand";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { ImageIcon,Link } from "lucide-react";
 import { ChangeEvent,MouseEvent,PointerEvent,ReactNode,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -11,11 +11,11 @@ jest.mock('~/hooks', () => ({
         vars ? `${key}:${Object.values(vars).join(',')}` : key,
 }));
 
-jest.mock('bisheng-icons', () => ({
+jest.mock('@doberman-agent/icons', () => ({
     Outlined: new Proxy({}, { get: () => () => null }),
 }));
 
-jest.mock('@bisheng/ui', () => ({
+jest.mock('@doberman-agent/ui', () => ({
     Badge: ({ children }: { children?: React.ReactNode }) => <span>{children}</span>,
 }));
 

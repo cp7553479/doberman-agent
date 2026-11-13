@@ -27,7 +27,7 @@ class BundlePreparer:
         source = root / "input"
         marker = root / "source.ready"
         if marker.exists() and marker.read_text() == operation["payload"]["source_artifact_id"]:
-            if (source / "bisheng-app.yaml").is_file():
+            if (source / "doberman-agent-app.yaml").is_file():
                 return source
             children = list(source.iterdir())
             if len(children) == 1 and children[0].is_dir():
@@ -50,9 +50,9 @@ class BundlePreparer:
             max_entries=limits.get("entries", 20000),
         )
         marker.write_text(operation["payload"]["source_artifact_id"])
-        if not (source / "bisheng-app.yaml").is_file():
+        if not (source / "doberman-agent-app.yaml").is_file():
             children = list(source.iterdir())
-            if len(children) == 1 and children[0].is_dir() and (children[0] / "bisheng-app.yaml").is_file():
+            if len(children) == 1 and children[0].is_dir() and (children[0] / "doberman-agent-app.yaml").is_file():
                 return children[0]
         return source
 
@@ -112,7 +112,7 @@ class BundlePreparer:
         common_env = {
             "PIP_DISABLE_PIP_VERSION_CHECK": "1",
             "PIP_NO_CACHE_DIR": "1",
-            "BISHENG_DEPENDENCY_LOCK": dependencies.get("lock") or "",
+            "DOBERMAN_AGENT_DEPENDENCY_LOCK": dependencies.get("lock") or "",
         }
         if plan.get("artifact_id"):
             package = root / "dependencies.tar.gz"
@@ -179,7 +179,7 @@ class BundlePreparer:
                     operation,
                     "download",
                     image=image,
-                    command=["python", "/opt/bisheng/prepare.py", "download", language],
+                    command=["python", "/opt/doberman-agent/prepare.py", "download", language],
                     mounts=mounts,
                     env=online,
                     network=network,
@@ -190,7 +190,7 @@ class BundlePreparer:
                 operation,
                 "resolve",
                 image=image,
-                command=["python", "/opt/bisheng/prepare.py", "lock", language],
+                command=["python", "/opt/doberman-agent/prepare.py", "lock", language],
                 mounts=mounts,
                 env=common_env,
                 network="none",
@@ -227,7 +227,7 @@ class BundlePreparer:
             operation,
             "compile",
             image=image,
-            command=["python", "/opt/bisheng/prepare.py", "build", language],
+            command=["python", "/opt/doberman-agent/prepare.py", "build", language],
             mounts=[
                 (source, "/workspace/app", False),
                 (original, "/original", True),
@@ -283,7 +283,7 @@ class BundlePreparer:
             expected_id=profile["runtime_image_id"],
             role="runtime",
         )
-        script = 'python -m venv --system-site-packages /opt/venv && /opt/venv/bin/python -m pip install --no-index --find-links=/materials/wheels --require-hashes -r /materials/runtime.lock && /opt/venv/bin/python -m pip check && /opt/venv/bin/python -c "import bisheng_sdk"'
+        script = 'python -m venv --system-site-packages /opt/venv && /opt/venv/bin/python -m pip install --no-index --find-links=/materials/wheels --require-hashes -r /materials/runtime.lock && /opt/venv/bin/python -m pip check && /opt/venv/bin/python -c "import doberman_agent_sdk"'
         self.runner.run(
             operation,
             "materialize",

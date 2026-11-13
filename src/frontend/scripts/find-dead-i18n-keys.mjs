@@ -33,7 +33,7 @@ const SCOPES = [
     srcDirs: ['platform/src'],
     // Dashboard names and schema fields arrive from backend metadata via t(variable).
     referenceSources: {
-      'dashboard.json': ['../backend/bisheng/telemetry_search/domain/init_dataset.py'],
+      'dashboard.json': ['../backend/doberman_agent/telemetry_search/domain/init_dataset.py'],
     },
     langs: ['zh-Hans', 'en-US', 'ja'],
     // Generated artifacts are excluded: api_errors is reconciled against the

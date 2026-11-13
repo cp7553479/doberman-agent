@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { getFileDownloadApi, getFilePreviewApi } from "~/api/knowledge";
 import type { KnowledgeFilePreview } from "~/api/knowledge";
 import { FileAiDock } from "~/pages/Subscription/AiChat/FileAiDock";
@@ -17,7 +17,7 @@ import { useLocalize } from "~/hooks";
 
 /**
  * Extract file extension from a URL path, ignoring query parameters.
- * e.g. "/bisheng/preview/84296.html?X-Amz-Algorithm=..." → "html"
+ * e.g. "/doberman_agent/preview/84296.html?X-Amz-Algorithm=..." → "html"
  */
 function extractExtFromUrl(url: string, fallback: string): string {
     try {

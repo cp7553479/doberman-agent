@@ -12,7 +12,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from bisheng.permission.domain.schemas.f048 import (
+from doberman_agent.permission.domain.schemas.f048 import (
     GrantAssigneeDTO,
     GrantMutationChange,
 )

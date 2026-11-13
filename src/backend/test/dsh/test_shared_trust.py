@@ -2,8 +2,8 @@
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshInvalidAccessTokenError
-from bisheng.dsh.infrastructure.token_keys import KEY_ID, LocalTokenKeys
+from doberman_agent.common.errcode.dsh import DshInvalidAccessTokenError
+from doberman_agent.dsh.infrastructure.token_keys import KEY_ID, LocalTokenKeys
 
 
 async def test_native_key_is_stable_and_purpose_separated():

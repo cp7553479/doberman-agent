@@ -12,7 +12,7 @@
 
 ## 分支与验证
 
-- 独立工作树：`.worktrees/bisheng-dsh-user-grants-3006`，分支 `codex/dsh-user-grants-switch`。
+- 独立工作树：`.worktrees/doberman-agent-dsh-user-grants-3006`，分支 `codex/dsh-user-grants-switch`。
 - 用量筛选由 `codex/dsh-system-model-permissions` 负责发布；本轮授权在用量版本上顺序合入和部署。
 - 用户行和部门/角色控件从原弹窗拆分为独立文件，业务主体与最高额度规则保持一致，每个生产组件文件小于 600 行。
 - 前端：用户授权与原部门角色交互 22 项测试通过，包含超时后使用原操作 ID 查询结果。

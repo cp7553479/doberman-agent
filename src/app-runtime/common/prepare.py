@@ -35,7 +35,7 @@ def hash_file(path):
 def copy_materials():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     WHEELS.mkdir(exist_ok=True)
-    for root in [Path("/opt/bisheng/wheelhouse"), MATERIALS]:
+    for root in [Path("/opt/doberman-agent/wheelhouse"), MATERIALS]:
         if not root.exists():
             continue
         for wheel in root.rglob("*.whl"):
@@ -62,7 +62,7 @@ def node_projects():
 
 
 def requirements():
-    declared = os.environ.get("BISHENG_DEPENDENCY_LOCK", "")
+    declared = os.environ.get("DOBERMAN_AGENT_DEPENDENCY_LOCK", "")
     if declared:
         path = (SOURCE / declared).resolve()
         if not path.is_relative_to(SOURCE):

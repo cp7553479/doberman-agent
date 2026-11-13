@@ -1,5 +1,5 @@
 """Tests for simhash_utils."""
-from bisheng.common.utils.simhash_utils import (
+from doberman_agent.common.utils.simhash_utils import (
     compute_simhash_64_hex,
     hamming_distance,
     similarity,
@@ -19,7 +19,7 @@ def test_compute_simhash_empty_returns_zeros():
 
 
 def test_compute_simhash_identical_text_same_hash():
-    text = "知识空间文件版本管理是 BiSheng 的新功能"
+    text = "知识空间文件版本管理是 doberman-agent 的新功能"
     assert compute_simhash_64_hex(text) == compute_simhash_64_hex(text)
 
 
@@ -35,8 +35,8 @@ def test_similarity_self_is_1():
 
 def test_similarity_near_duplicates_high():
     """Near-duplicate Chinese paragraphs should produce similarity above 0.85."""
-    text_a = "BiSheng 知识空间支持文件版本管理。逻辑文档可以归并多个物理文件版本。主版本对外生效。"
-    text_b = "BiSheng 知识空间支持文件版本管理。逻辑文档可以归并多个物理文件版本本。主版本对外生效。"  # 只差一个字
+    text_a = "doberman-agent 知识空间支持文件版本管理。逻辑文档可以归并多个物理文件版本。主版本对外生效。"
+    text_b = "doberman-agent 知识空间支持文件版本管理。逻辑文档可以归并多个物理文件版本本。主版本对外生效。"  # 只差一个字
     h_a = compute_simhash_64_hex(text_a)
     h_b = compute_simhash_64_hex(text_b)
     assert similarity(h_a, h_b) >= 0.85

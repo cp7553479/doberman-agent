@@ -27,10 +27,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
-from bisheng.knowledge.domain.services import retrieval_facade_service as facade_mod
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.permission.application.identity import get_current_permission_actor
+from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalIdentity
+from doberman_agent.knowledge.domain.services import retrieval_facade_service as facade_mod
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.permission.application.identity import get_current_permission_actor
 
 
 def _principal(**overrides) -> OpenApiPrincipal:
@@ -63,7 +63,7 @@ def test_every_open_face_caller_builds_the_identity_the_same_way():
     which is precisely the divergence AC-41 exists to prevent.
     """
 
-    import bisheng.open_endpoints.api.endpoints.filelib as filelib_mod
+    import doberman_agent.open_endpoints.api.endpoints.filelib as filelib_mod
 
     source = Path(filelib_mod.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source)
@@ -109,15 +109,15 @@ async def test_the_two_open_doors_hand_the_facade_the_very_same_call(monkeypatch
     would narrow that key on its own door only.
     """
 
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalFacadeResult
-    from bisheng.open_api.domain.context import (
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalFacadeResult
+    from doberman_agent.open_api.domain.context import (
         reset_current_open_api_principal,
         set_current_open_api_principal,
     )
-    from bisheng.open_endpoints.api.endpoints import filelib as filelib_mod
-    from bisheng.open_endpoints.domain.schemas.filelib import RetrieveReq
-    from bisheng.open_mcp import application as mcp_application
-    from bisheng.open_mcp.contracts import KnowledgeRetrieveInput
+    from doberman_agent.open_endpoints.api.endpoints import filelib as filelib_mod
+    from doberman_agent.open_endpoints.domain.schemas.filelib import RetrieveReq
+    from doberman_agent.open_mcp import application as mcp_application
+    from doberman_agent.open_mcp.contracts import KnowledgeRetrieveInput
 
     calls: list[tuple] = []
 
@@ -194,12 +194,12 @@ def test_identity_keeps_the_gates_data_scope_narrowing():
     silently and on a live endpoint.
     """
 
-    from bisheng.permission.application.data_scope import DATA_SCOPE_PERSONAL
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.data_scope import DATA_SCOPE_PERSONAL
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )
-    from bisheng.permission.domain.services.permission_action_service import PermissionActor
+    from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
     principal = _principal(
         actor_kind="natural_person",
@@ -232,11 +232,11 @@ def test_identity_keeps_the_gates_administrator_facts():
     the quiet direction — fewer results, no error.
     """
 
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )
-    from bisheng.permission.domain.services.permission_action_service import PermissionActor
+    from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
     principal = _principal(
         actor_kind="natural_person",
@@ -264,11 +264,11 @@ def test_identity_keeps_the_gates_administrator_facts():
 def test_identity_never_adopts_an_actor_for_a_different_subject():
     """Adoption is keyed on the subject, so an unrelated actor cannot leak in."""
 
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )
-    from bisheng.permission.domain.services.permission_action_service import PermissionActor
+    from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
     someone_else = PermissionActor(
         subject_type="user",
@@ -297,11 +297,11 @@ async def test_from_user_does_not_inherit_the_ambient_actor():
     hosted-runtime promise rules out.
     """
 
-    from bisheng.permission.application.identity import (
+    from doberman_agent.permission.application.identity import (
         reset_current_permission_actor,
         set_current_permission_actor,
     )
-    from bisheng.permission.domain.services.permission_action_service import PermissionActor
+    from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
     app_actor = PermissionActor(subject_type="service_account", subject_id=7, tenant_id=1)
 
@@ -422,7 +422,7 @@ def test_chunk_carries_enough_to_cite(monkeypatch):
 
 
 async def _facade_door(identity, knowledge_ids):
-    from bisheng.knowledge.domain.schemas.retrieval_facade import RetrievalRequest
+    from doberman_agent.knowledge.domain.schemas.retrieval_facade import RetrievalRequest
 
     return await facade_mod.RetrievalFacadeService.retrieve(
         identity, RetrievalRequest(query="q", knowledge_ids=knowledge_ids)
@@ -430,8 +430,8 @@ async def _facade_door(identity, knowledge_ids):
 
 
 async def _v2_door(knowledge_ids, monkeypatch):
-    from bisheng.open_endpoints.api.endpoints import filelib as filelib_mod
-    from bisheng.open_endpoints.domain.schemas.filelib import RetrieveReq
+    from doberman_agent.open_endpoints.api.endpoints import filelib as filelib_mod
+    from doberman_agent.open_endpoints.domain.schemas.filelib import RetrieveReq
 
     monkeypatch.setattr(filelib_mod, "get_current_open_api_principal", lambda: _principal())
     return await filelib_mod.retrieve_chunks(
@@ -442,12 +442,12 @@ async def _v2_door(knowledge_ids, monkeypatch):
 
 
 async def _mcp_door(knowledge_ids, monkeypatch):
-    from bisheng.open_api.domain.context import (
+    from doberman_agent.open_api.domain.context import (
         reset_current_open_api_principal,
         set_current_open_api_principal,
     )
-    from bisheng.open_mcp import application as mcp_application
-    from bisheng.open_mcp.contracts import KnowledgeRetrieveInput
+    from doberman_agent.open_mcp import application as mcp_application
+    from doberman_agent.open_mcp.contracts import KnowledgeRetrieveInput
 
     token = set_current_open_api_principal(_principal())
     try:
@@ -475,8 +475,8 @@ async def _hosted_runtime_door(knowledge_ids, monkeypatch):
     one, so the outage travels the real path.
     """
 
-    from bisheng.app_publish.domain.services import capability_audit
-    from bisheng.app_publish.domain.services.capability_bus_service import (
+    from doberman_agent.app_publish.domain.services import capability_audit
+    from doberman_agent.app_publish.domain.services.capability_bus_service import (
         CapabilityBusService,
         DeclaredKnowledge,
         EffectiveDeclaration,
@@ -536,7 +536,7 @@ async def test_a_permission_outage_returns_an_error_and_zero_chunks_at_every_doo
     store's behaviour, not this path's.
     """
 
-    from bisheng.common.errcode.permission import PermissionServiceUnavailableError
+    from doberman_agent.common.errcode.permission import PermissionServiceUnavailableError
 
     knowledge_rows(8)
 

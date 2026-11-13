@@ -20,15 +20,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import is_tenant_filter_bypassed
-from bisheng.workstation.domain.models.tenant_workstation_config import (
+from doberman_agent.core.context.tenant import is_tenant_filter_bypassed
+from doberman_agent.workstation.domain.models.tenant_workstation_config import (
     TenantWorkstationConfigDao,
 )
 
 ROOT = 1
 CHILD = 36
 KEY = "workstation"
-STORED = '{"welcomeMessage": "\\u6211\\u662f BISHENG"}'
+STORED = '{"welcomeMessage": "\\u6211\\u662f DOBERMAN_AGENT"}'
 
 
 def _filtered_reader(visible: set[int] | None):

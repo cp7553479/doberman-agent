@@ -12,7 +12,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-_DATA = Path(__file__).resolve().parents[2] / "bisheng" / "database" / "data"
+_DATA = Path(__file__).resolve().parents[2] / "doberman_agent" / "database" / "data"
 
 
 def _load(name: str) -> list[dict]:
@@ -35,4 +35,4 @@ def test_built_in_tools_resolve_to_their_own_category():
     categories = {row["id"]: row["name"] for row in _load("t_gpts_tools_type.json")}
     tools = {row["tool_key"]: row for row in _load("t_gpts_tools.json")}
     assert categories[tools["web_fetch"]["type"]] == "网页读取"
-    assert categories[tools["bisheng_knowledge_search"]["type"]] == "知识库检索"
+    assert categories[tools["doberman_agent_knowledge_search"]["type"]] == "知识库检索"

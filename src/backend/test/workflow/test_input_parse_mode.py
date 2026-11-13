@@ -13,7 +13,7 @@ Accepted ``file_parse_mode`` shapes: dialog single string, form array
 superseded per-type map (still tolerated). AC-01~AC-18.
 """
 
-from bisheng.workflow.nodes.input.input import InputNode, ParseModeEnum
+from doberman_agent.workflow.nodes.input.input import InputNode, ParseModeEnum
 
 EXTRACT = ParseModeEnum.EXTRACT_TEXT.value
 KEEP_RAW = ParseModeEnum.KEEP_RAW.value

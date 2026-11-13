@@ -1,4 +1,4 @@
-from bisheng.core.search.elasticsearch.manager import get_statistics_es_connection_sync
+from doberman_agent.core.search.elasticsearch.manager import get_statistics_es_connection_sync
 
 INDEX_MAPPING = {
     "mappings": {  # Defining the indexed Mapping

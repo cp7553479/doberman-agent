@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as SwitchPrimitive from '@radix-ui/react-switch';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import cn from '../../utils/cn';
 
 /**

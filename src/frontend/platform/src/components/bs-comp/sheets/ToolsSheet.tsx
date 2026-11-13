@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, SearchInput } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, SearchInput } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { Accordion } from "@/components/bs-ui/accordion";
 

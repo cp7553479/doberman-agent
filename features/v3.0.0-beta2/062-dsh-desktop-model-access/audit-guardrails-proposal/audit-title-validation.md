@@ -25,7 +25,7 @@
 ## 发布与实际客户端验收
 
 - [x] 双端审计分支提交推送并核对远端SHA。
-- [x] Drone核对本次BiSheng提交，后端/前端镜像构建发布成功。
+- [x] Drone核对本次doberman-agent提交，后端/前端镜像构建发布成功。
 - [x] 109:13001替换对应tag镜像，保留回滚镜像，核对健康、新表及唯一迁移头。
 - [x] 实际客户端使用企业模型创建隔离测试会话，标题已落SQL，改名后的最新标题在审计节点显示。
 - [x] 最后一次请求完成后仅改名，不再调用模型；管理刷新见新标题、原编号及请求数不变。
@@ -33,16 +33,16 @@
 
 ### 精确交付证据
 
-- BiSheng功能提交：`a3a9216c1ff6a1025e395222a90998cc7c056b3c`；Desktop：`73961535622bee347ab4044f2e9ec14d255fbc17`。均推送至各自`feat/3.0.0-dsh-audit`并用ls-remote核对。
-- [Drone #5434](http://110.16.193.170:50059/dataelement/bisheng/5434)对应上述BiSheng提交，状态success；后端、前端和sandbox构建步骤均success，用时4分38秒。
-- 109项目`dsh-bisheng`仅更新backend/backend_worker/frontend，API healthy、Worker inspect ping返回pong、前端nginx -t通过；公开13001的config含标题能力，未带DSH凭据的标题请求按标准返回401。
+- doberman-agent功能提交：`a3a9216c1ff6a1025e395222a90998cc7c056b3c`；Desktop：`73961535622bee347ab4044f2e9ec14d255fbc17`。均推送至各自`feat/3.0.0-dsh-audit`并用ls-remote核对。
+- Drone #5434对应上述doberman-agent提交，状态success；后端、前端和sandbox构建步骤均success，用时4分38秒。
+- 109项目`dsh-doberman-agent`仅更新backend/backend_worker/frontend，API healthy、Worker inspect ping返回pong、前端nginx -t通过；公开13001的config含标题能力，未带DSH凭据的标题请求按标准返回401。
 - 后端与Worker镜像ID：`sha256:dfda7555b2913752d5e3be0e5500a47c483c5c4454baf1b4f359f9e395ad4fb7`，仓库digest：`sha256:a7d0890666f295de94dd02f5546460b9d0389842e4a51900da30ed83d7167601`。
 - 前端镜像ID：`sha256:56abf40393a2e3d1eb951187ef1e7ccd6ae18dd3b8c92a4281cdc468484fcf63`，仓库digest：`sha256:137903d5259834a2f4a8da9efc883690bcd1fb69f04f98e08af08e9b2c6ec6f9`。tag均为`feat_3.0.0-dsh-audit`。
 - 两个镜像仓库均保存`audit-rollback-20261020-a3a9216c1-before`。未修改Gateway、Nginx挂载配置、密钥、数据卷或历史审计。标题新表已自动创建，utf8mb4；数据库迁移头仍唯一`f062_dsh_audit_tree`，租户1模式保持CONTENT。
 
 ### 原生客户端操作与回读
 
-使用本机bisheng-work实际开发客户端，正常恢复已有dshadmin企业连接；在新会话发送仅要求回复“验收通过”、禁止工具/文件读取的隔离消息。客户端成功回复，服务端标题记录为客户端接受的`审计标题联调 e2e-audit-title-20261`，事件序号14。
+使用本机doberman-agent-work实际开发客户端，正常恢复已有dshadmin企业连接；在新会话发送仅要求回复“验收通过”、禁止工具/文件读取的隔离消息。客户端成功回复，服务端标题记录为客户端接受的`审计标题联调 e2e-audit-title-20261`，事件序号14。
 
 随后仅通过原生会话菜单改名为`e2e-audit-title-20261020-改名验证`。服务端同一条标题事实更新为事件序号19；对应审计请求仍只有1条，SUCCEEDED/COMPLETED/SETTLED/COMPLETE、统一NORMAL。会话编号始终为`session-9b1eede8-c565-40cd-9e74-24236653c995`，请求编号`4d75d1ef-6bee-42ff-97fc-daa0916a17f3`。本次无新增标题生成模型调用、无模型重放。
 

@@ -6,15 +6,15 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.common.services.config_service import settings
-from bisheng.core.config.settings import CeleryConf
-from bisheng.database.models.failed_tuple import FailedTupleDao
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.core.config.settings import CeleryConf
+from doberman_agent.database.models.failed_tuple import FailedTupleDao
 
 
 def _load_retry_module():
     fake_celery = SimpleNamespace(task=lambda *args, **kwargs: lambda fn: fn)
-    sys.modules["bisheng.worker.main"] = SimpleNamespace(bisheng_celery=fake_celery)
-    path = Path(__file__).resolve().parents[2] / "bisheng/worker/permission/retry_failed_tuples.py"
+    sys.modules["doberman_agent.worker.main"] = SimpleNamespace(doberman_agent_celery=fake_celery)
+    path = Path(__file__).resolve().parents[2] / "doberman_agent/worker/permission/retry_failed_tuples.py"
     spec = importlib.util.spec_from_file_location("retry_failed_tuples_under_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -104,6 +104,6 @@ async def test_cleanup_deletes_only_succeeded_records_before_retention_cutoff(mo
 def test_cleanup_is_scheduled_on_the_default_queue():
     schedule = CeleryConf().beat_schedule["cleanup_succeeded_failed_tuples"]
 
-    assert schedule["task"] == ("bisheng.worker.permission.retry_failed_tuples.cleanup_succeeded_failed_tuples")
+    assert schedule["task"] == ("doberman_agent.worker.permission.retry_failed_tuples.cleanup_succeeded_failed_tuples")
     assert schedule["schedule"] is not None
     assert "options" not in schedule

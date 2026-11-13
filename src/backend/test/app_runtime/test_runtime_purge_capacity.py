@@ -9,10 +9,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
-from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+from doberman_agent.app_runtime.domain.models.runtime_delivery import RuntimeCapacityReservation, RuntimeNode, RuntimeOperation
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
+from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
 from test.app_runtime.test_runtime_kubernetes_repository import repo as repo
 
 

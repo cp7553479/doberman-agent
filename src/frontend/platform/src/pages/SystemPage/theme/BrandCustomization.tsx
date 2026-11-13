@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, Select, notification } from '@bisheng/ui';
+import { Button, Input, Select, notification } from '@doberman-agent/ui';
 import { LoadingIcon } from "@/components/bs-icons/loading";
 import BuiltinLoadingIcon from "@/components/bs-icons/loading/Loading.svg?react";
 
@@ -12,7 +12,7 @@ import type { BrandAsset,BrandAssetOption,BrandConfig,BrandText } from "@/contro
 import { getBrandAssetOptionsApi,getBrandConfigApi,saveBrandConfigApi } from "@/controllers/API";
 import { showApiError } from "@/controllers/request";
 import { withBrandBaseUrl } from "@/utils/brand";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { ChangeEvent,useContext,useEffect,useMemo,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -303,9 +303,9 @@ export default function BrandCustomization() {
                 file_name: t("theme.brandDefaultLoadingIcon"),
                 is_default: true,
             },
-            // 2. Built-in static loading image preset (the classic /assets/bisheng/loading.svg). Selectable, not default.
+            // 2. Built-in static loading image preset (the classic /assets/doberman-agent/loading.svg). Selectable, not default.
             {
-                url: "/assets/bisheng/loading.svg",
+                url: "/assets/doberman-agent/loading.svg",
                 relative_path: "",
                 file_name: t("theme.brandStaticLoadingIcon"),
                 is_default: false,
@@ -432,7 +432,7 @@ export default function BrandCustomization() {
     return (
         <div className="h-full min-h-0 overflow-y-auto border-t bg-accent">
             {loading ? (
-                // Wait for the API before rendering, so the BISHENG defaults
+                // Wait for the API before rendering, so the doberman-agent defaults
                 // don't flash in before the saved config arrives.
                 <div className="flex h-full items-center justify-center">
                     <LoadingIcon className="size-7" />

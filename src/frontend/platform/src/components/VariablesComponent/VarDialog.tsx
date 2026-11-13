@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { ArrowDownUp, Plus, X } from "lucide-react";
 import { useContext, useState } from 'react';
@@ -10,7 +10,7 @@ import { generateUUID } from '../../utils';
 
 import { DialogContent, DialogFooter } from '../bs-ui/dialog';
 
-import { Tabs } from '@bisheng/ui';
+import { Tabs } from '@doberman-agent/ui';
 
 export default function VarDialog({ data, onSave, onClose }) {
 

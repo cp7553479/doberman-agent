@@ -4,15 +4,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.department.domain.services.department_change_handler import DepartmentChangeHandler
-from bisheng.user_group.domain.services.group_change_handler import GroupChangeHandler
+from doberman_agent.department.domain.services.department_change_handler import DepartmentChangeHandler
+from doberman_agent.user_group.domain.services.group_change_handler import GroupChangeHandler
 
 
 def _patch_permissions():
     permissions = AsyncMock()
     permissions.apply_changes = AsyncMock()
     return permissions, patch(
-        "bisheng.permission.application.get_permission_relation_api",
+        "doberman_agent.permission.application.get_permission_relation_api",
         new=AsyncMock(return_value=permissions),
     )
 
@@ -48,7 +48,7 @@ async def test_group_changes_use_crash_safe_permission_protocol(changes) -> None
     with (
         permissions_patch,
         patch(
-            "bisheng.permission.domain.services.permission_cache.PermissionCache.invalidate_user",
+            "doberman_agent.permission.domain.services.permission_cache.PermissionCache.invalidate_user",
             new=AsyncMock(),
         ),
     ):
@@ -58,7 +58,7 @@ async def test_group_changes_use_crash_safe_permission_protocol(changes) -> None
 
 
 async def test_empty_changes_do_not_initialize_permission_runtime() -> None:
-    with patch("bisheng.permission.application.get_permission_relation_api") as get_permissions:
+    with patch("doberman_agent.permission.application.get_permission_relation_api") as get_permissions:
         await DepartmentChangeHandler.execute_async([])
         await GroupChangeHandler.execute_async([])
 

@@ -1,4 +1,4 @@
-import { Input } from '@bisheng/ui';
+import { Input } from '@doberman-agent/ui';
 import { useEffect, useRef } from "react";
 import { DictComponentType } from "../../types/components";
 

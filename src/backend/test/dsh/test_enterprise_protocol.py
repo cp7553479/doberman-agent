@@ -7,10 +7,10 @@ import httpx
 import pytest
 from langchain_openai import ChatOpenAI
 
-from bisheng.common.errcode.dsh import DshUnsupportedParameterError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
-from bisheng.dsh.domain.schemas.conversation import ConversationHint, parse_conversation
-from bisheng.dsh.domain.schemas.reasoning import reasoning_declaration
+from doberman_agent.common.errcode.dsh import DshUnsupportedParameterError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
+from doberman_agent.dsh.domain.schemas.conversation import ConversationHint, parse_conversation
+from doberman_agent.dsh.domain.schemas.reasoning import reasoning_declaration
 from test.dsh.test_model_service import principal, service_setup  # noqa: F401
 from test.dsh.test_models_api import app_setup  # noqa: F401
 
@@ -58,7 +58,7 @@ async def test_service_to_actual_sdk_wire_default_and_explicit(service_setup, ef
         )
         service.llm_builder = lambda *args: sdk
         service.capabilities_for = lambda *args: ChatCapabilities(reasoning=reasoning_declaration(DECLARATION))
-        body = {"model": "bisheng:42", "messages": [{"role": "user", "content": "hi"}]}
+        body = {"model": "doberman_agent:42", "messages": [{"role": "user", "content": "hi"}]}
         if effort:
             body["reasoning_effort"] = effort
         hint = ConversationHint(conversation_id="conversation-1", request_kind="compaction")
@@ -75,7 +75,7 @@ async def test_undeclared_effort_never_reaches_admission(service_setup):  # noqa
     with pytest.raises(DshUnsupportedParameterError):
         await service.complete(
             principal(),
-            DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}], reasoning_effort="high"),
+            DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}], reasoning_effort="high"),
         )
     assert llm.calls == 0 and ledger.events == []
 
@@ -119,12 +119,12 @@ def test_audit_context_uses_audit_keys():
 
 async def test_audit_context_is_metadata_not_model_input(app_setup):  # noqa: F811
     app, *_ = app_setup
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://bisheng.invalid") as client:
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://doberman-agent.invalid") as client:
         result = await client.post(
             "/api/v1/dsh/chat/completions",
             headers=[("Authorization", "Bearer dedicated")],
             json={
-                "model": "bisheng:42",
+                "model": "doberman_agent:42",
                 "messages": [{"role": "user", "content": "hi"}],
                 "audit_context": {"conversation_id": "bad id with spaces is still metadata", "request_kind": "x"},
             },
@@ -134,17 +134,17 @@ async def test_audit_context_is_metadata_not_model_input(app_setup):  # noqa: F8
 
 
 def test_real_model_configuration_negotiates_protocol_and_copies_chat_sdk():
-    from bisheng.dsh.infrastructure.chat_adapter import DshChatAdapter
-    from bisheng.dsh.infrastructure.model_capabilities import model_capabilities
-    from bisheng.llm.domain.llm.llm import BishengLLM
-    from bisheng.llm.domain.models import LLMModel, LLMServer
+    from doberman_agent.dsh.infrastructure.chat_adapter import DshChatAdapter
+    from doberman_agent.dsh.infrastructure.model_capabilities import model_capabilities
+    from doberman_agent.llm.domain.llm.llm import DobermanAgentLLM
+    from doberman_agent.llm.domain.models import LLMModel, LLMServer
 
     config = {"user_kwargs": json.dumps({**DECLARATION, "use_responses_api": True})}
     model = LLMModel(id=42, server_id=7, model_name="supplier-model", model_type="llm", config=config)
     server = LLMServer(id=7, type="openai", config={"api_key": "test-only", "base_url": "https://supplier.invalid/v1"})
     capabilities = model_capabilities(model, server)
     assert capabilities.responses and capabilities.reasoning.defaultEffort == "low"
-    llm = BishengLLM.get_class_instance_from_snapshot(
+    llm = DobermanAgentLLM.get_class_instance_from_snapshot(
         model_info=model,
         server_info=server,
         app_id="test",
@@ -154,7 +154,7 @@ def test_real_model_configuration_negotiates_protocol_and_copies_chat_sdk():
     )
     assert llm.llm.use_responses_api is False
     execution = DshChatAdapter().prepare(
-        DshChatRequest(model="bisheng:42", messages=[{"role": "user", "content": "hi"}]),
+        DshChatRequest(model="doberman_agent:42", messages=[{"role": "user", "content": "hi"}]),
         llm,
         capabilities,
     )

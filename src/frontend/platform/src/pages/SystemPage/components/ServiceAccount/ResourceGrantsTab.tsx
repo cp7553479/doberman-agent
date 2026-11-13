@@ -1,8 +1,8 @@
 import { useServiceAccountRequestScope } from "./useServiceAccountManagementScope";
-import { TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
-import { Button, SearchInput, Select, notification, toast } from '@bisheng/ui';
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
+import { Button, SearchInput, Select, notification, toast } from '@doberman-agent/ui';
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 

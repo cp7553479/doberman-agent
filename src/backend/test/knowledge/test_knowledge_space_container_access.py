@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import SpaceFolderNotFoundError, SpacePermissionDeniedError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import FileType
-from bisheng.knowledge.domain.services import knowledge_space_service as module
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.knowledge_space import SpaceFolderNotFoundError, SpacePermissionDeniedError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType
+from doberman_agent.knowledge.domain.services import knowledge_space_service as module
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 from test.permission.test_f048_authorization_model import ModelEvaluator, build_authorization_model_f048
 
 
@@ -88,7 +88,7 @@ async def test_folder_scope_is_validated_before_authorization(folder_access, met
 
 
 async def test_v2_list_returns_inherited_children_and_filters_custom_children(folder_access, monkeypatch):
-    from bisheng.open_endpoints.api.endpoints import filelib
+    from doberman_agent.open_endpoints.api.endpoints import filelib
 
     service, _, _ = folder_access
     children = [

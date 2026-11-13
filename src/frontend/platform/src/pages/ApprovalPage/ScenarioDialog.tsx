@@ -1,5 +1,5 @@
 import { useSelectLabels } from '@/components/bs-comp/formFields/useSelectLabels';
-import { Button, Select } from '@bisheng/ui';
+import { Button, Select } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 import { type ApprovalScenarioPreset } from "@/controllers/API/approval";

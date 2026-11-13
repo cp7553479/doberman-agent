@@ -20,13 +20,13 @@ pytestmark = pytest.mark.asyncio
 
 
 def _service():
-    from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
+    from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
 
     return AppQueryService
 
 
 def _entries():
-    from bisheng.app_runtime.domain.services import app_query_service
+    from doberman_agent.app_runtime.domain.services import app_query_service
 
     return app_query_service
 
@@ -53,7 +53,7 @@ async def test_the_detail_page_and_the_credential_door_agree_for_the_owner(
 async def test_a_tenant_administrator_reads_it_on_the_page_but_not_through_a_key(
     app_db, app_factory, app_owner, fake_orchestrator, monkeypatch, tenant_admin_payload
 ):
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     async def _is_tenant_admin(user_id: int, tenant_id: int) -> bool:
         return user_id == tenant_admin_payload.user_id
@@ -72,8 +72,8 @@ async def test_a_tenant_administrator_reads_it_on_the_page_but_not_through_a_key
 async def test_a_super_admin_key_gets_no_bypass_either(app_db, app_factory, app_owner, fake_orchestrator):
     """``is_global_super`` is not consulted on a credential door, even to widen the tenant."""
 
-    from bisheng.common.dependencies.user_deps import UserPayload
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     app, _ = await app_factory()
     superuser = UserPayload(
@@ -89,7 +89,7 @@ async def test_a_stranger_gets_the_same_answer_as_a_missing_application(
 ):
     """Existence must not be probeable by comparing two refusals."""
 
-    from bisheng.common.errcode.app_factory import AppNotFoundError
+    from doberman_agent.common.errcode.app_factory import AppNotFoundError
 
     app, _ = await app_factory()
 

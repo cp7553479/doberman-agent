@@ -14,9 +14,9 @@
 T007 命令（cwd=src/backend）：
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m pytest --confcutdir=test/dsh -p no:cacheprovider test/dsh/test_error_code_uniqueness.py::test_dsh_error_codes_are_unique -q
-PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m ruff check --no-cache bisheng/common/errcode/dsh.py
-bash ../../scripts/arch-guard.sh "$PWD/bisheng/common/errcode/dsh.py"
+PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m pytest --confcutdir=test/dsh -p no:cacheprovider test/dsh/test_error_code_uniqueness.py::test_dsh_error_codes_are_unique -q
+PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m ruff check --no-cache doberman-agent/common/errcode/dsh.py
+bash ../../scripts/arch-guard.sh "$PWD/doberman-agent/common/errcode/dsh.py"
 ```
 
 新代码的三语 api_errors 覆盖由既定 T130 生成验证，当前不声称该项全量检查通过。初次 Ruff 因功能工作树写缓存受沙箱限制失败，改用 --no-cache 后通过，不修改工具规则。
@@ -261,7 +261,7 @@ Wave15开始前完整性核对：发现T098元数据只有telemetry/Dispatcher�
 
 ## 17. Wave 15 接收认证/专用路由前置测试（2026-10-24，进行中）
 
-T031：唯一399行测试，44项预期RED均缺content_safety_runtime，旧共享签名/SSO及T030组合71PASS（f111-t031-red-adjacent.log）。真实SSOSyncConf没有enabled字段，测试使用实际SystemLoginMethod.bisheng_pro=false/省略登录配置对照；相同key与自定义签名头、原始字节、精确方法path、±300秒边界、UTF8/重复JSON/NaN/depth/64KiB、单租户403、多租户历史不查active、真实T030原mapping hash/missing-null冲突均有配对断言。cold import时拦模型/audit/tool runtime，不将已缓存模块避过导入当独立组装证明。主agent全文读取，Ruff/arch-guard及task-review测试subset、完整AC/范围/依赖PASS；缺生产模块的RED不能宣称全部断言已实际到达。
+T031：唯一399行测试，44项预期RED均缺content_safety_runtime，旧共享签名/SSO及T030组合71PASS（f111-t031-red-adjacent.log）。真实SSOSyncConf没有enabled字段，测试使用实际SystemLoginMethod.doberman_agent_pro=false/省略登录配置对照；相同key与自定义签名头、原始字节、精确方法path、±300秒边界、UTF8/重复JSON/NaN/depth/64KiB、单租户403、多租户历史不查active、真实T030原mapping hash/missing-null冲突均有配对断言。cold import时拦模型/audit/tool runtime，不将已缓存模块避过导入当独立组装证明。主agent全文读取，Ruff/arch-guard及task-review测试subset、完整AC/范围/依赖PASS；缺生产模块的RED不能宣称全部断言已实际到达。
 
 T089：唯一约340行JUnit测试20展开调用，私有javac使用FLOW诊断后仅4处缺DshModelRoutingFilter类型（t089-red-javac.log）；实际相邻T08852+T08630+proxy9共91PASS（t089-neighbor-green.log）。四模式用真实FilteringWebHandler、PathRate和默认Netty过滤器，CountedFilter仅委托计数；真实manager/proxy及两个独立loopback端口验证固定目标/原body/原Authorization/默认trap零请求，另测原错误、双编号、命中续读/取消/pooled refCnt与无demand预算。主agent全文读取，A交叉核对实际类和javap签名，未发现确证fixture错误；范围/前置/命名/完整AC与测试subset PASS。仍缺实现类，不以红编译代替实际路由验收。
 
@@ -272,7 +272,7 @@ T117最终实现：仅client.js/index.js，独立namespace与公共LocaleRuntime
 
 B交叉审真实Cordis+独立LocaleRuntime共享CookieJar实际复现同值两renderer：旧fiber卸载误删新窗口cookie，before=true/after=false。修为{owner,messages}随机owner所有权及按copy去重，Host只把messages投影入ALS；主agent独立执行同原probe得到before=true/afterFirstUnload=true、secondStillActive=2/locale=zh，parent-owner-green.log。原探针 /private/tmp/f111-impl-b-locale/renderer-ownership.mjs，未写业务桩。entry扩展覆盖双协议三语两类copy/tenant、6请求并发、无偏好、Host设置落盘延迟、坏cookie/重复/跨authority及重载；final-entry-green.log。主agent独立执行同真实入口probe退出0（parent-entry-green.log）；不是完整Session/Agent执行证据。
 
-GUI：独立Electron43.0.0/Chromium150.0.7871.46，临时bootstrap且独立userData，未跑正式main（其源码会强制使用bisheng-dev/bisheng）。旧electron-leiWN8/zh-blocked图经主agent实际查看为空，仅日志PASS不足；改为预期DOM文本+可见height+双requestAnimationFrame后捕获。最终有效paint-electron-gui.log及electron-zLug2C/六图，C逐六图、主agent抽三图查看确认新增安全正文实际可见；使用已发布LocaleRuntime/client、认证Host/adapter及原TurnErrorItem消费组件。该有限裸组件显示不代表全应用布局/全部旧文案翻译、正式main启动、Session.prompt/Agent队列或打包验收；这些保持后续任务范围。
+GUI：独立Electron43.0.0/Chromium150.0.7871.46，临时bootstrap且独立userData，未跑正式main（其源码会强制使用doberman-agent-dev/doberman-agent）。旧electron-leiWN8/zh-blocked图经主agent实际查看为空，仅日志PASS不足；改为预期DOM文本+可见height+双requestAnimationFrame后捕获。最终有效paint-electron-gui.log及electron-zLug2C/六图，C逐六图、主agent抽三图查看确认新增安全正文实际可见；使用已发布LocaleRuntime/client、认证Host/adapter及原TurnErrorItem消费组件。该有限裸组件显示不代表全应用布局/全部旧文案翻译、正式main启动、Session.prompt/Agent队列或打包验收；这些保持后续任务范围。
 
 相邻六文件143PASS（final-regression.log），npm typecheck退出0（TS集成边界）、node --check与diff-check PASS；没有新增依赖或第三方分发包改动。主agent完整diff审查，B实际生命周期交叉审查；任务范围/依赖、命名/注释/现有i18n与安全/设计同步PASS，backend/SQL N/A。T117满足当前接线及有限实际显示验收后勾选，新增T140在Wave17固化入口回归（临时probe不代替长期CI）。
 
@@ -315,7 +315,7 @@ T140：唯一约320行维护测试，真实Cordis renderer fiber/LocaleRuntime/c
 T033：唯一440行前置测试，A实际79PASS/36预期RED，主agent独立三个文件 **74PASS/36预期RED**（f111-wave17-backend-api-parent-red.log）；36setup error逐项为缺配对content_safety_events模块，不把尚未到达断言记GREEN。真实composition+DshRoute/ASGI、原verify+ingest+SQLite事务，时钟/config/Session端口可控；64KiB假长度chunk早停、原bytes单次读取/不改_receive/hashmissing-null、提交等待/回滚后ACK、错误状态与安全输出、query不覆盖签名scope、历史202租户无Token及断连无ACK均覆盖。主agent完整读取全部440行，A的Ruff/format/F821/arch-guard clean；task-review测试subset命名/完整AC/范围/依赖T016/T032 PASS。T033勾选 **87/141**，T034仍未开始。
 
 
-T091：唯一242行先行测试，真实YAML Binder/placeholder→RouteDefinitionRouteLocator(Path/Method/CacheRequestBody工厂)→CachingRouteLocator/RoutePredicateHandlerMapping→FilteringWebHandler。私有编译成功；当前24项4PASS/20预期FAIL，16专用路由实际选中bisheng-http、4未显式默认关闭；相邻原路由3PASS。主agent完整读取文件、普通Maven独立同样 **7PASS/20预期FAIL/0ERROR/0SKIP**，逐两份XML确认（wave17-parent-config-red.log），不把在首个route断言前尚未执行的真实Netty/Profile/Proxy场景记通过。actual默认Path factory matchTrailingSlash=true，与T088 parser默认不接受尾slash不同，T092须显式false保持两入口一致。task-review测试subset命名/完整AC/唯一定义范围/已勾T016/T090依赖PASS；无生产或YAML改动。
+T091：唯一242行先行测试，真实YAML Binder/placeholder→RouteDefinitionRouteLocator(Path/Method/CacheRequestBody工厂)→CachingRouteLocator/RoutePredicateHandlerMapping→FilteringWebHandler。私有编译成功；当前24项4PASS/20预期FAIL，16专用路由实际选中doberman-agent-http、4未显式默认关闭；相邻原路由3PASS。主agent完整读取文件、普通Maven独立同样 **7PASS/20预期FAIL/0ERROR/0SKIP**，逐两份XML确认（wave17-parent-config-red.log），不把在首个route断言前尚未执行的真实Netty/Profile/Proxy场景记通过。actual默认Path factory matchTrailingSlash=true，与T088 parser默认不接受尾slash不同，T092须显式false保持两入口一致。task-review测试subset命名/完整AC/唯一定义范围/已勾T016/T090依赖PASS；无生产或YAML改动。
 
 T141：唯一既有enterprise-adapter.test.ts，仅公共on disposer夹具和两处函数export提取终点，新增AC/边界英文注释，原业务断言完整保持。先 **5FAIL/147PASS**（f111-wave17-desktop-locale-adjacent-final.log），修后准确七文件 **152PASS/0SKIP**（f111-wave17-desktop-locale-adjacent-fixed.log）。主agent读全旧测试及实际diff，A只读交叉审T140+T141并对照真实Connection/LocaleRuntime/Host无新增HIGH/MEDIUM；A未重复执行，不冒领独立运行。task-review命名/完整AC/测试范围/依赖T117/T137 PASS，diff-check clean。T091/T141勾选 **89/141**，T118仍在本Wave最终验收。
 
@@ -438,7 +438,7 @@ T152：唯一257行真实HTTP/Service/Repo先行测试，主全文读取并独�
 T153/T156：T153恰原Service三处增now=self.now()，主已全文读251行及实际三处差异；无Service SQL/隐式bounds/游标实现混入，location/parent保持独立历史定位。A配对82GREEN后原两手工历史记录HTTP断言RED，主独立 **2FAIL**（f111-t156-parent-before.log），不是生产算法问题。T156各唯一旧case加NOW+1秒查询时钟（tree文件只另补必要import），原断言保持，未改全局Harness或模型记录。主新API25+原组/树 **52PASS**（f111-t153-t156-parent-green.log），最终全内容安全/全部model_audit及admin/middleware **665PASS/3环境SKIP**（f111-wave24-backend-final-parent.log）；全部原窗口9RED与旧2RED已闭合。Ruff/format/archguard/diffcheckPASS。T153 L1分层/命名/既有响应/严格tenant边界/安全/设计同步及单源范围、T152/T046配对依赖PASS；T156测试subset命名/完整AC/仅两文件与已勾T152依赖PASS。勾选两项 **120/156**，真实DM8和全链E2E仍待验收。
 
 
-T154/T155：Platform正式@bisheng/ui workspace:^本地链接；pnpm生成曾带无关peer图重解析，已拒绝该变更，仅保留生成的本地link，程序比对旧lock全部importers/packages/snapshots/元数据逐项不变。离线frozen-lockfile install成功（f111-t154-frozen.log），无其他manifest或嵌套lock残留。T155唯一Vite配置+physical CSS入口，从公开token/preset真实编译90,843bytes；主执行实际production plugin **613普通selector全部有scope**、dark/green顺序、touch及keyframe隔离PASS（f111-t155-probe-final.log）。新配置类型问题已修，主TS compiler API原HEAD与现源码对比均仅既有http-proxy类型缺失，无新增诊断（f111-t155-ts-compare.log）；不声称整个Vite config历史全绿。主全文读取两源/实际包与lock差异、零新依赖闭包、L1基础设施边界/无设计值复制/信息保护/设计同步/两任务各≤2文件及依赖PASS。
+T154/T155：Platform正式@doberman-agent/ui workspace:^本地链接；pnpm生成曾带无关peer图重解析，已拒绝该变更，仅保留生成的本地link，程序比对旧lock全部importers/packages/snapshots/元数据逐项不变。离线frozen-lockfile install成功（f111-t154-frozen.log），无其他manifest或嵌套lock残留。T155唯一Vite配置+physical CSS入口，从公开token/preset真实编译90,843bytes；主执行实际production plugin **613普通selector全部有scope**、dark/green顺序、touch及keyframe隔离PASS（f111-t155-probe-final.log）。新配置类型问题已修，主TS compiler API原HEAD与现源码对比均仅既有http-proxy类型缺失，无新增诊断（f111-t155-ts-compare.log）；不声称整个Vite config历史全绿。主全文读取两源/实际包与lock差异、零新依赖闭包、L1基础设施边界/无设计值复制/信息保护/设计同步/两任务各≤2文件及依赖PASS。
 
 T103/T105/T106：主完整读取五源（设置+hook、Filters、Card+Details），使用landed共享组件、局部v4 Provider、原wrapped request，无store HTTP/403分支/新库/HTML渲染。主独立正式包组件 **17PASS**、筛选 **6PASS**、详情最终 **10PASS**（f111-{t103-parent-official,t105-parent-private,t106-parent-final}.log）；原DSH/API相邻 **24文件204PASS**（f111-wave24-parent-frontend-regressions.log），完整Platform strict **602文件PASS**（f111-wave24-parent-frontend-typecheck.log），五源目标ESLint PASS。C各旧50回归及原18Card/Body断言保留。主审发现刷新失败后retry误用旧分页cursor，新增实际 **1RED/9GREEN→10GREEN** 后用attemptCursor记录确切重试请求；新区域详情按钮使用共享Button，旧Card按钮不变。三locale validation新增checks_required/reply_too_long/range_too_large并修旧默认窗口提示，主递归内容安全key parity PASS，无改generated api_errors。
 
@@ -528,7 +528,7 @@ T139：主完整读取Configuration160行、Outbox唯一移交的2行删除，�
 T052：主完整读取最终Maintenance275/Setting105行，独立8文件 **164PASS**（f111-t052-parent-green.log），A配对+相邻 **172PASS**、5项实际SQL临时probe PASS，均隔离SQLite，非双库锁验收。首次setting唯一sentinel flush、单调水位caller先独立commit、每批≤100且facts共享预算、running/pending排除并下轮重访、明确tenant/状态CAS、group delta和first/last索引约束、tree dirty及剩余子会话可见、rebuild原hash/保留窗口/过期skipped均核对。Repo无commit/新Session；不回收原生正文元数据/共享对象/密钥/计量，不能声称原文存储已释放。Ruff/guard与L1两源/已勾依赖及AC一致性PASS，勾选。A扩大特殊runtime→ingest→API→middleware顺序36FAIL/101PASS，以HEAD原Setting独立内存overlay确证同36FAIL/101PASS且endpoint module与sys.modules分叉，Maintenance未加载；保留旧fixture隔离缺陷证据，不归T052回归、不越界修复。两项后 **149/170**，允许T053和T168各自唯一测试先行。
 
 
-T170：主单构建源仅2新增行（对T155稳定preimage比对），optimizeDeps.include预编译@bisheng/ui自身依赖图，保留UI1.14/Platform2.6锁定merge；未加依赖/改组件/设计值。正式Vite5 dev真实helper DOM before丢text-caption-sm/12px → after保留/10px，Tag12px；同维护plugins/resolve的独立合成入口三语+390实际GUI PASS，console0/API0、根radius不变。新生产bundle独立重建4.05s（仅通用chunk-size提示）、三语+390 GUI再PASS，主view dev日语窄图。Platform原cname真实dev import 5合并语义PASS，613selectors/90,843bytes scope probe PASS，配置TS对HEAD基线仅同一http-proxy声明缺失/新增诊断0。证据f111-t170/{font-before,font-after,gui-after,legacy-after,production-build,gui-production,scoped-style,config-typecheck}.log。初次全GUI私有入口被HTML插件注入正式app而超时，仅调整私有harness剔除HTML入口注入后验证，未当业务失败或有效E2E。主L1基础设施架构/无DB/信息保护/设计同步/一源及已勾T155/T108依赖PASS，勾选 **150/170**；T110待T109主验后解锁。
+T170：主单构建源仅2新增行（对T155稳定preimage比对），optimizeDeps.include预编译@doberman-agent/ui自身依赖图，保留UI1.14/Platform2.6锁定merge；未加依赖/改组件/设计值。正式Vite5 dev真实helper DOM before丢text-caption-sm/12px → after保留/10px，Tag12px；同维护plugins/resolve的独立合成入口三语+390实际GUI PASS，console0/API0、根radius不变。新生产bundle独立重建4.05s（仅通用chunk-size提示）、三语+390 GUI再PASS，主view dev日语窄图。Platform原cname真实dev import 5合并语义PASS，613selectors/90,843bytes scope probe PASS，配置TS对HEAD基线仅同一http-proxy声明缺失/新增诊断0。证据f111-t170/{font-before,font-after,gui-after,legacy-after,production-build,gui-production,scoped-style,config-typecheck}.log。初次全GUI私有入口被HTML插件注入正式app而超时，仅调整私有harness剔除HTML入口注入后验证，未当业务失败或有效E2E。主L1基础设施架构/无DB/信息保护/设计同步/一源及已勾T155/T108依赖PASS，勾选 **150/170**；T110待T109主验后解锁。
 
 
 T171：主唯一测试源把冷启动检查移真实独立Python进程，guard在首次import前安装，仍真实构造IngestService且session_factory零调用，并验证父进程module身份不变。原同5文件顺序 **36FAIL/101PASS → 137PASS**（f111-t171-five-parent-green.log），单独cold1PASS、4文件131PASS；Ruff/format/guard/diffcheck PASS。冷启动行为检查保留且隔离更严格，无API fixture或生产源改动，无HTTP断言放宽。L1测试subset命名/完整AC/单文件/已勾T032/T034依赖PASS，勾选 **151/171**。此前T052的HEAD Setting对照证明归因边界，本条修复本特性T031自身fixture污染，不把已知顺序错误留到交付。
@@ -545,7 +545,7 @@ T110：主完整读取永久Settings254/Details582行（跨页补读所有片段
 真实MySQL准备（未勾T119）：主私有脚本通过实际DatabaseConnectionManager和未替换的完整Alembic online env/模型发现，在本次唯一临时dsh_test_f111库fresh upgrade head再重复upgrade，实际 **144表/f111_dsh_content_safety PASS**，finally仅删除本次库（f111-full-migration-preflight.log）。只替换连接配置入口，不替换migration/DDL；旧F029缺OpenFGA store/model回填跳过、F030空数据0行，不能当完整应用环境或真实DM8验收。首次私有probe误给只读engine property赋值，未运行迁移即异常并已清库；改为真实连接Manager构造后成功。T119永久真实并发/升级前后/schema回退仍待前驱齐备，未伪勾。
 
 
-T054：主全文读取最终CLI155行及README53行新增，独立8文件 **184PASS**（f111-t054-parent-final-green.log，35 CLI+27 retention及相邻），A八相邻选择175PASS。真实shared settings/session端口，DB-only严格profile_scope六context恢复、默认dryrun仅tenant验证/不扫描也不伪造估数、显式apply每batch事务且commit后才JSONL、main checkpoint独立先commit、details-only保水位/cursor，固定非0类型错误，README明确存储/billing非GC和部署writer guard前置。自审实际坏YAML与真实空SQLite下层logger先泄露trace/SQL的RED已保留0600；仅独立__main__进程导入前关闭bisheng/std业务日志，库导入不改宿主logging，固定安全stderr。主补T053同一源2永久真实子进程回归，35全部GREEN，正常/坏配置--help均0；不改core第三源。Ruff/format/F821/guard/diff及L1架构/命名/DB caller事务/信息保护/设计、恰脚本+README/已勾T053/T052依赖PASS，勾选 **155/171**。执行主清理前所有writer部署防复活仍由T169与后续运维验收约束；未执行真实环境清理或部署。
+T054：主全文读取最终CLI155行及README53行新增，独立8文件 **184PASS**（f111-t054-parent-final-green.log，35 CLI+27 retention及相邻），A八相邻选择175PASS。真实shared settings/session端口，DB-only严格profile_scope六context恢复、默认dryrun仅tenant验证/不扫描也不伪造估数、显式apply每batch事务且commit后才JSONL、main checkpoint独立先commit、details-only保水位/cursor，固定非0类型错误，README明确存储/billing非GC和部署writer guard前置。自审实际坏YAML与真实空SQLite下层logger先泄露trace/SQL的RED已保留0600；仅独立__main__进程导入前关闭doberman-agent/std业务日志，库导入不改宿主logging，固定安全stderr。主补T053同一源2永久真实子进程回归，35全部GREEN，正常/坏配置--help均0；不改core第三源。Ruff/format/F821/guard/diff及L1架构/命名/DB caller事务/信息保护/设计、恰脚本+README/已勾T053/T052依赖PASS，勾选 **155/171**。执行主清理前所有writer部署防复活仍由T169与后续运维验收约束；未执行真实环境清理或部署。
 
 
 T174：主唯一既有查询测试源新增18实际Repo断言，旧34保留；独立 **18预期RED/34PASS**（f111-t174-parent-red.log），4为upper查询丢记录/同规范cursor错误拒绝，14为非法UUID未前置安全拒绝，不把SQLite当DM8。大小写等价与显式cursor、不同实际ID仍拒绝、跨tenant隔离、不在SQL列调用LOWER以保索引、非法值SQL零调用均明确。Ruff/format/guard/diff及L1测试命名/full5AC/单源/已勾T109/T040依赖PASS，勾选 **156/175**，允许T175唯一查询Repo。新总数包含实际null序列化两任务T172/T173及本配对；不改已确认默认相对分页窗口。
@@ -678,7 +678,7 @@ T204/T205最终主交叉验收PASS：完整单源420行/冻SHA749c8262247196cb86
 
 ## 最终镜像与重启后复验
 
-B测试资料提交d5b026557b76bb57af223520c11aeecd4e83473e正常推work120并读回，Drone5625 SUCCESS；业务bisheng树与3cc9de9298无差异，backend COPY包含新测试故镜像更新为151d35b0436825c23dd9c5940300d801e8294bb1c0a75c5798250216991ef0cd，ImageID e5d1403c2e1a95323dffded3858cd088a76a8ac965df186cba799e0cea8587ce，仅109 backend/worker更新；frontend摘要未变。真实Backend进程重启后12条已存在审计四模式4PASS/13.14s，证明此批事实重启可读，不冒丢ACK/并发事务验收。
+B测试资料提交d5b026557b76bb57af223520c11aeecd4e83473e正常推work120并读回，Drone5625 SUCCESS；业务doberman-agent树与3cc9de9298无差异，backend COPY包含新测试故镜像更新为151d35b0436825c23dd9c5940300d801e8294bb1c0a75c5798250216991ef0cd，ImageID e5d1403c2e1a95323dffded3858cd088a76a8ac965df186cba799e0cea8587ce，仅109 backend/worker更新；frontend摘要未变。真实Backend进程重启后12条已存在审计四模式4PASS/13.14s，证明此批事实重启可读，不冒丢ACK/并发事务验收。
 
 启动窗口业务读取失败及四模式烟测2PASS后策略teardown503保留原日志；主核最后版本114/自有合成词和提示后CAS恢复115，不覆盖外部编辑。Gateway私有日志确实包含对旧172.31.62.10和新172.31.62.9的连接拒绝，127.0.0.1:17860/health及真实管理APIready后仅同镜像重建指定Gateway刷新连接，受保护capabilities连续三读成功。最终同源四模式烟测4PASS/31deselected/40.27s（post5625-stable-protocol-four），策略正常恢复；不放宽测试/不加模型自动重试。13001/health可被SPA兜底，不能当Backend就绪证据，运维步骤已同步。
 
@@ -739,13 +739,13 @@ Gateway 仍为每次请求生成独立 UUID，Proxy 用显式 UUID 参数在 hop
 
 ### 验证命令与结果
 
-以下命令 B 从 src/backend 运行，使用已有 Python3.11 环境 `/Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python`，`config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml`、`PYTHONDONTWRITEBYTECODE=1`。G 使用现有 Java17 `/private/tmp/f111-gateway-tools/jdk-17.0.21+9/Contents/Home` 与 Maven3.9.9，不改锁定依赖。
+以下命令 B 从 src/backend 运行，使用已有 Python3.11 环境 `/Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python`，`config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml`、`PYTHONDONTWRITEBYTECODE=1`。G 使用现有 Java17 `/private/tmp/f111-gateway-tools/jdk-17.0.21+9/Contents/Home` 与 Maven3.9.9，不改锁定依赖。
 
 | 检查 | 命令/方法 | 结果 |
 |---|---|---|
 | 新 backend HTTP/仓储测试 | `pytest -q -p no:cacheprovider test/dsh/test_unified_request_id.py`（并入下列组合） | 20项新增覆盖；最初7个有效反例确认旧实现不复用ID，另2个Responses夹具非法input先纠正为现有消息列表契约，再转GREEN |
 | backend 相关回归 | `pytest -q -p no:cacheprovider test/dsh/test_unified_request_id.py test/dsh/test_content_safety_merge.py test/dsh/test_content_safety_native_writer.py test/dsh/test_model_audit_request_id.py test/dsh/test_models_api.py test/dsh/test_native_responses_middleware.py -k 'not usage_selected_model_cannot_borrow_another_allowance' --tb=short` | **81 PASS / 1 deselected**；1.42s |
-| 既有失败对照 | 不排除上述case时，旧test_models_api中的policy SimpleNamespace缺monthly_token_limit，AttributeError；新进程读取`git show HEAD:src/backend/bisheng/dsh/api/responses.py`并加载原DshRoute后单独运行同一case | 同一 AttributeError；证明该失败在HEAD基线存在，本轮未修改用量业务或放宽原断言。排除仅用于清楚报告本轮通过集合，不宣称整个backend回归全绿 |
+| 既有失败对照 | 不排除上述case时，旧test_models_api中的policy SimpleNamespace缺monthly_token_limit，AttributeError；新进程读取`git show HEAD:src/backend/doberman_agent/dsh/api/responses.py`并加载原DshRoute后单独运行同一case | 同一 AttributeError；证明该失败在HEAD基线存在，本轮未修改用量业务或放宽原断言。排除仅用于清楚报告本轮通过集合，不宣称整个backend回归全绿 |
 | Gateway 定向 | `mvn -o -q -Dtest=DshModelProxyClientTest,DshSafetyRequestManagerTest,DshModelRoutingFilterTest,DshContentSafetyFilterTest,DshRequestTelemetryTest,DshSafetyRoutingConfigurationTest test` | 初轮172 PASS；自审追加响应头前主动取消、多值/零UUID后纳入完整回归 |
 | Gateway 完整 | `mvn -o -q test` | **902 PASS / 10 SKIP / 0 FAIL / 0 ERROR**，912 cases；Manager39项通过。SKIP为原真实双库集成，没有用mock替代 |
 | 两仓实际回环HTTP | `/private/tmp/dsh-unified-request-id/run_probe.py`：真实Java DshModelProxyClient→随机127.0.0.1端口上的实际Python DshRoute/模型服务/原生协议adapter | **Chat流式1 PASS + Responses流式1 PASS**；供应商/鉴权/额度是合成fixture。backend准入及结算4条事件的request_id/trace_id与Gateway生成ID一致，2个SUCCEEDED；不冒充真实部署E2E |
@@ -845,7 +845,7 @@ Gateway 仍为每次请求生成独立 UUID，Proxy 用显式 UUID 参数在 hop
 完整定向backend命令：在src/backend目录，以既有Python3.11独立环境执行：
 
 ```sh
-config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m pytest -q -p no:cacheprovider test/dsh/test_content_safety_matched_words.py test/dsh/test_content_safety_repository.py test/dsh/test_content_safety_merge.py test/dsh/test_content_safety_queries.py test/dsh/test_content_safety_api.py test/dsh/test_content_safety_native_writer.py test/dsh/test_matched_words_migration.py test/database/test_alembic_single_head.py --tb=short
+config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m pytest -q -p no:cacheprovider test/dsh/test_content_safety_matched_words.py test/dsh/test_content_safety_repository.py test/dsh/test_content_safety_merge.py test/dsh/test_content_safety_queries.py test/dsh/test_content_safety_api.py test/dsh/test_content_safety_native_writer.py test/dsh/test_matched_words_migration.py test/database/test_alembic_single_head.py --tb=short
 ```
 
 证据：`/private/tmp/dsh-matched-words-backend-final.log`、`/private/tmp/dsh-matched-words-backend-full.log`、`/private/tmp/dsh-matched-words-backend-head-baseline.log`；Gateway完整和生产mapper日志`/private/tmp/dsh-matched-words-gateway-full.log`、`/private/tmp/dsh-matched-words-gateway-production-mapper.log`；实际事件和MySQL脚本/回执`/private/tmp/dsh-matched-words/`（全部合成值）；前端`/private/tmp/dsh-request-view-words-{ui-final,typecheck-final,target-lint-final,lint,i18n,locales,build-final}.log`。HEAD对照来自`git archive`到本次独立临时目录，没有checkout/reset已有工作树。
@@ -881,7 +881,7 @@ T225–T243共19项完成，当前**228/243**。原15项T119、T120、T121、T12
 
 ## 2026-10-27 授权发布与验收脚本补齐（T244）
 
-用户已明确授权本轮提交、合并最新feat/bisheng-work-120-main并推送、CI构建和仅109 DSH13001部署，覆盖前述仅本轮不提交的限制。合并最新dfadd7ab3后B190PASS、G905PASS/10真实DB SKIP、前端269PASS；完整frontend lint/typecheck/i18n/locales和Platform生产构建PASS（18.83s），最新目标分支已修复旧95项lint问题，历史证据保持不变。
+用户已明确授权本轮提交、合并最新feat/doberman-agent-work-120-main并推送、CI构建和仅109 DSH13001部署，覆盖前述仅本轮不提交的限制。合并最新dfadd7ab3后B190PASS、G905PASS/10真实DB SKIP、前端269PASS；完整frontend lint/typecheck/i18n/locales和Platform生产构建PASS（18.83s），最新目标分支已修复旧95项lint问题，历史证据保持不变。
 
 发布前自审确证既有test_content_safety_recovery_e2e.validate_event_shape使用严格旧字段白名单；新详情会固定返回matched_words，即使旧数据NULL也会被旧验收脚本错误拒绝。T244仅在该脚本增加可选字段严格校验，保留旧缺失/null，拒绝词值越界、错误阶段、重复/Unicode及其他额外字段；新增test_content_safety_recovery_contract.py共11项。相关最终组合**201PASS**（3.61s），Ruff通过，业务文件未增加修改。文件范围、配对、边界、泄漏与设计自审PASS。原全特性15项待验不变，当前229/244。
 
@@ -936,11 +936,11 @@ python -m pytest -q -p no:cacheprovider test/dsh/test_safety_summary_metadata.py
 
 | 验证 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 定向回归 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件、276 PASS**；最终日志/private/tmp/dsh-audit-simplification-final-tests.log |
+| 定向回归 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件、276 PASS**；最终日志/private/tmp/dsh-audit-simplification-final-tests.log |
 | 完整前端lint | cwd=src/frontend；pnpm lint | **PASS**；包含Platform、Client、UI、file-viewers，日志/private/tmp/dsh-audit-simplification-final-lint.log |
 | 完整前端typecheck | cwd=src/frontend；pnpm typecheck | **PASS**；日志/private/tmp/dsh-audit-simplification-final-typecheck.log |
 | 三语和错误码生成检查 | cwd=src/frontend；pnpm check-i18n；pnpm locales:check | **PASS**；日志/private/tmp/dsh-audit-simplification-i18n.log（check-i18n另输出OK），无新增漂移 |
-| Platform构建 | cwd=src/frontend；pnpm --filter bisheng build | **PASS**；日志/private/tmp/dsh-audit-simplification-final-build.log，原有chunk体积提示不作为功能验收 |
+| Platform构建 | cwd=src/frontend；pnpm --filter doberman-agent build | **PASS**；日志/private/tmp/dsh-audit-simplification-final-build.log，原有chunk体积提示不作为功能验收 |
 | 架构守卫 / 差异 | 八个修改TS/TSX逐文件bash scripts/arch-guard.sh；git diff --check | **PASS** |
 | 真实组件桌面 / 窄屏 | 本机Vite挂载实际ModelAuditMode、ModelAuditRequests及卡片和事件组件，API wrapper下方替换为合成响应；1440px、500px触摸模式 | **PASS**；七项筛选完整；全通过无详情；命中详情仅词和时间；500px的document.clientWidth=scrollWidth=485，无横向溢出 |
 
@@ -971,10 +971,10 @@ python -m pytest -q -p no:cacheprovider test/dsh/test_safety_summary_metadata.py
 
 | 检查 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 配对反例 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx --reporter=dot | 修改前5 FAIL / 22 PASS；/private/tmp/dsh-safety-settings-simplification-red.log |
-| 最终DSH回归 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件279 PASS**，新增3项完整配置/读取恢复/冲突失败恢复；/private/tmp/dsh-safety-settings-simplification-tests.log |
+| 配对反例 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx --reporter=dot | 修改前5 FAIL / 22 PASS；/private/tmp/dsh-safety-settings-simplification-red.log |
+| 最终DSH回归 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件279 PASS**，新增3项完整配置/读取恢复/冲突失败恢复；/private/tmp/dsh-safety-settings-simplification-tests.log |
 | 完整前端门禁 | cwd=src/frontend；pnpm lint；pnpm typecheck；pnpm check-i18n；pnpm locales:check | **全部PASS**；/private/tmp/dsh-safety-settings-simplification-{lint,typecheck,i18n}.log；无冻结基线或生成文件改动 |
-| Platform构建 | cwd=src/frontend；pnpm --filter bisheng build | **PASS**，15.03秒；/private/tmp/dsh-safety-settings-simplification-build.log；仅既有chunk体积提示 |
+| Platform构建 | cwd=src/frontend；pnpm --filter doberman-agent build | **PASS**，15.03秒；/private/tmp/dsh-safety-settings-simplification-build.log；仅既有chunk体积提示 |
 | 架构 / 差异 | 两个修改TSX逐文件arch-guard；git diff --check | **PASS**，其他同名saved翻译未改动 |
 | 实际组件 | 本机Vite挂载实际设置组件，真实wrapper下方以合成GET/PUT替换传输；1440px / 500px触摸 | **PASS**；5个复选框及2个文本域齐全，无诊断信息/正常刷新；500px的clientWidth=scrollWidth=500；一次PUT后显示“已保存，5秒内对新请求生效” |
 | 读取失败恢复 | 实际组件首次合成策略GET失败→仅错误和刷新→手动刷新→完整表单 | **PASS**；两轮能力/策略GET，恢复后无错误、无刷新，未发生PUT |
@@ -1002,10 +1002,10 @@ ContentSafetyRequestDetails将当前请求已加载的事件汇总为一个区�
 
 | 检查 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 前置反例 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **6 FAIL / 44 PASS**；/private/tmp/dsh-request-summary-red.log，新增用例精确复现旧逐事件展示及时间口径 |
-| DSH回归 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件285 PASS**；/private/tmp/dsh-request-summary-tests.log；含DECISION/DRAIN正反顺序、跨页词值/时间、后续无命中、历史缺值、无命中时间 |
+| 前置反例 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **6 FAIL / 44 PASS**；/private/tmp/dsh-request-summary-red.log，新增用例精确复现旧逐事件展示及时间口径 |
+| DSH回归 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件285 PASS**；/private/tmp/dsh-request-summary-tests.log；含DECISION/DRAIN正反顺序、跨页词值/时间、后续无命中、历史缺值、无命中时间 |
 | 完整前端门禁 | cwd=src/frontend；pnpm lint；pnpm typecheck；pnpm check-i18n；pnpm locales:check | **全部PASS**；/private/tmp/dsh-request-summary-{lint,typecheck,i18n}.log |
-| 生产构建 | cwd=src/frontend；pnpm --filter bisheng build | **PASS**；14.30秒，只有既有chunk体积提示；/private/tmp/dsh-request-summary-build.log |
+| 生产构建 | cwd=src/frontend；pnpm --filter doberman-agent build | **PASS**；14.30秒，只有既有chunk体积提示；/private/tmp/dsh-request-summary-build.log |
 | 架构/差异 | 两个修改TSX逐文件执行scripts/arch-guard.sh；git diff --check | **PASS**；无守卫输出、无空白错误，单文件均不超过600行 |
 
 主agent按[task-review清单](../../../.claude/skills/task-review/references/task-checklist.md)读取实际源文件及测试并自审：
@@ -1025,8 +1025,8 @@ ContentSafetyRequestDetails将当前请求已加载的事件汇总为一个区�
 
 | 检查 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 前置反例 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **2 FAIL / 50 PASS**；/private/tmp/dsh-hide-stat-version-red.log |
-| DSH回归 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件287 PASS**；/private/tmp/dsh-hide-stat-version-tests.log；新增就绪/更新中均隐藏版本而保留时间、状态及正确计数可见性 |
+| 前置反例 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **2 FAIL / 50 PASS**；/private/tmp/dsh-hide-stat-version-red.log |
+| DSH回归 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件287 PASS**；/private/tmp/dsh-hide-stat-version-tests.log；新增就绪/更新中均隐藏版本而保留时间、状态及正确计数可见性 |
 | 完整前端lint | cwd=src/frontend；pnpm lint | **PASS**；/private/tmp/dsh-hide-stat-version-lint.log |
 | 完整前端类型检查 | cwd=src/frontend；pnpm typecheck | **PASS**；/private/tmp/dsh-hide-stat-version-typecheck.log |
 | 架构与差异 | 两个本轮修改TSX的scripts/arch-guard.sh；git diff --check | **PASS**；测试文件578行，未改冻结检查基线 |
@@ -1052,10 +1052,10 @@ ContentSafetyRequestDetails将当前请求已加载的事件汇总为一个区�
 
 | 检查 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 配对反例 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh/ModelAuditCard.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **8 FAIL / 54 PASS**；/private/tmp/dsh-request-details-red.log；原重复名称/执行时间展示用例按已授权新规则更新 |
-| DSH回归 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件287 PASS**；/private/tmp/dsh-request-details-tests.log；包含独立标题、技术字段隐藏、三种模型准入/结果缺失、归类失败、折叠、头部时间及原文权限 |
+| 配对反例 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh/ModelAuditCard.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **8 FAIL / 54 PASS**；/private/tmp/dsh-request-details-red.log；原重复名称/执行时间展示用例按已授权新规则更新 |
+| DSH回归 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **25文件287 PASS**；/private/tmp/dsh-request-details-tests.log；包含独立标题、技术字段隐藏、三种模型准入/结果缺失、归类失败、折叠、头部时间及原文权限 |
 | 前端质量门禁 | cwd=src/frontend；pnpm lint；pnpm typecheck；pnpm check-i18n；pnpm locales:check | **全部PASS**；/private/tmp/dsh-request-details-{lint,typecheck,i18n}.log；无冻结基线或翻译文件改动 |
-| Platform构建 | cwd=src/frontend；pnpm --filter bisheng build | **PASS**；15.18秒，只有既有chunk体积提示；/private/tmp/dsh-request-details-build.log |
+| Platform构建 | cwd=src/frontend；pnpm --filter doberman-agent build | **PASS**；15.18秒，只有既有chunk体积提示；/private/tmp/dsh-request-details-build.log |
 | 真实组件展示 | 本机Vite临时挂载真实ModelAuditCard及原样式，合成外部摘要与HTTP429模型失败两条记录；1440px及500px触摸 | **PASS**；均为独立请求详情标题；桌面两列/窄屏单列；最后窄屏clientWidth=scrollWidth=489（视口500含滚动条），无横向溢出；合成编号不显示，失败归类保留 |
 | 架构及差异 | 三个修改TSX逐文件scripts/arch-guard.sh；git diff --check | **PASS**；所有文件均不超过600行 |
 
@@ -1081,13 +1081,13 @@ ContentSafetyRequestDetails将当前请求已加载的事件汇总为一个区�
 
 | 检查 | 命令 / 证据 | 结果 |
 |---|---|---|
-| 前端反例 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh/ModelAuditPresentation.test.tsx src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **9 FAIL / 76 PASS**；/private/tmp/dsh-audit-refinement-red.log |
+| 前端反例 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh/ModelAuditPresentation.test.tsx src/pages/SystemPage/dsh/DshContentSafetySettings.test.tsx src/pages/SystemPage/dsh/ContentSafetyDetails.test.tsx --reporter=dot | **9 FAIL / 76 PASS**；/private/tmp/dsh-audit-refinement-red.log |
 | 后端反例 | cwd=src/backend；既有Python3.11执行pytest test/dsh/test_model_audit_visible_requests.py | **1 FAIL**，返回首两条辅助请求而非两条可见请求；/private/tmp/dsh-conversation-visibility-red.log |
-| 最终前端 | cwd=src/frontend；pnpm --filter bisheng exec vitest run src/pages/SystemPage/dsh --reporter=dot | **26文件295 PASS**；/private/tmp/dsh-audit-refinement-tests.log；包括四种方向组合、全部关闭再启用、部分统计就绪/完整未就绪、就绪恢复和真实读取失败提示 |
-| 后端查询组合 | config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/bisheng/src/backend/.venv/bin/python -m pytest -q -p no:cacheprovider test/dsh/test_model_audit_visible_requests.py test/dsh/test_model_audit_groups.py test/dsh/test_model_audit_tree_queries.py test/dsh/test_content_safety_group_query_api.py test/dsh/test_content_safety_queries.py --tb=short | **108 PASS**；/private/tmp/dsh-conversation-visibility-tests.log。真实ASGI/HTTP及隔离SQLite，包括分页首段全辅助、第二页不漏不重、NULL用途、精确辅助编号仍隐藏、游标范围隔离、外层计数及六条原始记录不变；不代表真实双库验收 |
+| 最终前端 | cwd=src/frontend；pnpm --filter doberman-agent exec vitest run src/pages/SystemPage/dsh --reporter=dot | **26文件295 PASS**；/private/tmp/dsh-audit-refinement-tests.log；包括四种方向组合、全部关闭再启用、部分统计就绪/完整未就绪、就绪恢复和真实读取失败提示 |
+| 后端查询组合 | config=/private/tmp/dsh-credit-limit-fix-20261027/test-config.yaml PYTHONDONTWRITEBYTECODE=1 /Users/zhangguoqing/works/doberman-agent/src/backend/.venv/bin/python -m pytest -q -p no:cacheprovider test/dsh/test_model_audit_visible_requests.py test/dsh/test_model_audit_groups.py test/dsh/test_model_audit_tree_queries.py test/dsh/test_content_safety_group_query_api.py test/dsh/test_content_safety_queries.py --tb=short | **108 PASS**；/private/tmp/dsh-conversation-visibility-tests.log。真实ASGI/HTTP及隔离SQLite，包括分页首段全辅助、第二页不漏不重、NULL用途、精确辅助编号仍隐藏、游标范围隔离、外层计数及六条原始记录不变；不代表真实双库验收 |
 | 代码规范 | 本轮三个Python文件ruff format/check；全部修改源逐文件scripts/arch-guard.sh；git diff --check；前端单文件行数 | **PASS**；未新增凭据、普通日志词值、HTTP客户端或状态库，前端文件均≤600行 |
 | 前端质量门禁 | pnpm lint；pnpm typecheck；pnpm check-i18n；pnpm locales:check | **全部PASS**；三语及生成检查PASS，无新文案键；/private/tmp/dsh-audit-refinement-{lint,typecheck,i18n}.log |
-| Platform构建 | pnpm --filter bisheng build | **PASS**，14.92秒，仅既有chunk体积提示；/private/tmp/dsh-audit-refinement-build.log |
+| Platform构建 | pnpm --filter doberman-agent build | **PASS**，14.92秒，仅既有chunk体积提示；/private/tmp/dsh-audit-refinement-build.log |
 | 本地真实组件 | Vite挂载真实设置、树会话及请求卡片，API wrapper以下仅合成GET/PUT；默认桌面及500px | **PASS**；检查开关只有输入/输出，连同两个词库来源共4个复选框；无准备状态，无用途/来源标签，未就绪会话行仍在；输入单独启用后显式保存成功，全部取消再保存成功；500px的clientWidth=scrollWidth=500 |
 
 [桌面](/private/tmp/dsh-audit-refinement-desktop.png)、[500px](/private/tmp/dsh-audit-refinement-mobile-500.png)。Chrome DevTools工具因其他浏览器实例占用无法连接，未关闭其他浏览器，改用本线程IAB临时页完成实测。页面合成数据，不是109部署后验收；临时视口已恢复、临时页已关闭，三个临时入口/config文件及Vite服务均已清理。首次质量检查发现移除旧提示后readinessFailed未使用，保留真正读取错误反馈后修复；新严格测试夹具补齐必填summary_as_of后转绿，未修改冻结基线。一次追加测试脚本的cwd路径错误未改动文件，已在正确目录重试并重新验证，不将该次旧测试运行当新增断言证据。

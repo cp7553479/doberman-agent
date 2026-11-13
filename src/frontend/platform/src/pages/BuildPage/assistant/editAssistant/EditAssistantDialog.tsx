@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Button, Input, Textarea, notification } from '@bisheng/ui';
+import { Button, Input, Textarea, notification } from '@doberman-agent/ui';
 import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 
 import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
@@ -94,7 +94,7 @@ export default function EditAssistantDialog({ logo, viewLogo, name, desc, onSave
         </DialogHeader>
         <div className="flex flex-col gap-8 py-6">
             <div className="">
-                <label htmlFor="name" className="bisheng-label">{t('build.assistantAvatar')}<span className="bisheng-tip">*</span></label>
+                <label htmlFor="name" className="doberman_agent-label">{t('build.assistantAvatar')}<span className="doberman_agent-tip">*</span></label>
                 <Avator
                     value={previewAvatar}
                     className="mt-2"
@@ -103,17 +103,17 @@ export default function EditAssistantDialog({ logo, viewLogo, name, desc, onSave
                     <AppAvator id={6} flowType={5} className="size-9"></AppAvator>
                 </Avator>
 
-                {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
+                {errors.name && <p className="doberman_agent-tip mt-1">{errors.name}</p>}
             </div>
             <div className="">
-                <label htmlFor="name" className="bisheng-label">{t('build.assistantName')}<span className="bisheng-tip">*</span></label>
+                <label htmlFor="name" className="doberman_agent-label">{t('build.assistantName')}<span className="doberman_agent-tip">*</span></label>
                 <Input id="name" name="name" placeholder={t('build.enterName')} maxLength={50} showCount value={formData.name} onChange={handleChange} className={"mt-2"} />
-                {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
+                {errors.name && <p className="doberman_agent-tip mt-1">{errors.name}</p>}
             </div>
             <div className="">
-                <label htmlFor="desc" className="bisheng-label">{t('build.assistantDesc')}</label>
+                <label htmlFor="desc" className="doberman_agent-label">{t('build.assistantDesc')}</label>
                 <Textarea id="desc" name="desc" placeholder={t('build.enterDesc')} maxLength={1000} value={formData.desc} onChange={handleChange} textareaClassName={"mt-2"} showCount />
-                {errors.desc && <p className="bisheng-tip mt-1">{errors.desc}</p>}
+                {errors.desc && <p className="doberman_agent-tip mt-1">{errors.desc}</p>}
             </div>
         </div>
         <DialogFooter>

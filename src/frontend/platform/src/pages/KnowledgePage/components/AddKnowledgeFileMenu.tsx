@@ -1,6 +1,6 @@
-import { Button, Dropdown, DropdownChevron, DropdownItem } from '@bisheng/ui';
+import { Button, Dropdown, DropdownChevron, DropdownItem } from '@doberman-agent/ui';
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeTooltip } from "./KnowledgeTooltip";
 
 import { cn } from "@/utils";

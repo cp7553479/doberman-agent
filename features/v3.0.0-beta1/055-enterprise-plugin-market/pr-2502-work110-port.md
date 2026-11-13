@@ -1,14 +1,14 @@
 # PR #2502 移植说明
 
-日期：2026-10-21。目标分支：`feat/bisheng-work-110`。
+日期：2026-10-21。目标分支：`feat/doberman-agent-work-110`。
 
 ## 来源与范围
 
-来源：[PR #2502](https://github.com/dataelement/bisheng/pull/2502)，提交 `29ab7fd1318b21466e3a05d9ace7a8dcc360516c`。目标基线为 `926fda34e7515e97f4352838e31fc0de224c3bce`。本次按该提交的功能差异移植，不执行源分支 merge，不引入 `feat/bisheng-work-120` 的其他提交。
+来源：PR #2502，提交 `29ab7fd1318b21466e3a05d9ace7a8dcc360516c`。目标基线为 `926fda34e7515e97f4352838e31fc0de224c3bce`。本次按该提交的功能差异移植，不执行源分支 merge，不引入 `feat/doberman-agent-work-120` 的其他提交。
 
 用户已确认同时移入 npm 插件包导入。
 
-- 市场能力改为 contract_version=2，`enabled=true`，不读取 `BISHENG_DSH_MARKET_SIGNING_KEY`，不返回 `public_key` 或 `lease_seconds`。
+- 市场能力改为 contract_version=2，`enabled=true`，不读取 `DOBERMAN_AGENT_DSH_MARKET_SIGNING_KEY`，不返回 `public_key` 或 `lease_seconds`。
 - `/sync` 返回 `{tenant_id,user_id,device_id,synced_at,policies}`，移除签名、编码 payload 和离线租约时间；能力、目录、同步和制品响应禁止缓存。
 - 支持 manifest ZIP、社区 package.json ZIP / npm tgz；保留安全路径与容量限制，支持预发布版本比较，gzip 制品返回正确类型和文件名。
 - 导入页接受 `.zip`、`.tgz`、`.tar.gz`，同步中英日文案。
@@ -36,6 +36,6 @@
 
 本地日志：`/tmp/work110-pr2502-backend.log`、`/tmp/work110-pr2502-frontend-tests.log`、`/tmp/work110-pr2502-crossrepo.log`、`/tmp/work110-pr2502-client-tests.log`。基线日志为 `/tmp/work110-pr2502-basefront-lint.log`、`/tmp/work110-pr2502-basefront-typecheck.log`。
 
-复跑后端：仓库根设置 `PYTHONPATH=src/backend`，使用 Python 3.11 执行 `python -m pytest --confcutdir=src/backend/test/dsh_market src/backend/test/dsh_market -q`。管理页：在 `src/frontend` 执行 `pnpm --filter bisheng exec vitest run src/test/dshMarket.test.tsx src/test/headerMenuChildAdmin.test.tsx`。
+复跑后端：仓库根设置 `PYTHONPATH=src/backend`，使用 Python 3.11 执行 `python -m pytest --confcutdir=src/backend/test/dsh_market src/backend/test/dsh_market -q`。管理页：在 `src/frontend` 执行 `pnpm --filter doberman-agent exec vitest run src/test/dshMarket.test.tsx src/test/headerMenuChildAdmin.test.tsx`。
 
 本轮未部署 109，不代表已经完成真实 MySQL/DM8/MinIO、npm 依赖安装或原生客户端市场完整验收。服务端升级市场契约后，客户端需支持契约 v2；当前取消席位客户端分支已具有该协议。仍只支持契约 v1 的旧客户端市场需单独验证，不能视为兼容。

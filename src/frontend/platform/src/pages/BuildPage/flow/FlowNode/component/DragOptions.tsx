@@ -1,10 +1,10 @@
 // @ts-strict-ignore
-import { Button, Input } from '@bisheng/ui';
+import { Button, Input } from '@doberman-agent/ui';
 
 
 import { generateUUID } from '@/components/bs-ui/utils';
 import { Handle,Position } from '@xyflow/react';
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import i18next from "i18next";
 import { GripVertical } from "lucide-react"; // 图标
 import { forwardRef,useEffect,useRef,useState } from 'react';
@@ -142,7 +142,7 @@ const DragOptions = forwardRef(({ edges = false, edit = false, scroll = false, o
                                                     id={item.id}
                                                     type="source"
                                                     position={Position.Right}
-                                                    className='bisheng-flow-handle group'
+                                                    className='doberman_agent-flow-handle group'
                                                     style={{ right: -30, top: 18 }}
                                                 ><span></span></Handle>
                                             }

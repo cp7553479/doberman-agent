@@ -1,1 +1,1 @@
-export { sanitizeHtml } from '@bisheng/file-viewers/sanitize';
+export { sanitizeHtml } from '@doberman-agent/file-viewers/sanitize';

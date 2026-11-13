@@ -6,15 +6,15 @@ from unittest.mock import AsyncMock
 
 from sqlmodel import Session, select
 
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
 from test.dsh.test_policy_repository import sql_store  # noqa: F401
 from test.dsh.test_profile_outbox import user_store  # noqa: F401
 
 
 async def test_account_disable_does_not_publish_unchanged_name(user_store, monkeypatch):  # noqa: F811
-    from bisheng.user.api import user as endpoint
-    from bisheng.user.domain.models.user import User, UserUpdate
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.user.api import user as endpoint
+    from doberman_agent.user.domain.models.user import User, UserUpdate
+    from doberman_agent.user.domain.services.user import UserService
 
     with Session(user_store) as session:
         original_user = session.get(User, 20)
@@ -53,9 +53,9 @@ async def test_account_disable_does_not_publish_unchanged_name(user_store, monke
 
 
 async def test_actual_sso_rename_persists_profile_intent(user_store, monkeypatch):  # noqa: F811
-    from bisheng.sso_sync.domain.services.login_sync_service import LoginSyncService
-    from bisheng.user.domain.models.user import User, UserDao
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.sso_sync.domain.services.login_sync_service import LoginSyncService
+    from doberman_agent.user.domain.models.user import User, UserDao
+    from doberman_agent.user.domain.services.user import UserService
 
     with Session(user_store) as session:
         existing = session.get(User, 20)
@@ -89,11 +89,11 @@ async def test_actual_sso_rename_persists_profile_intent(user_store, monkeypatch
 async def test_primary_department_does_not_enqueue_dsh_profile(user_store, monkeypatch):  # noqa: F811
     from contextlib import asynccontextmanager
 
-    from bisheng.database.models.department import Department, UserDepartment
-    from bisheng.department.domain.services import department_service
-    from bisheng.user.domain.models.user import User
-    from bisheng.user.domain.services import user_department_service as module
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.database.models.department import Department, UserDepartment
+    from doberman_agent.department.domain.services import department_service
+    from doberman_agent.user.domain.models.user import User
+    from doberman_agent.user.domain.services import user_department_service as module
+    from doberman_agent.user.domain.services.user import UserService
 
     with Session(user_store) as session, session.begin():
         session.add(Department(id=5, dept_id="dept-5", name="Department", parent_id=None))
@@ -138,8 +138,8 @@ async def test_primary_department_does_not_enqueue_dsh_profile(user_store, monke
 
 
 async def test_tenant_relocation_calls_atomic_profile_path(user_store, monkeypatch):  # noqa: F811
-    from bisheng.tenant.domain.services import user_tenant_sync_service as module
-    from bisheng.user.domain.services.user import UserService
+    from doberman_agent.tenant.domain.services import user_tenant_sync_service as module
+    from doberman_agent.user.domain.services.user import UserService
 
     monkeypatch.setattr(UserService, "_dsh_enabled", staticmethod(lambda: True))
     atomic = AsyncMock()
@@ -161,12 +161,12 @@ async def test_tenant_relocation_calls_atomic_profile_path(user_store, monkeypat
     ):
         monkeypatch.setattr(module.UserTenantSyncService, name, AsyncMock())
     monkeypatch.setattr(module.UserTenantSyncService, "_count_owned_resources", AsyncMock(return_value=0))
-    from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+    from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
     monkeypatch.setattr(TenantScopeService, "clear_on_token_version_bump", AsyncMock())
     # Relocation also migrates personal tokens, which reaches Redis. This test has
     # no Redis, and the migration itself is covered by the open-api suite.
-    from bisheng.open_api.domain.services.personal_token_service import PersonalTokenService
+    from doberman_agent.open_api.domain.services.personal_token_service import PersonalTokenService
 
     monkeypatch.setattr(PersonalTokenService, "migrate_tenant", AsyncMock())
     await module.UserTenantSyncService.sync_user(20)

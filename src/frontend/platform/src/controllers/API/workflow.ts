@@ -24,7 +24,7 @@ export const getWorkflowReportTemplate = async (key: string, flowId: string): Pr
 export const createWorkflowApi = async (name, desc, url, flow): Promise<any> => {
     if (url) {
         // logo保存相对路径
-        url = url.replace('/bisheng', '')
+        url = url.replace('/doberman_agent', '')
     }
     const data = flow || {}
     return await axios.post("/api/v1/workflow/create", {
@@ -360,7 +360,7 @@ const workflowTemplate = [
                     {
                         "key": "recommended_llm",
                         "label": "true",
-                        "type": "bisheng_model",
+                        "type": "doberman_agent_model",
                         "tab": "dialog_input",
                         "value": "",
                         "placeholder": "true",
@@ -484,7 +484,7 @@ const workflowTemplate = [
                     {
                         "key": "model_id",
                         "label": "true",
-                        "type": "bisheng_model",
+                        "type": "doberman_agent_model",
                         "value": "",
                         "required": true,
                         "placeholder": "true"
@@ -859,7 +859,7 @@ const workflowTemplate = [
                     {
                         "key": "model_id",
                         "label": "true",
-                        "type": "bisheng_model",
+                        "type": "doberman_agent_model",
                         "value": "",
                         "required": true,
                         "placeholder": "true"

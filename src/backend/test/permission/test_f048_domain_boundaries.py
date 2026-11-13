@@ -11,13 +11,13 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from bisheng.permission.application.resource_permission_coordinator import (
+from doberman_agent.permission.application.resource_permission_coordinator import (
     ResourcePermissionCoordinator,
 )
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
-PERMISSION_ROOT = BACKEND_ROOT / "bisheng" / "permission"
+PERMISSION_ROOT = BACKEND_ROOT / "doberman_agent" / "permission"
 SERVICE_ROOT = PERMISSION_ROOT / "domain" / "services"
 F048_DOMAIN_FILES = (
     "catalog_policy.py",
@@ -34,24 +34,24 @@ F048_DOMAIN_FILES = (
     "permission_service.py",
 )
 FORBIDDEN_IMPORT_FRAGMENTS = (
-    "bisheng.knowledge",
-    "bisheng.flow",
-    "bisheng.workflow",
-    "bisheng.dashboard",
-    "bisheng.tool",
-    "bisheng.channel",
-    "bisheng.api.services",
-    "bisheng.database.models.assistant",
-    "bisheng.database.models.department",
-    "bisheng.database.models.flow",
-    "bisheng.database.models.group",
-    "bisheng.database.models.tenant",
-    "bisheng.database.models.user_group",
-    "bisheng.telemetry_search",
-    "bisheng.tenant",
-    "bisheng.user.domain",
-    "bisheng.workstation",
-    "bisheng.linsight",
+    "doberman_agent.knowledge",
+    "doberman_agent.flow",
+    "doberman_agent.workflow",
+    "doberman_agent.dashboard",
+    "doberman_agent.tool",
+    "doberman_agent.channel",
+    "doberman_agent.api.services",
+    "doberman_agent.database.models.assistant",
+    "doberman_agent.database.models.department",
+    "doberman_agent.database.models.flow",
+    "doberman_agent.database.models.group",
+    "doberman_agent.database.models.tenant",
+    "doberman_agent.database.models.user_group",
+    "doberman_agent.telemetry_search",
+    "doberman_agent.tenant",
+    "doberman_agent.user.domain",
+    "doberman_agent.workstation",
+    "doberman_agent.linsight",
 )
 
 

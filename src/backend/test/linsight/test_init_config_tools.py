@@ -8,11 +8,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.api.v1.schemas import ToolConfig
-from bisheng.linsight.domain.models.linsight_session_version import LinsightSessionVersion
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao
-from bisheng.tool.domain.services.executor import ToolExecutor
+from doberman_agent.api.v1.schemas import ToolConfig
+from doberman_agent.linsight.domain.models.linsight_session_version import LinsightSessionVersion
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsDao
+from doberman_agent.tool.domain.services.executor import ToolExecutor
 
 CODE_TOOL_ID = 6
 
@@ -29,7 +29,7 @@ def _session_with_tools(tool_ids: list[int] | None = None) -> LinsightSessionVer
 
 
 def _fake_code_tool_row() -> GptsTools:
-    return GptsTools(id=CODE_TOOL_ID, type=6, tool_key="bisheng_code_interpreter", extra=None)
+    return GptsTools(id=CODE_TOOL_ID, type=6, tool_key="doberman_agent_code_interpreter", extra=None)
 
 
 @pytest.fixture(autouse=True)
@@ -125,7 +125,7 @@ _LEGACY_LOCAL_FILE_TOOL_NAMES = {
 
 async def test_init_linsight_tools_drops_legacy_local_file_tools():
     """init_linsight_tools must not surface the retired local_file tools."""
-    from bisheng.tool.domain.services.tool import ToolServices
+    from doberman_agent.tool.domain.services.tool import ToolServices
 
     tools = await ToolServices.init_linsight_tools(root_path="/tmp/linsight-test")
     names = {t.name for t in tools}
@@ -139,7 +139,7 @@ async def test_init_linsight_tools_drops_legacy_local_file_tools():
 
 async def test_get_linsight_tools_drops_file_operation_group():
     """The frontend tool tree must no longer advertise the legacy file-op group."""
-    from bisheng.tool.domain.services.tool import ToolServices
+    from doberman_agent.tool.domain.services.tool import ToolServices
 
     groups = await ToolServices.get_linsight_tools()
     child_keys = {child.tool_key for grp in groups for child in (grp.children or [])}
@@ -154,7 +154,7 @@ async def test_e2b_file_list_honours_autopush_ceiling(monkeypatch: pytest.Monkey
     SIZE_AUTOPUSH. The dual-track ingest keeps originals up to 50MB because
     LocalExecutor serves those for free — so the ceiling belongs on this side only.
     """
-    from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
+    from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
 
     monkeypatch.setattr(
         GptsToolsDao, "aget_one_tool_type", AsyncMock(return_value=SimpleNamespace(id=6, extra={"type": "e2b"}))
@@ -185,7 +185,7 @@ async def test_e2b_file_list_honours_autopush_ceiling(monkeypatch: pytest.Monkey
 
 async def test_container_binds_workspace_without_e2b_file_list(monkeypatch: pytest.MonkeyPatch, tmp_path):
     """Container copy-in happens at run(); do not pre-scan file_list (AC-11)."""
-    from bisheng_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
+    from doberman_agent_langchain.gpts.tools.code_interpreter.e2b_executor import SIZE_AUTOPUSH
 
     (tmp_path / "skills" / "demo").mkdir(parents=True)
     (tmp_path / "skills" / "demo" / "SKILL.md").write_text("hi")
@@ -194,7 +194,7 @@ async def test_container_binds_workspace_without_e2b_file_list(monkeypatch: pyte
 
     row = GptsTools(
         id=CODE_TOOL_ID,
-        tool_key="bisheng_code_interpreter",
+        tool_key="doberman_agent_code_interpreter",
         type=6,
         extra=json.dumps({"type": "container"}),
     )
@@ -226,7 +226,7 @@ async def test_empty_tool_extra_falls_back_to_category_container(monkeypatch: py
     """Built-in-tool UI writes type.extra and NULLs the row; Linsight must still isolate."""
     row = GptsTools(
         id=CODE_TOOL_ID,
-        tool_key="bisheng_code_interpreter",
+        tool_key="doberman_agent_code_interpreter",
         extra=None,
         type=CODE_TOOL_ID,
     )
@@ -257,7 +257,7 @@ async def test_tool_row_extra_wins_over_category(monkeypatch: pytest.MonkeyPatch
     """A non-empty tool row is exclusive, same as parse_preset_tool_params."""
     row = GptsTools(
         id=CODE_TOOL_ID,
-        tool_key="bisheng_code_interpreter",
+        tool_key="doberman_agent_code_interpreter",
         extra=json.dumps({"type": "e2b"}),
         type=CODE_TOOL_ID,
     )
@@ -315,7 +315,7 @@ async def test_initialization_failure_surfaces_before_model_execution(monkeypatc
 @pytest.mark.parametrize("executor_type", ["local", None, ""])
 @pytest.mark.parametrize("selected", [[], [CODE_TOOL_ID], [100, CODE_TOOL_ID]])
 async def test_local_executor_binds_task_workspace(monkeypatch, tmp_path, executor_type, selected):
-    from bisheng_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
+    from doberman_agent_langchain.gpts.tools.code_interpreter.local_executor import LocalExecutor
 
     extra = {"type": executor_type} if executor_type is not None else {}
     category = SimpleNamespace(id=6, tenant_id=7, extra=extra)
@@ -355,7 +355,7 @@ async def test_local_workspace_binding_preserves_admin_options(monkeypatch, tmp_
             }
         },
     }
-    row = GptsTools(id=CODE_TOOL_ID, type=6, tool_key="bisheng_code_interpreter", extra=json.dumps(extra))
+    row = GptsTools(id=CODE_TOOL_ID, type=6, tool_key="doberman_agent_code_interpreter", extra=json.dumps(extra))
     monkeypatch.setattr(GptsToolsDao, "aget_tool_by_tool_key", AsyncMock(return_value=row))
     init_one = AsyncMock(return_value=object())
     monkeypatch.setattr(ToolExecutor, "init_by_tool_id", init_one)
@@ -364,9 +364,9 @@ async def test_local_workspace_binding_preserves_admin_options(monkeypatch, tmp_
     def unexpected_scan(*args, **kwargs):
         pytest.fail("Local initialization should use the task directory directly")
 
-    monkeypatch.setattr("bisheng.linsight.domain.services.workbench_impl.os.walk", unexpected_scan)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.workbench_impl.os.walk", unexpected_scan)
 
-    await LinsightWorkbenchImpl._init_bisheng_code_tool([], str(tmp_path), 42, "current")
+    await LinsightWorkbenchImpl._init_doberman_agent_code_tool([], str(tmp_path), 42, "current")
 
     assert init_one.await_args.kwargs["tool"].extra["config"] == {
         "local": {
@@ -380,7 +380,7 @@ async def test_local_workspace_binding_preserves_admin_options(monkeypatch, tmp_
 
 
 async def test_unknown_executor_type_reports_configuration_error(monkeypatch, tmp_path):
-    from bisheng.common.errcode.sandbox import SandboxConfigurationError
+    from doberman_agent.common.errcode.sandbox import SandboxConfigurationError
 
     monkeypatch.setattr(
         GptsToolsDao, "aget_one_tool_type", AsyncMock(return_value=SimpleNamespace(id=6, extra={"type": "unknown"}))
@@ -399,22 +399,22 @@ async def test_missing_interpreter_keeps_optional_tools(monkeypatch, tmp_path):
 
 
 def test_task_metadata_uses_host_runner_credentials(monkeypatch, tmp_path):
-    from bisheng.common.services.config_service import settings
-    from bisheng.core.config.settings import SandboxConf
+    from doberman_agent.common.services.config_service import settings
+    from doberman_agent.core.config.settings import SandboxConf
 
     monkeypatch.setattr(
-        "bisheng.tool.domain.services.executor.settings",
+        "doberman_agent.tool.domain.services.executor.settings",
         SimpleNamespace(
             sandbox_conf=SandboxConf(endpoints=["http://trusted:8080"], token="host-only"),
             get_minio_conf=settings.get_minio_conf,
         ),
     )
     monkeypatch.setattr(
-        "bisheng_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
+        "doberman_agent_langchain.gpts.tools.code_interpreter.factory.load_sandbox_conf",
         lambda: SandboxConf(endpoints=["http://trusted:8080"], token="host-only"),
     )
     row = GptsTools(
-        tool_key="bisheng_code_interpreter",
+        tool_key="doberman_agent_code_interpreter",
         extra={
             "type": "container",
             "config": {

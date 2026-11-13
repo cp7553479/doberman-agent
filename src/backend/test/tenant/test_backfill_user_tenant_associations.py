@@ -21,7 +21,7 @@ if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
 import scripts.backfill_user_tenant_associations as mod  # noqa: E402
-from bisheng.database.models.tenant import Tenant, UserTenant  # noqa: E402
+from doberman_agent.database.models.tenant import Tenant, UserTenant  # noqa: E402
 from test.fixtures.table_definitions import create_tables  # noqa: E402
 
 

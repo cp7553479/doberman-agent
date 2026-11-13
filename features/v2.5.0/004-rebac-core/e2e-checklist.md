@@ -1,7 +1,7 @@
 # E2E 验证清单: F004 ReBAC Permission Engine Core
 
 **测试环境**: http://192.168.106.114:4001 (Platform) / http://192.168.106.114:7860/docs (API Docs)
-**前置条件**: 后端 + OpenFGA 运行中，默认管理员 admin/Bisheng@top1
+**前置条件**: 后端 + OpenFGA 运行中，默认管理员 admin/doberman-agent@top1
 
 ## API 手动验证
 
@@ -11,17 +11,17 @@
 - [ ] OpenFGA Playground 可访问: http://localhost:3000
 
 ### AC-09: FGAManager 启动时自动初始化
-- [ ] 启动后端: `python -m bisheng --dev`
+- [ ] 启动后端: `python -m doberman-agent --dev`
 - [ ] 查看日志: "FGAClient initialized: store=xxx model=xxx"
-- [ ] 查看 OpenFGA stores: `curl http://localhost:8080/stores` — bisheng store 存在
+- [ ] 查看 OpenFGA stores: `curl http://localhost:8080/stores` — doberman-agent store 存在
 - [ ] 重启后端，store 不重复创建（日志显示 "Found existing OpenFGA store"）
 
 ### AC-04: FailedTuple 补偿机制
-- [ ] 停止 OpenFGA 服务: `docker stop bisheng-openfga`
+- [ ] 停止 OpenFGA 服务: `docker stop doberman-agent-openfga`
 - [ ] 通过 API 执行授权操作（管理员给某用户授权）
 - [ ] 查看 MySQL: `SELECT * FROM failed_tuple WHERE status='pending'` — 有记录
-- [ ] 重新启动 OpenFGA: `docker start bisheng-openfga`
-- [ ] 启动 Celery beat: `.venv/bin/celery -A bisheng.worker.main beat -l info`
+- [ ] 重新启动 OpenFGA: `docker start doberman-agent-openfga`
+- [ ] 启动 Celery beat: `.venv/bin/celery -A doberman_agent.worker.main beat -l info`
 - [ ] 等待 30 秒，再查 MySQL: `SELECT * FROM failed_tuple WHERE status='succeeded'` — 补偿成功
 - [ ] 验证 OpenFGA 中元组已写入
 

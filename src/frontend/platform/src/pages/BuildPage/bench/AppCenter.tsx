@@ -1,4 +1,4 @@
-import { Button, notification } from '@bisheng/ui';
+import { Button, notification } from '@doberman-agent/ui';
 // the home tab. Both fields still persist into the daily workstation config:
 // the full config is loaded on mount and round-tripped on save with only
 // these two fields replaced (tab content remounts on switch, so the loaded

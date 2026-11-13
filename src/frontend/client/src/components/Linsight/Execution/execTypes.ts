@@ -29,7 +29,7 @@ export type ExecStepType = 'tool' | 'thinking' | 'knowledge' | 'subagent' | 'ui_
  * wrong in persisted history after a language switch.
  *
  * ⚠️ Contract with the backend: this name is `_INGEST_STEP_NAME` in
- * bisheng/linsight/domain/task_exec.py. Change one side alone and the row falls
+ * doberman_agent/linsight/domain/task_exec.py. Change one side alone and the row falls
  * back to rendering the raw token.
  */
 export const INGEST_STEP_NAME = 'ingest_uploads';
@@ -81,7 +81,7 @@ export function readIngestProgress(step: {
  * local-disk storage hid a multi-node inconsistency for months.
  *
  * ⚠️ Contract with the backend: `_SKILL_LOAD_FAILED_STEP_NAME` in
- * bisheng/linsight/domain/task_exec.py.
+ * doberman_agent/linsight/domain/task_exec.py.
  */
 export const SKILL_LOAD_FAILED_STEP_NAME = 'skill_load_failed';
 

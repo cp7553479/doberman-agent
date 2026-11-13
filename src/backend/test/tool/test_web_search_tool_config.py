@@ -1,7 +1,7 @@
 import unittest
 
-from bisheng_langchain.gpts.load_tools import load_tools
-from bisheng_langchain.gpts.tools.web_search.tool import (
+from doberman_agent_langchain.gpts.load_tools import load_tools
+from doberman_agent_langchain.gpts.tools.web_search.tool import (
     BoChaSearch,
     SearchTool,
     SearXNGSearch,

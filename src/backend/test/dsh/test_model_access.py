@@ -9,14 +9,14 @@ from fastapi import FastAPI, HTTPException
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.database.models.tenant import Tenant, UserTenant
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.model_access import DshModelAccessRepository
-from bisheng.dsh.domain.services.admin import DshManagementService
-from bisheng.dsh.domain.services.profile import profile_scope
-from bisheng.user.domain.models.user import User
-from bisheng.user.domain.repositories.dsh_profile import UserDshProfileRepository
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.database.models.tenant import Tenant, UserTenant
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.model_access import DshModelAccessRepository
+from doberman_agent.dsh.domain.services.admin import DshManagementService
+from doberman_agent.dsh.domain.services.profile import profile_scope
+from doberman_agent.user.domain.models.user import User
+from doberman_agent.user.domain.repositories.dsh_profile import UserDshProfileRepository
 
 
 @pytest.fixture
@@ -144,7 +144,7 @@ def test_users_with_and_without_policy_are_listed_independently_of_dsh_sessions(
 
 
 async def test_model_users_service_authorizes_tenant_before_any_query():
-    from bisheng.core.context.tenant import get_current_tenant_id
+    from doberman_agent.core.context.tenant import get_current_tenant_id
 
     async def view(model_id, **kwargs):
         assert get_current_tenant_id() == 2
@@ -178,7 +178,7 @@ async def test_model_users_service_authorizes_tenant_before_any_query():
 
 
 async def test_model_users_route_uses_verified_actor_and_validates_query():
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/v1")
@@ -205,7 +205,7 @@ async def test_model_users_route_uses_verified_actor_and_validates_query():
 
 
 async def test_model_user_permissions_authorizes_scope_and_validates_result():
-    from bisheng.core.context.tenant import get_current_tenant_id
+    from doberman_agent.core.context.tenant import get_current_tenant_id
 
     async def view(model_id, **kwargs):
         assert get_current_tenant_id() == 2
@@ -275,7 +275,7 @@ async def test_model_user_permissions_authorizes_scope_and_validates_result():
 
 
 async def test_model_user_permissions_route_validates_department_and_membership():
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/v1")

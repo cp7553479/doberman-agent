@@ -1,4 +1,4 @@
-import { isApiError, normalizeApiError } from '@bisheng/api-client';
+import { isApiError, normalizeApiError } from '@doberman-agent/api-client';
 import request, { translateApiErrorMessage } from './request';
 import { type SkillRecord } from '~/components/Skills/types';
 

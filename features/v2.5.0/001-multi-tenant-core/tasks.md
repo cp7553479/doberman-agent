@@ -67,9 +67,9 @@ T009 (DDL 迁移 + 默认数据)
 - [x] **T001**: 测试基础设施 + MultiTenantConf 配置
   **文件（新建）**:
   - `src/backend/test/conftest.py` — 最小 pytest fixture：SQLite in-memory engine + sync/async session + settings mock
-  - `src/backend/bisheng/core/config/multi_tenant.py` — `MultiTenantConf(BaseModel)` 含 `enabled: bool = False`, `default_tenant_code: str = "default"`
+  - `src/backend/doberman_agent/core/config/multi_tenant.py` — `MultiTenantConf(BaseModel)` 含 `enabled: bool = False`, `default_tenant_code: str = "default"`
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/settings.py` — Settings 类添加 `multi_tenant: MultiTenantConf = MultiTenantConf()`
+  - `src/backend/doberman_agent/core/config/settings.py` — Settings 类添加 `multi_tenant: MultiTenantConf = MultiTenantConf()`
   **逻辑**:
   - conftest.py 提供 `db_engine` fixture（SQLite in-memory）、`sync_session` / `async_session` fixture、`mock_settings` fixture
   - `MultiTenantConf` 定义两个字段 + config.yaml 不在此任务修改（T009 迁移时一并加入）
@@ -78,8 +78,8 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T002**: Tenant/UserTenant ORM + DAO + 错误码
   **文件（新建）**:
-  - `src/backend/bisheng/database/models/tenant.py` — Tenant + UserTenant SQLModel 表定义 + TenantDao + UserTenantDao
-  - `src/backend/bisheng/common/errcode/tenant.py` — 200xx 错误码
+  - `src/backend/doberman_agent/database/models/tenant.py` — Tenant + UserTenant SQLModel 表定义 + TenantDao + UserTenantDao
+  - `src/backend/doberman_agent/common/errcode/tenant.py` — 200xx 错误码
   - `src/backend/test/test_tenant_dao.py` — DAO 单元测试
   **逻辑**:
   - `Tenant` 表：id(INT PK), tenant_code(VARCHAR 64 UNIQUE), tenant_name(VARCHAR 128), logo, root_dept_id, status(active/disabled/archived), contact_name/phone/email, quota_config(JSON), storage_config(JSON), create_user, create_time, update_time
@@ -97,7 +97,7 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T003**: 租户 ContextVar + Bypass 机制
   **文件（新建）**:
-  - `src/backend/bisheng/core/context/tenant.py` — ContextVar 定义 + 工具函数
+  - `src/backend/doberman_agent/core/context/tenant.py` — ContextVar 定义 + 工具函数
   - `src/backend/test/test_tenant_context.py` — ContextVar 单元测试
   **逻辑**:
   - `DEFAULT_TENANT_ID: int = 1` 常量
@@ -118,10 +118,10 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T004**: SQLAlchemy 事件钩子（租户自动过滤 + 自动填充）
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/tenant_filter.py` — 事件注册 + 处理函数
+  - `src/backend/doberman_agent/core/database/tenant_filter.py` — 事件注册 + 处理函数
   - `src/backend/test/test_tenant_filter.py` — 集成测试（SQLite in-memory）
   **文件（修改）**:
-  - `src/backend/bisheng/core/database/manager.py` — 引擎创建后调用 `register_tenant_filter_events(engine)`
+  - `src/backend/doberman_agent/core/database/manager.py` — 引擎创建后调用 `register_tenant_filter_events(engine)`
   **逻辑**:
   - `_tenant_aware_tables: Set[str]` — 启动时通过 `SQLModel.metadata.tables` 自动发现含 `tenant_id` 列的表名集合（不硬编码）
   - `register_tenant_filter_events(sync_engine, async_engine)` — 注册以下两个事件
@@ -148,7 +148,7 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T005**: JWT Payload 扩展 + LoginUser/UserPayload 改造
   **文件（修改）**:
-  - `src/backend/bisheng/user/domain/services/auth.py`
+  - `src/backend/doberman_agent/user/domain/services/auth.py`
   **文件（新建）**:
   - `src/backend/test/test_tenant_auth.py` — JWT + LoginUser 测试
   **逻辑**:
@@ -170,7 +170,7 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T006**: HTTP/WS 中间件 — 租户上下文注入
   **文件（修改）**:
-  - `src/backend/bisheng/utils/http_middleware.py`
+  - `src/backend/doberman_agent/utils/http_middleware.py`
   **逻辑**:
   - `CustomMiddleware.dispatch` 中，在 `trace_id_var.set(trace_id)` 之后：
     1. 尝试从 `request.cookies.get("access_token_cookie")` 获取 JWT token
@@ -192,10 +192,10 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T007**: Celery 租户上下文传播
   **文件（新建）**:
-  - `src/backend/bisheng/worker/tenant_context.py` — 信号处理函数
+  - `src/backend/doberman_agent/worker/tenant_context.py` — 信号处理函数
   - `src/backend/test/test_celery_tenant.py` — mock 信号测试
   **文件（修改）**:
-  - `src/backend/bisheng/worker/main.py` — 导入 tenant_context 模块以触发信号注册
+  - `src/backend/doberman_agent/worker/main.py` — 导入 tenant_context 模块以触发信号注册
   **逻辑**:
   - `@before_task_publish.connect` 信号:
     ```python
@@ -215,7 +215,7 @@ T009 (DDL 迁移 + 默认数据)
             set_current_tenant_id(DEFAULT_TENANT_ID)
     ```
   - `@task_postrun.connect` 信号: reset ContextVar 避免线程池复用时泄漏
-  - 在 `worker/main.py` 添加 `import bisheng.worker.tenant_context` 确保信号注册
+  - 在 `worker/main.py` 添加 `import doberman_agent.worker.tenant_context` 确保信号注册
   **测试**: `test_celery_tenant.py` —
   - `test_inject_tenant_header` — mock headers dict，设置 ContextVar=2，调用信号函数，验证 headers['tenant_id']=2 → AC-09
   - `test_restore_tenant_context` — mock sender.request.headers={'tenant_id': 3}，调用信号函数，验证 get_current_tenant_id()=3 → AC-09
@@ -230,7 +230,7 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T008**: 存储前缀工具函数
   **文件（新建）**:
-  - `src/backend/bisheng/core/storage/tenant_storage.py` — 前缀工具函数
+  - `src/backend/doberman_agent/core/storage/tenant_storage.py` — 前缀工具函数
   - `src/backend/test/test_tenant_storage.py` — 前缀函数单元测试
   **逻辑**:
   - `get_minio_prefix(tenant_id: int, tenant_code: str) -> str`: 默认租户→`""`，新租户→`"tenant_{tenant_code}/"`
@@ -251,10 +251,10 @@ T009 (DDL 迁移 + 默认数据)
 
 - [x] **T009**: DDL 迁移 + 默认租户初始化 + config.yaml
   **文件（新建）**:
-  - `src/backend/bisheng/core/database/alembic/versions/v2_5_0_f001_multi_tenant_{hash}.py` — Alembic 迁移脚本
+  - `src/backend/doberman_agent/core/database/alembic/versions/v2_5_0_f001_multi_tenant_{hash}.py` — Alembic 迁移脚本
   **文件（修改）**:
-  - `src/backend/bisheng/common/init_data.py` — `init_default_data()` 中调用 `init_default_tenant()`
-  - `src/backend/bisheng/config.yaml` — 添加 `multi_tenant:` 配置节（enabled: false, default_tenant_code: "default"）
+  - `src/backend/doberman_agent/common/init_data.py` — `init_default_data()` 中调用 `init_default_tenant()`
+  - `src/backend/doberman_agent/config.yaml` — 添加 `multi_tenant:` 配置节（enabled: false, default_tenant_code: "default"）
   **逻辑**:
   - **DDL upgrade**:
     1. CREATE TABLE `tenant`（按 spec §5 DDL）

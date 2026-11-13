@@ -33,14 +33,14 @@ from starlette.responses import JSONResponse, Response
 #: them latin-1 safe (坑 9). ``test_headers`` also covers the pre-encoded
 #: variant, so both backend conventions are pinned.
 DEFAULT_HEADER_MATERIAL = {
-    "X-BiSheng-User-Id": "42",
-    "X-BiSheng-User-Name": "张三",
-    "X-BiSheng-Tenant-Id": "1",
-    "X-BiSheng-Dept-Id": "BS@d4f1",
-    "X-BiSheng-Dept-Name": "研发中心",
-    "X-BiSheng-Dept-Path": "毕昇科技/研发中心",
-    "X-BiSheng-Subject-Kind": "human",
-    "X-BiSheng-App-Id": "app-0001",
+    "X-Doberman-Agent-User-Id": "42",
+    "X-Doberman-Agent-User-Name": "张三",
+    "X-Doberman-Agent-Tenant-Id": "1",
+    "X-Doberman-Agent-Dept-Id": "BS@d4f1",
+    "X-Doberman-Agent-Dept-Name": "研发中心",
+    "X-Doberman-Agent-Dept-Path": "doberman-agent科技/研发中心",
+    "X-Doberman-Agent-Subject-Kind": "human",
+    "X-Doberman-Agent-App-Id": "app-0001",
 }
 
 DEFAULT_APP_ID = "app-0001"
@@ -84,7 +84,7 @@ def allow_response(
     owner_name: str = "李四",
 ) -> dict[str, Any]:
     headers = dict(DEFAULT_HEADER_MATERIAL if material is None else material)
-    headers.setdefault("X-BiSheng-App-Id", app_id)
+    headers.setdefault("X-Doberman-Agent-App-Id", app_id)
     return {
         "decision": "allow",
         "headers": headers,
@@ -481,7 +481,7 @@ def preview_allow_response(
     anybody — the visitor has not been told the application exists.
     """
     headers = dict(DEFAULT_HEADER_MATERIAL if material is None else material)
-    headers.setdefault("X-BiSheng-App-Id", app_id)
+    headers.setdefault("X-Doberman-Agent-App-Id", app_id)
     return {
         "decision": "allow",
         "headers": headers,

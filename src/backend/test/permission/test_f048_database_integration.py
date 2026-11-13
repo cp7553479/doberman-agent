@@ -27,10 +27,10 @@ from alembic.migration import MigrationContext
 from alembic.operations import Operations
 from sqlalchemy.engine import Connection, Engine, make_url
 
-from bisheng.core.database.alembic.versions import (
+from doberman_agent.core.database.alembic.versions import (
     f048_permission_model_grants as revision,
 )
-from bisheng.core.database.alembic.versions import (
+from doberman_agent.core.database.alembic.versions import (
     v3_0_0_f048_visible_source_projection as visible_revision,
 )
 
@@ -68,7 +68,7 @@ def test_alembic_revision_is_schema_only() -> None:
         assert imported_modules <= {
             "collections.abc",
             "alembic",
-            "bisheng.core.database.alembic_helpers.online",
+            "doberman_agent.core.database.alembic_helpers.online",
         }
         assert not _DML.search(source)
         assert "session" not in {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}

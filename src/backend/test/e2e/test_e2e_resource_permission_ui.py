@@ -4,7 +4,7 @@ E2E tests for F007: Resource Permission UI
 Prerequisites:
 - Backend running on localhost:7860 (or E2E_API_BASE env var)
 - OpenFGA running on localhost:8080
-- Default admin account: admin/<E2E_ADMIN_PASSWORD> (default: Bisheng@top1)
+- Default admin account: admin/<E2E_ADMIN_PASSWORD> (default: doberman-agent@top1)
 - At least one normal user (user_id=2)
 
 Covers:
@@ -55,7 +55,7 @@ def _login(client: httpx.Client, username: str = "admin", password: str | None =
     public_key_pem = pubkey_resp.json()["data"]["public_key"]
 
     if password is None:
-        password = os.environ.get("E2E_ADMIN_PASSWORD", "Bisheng@top1")
+        password = os.environ.get("E2E_ADMIN_PASSWORD", "doberman-agent@top1")
 
     public_key = serialization.load_pem_public_key(public_key_pem.encode())
     encrypted = public_key.encrypt(password.encode(), padding.PKCS1v15())

@@ -7,9 +7,9 @@ credential and does not offer write or destructive tool calls.
 
 Run from ``src/backend``::
 
-    export BISHENG_API_KEY='<api-key-or-personal-access-token>'
+    export DOBERMAN_AGENT_API_KEY='<api-key-or-personal-access-token>'
     .venv/bin/python scripts/verify_open_mcp.py \
-      --url https://bisheng.example.com/api/v2/mcp \
+      --url https://doberman-agent.example.com/api/v2/mcp \
       --expected-profile full
 
 An optional read-only smoke call can be added with ``--call-tool`` and
@@ -33,23 +33,23 @@ from mcp.client.streamable_http import streamablehttp_client
 
 EXPECTED_TOOL_NAMES = frozenset(
     {
-        "bisheng_knowledge_list",
-        "bisheng_knowledge_create",
-        "bisheng_knowledge_update",
-        "bisheng_knowledge_delete",
-        "bisheng_knowledge_clear",
-        "bisheng_knowledge_retrieve",
-        "bisheng_knowledge_file_upload",
-        "bisheng_knowledge_file_list",
-        "bisheng_knowledge_file_delete",
-        "bisheng_knowledge_files_delete",
+        "doberman_agent_knowledge_list",
+        "doberman_agent_knowledge_create",
+        "doberman_agent_knowledge_update",
+        "doberman_agent_knowledge_delete",
+        "doberman_agent_knowledge_clear",
+        "doberman_agent_knowledge_retrieve",
+        "doberman_agent_knowledge_file_upload",
+        "doberman_agent_knowledge_file_list",
+        "doberman_agent_knowledge_file_delete",
+        "doberman_agent_knowledge_files_delete",
     }
 )
 READ_ONLY_TOOL_NAMES = frozenset(
     {
-        "bisheng_knowledge_list",
-        "bisheng_knowledge_retrieve",
-        "bisheng_knowledge_file_list",
+        "doberman_agent_knowledge_list",
+        "doberman_agent_knowledge_retrieve",
+        "doberman_agent_knowledge_file_list",
     }
 )
 EXPECTED_PROFILES = {
@@ -86,13 +86,13 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--url",
         type=_endpoint,
-        default=os.getenv("BISHENG_MCP_URL"),
-        help="MCP endpoint; defaults to BISHENG_MCP_URL",
+        default=os.getenv("DOBERMAN_AGENT_MCP_URL"),
+        help="MCP endpoint; defaults to DOBERMAN_AGENT_MCP_URL",
     )
     parser.add_argument(
         "--api-key-env",
-        default="BISHENG_API_KEY",
-        help="environment variable holding the API key or PAT (default: BISHENG_API_KEY)",
+        default="DOBERMAN_AGENT_API_KEY",
+        help="environment variable holding the API key or PAT (default: DOBERMAN_AGENT_API_KEY)",
     )
     parser.add_argument(
         "--on-behalf-of",
@@ -210,7 +210,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
     if not args.url:
-        parser.error("--url or BISHENG_MCP_URL is required")
+        parser.error("--url or DOBERMAN_AGENT_MCP_URL is required")
     if args.on_behalf_of and args.end_user:
         parser.error("--on-behalf-of and --end-user are mutually exclusive")
     if args.timeout_seconds <= 0:

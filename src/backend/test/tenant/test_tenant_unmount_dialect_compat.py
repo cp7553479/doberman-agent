@@ -37,12 +37,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 # Import the real models so their tables register in SQLModel.metadata, the
 # way the FastAPI app does on startup (via api.router). `_filter_known_tables`
 # inspects that metadata, so the tables it should keep must be imported here.
-import bisheng.database.models.flow
-import bisheng.knowledge.domain.models.knowledge
-import bisheng.tool.domain.models.gpts_tools  # noqa: F401
-from bisheng.database.models.tenant import ROOT_TENANT_ID, TenantDao
-from bisheng.tenant.domain.services import tenant_mount_service
-from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+import doberman_agent.database.models.flow
+import doberman_agent.knowledge.domain.models.knowledge
+import doberman_agent.tool.domain.models.gpts_tools  # noqa: F401
+from doberman_agent.database.models.tenant import ROOT_TENANT_ID, TenantDao
+from doberman_agent.tenant.domain.services import tenant_mount_service
+from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
 
 def test_filter_known_tables_avoids_mysql_only_catalog_sql():
@@ -107,7 +107,7 @@ async def test_abulk_update_appends_extra_predicate_only_where_given():
 
     with (
         patch.object(tenant_mount_service, "get_async_db_session", _fake_factory),
-        patch("bisheng.database.models.tenant.get_async_db_session", _fake_factory),
+        patch("doberman_agent.database.models.tenant.get_async_db_session", _fake_factory),
     ):
         await TenantDao.abulk_update_tenant_id(
             tables=["flow", "t_gpts_tools"],

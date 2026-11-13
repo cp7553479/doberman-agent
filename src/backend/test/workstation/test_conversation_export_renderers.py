@@ -25,10 +25,10 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.common.errcode.workstation import ConversationExportRenderFailedError
-from bisheng.database.models.session import MessageSession
-from bisheng.workstation.domain.services import conversation_export_service as svc_mod
-from bisheng.workstation.domain.services.conversation_export_service import (
+from doberman_agent.common.errcode.workstation import ConversationExportRenderFailedError
+from doberman_agent.database.models.session import MessageSession
+from doberman_agent.workstation.domain.services import conversation_export_service as svc_mod
+from doberman_agent.workstation.domain.services.conversation_export_service import (
     ConversationExportService,
     ConversationTurn,
 )

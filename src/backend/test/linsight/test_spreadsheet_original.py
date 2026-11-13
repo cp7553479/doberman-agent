@@ -15,8 +15,8 @@ from types import SimpleNamespace
 
 from openpyxl import Workbook
 
-from bisheng.linsight.domain.schemas.linsight_schema import SubmitFileSchema
-from bisheng.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
+from doberman_agent.linsight.domain.schemas.linsight_schema import SubmitFileSchema
+from doberman_agent.linsight.domain.services.workbench_impl import LinsightWorkbenchImpl as Impl
 
 MODE = "spreadsheet_original"
 
@@ -36,7 +36,7 @@ class _ExplodingPipeline:
 
 
 class _FakeMinio:
-    bucket = "bisheng"
+    bucket = "doberman_agent"
     tmp_bucket = "tmp-dir"
 
     def __init__(self):
@@ -89,12 +89,12 @@ def test_original_route_falls_back_to_parse_past_the_carry_ceiling(tmp_path, mon
 async def test_daily_upload_lands_only_the_original(tmp_path, monkeypatch):
     path = _xlsx(tmp_path)
     minio = _FakeMinio()
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline)
 
     async def _download(_url):
         return path, "book.xlsx"
 
-    monkeypatch.setattr("bisheng.core.cache.utils.async_file_download", _download)
+    monkeypatch.setattr("doberman_agent.core.cache.utils.async_file_download", _download)
     submit = SimpleNamespace(file_id="f1", file_name="销售.xlsx", file_url="http://x", relative_path=None)
 
     entry = await Impl._ingest_daily_file(submit, "chat1", minio, user_id=1, used_names=set())
@@ -108,7 +108,7 @@ async def test_daily_upload_lands_only_the_original(tmp_path, monkeypatch):
     assert entry["raw_workspace_path"] == "/uploads/销售.xlsx"
     assert entry["markdown_file_path"] == entry["original_file_path"] == "linsight/chat1/f1.xlsx"
     original = Path(path).read_bytes()
-    assert minio.store[("bisheng", "workspace/chat1/uploads/销售.xlsx")] == original
+    assert minio.store[("doberman_agent", "workspace/chat1/uploads/销售.xlsx")] == original
     assert not any(key.endswith(".md") for _, key in minio.store)
 
 
@@ -123,12 +123,12 @@ async def test_daily_upload_over_the_ceiling_keeps_the_old_parse_path(tmp_path, 
         def __init__(self, **_kwargs):
             raise _Reached
 
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _RecordingPipeline)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _RecordingPipeline)
 
     async def _download(_url):
         return path, "book.xlsx"
 
-    monkeypatch.setattr("bisheng.core.cache.utils.async_file_download", _download)
+    monkeypatch.setattr("doberman_agent.core.cache.utils.async_file_download", _download)
     submit = SimpleNamespace(file_id="f2", file_name="big.xlsx", file_url="http://x", relative_path=None)
 
     entry = await Impl._ingest_daily_file(submit, "chat1", _FakeMinio(), user_id=1, used_names=set())
@@ -143,7 +143,7 @@ async def test_daily_upload_over_the_ceiling_keeps_the_old_parse_path(tmp_path, 
 async def test_follow_up_upload_then_ingest_lands_only_the_original(tmp_path, monkeypatch):
     path = _xlsx(tmp_path)
     minio = _FakeMinio()
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", _ExplodingPipeline)
 
     async def _get_minio():
         return minio
@@ -151,8 +151,8 @@ async def test_follow_up_upload_then_ingest_lands_only_the_original(tmp_path, mo
     async def _md5(_data):
         return "md5"
 
-    monkeypatch.setattr("bisheng.linsight.domain.services.workbench_impl.get_minio_storage", _get_minio)
-    monkeypatch.setattr("bisheng.linsight.domain.services.workbench_impl.async_calculate_md5", _md5)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.workbench_impl.get_minio_storage", _get_minio)
+    monkeypatch.setattr("doberman_agent.linsight.domain.services.workbench_impl.async_calculate_md5", _md5)
 
     temp_info = await Impl._parse_file(1, "fid", path, "销售.xlsx")
 
@@ -168,7 +168,7 @@ async def test_follow_up_upload_then_ingest_lands_only_the_original(tmp_path, mo
 
     assert entry["markdown_file_path"] == entry["original_file_path"] == "linsight/chat1/fid.xlsx"
     assert entry["workspace_path"] == entry["raw_workspace_path"] == "/uploads/销售.xlsx"
-    assert minio.store[("bisheng", "workspace/chat1/uploads/销售.xlsx")] == Path(path).read_bytes()
+    assert minio.store[("doberman_agent", "workspace/chat1/uploads/销售.xlsx")] == Path(path).read_bytes()
 
 
 # --------------------------------------------------------------------------
@@ -194,7 +194,7 @@ async def test_pointer_block_routes_excel_to_the_code_interpreter():
     assert "raw: uploads/销售.xlsx" in block
     assert "不可 read_file" in block
     assert "lines:" not in block
-    assert "bisheng_code_interpreter" in block
+    assert "doberman_agent_code_interpreter" in block
     assert "sheet_name" in block and "header" in block
     # Text-passthrough wording ("read_file works") must not leak onto a binary.
     assert "read_file 与代码工具都可直接使用" not in block
@@ -206,4 +206,4 @@ async def test_pointer_block_without_code_interpreter_asks_user_to_add_the_tool(
     assert "无法读取 Excel 原件" in block
     assert "需要添加代码执行器工具" in block
     # Prompt <-> tool lockstep: never point at a tool that is not bound.
-    assert "bisheng_code_interpreter" not in block
+    assert "doberman_agent_code_interpreter" not in block

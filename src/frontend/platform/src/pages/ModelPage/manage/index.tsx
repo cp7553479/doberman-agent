@@ -1,8 +1,8 @@
 // @ts-strict-ignore
-import { toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
-import { Button } from "@bisheng/ui"
+import { Button } from "@doberman-agent/ui"
 import { locationContext } from "@/contexts/locationContext"
 import { userContext } from "@/contexts/userContext"
 import { useContext, useEffect, useState } from "react"

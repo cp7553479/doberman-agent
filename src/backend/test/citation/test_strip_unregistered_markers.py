@@ -7,13 +7,13 @@ id — and the client rendered a reference card whose detail endpoint then 404'd
 showing "溯源详情加载失败" as though the system had failed.
 """
 
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER,
     CITATION_SEPARATOR_MARKER,
     CITATION_START_MARKER,
@@ -82,7 +82,7 @@ def test_empty_and_none_text_are_safe():
 
 def test_prompt_example_knowledgesearch_is_remapped_onto_temp_registry():
     """Models copy the citation-rules example id; remap it onto the real temp source."""
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         TempCitationItemSchema,
         TempCitationPayloadSchema,
     )
@@ -102,7 +102,7 @@ def test_prompt_example_knowledgesearch_is_remapped_onto_temp_registry():
 
 
 def test_prompt_example_is_not_remapped_when_a_real_marker_already_exists():
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         TempCitationItemSchema,
         TempCitationPayloadSchema,
     )
@@ -131,7 +131,7 @@ def test_only_the_first_unregistered_marker_is_remapped():
 
 
 def _temp_item(citation_id: str, item_id: str, content: str) -> CitationRegistryItemSchema:
-    from bisheng.citation.domain.schemas.citation_schema import (
+    from doberman_agent.citation.domain.schemas.citation_schema import (
         TempCitationItemSchema,
         TempCitationPayloadSchema,
     )

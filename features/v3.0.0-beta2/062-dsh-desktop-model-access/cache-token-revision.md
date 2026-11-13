@@ -29,7 +29,7 @@
 | cache_read_tokens | BIGINT NULL | NULL |
 | cache_creation_tokens | BIGINT NULL | NULL |
 
-109 独立 DSH 的 `dsh-backend` 所连接 MySQL `bisheng` 库已完成两列新增，并通过 schema inspect 验证类型与可空属性。只操作该独立实例；不回填历史记录，不部署服务、不重启容器。部署由用户处理。
+109 独立 DSH 的 `dsh-backend` 所连接 MySQL `doberman-agent` 库已完成两列新增，并通过 schema inspect 验证类型与可空属性。只操作该独立实例；不回填历史记录，不部署服务、不重启容器。部署由用户处理。
 
 API 与 Worker 需使用同一版代码；旧 Worker 的严格事件校验不能消费新增字段，不应混用。新代码接受缺失缓存字段的旧事件并按 NULL 落库。Gateway 无需更新。回退代码前先处理完含新字段的事件；新增列可保留，不需要删除明细或字段。
 

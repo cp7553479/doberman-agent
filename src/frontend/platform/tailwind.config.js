@@ -2,7 +2,7 @@
 const plugin = require('tailwindcss/plugin');
 
 module.exports = {
-  presets: [require('@bisheng/ui/tailwind-preset')],
+  presets: [require('@doberman-agent/ui/tailwind-preset')],
   content: [
     "../packages/ui/src/**/*.{ts,tsx}",
     "../packages/chat/src/**/*.{ts,tsx}",

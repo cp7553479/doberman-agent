@@ -18,9 +18,9 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.app_publish.domain.constants import RELEASE_AUDIT_TARGET_TYPE, AppReleaseAuditAction
-from bisheng.app_publish.domain.models import AppDeployment, AppDeploymentDao
-from bisheng.app_publish.domain.models.app_deployment import (
+from doberman_agent.app_publish.domain.constants import RELEASE_AUDIT_TARGET_TYPE, AppReleaseAuditAction
+from doberman_agent.app_publish.domain.models import AppDeployment, AppDeploymentDao
+from doberman_agent.app_publish.domain.models.app_deployment import (
     ACTIVE_STATUSES,
     DEPLOYMENT_STAGES,
     DEPLOYMENT_STATUSES,
@@ -31,8 +31,8 @@ from bisheng.app_publish.domain.models.app_deployment import (
     STATUS_SUCCEEDED,
     STATUS_WAITING_APPROVAL,
 )
-from bisheng.common.errcode import app_publish as errcodes
-from bisheng.database.models.resource_tier import (
+from doberman_agent.common.errcode import app_publish as errcodes
+from doberman_agent.database.models.resource_tier import (
     DEFAULT_TIER_CODE,
     TIER_CODE_LIGHT,
     TIER_CODE_PERFORMANCE,
@@ -83,7 +83,7 @@ def test_error_payload_carries_reason_for_machine_readers():
 
 def test_f055_codes_are_not_declared_in_the_f054_module():
     """162 lives in its own file; adding to ``app_factory.py`` breaks the band split (K9)."""
-    from bisheng.common.errcode import app_factory
+    from doberman_agent.common.errcode import app_factory
 
     f054_codes = {
         value.Code
@@ -111,7 +111,7 @@ def test_every_code_has_copy_in_all_three_languages():
 
 
 def test_release_actions_are_registered_in_the_ui_whitelist():
-    from bisheng.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS, _V2_NAMESPACE_TO_ACTION_PREFIX
+    from doberman_agent.database.models.audit_log import _UI_VISIBLE_V2_ACTIONS, _V2_NAMESPACE_TO_ACTION_PREFIX
 
     assert _V2_NAMESPACE_TO_ACTION_PREFIX["app"] == "app."
     missing = [action.value for action in AppReleaseAuditAction if action.value not in _UI_VISIBLE_V2_ACTIONS]
@@ -120,7 +120,7 @@ def test_release_actions_are_registered_in_the_ui_whitelist():
 
 def test_release_family_does_not_collide_with_f054_publish_actions():
     """``app.publish`` is F054's *state action*; the pipeline family is ``app.release.*`` (design D12)."""
-    from bisheng.app_runtime.domain.constants import AppAuditAction
+    from doberman_agent.app_runtime.domain.constants import AppAuditAction
 
     f054 = {action.value for action in AppAuditAction}
     f055 = {action.value for action in AppReleaseAuditAction}
@@ -134,7 +134,7 @@ def test_release_family_does_not_collide_with_f054_publish_actions():
 
 def test_settings_expose_the_five_publish_keys_under_app_runtime():
     """All five hang off the F054 ``app_runtime`` block — no new top-level key (K10)."""
-    from bisheng.core.config.settings import Settings
+    from doberman_agent.core.config.settings import Settings
 
     settings = Settings()
     assert settings.app_runtime.max_package_mb == 50
@@ -149,10 +149,10 @@ def test_settings_expose_the_five_publish_keys_under_app_runtime():
 
 
 def test_both_new_model_modules_are_registered_for_metadata_import():
-    from bisheng.core.database.tenant_filter import _TENANT_AWARE_MODEL_MODULES
+    from doberman_agent.core.database.tenant_filter import _TENANT_AWARE_MODEL_MODULES
 
-    assert "bisheng.app_publish.domain.models" in _TENANT_AWARE_MODEL_MODULES
-    assert "bisheng.database.models.resource_tier" in _TENANT_AWARE_MODEL_MODULES
+    assert "doberman_agent.app_publish.domain.models" in _TENANT_AWARE_MODEL_MODULES
+    assert "doberman_agent.database.models.resource_tier" in _TENANT_AWARE_MODEL_MODULES
 
 
 def test_resource_tier_has_no_tenant_column_and_app_deployment_has_one():
@@ -311,7 +311,7 @@ def test_revision_chains_onto_the_f054_head():
 
     path = (
         Path(__file__).resolve().parents[2]
-        / "bisheng"
+        / "doberman_agent"
         / "core"
         / "database"
         / "alembic"
@@ -338,14 +338,14 @@ def test_tarball_factory_emits_the_four_tar_only_entry_kinds(tarball_factory):
     assert members["a-fifo"].isfifo()
     assert any(name.startswith("/") for name in members)
     assert any(".." in name for name in members)
-    assert "bisheng-app.yaml" in members
+    assert "doberman-agent-app.yaml" in members
 
 
 def test_tarball_factory_can_drop_the_manifest_and_pad_entries(tarball_factory):
     package = tarball_factory(include_manifest=False, entries=40)
     with tarfile.open(package, mode="r:gz") as tar:
         names = tar.getnames()
-    assert "bisheng-app.yaml" not in names
+    assert "doberman-agent-app.yaml" not in names
     assert len(names) == 40
 
 
@@ -361,14 +361,14 @@ async def test_fake_minio_records_path_uploads_and_bucket_creation(fake_minio, t
     source = tmp_path / "code.tar.gz"
     source.write_bytes(b"payload")
 
-    fake_minio.create_bucket_sync("bisheng-apps")
-    await fake_minio.put_object(bucket_name="bisheng-apps", object_name="apps/a/versions/v/code.tar.gz", file=source)
+    fake_minio.create_bucket_sync("doberman-agent-apps")
+    await fake_minio.put_object(bucket_name="doberman-agent-apps", object_name="apps/a/versions/v/code.tar.gz", file=source)
 
-    assert fake_minio.created_buckets == ["bisheng-apps"]
+    assert fake_minio.created_buckets == ["doberman-agent-apps"]
     put_calls = [kwargs for name, kwargs in fake_minio.calls if name == "put_object"]
     assert put_calls and put_calls[0]["from_path"] is True
-    assert await fake_minio.get_object("bisheng-apps", "apps/a/versions/v/code.tar.gz") == b"payload"
-    assert fake_minio.list_object_names("bisheng-apps", prefix="apps/a/") == ["apps/a/versions/v/code.tar.gz"]
+    assert await fake_minio.get_object("doberman-agent-apps", "apps/a/versions/v/code.tar.gz") == b"payload"
+    assert fake_minio.list_object_names("doberman-agent-apps", prefix="apps/a/") == ["apps/a/versions/v/code.tar.gz"]
 
 
 def test_service_account_principal_defaults_to_the_owner(service_account_principal, owner_user):
@@ -396,7 +396,7 @@ def test_tenant_admin_fixture_is_not_a_super_admin(tenant_admin_user, super_admi
 
 
 async def test_dept_admin_fixture_is_resolvable_by_the_approver_resolver(publish_db, dept_admin_user, owner_user):
-    from bisheng.approval.domain.services.approver_resolver import resolve_approvers_from_sources
+    from doberman_agent.approval.domain.services.approver_resolver import resolve_approvers_from_sources
 
     class _Req:
         applicant_department_id = dept_admin_user.department_id

@@ -32,7 +32,7 @@ Two properties are asserted as loudly as the recovery itself:
   orphans before recovering would turn a lost state file into a site-wide
   outage.
 * **Reclaim is narrow.** Only containers this manager labelled
-  ``bisheng.managed=true`` are ever candidates, and among those, the current
+  ``doberman-agent.managed=true`` are ever candidates, and among those, the current
   instance and everything inside its retirement grace window are protected. 114
   runs onlyoffice, rabbitmq and a JVM or two on the same daemon; a reconciler
   that reasons in terms of "not in my desired state" instead of "mine, and not
@@ -49,7 +49,7 @@ blue-green replacement at the next generation, one application per pass.
 
 One pass does a further, unrelated thing: it reclaims **approval-time previews**
 whose deadline has passed (F055 AC-28). They are deliberately outside
-everything above — ``bisheng.managed=preview``, no desired-state record — so
+everything above — ``doberman-agent.managed=preview``, no desired-state record — so
 the sweep reads their own label and touches nothing else. It rides this loop
 rather than a scheduler of its own because this loop already runs every 15 s,
 already reads the daemon and already survives a restart.
@@ -259,7 +259,7 @@ class Reconciler:
 
         self._reclaim_orphans(actual, report)
         # F055 AC-28's timeout leg. Previews are invisible to everything above
-        # (they carry ``bisheng.managed=preview``), so this is a separate pass
+        # (they carry ``doberman-agent.managed=preview``), so this is a separate pass
         # over their own label — and it lives here rather than in a platform
         # beat task because the manager is the process that has to be alive for
         # the container to exist, and F054 AC-59 forbids a resident app-factory
@@ -489,7 +489,7 @@ class Reconciler:
             return ""
         destinations = runtime_destinations(
             config,
-            platform_api_base=record.env.get("BISHENG_PLATFORM_API_BASE", ""),
+            platform_api_base=record.env.get("DOBERMAN_AGENT_PLATFORM_API_BASE", ""),
             declared=record.egress_domains,
             injected_env=record.env,
         )
@@ -611,9 +611,9 @@ class Reconciler:
     def _managed_containers(self) -> dict[str, dict[str, Any]]:
         """Name → summary, for containers **this manager created** only.
 
-        The label filter is the safety property: ``bisheng.managed=true`` is
+        The label filter is the safety property: ``doberman-agent.managed=true`` is
         written by :func:`~runtime_manager.lifecycle.build_container_payload`
-        and by nothing else. Probe instances carry ``bisheng.managed=probe`` and
+        and by nothing else. Probe instances carry ``doberman-agent.managed=probe`` and
         are therefore invisible here — they clean themselves up, and a reconciler
         racing that cleanup would fail pre-flights for no reason.
         """

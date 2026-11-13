@@ -17,11 +17,11 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from bisheng.core.openfga.authorization_model_f048 import build_authorization_model_f048
-from bisheng.core.openfga.client import FGAClient
-from bisheng.database.models.department import Department, UserDepartment
-from bisheng.department.domain.services.permission_context import DepartmentPermissionContextProvider
-from bisheng.permission.application.department_context import configure_department_context
+from doberman_agent.core.openfga.authorization_model_f048 import build_authorization_model_f048
+from doberman_agent.core.openfga.client import FGAClient
+from doberman_agent.database.models.department import Department, UserDepartment
+from doberman_agent.department.domain.services.permission_context import DepartmentPermissionContextProvider
+from doberman_agent.permission.application.department_context import configure_department_context
 from test.department import test_permission_context as organization_tests
 from test.permission.test_f048_authorization_model import _active_model_tuples, _resource_grant_tuples
 
@@ -173,7 +173,7 @@ async def test_full_model_large_department_batches_lists_and_revocation(runtime,
 
 async def test_forty_level_department_does_not_consume_fga_resolution_depth(runtime, database):
     """AC-06: 40 departments become flat request inputs with real SQL reads."""
-    from bisheng.core.openfga.exceptions import FGAClientError
+    from doberman_agent.core.openfga.exceptions import FGAClientError
 
     client, legacy = runtime
     _, sessions = database

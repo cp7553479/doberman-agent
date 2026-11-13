@@ -32,16 +32,16 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from langchain_core.messages import AIMessage
 
-from bisheng.common.services.config_service import settings
-from bisheng.open_api.domain.models.model_call_record import SUBJECT_KIND_APP_SELF, SUBJECT_KIND_USER
-from bisheng.open_api.domain.services import model_range_policy
-from bisheng.open_api.domain.services.model_range_policy import (
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.open_api.domain.models.model_call_record import SUBJECT_KIND_APP_SELF, SUBJECT_KIND_USER
+from doberman_agent.open_api.domain.services import model_range_policy
+from doberman_agent.open_api.domain.services.model_range_policy import (
     ACCESS_TOKEN_HEADER,
     register_access_subject_verifier,
     register_hosted_app_declaration_port,
 )
 from test.open_api.model_gateway_fixtures import (
-    FakeBishengLLM,
+    FakeDobermanAgentLLM,
     build_model_face_app,
     capture_records,
     hosted_app_principal,
@@ -91,8 +91,8 @@ def declaration(monkeypatch):
     adapter does with its answer (the tenant comparison, ``model_names``, the
     ``None`` passthrough) is the shipped code.
     """
-    from bisheng.app_publish.domain.services import capability_bus_service
-    from bisheng.app_publish.domain.services.capability_bus_service import (
+    from doberman_agent.app_publish.domain.services import capability_bus_service
+    from doberman_agent.app_publish.domain.services.capability_bus_service import (
         EffectiveDeclaration,
         HostedAppDeclarationAdapter,
     )
@@ -125,7 +125,7 @@ def obo(monkeypatch):
     all (an OBO token that doubles as a platform session is the failure that
     check exists for), so both are pinned here.
     """
-    from bisheng.app_runtime.domain.services.entry_authz_service import AccessSubjectVerifier, _issue_obo_token
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import AccessSubjectVerifier, _issue_obo_token
 
     monkeypatch.setattr(settings.app_runtime, "obo_secret", OBO_SECRET, raising=False)
     monkeypatch.setattr(settings, "jwt_secret", "a-different-platform-secret", raising=False)
@@ -152,7 +152,7 @@ def hosted(monkeypatch):
     "declared but taken away" is told apart from "never declared".
     """
     monkeypatch.setattr(
-        "bisheng.open_api.api.dependencies.validate_bearer",
+        "doberman_agent.open_api.api.dependencies.validate_bearer",
         AsyncMock(return_value=hosted_app_principal(app_id=APP_ID, tenant_id=TENANT_ID)),
     )
     install_catalog(
@@ -164,7 +164,7 @@ def hosted(monkeypatch):
             model_row(12, 1, "retired", online=False),
         ],
     )
-    install_fake_llm(monkeypatch, FakeBishengLLM(invoke_result=AIMessage(content="ok")))
+    install_fake_llm(monkeypatch, FakeDobermanAgentLLM(invoke_result=AIMessage(content="ok")))
     return capture_records(monkeypatch)
 
 
@@ -208,7 +208,7 @@ async def test_a_tenant_model_the_application_never_declared_is_26515(hosted, de
     response = await _call("POST", CHAT_PATH, json_body={**BODY, "model": "qwen-max"})
 
     assert response.status_code == 403
-    assert _error(response)["bisheng_code"] == 26515
+    assert _error(response)["doberman_agent_code"] == 26515
     assert _error(response)["code"] == "capability_undeclared"
     # The record still lands: the call reached model resolution, which is the
     # line AC-20 draws for "gets a usage row".
@@ -227,7 +227,7 @@ async def test_a_declared_model_that_was_taken_offline_is_26512_not_26515(hosted
     response = await _call("POST", CHAT_PATH, json_body={**BODY, "model": "retired"})
 
     assert response.status_code == 404
-    assert _error(response)["bisheng_code"] == 26512
+    assert _error(response)["doberman_agent_code"] == 26512
     assert [(row.result, row.error_code) for row in hosted] == [("model_unavailable", 26512)]
 
 
@@ -240,20 +240,20 @@ async def test_a_declared_model_withdrawn_inside_the_cache_window_is_26513_not_2
     that is correct, which is the exact confusion F055's 16273 / 16274 and this
     band are kept apart to avoid.
     """
-    from bisheng.common.errcode.server import LlmProviderDeletedError
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.common.errcode.server import LlmProviderDeletedError
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     declaration(("gpt-4o",))
 
     async def explode(**_kwargs):
         raise LlmProviderDeletedError()
 
-    monkeypatch.setattr(LLMService, "get_bisheng_llm", staticmethod(explode))
+    monkeypatch.setattr(LLMService, "get_doberman_agent_llm", staticmethod(explode))
 
     response = await _call("POST", CHAT_PATH, json_body=BODY)
 
     assert response.status_code == 404
-    assert _error(response)["bisheng_code"] == 26513
+    assert _error(response)["doberman_agent_code"] == 26513
     assert [(row.result, row.error_code) for row in hosted] == [("model_unavailable", 26513)]
 
 
@@ -266,7 +266,7 @@ async def test_a_declared_model_the_tenant_never_had_is_26511(hosted, declaratio
     response = await _call("POST", CHAT_PATH, json_body={**BODY, "model": "claude-3"})
 
     assert response.status_code == 404
-    assert _error(response)["bisheng_code"] == 26511
+    assert _error(response)["doberman_agent_code"] == 26511
 
 
 async def test_declaring_no_model_at_all_refuses_by_name_rather_than_by_range(hosted, declaration):
@@ -276,7 +276,7 @@ async def test_declaring_no_model_at_all_refuses_by_name_rather_than_by_range(ho
 
     # An empty declaration is a *known* range, so the answer is 26515 — not
     # 26516, which would tell the caller to retry something that can never work.
-    assert _error(response)["bisheng_code"] == 26515
+    assert _error(response)["doberman_agent_code"] == 26515
     assert (await _call("GET", MODELS_PATH)).json()["data"] == []
 
 
@@ -294,7 +294,7 @@ async def test_without_a_registered_declaration_port_every_call_is_26516(hosted)
         response = await _call(method, path, json_body=body)
 
         assert response.status_code == 503
-        assert _error(response)["bisheng_code"] == 26516
+        assert _error(response)["doberman_agent_code"] == 26516
 
 
 async def test_an_unreadable_declaration_never_falls_back_to_the_tenant_range(hosted, declaration):
@@ -306,7 +306,7 @@ async def test_an_unreadable_declaration_never_falls_back_to_the_tenant_range(ho
     response = await _call("GET", MODELS_PATH)
 
     assert response.status_code == 503
-    assert _error(response)["bisheng_code"] == 26516
+    assert _error(response)["doberman_agent_code"] == 26516
 
 
 async def test_another_tenants_declaration_is_unreadable_rather_than_usable(hosted, declaration):
@@ -316,7 +316,7 @@ async def test_another_tenants_declaration_is_unreadable_rather_than_usable(host
 
     response = await _call("GET", MODELS_PATH)
 
-    assert _error(response)["bisheng_code"] == 26516
+    assert _error(response)["doberman_agent_code"] == 26516
 
 
 # --- T023: who the call is attributed to -------------------------------------
@@ -363,7 +363,7 @@ async def test_a_call_with_no_token_is_labelled_app_self_rather_than_borrowing_t
             lambda _issue: jwt.encode(
                 {
                     "sub": json.dumps({"app_id": APP_ID, "user_id": VISITOR_USER_ID, "tenant_id": TENANT_ID}),
-                    "aud": "bisheng-app-obo",
+                    "aud": "doberman-agent-app-obo",
                     "iss": settings.cookie_conf.jwt_iss,
                     "iat": int(time.time()) - 10,
                     "exp": int(time.time()) - 1,
@@ -377,7 +377,7 @@ async def test_a_call_with_no_token_is_labelled_app_self_rather_than_borrowing_t
             lambda _issue: jwt.encode(
                 {
                     "sub": json.dumps({"app_id": APP_ID, "user_id": VISITOR_USER_ID, "tenant_id": TENANT_ID}),
-                    "aud": "bisheng-app-obo",
+                    "aud": "doberman-agent-app-obo",
                     "iss": settings.cookie_conf.jwt_iss,
                     "iat": int(time.time()),
                     "exp": int(time.time()) + 600,
@@ -395,7 +395,7 @@ async def test_a_token_that_does_not_verify_is_refused_not_downgraded(hosted, de
     response = await _call("POST", CHAT_PATH, headers={ACCESS_TOKEN_HEADER: token_factory(obo)}, json_body=BODY)
 
     assert response.status_code == 403
-    assert _error(response)["bisheng_code"] == 26504
+    assert _error(response)["doberman_agent_code"] == 26504
     # Refused before the model is touched, so no usage row and no provider call.
     assert hosted == []
 
@@ -418,7 +418,7 @@ async def test_the_subject_is_decided_before_the_range_is(hosted, declaration, o
 
     response = await _call("POST", CHAT_PATH, headers={ACCESS_TOKEN_HEADER: "not-a-jwt"}, json_body=BODY)
 
-    assert _error(response)["bisheng_code"] == 26504
+    assert _error(response)["doberman_agent_code"] == 26504
 
 
 # --- T023: the registration itself -------------------------------------------
@@ -428,13 +428,13 @@ def test_the_composition_root_installs_both_ports(_restore_ports):
     """Registering one without the other is the shape that hurts: a readable
     declaration plus an unverifiable token would serve every call while
     attributing all of them to the application itself."""
-    from bisheng.app_publish.composition import register
-    from bisheng.app_publish.domain.services.capability_bus_service import HostedAppDeclarationAdapter
-    from bisheng.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
-    from bisheng.app_runtime.domain.services.entry_authz_service import AccessSubjectVerifier
-    from bisheng.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
-    from bisheng.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS
-    from bisheng.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
+    from doberman_agent.app_publish.composition import register
+    from doberman_agent.app_publish.domain.services.capability_bus_service import HostedAppDeclarationAdapter
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
+    from doberman_agent.app_runtime.domain.services.entry_authz_service import AccessSubjectVerifier
+    from doberman_agent.open_api.domain.models.api_credential import SUBJECT_KIND_HOSTED_APP
+    from doberman_agent.open_api.domain.services.credential_validator import SUBJECT_RESOLVERS
+    from doberman_agent.open_api.domain.services.execution_context import SUBJECT_EXECUTION_GUARDS
 
     lifecycle_hooks.clear_app_deleted_hooks()
     try:
@@ -461,16 +461,16 @@ def test_both_process_entry_points_call_the_composition_root():
     import ast
     import pathlib
 
-    import bisheng
+    import doberman_agent
 
-    root = pathlib.Path(bisheng.__file__).parent
+    root = pathlib.Path(doberman_agent.__file__).parent
     for relative in ("main.py", "worker/main.py"):
         source = (root / relative).read_text(encoding="utf-8")
         tree = ast.parse(source)
         aliases = {
             alias.asname or alias.name
             for node in ast.walk(tree)
-            if isinstance(node, ast.ImportFrom) and node.module == "bisheng.app_publish.composition"
+            if isinstance(node, ast.ImportFrom) and node.module == "doberman_agent.app_publish.composition"
             for alias in node.names
             if alias.name == "register"
         }

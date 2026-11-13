@@ -1,6 +1,6 @@
-import { Dropdown } from "@bisheng/ui";
-import { Breadcrumb, type BreadcrumbItem } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Dropdown } from "@doberman-agent/ui";
+import { Breadcrumb, type BreadcrumbItem } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { KnowledgeSpace } from "~/api/knowledge";
 import { SpaceActionMenuItems } from "./SpaceActionMenuItems";
 import { useLocalize } from "~/hooks";
@@ -28,7 +28,7 @@ interface SpaceBreadcrumbProps {
  * space-level action vanished below the root. The menu trigger now trails the
  * location at every depth — it took over the ⓘ icon's slot, and the summary that
  * icon used to hover open is its first row, so nothing was lost with it.
- * The path itself is `@bisheng/ui`'s Breadcrumb, so truncation, the collapse
+ * The path itself is `@doberman-agent/ui`'s Breadcrumb, so truncation, the collapse
  * past four levels and the narrow-screen thresholds are the component's rules,
  * not ours — including rendering nothing at the space root, where the chain is
  * one level and the <h1> says it already (组件-Breadcrumb面包屑.md §1).

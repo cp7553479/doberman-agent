@@ -10,9 +10,9 @@ wrapper just runs the event loop. AC-13 covered:
   - Corrupt Redis values (non-numeric) are cleaned up as stale.
   - ``bypass_tenant_filter`` wraps the cross-tenant DB query.
 
-Strategy mirrors ``test_tenant_reconcile_task.py``: ``bisheng.worker``'s
+Strategy mirrors ``test_tenant_reconcile_task.py``: ``doberman_agent.worker``'s
 ``__init__`` eagerly pulls the world, so we importlib-load ``tasks.py``
-directly with a stubbed ``@bisheng_celery.task`` decorator.
+directly with a stubbed ``@doberman_agent_celery.task`` decorator.
 """
 
 from __future__ import annotations
@@ -28,37 +28,37 @@ import pytest
 
 
 def _load_tasks_module() -> ModuleType:
-    _celery_stub = MagicMock(name='bisheng_celery')
+    _celery_stub = MagicMock(name='doberman_agent_celery')
     _celery_stub.task = lambda *a, **kw: (lambda fn: fn)  # passthrough
-    sys.modules['bisheng.worker.main'] = MagicMock(bisheng_celery=_celery_stub)
+    sys.modules['doberman_agent.worker.main'] = MagicMock(doberman_agent_celery=_celery_stub)
 
-    if 'bisheng.worker' not in sys.modules or not isinstance(
-        getattr(sys.modules['bisheng.worker'], '__path__', None), list,
+    if 'doberman_agent.worker' not in sys.modules or not isinstance(
+        getattr(sys.modules['doberman_agent.worker'], '__path__', None), list,
     ):
         # Derive the worker path from this test file's location so the
         # test works under any checkout root (main repo, worktrees,
-        # /opt/bisheng, /opt/bisheng-f019, etc.). A hard-coded /opt path
+        # /opt/doberman_agent, /opt/doberman-agent-f019, etc.). A hard-coded /opt path
         # would break the moment we run inside a worktree.
-        worker_path = Path(__file__).resolve().parent.parent.parent / 'bisheng' / 'worker'
-        stub_pkg = ModuleType('bisheng.worker')
+        worker_path = Path(__file__).resolve().parent.parent.parent / 'doberman_agent' / 'worker'
+        stub_pkg = ModuleType('doberman_agent.worker')
         stub_pkg.__path__ = [str(worker_path)]
-        sys.modules['bisheng.worker'] = stub_pkg
-    if 'bisheng.worker.admin_scope' not in sys.modules:
-        sub_pkg = ModuleType('bisheng.worker.admin_scope')
+        sys.modules['doberman_agent.worker'] = stub_pkg
+    if 'doberman_agent.worker.admin_scope' not in sys.modules:
+        sub_pkg = ModuleType('doberman_agent.worker.admin_scope')
         sub_pkg.__path__ = [str(
-            Path(sys.modules['bisheng.worker'].__path__[0]) / 'admin_scope'
+            Path(sys.modules['doberman_agent.worker'].__path__[0]) / 'admin_scope'
         )]
-        sys.modules['bisheng.worker.admin_scope'] = sub_pkg
+        sys.modules['doberman_agent.worker.admin_scope'] = sub_pkg
 
     tasks_path = (
-        Path(sys.modules['bisheng.worker'].__path__[0])
+        Path(sys.modules['doberman_agent.worker'].__path__[0])
         / 'admin_scope' / 'tasks.py'
     )
     spec = importlib.util.spec_from_file_location(
-        'bisheng.worker.admin_scope.tasks', tasks_path,
+        'doberman_agent.worker.admin_scope.tasks', tasks_path,
     )
     module = importlib.util.module_from_spec(spec)
-    sys.modules['bisheng.worker.admin_scope.tasks'] = module
+    sys.modules['doberman_agent.worker.admin_scope.tasks'] = module
     spec.loader.exec_module(module)
     return module
 
@@ -93,7 +93,7 @@ class _FakeRedis:
 @pytest.fixture()
 def bypass_spy(monkeypatch):
     """Wrap ``bypass_tenant_filter`` so we can assert it was used."""
-    from bisheng.core.context import tenant as tenant_mod
+    from doberman_agent.core.context import tenant as tenant_mod
     calls = {'entered': 0, 'exited': 0}
 
     real_cm = tenant_mod.bypass_tenant_filter
@@ -125,10 +125,10 @@ def _patch_deps(monkeypatch, redis_store, non_active_ids):
 
     # Patch the module-level imports inside ``_cleanup_async``.
     import importlib
-    rm_mod = importlib.import_module('bisheng.core.cache.redis_manager')
+    rm_mod = importlib.import_module('doberman_agent.core.cache.redis_manager')
     monkeypatch.setattr(rm_mod, 'get_redis_client', _get_client)
 
-    from bisheng.database.models.tenant import TenantDao
+    from doberman_agent.database.models.tenant import TenantDao
     monkeypatch.setattr(
         TenantDao, 'aget_non_active_ids',
         AsyncMock(return_value=list(non_active_ids)),

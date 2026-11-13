@@ -32,7 +32,7 @@
 - 两端独立生产构建、静态启动及实际高亮模块导入通过；没有 `ReferenceError` 或 `HighlightJS` 初始化错误。生产静态测试没有业务后端，client 的环境读取产生 1 个预期的离线 404 ApiError，不能据此声称业务联调已通过。
 - 两端输出的两个根目录图表脚本均与公共源字节一致；worker/CMaps 均存在；client PWA 包含两份根目录图表资源。
 
-[浏览器结果摘要](evidence/browser-summary.json) · [后台 PDF 样本](evidence/platform-pdf.png) · [前台 PDF 样本](evidence/client-pdf.png)
+[浏览器结果摘要](evidence/browser-summary.json)
 
 API E2E 分类：本次没有新增或修改的 API 行为类 AC，因此没有新增后端 pytest。真实账号权限、分享、保存切片和完整业务流程仍须按 [验收清单](e2e-checklist.md) 验收。自动样本覆盖不能替代它们。
 

@@ -25,9 +25,9 @@ function dshContentSafetyStyles(): Plugin {
   const require = createRequire(import.meta.url);
   const scope = ".dsh-content-safety";
   const cssFile = path.resolve(__dirname, "src/style/dsh-content-safety.css");
-  const tokensFile = require.resolve("@bisheng/ui/tokens.css");
-  const presetFile = require.resolve("@bisheng/ui/tailwind-preset");
-  const uiDirectory = path.dirname(require.resolve("@bisheng/ui"));
+  const tokensFile = require.resolve("@doberman-agent/ui/tokens.css");
+  const presetFile = require.resolve("@doberman-agent/ui/tailwind-preset");
+  const uiDirectory = path.dirname(require.resolve("@doberman-agent/ui"));
   const featureDirectory = path.resolve(__dirname, "src/pages/SystemPage/dsh");
   const preset = require(presetFile) as Partial<import("tailwindcss").Config>;
   const scopedSelector = (selector: string): string => {
@@ -104,7 +104,7 @@ const warnMinioSignatureMismatch = (targetHost: string, requestUrl: string) => {
   if (warnedMinio403) return;
   warnedMinio403 = true;
   console.warn(
-    `\n\x1b[33m[bisheng:minio-proxy] ⚠️  MinIO returned 403 for "${requestUrl}".\n` +
+    `\n\x1b[33m[doberman_agent:minio-proxy] ⚠️  MinIO returned 403 for "${requestUrl}".\n` +
     `  Almost certainly a SigV4 host mismatch: the dev proxy forwards Host=${targetHost},\n` +
     `  but the presigned URL was signed for a different host.\n` +
     `  Fix: set VITE_MINIO_PROXY_TARGET so its host EXACTLY equals backend config.yaml\n` +
@@ -138,7 +138,7 @@ const createProxyConfig = (target: string, rewrite = true, isMinio = false, verb
 });
 
 const apiRoutes = ["/api/", "/health"];
-const fileServiceRoutes = ["/bisheng", "/tmp-dir"];
+const fileServiceRoutes = ["/doberman_agent", "/tmp-dir"];
 
 function resolveMinioProxyTarget(env: Record<string, string>): string {
   if (env.VITE_MINIO_PROXY_TARGET) {
@@ -169,7 +169,7 @@ function resolveMinioProxyTarget(env: Record<string, string>): string {
 
 export default defineConfig(({ command, mode }) => {
   // 必须从 .env.development.local 等文件加载；仅用 process.env 时配置阶段读不到 VITE_ 变量，会回落到 7860，
-  // 导致 /api/department-limit/*（仅 Gateway 提供）打到 bisheng 出现 404。
+  // 导致 /api/department-limit/*（仅 Gateway 提供）打到 doberman_agent 出现 404。
   const env = loadFrontendEnv(mode, __dirname);
   const target = resolveApiTarget(env);
   // Gateway-owned `/api/license/*` (F037/F067 status). Must not fall through to
@@ -180,10 +180,10 @@ export default defineConfig(({ command, mode }) => {
   // backend config.yaml object_storage.minio.sharepoint or every object 403s.
   if (command === 'serve') {
     console.log(
-      `[bisheng:minio-proxy] dev object proxy -> ${fileServiceTarget} ` +
+      `[doberman_agent:minio-proxy] dev object proxy -> ${fileServiceTarget} ` +
       `(host must equal backend sharepoint; 127.0.0.1 ≠ localhost)`,
     );
-    console.log(`[bisheng:gateway-proxy] /api/license -> ${gatewayTarget}`);
+    console.log(`[doberman_agent:gateway-proxy] /api/license -> ${gatewayTarget}`);
   }
   const app_env_define = {
     ...app_env,
@@ -256,7 +256,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     // Serve workspace UI as source so component edits participate in HMR.
-    optimizeDeps: { exclude: ["@bisheng/ui"] },
+    optimizeDeps: { exclude: ["@doberman-agent/ui"] },
     resolve: {
       // Workspace viewers must use the app's initialized i18n hook instance.
       dedupe: ['react-i18next'],

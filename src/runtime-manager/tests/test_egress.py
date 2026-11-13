@@ -213,11 +213,11 @@ def test_the_model_face_address_is_on_the_list_even_though_it_is_not_platform_ap
         platform_api_base="http://entry.example.com",
         declared=[],
         injected_env={
-            "OPENAI_BASE_URL": "https://bisheng.customer.com/api/v2/model/v1",
-            "BISHENG_MODEL_BASE_URL": "https://bisheng.customer.com/api/v2/model/v1",
+            "OPENAI_BASE_URL": "https://doberman-agent.customer.com/api/v2/model/v1",
+            "DOBERMAN_AGENT_MODEL_BASE_URL": "https://doberman-agent.customer.com/api/v2/model/v1",
         },
     )
-    decision = decide(destinations, "bisheng.customer.com", 443)
+    decision = decide(destinations, "doberman-agent.customer.com", 443)
     assert decision.allowed
     assert decision.trusted, "the platform's own address may be private on an on-premise install"
 
@@ -230,13 +230,13 @@ def test_an_applications_own_env_cannot_forge_a_platform_address(egress_config: 
 
 def test_the_deploy_path_puts_the_model_face_on_the_policy(egress_config: Config, fake_docker):
     service = _service(egress_config, fake_docker)
-    service.deploy(_deploy_request(env={"OPENAI_BASE_URL": "https://bisheng.customer.com/api/v2/model/v1"}))
+    service.deploy(_deploy_request(env={"OPENAI_BASE_URL": "https://doberman-agent.customer.com/api/v2/model/v1"}))
     hosts = {d.host for d in get_policy_store(egress_config).get("app-1").destinations}
-    assert "bisheng.customer.com" in hosts
+    assert "doberman-agent.customer.com" in hosts
 
 
 def test_the_attachment_handle_host_is_always_on_the_run_phase_list(egress_config: Config):
-    """contracts §9: the whitelist must allow ``BISHENG_APP_STORAGE_ENDPOINT``.
+    """contracts §9: the whitelist must allow ``DOBERMAN_AGENT_APP_STORAGE_ENDPOINT``.
 
     The value is derived from ``RTM_APP_FACING_BASE_URL``, which is also what
     the injected endpoint is built from — so this test fails the moment someone
@@ -499,7 +499,7 @@ async def test_absolute_form_http_is_forwarded_without_the_proxy_credential(egre
 async def test_a_real_http_client_posts_a_json_body_through_the_proxy(egress_config: Config, running_proxy):
     """The SDK's platform calls on a plain ``http://`` base, as httpx really sends them.
 
-    Hosted apps sit on an ``--internal`` network, so ``bisheng_sdk.retrieve`` reaches
+    Hosted apps sit on an ``--internal`` network, so ``doberman_agent_sdk.retrieve`` reaches
     the platform only through here: absolute-form, a JSON body, credentials in the
     proxy URL, several calls from one pooled client. The upstream echoes
     ``Connection: close`` the way uvicorn and nginx do, which is what lets the
@@ -575,10 +575,10 @@ async def test_an_application_declared_name_pointing_inside_the_deployment_is_re
 ):
     """The hole in the wall must not double as a relay into the platform's network.
 
-    The proxy is the one process with a route both onto ``bisheng-apps`` and off
+    The proxy is the one process with a route both onto ``doberman-agent-apps`` and off
     the box, and in the compose form it sits on the platform's own network next
     to mysql / redis / minio. Without this gate a single line of
-    ``egress: {domains: [mysql]}`` in somebody's ``bisheng-app.yaml`` reaches all
+    ``egress: {domains: [mysql]}`` in somebody's ``doberman-agent-app.yaml`` reaches all
     of them — the exact reachability the ``--internal`` network removed.
     """
     _proxy, port = running_proxy
@@ -724,7 +724,7 @@ def test_delete_commands_are_the_exact_inverse_so_re_applying_is_idempotent(egre
 
 def test_the_nft_ruleset_drops_its_own_table_first_and_hooks_ahead_of_docker(egress_config: Config):
     script = nft_script(egress_config, firewall_rules(egress_config))
-    assert "delete table inet bisheng_egress" in script
+    assert "delete table inet doberman_agent_egress" in script
     assert "priority -100" in script
     assert "meta l4proto udp" in script and "drop" in script
 
@@ -750,7 +750,7 @@ def test_preflight_says_out_loud_that_an_undeployed_whitelist_means_open_egress(
 def test_preflight_flags_an_application_network_that_is_not_internal(egress_config: Config, fake_docker):
     row = next(r for r in egress_preflight(egress_config, fake_docker) if r["name"] == "application_network_internal")
     assert row["ok"] is False
-    assert "docker network create --internal bisheng-apps" in row["detail"]
+    assert "docker network create --internal doberman-agent-apps" in row["detail"]
 
 
 def test_preflight_is_clean_once_the_network_is_internal_and_iptables_is_pinned(egress_config: Config, fake_docker):
@@ -793,7 +793,7 @@ def _deploy_request(**overrides) -> DeployRequest:
         "slug": "demo",
         "version_id": "v" * 32,
         "version_no": 1,
-        "image_ref": "bisheng-app/demo:1-vvvvvvvv",
+        "image_ref": "doberman-agent-app/demo:1-vvvvvvvv",
         "tier": TierIn(cpu=0.5, mem=512),
         "port": 8080,
         "health": HealthIn(),
@@ -849,7 +849,7 @@ def test_a_redeploy_carries_the_same_credential_through_the_grace_window(egress_
     service = _service(egress_config, fake_docker)
     service.deploy(_deploy_request())
     first = dict(item.split("=", 1) for item in fake_docker.last_call("create_container")["payload"]["Env"])
-    service.deploy(_deploy_request(version_id="w" * 32, version_no=2, image_ref="bisheng-app/demo:2-wwwwwwww"))
+    service.deploy(_deploy_request(version_id="w" * 32, version_no=2, image_ref="doberman-agent-app/demo:2-wwwwwwww"))
     second = dict(item.split("=", 1) for item in fake_docker.last_call("create_container")["payload"]["Env"])
     assert first[ENV_EGRESS_TOKEN] == second[ENV_EGRESS_TOKEN]
 
@@ -873,7 +873,7 @@ def test_declared_domains_survive_a_lost_state_file(egress_config: Config, fake_
 def test_the_build_runs_on_the_build_network_with_the_build_principals_proxy(egress_config: Config, fake_docker):
     from runtime_manager.api.schemas import BuildRequest
 
-    config = egress_config.with_overrides(build_network="bisheng-build")
+    config = egress_config.with_overrides(build_network="doberman-agent-build")
     from runtime_manager.admission import AdmissionService
 
     service = BuildService(
@@ -894,7 +894,7 @@ def test_the_build_runs_on_the_build_network_with_the_build_principals_proxy(egr
         )
     )
     call = fake_docker.last_call("build_image")
-    assert call["network_mode"] == "bisheng-build"
+    assert call["network_mode"] == "doberman-agent-build"
     assert call["buildargs"]["HTTP_PROXY"].startswith(f"http://{PRINCIPAL_BUILD}:")
 
 
@@ -912,7 +912,7 @@ def test_a_preview_gets_its_own_principal_not_the_applications(egress_config: Co
         session_id="session-0001",
         app_id="app-1",
         version_id="v" * 32,
-        image_ref="bisheng-app/demo:1-vvvvvvvv",
+        image_ref="doberman-agent-app/demo:1-vvvvvvvv",
         tier=Tier(cpu=0.5, mem_mb=512),
         egress_domains=["api.openai.com"],
     )
@@ -938,7 +938,7 @@ def test_stopping_a_preview_takes_its_credential_with_it(egress_config: Config, 
         session_id="session-0001",
         app_id="app-1",
         version_id="v" * 32,
-        image_ref="bisheng-app/demo:1-vvvvvvvv",
+        image_ref="doberman-agent-app/demo:1-vvvvvvvv",
         tier=Tier(cpu=0.5, mem_mb=512),
     )
     service.stop("session-0001")
@@ -1090,7 +1090,7 @@ def test_a_host_full_of_old_instances_is_realigned_one_application_per_pass(
     service = _service(rtm_config, fake_docker)
     service.deploy(_deploy_request())
     service.deploy(
-        _deploy_request(app_id="app-2", slug="other", version_id="w" * 32, image_ref="bisheng-app/other:1-wwwwwwww")
+        _deploy_request(app_id="app-2", slug="other", version_id="w" * 32, image_ref="doberman-agent-app/other:1-wwwwwwww")
     )
     reconciler = _reconciler(egress_config, fake_docker)
 
@@ -1178,13 +1178,13 @@ def test_a_deploy_that_lands_while_the_replacement_is_probed_wins(
 
     class _DeployDuringProbe:
         def wait_ready(self, container, port, health_path, timeout=None):
-            store.put(replace(store.get("app-1"), container_name="bisheng-app-demo-deployed", generation=9))
+            store.put(replace(store.get("app-1"), container_name="doberman-agent-app-demo-deployed", generation=9))
             return SimpleNamespace(ready=True, reason="")
 
     report = _reconciler(egress_config, fake_docker, prober=_DeployDuringProbe()).reconcile_once()
 
     assert report.realigned == []
-    assert store.get("app-1").container_name == "bisheng-app-demo-deployed"
+    assert store.get("app-1").container_name == "doberman-agent-app-demo-deployed"
     with pytest.raises(FakeDockerError):
         fake_docker.get(fake_docker.last_call("create_container")["name"])
 
@@ -1198,14 +1198,14 @@ def test_a_deploy_that_lands_while_the_replacement_is_probed_wins(
 def test_the_application_network_is_internal_on_this_host():
     """AC-16 L1. Verified on 114 / in the CI middleware stage.
 
-    ``docker network inspect bisheng-apps -f '{{.Internal}}'`` must print
+    ``docker network inspect doberman-agent-apps -f '{{.Internal}}'`` must print
     ``true``; anything else means instances have a route around the proxy no
     unit test can see.
     """
     import subprocess
 
     out = subprocess.run(
-        ["docker", "network", "inspect", "bisheng-apps", "-f", "{{.Internal}}"],
+        ["docker", "network", "inspect", "doberman-agent-apps", "-f", "{{.Internal}}"],
         capture_output=True,
         text=True,
         check=True,
@@ -1228,7 +1228,7 @@ def test_an_instance_cannot_reach_an_undeclared_host():
             "run",
             "--rm",
             "--network",
-            "bisheng-apps",
+            "doberman-agent-apps",
             "curlimages/curl:8.8.0",
             "-sS",
             "--max-time",
@@ -1253,7 +1253,7 @@ def test_udp_out_of_the_application_network_is_dropped():
             "run",
             "--rm",
             "--network",
-            "bisheng-apps",
+            "doberman-agent-apps",
             "busybox:1.36",
             "sh",
             "-c",

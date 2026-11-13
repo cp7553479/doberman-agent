@@ -11,7 +11,7 @@
 
 实际上运行期并不依赖这张回填表：``UserPayload`` 的租户解析在用户没有
 ``user_tenant`` 行时会回退到 ``DEFAULT_TENANT_ID``（见
-``bisheng/common/dependencies/user_deps.py``），登录/查询都不会因缺行而失败。
+``doberman_agent/common/dependencies/user_deps.py``），登录/查询都不会因缺行而失败。
 多租户登录路径还会在首次登录时惰性补挂默认租户。所以这段回填是**纯数据
 一致性维护**，适合作为一次性脚本按需运行，而不是每次开机跑。
 
@@ -61,10 +61,10 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.core.context.tenant import DEFAULT_TENANT_ID, bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_sync_db_session  # noqa: E402
-from bisheng.database.models.tenant import Tenant, UserTenant  # noqa: E402
-from bisheng.user.domain.models.user import User  # noqa: E402
+from doberman_agent.core.context.tenant import DEFAULT_TENANT_ID, bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_sync_db_session  # noqa: E402
+from doberman_agent.database.models.tenant import Tenant, UserTenant  # noqa: E402
+from doberman_agent.user.domain.models.user import User  # noqa: E402
 
 
 @dataclass

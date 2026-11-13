@@ -94,7 +94,7 @@ QA 双端点不在清单内：beta1 已有 `_qa_with_knowledge_access` 闸（`op
 
 ### 决策 8：技能包修缮边界
 
-- 只改 `open_api/skill_packs/bisheng-knowledge-search/` 下静态文件 + 新增 `references/api.md`（`.md` 后缀自动吃 `{{BASE_URL}}`/`{{OUTBOUND_ORIGIN}}` 渲染，`skill_pack_service.py` 零改动）。
+- 只改 `open_api/skill_packs/doberman-agent-knowledge-search/` 下静态文件 + 新增 `references/api.md`（`.md` 后缀自动吃 `{{BASE_URL}}`/`{{OUTBOUND_ORIGIN}}` 渲染，`skill_pack_service.py` 零改动）。
 - api.md 必写：端点表（retrieve / 列表 / file list）、响应 wrapper 与 chunk 字段、`extra=forbid`（多传字段即 422）、top_k ≤200、QA/个人库不可检索、**「先调 `GET /api/v2/filelib/`（type=3 与 type=0）拿知识库标识再检索」**、cursor 分页、引用回链格式（document_name + knowledge_id/document_id/chunk_index）、错误码表（26001/26002/26003/26030/26040/26043/**26044** 各自的行动指引）、**v2 type=3 清单不含部门空间**（可检索但需用户提供标识）。
 - `search.py`：非 2xx 读取 `exc.read()` 透出 `status_code`/`status_message`；SKILL.md frontmatter description 补中文触发词。
 - **何时重新考虑**：需要在包内携带实例相关 JSON（如 meta.json 带版本与地址）时，须把 `.json` 加进 skill_pack_service 的渲染后缀名单——那是唯一允许动打包服务的场景，本期不做。
@@ -141,7 +141,7 @@ v2 请求 → verify_open_api_access (open_api/api/dependencies.py)
 | `knowledge/domain/services/knowledge_space_service.py` | 旁路收口 ②（:2841 / :2990 system_scope） | — |
 | `client .../PersonalTokenDialog.tsx` → AI 助手接入弹窗 | 状态机：两步 / 管理员确认 / 展示（红条+范围卡）/ 已连接 / 关停 | 不直调 axios；不超 600 行 |
 | `platform .../SystemPage/components/PersonalToken/` | 使用策略卡（含 RadioGroup + 收紧确认）+ 台账 | 不新建页面级组件 |
-| `open_api/skill_packs/bisheng-knowledge-search/` | 三个静态文件 + 新增 references/api.md | 打包服务零逻辑改动 |
+| `open_api/skill_packs/doberman-agent-knowledge-search/` | 三个静态文件 + 新增 references/api.md | 打包服务零逻辑改动 |
 
 ---
 
@@ -159,7 +159,7 @@ v2 请求 → verify_open_api_access (open_api/api/dependencies.py)
 | 8 | `DEFAULT_PAT_TTL_DAYS` **beta1=365**；beta2 上是 30（旧值） | 从 beta2 抄代码会把默认 TTL 改坏 | 本 feature 基线是 beta1，勿参照 beta2 |
 | 9 | 管理员 TTL = `min(租户值, pat_admin_ttl_days=7)`（personal_token_service.py:52-53） | 前端硬写「7 天」在租户 TTL<7 时说大 | `{{days}}` 用签发响应实际值 |
 | 10 | `f053_pat_tenant_setting` 迁移已有后继，**加列必须新开迁移**；单头纪律以 `alembic heads` 实跑为准 | 双头 → entrypoint fail-fast 全站起不来 | alembic/AGENTS.md §0-§3 |
-| 11 | worktree 跑前端要镜像 node_modules + 重定向 @bisheng + 补链隐藏项；`pnpm install` 会搞坏 canvas | worktree 里 lint/test 全挂或 client jest 全挂 | 参照 bisheng-prd1 先例；能不 install 就不 install |
+| 11 | worktree 跑前端要镜像 node_modules + 重定向 @doberman-agent + 补链隐藏项；`pnpm install` 会搞坏 canvas | worktree 里 lint/test 全挂或 client jest 全挂 | 参照 doberman-agent-prd1 先例；能不 install 就不 install |
 | 12 | `api_errors` 产物 json（client `api_errors.gen.json` / platform `public/locales/*/api_errors.json`）禁手改 | CI 挂 | 改 packages/locales 源 + 重跑 build |
 | 13 | `tenant_filter` 只拦 SELECT、粒度只有租户、raw SQL 绕过 | 有人想借它做收窄（决策 1-C 的诱惑） | 已否决，见决策 1 |
 | 14 | `26044` 不并入 `26003`：行动指引不同（加位 vs 范围策略） | Agent/用户拿到笼统 403 无从自救 | 决策 2 + api.md 错误码表 |
@@ -222,5 +222,5 @@ v2 请求 → verify_open_api_access (open_api/api/dependencies.py)
 | 2026-09-13 | 初版（8 项决策 + 15 条坑） | F066 设计定稿 |
 | 2026-09-13 | 决策 2 补异常落位注；§7 矩阵改两层实现形态（T010 测试降级） | 实现期回写 |
 | 2026-09-13 | 决策 5 收口清单 3→4 处；§5 增坑 16（应用层超管短路） | 105 e2e N6 抓获真旁路 |
-| 2026-09-13 | 迭代二·去品牌化（采访定稿 5 条）：环境变量 `BISHENG_API_KEY`→`KNOWLEDGE_API_KEY`、技能包 slug/name `bisheng-knowledge-search`→`knowledge-search`（不留旧别名）、界面文案接 `$t(bisheng)` 白标插值、技能包内英文文档一律中性、`bs-pat-` 前缀不改；顺带修打包器 `__pycache__` 泄入 zip | 贴牌客户不能透出品牌（用户采访确认） |
+| 2026-09-13 | 迭代二·去品牌化（采访定稿 5 条）：环境变量 `DOBERMAN_AGENT_API_KEY`→`KNOWLEDGE_API_KEY`、技能包 slug/name `doberman-agent-knowledge-search`→`knowledge-search`（不留旧别名）、界面文案接 `$t(doberman-agent)` 白标插值、技能包内英文文档一律中性、`bs-pat-` 前缀不改；顺带修打包器 `__pycache__` 泄入 zip | 贴牌客户不能透出品牌（用户采访确认） |
 | 2026-09-13 | 迭代二·交互修订（AC-P31 口径变更）：勾选门控取消，明文改在主弹窗之上的二次小弹窗（TokenRevealDialog，z-110 照 ConfirmContext 叠加先例）展示，×/Esc/遮罩直接关、关后主栏即掩码态；主栏永不渲染明文与红条；删「开发者文档说明」折叠区；驻地页副标题 Claude Code→WorkBuddy；入口副文案改「让第三方 AI 助手检索知识空间」 | 勾选才能关弹窗反直觉（对标 ima 二次弹窗）+ 第二步过长 |

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PreviewPdfBBox } from '@bisheng/file-viewers/types';
+import type { PreviewPdfBBox } from '@doberman-agent/file-viewers/types';
 import type { CitationServices } from './types';
 export interface CitationFileProps {
   fileName:string;fileType:string;fileUrl:string;transcriptUrl?:string;

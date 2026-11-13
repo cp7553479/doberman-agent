@@ -76,13 +76,13 @@ ACTION_BEARING_BLOCK_TYPES = frozenset({"agree_reject_button", "button", "approv
 
 
 def _publish_approval():
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     return publish_approval_service
 
 
 def _center():
-    from bisheng.approval.domain.services.approval_center_service import ApprovalCenterService
+    from doberman_agent.approval.domain.services.approval_center_service import ApprovalCenterService
 
     return ApprovalCenterService
 
@@ -102,7 +102,7 @@ async def _submitted(
     the CLI (INV-29) — is exactly what the approve/reject recipients are read
     from, and hand-seeding would let this file assert its own assumption.
     """
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_PRECHECK_PROBE, STATUS_RUNNING
 
     app, _ = await app_factory(tenant_id=tenant_id, with_version=False, owner_user_id=owner_user_id)
     deployment = await deployment_factory(
@@ -150,8 +150,8 @@ def message_sink(monkeypatch):
     fixture asserts the sink is **non-empty** before asserting anything about
     its contents; otherwise a broken chain reads as a passing test.
     """
-    from bisheng.message.api import dependencies as message_dependencies
-    from bisheng.message.domain.services.message_service import MessageService
+    from doberman_agent.message.api import dependencies as message_dependencies
+    from doberman_agent.message.domain.services.message_service import MessageService
 
     saved: list = []
 
@@ -185,7 +185,7 @@ async def test_approved_notifies_the_owner_as_applicant(
 
     The receiver is ``instance.applicant_user_id``, which
     ``publish_approval_service`` set to the application's owner rather than the
-    service account that ran ``bisheng deploy``. A service account has no
+    service account that ran ``doberman-agent deploy``. A service account has no
     inbox anybody reads, so getting this wrong loses the message entirely
     without any error (INV-29).
     """
@@ -209,7 +209,7 @@ async def test_rejected_notifies_the_owner_and_carries_the_comment(
     """Rejection reaches the same person approval would have, with the reason attached.
 
     The comment is the only thing that tells the owner what to change before
-    the next ``bisheng deploy``; dropping it turns a rejection into "no".
+    the next ``doberman-agent deploy``; dropping it turns a rejection into "no".
     """
     app, _, result = await _submitted(app_factory, deployment_factory)
     approval_notifications.clear()
@@ -323,7 +323,7 @@ async def test_pending_online_union_reaches_owner_super_admin_and_tenant_admin(
     by construction — running it there would prove only that the super admin
     branch works.
     """
-    from bisheng.app_publish.domain.services import publish_notification_service
+    from doberman_agent.app_publish.domain.services import publish_notification_service
 
     recipients = await publish_notification_service.notify_pending_online(
         tenant_id=SUB_TENANT_ID,
@@ -356,9 +356,9 @@ async def test_manual_publish_after_resources_freed_notifies_nobody(
     **zero** station messages — if it grew one, every parked application in a
     busy cluster would page its owner twice.
     """
-    from bisheng.app_publish.domain.services.publish_online_service import PublishOnlineService
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.app_publish.domain.services.publish_online_service import PublishOnlineService
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult, AppStateService
+    from doberman_agent.database.models.app import AppDao
 
     app, version = await app_factory(state="pending_capacity", with_version=True)
     await deployment_factory(
@@ -403,7 +403,7 @@ async def test_app_publish_owns_exactly_three_notification_call_sites():
     import ast
     from pathlib import Path
 
-    import bisheng.app_publish as app_publish
+    import doberman_agent.app_publish as app_publish
 
     package_root = Path(app_publish.__file__).parent
     service_module = package_root / "domain" / "services" / "publish_notification_service.py"
@@ -437,7 +437,7 @@ async def test_publish_notification_service_declares_no_silent_class_action_code
     Leaving ``ACTION_RESOURCE_RELEASED`` lying around unused is how "we decided
     not to notify" becomes "somebody wired it up".
     """
-    from bisheng.app_publish.domain.services import publish_notification_service
+    from doberman_agent.app_publish.domain.services import publish_notification_service
 
     declared = {
         value
@@ -472,8 +472,8 @@ async def test_publish_notifications_are_neutral_notify_messages(publish_db, mes
     guarantee has to live on the sending side, and this asserts it on the real
     ``send_generic_notify`` path rather than on its source text.
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
-    from bisheng.message.domain.models.inbox_message import MessageStatusEnum, MessageTypeEnum
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.message.domain.models.inbox_message import MessageStatusEnum, MessageTypeEnum
 
     await ApprovalNotificationService.notify_users(
         sender=OWNER_USER_ID,
@@ -501,7 +501,7 @@ async def test_publish_notification_content_carries_no_action_payload(publish_db
     none of that: the handling lives on the publish face and in the approval
     centre, so the inbox card is a statement with a link at most.
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     await ApprovalNotificationService.notify_users(
         sender=OWNER_USER_ID,
@@ -534,7 +534,7 @@ async def test_task_pending_metadata_is_a_deep_link_not_a_command(publish_db, me
     approval centre. That is navigation — the decision is still taken there,
     with its own permission check — and it is the boundary AC-65 draws.
     """
-    from bisheng.approval.domain.services.approval_notification_service import ApprovalNotificationService
+    from doberman_agent.approval.domain.services.approval_notification_service import ApprovalNotificationService
 
     await ApprovalNotificationService.notify_users(
         sender=OWNER_USER_ID,

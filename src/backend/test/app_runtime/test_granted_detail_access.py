@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.app_publish.domain.services.publish_status_service import PublishStatusService
-from bisheng.app_runtime.domain.services.app_query_service import AppQueryService
-from bisheng.common.errcode.app_factory import AppManageForbiddenError, AppNotFoundError
-from bisheng.common.errcode.app_publish import AppPublishOwnerOnlyError
+from doberman_agent.app_publish.domain.services.publish_status_service import PublishStatusService
+from doberman_agent.app_runtime.domain.services.app_query_service import AppQueryService
+from doberman_agent.common.errcode.app_factory import AppManageForbiddenError, AppNotFoundError
+from doberman_agent.common.errcode.app_publish import AppPublishOwnerOnlyError
 
 
 @pytest.mark.parametrize("allowed", [True, False])
@@ -17,13 +17,13 @@ async def test_detail_and_publish_status_use_concrete_edit_action(monkeypatch, a
     actor = SimpleNamespace(user_id=11, tenant_id=2, is_global_super=False)
     monkeypatch.setattr(AppQueryService, "_load", AsyncMock(return_value=app))
     monkeypatch.setattr(
-        "bisheng.app_runtime.domain.services.app_query_service.check_tenant_admin", AsyncMock(return_value=False)
+        "doberman_agent.app_runtime.domain.services.app_query_service.check_tenant_admin", AsyncMock(return_value=False)
     )
     monkeypatch.setattr(
-        "bisheng.app_publish.domain.services.publish_status_service.check_tenant_admin", AsyncMock(return_value=False)
+        "doberman_agent.app_publish.domain.services.publish_status_service.check_tenant_admin", AsyncMock(return_value=False)
     )
     check = AsyncMock(return_value=allowed)
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.check_business_action", check)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.check_business_action", check)
     if allowed:
         assert await AppQueryService._load_visible("app", actor) is app
         await PublishStatusService._require_viewer(app, actor)
@@ -41,7 +41,7 @@ async def test_cross_tenant_and_developer_key_do_not_gain_access(monkeypatch):
     actor = SimpleNamespace(user_id=11, tenant_id=3, is_global_super=False)
     monkeypatch.setattr(AppQueryService, "_load", AsyncMock(return_value=app))
     check = AsyncMock(return_value=True)
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.check_business_action", check)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.check_business_action", check)
     with pytest.raises(AppNotFoundError):
         await AppQueryService._load_visible("app", actor)
     actor.tenant_id = 2

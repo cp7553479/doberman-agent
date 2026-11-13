@@ -1,10 +1,10 @@
 // @ts-strict-ignore
 import { PlatformImagePreview } from '@/components/bs-comp/preview/DocumentPreview';
-import { Button, toast } from '@bisheng/ui';
+import { Button, toast } from '@doberman-agent/ui';
 import type { PdfScrollContext } from '@/components/bs-comp/preview/PlatformPdfPreview';
 import { labelTop as pdfLabelTop } from '@/components/bs-comp/preview/pdfEditing';
 import FileView from "@/components/bs-comp/FileView";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 
 

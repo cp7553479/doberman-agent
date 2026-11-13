@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeExecutionResource, RuntimeMaterialDelegation
 from test.app_runtime.test_runtime_material_service import bind, create
 from test.app_runtime.test_runtime_material_service import control as control
 from test.app_runtime.test_runtime_material_service import materials as materials

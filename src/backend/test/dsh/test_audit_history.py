@@ -13,18 +13,18 @@ from fastapi import FastAPI, HTTPException
 from sqlalchemy import create_engine, event
 from sqlmodel import Session, SQLModel
 
-from bisheng.common.errcode.dsh import DshInvalidRequestError
-from bisheng.core.database import tenant_filter
-from bisheng.database.models.department import Department
-from bisheng.database.models.role import Role
-from bisheng.database.models.tenant import UserTenant
-from bisheng.dsh.domain.models.admin_operation import DshAdminOperation
-from bisheng.dsh.domain.models.subject_policy import DshSubjectPolicyAudit
-from bisheng.dsh.domain.repositories.audit import DshAuditRepository
-from bisheng.dsh.domain.services.admin import DshManagementService
-from bisheng.dsh.domain.services.profile import profile_scope
-from bisheng.llm.domain.models.llm_server import LLMModel
-from bisheng.user.domain.models.user import User
+from doberman_agent.common.errcode.dsh import DshInvalidRequestError
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.database.models.department import Department
+from doberman_agent.database.models.role import Role
+from doberman_agent.database.models.tenant import UserTenant
+from doberman_agent.dsh.domain.models.admin_operation import DshAdminOperation
+from doberman_agent.dsh.domain.models.subject_policy import DshSubjectPolicyAudit
+from doberman_agent.dsh.domain.repositories.audit import DshAuditRepository
+from doberman_agent.dsh.domain.services.admin import DshManagementService
+from doberman_agent.dsh.domain.services.profile import profile_scope
+from doberman_agent.llm.domain.models.llm_server import LLMModel
+from doberman_agent.user.domain.models.user import User
 from test.e2e.helpers.api import assert_resp_200
 
 AT = datetime(2026, 9, 16, 9, 0)
@@ -218,7 +218,7 @@ def test_invalid_cursors(audit_db, cursor):
 
 async def test_api_service_repository_chain_and_denials(audit_db):
     """AC-01,04,05,07: real read chain, validated inputs and original authorizer."""
-    from bisheng.dsh.api.endpoints import admin
+    from doberman_agent.dsh.api.endpoints import admin
 
     async def read(**query):
         with Session(audit_db) as session:

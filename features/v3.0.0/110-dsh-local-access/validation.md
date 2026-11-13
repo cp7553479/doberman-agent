@@ -6,8 +6,8 @@
 
 | 仓库 | 工作区 | 分支 / 基线 |
 | --- | --- | --- |
-| BiSheng | /Users/zhangguoqing/.codex/worktrees/bisheng-work-110/bisheng | feat/bisheng-work-110，实施前 HEAD a2b7860d8efed08fdee41e9ecdf46560ed5ef0bb |
-| Desktop | /Users/zhangguoqing/works/bisheng-work/.worktrees/dsh-without-gateway | codex/dsh-without-gateway，创建时 origin/V1.1.0 = 5ee11bddf915a29af6d9252ead9b3f8343dba544 |
+| doberman-agent | /Users/zhangguoqing/.codex/worktrees/doberman-agent-work-110/doberman-agent | feat/doberman-agent-work-110，实施前 HEAD a2b7860d8efed08fdee41e9ecdf46560ed5ef0bb |
+| Desktop | /Users/zhangguoqing/works/doberman-agent-work/.worktrees/dsh-without-gateway | codex/dsh-without-gateway，创建时 origin/V1.1.0 = 5ee11bddf915a29af6d9252ead9b3f8343dba544 |
 
 用户指定的 v1.1.0 对应远端实际分支名 V1.1.0，已核对并从该分支创建。原客户端主工作区及其未提交文档未修改。
 
@@ -19,7 +19,7 @@
 | 最终严格租户模式回归 | test_native_access.py 单独启用真实 SQLAlchemy 租户事件，11 passed；包含 Root 可见时会话不串租户 |
 | Python → Desktop 契约 | 新服务真实签发 Token 响应，经客户端 contract.js 的 parseToken 校验；跨仓库测试通过 |
 | 管理端 DSH 回归 | 35 files / 300 tests passed，包含额度界面、默认导航、设置、用量和模型审计 |
-| 管理端类型 / 构建 | pnpm --filter bisheng typecheck、pnpm --filter bisheng build 通过 |
+| 管理端类型 / 构建 | pnpm --filter doberman-agent typecheck、pnpm --filter doberman-agent build 通过 |
 | 改动管理端文件 ESLint | 11 个仍存在的改动 TS/TSX 文件检查通过；未新增豁免 |
 | 多语言 | pnpm check-i18n 通过，无新增 drift |
 | 后端 lint | 改动的 52 个现存 Python 文件 Ruff 通过；DSH 模块整体 Ruff 通过 |

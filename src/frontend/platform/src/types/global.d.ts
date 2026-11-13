@@ -30,7 +30,7 @@ declare global {
             };
         };
         __BRAND_CONFIG_READY__?: Promise<any>;
-        /** Runtime app config injected by public/assets/bisheng/config.js. */
+        /** Runtime app config injected by public/assets/doberman-agent/config.js. */
         APP_CONFIG?: {
             /** Hide Japanese from the language switcher and locale auto-detection. */
             disableJa?: boolean;

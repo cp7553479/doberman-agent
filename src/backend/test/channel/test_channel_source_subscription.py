@@ -12,18 +12,18 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-from bisheng.channel.domain.schemas.channel_manager_schema import (
+from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+from doberman_agent.channel.domain.schemas.channel_manager_schema import (
     CreateChannelRequest,
     UpdateChannelRequest,
 )
-from bisheng.channel.domain.services.channel_service import ChannelService
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.channel.domain.services.channel_service import ChannelService
+from doberman_agent.common.models.space_channel_member import (
     MembershipStatusEnum,
     UserRoleEnum,
 )
 
-_CS = "bisheng.channel.domain.services.channel_service"
+_CS = "doberman_agent.channel.domain.services.channel_service"
 
 
 @pytest.fixture(autouse=True)
@@ -33,7 +33,7 @@ def _stub_channel_quota():
     # be stubbed too or these tests hit the database for a quota they do not exercise.
     with (
         patch(
-            "bisheng.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
+            "doberman_agent.role.domain.services.quota_service.UserRoleDao.aget_user_roles",
             new=AsyncMock(return_value=[]),
         ),
         patch(
@@ -123,7 +123,7 @@ async def test_create_never_subscribes_and_refreshes_public_metadata():
             f"{_CS}.get_f048_resource_adapter",
             new=AsyncMock(return_value=permission_adapter),
         ),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.create_channel(
             CreateChannelRequest(
@@ -174,7 +174,7 @@ async def test_create_metadata_failure_does_not_roll_back_channel():
             f"{_CS}.get_f048_resource_adapter",
             new=AsyncMock(return_value=permission_adapter),
         ),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.create_channel(
             CreateChannelRequest(
@@ -221,7 +221,7 @@ async def test_create_upserts_selected_source_metadata():
             f"{_CS}.get_f048_resource_adapter",
             new=AsyncMock(return_value=permission_adapter),
         ),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.create_channel(
             CreateChannelRequest(
@@ -268,7 +268,7 @@ async def test_create_is_not_blocked_by_remote_subscription_limit():
             f"{_CS}.get_f048_resource_adapter",
             new=AsyncMock(return_value=permission_adapter),
         ),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.create_channel(
             CreateChannelRequest(
@@ -339,7 +339,7 @@ async def test_update_add_never_subscribes_and_refreshes_metadata():
 
     with (
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.update_channel(
             "channel-1",
@@ -380,7 +380,7 @@ async def test_update_remove_does_not_unsubscribe():
 
     with (
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.update_channel(
             "channel-1",
@@ -441,7 +441,7 @@ async def test_dismiss_does_not_unsubscribe():
             new=AsyncMock(return_value=permission_adapter),
         ),
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.dismiss_channel("channel-1", _LoginUser())
 
@@ -464,7 +464,7 @@ async def test_dismiss_shared_source_stays_subscribed():
             new=AsyncMock(return_value=permission_adapter),
         ),
         patch(f"{_CS}.require_business_action", new=AsyncMock()),
-        patch(f"{_CS}.get_bisheng_information_client", new=AsyncMock(return_value=info_client)),
+        patch(f"{_CS}.get_doberman_agent_information_client", new=AsyncMock(return_value=info_client)),
     ):
         await service.dismiss_channel("channel-A", _LoginUser())
 
@@ -482,8 +482,8 @@ async def test_batch_add_idempotent_on_integrity_error():
     """A concurrent duplicate-id insert is recovered: rollback, drop existing, retry new only."""
     from sqlalchemy.exc import IntegrityError
 
-    from bisheng.channel.domain.models.channel_info_source import ChannelInfoSource
-    from bisheng.channel.domain.repositories.implementations.channel_info_source_repository_impl import (
+    from doberman_agent.channel.domain.models.channel_info_source import ChannelInfoSource
+    from doberman_agent.channel.domain.repositories.implementations.channel_info_source_repository_impl import (
         ChannelInfoSourceRepositoryImpl,
     )
 

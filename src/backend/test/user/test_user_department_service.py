@@ -14,10 +14,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.errcode.tenant_resolver import TenantRelocateBlockedError
-from bisheng.tenant.domain.constants import UserTenantSyncTrigger
-from bisheng.user.domain.services import user_department_service as uds_module
-from bisheng.user.domain.services.user_department_service import (
+from doberman_agent.common.errcode.tenant_resolver import TenantRelocateBlockedError
+from doberman_agent.tenant.domain.constants import UserTenantSyncTrigger
+from doberman_agent.user.domain.services import user_department_service as uds_module
+from doberman_agent.user.domain.services.user_department_service import (
     UserDepartmentService,
 )
 

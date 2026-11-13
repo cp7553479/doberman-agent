@@ -9,7 +9,7 @@ import autoprefixer from 'autoprefixer';
 /**
  * Component-library docs site (rspress).
  *
- * - Docs root is `packages/ui/docs/` (design specs, git-tracked with @bisheng/ui).
+ * - Docs root is `packages/ui/docs/` (design specs, git-tracked with @doberman-agent/ui).
  * - Real ui components are imported via the `~` / `@` alias (mirrors vite.config).
  * - @rspress/plugin-preview renders live component demos inside markdown.
  * - i18n and custom theme intentionally NOT enabled yet.
@@ -38,7 +38,7 @@ const docsBuild = {
 };
 
 /**
- * Which components @bisheng/ui publicly exports, read from its entry at build time.
+ * Which components @doberman-agent/ui publicly exports, read from its entry at build time.
  *
  * The 组件总览 「已迁库」 badge derives itself from this list: a demo page declares
  * WHICH component it documents (`component:` front matter) and the table decides
@@ -66,12 +66,14 @@ const uiComponents = (() => {
 export default defineConfig({
   // Docs live with the component library: src/frontend/packages/ui/docs
   // (git-tracked; the site stays hosted in client until the app-coupled demos
-  // finish migrating onto @bisheng/ui).
+  // finish migrating onto @doberman-agent/ui).
   root: path.join(__dirname, '../packages/ui/docs'),
   // Build output next to the docs source (gitignored; CI artifact only).
   outDir: path.join(__dirname, '../packages/ui/doc_build'),
-  title: 'BISHENG 组件库',
-  description: 'BISHENG client 设计规范 + 组件库',
+  title: 'doberman-agent 组件库',
+  icon: '/doberman-agent-icon.png',
+  logo: '/doberman-agent-icon.png',
+  description: 'doberman-agent client 设计规范 + 组件库',
   lang: 'zh', // single language — i18n intentionally not enabled (req 5)
   // No SSG: demos import real app components, whose dependency tree reaches
   // browser/node-conditional packages (@dicebear/converter resolves its `node`
@@ -239,7 +241,7 @@ export default defineConfig({
       preEntry: [
         'regenerator-runtime/runtime',
         // globalStyles below loads the app's style.css, which no longer carries the
-        // design tokens — they live in @bisheng/ui now. Load them here too, or every
+        // design tokens — they live in @doberman-agent/ui now. Load them here too, or every
         // color / type custom property on the docs site resolves to nothing.
         path.join(__dirname, '../packages/ui/src/styles/tokens.css'),
         path.join(__dirname, 'stubs/rspress-overrides.css'),
@@ -249,7 +251,7 @@ export default defineConfig({
         __UI_COMPONENTS__: JSON.stringify(uiComponents),
         // vite injects these globals (vite.config define); app code reached via
         // the `~/utils` barrel reads them at module scope — must exist here too.
-        __APP_ENV__: JSON.stringify({ BASE_URL: '/workspace', BISHENG_HOST: '/admin' }),
+        __APP_ENV__: JSON.stringify({ BASE_URL: '/workspace', DOBERMAN_AGENT_HOST: '/admin' }),
         __VCONSOLE_ENABLED__: JSON.stringify(false),
         // vite exposes import.meta.env; rspack leaves it undefined. App code reads
         // DEV/BASE_URL/MODE/VITE_* at module scope, so give it a concrete object.
@@ -270,11 +272,11 @@ export default defineConfig({
         // bundle) — e.g. the generated component index on /components/.
         '@docs-site': path.join(__dirname, 'docs-site'),
         // Spec pages (packages/ui/docs/*.mdx) live outside this project, so a
-        // bare `bisheng-icons` import resolves from the docs dir and misses the
+        // bare `@doberman-agent/icons` import resolves from the docs dir and misses the
         // package installed here. Alias it to the local install so spec mdx can
         // embed real icon components (plugin-preview fenced demos already
         // resolve it via the client context; this covers page-body imports).
-        'bisheng-icons': path.join(__dirname, 'node_modules/bisheng-icons'),
+        '@doberman-agent/icons': path.join(__dirname, 'node_modules/@doberman-agent/icons'),
         $fonts: path.join(__dirname, 'public/fonts'),
         // `import { URL } from 'url'` in api code must not resolve to the npm
         // `url` package (no URL named export) — shim with the browser global.

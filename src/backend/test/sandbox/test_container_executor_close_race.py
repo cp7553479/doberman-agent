@@ -10,8 +10,8 @@ from __future__ import annotations
 import pytest
 from test_container_executor_recovery import URL, ScriptedRunner, _count, _exe
 
-from bisheng.common.errcode.sandbox import SandboxExecTimeoutError
-from bisheng_langchain.gpts.tools.code_interpreter import container_executor as ce
+from doberman_agent.common.errcode.sandbox import SandboxExecTimeoutError
+from doberman_agent_langchain.gpts.tools.code_interpreter import container_executor as ce
 
 # ---------------------------------------------------------------- C1 authority
 

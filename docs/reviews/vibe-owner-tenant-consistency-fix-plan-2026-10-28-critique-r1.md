@@ -15,7 +15,7 @@
 **B1 — [维度 6] 非 CLI 启动入口没有加入共同事务门闸，仍存在“检查通过后人员迁走，再启动实例”的窗口。**
 
 - **文档锚点：** §4.2“手工上线、停用恢复、配置重建、预览准备”；§4.3 第 1–3 点只规定 `accept` 建 deployment 占位与迁移写入锁同一用户行。
-- **代码锚点：** `src/backend/bisheng/app_runtime/domain/services/app_state_service.py:293–313`，`_start` 在读取、权限检查之后才调用部署协调器；`runtime_operation_service.py:61–104` 再创建持久操作。目前两者均没有共同人员事务锁。
+- **代码锚点：** `src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py:293–313`，`_start` 在读取、权限检查之后才调用部署协调器；`runtime_operation_service.py:61–104` 再创建持久操作。目前两者均没有共同人员事务锁。
 - **影响：** 一个稳定停用应用没有 active deployment。恢复请求读取 owner 关系通过后暂停，迁移事务检查不到任何在途记录而提交，恢复请求随后建立 runtime operation 并启动。给 §4.2 加一次重读无法满足 §4.3 的两种顺序保证。
 - **建议：** 明确所有会产生新执行者的入口，均须在同一用户行锁下完成“重读资格＋持久操作登记”，且登记在操作完全结算前持续阻断迁移。复用已有 runtime operation；旧协议没有持久记录的入口也须明确保护办法。补一条定向交错验证：暂停在资格检查与登记之间，验证迁移和启动不能同时成功。
 

@@ -14,7 +14,7 @@
 | 消息流 `push_message` | 仅 Redis List（TTL=3600s，LPOP 即弹出） | 否（瞬态） |
 | 任务实体 `add_execution_task_step` | Redis + **MySQL 双写**（`LinsightExecuteTask.history`） | 是 |
 
-刷新走 [`get_execute_task_detail`](../../../src/backend/bisheng/linsight/domain/services/workbench_impl.py) → `get_by_session_version_id` → 各任务行 `history`。**未进某条任务行 history 的事件刷新即丢**。由此引出两个缺陷。
+刷新走 [`get_execute_task_detail`](../../../src/backend/doberman_agent/linsight/domain/services/workbench_impl.py) → `get_by_session_version_id` → 各任务行 `history`。**未进某条任务行 history 的事件刷新即丢**。由此引出两个缺陷。
 
 ---
 

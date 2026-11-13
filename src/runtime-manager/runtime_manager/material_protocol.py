@@ -136,7 +136,7 @@ def canonical_message(method, target, body, *, delegation_id, key_id, pod_uid, t
         raise MaterialProtocolError("material_ticket_scope_invalid", 401)
     return "\n".join(
         [
-            "BISHENG-RUNTIME-MATERIAL-V1",
+            "DOBERMAN_AGENT-RUNTIME-MATERIAL-V1",
             delegation_id,
             key_id,
             pod_uid,

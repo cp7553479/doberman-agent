@@ -13,10 +13,10 @@ from test.app_runtime.test_runtime_delivery_repository import runtime_repo as ru
 
 @pytest.fixture
 async def runtime_api(runtime_repo, monkeypatch):
-    from bisheng.app_runtime.api.endpoints import runtime_delivery as api
-    from bisheng.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
-    from bisheng.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
-    from bisheng.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
+    from doberman_agent.app_runtime.api.endpoints import runtime_delivery as api
+    from doberman_agent.app_runtime.domain.services.runtime_artifact_service import RuntimeArtifactService
+    from doberman_agent.app_runtime.domain.services.runtime_operation_service import RuntimeOperationService
+    from doberman_agent.app_runtime.domain.services.runtime_protocol import canonical_json, signed_headers
 
     keys = {
         role: {"secret": "fixture-" + role, "roles": [role], "node_id": "node-a"}
@@ -56,7 +56,7 @@ async def runtime_api(runtime_repo, monkeypatch):
             return await client.request(method, path, headers=headers, content=raw)
 
         async def create(document):
-            from bisheng.app_runtime.domain.schemas.runtime_delivery import OperationInput
+            from doberman_agent.app_runtime.domain.schemas.runtime_delivery import OperationInput
 
             return await svc.create(OperationInput.model_validate(document))
 
@@ -83,7 +83,7 @@ async def test_operation_idempotency_and_bound_node(runtime_api):
     assert (await runtime_api("GET", f"/operations/{op}", "other-node")).status_code == 404
     assert (await runtime_api("GET", f"/operations/{op}", "entry")).status_code == 403
     payload["payload"] = {"changed": True}
-    from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+    from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
 
     with pytest.raises(RuntimeConflict, match="idempotency_content_conflict"):
         await runtime_api.create(payload)

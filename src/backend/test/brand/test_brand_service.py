@@ -2,7 +2,7 @@ import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from bisheng.brand.domain.services.brand_service import BRAND_CONFIG_KEY, BrandService
+from doberman_agent.brand.domain.services.brand_service import BRAND_CONFIG_KEY, BrandService
 
 
 def build_service(raw_value: str | None) -> tuple[BrandService, AsyncMock]:
@@ -16,8 +16,8 @@ async def test_runtime_config_returns_builtin_brand_when_not_configured() -> Non
 
     config = await service.get_runtime_config()
 
-    assert config["brandName"] == {"zh": "BISHENG", "en": "BISHENG"}
-    assert config["assets"]["favicon"]["url"] == "/assets/bisheng/favicon.ico"
+    assert config["brandName"] == {"zh": "doberman-agent", "en": "doberman-agent"}
+    assert config["assets"]["favicon"]["url"] == "/assets/doberman-agent/favicon.ico"
     assert "linsightAgentName" not in config
     get_value.assert_awaited_once_with(BRAND_CONFIG_KEY)
 
@@ -27,8 +27,8 @@ async def test_runtime_config_falls_back_to_builtin_brand_for_invalid_saved_conf
 
     config = await service.get_runtime_config()
 
-    assert config["brandName"] == {"zh": "BISHENG", "en": "BISHENG"}
-    assert config["assets"]["headerLogoLight"]["url"] == "/assets/bisheng/login-logo-small.png"
+    assert config["brandName"] == {"zh": "doberman-agent", "en": "doberman-agent"}
+    assert config["assets"]["headerLogoLight"]["url"] == "/assets/doberman-agent/login-logo-small.png"
 
 
 async def test_runtime_config_preserves_saved_brand_and_fills_default_assets() -> None:
@@ -38,4 +38,4 @@ async def test_runtime_config_preserves_saved_brand_and_fills_default_assets() -
     config = await service.get_runtime_config()
 
     assert config["brandName"] == {"zh": "定制品牌", "en": "Custom Brand"}
-    assert config["assets"]["favicon"]["url"] == "/assets/bisheng/favicon.ico"
+    assert config["assets"]["favicon"]["url"] == "/assets/doberman-agent/favicon.ico"

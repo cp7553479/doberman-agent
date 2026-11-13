@@ -3,7 +3,7 @@ import { SubjectSearchDepartment } from '@/components/bs-comp/permission/Subject
 import { SubjectSearchUser } from '@/components/bs-comp/permission/SubjectSearchUser'
 import { SubjectSearchUserGroup } from '@/components/bs-comp/permission/SubjectSearchUserGroup'
 import type { SelectedSubject, SubjectType } from '@/components/bs-comp/permission/types'
-import { Button } from "@bisheng/ui";
+import { Button } from "@doberman-agent/ui";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/bs-ui/dialog'
 
 import type { ModelVisibility, PolicySubjectOption } from '@/controllers/API/dshUnified'

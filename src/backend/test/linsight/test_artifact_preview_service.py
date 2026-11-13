@@ -16,10 +16,10 @@ from types import SimpleNamespace
 import fitz
 import pytest
 
-from bisheng.common.errcode.http_error import NotFoundError, UnAuthorizedError
-from bisheng.common.errcode.linsight import LinsightArtifactPreviewError
-from bisheng.linsight.domain.services import artifact_preview_service as svc_mod
-from bisheng.linsight.domain.services.artifact_preview_service import LinsightArtifactPreviewService
+from doberman_agent.common.errcode.http_error import NotFoundError, UnAuthorizedError
+from doberman_agent.common.errcode.linsight import LinsightArtifactPreviewError
+from doberman_agent.linsight.domain.services import artifact_preview_service as svc_mod
+from doberman_agent.linsight.domain.services.artifact_preview_service import LinsightArtifactPreviewService
 
 SVID = "ver-1"
 OWNER = 7
@@ -33,7 +33,7 @@ FAILED = f"linsight:pptx_preview_failed:{SVID}:abc123"
 # fakes
 # --------------------------------------------------------------------------- #
 class FakeMinio:
-    bucket = "bisheng"
+    bucket = "doberman_agent"
 
     def __init__(self, objects=None):
         self.objects = dict(objects or {})
@@ -52,7 +52,7 @@ class FakeMinio:
         self.objects[object_name] = file
 
     async def get_share_link(self, object_name, bucket=None, clear_host=True, expire_days=7):
-        return f"/bisheng/{object_name}?sig=1"
+        return f"/doberman_agent/{object_name}?sig=1"
 
 
 class FakeRedisConn:
@@ -199,7 +199,7 @@ async def test_foreign_or_odd_file_keys_are_rejected_without_converting(env, bad
 
 
 async def test_bucket_prefixed_key_is_accepted(env):
-    result = await LinsightArtifactPreviewService.get_pptx_preview(env.version, f"/bisheng/{FILE_KEY}")
+    result = await LinsightArtifactPreviewService.get_pptx_preview(env.version, f"/doberman_agent/{FILE_KEY}")
     assert result["status"] == "ready"
 
 
@@ -208,7 +208,7 @@ async def test_bucket_prefixed_key_is_accepted(env):
 # --------------------------------------------------------------------------- #
 async def test_first_open_converts_caches_and_releases_lock(env):
     result = await LinsightArtifactPreviewService.get_pptx_preview(env.version, FILE_KEY)
-    assert result == {"status": "ready", "file_path": f"/bisheng/{PREVIEW_KEY}?sig=1"}
+    assert result == {"status": "ready", "file_path": f"/doberman_agent/{PREVIEW_KEY}?sig=1"}
     assert env.minio.puts == [PREVIEW_KEY]
     assert env.converted and env.converted[0][1] == 120
     assert (LOCK, True, 180) in env.redis.async_connection.set_calls
@@ -294,13 +294,13 @@ async def test_missing_source_object_is_a_preview_failure(env):
 # the download endpoint after the refactor (AC-28)
 # --------------------------------------------------------------------------- #
 async def test_download_endpoint_still_signs_the_requested_key(env, monkeypatch):
-    from bisheng.linsight.api.endpoints import linsight as endpoint
+    from doberman_agent.linsight.api.endpoints import linsight as endpoint
 
     monkeypatch.setattr(endpoint, "get_minio_storage", lambda: _awaitable(env.minio))
     resp = await endpoint.linsight_file_download(
-        file_url=f"/bisheng/{FILE_KEY}", session_version_id=SVID, login_user=_user(), share_link=None
+        file_url=f"/doberman_agent/{FILE_KEY}", session_version_id=SVID, login_user=_user(), share_link=None
     )
-    assert resp.data == {"file_path": f"/bisheng/{FILE_KEY}?sig=1"}
+    assert resp.data == {"file_path": f"/doberman_agent/{FILE_KEY}?sig=1"}
     with pytest.raises(UnAuthorizedError):
         await endpoint.linsight_file_download(
             file_url=FILE_KEY, session_version_id=SVID, login_user=_user(99), share_link=None
@@ -309,7 +309,7 @@ async def test_download_endpoint_still_signs_the_requested_key(env, monkeypatch)
         resp = await endpoint.linsight_file_download(
             file_url=own, session_version_id=SVID, login_user=_user(), share_link=None
         )
-        assert resp.data == {"file_path": f"/bisheng/{own}?sig=1"}
+        assert resp.data == {"file_path": f"/doberman_agent/{own}?sig=1"}
     for foreign in (
         "linsight/final_result/ver-2/a.pptx",
         "knowledge/original/1.pdf",

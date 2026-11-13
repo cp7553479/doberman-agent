@@ -94,7 +94,7 @@
   - C. **各子系统最细统一边界埋**：
     - DB → SQLAlchemy engine 的 `before/after_cursor_execute`（cursor 级）+ pool 采样（双 DB 通用）。
     - 存储 → `MinioStorage` 的 `put_object* / get_object* / download_object_sync` 方法层切面（全仓都经 `get_minio_storage()` 拿实例）。
-    - 模型 → `bisheng/llm/domain/utils.py` 4 个 wrapper 的 `finally`（TTFT / status 数据**已存在**）。
+    - 模型 → `doberman-agent/llm/domain/utils.py` 4 个 wrapper 的 `finally`（TTFT / status 数据**已存在**）。
     - E+ → `CofcoEPlusClient.send_textcard` + `forwarder.maybe_forward_external` 的 skipped 分支。
 - **选定**：C
 - **原因**：这些是各子系统唯一无旁路的统一边界，一处埋点全覆盖、跨 web/worker 进程都生效，改动最小；A/B 分别栽在"粒度不足 + worker 盲区"和"必漏 + 难维护"。
@@ -212,7 +212,7 @@ BS_METRIC domain=eplus_notify result=ok http_status=200 biz_code=0 elapsed_ms=88
 
 - **单元**：`emit_metric` 格式化/转义/字段省略；DB 直方图桶归类与周期 flush 计数正确性；存储 result 分类（ok/error/excluded 的 401/403 边界）；op 从 SQL 前缀解析。
 - **集成**：真实跑一条慢 SQL 断言 `db_query` 行；连续查询后断言 `db_query_agg` 桶计数与 count；put/get 一次断言 `obj_storage` 行；mock 401/403 断言 `excluded`。
-- **手动验证**：本地起后端（`cd src/backend && uv run uvicorn bisheng.main:app`），制造流量后 grep 日志——`grep 'BS_METRIC domain=' <stdout / 日志文件>`。分域确认：`domain=db_query_agg`（每 `db_agg_window_s` 秒一行、桶计数非零→QPS/P95）、`domain=db_pool`（采样字段齐）、上传/下载文件看 `domain=obj_storage`、跑一次模型调用看 `domain=model_invoke`（与既有 ES telemetry 并存）、触发一次站内信看 `domain=eplus_notify`。把 `db_slow_query_ms` 调小（如 1）可强制产出 `db_query` 慢查询明细行。
+- **手动验证**：本地起后端（`cd src/backend && uv run uvicorn doberman_agent.main:app`），制造流量后 grep 日志——`grep 'BS_METRIC domain=' <stdout / 日志文件>`。分域确认：`domain=db_query_agg`（每 `db_agg_window_s` 秒一行、桶计数非零→QPS/P95）、`domain=db_pool`（采样字段齐）、上传/下载文件看 `domain=obj_storage`、跑一次模型调用看 `domain=model_invoke`（与既有 ES telemetry 并存）、触发一次站内信看 `domain=eplus_notify`。把 `db_slow_query_ms` 调小（如 1）可强制产出 `db_query` 慢查询明细行。
 - **可观测**：本 feature 产出的就是可观测数据；自身健康度看 `emit_metric` 是否有异常吞没（应有兜底 try/except，埋点绝不影响业务主流程）。
 
 ---

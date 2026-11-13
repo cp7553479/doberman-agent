@@ -1,10 +1,10 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 import type { UploadFileKind } from "@/util/fileAcceptUtils";
 
 import { Label } from "@/components/bs-ui/label";
 import { acceptsImages } from "@/util/fileAcceptUtils";
 import { generateUUID } from "@/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { Type } from "lucide-react";
 import { useEffect,useMemo,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -444,7 +444,7 @@ export function InputFormEditor({ nodeId, nodeData, initialData, onSubmit, onCan
         <form onSubmit={handleFormSubmit} className="flex min-h-0 flex-1 flex-col">
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-0.5">
             <div>
-                <Label className="bisheng-label">{t("formType")}</Label>
+                <Label className="doberman_agent-label">{t("formType")}</Label>
                 <div className="grid grid-cols-3 gap-4 mt-2">
                     <Button className={`flex flex-col h-auto w-full min-w-0 gap-1 py-2 ${formData.formType === FormType.Text ? "border-primary/40 bg-[#DFE9FD] text-primary" : ""}`} type="button" variant="outlined" onClick={() => handleChangeFormType(FormType.Text)} color="default">
                         <Type size={18} />

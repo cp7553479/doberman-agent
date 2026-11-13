@@ -27,9 +27,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from bisheng.approval.domain.services.user_menu_access_service import UserMenuAccessService
-from bisheng.database.models.role_access import WebMenuResource
-from bisheng.user.domain.services.auth import (
+from doberman_agent.approval.domain.services.user_menu_access_service import UserMenuAccessService
+from doberman_agent.database.models.role_access import WebMenuResource
+from doberman_agent.user.domain.services.auth import (
     _ROLE_UI_ADMIN_CHILDREN,
     _ROLE_UI_WORKBENCH_CHILDREN,
 )

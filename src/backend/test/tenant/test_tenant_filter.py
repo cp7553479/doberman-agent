@@ -12,9 +12,9 @@ from sqlalchemy import Column, Integer, String, create_engine, event, text
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Field, SQLModel, Session, select
 
-from bisheng.common.models.base import SQLModelSerializable
-from bisheng.core.config.multi_tenant import MultiTenantConf
-from bisheng.core.context.tenant import (
+from doberman_agent.common.models.base import SQLModelSerializable
+from doberman_agent.core.config.multi_tenant import MultiTenantConf
+from doberman_agent.core.context.tenant import (
     DEFAULT_TENANT_ID,
     bypass_tenant_filter,
     current_tenant_id,
@@ -25,15 +25,15 @@ from bisheng.core.context.tenant import (
 
 # Pre-mock modules that trigger import chain issues
 _MOCK_MODULES = [
-    'bisheng.common.services',
-    'bisheng.common.services.config_service',
-    'bisheng.common.services.telemetry',
-    'bisheng.common.services.telemetry.telemetry_service',
+    'doberman_agent.common.services',
+    'doberman_agent.common.services.config_service',
+    'doberman_agent.common.services.telemetry',
+    'doberman_agent.common.services.telemetry.telemetry_service',
 ]
 for _m in _MOCK_MODULES:
     if _m not in sys.modules:
         _mock = MagicMock()
-        if _m == 'bisheng.common.services.config_service':
+        if _m == 'doberman_agent.common.services.config_service':
             _mock.settings = MagicMock()
             _mock.settings.multi_tenant = MultiTenantConf(enabled=False)
         sys.modules[_m] = _mock
@@ -67,7 +67,7 @@ _registered_handlers = {}
 @pytest.fixture()
 def filter_engine():
     """Create a fresh SQLite engine with tenant filter events registered."""
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     # Reset module state
     tenant_filter._initialized = False
@@ -106,7 +106,7 @@ def session(filter_engine):
 
 def _set_mock_settings(enabled: bool):
     """Update the mock settings for multi_tenant.enabled."""
-    mock = sys.modules['bisheng.common.services.config_service']
+    mock = sys.modules['doberman_agent.common.services.config_service']
     mock.settings.multi_tenant = MultiTenantConf(enabled=enabled)
 
 
@@ -147,7 +147,7 @@ class TestSelectAutoFilter:
             results = session.exec(select(_TenantTestItem)).all()
         finally:
             current_tenant_id.reset(tenant_token)
-            from bisheng.core.context.tenant import visible_tenant_ids
+            from doberman_agent.core.context.tenant import visible_tenant_ids
             visible_tenant_ids.reset(visible_token)
 
         assert {one.name for one in results} == {'root_item', 'leaf_item'}
@@ -166,7 +166,7 @@ class TestSelectAutoFilter:
                 results = session.exec(select(_TenantTestItem)).all()
         finally:
             current_tenant_id.reset(tenant_token)
-            from bisheng.core.context.tenant import visible_tenant_ids
+            from doberman_agent.core.context.tenant import visible_tenant_ids
             visible_tenant_ids.reset(visible_token)
 
         assert [one.name for one in results] == ['leaf_item']
@@ -224,7 +224,7 @@ class TestEnabledDisabled:
         assert results[0].name == 'default'
 
     def test_no_context_enabled_raises(self, session):
-        from bisheng.common.errcode.tenant import NoTenantContextError
+        from doberman_agent.common.errcode.tenant import NoTenantContextError
 
         _set_mock_settings(enabled=True)
         token = current_tenant_id.set(None)

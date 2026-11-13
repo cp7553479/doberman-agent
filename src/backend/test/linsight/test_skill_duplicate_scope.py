@@ -11,12 +11,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.common.errcode.linsight import SkillNameDuplicateError
-from bisheng.core.context.tenant import set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.linsight.domain.services.skill_service import SkillService
-from bisheng.linsight.domain.services.skill_store import SKILL_MD, SkillStore
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.common.errcode.linsight import SkillNameDuplicateError
+from doberman_agent.core.context.tenant import set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.services.skill_service import SkillService
+from doberman_agent.linsight.domain.services.skill_store import SKILL_MD, SkillStore
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
 TENANT = 5

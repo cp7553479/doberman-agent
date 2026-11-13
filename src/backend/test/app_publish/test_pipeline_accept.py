@@ -44,7 +44,7 @@ def _runtime_layer_on(app_runtime_settings):
     hook from the context, never from a Python default, so that a child-tenant
     submission can never be written to Root.
     """
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     set_current_tenant_id(ROOT_TENANT_ID)
     app_runtime_settings(enabled=True)
@@ -53,7 +53,7 @@ def _runtime_layer_on(app_runtime_settings):
 @pytest.fixture(autouse=True)
 def _no_celery(monkeypatch):
     """Capture the hand-off to Celery instead of touching a broker."""
-    from bisheng.app_publish.domain.services import publish_pipeline_service
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service
 
     enqueued: list[str] = []
 
@@ -70,7 +70,7 @@ def enqueued(_no_celery):
 
 
 async def _accept(package: Path, principal, **kwargs):
-    from bisheng.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import PublishPipelineService
 
     return await PublishPipelineService.accept(package_path=package, principal=principal, **kwargs)
 
@@ -92,7 +92,7 @@ async def test_first_deploy_creates_draft_app_via_f054_create_app(
     enqueued,
 ):
     """F055 must not write ``app`` itself (决议-8); the owner is the credential's resource owner."""
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     fake_f054_services.responses["create_draft"] = "app-created-by-f054"
     result = await _accept(tarball_factory(), service_account_principal())
@@ -146,7 +146,7 @@ async def test_iteration_deploy_requires_owner_match_else_16205(
     enqueued,
 ):
     """A key may publish, its resource owner decides *whose* apps (AC-04)."""
-    from bisheng.common.errcode.app_publish import AppNotOwnedBySubjectError
+    from doberman_agent.common.errcode.app_publish import AppNotOwnedBySubjectError
 
     someone_else, _ = await app_factory(owner_user_id=OWNER_USER_ID + 99, with_version=False)
     with pytest.raises(AppNotOwnedBySubjectError) as excinfo:
@@ -175,8 +175,8 @@ async def test_iteration_deploy_refuses_a_root_tenant_app_from_a_leaf_tenant_key
     app they left behind keeps matching. ``AppQueryService._load_visible``
     already refuses this on the platform face; the CLI door must answer alike.
     """
-    from bisheng.common.errcode.app_publish import AppNotOwnedBySubjectError
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.common.errcode.app_publish import AppNotOwnedBySubjectError
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     from .conftest import SUB_TENANT_ID
 
@@ -211,7 +211,7 @@ async def test_iteration_deploy_accepted_inside_the_credential_tenant(
 ):
     """The guard is a tenant *comparison*, not a "root only" rule: a child-tenant
     app published by that tenant's own key is the ordinary case and passes."""
-    from bisheng.core.context.tenant import set_current_tenant_id
+    from doberman_agent.core.context.tenant import set_current_tenant_id
 
     from .conftest import SUB_TENANT_ID
 
@@ -266,7 +266,7 @@ async def test_active_approval_blocks_new_submit_16251(
     enqueued,
 ):
     """Checked *before* the gate — the gate's own answer to a duplicate is a silent 200 (坑 8)."""
-    from bisheng.common.errcode.app_publish import AppApprovalInFlightError
+    from doberman_agent.common.errcode.app_publish import AppApprovalInFlightError
 
     app_row, _ = await app_factory(with_version=False)
     fake_publish_approval.responses["assert_submittable"] = AppApprovalInFlightError(msg="in flight")
@@ -290,7 +290,7 @@ async def test_pending_online_state_blocks_new_submit_16252(
     audit_sink,
     enqueued,
 ):
-    from bisheng.common.errcode.app_publish import AppPendingOnlineError
+    from doberman_agent.common.errcode.app_publish import AppPendingOnlineError
 
     app_row, _ = await app_factory(with_version=False)
     fake_publish_approval.responses["assert_submittable"] = AppPendingOnlineError(msg="pending online")
@@ -316,12 +316,12 @@ async def test_deployment_row_created_with_stage_received(
     audit_sink,
     enqueued,
 ):
-    from bisheng.app_publish.domain.models.app_deployment import (
+    from doberman_agent.app_publish.domain.models.app_deployment import (
         STAGE_RECEIVED,
         STATUS_RUNNING,
         AppDeploymentDao,
     )
-    from bisheng.app_publish.domain.services.publish_pipeline_service import NO_NATURAL_PERSON_SUBMITTER
+    from doberman_agent.app_publish.domain.services.publish_pipeline_service import NO_NATURAL_PERSON_SUBMITTER
 
     from .conftest import SERVICE_ACCOUNT_NAME, SERVICE_ACCOUNT_USER_ID
 
@@ -365,7 +365,7 @@ async def test_version_id_generated_at_accept_and_reused_by_version_row(
     enqueued,
 ):
     """The object key is minted with the version id; there is no staging key and no copy (design D2)."""
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     app_row, _ = await app_factory(with_version=False)
     result = await _accept(tarball_factory(), service_account_principal(), app_id=app_row.id)
@@ -374,7 +374,7 @@ async def test_version_id_generated_at_accept_and_reused_by_version_row(
         row = await AppDeploymentDao.aget(session, result.deployment_id)
     assert row.version_id == result.version_id
     assert row.code_object_key == f"apps/{app_row.id}/versions/{result.version_id}/code.tar.gz"
-    assert await fake_minio.get_object(bucket_name="bisheng-apps", object_name=row.code_object_key) is not None
+    assert await fake_minio.get_object(bucket_name="doberman-agent-apps", object_name=row.code_object_key) is not None
 
 
 async def test_meta_not_updated_at_accept(
@@ -427,8 +427,8 @@ async def test_illegal_package_rejected_before_anything_is_created(
     enqueued,
 ):
     """A hostile package leaves no deployment row, no object and no draft app."""
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.common.errcode.app_publish import AppPackageInvalidError
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.common.errcode.app_publish import AppPackageInvalidError
 
     app_row, _ = await app_factory(with_version=False)
     with pytest.raises(AppPackageInvalidError):
@@ -436,7 +436,7 @@ async def test_illegal_package_rejected_before_anything_is_created(
 
     async with publish_db() as session:
         assert await AppDeploymentDao.alist_by_app(session, app_row.id) == []
-    assert fake_minio.list_object_names("bisheng-apps") == []
+    assert fake_minio.list_object_names("doberman-agent-apps") == []
     assert enqueued == []
 
 
@@ -453,7 +453,7 @@ async def test_runtime_layer_disabled_is_16207(
     enqueued,
 ):
     """A deployment without the app factory says so on the first call, not after a build times out."""
-    from bisheng.common.errcode.app_publish import AppPublishRuntimeLayerDisabledError
+    from doberman_agent.common.errcode.app_publish import AppPublishRuntimeLayerDisabledError
 
     app_row, _ = await app_factory(with_version=False)
     app_runtime_settings(enabled=False)

@@ -3,12 +3,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.database.models.audit_log import AuditLog
-from bisheng.open_api.api import middleware as middleware_module
-from bisheng.open_api.api.middleware import OpenApiAuditMiddleware
-from bisheng.open_api.domain.context import OpenApiPrincipal
-from bisheng.open_api.domain.scopes import open_api_scope
-from bisheng.open_api.domain.services.call_audit_service import OpenApiCallAuditService
+from doberman_agent.database.models.audit_log import AuditLog
+from doberman_agent.open_api.api import middleware as middleware_module
+from doberman_agent.open_api.api.middleware import OpenApiAuditMiddleware
+from doberman_agent.open_api.domain.context import OpenApiPrincipal
+from doberman_agent.open_api.domain.scopes import open_api_scope
+from doberman_agent.open_api.domain.services.call_audit_service import OpenApiCallAuditService
 
 
 def principal(*, actor_kind: str = "service_account", mode: str = "S") -> OpenApiPrincipal:
@@ -212,7 +212,7 @@ async def test_batch_write_failure_is_best_effort_and_drains_queue(monkeypatch):
     service.enqueue(AuditLog(operator_id=0, action="open_api.call"))
     write = AsyncMock(side_effect=RuntimeError("database unavailable"))
     monkeypatch.setattr(
-        "bisheng.open_api.domain.services.call_audit_service."
+        "doberman_agent.open_api.domain.services.call_audit_service."
         "AuditLogDao.ainsert_audit_logs",
         write,
     )

@@ -1,8 +1,8 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogTrigger } from "@/components/bs-ui/dialog";
 import { darkContext } from "@/contexts/darkContext";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { useContext,useState } from "react";
 import AceEditor from "react-ace";

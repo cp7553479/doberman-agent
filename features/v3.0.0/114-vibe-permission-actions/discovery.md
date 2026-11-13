@@ -2,7 +2,7 @@
 
 > 状态：2026-10-30 用户已确认 36 项映射并要求进入正式规格；同日追加具体租户单选，并按用户同意的复审建议补充代发布自审、预览用途和取消资格。正式规格见 spec.md，规格与修订设计均已确认；本地实现已接线，真实E2E与最终L2待完成，证据见verification。
 > 日期：2026-10-30（Asia/Taipei）。基线：`origin/feat/3.0.0@cfcefd6577744c7807f30ce77de4e1b4050074ff`。
-> 分支：`codex/114-vibe-permission-actions`；独立工作树：`/Users/zhangguoqing/.codex/worktrees/vibe-permission-actions/bisheng`。
+> 分支：`codex/114-vibe-permission-actions`；独立工作树：`/Users/zhangguoqing/.codex/worktrees/vibe-permission-actions/doberman-agent`。
 
 ## 1. 需求变更
 
@@ -123,21 +123,21 @@
 
 | 文件 | 已核对事实 |
 | --- | --- |
-| [catalog_policy.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/permission/domain/services/catalog_policy.py#L52) | app 已有六个动作，share/download 等不在 app 范围 |
-| [test_app_permission_registration.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/test/app_runtime/test_app_permission_registration.py#L67) | app 类型及六动作注册断言 |
-| [app_state_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_state_service.py#L782) | 删除、上下线等独立业务资格分支 |
-| [app_query_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_query_service.py#L266) | 平台详情 edit、CLI/MCP 额外 owner 入口及日志判断 |
-| [app_data_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/app_data_service.py) | 生产数据 owner 校验；运行时数据会话/票据复用该判断 |
-| [app_secret_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/app_secret_service.py#L55) | 变量维护 owner 校验、只读响应按 owner 裁剪 |
-| [secret_rebuild_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/secret_rebuild_service.py) | 重建 owner 判断和确认指纹/幂等围栏 |
-| [publish_pipeline_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/publish_pipeline_service.py#L228) | 发布主体重校验、自然人归属校验、迭代仅原归属人 |
-| [deploy.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/api/endpoints/deploy.py#L198) | CLI logs 构造资源归属人兼容身份 |
-| [publish_status_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_publish/domain/services/publish_status_service.py#L91) | withdraw/preview/manual_publish 按 owner 设置 |
-| [runtime_management_service.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/domain/services/runtime_management_service.py#L35) | 私有物料、运行状态、快照恢复等 natural_owner_required |
-| [runtime_management.py](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/backend/bisheng/app_runtime/api/endpoints/runtime_management.py) | 应用级管理与平台公共 profile/物料入口 |
-| [HostedAppCard.tsx](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/frontend/platform/src/pages/BuildPage/HostedAppCard.tsx#L188) | F048 canDelete 后又叠加创建人/管理员条件 |
-| [DangerZoneCard.tsx](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/src/frontend/platform/src/pages/BuildPage/hostedApp/publish/DangerZoneCard.tsx) | 详情删除区只按 owner/super 显示 |
-| [approval-module](https://github.com/dataelement/bisheng/blob/cfcefd6577744c7807f30ce77de4e1b4050074ff/.claude/skills/approval-module/SKILL.md) | 任务决策、业务取消、必审及 outbox 的既有边界 |
+| [catalog_policy.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/permission/domain/services/catalog_policy.py#L52) | app 已有六个动作，share/download 等不在 app 范围 |
+| [test_app_permission_registration.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/test/app_runtime/test_app_permission_registration.py#L67) | app 类型及六动作注册断言 |
+| [app_state_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_state_service.py#L782) | 删除、上下线等独立业务资格分支 |
+| [app_query_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_query_service.py#L266) | 平台详情 edit、CLI/MCP 额外 owner 入口及日志判断 |
+| [app_data_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/app_data_service.py) | 生产数据 owner 校验；运行时数据会话/票据复用该判断 |
+| [app_secret_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/app_secret_service.py#L55) | 变量维护 owner 校验、只读响应按 owner 裁剪 |
+| [secret_rebuild_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/secret_rebuild_service.py) | 重建 owner 判断和确认指纹/幂等围栏 |
+| [publish_pipeline_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_pipeline_service.py#L228) | 发布主体重校验、自然人归属校验、迭代仅原归属人 |
+| [deploy.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/api/endpoints/deploy.py#L198) | CLI logs 构造资源归属人兼容身份 |
+| [publish_status_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_publish/domain/services/publish_status_service.py#L91) | withdraw/preview/manual_publish 按 owner 设置 |
+| [runtime_management_service.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/domain/services/runtime_management_service.py#L35) | 私有物料、运行状态、快照恢复等 natural_owner_required |
+| [runtime_management.py](https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/app_runtime/api/endpoints/runtime_management.py) | 应用级管理与平台公共 profile/物料入口 |
+| [HostedAppCard.tsx](https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/BuildPage/HostedAppCard.tsx#L188) | F048 canDelete 后又叠加创建人/管理员条件 |
+| [DangerZoneCard.tsx](https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/BuildPage/hostedApp/publish/DangerZoneCard.tsx) | 详情删除区只按 owner/super 显示 |
+| [approval-module](https://github.com/cp7553479/doberman-agent/blob/main/.claude/skills/approval-module/SKILL.md) | 任务决策、业务取消、必审及 outbox 的既有边界 |
 
 ## 8. 验证与交付边界
 

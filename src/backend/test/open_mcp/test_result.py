@@ -3,9 +3,9 @@ import json
 from fastapi import HTTPException
 from pydantic import BaseModel, ValidationError
 
-from bisheng.common.errcode.open_api import OpenApiScopeMissingError
-from bisheng.open_mcp.result import error_result, error_result_from_exception, success_result
-from bisheng.open_mcp.upload import McpUploadError
+from doberman_agent.common.errcode.open_api import OpenApiScopeMissingError
+from doberman_agent.open_mcp.result import error_result, error_result_from_exception, success_result
+from doberman_agent.open_mcp.upload import McpUploadError
 
 
 class _Payload(BaseModel):
@@ -17,10 +17,10 @@ def _text_payload(result):
 
 
 def test_success_result_keeps_text_and_structured_content_equivalent():
-    result = success_result(_Payload(value="毕昇"))
+    result = success_result(_Payload(value="doberman-agent"))
 
     assert result.isError is False
-    assert result.structuredContent == {"value": "毕昇"}
+    assert result.structuredContent == {"value": "doberman-agent"}
     assert _text_payload(result) == result.structuredContent
 
 

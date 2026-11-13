@@ -16,18 +16,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.dsh.config import DshSettings
+from doberman_agent.dsh.config import DshSettings
 
 SCAN = "dsh.scan_content_safety"
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def settings(*, enabled=True):
-    return DshSettings(enabled=enabled, platform_public_url="https://bisheng.invalid" if enabled else None)
+    return DshSettings(enabled=enabled, platform_public_url="https://doberman-agent.invalid" if enabled else None)
 
 
 def load_schedule(monkeypatch, *, enabled=True, existing=None):
-    from bisheng.common.services import config_service
+    from doberman_agent.common.services import config_service
 
     configured = {} if existing is None else existing
     synthetic = SimpleNamespace(
@@ -36,7 +36,7 @@ def load_schedule(monkeypatch, *, enabled=True, existing=None):
         dsh=settings(enabled=enabled),
     )
     monkeypatch.setattr(config_service, "settings", synthetic)
-    spec = importlib.util.spec_from_file_location("f111_actual_beat_config", ROOT / "bisheng/worker/config.py")
+    spec = importlib.util.spec_from_file_location("f111_actual_beat_config", ROOT / "doberman_agent/worker/config.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -140,12 +140,12 @@ def read_administration(database):
     from sqlalchemy import create_engine
     from sqlmodel import Session
 
-    from bisheng.core.context import tenant as context
-    from bisheng.database.models.tenant import UserTenantDao
-    from bisheng.dsh import audit_admin_runtime as composition
-    from bisheng.dsh.domain.services.profile import profile_scope
-    from bisheng.permission import application as permissions
-    from bisheng.user.domain.models.user import UserDao
+    from doberman_agent.core.context import tenant as context
+    from doberman_agent.database.models.tenant import UserTenantDao
+    from doberman_agent.dsh import audit_admin_runtime as composition
+    from doberman_agent.dsh.domain.services.profile import profile_scope
+    from doberman_agent.permission import application as permissions
+    from doberman_agent.user.domain.models.user import UserDao
     from test.dsh.content_safety_fixtures import safety_database
 
     engine = create_engine("sqlite:///" + database, connect_args={"check_same_thread": False})
@@ -191,9 +191,9 @@ def runtime_without_receiver(*, empty_key):
     import socket
     from unittest.mock import patch
 
-    from bisheng.common.services import config_service
-    from bisheng.dsh.audit_admin_runtime import build_audit_administration
-    from bisheng.dsh.runtime import get_model_runtime
+    from doberman_agent.common.services import config_service
+    from doberman_agent.dsh.audit_admin_runtime import build_audit_administration
+    from doberman_agent.dsh.runtime import get_model_runtime
 
     ordinary = SimpleNamespace(redis_url="redis://127.0.0.1:1/15")
     if empty_key:
@@ -201,7 +201,7 @@ def runtime_without_receiver(*, empty_key):
     original_import = builtins.__import__
 
     def import_without_receiver(name, *args, **kwargs):
-        assert name not in {"bisheng.dsh.content_safety_runtime", "bisheng.sso_sync.domain.services.hmac_auth"}
+        assert name not in {"doberman_agent.dsh.content_safety_runtime", "doberman_agent.sso_sync.domain.services.hmac_auth"}
         return original_import(name, *args, **kwargs)
 
     async def construct():

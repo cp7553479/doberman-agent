@@ -169,7 +169,7 @@ export function Cascader(props: CascaderProps) {
   React.useEffect(() => {
     if (variant !== 'outlined' && status !== 'default') {
       console.warn(
-        `[@bisheng/ui] Cascader variant="${variant}" shows no validation status; use variant="outlined" for a field that needs one.`,
+        `[@doberman-agent/ui] Cascader variant="${variant}" shows no validation status; use variant="outlined" for a field that needs one.`,
       );
     }
   }, [status, variant]);

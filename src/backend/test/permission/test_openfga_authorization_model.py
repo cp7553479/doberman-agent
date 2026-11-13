@@ -12,7 +12,7 @@ Verifies:
 
 import pytest
 
-from bisheng.core.openfga.authorization_model import (
+from doberman_agent.core.openfga.authorization_model import (
     AUTHORIZATION_MODEL,
     MODEL_VERSION,
     get_authorization_model,

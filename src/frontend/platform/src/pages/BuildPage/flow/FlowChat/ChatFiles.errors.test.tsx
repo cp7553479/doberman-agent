@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import { createRef } from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -7,7 +7,7 @@ import ChatFiles, { type ChatFilesHandle } from './ChatFiles';
 const mock = vi.hoisted(() => ({ upload: vi.fn(), report: vi.fn(), notice: vi.fn() }));
 vi.mock('@/controllers/API/flow', () => ({ uploadChatFile: mock.upload }));
 vi.mock('@/controllers/request', () => ({ showApiError: mock.report }));
-vi.mock('@bisheng/ui', () => ({ notification: { open: mock.notice } }));
+vi.mock('@doberman-agent/ui', () => ({ notification: { open: mock.notice } }));
 vi.mock('@/contexts/locationContext', async () => ({ locationContext: (await import('react')).createContext({ appConfig: { uploadFileMaxSize: 50 } }) }));
 beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);

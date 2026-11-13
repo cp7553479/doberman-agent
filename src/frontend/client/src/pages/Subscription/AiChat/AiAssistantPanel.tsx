@@ -1,5 +1,5 @@
 import { ApiRequestFailure } from "~/components/ApiRequestFailure";
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 import { useLocalize } from "~/hooks";
 /**
  * AI Assistant Panel — complete chat interface.

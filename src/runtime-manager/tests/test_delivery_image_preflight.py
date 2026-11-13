@@ -73,7 +73,7 @@ def test_legacy_build_uses_the_checked_image_id_even_if_tag_moves(tmp_path, monk
 
     source = tmp_path / "input"
     source.mkdir()
-    (source / "bisheng-app.yaml").write_text("runtime: python3.11")
+    (source / "doberman-agent-app.yaml").write_text("runtime: python3.11")
     (source / "main.py").write_text("")
     archive = archive_directory(source, tmp_path / "source.tar.gz").read_bytes()
     checked = "sha256:" + "a" * 64

@@ -7,7 +7,7 @@ user cannot use must not appear in the picker at all.
 
 import pytest
 
-from bisheng.workstation.domain.services.workstation_service import WorkStationService
+from doberman_agent.workstation.domain.services.workstation_service import WorkStationService
 
 GROUPS = [
     {"id": 362, "name": "地图", "children": [{"id": 2125}]},
@@ -32,7 +32,7 @@ async def test_keeps_only_usable_groups(monkeypatch, login_user):
         return {"362": frozenset({"use"})}
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         fake_batch,
     )
 
@@ -46,7 +46,7 @@ async def test_empty_input_short_circuits(monkeypatch, login_user):
         raise AssertionError("permission check must not run for an empty list")
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         fail_batch,
     )
 
@@ -60,7 +60,7 @@ async def test_group_without_id_is_dropped(monkeypatch, login_user):
         return {"627": frozenset({"use"})}
 
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions",
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions",
         fake_batch,
     )
 

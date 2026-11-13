@@ -2,10 +2,10 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.repositories.interfaces.knowledge_chat_session_repository import (
+from doberman_agent.knowledge.domain.repositories.interfaces.knowledge_chat_session_repository import (
     KnowledgeChatSessionRehomeResult,
 )
-from bisheng.knowledge.domain.services.knowledge_space_chat_history_retention_service import (
+from doberman_agent.knowledge.domain.services.knowledge_space_chat_history_retention_service import (
     DEFAULT_FLOW_CHUNK_SIZE,
     KnowledgeSpaceChatHistoryRetentionService,
     build_knowledge_chat_flows,
@@ -53,7 +53,7 @@ def test_build_flows_and_dispatch_in_chunks_of_500():
     )
 
     with patch(
-        "bisheng.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions.apply_async"
+        "doberman_agent.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions.apply_async"
     ) as apply_async:
         dispatched = dispatch_knowledge_chat_rehome(
             source_space_id=9,
@@ -68,7 +68,7 @@ def test_build_flows_and_dispatch_in_chunks_of_500():
 
 def test_dispatch_failure_is_best_effort():
     with patch(
-        "bisheng.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions.apply_async",
+        "doberman_agent.worker.knowledge.knowledge_chat_history_retention.rehome_knowledge_chat_sessions.apply_async",
         side_effect=RuntimeError("broker unavailable"),
     ):
         dispatched = dispatch_knowledge_chat_rehome(

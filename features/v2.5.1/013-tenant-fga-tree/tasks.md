@@ -71,13 +71,13 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T01**: 错误码注册（192xx）+ release-contract / CLAUDE.md 同步校验
   **文件（新建）**:
-  - `src/backend/bisheng/common/errcode/tenant_fga.py` — 4 个错误码类
+  - `src/backend/doberman_agent/common/errcode/tenant_fga.py` — 4 个错误码类
   **文件（修改）**:
   - `features/v2.5.1/013-tenant-fga-tree/tasks.md` — 本文件状态表同步
   - （release-contract.md 表 3 "192 = tenant_fga F013" 已声明，CLAUDE.md 同步已存在 —— **仅校验不修改**）
   **逻辑**:
   ```python
-  # src/backend/bisheng/common/errcode/tenant_fga.py
+  # src/backend/doberman_agent/common/errcode/tenant_fga.py
   from .base import BaseErrorCode
 
   # Tenant FGA tree module error codes, module code: 192
@@ -109,7 +109,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T02**: OpenFGA authorization_model 升级（tenant.shared_to + 资源 viewer 补丁 + llm_server/llm_model 新增）
   **文件（修改）**:
-  - `src/backend/bisheng/core/openfga/authorization_model.py` —
+  - `src/backend/doberman_agent/core/openfga/authorization_model.py` —
     - `MODEL_VERSION` 提升到 `v2.0.0`
     - `tenant` 类型新增 `shared_to` 关系（`directly_related_user_types: [{type: tenant}]`）
     - `_standard_resource_type()` 签名新增 `viewer_includes_tenant_shared: bool = True` 形参（默认 True，仅 viewer 追加 `tenant#shared_to#member`，**manager/editor 不加**）
@@ -176,19 +176,19 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T03**: `OpenFGAConf` 扩展（dual_model_mode / legacy_model_id）
   **文件（修改）**:
-  - `src/backend/bisheng/core/config/openfga.py` — `OpenFGAConf` 新增 2 字段
+  - `src/backend/doberman_agent/core/config/openfga.py` — `OpenFGAConf` 新增 2 字段
   **文件（修改）**:
-  - `src/backend/bisheng/config.yaml` —
+  - `src/backend/doberman_agent/config.yaml` —
     `openfga` 配置块新增默认值（dual_model_mode=false；legacy_model_id=null）
-    （**需 grep 确认配置 key**：`grep -n 'openfga:' src/backend/bisheng/config.yaml`）
+    （**需 grep 确认配置 key**：`grep -n 'openfga:' src/backend/doberman_agent/config.yaml`）
   **逻辑**:
   ```python
-  # src/backend/bisheng/core/config/openfga.py
+  # src/backend/doberman_agent/core/config/openfga.py
   class OpenFGAConf(BaseModel):
       """OpenFGA connection and behavior configuration."""
       enabled: bool = Field(default=True, ...)
       api_url: str = Field(default='http://localhost:8080', ...)
-      store_name: str = Field(default='bisheng', ...)
+      store_name: str = Field(default='doberman-agent', ...)
       store_id: Optional[str] = Field(default=None, ...)
       model_id: Optional[str] = Field(default=None, ...)
       timeout: int = Field(default=5, ...)
@@ -216,9 +216,9 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T04**: `FGAManager` 双 model bootstrap
   **文件（修改）**:
-  - `src/backend/bisheng/core/openfga/manager.py` — `_async_initialize` 在写新 model 时，若 `dual_model_mode=True` 且 `legacy_model_id` 已配置，保留旧 id 在 client 上
+  - `src/backend/doberman_agent/core/openfga/manager.py` — `_async_initialize` 在写新 model 时，若 `dual_model_mode=True` 且 `legacy_model_id` 已配置，保留旧 id 在 client 上
   **文件（修改）**:
-  - `src/backend/bisheng/core/openfga/client.py` — `FGAClient.__init__` 新增 `legacy_model_id: Optional[str] = None` 形参（**为 T05 铺路，此 Task 仅加字段不改逻辑**）
+  - `src/backend/doberman_agent/core/openfga/client.py` — `FGAClient.__init__` 新增 `legacy_model_id: Optional[str] = None` 形参（**为 T05 铺路，此 Task 仅加字段不改逻辑**）
   **逻辑**:
   - **`FGAClient.__init__` 签名变化**:
     ```python
@@ -253,7 +253,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T05**: `FGAClient` 双写旁路（write_tuples 灰度期双写，check 仅走新 model）
   **文件（修改）**:
-  - `src/backend/bisheng/core/openfga/client.py` — `write_tuples` 方法灰度期向 legacy model 二次写入
+  - `src/backend/doberman_agent/core/openfga/client.py` — `write_tuples` 方法灰度期向 legacy model 二次写入
   **逻辑**:
   - **修改 `write_tuples` 方法**：新 model 写成功后，若 `legacy_model_id` 非空，再向旧 model 发一次 write（**旧 model 失败仅记 warning，不抛异常** —— 灰度期弃用中，不阻塞业务）
     ```python
@@ -298,17 +298,17 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T06**: `UserPayload` 扩展 stub —— `get_visible_tenants` / `has_tenant_admin`
   **文件（修改）**:
-  - `src/backend/bisheng/common/dependencies/user_deps.py` — `UserPayload` 新增两个 async 方法
+  - `src/backend/doberman_agent/common/dependencies/user_deps.py` — `UserPayload` 新增两个 async 方法
   **文件（新建）**:
   - `src/backend/test/test_user_payload_tenant.py` — stub 行为单测
   **逻辑**:
   ```python
-  # src/backend/bisheng/common/dependencies/user_deps.py
+  # src/backend/doberman_agent/common/dependencies/user_deps.py
   from __future__ import annotations
 
   from typing import List
 
-  from bisheng.user.domain.services.auth import LoginUser
+  from doberman_agent.user.domain.services.auth import LoginUser
 
   # ROOT_TENANT_ID: Private-deployment MVP fixes root tenant id to 1.
   # Do NOT read from config — spec §1.5 locks this as a hardcoded invariant.
@@ -324,7 +324,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
           TODO(F012): replace with JWT claim `tenant_id` + ROOT_TENANT_ID.
           Currently falls back to UserTenantDao live lookup (is_active=1 record).
           """
-          from bisheng.database.models.tenant import UserTenantDao
+          from doberman_agent.database.models.tenant import UserTenantDao
 
           leaf_tenant = await UserTenantDao.aget_active_user_tenant(self.user_id)
           leaf_id = leaf_tenant.tenant_id if leaf_tenant else ROOT_TENANT_ID
@@ -342,7 +342,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
           """
           if tenant_id == ROOT_TENANT_ID:
               return False
-          from bisheng.core.openfga.manager import aget_fga_client
+          from doberman_agent.core.openfga.manager import aget_fga_client
           fga = await aget_fga_client()
           if fga is None:
               return False
@@ -368,23 +368,23 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T07**: `TenantAdminService` 新增（Child admin CRUD + Root 守卫）
   **文件（新建）**:
-  - `src/backend/bisheng/permission/domain/services/tenant_admin_service.py` — 服务类
+  - `src/backend/doberman_agent/permission/domain/services/tenant_admin_service.py` — 服务类
   - `src/backend/test/test_tenant_admin_service.py` — 单测
   **文件（修改）**:
-  - `src/backend/bisheng/database/models/failed_tuple.py` — **无改动**（已在 F011 落地时就绪，复用 `FailedTupleDao.acreate_batch`）
+  - `src/backend/doberman_agent/database/models/failed_tuple.py` — **无改动**（已在 F011 落地时就绪，复用 `FailedTupleDao.acreate_batch`）
   **逻辑**:
   ```python
-  # src/backend/bisheng/permission/domain/services/tenant_admin_service.py
+  # src/backend/doberman_agent/permission/domain/services/tenant_admin_service.py
   from __future__ import annotations
 
   import logging
   from typing import List, Optional
 
-  from bisheng.common.errcode.tenant_fga import RootTenantAdminNotAllowedError
-  from bisheng.common.exceptions.domain import BusinessError
-  from bisheng.core.openfga.exceptions import FGAConnectionError
-  from bisheng.core.openfga.manager import aget_fga_client
-  from bisheng.database.models.tenant import TenantDao
+  from doberman_agent.common.errcode.tenant_fga import RootTenantAdminNotAllowedError
+  from doberman_agent.common.exceptions.domain import BusinessError
+  from doberman_agent.core.openfga.exceptions import FGAConnectionError
+  from doberman_agent.core.openfga.manager import aget_fga_client
+  from doberman_agent.database.models.tenant import TenantDao
 
   logger = logging.getLogger(__name__)
 
@@ -485,7 +485,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 
 - [x] **T08**: `PermissionService.check` 插入 L2/L3 + `_is_shared_to` 辅助
   **文件（修改）**:
-  - `src/backend/bisheng/permission/domain/services/permission_service.py` — `check` 方法 L1 后插入 L2/L3；新增 `_is_shared_to` 辅助
+  - `src/backend/doberman_agent/permission/domain/services/permission_service.py` — `check` 方法 L1 后插入 L2/L3；新增 `_is_shared_to` 辅助
   **文件（修改）**:
   - `src/backend/test/test_permission_service.py` — 追加 F013 场景
   **逻辑**:
@@ -510,7 +510,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
         # ── F013 新增：L3 Child tenant admin ──
         if login_user and resource_tenant_id is not None and resource_tenant_id != 1:
             # Root (id=1 or parent_tenant_id IS NULL) 不触发 tenant.admin check（Root 无此元组）
-            from bisheng.database.models.tenant import TenantDao
+            from doberman_agent.database.models.tenant import TenantDao
             tenant = await TenantDao.aget_one(resource_tenant_id)
             if tenant is not None and tenant.parent_tenant_id is not None:
                 if await login_user.has_tenant_admin(resource_tenant_id):
@@ -530,15 +530,15 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
         """
         try:
             if object_type == 'workflow':
-                from bisheng.database.models.flow import FlowDao
+                from doberman_agent.database.models.flow import FlowDao
                 obj = await FlowDao.aget_one(object_id)
                 return obj.tenant_id if obj else None
             if object_type == 'knowledge_space':
-                from bisheng.database.models.knowledge import KnowledgeDao
+                from doberman_agent.database.models.knowledge import KnowledgeDao
                 obj = await KnowledgeDao.aget_one(object_id)
                 return obj.tenant_id if obj else None
             if object_type == 'assistant':
-                from bisheng.database.models.assistant import AssistantDao
+                from doberman_agent.database.models.assistant import AssistantDao
                 obj = await AssistantDao.aget_one(object_id)
                 return obj.tenant_id if obj else None
             # Other types: return None (skip L2/L3, fall through to existing ReBAC)
@@ -594,7 +594,7 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
   - **降级理由**：
     1. CI 环境不部署 OpenFGA docker（与 Milvus/ES 同类外部依赖，项目约定不纳入 CI 自动化）
     2. 真实 FGA store DSL 部署、元组预置、并发 QPS 压测需要有状态服务，pytest 难以稳定复现
-    3. 本地开发人员已有 `docker compose -p bisheng up -d openfga`，手动跑通可替代自动化
+    3. 本地开发人员已有 `docker compose -p doberman-agent up -d openfga`，手动跑通可替代自动化
   - **补偿措施**：真实 FGA 端到端验证 + AC-10 性能压测 100% 推到 T10 手工 QA（spec §9.4），用真实 Docker OpenFGA + 10w 元组数据集执行
   **逻辑**:
   - **前置 fixture**：从 `test/conftest.py` 获取 `db_session`；FGA 侧统一使用 `AsyncMock` 替身（不启动 httpx、不连接 OpenFGA）
@@ -668,6 +668,6 @@ T10 (手工 QA + ac-verification.md)  ← T01-T09
 - **偏差 3**：spec §6 伪代码假设 `resource_tenant_id` 由调用方传入；实际生产无人传，新增 `_resolve_resource_tenant(object_type, object_id)` 解析。MVP 仅支持 workflow / assistant / knowledge_space 三类主资源；其他类型返回 None 跳过 L3/L4，回退到 FGA chain（仍受 DSL 层 tenant#shared_to#member 约束）
 - **偏差 4**：spec §8 的 `_relation_implicit_manager_ok` 顺位下移、原 L2-L5 → L4-L7 重排——这是 D5 增量策略的副作用（不重写既有层）
 - **偏差 5**：T03 实际 `config.yaml` 不需要修改（grep 确认无 openfga 配置块；纯 Pydantic 默认值生效）。tasks.md T03 中"配置 yaml 文件修改"实际跳过
-- **偏差 6**：本地 mac 环境无 BiShengVENV conda env，pytest 无法执行；所有自动化验证用 `python -m py_compile` + 直接 import 完成 syntax + 功能性 smoke。完整 pytest 推到 T10 在测试服务器 192.168.106.114 执行
+- **偏差 6**：本地 mac 环境无 DobermanAgentVENV conda env，pytest 无法执行；所有自动化验证用 `python -m py_compile` + 直接 import 完成 syntax + 功能性 smoke。完整 pytest 推到 T10 在测试服务器 192.168.106.114 执行
 - **偏差 7**：T10 实际只完成 ac-verification.md **模板**初稿（标注所有手工 QA 项为 ⏳ pending），未执行真实 OpenFGA 端到端验证（需测试服务器）；ac-verification.md 末尾"Pending Items Summary"列出测试服务器执行步骤
-- **偏差 8**（2026-04-19 合并 F012 后）：T06 `UserPayload.get_visible_tenants` 改造完成——原 `TODO(F012)` stub 已切换为读 `bisheng.core.context.tenant.get_visible_tenant_ids()` ContextVar（F012 `CustomMiddleware` 注入），DB 反查降为 fallback 路径（供超管和无 middleware 的 legacy 调用使用）。权限检查热路径省 1 次 DB 往返。`has_tenant_admin` 保持 FGA 直查——F012 未提供等价缓存渠道
+- **偏差 8**（2026-04-19 合并 F012 后）：T06 `UserPayload.get_visible_tenants` 改造完成——原 `TODO(F012)` stub 已切换为读 `doberman_agent.core.context.tenant.get_visible_tenant_ids()` ContextVar（F012 `CustomMiddleware` 注入），DB 反查降为 fallback 路径（供超管和无 middleware 的 legacy 调用使用）。权限检查热路径省 1 次 DB 往返。`has_tenant_admin` 保持 FGA 直查——F012 未提供等价缓存渠道

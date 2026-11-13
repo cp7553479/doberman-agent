@@ -19,7 +19,7 @@
 ## 2. 关键约束
 
 - 遵循 `docs/constitution.md` C1–C7（本特性仅涉及 **C7**：不在 store 里发 HTTP——本特性根本不发请求）。
-- 遵循 `src/frontend/client/AGENTS.md`：Recoil / react-query v4 / shadcn / `~/` 别名 / 单文件 ≤600 行 / 命名导出 / 图标优先 `bisheng-icons`。
+- 遵循 `src/frontend/client/AGENTS.md`：Recoil / react-query v4 / shadcn / `~/` 别名 / 单文件 ≤600 行 / 命名导出 / 图标优先 `doberman-agent-icons`。
 - **纯前端**：不新增接口、不改消息数据结构、不做数据迁移——因此必须在**现有消息数据能提供的信息**范围内实现（这直接导出决策 1）。
 - 存量历史消息也要生效，意味着不能依赖任何"从今往后才会写入"的字段。
 

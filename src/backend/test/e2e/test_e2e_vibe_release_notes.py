@@ -43,7 +43,7 @@ async def publication_target():
         assert int(app["tenant_id"]) == tenant
         package = Path(os.environ["F112_E2E_PACKAGE"])
         with tarfile.open(package, "r:gz") as archive:
-            candidates = [m for m in archive if m.name in {"bisheng-app.yaml", "./bisheng-app.yaml"}]
+            candidates = [m for m in archive if m.name in {"doberman-agent-app.yaml", "./doberman-agent-app.yaml"}]
             assert len(candidates) == 1 and candidates[0].isfile() and candidates[0].size <= 65536
             manifest = yaml.safe_load(archive.extractfile(candidates[0]).read())
         assert manifest["name"] == app["name"]

@@ -10,15 +10,15 @@ import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import select
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.core.context.tenant import (
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.core.context.tenant import (
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
     set_visible_tenant_ids,
     visible_tenant_ids,
 )
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
 
 ROOT = 1
 TENANT = 5
@@ -65,7 +65,7 @@ async def dao(monkeypatch):
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",

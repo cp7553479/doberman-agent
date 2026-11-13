@@ -1,8 +1,8 @@
 import json
 
 import requests
-from bisheng_langchain.embeddings import HostEmbeddings
-from bisheng_langchain.vectorstores import Milvus
+from doberman_agent_langchain.embeddings import HostEmbeddings
+from doberman_agent_langchain.vectorstores import Milvus
 from pymilvus import Collection, MilvusClient, MilvusException
 from sqlmodel import Session, create_engine, text
 

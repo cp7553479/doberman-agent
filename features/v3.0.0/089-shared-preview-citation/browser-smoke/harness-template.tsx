@@ -18,7 +18,7 @@ import zh from '../packages/locales/src/shared/zh-Hans.json';
 import ja from '../packages/locales/src/shared/ja.json';
 __PLATFORM_IMPORT__
 __HOST_CSS__
-import '@bisheng/ui/tokens.css';
+import '@doberman-agent/ui/tokens.css';
 const base=__APP_ENV__.BASE_URL;
 const url=(name:string)=>base+'/__f089__/fixtures/'+name;
 const instance=i18next.createInstance();

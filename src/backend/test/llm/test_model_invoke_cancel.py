@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.constants.enums.telemetry import StatusEnum
-from bisheng.llm.domain import utils as llm_utils
-from bisheng.llm.domain.const import LLMModelStatus
+from doberman_agent.common.constants.enums.telemetry import StatusEnum
+from doberman_agent.llm.domain import utils as llm_utils
+from doberman_agent.llm.domain.const import LLMModelStatus
 
 
 def _fake_model():
@@ -20,7 +20,7 @@ def _fake_model():
 def telemetry():
     upload = MagicMock()
     with (
-        patch.object(llm_utils, "bisheng_model_limit_check", AsyncMock()),
+        patch.object(llm_utils, "doberman_agent_model_limit_check", AsyncMock()),
         patch.object(llm_utils, "upload_telemetry_log", upload),
     ):
         yield upload
@@ -29,7 +29,7 @@ def telemetry():
 async def test_cancelled_call_is_recorded_as_failed(telemetry):
     started = asyncio.Event()
 
-    @llm_utils.wrapper_bisheng_model_limit_check_async
+    @llm_utils.wrapper_doberman_agent_model_limit_check_async
     async def hang(self):
         started.set()
         await asyncio.sleep(3600)
@@ -46,7 +46,7 @@ async def test_cancelled_call_is_recorded_as_failed(telemetry):
 
 
 async def test_failed_call_names_the_model_in_the_error(telemetry):
-    @llm_utils.wrapper_bisheng_model_limit_check_async
+    @llm_utils.wrapper_doberman_agent_model_limit_check_async
     async def fail(self):
         raise RuntimeError("Model not exist.")
 
@@ -64,7 +64,7 @@ async def test_failed_call_names_the_model_in_the_error(telemetry):
 
 
 async def test_successful_call_still_marks_the_model_normal(telemetry):
-    @llm_utils.wrapper_bisheng_model_limit_check_async
+    @llm_utils.wrapper_doberman_agent_model_limit_check_async
     async def ok(self):
         return "hi"
 

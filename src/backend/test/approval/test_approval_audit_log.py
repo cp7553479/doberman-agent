@@ -10,17 +10,17 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-from bisheng.approval.domain.models.approval_instance import (
+from doberman_agent.approval.domain.models.approval_instance import (
     ApprovalExceptionType,
     ApprovalInstanceStatus,
 )
-from bisheng.approval.domain.schemas.approval_center_schema import (
+from doberman_agent.approval.domain.schemas.approval_center_schema import (
     ApprovalGateDecision,
     ApprovalGateRequest,
 )
-from bisheng.approval.domain.services.approval_gate import ApprovalGate
-from bisheng.approval.domain.services.approval_outbox_service import ApprovalOutboxService
-from bisheng.approval.domain.services.approval_scenario_admin_service import (
+from doberman_agent.approval.domain.services.approval_gate import ApprovalGate
+from doberman_agent.approval.domain.services.approval_outbox_service import ApprovalOutboxService
+from doberman_agent.approval.domain.services.approval_scenario_admin_service import (
     ApprovalScenarioAdminService,
 )
 
@@ -55,16 +55,16 @@ async def test_update_scenario_writes_toggle_audit_when_enabled_flips():
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service.ApprovalScenarioRepository.get_scenario",
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service.ApprovalScenarioRepository.get_scenario",
             new=AsyncMock(return_value=scenario),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service."
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service."
             "ApprovalScenarioRepository.update_scenario",
             new=AsyncMock(return_value=scenario),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2",
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2",
             new=AsyncMock(side_effect=fake_ainsert_v2),
         ),
     ):
@@ -95,16 +95,16 @@ async def test_update_scenario_skips_toggle_audit_when_enabled_unchanged():
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service.ApprovalScenarioRepository.get_scenario",
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service.ApprovalScenarioRepository.get_scenario",
             new=AsyncMock(return_value=scenario),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service."
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service."
             "ApprovalScenarioRepository.update_scenario",
             new=AsyncMock(return_value=scenario),
         ),
         patch(
-            "bisheng.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2",
+            "doberman_agent.approval.domain.services.approval_scenario_admin_service.AuditLogDao.ainsert_v2",
             new=AsyncMock(side_effect=lambda **kw: captured.append(kw)),
         ),
     ):
@@ -149,7 +149,7 @@ async def test_outbox_success_emits_handler_success_audit():
     )
 
     with patch(
-        "bisheng.approval.domain.services.approval_outbox_service.AuditLogDao.ainsert_v2",
+        "doberman_agent.approval.domain.services.approval_outbox_service.AuditLogDao.ainsert_v2",
         new=AsyncMock(side_effect=lambda **kw: captured.append(kw)),
     ):
         service = ApprovalOutboxService(instance_repository=repo)
@@ -192,7 +192,7 @@ async def test_outbox_failure_emits_handler_failed_audit_with_error_summary():
     )
 
     with patch(
-        "bisheng.approval.domain.services.approval_outbox_service.AuditLogDao.ainsert_v2",
+        "doberman_agent.approval.domain.services.approval_outbox_service.AuditLogDao.ainsert_v2",
         new=AsyncMock(side_effect=lambda **kw: captured.append(kw)),
     ):
         service = ApprovalOutboxService(instance_repository=repo)
@@ -304,7 +304,7 @@ async def _run_gate_for_exception(*, exception_type: str):
 
     with (
         patch(
-            "bisheng.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
+            "doberman_agent.approval.domain.services.approval_gate.AuditLogDao.ainsert_v2",
             new=AsyncMock(side_effect=lambda **kw: captured.append(kw)),
         ),
         patch.object(ApprovalGate, "_notify_admins_of_exception", new=AsyncMock()),

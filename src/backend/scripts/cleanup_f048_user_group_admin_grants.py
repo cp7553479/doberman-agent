@@ -67,47 +67,47 @@ from loguru import logger  # noqa: E402
 from sqlalchemy import func  # noqa: E402
 from sqlmodel import col, select  # noqa: E402
 
-from bisheng.api.services.f048_permission_runtime import (  # noqa: E402
+from doberman_agent.api.services.f048_permission_runtime import (  # noqa: E402
     build_f048_resource_composition,
 )
-from bisheng.common.errcode.permission import PermissionInvalidResourceError  # noqa: E402
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.errcode.permission import PermissionInvalidResourceError  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     app_context,
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import (  # noqa: E402
+from doberman_agent.core.context.tenant import (  # noqa: E402
     bypass_tenant_filter,
     current_tenant_id,
     set_current_tenant_id,
 )
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.core.openfga.runtime_heartbeat import (  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.openfga.runtime_heartbeat import (  # noqa: E402
     list_runtime_heartbeats,
 )
-from bisheng.database.models.group import Group  # noqa: E402
-from bisheng.department.domain.services.department_projection_scope import (  # noqa: E402
+from doberman_agent.database.models.group import Group  # noqa: E402
+from doberman_agent.department.domain.services.department_projection_scope import (  # noqa: E402
     get_department_projection_scope,
 )
-from bisheng.permission.application.control_state import (  # noqa: E402
+from doberman_agent.permission.application.control_state import (  # noqa: E402
     SqlPermissionControlState,
 )
-from bisheng.permission.application.runtime import (  # noqa: E402
+from doberman_agent.permission.application.runtime import (  # noqa: E402
     F048PermissionRuntime,
     build_f048_permission_runtime,
 )
-from bisheng.permission.domain.models import (  # noqa: E402
+from doberman_agent.permission.domain.models import (  # noqa: E402
     PermissionGrant,
     PermissionGrantAssignee,
     PermissionProjectionOperation,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget  # noqa: E402
-from bisheng.permission.domain.services.grant_service import (  # noqa: E402
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget  # noqa: E402
+from doberman_agent.permission.domain.services.grant_service import (  # noqa: E402
     CanonicalGrantChange,
 )
-from bisheng.permission.domain.services.permission_action_service import (  # noqa: E402
+from doberman_agent.permission.domain.services.permission_action_service import (  # noqa: E402
     PermissionActor,
 )
 

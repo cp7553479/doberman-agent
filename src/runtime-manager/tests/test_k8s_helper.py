@@ -52,7 +52,7 @@ def setup(tmp_path):
     client.data["source-a"] = package(
         tmp_path,
         "source",
-        {"bisheng-app.yaml": b"runtime: python3.11\n", "main.py": b"print('application')\n", "requirements.txt": b""},
+        {"doberman-agent-app.yaml": b"runtime: python3.11\n", "main.py": b"print('application')\n", "requirements.txt": b""},
     )
     client.data["compiled-a"] = package(tmp_path, "compiled", {"main.py": b"print('compiled')\n"})
     client.data["dependencies-a"] = package(
@@ -97,7 +97,7 @@ def test_runtime_fetch_only_validates_and_extracts_frozen_artifacts(setup, monke
     assert (root / "code/main.py").read_bytes() == b"print('compiled')\n"
     script = (root / "tools/environment.sh").read_text()
     assert "/opt/venv" in script and "--no-index" in script and "--require-hashes" in script
-    assert "-I -m pip" in script and "import bisheng_sdk" in script
+    assert "-I -m pip" in script and "import doberman_agent_sdk" in script
     assert client.downloads == ["compiled-a", "dependencies-a"]
 
 
@@ -239,7 +239,7 @@ def test_optional_lock_runs_real_image_resolver_and_writes_normalized_install_co
         root,
         "optional-lock-source",
         {
-            "bisheng-app.yaml": b"runtime: python3.11\n",
+            "doberman-agent-app.yaml": b"runtime: python3.11\n",
             "main.py": b"print('application')\n",
             "requirements.txt": b"",
             "locks/runtime.txt": b"",
@@ -247,7 +247,7 @@ def test_optional_lock_runs_real_image_resolver_and_writes_normalized_install_co
     )
     document["delivery"]["dependencies"] = {"install_inputs": [], "offline_artifacts": [], **dependencies}
     document["offline"] = True
-    monkeypatch.setenv("BISHENG_DEPENDENCY_LOCK", "previous-lock")
+    monkeypatch.setenv("DOBERMAN_AGENT_DEPENDENCY_LOCK", "previous-lock")
     tool = image_prepare_tool()
     monkeypatch.setattr(helper, "_load_download_tool", lambda: tool)
     calls = []
@@ -255,7 +255,7 @@ def test_optional_lock_runs_real_image_resolver_and_writes_normalized_install_co
     def pip_download(args, **kwargs):
         assert args[:5] == ["python", "-I", "-m", "pip", "download"]
         assert "--only-binary=:all:" in args
-        assert os.environ["BISHENG_DEPENDENCY_LOCK"] == expected
+        assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == expected
         assert os.environ["PIP_NO_INDEX"] == "1"
         assert tool.requirements() == root / "work/source" / (expected or "requirements.txt")
         calls.append(args)
@@ -274,7 +274,7 @@ def test_optional_lock_runs_real_image_resolver_and_writes_normalized_install_co
     assert result["cached"] is cached
     config = json.loads((root / "work/tools/prepare.json").read_text())
     assert config["lock"] == expected and config["cached"] is cached
-    assert os.environ["BISHENG_DEPENDENCY_LOCK"] == "previous-lock"
+    assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == "previous-lock"
     if cached:
         assert calls == []
     else:
@@ -288,14 +288,14 @@ def test_invalid_optional_lock_is_rejected_before_material_download_or_tool_load
 
     client, document, _, root = setup
     document["delivery"]["dependencies"] = {"lock": value}
-    monkeypatch.setenv("BISHENG_DEPENDENCY_LOCK", "previous-lock")
+    monkeypatch.setenv("DOBERMAN_AGENT_DEPENDENCY_LOCK", "previous-lock")
     monkeypatch.setattr(helper, "_load_download_tool", lambda: pytest.fail("invalid lock must not load image tools"))
     with pytest.raises(ValueError, match="helper_dependency_lock_invalid"):
         helper.resolve_download(document, root / "source", root / "offline", root / "output")
     with pytest.raises(ValueError, match="helper_dependency_lock_invalid"):
         helper.prepare_download(client, document, work=root / "work")
     assert client.downloads == [] and not (root / "work").exists()
-    assert os.environ["BISHENG_DEPENDENCY_LOCK"] == "previous-lock"
+    assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == "previous-lock"
 
 
 @pytest.mark.parametrize("cached", [False, True])
@@ -319,7 +319,7 @@ def test_standalone_prepare_optional_lock_runs_real_offline_image_tool(tmp_path,
     def offline_resolution(*args, **kwargs):
         assert args[:4] == ("python", "-m", "pip", "install")
         assert "--no-index" in args and "--dry-run" in args
-        assert os.environ["BISHENG_DEPENDENCY_LOCK"] == expected
+        assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == expected
         assert os.environ["PIP_NO_INDEX"] == "1"
         Path(args[args.index("--report") + 1]).write_text('{"install": []}')
         calls.append(args)
@@ -328,11 +328,11 @@ def test_standalone_prepare_optional_lock_runs_real_offline_image_tool(tmp_path,
     original_build = tool.build
 
     def build(language):
-        assert os.environ["BISHENG_DEPENDENCY_LOCK"] == expected
+        assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == expected
         original_build(language)
 
     tool.build = build
-    monkeypatch.setenv("BISHENG_DEPENDENCY_LOCK", "previous-lock")
+    monkeypatch.setenv("DOBERMAN_AGENT_DEPENDENCY_LOCK", "previous-lock")
     prepare(
         {"language": "python3.11", "cached": cached, **extra},
         source=source,
@@ -342,7 +342,7 @@ def test_standalone_prepare_optional_lock_runs_real_offline_image_tool(tmp_path,
         common=tool,
     )
     assert len(calls) == (0 if cached else 1)
-    assert os.environ["BISHENG_DEPENDENCY_LOCK"] == "previous-lock"
+    assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == "previous-lock"
     if not cached:
         assert (output / "runtime.lock").read_text() == "\n"
 
@@ -351,11 +351,11 @@ def test_standalone_prepare_optional_lock_runs_real_offline_image_tool(tmp_path,
 def test_standalone_prepare_refuses_nonstring_optional_lock_before_loading_tools(monkeypatch, value):
     from runtime_manager import k8s_prepare as installer
 
-    monkeypatch.setenv("BISHENG_DEPENDENCY_LOCK", "previous-lock")
+    monkeypatch.setenv("DOBERMAN_AGENT_DEPENDENCY_LOCK", "previous-lock")
     monkeypatch.setattr(installer, "_common", lambda: pytest.fail("invalid lock must not load image tools"))
     with pytest.raises(ValueError, match="prepare_dependency_lock_invalid"):
         installer.prepare({"language": "python3.11", "cached": False, "lock": value})
-    assert os.environ["BISHENG_DEPENDENCY_LOCK"] == "previous-lock"
+    assert os.environ["DOBERMAN_AGENT_DEPENDENCY_LOCK"] == "previous-lock"
 
 
 def test_environment_input_key_includes_profile_abi_architecture_and_application(setup):
@@ -584,14 +584,14 @@ def test_verify_volume_is_readonly_and_never_creates_business_layout(tmp_path, m
     from runtime_manager import k8s_capabilities
     from runtime_manager.k8s_helper import verify_volume
 
-    marker = tmp_path / ".bisheng-volume.json"
+    marker = tmp_path / ".doberman-agent-volume.json"
     marker.write_text(json.dumps({"namespace": "runtime-apps", "installation_id": "e2e-f059"}))
     monkeypatch.setattr(k8s_capabilities, "mounted_filesystem", lambda path: "ext4")
     monkeypatch.setattr(k8s_capabilities, "volume_capacity", lambda path: 1024**3)
     before = marker.read_bytes()
     assert verify_volume(tmp_path, guard=guard_document()) == {"verified": True}
     assert marker.read_bytes() == before
-    assert sorted(path.name for path in tmp_path.iterdir()) == [".bisheng-volume.json"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == [".doberman-agent-volume.json"]
 
 
 @pytest.mark.parametrize(
@@ -601,7 +601,7 @@ def test_bad_scratch_volume_is_rejected_without_writes(tmp_path, monkeypatch, pr
     from runtime_manager import k8s_capabilities
     from runtime_manager.k8s_helper import initialize_data_layout, verify_volume
 
-    marker = tmp_path / ".bisheng-volume.json"
+    marker = tmp_path / ".doberman-agent-volume.json"
     marker.write_text(
         json.dumps(
             {"namespace": "other-apps" if problem == "wrong-scope" else "runtime-apps", "installation_id": "e2e-f059"}
@@ -662,7 +662,7 @@ def test_static_upload_freezes_startup_argv_without_baking_in_runtime_wrapper(se
 
     client, document, _, root = setup
     client.data["source-a"] = package(
-        root, "static-source", {"bisheng-app.yaml": b"runtime: static\n", "index.html": b"<h1>default static</h1>"}
+        root, "static-source", {"doberman-agent-app.yaml": b"runtime: static\n", "index.html": b"<h1>default static</h1>"}
     )
     document["profile"]["language"] = "static"
     document["delivery"]["startup"] = {} if declared is None else {"command": declared}
@@ -674,7 +674,7 @@ def test_static_upload_freezes_startup_argv_without_baking_in_runtime_wrapper(se
     result = prepare_upload(client, document, work=root / "work")
     assert result["startup"]["command"] == (declared or ["nginx", "-g", "daemon off;"])
     assert result["profile"]["language"] == "static"
-    assert "/opt/bisheng/entrypoint.sh" not in result["startup"]["command"]
+    assert "/opt/doberman-agent/entrypoint.sh" not in result["startup"]["command"]
     assert document["delivery"]["startup"] == ({} if declared is None else {"command": declared})
     compiled = next(payload for kind, payload, _platform, _metadata in client.uploads if kind == "compiled")
     with tarfile.open(fileobj=io.BytesIO(compiled)) as archive:

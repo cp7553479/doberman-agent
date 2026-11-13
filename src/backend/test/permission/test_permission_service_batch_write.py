@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.core.openfga.exceptions import FGAWriteError
-from bisheng.permission.domain.schemas.tuple_operation import TupleOperation
-from bisheng.permission.domain.services.permission_service import PermissionService
+from doberman_agent.core.openfga.exceptions import FGAWriteError
+from doberman_agent.permission.domain.schemas.tuple_operation import TupleOperation
+from doberman_agent.permission.domain.services.permission_service import PermissionService
 
 
 def _op(action: str, obj: str) -> TupleOperation:
@@ -129,7 +129,7 @@ async def test_batch_write_tuples_uses_async_fga_accessor_first():
     ops = [_op('write', 'llm_model:2202')]
 
     with patch(
-        'bisheng.core.openfga.manager.aget_fga_client',
+        'doberman_agent.core.openfga.manager.aget_fga_client',
         new_callable=AsyncMock,
         return_value=fake_fga,
     ) as async_get_fga, patch.object(

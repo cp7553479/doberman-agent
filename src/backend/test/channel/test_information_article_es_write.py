@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.channel.domain.schemas.article_schema import ArticleDocument
-from bisheng.channel.domain.services.article_es_service import ArticleEsService
+from doberman_agent.channel.domain.schemas.article_schema import ArticleDocument
+from doberman_agent.channel.domain.services.article_es_service import ArticleEsService
 
 
 def _article(title: str) -> ArticleDocument:
@@ -35,7 +35,7 @@ async def test_detailed_bulk_maps_success_and_failure_ids():
     errors = [{"index": {"_id": "B", "status": 429, "error": {"type": "busy"}}}]
 
     with patch(
-        "bisheng.channel.domain.services.article_es_service.es_helpers.async_bulk",
+        "doberman_agent.channel.domain.services.article_es_service.es_helpers.async_bulk",
         new=AsyncMock(return_value=(1, errors)),
     ):
         result = await service.bulk_index_articles_detailed({"A": _article("A"), "B": _article("B")})

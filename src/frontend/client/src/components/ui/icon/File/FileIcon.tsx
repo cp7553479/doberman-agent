@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { BookType, File, FileMinus, Heading, Image, Loader2, Table2 } from "lucide-react";
 import React from "react";
 
@@ -136,7 +136,7 @@ const getSizeClass = (size: 'sm' | 'md' | 'lg') => {
 export const getFileTypebyFileName = (fileName: string) => {
     return fileName ? fileName.split('.').pop()?.toLocaleLowerCase() as FileType : '';
 }
-// Map an uploaded file's extension to a bisheng outlined file-type icon.
+// Map an uploaded file's extension to a doberman_agent outlined file-type icon.
 // Anything not listed falls back to the generic Outlined.File icon.
 const FILE_TYPE_ICONS: Record<string, typeof Outlined.File> = {
     // FileExcel

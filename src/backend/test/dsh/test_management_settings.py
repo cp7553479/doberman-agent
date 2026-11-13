@@ -12,14 +12,14 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.models.config import Config
-from bisheng.dsh.api import dependencies
-from bisheng.dsh.api.endpoints import identity, models
-from bisheng.dsh.api.endpoints import settings as settings_api
-from bisheng.dsh.config import DshSettings
-from bisheng.dsh.domain.repositories import settings as settings_repo
-from bisheng.dsh.domain.schemas.settings import DshManagementSettings
-from bisheng.dsh.domain.services.settings import DshSettingsService
+from doberman_agent.common.models.config import Config
+from doberman_agent.dsh.api import dependencies
+from doberman_agent.dsh.api.endpoints import identity, models
+from doberman_agent.dsh.api.endpoints import settings as settings_api
+from doberman_agent.dsh.config import DshSettings
+from doberman_agent.dsh.domain.repositories import settings as settings_repo
+from doberman_agent.dsh.domain.schemas.settings import DshManagementSettings
+from doberman_agent.dsh.domain.services.settings import DshSettingsService
 
 
 @pytest.fixture
@@ -91,7 +91,7 @@ async def test_deployment_gate_wins_without_reading_database(settings_app, monke
             "management_enabled": False,
             "enabled": False,
             "download_url": "https://www.dshdesktop.com/zh/enterprise/",
-            "launch_url": "bisheng://login",
+            "launch_url": "doberman_agent://login",
         }
         assert (await client.get("/api/v1/dsh/config")).json() == {"enabled": False}
         assert (await client.put("/api/v1/dsh/admin/settings", json={"enabled": True})).status_code == 403
@@ -121,7 +121,7 @@ async def test_rejected_writes_leave_current_value_unchanged(settings_app):
 
 
 async def test_unreadable_settings_fail_closed():
-    from bisheng.common.errcode.dsh import DshAuthorizationUnavailableError
+    from doberman_agent.common.errcode.dsh import DshAuthorizationUnavailableError
 
     repository = SimpleNamespace(read=AsyncMock(return_value='{"enabled":"true"}'))
     with pytest.raises(DshAuthorizationUnavailableError):
@@ -135,7 +135,7 @@ def test_settings_reject_unknown_fields_and_normalize_empty_download():
 
 
 async def test_settings_use_existing_global_administrator_guard(monkeypatch):
-    from bisheng.common.dependencies.user_deps import UserPayload
+    from doberman_agent.common.dependencies.user_deps import UserPayload
 
     user = SimpleNamespace(user_id=9, is_admin=lambda: False)
     monkeypatch.setattr(UserPayload, "get_login_user", AsyncMock(return_value=user))
@@ -172,9 +172,9 @@ async def test_existing_settings_default_launch_and_failed_writes_preserve_it(se
         await session.commit()
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         url = "/api/v1/dsh/admin/settings"
-        assert (await client.get(url)).json()["data"]["launch_url"] == "bisheng://login"
+        assert (await client.get(url)).json()["data"]["launch_url"] == "doberman_agent://login"
         assert (await client.put(url, json={"enabled": True, "launch_url": "javascript://alert"})).status_code == 400
-        assert (await client.get(url)).json()["data"]["launch_url"] == "bisheng://login"
+        assert (await client.get(url)).json()["data"]["launch_url"] == "doberman_agent://login"
 
 
 async def test_fresh_settings_use_client_addresses_and_preserve_explicit_download_choice(settings_app):
@@ -182,7 +182,7 @@ async def test_fresh_settings_use_client_addresses_and_preserve_explicit_downloa
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         for url in ("/api/v1/dsh/admin/settings", "/api/v1/dsh/browser-config"):
             data = (await client.get(url)).json()["data"]
-            assert data["launch_url"] == "bisheng://login"
+            assert data["launch_url"] == "doberman_agent://login"
             assert data["download_url"] == "https://www.dshdesktop.com/zh/enterprise/"
         value = {"download_url": None, "launch_url": "custom-client://login"}
         assert (await client.put("/api/v1/dsh/admin/settings", json=value)).status_code == 200

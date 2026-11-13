@@ -10,30 +10,30 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import (
+from doberman_agent.common.errcode.knowledge_space import (
     SpaceFolderDepthError,
     SpaceNotFoundError,
     SpacePermissionDeniedError,
 )
-from bisheng.common.errcode.llm import WorkbenchEmbeddingError
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.errcode.llm import WorkbenchEmbeddingError
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.knowledge.domain.models.knowledge import (
+from doberman_agent.knowledge.domain.models.knowledge import (
     AuthTypeEnum,
     Knowledge,
     KnowledgeState,
     KnowledgeTypeEnum,
 )
-from bisheng.knowledge.domain.models.knowledge_file import (
+from doberman_agent.knowledge.domain.models.knowledge_file import (
     FileType,
     KnowledgeFile,
 )
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import SpaceSubscriptionStatusEnum
-from bisheng.knowledge.domain.services.knowledge_space_service import (
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import SpaceSubscriptionStatusEnum
+from doberman_agent.knowledge.domain.services.knowledge_space_service import (
     KnowledgeSpaceService,
 )
 
@@ -127,7 +127,7 @@ async def test_get_space_info_raises_when_space_is_missing(
     service: KnowledgeSpaceService,
 ) -> None:
     with patch(
-        "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+        "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
         new_callable=AsyncMock,
         return_value=None,
     ):
@@ -141,17 +141,17 @@ async def test_create_limit_count_excludes_department_spaces(
     with (
         # A finite quota keeps the count path alive; -1 would skip it entirely.
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.QuotaService.get_effective_quota",
             new_callable=AsyncMock,
             return_value=50,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_spaces_by_user",
             new_callable=AsyncMock,
             return_value=0,
         ) as mock_count,
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.LLMService.get_workbench_llm",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -181,13 +181,13 @@ async def test_created_spaces_exclude_department_bound_spaces(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "SpaceChannelMemberDao.async_get_user_created_members",
             new_callable=AsyncMock,
             return_value=[department_member, normal_member],
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "DepartmentKnowledgeSpaceDao.aget_department_ids_by_space_ids",
             new_callable=AsyncMock,
             return_value={101: 10},
@@ -216,17 +216,17 @@ async def test_unsubscribe_space_blocks_creator(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=owned_space,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             new_callable=AsyncMock,
             return_value=creator_member,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.delete_space_member",
             new_callable=AsyncMock,
         ) as mock_delete_member,
     ):
@@ -244,7 +244,7 @@ async def test_add_folder_under_level_9_parent_raises_depth_error(
     Batch upload has its own depth coverage in test_knowledge_space_folder_upload;
     this pins the single-folder path, whose check lives in add_folder itself.
     """
-    from bisheng.knowledge.domain.services.knowledge_space_service import (
+    from doberman_agent.knowledge.domain.services.knowledge_space_service import (
         MAX_FOLDER_LEVEL,
     )
 
@@ -268,7 +268,7 @@ async def test_add_folder_under_level_9_parent_raises_depth_error(
             return_value=parent_folder,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aadd_file",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aadd_file",
             new_callable=AsyncMock,
         ) as mock_add_file,
     ):
@@ -283,7 +283,7 @@ async def test_add_folder_under_level_8_parent_creates_level_9_child(
     service: KnowledgeSpaceService,
 ) -> None:
     """The layer right at the cap is still allowed — the check is >, not >=."""
-    from bisheng.knowledge.domain.services.knowledge_space_service import (
+    from doberman_agent.knowledge.domain.services.knowledge_space_service import (
         MAX_FOLDER_LEVEL,
     )
 
@@ -305,12 +305,12 @@ async def test_add_folder_under_level_8_parent_creates_level_9_child(
             return_value=parent_folder,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceFileDao.count_folder_by_name",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceFileDao.count_folder_by_name",
             new_callable=AsyncMock,
             return_value=0,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aadd_file",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.aadd_file",
             new_callable=AsyncMock,
             side_effect=lambda folder: folder,
         ) as mock_add_file,
@@ -320,7 +320,7 @@ async def test_add_folder_under_level_8_parent_creates_level_9_child(
             new_callable=AsyncMock,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service."
+            "doberman_agent.knowledge.domain.services.knowledge_space_service."
             "KnowledgeDao.async_update_knowledge_update_time_by_id",
             new_callable=AsyncMock,
         ),
@@ -344,28 +344,28 @@ async def test_shared_space_info_previews_joinable_spaces(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=space,
         ),
         patch.object(service, "_check_action", new_callable=AsyncMock, return_value=False) as check_action,
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_count_space_members",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_count_space_members",
             new_callable=AsyncMock,
             return_value=3,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
             new_callable=AsyncMock,
             return_value={301: 2},
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.UserDao.aget_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.UserDao.aget_user",
             new_callable=AsyncMock,
             return_value=creator,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -413,22 +413,22 @@ async def test_space_info_marks_visible_grant_as_subscribed_without_membership(
             return_value=SimpleNamespace(super_admin=False),
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_count_space_members",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_count_space_members",
             new_callable=AsyncMock,
             return_value=1,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
             new_callable=AsyncMock,
             return_value={303: 2},
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.UserDao.aget_user",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.UserDao.aget_user",
             new_callable=AsyncMock,
             return_value=creator,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.SpaceChannelMemberDao.async_find_member",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -452,7 +452,7 @@ async def test_joined_visibility_does_not_expand_super_admin_identity(
     with (
         patch.object(service, "_permission_actor", new_callable=AsyncMock, return_value=actor),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
             new_callable=AsyncMock,
             return_value={"304": False},
         ) as check_visible,
@@ -503,7 +503,7 @@ async def test_private_space_info_requires_visible_permission(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=space,
         ),
@@ -522,32 +522,32 @@ async def test_square_super_admin_scope_does_not_mark_ungranted_space_subscribed
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_get_public_spaces_paginated",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_get_public_spaces_paginated",
             new_callable=AsyncMock,
             return_value=[(space, None, None, 0)],
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_public_spaces",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_public_spaces",
             new_callable=AsyncMock,
             return_value=1,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.UserDao.aget_user_by_ids",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.UserDao.aget_user_by_ids",
             new_callable=AsyncMock,
             return_value=[creator],
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
             new_callable=AsyncMock,
             return_value={401: 0},
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
             new_callable=AsyncMock,
             return_value={"401": False},
         ) as check_visible,
         patch(
-            "bisheng.user.domain.services.user.UserService.get_avatar_share_link",
+            "doberman_agent.user.domain.services.user.UserService.get_avatar_share_link",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -575,32 +575,32 @@ async def test_square_marks_real_visible_grant_as_subscribed(
 
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_get_public_spaces_paginated",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_get_public_spaces_paginated",
             new_callable=AsyncMock,
             return_value=[(space, None, None, 0)],
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_public_spaces",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.async_count_public_spaces",
             new_callable=AsyncMock,
             return_value=1,
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.UserDao.aget_user_by_ids",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.UserDao.aget_user_by_ids",
             new_callable=AsyncMock,
             return_value=[creator],
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeFileDao.async_count_success_files_batch",
             new_callable=AsyncMock,
             return_value={402: 0},
         ),
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.batch_check_business_visible",
             new_callable=AsyncMock,
             return_value={"402": True},
         ),
         patch(
-            "bisheng.user.domain.services.user.UserService.get_avatar_share_link",
+            "doberman_agent.user.domain.services.user.UserService.get_avatar_share_link",
             new_callable=AsyncMock,
             return_value=None,
         ),
@@ -625,7 +625,7 @@ async def test_share_preview_content_requires_visible_permission(
     space = _make_space(space_id=301, user_id=9, is_released=is_released, auth_type=auth_type)
     with (
         patch(
-            "bisheng.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
+            "doberman_agent.knowledge.domain.services.knowledge_space_service.KnowledgeDao.aquery_by_id",
             new_callable=AsyncMock,
             return_value=space,
         ),

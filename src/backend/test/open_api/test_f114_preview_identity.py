@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.open_api import OpenApiCredentialInvalidError
-from bisheng.open_api.domain.context import OpenApiExecutionSnapshot, OpenApiPrincipal
+from doberman_agent.common.errcode.open_api import OpenApiCredentialInvalidError
+from doberman_agent.open_api.domain.context import OpenApiExecutionSnapshot, OpenApiPrincipal
 
 
 def principal(**kw):
@@ -29,7 +29,7 @@ def principal(**kw):
 
 @pytest.fixture
 def binding(monkeypatch):
-    from bisheng.open_api.domain.services import preview_context as mod
+    from doberman_agent.open_api.domain.services import preview_context as mod
 
     context = SimpleNamespace(
         tenant_id=3,
@@ -89,11 +89,11 @@ async def credential_db(monkeypatch):
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.app_publish.domain.models.hosted_app_subject import HostedAppSubject
-    from bisheng.database.models.app import App
-    from bisheng.database.models.audit_log import AuditLog
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
-    from bisheng.open_api.domain.repositories import credential_repository
+    from doberman_agent.app_publish.domain.models.hosted_app_subject import HostedAppSubject
+    from doberman_agent.database.models.app import App
+    from doberman_agent.database.models.audit_log import AuditLog
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.open_api.domain.repositories import credential_repository
 
     engine = create_async_engine("sqlite+aiosqlite://")
     async with engine.begin() as conn:
@@ -132,10 +132,10 @@ async def test_preview_revoke_is_exact_audited_and_rollbackable(credential_db):
     """AC-50、AC-53、AC-69: one preview key, no subject-wide revocation or independent commit."""
     from sqlmodel import select
 
-    from bisheng.core.context.tenant import tenant_execution_scope
-    from bisheng.database.models.audit_log import AuditLog
-    from bisheng.open_api.application.runtime_credentials import revoke_preview_credential
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.core.context.tenant import tenant_execution_scope
+    from doberman_agent.database.models.audit_log import AuditLog
+    from doberman_agent.open_api.application.runtime_credentials import revoke_preview_credential
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
 
     factory, repo = credential_db
     kwargs = {"credential_id": 7, "tenant_id": 3, "subject_id": 1, "reason": "manual"}
@@ -160,8 +160,8 @@ async def test_preview_revoke_is_exact_audited_and_rollbackable(credential_db):
 @pytest.mark.parametrize("tenant,subject", [(4, 1), (3, 2)])
 async def test_preview_revoke_mixed_identity_has_no_effect(credential_db, tenant, subject):
     """AC-50、AC-69: a cross-tenant or mixed subject reference never revokes a key."""
-    from bisheng.core.context.tenant import tenant_execution_scope
-    from bisheng.open_api.domain.models.api_credential import ApiCredential
+    from doberman_agent.core.context.tenant import tenant_execution_scope
+    from doberman_agent.open_api.domain.models.api_credential import ApiCredential
 
     factory, repo = credential_db
     with tenant_execution_scope(3):

@@ -25,7 +25,7 @@ class _Echo(BaseModel):
 
 
 def _build_app() -> FastAPI:
-    from bisheng.sso_sync.domain.services.hmac_auth import verify_hmac
+    from doberman_agent.sso_sync.domain.services.hmac_auth import verify_hmac
 
     app = FastAPI()
 

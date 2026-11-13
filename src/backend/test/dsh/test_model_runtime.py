@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.dsh import DshQuotaUnavailableError
-from bisheng.dsh.runtime import ModelRuntime
+from doberman_agent.common.errcode.dsh import DshQuotaUnavailableError
+from doberman_agent.dsh.runtime import ModelRuntime
 from test.dsh.test_model_service import principal
 
 

@@ -2,11 +2,11 @@
   "release": "v3.0.0-test-vibe",
   "commit": "755d4456e50c015a3fa88da0c0c35ab53bbd1650",
   "annotated_tag_object": "cada64894bef204330e4f62d51cfa732b4046b81",
-  "initial_failed_run": "https://github.com/dataelement/bisheng/actions/runs/39566080903",
+  "initial_failed_run": "https://github.com/cp7553479/doberman-agent/actions/runs/39566080903",
   "failure": "runner missing rg; missing image was incorrectly rejected",
   "fix": "Use grep -Eqi in architecture builder and service-index publication; no image tag overwrite enabled",
   "runtime_workflow": {
-    "url": "https://github.com/dataelement/bisheng/actions/runs/39567381522",
+    "url": "https://github.com/cp7553479/doberman-agent/actions/runs/39567381522",
     "conclusion": "success",
     "duration_seconds": 385,
     "jobs": {
@@ -25,7 +25,7 @@
     ]
   },
   "existing_backend_frontend_workflow": {
-    "url": "https://github.com/dataelement/bisheng/actions/runs/39567381486",
+    "url": "https://github.com/cp7553479/doberman-agent/actions/runs/39567381486",
     "conclusion": "success",
     "duration_seconds": 454
   },

@@ -165,8 +165,8 @@ def test_real_helper_reads_latest_wal_and_cleans_only_its_container(tmp_path, st
     finally:
         if ref:
             actual = engine.inspect_container(ref)
-            assert actual["Config"]["Labels"]["bisheng.app.id"] == app
-            assert actual["Config"]["Labels"]["bisheng.runtime.node"] == config.node_id
+            assert actual["Config"]["Labels"]["doberman-agent.app.id"] == app
+            assert actual["Config"]["Labels"]["doberman-agent.runtime.node"] == config.node_id
             if actual["State"]["Running"]:
                 engine.stop_container(ref, timeout=5)
             assert not engine.inspect_container(ref)["State"]["Running"]

@@ -1,4 +1,4 @@
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 
 interface FileAbnormalStatusCellProps {

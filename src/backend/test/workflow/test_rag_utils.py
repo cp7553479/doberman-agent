@@ -14,8 +14,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bisheng.knowledge.rag.version_filter import build_primary_only_filter
-from bisheng.workflow.common.knowledge import ConditionCases, RagUtils
+from doberman_agent.knowledge.rag.version_filter import build_primary_only_filter
+from doberman_agent.workflow.common.knowledge import ConditionCases, RagUtils
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +93,7 @@ class TestInitKnowledgeRetrieverNoExclusions:
 
         with patch.object(obj, "_fetch_non_primary_file_ids", return_value=[]):
             with patch(
-                "bisheng.workflow.common.knowledge.MultiRetriever",
+                "doberman_agent.workflow.common.knowledge.MultiRetriever",
                 side_effect=_fake_multi_retriever,
             ):
                 obj.init_knowledge_retriever()
@@ -136,7 +136,7 @@ class TestInitKnowledgeRetrieverNoExclusions:
 
         with patch.object(obj, "_fetch_non_primary_file_ids", return_value=[]):
             with patch(
-                "bisheng.workflow.common.knowledge.MultiRetriever",
+                "doberman_agent.workflow.common.knowledge.MultiRetriever",
                 side_effect=_fake_multi_retriever,
             ):
                 obj.init_knowledge_retriever()
@@ -184,7 +184,7 @@ class TestInitKnowledgeRetrieverWithExclusions:
 
         with patch.object(obj, "_fetch_non_primary_file_ids", return_value=excluded):
             with patch(
-                "bisheng.workflow.common.knowledge.MultiRetriever",
+                "doberman_agent.workflow.common.knowledge.MultiRetriever",
                 side_effect=_fake_multi_retriever,
             ):
                 obj.init_knowledge_retriever()
@@ -273,7 +273,7 @@ class TestInitKnowledgeRetrieverSkipsNoneFilter:
 
         with patch.object(obj, "_fetch_non_primary_file_ids", return_value=[10]) as mock_fetch:
             with patch(
-                "bisheng.workflow.common.knowledge.MultiRetriever",
+                "doberman_agent.workflow.common.knowledge.MultiRetriever",
                 side_effect=_fake_multi_retriever,
             ):
                 obj.init_knowledge_retriever()
@@ -310,11 +310,11 @@ class TestInitKnowledgeRetrieverEmptyList:
 
         with patch.object(obj, "_fetch_non_primary_file_ids", return_value=[]) as mock_fetch:
             with patch(
-                "bisheng.workflow.common.knowledge.MultiRetriever",
+                "doberman_agent.workflow.common.knowledge.MultiRetriever",
                 side_effect=_fake_multi_retriever,
             ):
                 with patch(
-                    "bisheng.workflow.common.knowledge.KnowledgeRag"
+                    "doberman_agent.workflow.common.knowledge.KnowledgeRag"
                     ".get_multi_knowledge_vectorstore_sync",
                     return_value={},
                 ):

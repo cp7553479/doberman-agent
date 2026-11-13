@@ -6,15 +6,15 @@ import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.context import tenant
-from bisheng.core.database import tenant_filter
-from bisheng.database.models.role import Role, RoleDao
+from doberman_agent.core.context import tenant
+from doberman_agent.core.database import tenant_filter
+from doberman_agent.database.models.role import Role, RoleDao
 from test.app_publish.conftest import _sqlite_ddl_quirks
 
 
 @pytest.mark.parametrize("global_view,expected", [(False, {2, 4}), (True, {2, 3, 4, 5})])
 async def test_catalog_and_custom_roles_follow_the_view(monkeypatch, global_view, expected):
-    from bisheng.database.models import role as module
+    from doberman_agent.database.models import role as module
 
     tenant_filter.register_tenant_filter_events()
     engine = create_async_engine("sqlite+aiosqlite://")
@@ -54,8 +54,8 @@ async def test_catalog_and_custom_roles_follow_the_view(monkeypatch, global_view
 
 
 def test_user_role_mapping_is_shared_with_domain_import():
-    from bisheng.database.models.user_role import UserRole
-    from bisheng.user.domain.models.user_role import UserRole as DomainUserRole
+    from doberman_agent.database.models.user_role import UserRole
+    from doberman_agent.user.domain.models.user_role import UserRole as DomainUserRole
 
     assert DomainUserRole is UserRole
     assert UserRole.__tablename__ == "userrole"

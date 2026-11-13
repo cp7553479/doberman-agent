@@ -18,20 +18,20 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import delete
 from sqlmodel import Session
 
-from bisheng.common.errcode.base import BaseErrorCode
-from bisheng.core.context import tenant as context
-from bisheng.database.models.tenant import UserTenantDao
-from bisheng.dsh import admin_runtime
-from bisheng.dsh.api.endpoints import model_audit_admin as endpoint
-from bisheng.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
-from bisheng.dsh.domain.models.model_audit_tree import DshAuditTreeState
-from bisheng.dsh.domain.repositories import content_safety, content_safety_projection
-from bisheng.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
-from bisheng.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
-from bisheng.permission import application as permissions
-from bisheng.permission.application import relation_api
-from bisheng.user.domain.models.user import User, UserDao
-from bisheng.user.domain.models.user_role import UserRoleDao
+from doberman_agent.common.errcode.base import BaseErrorCode
+from doberman_agent.core.context import tenant as context
+from doberman_agent.database.models.tenant import UserTenantDao
+from doberman_agent.dsh import admin_runtime
+from doberman_agent.dsh.api.endpoints import model_audit_admin as endpoint
+from doberman_agent.dsh.domain.models.content_safety_event import DshContentSafetyEvent as Fact
+from doberman_agent.dsh.domain.models.model_audit_tree import DshAuditTreeState
+from doberman_agent.dsh.domain.repositories import content_safety, content_safety_projection
+from doberman_agent.dsh.domain.repositories.model_audit_queries import DshModelAuditQueryRepository
+from doberman_agent.dsh.domain.services.model_audit_queries import DshModelAuditQueryService
+from doberman_agent.permission import application as permissions
+from doberman_agent.permission.application import relation_api
+from doberman_agent.user.domain.models.user import User, UserDao
+from doberman_agent.user.domain.models.user_role import UserRoleDao
 from test.dsh import test_content_safety_queries as query_tests
 from test.dsh.test_content_safety_groups import native
 from test.dsh.test_content_safety_merge import committed_merge
@@ -128,7 +128,7 @@ def query_api(monkeypatch, query_engine, content_safety_clock, content_safety_id
 async def get(api, path, *, actor=41, admin_scope=None, **params):
     with actor_scope(actor, admin_scope=admin_scope):
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=api.app), base_url="https://bisheng.invalid"
+            transport=httpx.ASGITransport(app=api.app), base_url="https://doberman-agent.invalid"
         ) as client:
             return await client.get(
                 BASE + path,

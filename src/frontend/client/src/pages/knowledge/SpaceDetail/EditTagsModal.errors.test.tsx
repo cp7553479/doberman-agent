@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import messages from '../../../locales/en/api_errors.gen.json';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { normalizeApiError } from '@bisheng/api-client';
+import { normalizeApiError } from '@doberman-agent/api-client';
 import { addSpaceTagApi, batchUpdateTagsApi, deleteSpaceTagApi, getSpaceTagsApi, updateFileTagsApi } from '~/api/knowledge';
 import { EditTagsModal } from './EditTagsModal';
 

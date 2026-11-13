@@ -1,4 +1,4 @@
-"""Regression: ``bisheng.utils.util.sync_func_to_async`` must preserve
+"""Regression: ``doberman_agent.utils.util.sync_func_to_async`` must preserve
 ContextVars when offloading sync work to a thread pool.
 
 ``loop.run_in_executor`` does not propagate ``contextvars.Context`` by
@@ -11,8 +11,8 @@ import threading
 
 import pytest
 
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.utils.util import sync_func_to_async
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.utils.util import sync_func_to_async
 
 
 @pytest.mark.asyncio

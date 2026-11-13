@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.chat_session.domain.services.workflow_file_service import WorkflowFileService
-from bisheng.common.errcode.workstation import ChatFileParseError
-from bisheng.workstation.domain.services import chat_service
+from doberman_agent.chat_session.domain.services.workflow_file_service import WorkflowFileService
+from doberman_agent.common.errcode.workstation import ChatFileParseError
+from doberman_agent.workstation.domain.services import chat_service
 
 
 async def test_daily_parser_receives_the_owned_image_storage_context(monkeypatch):
@@ -22,7 +22,7 @@ async def test_daily_parser_receives_the_owned_image_storage_context(monkeypatch
         "source.pdf",
         7,
         chat_id="daily",
-        source_url="/bisheng/chat/7/source.pdf",
+        source_url="/doberman_agent/chat/7/source.pdf",
         tenant_id=3,
     )
     assert result.startswith("![image](/api/v1/chat/daily/")
@@ -33,7 +33,7 @@ async def test_daily_parser_receives_the_owned_image_storage_context(monkeypatch
         "workflow_id": "",
         "run_id": "ignored",
         "node_id": "daily-attachment",
-        "source_url": "/bisheng/chat/7/source.pdf",
+        "source_url": "/doberman_agent/chat/7/source.pdf",
         "file_name": "source.pdf",
     }
     assert parse.await_args.kwargs["image_storage"] is storage
@@ -47,7 +47,7 @@ async def test_temp_pipeline_keeps_images_and_uses_the_retained_storage(monkeypa
             documents=[Document(page_content="![image](/api/v1/chat/daily/files/image/content)")]
         )
     )
-    monkeypatch.setattr("bisheng.knowledge.rag.temp_file_pipeline.TempFilePipeline", pipeline)
+    monkeypatch.setattr("doberman_agent.knowledge.rag.temp_file_pipeline.TempFilePipeline", pipeline)
     monkeypatch.setattr(
         chat_service.knowledge_imp.KnowledgeUtils, "chunk2promt", staticmethod(lambda body, _: body), raising=False
     )
@@ -74,7 +74,7 @@ async def test_live_daily_file_processing_binds_each_document_to_the_new_convers
     monkeypatch.setattr(
         chat_service, "_annotate_agent_files_with_video_covers", AsyncMock(side_effect=lambda files, _: files)
     )
-    files = [{"filepath": "/bisheng/chat/7/source.pdf"}]
+    files = [{"filepath": "/doberman_agent/chat/7/source.pdf"}]
     await chat_service._process_agent_files(
         SimpleNamespace(files=files),
         SimpleNamespace(visual=False),

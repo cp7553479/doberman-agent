@@ -15,7 +15,7 @@ re-implemented:
 same :func:`app_proxy.proxy.forward`, which calls the same
 :func:`app_proxy.headers.build_upstream_headers`. That is a requirement, not a
 convenience: a second copy of the strip rule is a second place for
-``X_BiSheng_User_Id`` to walk past it (AC-32). The trick that makes it work is
+``X_Doberman_Agent_User_Id`` to walk past it (AC-32). The trick that makes it work is
 that the "slug" handed to ``forward`` is ``preview/{session}``, so
 ``entry_prefix_for`` yields ``/apps/preview/{session}`` and both the prefix
 strip and ``X-Forwarded-Prefix`` come out right with no branch at all.

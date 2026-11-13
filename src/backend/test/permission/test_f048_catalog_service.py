@@ -10,7 +10,7 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     AuthorizationModelMismatchError,
     PermissionImpactExpiredError,
     PermissionModelStateConflictError,
@@ -18,13 +18,13 @@ from bisheng.common.errcode.permission import (
     PermissionPublishNotReadyError,
     PermissionVersionConflictError,
 )
-from bisheng.permission.domain.services.catalog_policy import (
+from doberman_agent.permission.domain.services.catalog_policy import (
     ACTION_RESOURCE_SCOPES,
     REGISTERED_ACTION_CODES,
     CatalogAction,
     derive_action_release,
 )
-from bisheng.permission.domain.services.catalog_service import (
+from doberman_agent.permission.domain.services.catalog_service import (
     CatalogCommitUnknownError,
     CatalogDraftBuildInput,
     CatalogDraftSnapshot,
@@ -32,7 +32,7 @@ from bisheng.permission.domain.services.catalog_service import (
     CatalogPublishContext,
     CatalogService,
 )
-from bisheng.permission.domain.services.model_policy import (
+from doberman_agent.permission.domain.services.model_policy import (
     CustomModelSelection,
     ModelReferenceSummary,
     derive_permission_models,

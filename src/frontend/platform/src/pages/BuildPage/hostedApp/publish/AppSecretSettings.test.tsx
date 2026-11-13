@@ -5,7 +5,7 @@ import { AppSecretSettings } from './AppSecretSettings'
 const { save, rebuild, confirm, row } = vi.hoisted(() => ({ save: vi.fn(), rebuild: vi.fn(), confirm: vi.fn(), row: { name: 'COLOR', present: true, mask: '••••••', updated_at: '2026-10-24T00:00:00', approved_reference: true, pending_reference: false } }))
 vi.mock('../hooks/useAppSecrets', () => ({ useAppSecrets: () => ({ data: { revision: 1, items: [row], runtime: { comparison: 'different', changed_names: ['COLOR'], running_version_id: 'v1', route_epoch: 3, rebuild_operation: null } }, save, rebuild, remove: vi.fn(), refresh: vi.fn(), loading: false, busy: false }) }))
 vi.mock('@/components/bs-ui/alertDialog/useConfirm', () => ({ bsConfirm: confirm }))
-vi.mock('@bisheng/ui', () => ({ Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />, Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />, Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} /> }))
+vi.mock('@doberman-agent/ui', () => ({ Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />, Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />, Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} /> }))
 
 describe('environment settings', () => {
   beforeEach(() => { row.present = true; row.updated_at = '2026-10-24T00:00:00'; vi.clearAllMocks() })

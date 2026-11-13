@@ -1,6 +1,6 @@
-import { Button, Input, Textarea } from '@bisheng/ui';
-import { Tooltip as SharedTooltip } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Button, Input, Textarea } from '@doberman-agent/ui';
+import { Tooltip as SharedTooltip } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 
 import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
@@ -8,7 +8,7 @@ import { Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/co
 import { Label } from "@/components/bs-ui/label";
 import { generateUUID } from "@/components/bs-ui/utils";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import { MinusCircle } from "lucide-react";
 import { useEffect,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -123,7 +123,7 @@ export default function GlobalVarItem({ data, onChange, i18nPrefix }) {
         <div className="w-full max-w-3xl">
             <div className="space-y-4">
                 {/* Header */}
-                <Label className="flex items-center bisheng-label">
+                <Label className="flex items-center doberman_agent-label">
                     {t(`${i18nPrefix}label`)}
                     {data.help && <QuestionTooltip content={t(`${i18nPrefix}help`)} />}
                 </Label>
@@ -186,7 +186,7 @@ export default function GlobalVarItem({ data, onChange, i18nPrefix }) {
                         {/* Variable Name */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label className="flex items-center bisheng-label">
+                                <Label className="flex items-center doberman_agent-label">
                                     {t('flow.variableName', { ns: 'bs' })}
                                     <QuestionTooltip content={t('variableNameRuleTip')} />
                                 </Label>
@@ -203,7 +203,7 @@ export default function GlobalVarItem({ data, onChange, i18nPrefix }) {
                         {/* Variable Value */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label className="flex items-center bisheng-label">
+                                <Label className="flex items-center doberman_agent-label">
                                     {t('variableValue')}
                                     <QuestionTooltip content={t('variableValueRuleTip')} />
                                 </Label>

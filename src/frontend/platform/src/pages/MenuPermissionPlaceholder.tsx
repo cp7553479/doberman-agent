@@ -1,4 +1,4 @@
-import { Button, Textarea, notification } from '@bisheng/ui';
+import { Button, Textarea, notification } from '@doberman-agent/ui';
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 

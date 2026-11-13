@@ -338,7 +338,7 @@ async def handle_close_connections(request: Request) -> Response:
 
 def create_app() -> FastAPI:
     application = FastAPI(
-        title="BiSheng app-proxy",
+        title="DobermanAgent app-proxy",
         description="Hosted-app entry: session check, header strip/inject, fallback pages, reverse proxy",
         version="3.0.0",
         lifespan=lifespan,

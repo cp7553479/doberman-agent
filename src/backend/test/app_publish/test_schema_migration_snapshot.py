@@ -37,14 +37,14 @@ import pytest
 
 
 def _service():
-    from bisheng.app_publish.domain.services import schema_evolution_service
+    from doberman_agent.app_publish.domain.services import schema_evolution_service
 
     return schema_evolution_service
 
 
 def _tables(declaration: dict[str, list]) -> list:
     """``{"orders": [{"name": "id", ...}, "note"]}`` → validated ``DatabaseTable``s."""
-    from bisheng.app_publish.domain.schemas.app_manifest import DatabaseTable
+    from doberman_agent.app_publish.domain.schemas.app_manifest import DatabaseTable
 
     return [DatabaseTable.model_validate({"name": name, "columns": columns}) for name, columns in declaration.items()]
 
@@ -184,7 +184,7 @@ class TestTheBackendWritesNoDdl:
 async def _set_manifest(publish_db, version_id: str, manifest: dict) -> None:
     from sqlmodel import select
 
-    from bisheng.database.models.app_version import AppVersion
+    from doberman_agent.database.models.app_version import AppVersion
 
     async with publish_db() as session:
         row = (await session.execute(select(AppVersion).where(AppVersion.id == version_id))).scalars().first()
@@ -250,7 +250,7 @@ class TestMigrateForRelease:
 
 
 def _action_result(*, state: str, ok: bool = True, reason: str = "", detail=None):
-    from bisheng.app_runtime.domain.services.app_state_service import ActionResult
+    from doberman_agent.app_runtime.domain.services.app_state_service import ActionResult
 
     return ActionResult(app_id="app", state=state, ok=ok, reason=reason, version_id=None, detail=detail or {})
 
@@ -258,7 +258,7 @@ def _action_result(*, state: str, ok: bool = True, reason: str = "", detail=None
 @pytest.fixture()
 def start_attempt(monkeypatch):
     """Record whether — and when — the version was actually started."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     calls: list[str] = []
 
@@ -278,8 +278,8 @@ async def _release(publish_db, app_factory, deployment_factory, *, state: str, d
     """An approved release of ``declaration``, on an app whose online version declares nothing."""
     from datetime import datetime
 
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
-    from bisheng.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
+    from doberman_agent.database.models.app_version import VERSION_KIND_ITERATION, AppVersion, AppVersionDao
 
     app, online = await app_factory(state=state, with_version=True)
     async with publish_db() as session:
@@ -318,13 +318,13 @@ async def _release(publish_db, app_factory, deployment_factory, *, state: str, d
 
 
 def _online_service():
-    from bisheng.app_publish.domain.services.publish_online_service import PublishOnlineService
+    from doberman_agent.app_publish.domain.services.publish_online_service import PublishOnlineService
 
     return PublishOnlineService
 
 
 async def _deployment_row(publish_db, deployment_id: str):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     async with publish_db() as session:
         return await AppDeploymentDao.aget(session, deployment_id)
@@ -359,7 +359,7 @@ class TestGoLive:
         on a different manifest, and parking it would refuse the very
         resubmission that carries the fix (16252).
         """
-        from bisheng.common.errcode.app_publish import AppSchemaMigrationFailedError
+        from doberman_agent.common.errcode.app_publish import AppSchemaMigrationFailedError
 
         _, _, _, deployment, payload = await _release(
             publish_db, app_factory, deployment_factory, state="online", declaration={"orders": ["id"]}
@@ -381,14 +381,14 @@ class TestGoLive:
         assert row.status == "failed"
         assert row.failure["code"] == AppSchemaMigrationFailedError.Code
         assert row.failure["details"]["column"] == "owner"
-        assert "bisheng deploy" in " ".join(row.failure["hints"])
+        assert "doberman-agent deploy" in " ".join(row.failure["hints"])
 
     async def test_a_refused_migration_is_audited_under_its_own_action(
         self, publish_db, app_factory, deployment_factory, fake_orchestrator, start_attempt, audit_sink
     ):
         """Not ``iteration_failed``: that one says the start failed, and would
         send an operator to runtime logs that have nothing in them."""
-        from bisheng.common.errcode.app_publish import AppSchemaMigrationFailedError
+        from doberman_agent.common.errcode.app_publish import AppSchemaMigrationFailedError
 
         _, _, _, _, payload = await _release(
             publish_db, app_factory, deployment_factory, state="online", declaration={"orders": ["id"]}
@@ -409,13 +409,13 @@ class TestGoLive:
         special case — but it must still run: a release parked before its
         tables were built would otherwise start against a database without them.
         """
-        from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+        from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
         app, _, pending, _, _ = await _release(
             publish_db, app_factory, deployment_factory, state="pending_online", declaration={"orders": ["id"]}
         )
         async with publish_db() as session:
-            from bisheng.database.models.app import AppDao
+            from doberman_agent.database.models.app import AppDao
 
             row = await AppDao.aget(session, app.id)
             row.pending_version_id = pending.id

@@ -10,49 +10,49 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from bisheng.api.services.permission_migration_source import (
+from doberman_agent.api.services.permission_migration_source import (
     ApplicationPermissionMigrationSource,
     SqlApplicationMigrationRepository,
 )
-from bisheng.channel.domain.services.permission_migration_source import (
+from doberman_agent.channel.domain.services.permission_migration_source import (
     ChannelPermissionMigrationSource,
     SqlChannelMigrationRepository,
 )
-from bisheng.common.errcode.permission import PermissionMigrationBlockedError
-from bisheng.common.services.config_service import settings
-from bisheng.core.openfga.authorization_model_f048 import (
+from doberman_agent.common.errcode.permission import PermissionMigrationBlockedError
+from doberman_agent.common.services.config_service import settings
+from doberman_agent.core.openfga.authorization_model_f048 import (
     authorization_model_checksum,
     get_authorization_model_f048,
 )
-from bisheng.core.openfga.client import FGAClient
-from bisheng.core.openfga.discovery import OpenFGARuntimePin, discover_openfga_runtime
-from bisheng.knowledge.domain.services.permission_migration_source import (
+from doberman_agent.core.openfga.client import FGAClient
+from doberman_agent.core.openfga.discovery import OpenFGARuntimePin, discover_openfga_runtime
+from doberman_agent.knowledge.domain.services.permission_migration_source import (
     KnowledgePermissionMigrationSource,
     SqlKnowledgeMigrationRepository,
 )
-from bisheng.permission.migration.f048_coordinator import (
+from doberman_agent.permission.migration.f048_coordinator import (
     F048MigrationCoordinator,
 )
-from bisheng.permission.migration.f048_runtime_source import (
+from doberman_agent.permission.migration.f048_runtime_source import (
     LiveMigrationSourceProvider,
 )
-from bisheng.permission.migration.f048_runtime_storage import (
+from doberman_agent.permission.migration.f048_runtime_storage import (
     OpenFGAMigrationModelPublisher,
     SqlMigrationRunStore,
     SqlOpenFGAMigrationTargetWriter,
 )
-from bisheng.permission.migration.f048_runtime_verification import (
+from doberman_agent.permission.migration.f048_runtime_verification import (
     LiveMigrationEvidenceProvider,
 )
-from bisheng.permission.migration.f048_verifier import F048MigrationVerifier
-from bisheng.telemetry_search.domain.services.permission_migration_source import (
+from doberman_agent.permission.migration.f048_verifier import F048MigrationVerifier
+from doberman_agent.telemetry_search.domain.services.permission_migration_source import (
     DashboardPermissionMigrationSource,
     SqlDashboardMigrationRepository,
 )
-from bisheng.tenant.domain.services.permission_migration_source import (
+from doberman_agent.tenant.domain.services.permission_migration_source import (
     LegacyIdentityPermissionMigrationSource,
 )
-from bisheng.tool.domain.services.permission_migration_source import (
+from doberman_agent.tool.domain.services.permission_migration_source import (
     SqlToolMigrationRepository,
     ToolPermissionMigrationSource,
 )

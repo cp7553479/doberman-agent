@@ -6,16 +6,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import InvalidCatalogActionError
-from bisheng.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import FileType, KnowledgeFileDao
-from bisheng.knowledge.domain.services import knowledge_file_visibility_service as visibility
-from bisheng.knowledge.domain.services import knowledge_permission_service as permissions
-from bisheng.permission.application import business_authorization as business
-from bisheng.permission.application.control_state import PermissionResourceSnapshot
-from bisheng.permission.application.identity import reset_current_permission_actor, set_current_permission_actor
-from bisheng.permission.domain.services.data_scope import DATA_SCOPE_PERSONAL
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.common.errcode.permission import InvalidCatalogActionError
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeDao, KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import FileType, KnowledgeFileDao
+from doberman_agent.knowledge.domain.services import knowledge_file_visibility_service as visibility
+from doberman_agent.knowledge.domain.services import knowledge_permission_service as permissions
+from doberman_agent.permission.application import business_authorization as business
+from doberman_agent.permission.application.control_state import PermissionResourceSnapshot
+from doberman_agent.permission.application.identity import reset_current_permission_actor, set_current_permission_actor
+from doberman_agent.permission.domain.services.data_scope import DATA_SCOPE_PERSONAL
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
 
 
 @pytest.fixture

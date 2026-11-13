@@ -4,8 +4,8 @@ import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.workstation.domain.schemas.chat import APIChatCompletion
-from bisheng.workstation.domain.services import chat_service, task_submit_service
+from doberman_agent.workstation.domain.schemas.chat import APIChatCompletion
+from doberman_agent.workstation.domain.services import chat_service, task_submit_service
 
 
 async def test_task_title_survives_handoff_disconnect(monkeypatch):
@@ -25,7 +25,7 @@ async def test_task_title_survives_handoff_disconnect(monkeypatch):
         "submit_task_turn",
         AsyncMock(return_value=(SimpleNamespace(name="New Chat"), SimpleNamespace(id="sv1", session_id="c1"))),
     )
-    monkeypatch.setattr(chat_service.LLMService, "get_bisheng_llm", AsyncMock(return_value=object()))
+    monkeypatch.setattr(chat_service.LLMService, "get_doberman_agent_llm", AsyncMock(return_value=object()))
     data = APIChatCompletion(clientTimestamp="t", model="m1", text="总结文档", task_mode=True)
     response = await chat_service._task_mode_stream_completion(MagicMock(), data, MagicMock())
     chunk = await anext(response.body_iterator)

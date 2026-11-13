@@ -1,7 +1,7 @@
-import { Button, Input, Textarea, toast } from '@bisheng/ui';
+import { Button, Input, Textarea, toast } from '@doberman-agent/ui';
 import { Dialog,DialogClose,DialogContent,DialogFooter,DialogHeader,DialogTitle } from "@/components/bs-ui/dialog";
 
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import type { ChangeEvent } from 'react';
 import { forwardRef,useImperativeHandle,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -148,13 +148,13 @@ export const EditQa = forwardRef<EditQaHandle, EditQaProps>(function EditQa({ kn
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-2">
                     <div>
-                        <label htmlFor="question" className="bisheng-label">
+                        <label htmlFor="question" className="doberman_agent-label">
                             <span className="text-red-500">*</span>{t('question')}
                         </label>
                         <Input name="question" value={form.question} onChange={handleInputChange} className={`col-span-3 ${error.question && 'border-red-400'}`} />
                     </div>
                     <div>
-                        <label htmlFor="similarQuestions" className="bisheng-label">{t('similarQuestions')}</label>
+                        <label htmlFor="similarQuestions" className="doberman_agent-label">{t('similarQuestions')}</label>
                         <InputList
                             className="max-h-60 overflow-y-auto"
                             value={form.similarQuestions}
@@ -165,7 +165,7 @@ export const EditQa = forwardRef<EditQaHandle, EditQaProps>(function EditQa({ kn
                         </Button>
                     </div>
                     <div>
-                        <label htmlFor="answer" className="bisheng-label">
+                        <label htmlFor="answer" className="doberman_agent-label">
                             <span className="text-red-500">*</span>{t('answer')}
                         </label>
                         <Textarea name="answer" value={form.answer} onChange={handleInputChange} textareaClassName={`col-span-3 h-36 ${error.answer && 'border-red-400'}`} />

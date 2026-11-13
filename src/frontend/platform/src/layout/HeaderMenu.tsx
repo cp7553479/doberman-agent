@@ -1,5 +1,5 @@
-import { Segmented } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Segmented } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { userContext } from "@/contexts/userContext";
 import { canManageWorkbenchConfig } from "@/pages/ModelPage/manage/permissions";

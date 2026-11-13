@@ -1,7 +1,7 @@
 """T026 — the "应用发布" approval scenario ships with the platform (AC-12 / AC-19 / AC-20).
 
 The approval gate fails closed: with no ``approval_scenario`` row for
-``(tenant_id, 'app_publish_request')`` the very first ``bisheng deploy`` raises
+``(tenant_id, 'app_publish_request')`` the very first ``doberman-agent deploy`` raises
 ``ApprovalScenarioDisabledError``. So the seed is not setup convenience — it is
 the difference between the demo path working and it stopping on step one.
 
@@ -40,13 +40,13 @@ APP_PUBLISH_SCENARIO = "app_publish_request"
 
 
 def _seeds():
-    from bisheng.approval.domain.services.approval_seed_service import DEFAULT_APPROVAL_SCENARIO_SEEDS
+    from doberman_agent.approval.domain.services.approval_seed_service import DEFAULT_APPROVAL_SCENARIO_SEEDS
 
     return DEFAULT_APPROVAL_SCENARIO_SEEDS
 
 
 async def _seed(publish_db, tenant_id: int = ROOT_TENANT_ID) -> None:
-    from bisheng.approval.domain.services.approval_seed_service import seed_approval_scenarios_in_session
+    from doberman_agent.approval.domain.services.approval_seed_service import seed_approval_scenarios_in_session
 
     async with publish_db() as session:
         await seed_approval_scenarios_in_session(session, tenant_id)
@@ -54,7 +54,7 @@ async def _seed(publish_db, tenant_id: int = ROOT_TENANT_ID) -> None:
 
 
 async def _scenario(publish_db, tenant_id: int, code: str = APP_PUBLISH_SCENARIO):
-    from bisheng.approval.domain.models.approval_scenario import ApprovalScenario
+    from doberman_agent.approval.domain.models.approval_scenario import ApprovalScenario
 
     async with publish_db() as session:
         rows = (
@@ -85,7 +85,7 @@ async def test_fresh_deploy_has_app_publish_scenario_enabled(publish_db):
 
 async def test_seed_shape_single_catchall_route_single_or_node(publish_db):
     """Five rows, and every flag that could silently disable the flow."""
-    from bisheng.approval.domain.models.approval_scenario import (
+    from doberman_agent.approval.domain.models.approval_scenario import (
         ApprovalFlowDefinition,
         ApprovalFlowVersion,
         ApprovalNodeDefinition,
@@ -136,7 +136,7 @@ async def test_seed_shape_single_catchall_route_single_or_node(publish_db):
 
 async def test_sources_are_department_admin_and_tenant_admin(publish_db):
     """Order matters only for readability, membership matters for AC-14."""
-    from bisheng.approval.domain.models.approval_scenario import ApprovalNodeDefinition
+    from doberman_agent.approval.domain.models.approval_scenario import ApprovalNodeDefinition
 
     await _seed(publish_db)
     async with publish_db() as session:
@@ -161,7 +161,7 @@ async def test_scenario_is_seeded_per_tenant(publish_db):
 
 
 async def test_seed_idempotent_by_tenant_and_scenario_code(publish_db):
-    from bisheng.approval.domain.models.approval_scenario import ApprovalFlowDefinition, ApprovalRouteRule
+    from doberman_agent.approval.domain.models.approval_scenario import ApprovalFlowDefinition, ApprovalRouteRule
 
     await _seed(publish_db)
     await _seed(publish_db)
@@ -176,7 +176,7 @@ async def test_seed_idempotent_by_tenant_and_scenario_code(publish_db):
 
 async def test_manual_reconfig_survives_reseed(publish_db):
     """Reshaped approvers stay reshaped. This is the whole of AC-19."""
-    from bisheng.approval.domain.models.approval_scenario import ApprovalNodeDefinition, ApprovalScenario
+    from doberman_agent.approval.domain.models.approval_scenario import ApprovalNodeDefinition, ApprovalScenario
 
     await _seed(publish_db)
     async with publish_db() as session:
@@ -214,7 +214,7 @@ async def test_manual_reconfig_survives_reseed(publish_db):
 
 async def test_menu_access_scenario_not_touched(publish_db):
     """``menu_access_request`` stays unseeded — enabling it is a product decision, not a seed change."""
-    from bisheng.approval.domain.models.approval_scenario import ApprovalScenario
+    from doberman_agent.approval.domain.models.approval_scenario import ApprovalScenario
 
     await _seed(publish_db)
 
@@ -242,7 +242,7 @@ async def test_existing_two_scenarios_still_seeded(publish_db):
 
 async def test_boot_path_still_seeds_the_default_tenant(publish_db):
     """``init_data`` keeps its old one-argument call and still targets the default tenant."""
-    from bisheng.common.init_data import _init_default_approval_scenarios
+    from doberman_agent.common.init_data import _init_default_approval_scenarios
 
     async with publish_db() as session:
         await _init_default_approval_scenarios(session)
@@ -258,7 +258,7 @@ async def test_boot_path_still_seeds_the_default_tenant(publish_db):
 
 async def test_tenant_scoped_entry_point_seeds_an_arbitrary_tenant(publish_db):
     """``seed_approval_scenarios_for_tenant`` owns its session — that is what the hooks call."""
-    from bisheng.approval.domain.services.approval_seed_service import seed_approval_scenarios_for_tenant
+    from doberman_agent.approval.domain.services.approval_seed_service import seed_approval_scenarios_for_tenant
 
     await seed_approval_scenarios_for_tenant(SUB_TENANT_ID + 3)
 
@@ -295,7 +295,7 @@ def _seed_call_nodes(func):
 
 async def test_create_tenant_path_seeds_scenario():
     """``TenantService.acreate_tenant`` — the admin-console path, and the one both upstream docs omit."""
-    from bisheng.tenant.domain.services.tenant_service import TenantService
+    from doberman_agent.tenant.domain.services.tenant_service import TenantService
 
     calls = _seed_call_nodes(TenantService.acreate_tenant)
 
@@ -304,7 +304,7 @@ async def test_create_tenant_path_seeds_scenario():
 
 async def test_mount_child_path_seeds_scenario():
     """``TenantMountService.mount_child`` — department mounted as a child tenant."""
-    from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
+    from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
 
     calls = _seed_call_nodes(TenantMountService.mount_child)
 
@@ -313,8 +313,8 @@ async def test_mount_child_path_seeds_scenario():
 
 async def test_seed_failure_does_not_break_tenant_creation():
     """Both hooks sit inside a ``try``: an unseeded scenario is recoverable, a half-created tenant is not."""
-    from bisheng.tenant.domain.services.tenant_mount_service import TenantMountService
-    from bisheng.tenant.domain.services.tenant_service import TenantService
+    from doberman_agent.tenant.domain.services.tenant_mount_service import TenantMountService
+    from doberman_agent.tenant.domain.services.tenant_service import TenantService
 
     for func in (TenantService.acreate_tenant, TenantMountService.mount_child):
         for ancestors in _seed_call_nodes(func):

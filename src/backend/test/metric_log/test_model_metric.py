@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 
 from loguru import logger
 
-from bisheng.common.constants.enums.telemetry import StatusEnum
-from bisheng.llm.domain import utils
+from doberman_agent.common.constants.enums.telemetry import StatusEnum
+from doberman_agent.llm.domain import utils
 
 
 @contextmanager

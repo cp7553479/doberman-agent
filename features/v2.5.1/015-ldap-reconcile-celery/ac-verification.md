@@ -1,7 +1,7 @@
 # AC Verification — F015-ldap-reconcile-celery
 
 **Feature**: [spec.md](./spec.md) · [tasks.md](./tasks.md)
-**分支**: `feat/v2.5.1/015-ldap-reconcile-celery` (worktree `/Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile`)
+**分支**: `feat/v2.5.1/015-ldap-reconcile-celery` (worktree `/Users/lilu/Projects/doberman-agent-worktrees/015-ldap-reconcile`)
 **最后更新**: 2026-04-20
 
 本文件记录 14 条 AC（AC-01 ~ AC-13 + 边界情况）的自动化 + 手工验证矩阵，供 `/task-review` / `/e2e-test` / `/code-review` 核对。
@@ -45,10 +45,10 @@
 
 ```bash
 # 在 worktree 中
-cd /Users/lilu/Projects/bisheng-worktrees/015-ldap-reconcile/src/backend
+cd /Users/lilu/Projects/doberman-agent-worktrees/015-ldap-reconcile/src/backend
 
-# 本地如有 BiShengVENV conda env
-conda activate BiShengVENV
+# 本地如有 DobermanAgentVENV conda env
+conda activate DobermanAgentVENV
 uv sync --frozen --python $(which python)
 
 # 数据库迁移（F014 → F015）
@@ -57,7 +57,7 @@ uv sync --frozen --python $(which python)
 # 验证 org_sync_log 新字段
 .venv/bin/python -c "
 from sqlalchemy import inspect
-from bisheng.core.database import engine
+from doberman_agent.core.database import engine
 print(sorted(c['name'] for c in inspect(engine).get_columns('org_sync_log')))
 "
 # 期待输出含 event_type / level / external_id / source_ts
@@ -89,19 +89,19 @@ print(sorted(c['name'] for c in inspect(engine).get_columns('org_sync_log')))
 
 ```bash
 # 启动 worker + beat
-.venv/bin/celery -A bisheng.worker.main:bisheng_celery worker -Q knowledge_celery -l info &
-.venv/bin/celery -A bisheng.worker.main:bisheng_celery beat -l info &
+.venv/bin/celery -A doberman_agent.worker.main:doberman_agent_celery worker -Q knowledge_celery -l info &
+.venv/bin/celery -A doberman_agent.worker.main:doberman_agent_celery beat -l info &
 
 # 手动派发一次（不用等 6h）
 .venv/bin/python -c "
-from bisheng.worker.org_sync.reconcile_tasks import reconcile_all_organizations
+from doberman_agent.worker.org_sync.reconcile_tasks import reconcile_all_organizations
 reconcile_all_organizations.delay()
 "
 
 # 检查 org_sync_log
 .venv/bin/python -c "
 import asyncio
-from bisheng.org_sync.domain.models.org_sync import OrgSyncLogDao
+from doberman_agent.org_sync.domain.models.org_sync import OrgSyncLogDao
 async def run():
     rows = await OrgSyncLogDao.aget_conflicts_since(__import__('datetime').datetime.utcnow()-__import__('datetime').timedelta(hours=1))
     print(f'recent events: {len(rows)}')
@@ -136,7 +136,7 @@ UPDATE department SET last_sync_ts=7000, is_deleted=0
 
 -- 让 Celery reconcile 在 ts=7000 时 diff 出 archive（移除 remote 中 E1 即可）
 -- 然后触发
-.venv/bin/python -c "from bisheng.worker.org_sync.reconcile_tasks import reconcile_single_config; reconcile_single_config.delay(<config_id>)"
+.venv/bin/python -c "from doberman_agent.worker.org_sync.reconcile_tasks import reconcile_single_config; reconcile_single_config.delay(<config_id>)"
 
 -- 检查 audit_log 是否写入
 SELECT action, target_id, metadata FROM audit_log
@@ -154,7 +154,7 @@ SELECT event_type, level, external_id, source_ts, create_time
 ```bash
 .venv/bin/python -c "
 import asyncio
-from bisheng.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
+from doberman_agent.org_sync.domain.services.ts_conflict_reporter import TsConflictReporter
 summary = asyncio.run(TsConflictReporter.weekly_report())
 print(summary)
 "

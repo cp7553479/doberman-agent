@@ -5,8 +5,8 @@ import zipfile
 
 import pytest
 
-from bisheng.dsh_market.domain.bundle import BundleError, validate_bundle
-from bisheng.dsh_market.domain.community_bundle import compare_semver
+from doberman_agent.dsh_market.domain.bundle import BundleError, validate_bundle
+from doberman_agent.dsh_market.domain.community_bundle import compare_semver
 
 
 def package_archive(kind="zip", fields=None, extra=None):

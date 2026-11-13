@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Button, Switch } from '@bisheng/ui';
-import { Outlined } from 'bisheng-icons';
+import { Button, Switch } from '@doberman-agent/ui';
+import { Outlined } from '@doberman-agent/icons';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '~/components/ui/Dialog';

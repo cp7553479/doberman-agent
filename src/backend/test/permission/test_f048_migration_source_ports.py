@@ -2,30 +2,30 @@
 
 from __future__ import annotations
 
-from bisheng.api.services.permission_migration_source import (
+from doberman_agent.api.services.permission_migration_source import (
     ApplicationMigrationRow,
     ApplicationPermissionMigrationSource,
 )
-from bisheng.channel.domain.services.permission_migration_source import (
+from doberman_agent.channel.domain.services.permission_migration_source import (
     ChannelMigrationRow,
     ChannelPermissionMigrationSource,
 )
-from bisheng.knowledge.domain.models.knowledge import KnowledgeTypeEnum
-from bisheng.knowledge.domain.models.knowledge_file import (
+from doberman_agent.knowledge.domain.models.knowledge import KnowledgeTypeEnum
+from doberman_agent.knowledge.domain.models.knowledge_file import (
     FileType,
     KnowledgeFile,
     KnowledgeFileStatus,
 )
-from bisheng.knowledge.domain.services.permission_migration_source import (
+from doberman_agent.knowledge.domain.services.permission_migration_source import (
     KnowledgeMigrationRow,
     KnowledgePermissionMigrationSource,
     _build_file_migration_row,
 )
-from bisheng.telemetry_search.domain.services.permission_migration_source import (
+from doberman_agent.telemetry_search.domain.services.permission_migration_source import (
     DashboardMigrationRow,
     DashboardPermissionMigrationSource,
 )
-from bisheng.tool.domain.services.permission_migration_source import (
+from doberman_agent.tool.domain.services.permission_migration_source import (
     ToolMigrationRow,
     ToolPermissionMigrationSource,
 )

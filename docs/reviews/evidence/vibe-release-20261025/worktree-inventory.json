@@ -56,49 +56,49 @@
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/f059-e2e/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/f059-e2e/doberman-agent",
     "branch": "codex/f059-e2e",
     "head": "21250d32900c4c4ba893248aa5b8cc1d8d65182b",
     "contained": true,
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/f059-image-release/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/f059-image-release/doberman-agent",
     "branch": "codex/f059-image-release",
     "head": "f84415f2540b1b762dcfba2b7e8e521ca170f3bd",
     "contained": true,
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/f059-installation/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/f059-installation/doberman-agent",
     "branch": "codex/f059-installation",
     "head": "992905292418308b298d48a24d20cc9e19032c15",
     "contained": true,
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-k8s-runtime/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-k8s-runtime/doberman-agent",
     "branch": "codex/059-k8s-runtime",
     "head": "cda8dccf26298af91a1df277dcd1a49787b6b444",
     "contained": true,
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-runtime-delivery/doberman-agent",
     "branch": "codex/086-vibe-runtime-delivery",
     "head": "667546bb77eeb366e66a13d544d122ef24811e35",
     "contained": true,
     "dirty": true
   },
   {
-    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-tenant-prerequisites/bisheng",
+    "path": "/Users/zhangguoqing/.codex/worktrees/vibe-tenant-prerequisites/doberman-agent",
     "branch": "codex/f086-tenant-bootstrap",
     "head": "9d156f261cc7769fcf75f41caeb104a425308017",
     "contained": true,
     "dirty": false
   },
   {
-    "path": "/Users/zhangguoqing/works/bisheng/.worktrees/vibe-app-integration",
+    "path": "/Users/zhangguoqing/works/doberman-agent/.worktrees/vibe-app-integration",
     "branch": "feat/3.0.0-vibe",
     "head": "804e4a1965cb4134a09633e1d36b85131ca96d6c",
     "contained": true,

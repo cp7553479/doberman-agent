@@ -3,7 +3,7 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from bisheng.knowledge.domain.services.knowledge_file_visibility_service import (
+from doberman_agent.knowledge.domain.services.knowledge_file_visibility_service import (
     KnowledgeFileVisibilityService,
 )
 

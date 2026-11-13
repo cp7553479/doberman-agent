@@ -2,7 +2,7 @@
 
 The route table is the single most easily got-wrong piece of the compose form,
 and the reason is 坑 30: on 114 the app-proxy runs as a *host* systemd unit, not
-as a container. It cannot resolve ``bisheng-app-sales-report`` — docker's DNS
+as a container. It cannot resolve ``doberman-agent-app-sales-report`` — docker's DNS
 does not exist outside the network — and AC-33 forbids publishing a host port.
 What is left, and what works identically in both deployment shapes, is the
 container's address on the bridge: reachable from the host, unreachable from
@@ -32,7 +32,7 @@ def _deploy_request(**overrides) -> DeployRequest:
         "slug": "sales-report",
         "version_id": "ver-0123456789abcdef",
         "version_no": 3,
-        "image_ref": "bisheng-app/sales-report:3-ver-0123",
+        "image_ref": "doberman-agent-app/sales-report:3-ver-0123",
         "tier": TierIn(cpu=0.5, mem=512),
         "port": 8080,
         "health": HealthIn(path="/healthz"),
@@ -54,7 +54,7 @@ def _lifecycle(config, fake_docker, prober=None):
     )
 
 
-def _started_container(fake_docker, name="bisheng-app-sales-report-ver-0123", ip="172.31.0.7"):
+def _started_container(fake_docker, name="doberman-agent-app-sales-report-ver-0123", ip="172.31.0.7"):
     cid = fake_docker.create_container(name, {"Image": "img", "Env": [], "HostConfig": {}})
     fake_docker.start_container(cid)
     fake_docker.get(cid).ip = ip
@@ -120,7 +120,7 @@ def test_probe_standalone_image(rtm_config, fake_docker):
     service = ProbeService(rtm_config, docker=fake_docker, http=http, clock=FakeClock())
 
     outcome = service.probe_image(
-        image_ref="bisheng-app/sales-report:3-ver-0123",
+        image_ref="doberman-agent-app/sales-report:3-ver-0123",
         env={"FOO": "bar"},
         port=8080,
         health_path="/healthz",
@@ -197,7 +197,7 @@ def test_route_returns_bridge_ip_port(rtm_config, fake_docker):
     assert route.version_id == "ver-0123456789abcdef"
     assert route.generation == 1
     # Not a container name: app-proxy is a host process and cannot resolve one.
-    assert "bisheng-app-" not in route.upstream
+    assert "doberman-agent-app-" not in route.upstream
     assert "127.0.0.1" not in route.upstream
 
 
@@ -269,7 +269,7 @@ def test_probe_endpoint_app_and_standalone(rtm_client, rtm_config, fake_docker, 
 
     standalone = rtm_client.post(
         "/v1/intents/probe",
-        {"image_ref": "bisheng-app/x:1-aaaa", "port": 8080, "health": {"path": "/healthz"}},
+        {"image_ref": "doberman-agent-app/x:1-aaaa", "port": 8080, "health": {"path": "/healthz"}},
     )
     assert standalone.status_code == 200
     assert standalone.json()["ready"] is True

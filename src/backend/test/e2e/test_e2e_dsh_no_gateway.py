@@ -160,7 +160,7 @@ async def _personal_policy(client, admin, uid, model_id, enabled, limit):
 async def test_native_login_quota_and_content_audit(scenario):
     """AC-01, AC-02, AC-03, AC-05, AC-06, AC-07, AC-08: native access, quota and audit."""
     client, admin, department, model_id, users = scenario
-    model = f"bisheng:{model_id}"
+    model = f"doberman_agent:{model_id}"
     assert_resp_200(
         await client.put(
             f"{API_BASE}/dsh/admin/models/{model_id}/subjects/DEPARTMENT/{department['id']}/policy",

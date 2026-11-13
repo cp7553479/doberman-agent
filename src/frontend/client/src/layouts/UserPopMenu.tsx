@@ -1,4 +1,4 @@
-import { Badge } from "@bisheng/ui";
+import { Badge } from "@doberman-agent/ui";
 import type { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from bisheng.knowledge.domain.models.knowledge_file import (
+from doberman_agent.knowledge.domain.models.knowledge_file import (
     KNOWLEDGE_FILE_NAME_MAX_LENGTH,
     KnowledgeFile,
     KnowledgeFileCreate,

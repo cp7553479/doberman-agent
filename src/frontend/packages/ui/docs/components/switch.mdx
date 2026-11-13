@@ -5,7 +5,7 @@ component: Switch
 
 # 开关 Switch
 
-拨一个**独立设置的开 / 关**,拨动**立即生效**——不需要提交按钮,也不需要确认;要攒着随表单一起提交的,用复选框。label 描述「开着的是什么」(如「消息通知」),不写疑问句。拨一下就有破坏性后果的动作不用开关,用按钮 + 二次确认。组件库 `@bisheng/ui` 导出 **`Switch`**。规范全文见「文档 → 组件规范 → 开关 Switch」。
+拨一个**独立设置的开 / 关**,拨动**立即生效**——不需要提交按钮,也不需要确认;要攒着随表单一起提交的,用复选框。label 描述「开着的是什么」(如「消息通知」),不写疑问句。拨一下就有破坏性后果的动作不用开关,用按钮 + 二次确认。组件库 `@doberman-agent/ui` 导出 **`Switch`**。规范全文见「文档 → 组件规范 → 开关 Switch」。
 
 **壳把规范写死的部分**:两档 22×38 / 18×32,胶囊轨道 + 正圆滑块 + 2px 内边距;开启品牌色轨道(随蓝⇄绿主题)、关闭中性灰轨道,悬停各加深一档;禁用保持当前侧别、整体降 40% 不透明度;loading 期间锁拨;聚焦环只在键盘 Tab 时出现;触屏热区 ≥44px。这些没有 prop。
 
@@ -14,7 +14,7 @@ component: Switch
 默认档高 22px 与正文行高同值,和 14px 文字同排天然居中。
 
 ```tsx
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -29,7 +29,7 @@ export default () => (
 `small`(18×32)用于表格行内、紧凑列表;触屏高频场景直接升 default。
 
 ```tsx
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -45,7 +45,7 @@ export default () => (
 可选的强调,默认不放;要放就最多 2 个字或一个 icon,显示在滑块让出的那一侧。`small` 档装不下,不渲染框内文字。
 
 ```tsx
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -61,7 +61,7 @@ export default () => (
 
 ```tsx
 import React from 'react';
-import { Switch, Toaster, toast } from '@bisheng/ui';
+import { Switch, Toaster, toast } from '@doberman-agent/ui';
 
 export default () => {
   const [checked, setChecked] = React.useState(false);
@@ -90,7 +90,7 @@ export default () => {
 保持当前开 / 关的颜色、整体降 40% 不透明度——开关的禁用要能看出**停在哪一侧**,所以不改成统一灰底。
 
 ```tsx
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 export default () => (
   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -106,7 +106,7 @@ label 放开关左侧,设置列表里开关靠行尾右对齐;整行可点、触
 
 ```tsx
 import React from 'react';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 
 const Row = ({ label, hint, ...props }) => {
   const id = React.useId();

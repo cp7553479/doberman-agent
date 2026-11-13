@@ -1,4 +1,4 @@
-import { isApiError } from "@bisheng/api-client";
+import { isApiError } from "@doberman-agent/api-client";
 import { ApiRequestFailure } from "~/components/ApiRequestFailure";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";

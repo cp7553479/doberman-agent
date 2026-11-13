@@ -8,7 +8,7 @@ Names are now uuid-based and prefixed by conversation.
 See features/v2.6.0/043-chat-file-permanent-storage/design.md §3 decision 1.
 """
 
-from bisheng.core.storage.chat_attachment import CHAT_OBJECT_PREFIX, build_chat_object_name
+from doberman_agent.core.storage.chat_attachment import CHAT_OBJECT_PREFIX, build_chat_object_name
 
 
 class TestBuildChatObjectName:

@@ -1,8 +1,8 @@
 # 企业工作台压缩包校验规则
 
-> 状态：当前工作分支已实现静态校验，尚未提交或部署。适用于 BiSheng 租户管理员上传本地 `.tgz` 并向本租户 Desktop 提供工作台信息与原始包的场景。静态校验通过或原包下载成功不代表 Desktop 已安装、已加载或可离线运行。
+> 状态：当前工作分支已实现静态校验，尚未提交或部署。适用于 doberman-agent 租户管理员上传本地 `.tgz` 并向本租户 Desktop 提供工作台信息与原始包的场景。静态校验通过或原包下载成功不代表 Desktop 已安装、已加载或可离线运行。
 >
-> 依据：[DSH 工作台开发规范](https://dshdesktop.com/workbench/docs/development/) §2–3、§8；[工作台市场验收规范](https://dshdesktop.com/workbench/docs/market-acceptance/) §3–4。后者的公开仓库、投稿与截图要求只适用于公共市场，不自动成为企业私有上传要求。BiSheng 的额外资源限制和归档安全规则在下文单独标明。
+> 依据：[DSH 工作台开发规范](https://dshdesktop.com/workbench/docs/development/) §2–3、§8；[工作台市场验收规范](https://dshdesktop.com/workbench/docs/market-acceptance/) §3–4。后者的公开仓库、投稿与截图要求只适用于公共市场，不自动成为企业私有上传要求。doberman-agent 的额外资源限制和归档安全规则在下文单独标明。
 
 ## 1. 身份与校验结论
 
@@ -18,7 +18,7 @@
 
 校验器返回以下之一，供上传预览和导入共用：
 
-| 结果 | 条件 | BiSheng 行为 |
+| 结果 | 条件 | doberman-agent 行为 |
 | --- | --- | --- |
 | `standard` | 包结构合格，且包根有规范 GitHub `repository` | 保存 `workbench_key=owner/repo`，可进入租户信息目录；仍标记“运行未验证” |
 | `legacy_metadata_only` | 基本包结构合格，缺 `repository`，但可从旧 `workbench.json` 取得非空旧 ID | 保留原包和旧 ID 供管理、查询；不伪造 `owner/repo`，不声明支持客户端安装 |
@@ -28,7 +28,7 @@
 
 ## 2. 可执行的静态规则
 
-以下“必须”由 BiSheng 上传接口检查；“提示”不阻断上传，但进入预览和版本详情。校验器不执行包内任意脚本、`!!js`、Node 模块或外部网络请求。
+以下“必须”由 doberman-agent 上传接口检查；“提示”不阻断上传，但进入预览和版本详情。校验器不执行包内任意脚本、`!!js`、Node 模块或外部网络请求。
 
 | 规则 | 级别 | 判定 |
 | --- | --- | --- |

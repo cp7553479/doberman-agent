@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from bisheng.common.chat.clients import workflow_client as module
-from bisheng.database.models.flow import FlowStatus
-from bisheng.workflow.common.workflow import WorkflowStatus
+from doberman_agent.common.chat.clients import workflow_client as module
+from doberman_agent.database.models.flow import FlowStatus
+from doberman_agent.workflow.common.workflow import WorkflowStatus
 from test.workflow.test_workflow_auto_rerun_status import FakeRedisCallback, make_client
 
 

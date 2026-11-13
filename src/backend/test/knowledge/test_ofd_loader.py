@@ -8,9 +8,9 @@ conversion is covered in test_ofd_converter.py).
 import pytest
 from langchain_core.documents import Document
 
-from bisheng.common.errcode.knowledge import OfdConvertError
-from bisheng.knowledge.rag.pipeline.loader import ofd as ofd_module
-from bisheng.knowledge.rag.pipeline.loader.ofd import OfdLoader
+from doberman_agent.common.errcode.knowledge import OfdConvertError
+from doberman_agent.knowledge.rag.pipeline.loader import ofd as ofd_module
+from doberman_agent.knowledge.rag.pipeline.loader.ofd import OfdLoader
 
 
 class _FakeDelegate:

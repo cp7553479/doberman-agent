@@ -17,8 +17,8 @@
 
 修改位置：
 
-- `src/backend/bisheng/public_endpoints/api/endpoints/chat.py`
-- `src/backend/bisheng/chat_session/domain/chat.py`
+- `src/backend/doberman_agent/public_endpoints/api/endpoints/chat.py`
+- `src/backend/doberman_agent/chat_session/domain/chat.py`
 - 回归测试：`src/backend/test/public_endpoints/test_chat_compatibility.py`
 - v3 路由与 guest policy 移除身份头拒绝，删除 `public_endpoints/api/dependencies.py`；`utils/http_middleware.py` 跳过 v3 调用方登录态。
 - 凭据无关性回归：`src/backend/test/public_endpoints/test_anonymous_identity.py`，包含真实 HTTP/WS 中间件、两个详情入口、两个聊天入口和默认操作员身份断言。

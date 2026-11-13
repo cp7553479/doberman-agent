@@ -7,21 +7,21 @@ import pytest
 @pytest.mark.asyncio
 async def test_subscribe_channel_uses_role_quota_service(monkeypatch):
     monkeypatch.setattr(
-        "bisheng.channel.domain.services.channel_service.batch_check_business_visible",
+        "doberman_agent.channel.domain.services.channel_service.batch_check_business_visible",
         AsyncMock(return_value={"channel-1": False}),
     )
-    from bisheng.channel.domain.models.channel import ChannelVisibilityEnum
-    from bisheng.channel.domain.schemas.channel_manager_schema import (
+    from doberman_agent.channel.domain.models.channel import ChannelVisibilityEnum
+    from doberman_agent.channel.domain.schemas.channel_manager_schema import (
         SubscribeChannelRequest,
         SubscriptionStatusEnum,
     )
-    from bisheng.channel.domain.services.channel_service import ChannelService
-    from bisheng.common.models.space_channel_member import (
+    from doberman_agent.channel.domain.services.channel_service import ChannelService
+    from doberman_agent.common.models.space_channel_member import (
         BusinessTypeEnum,
         MembershipStatusEnum,
         UserRoleEnum,
     )
-    from bisheng.role.domain.services.quota_service import QuotaResourceType
+    from doberman_agent.role.domain.services.quota_service import QuotaResourceType
 
     channel = SimpleNamespace(id="channel-1", visibility=ChannelVisibilityEnum.PUBLIC)
     channel_repository = SimpleNamespace(
@@ -42,7 +42,7 @@ async def test_subscribe_channel_uses_role_quota_service(monkeypatch):
 
     with (
         patch(
-            "bisheng.channel.domain.services.channel_service.QuotaService.check_quota",
+            "doberman_agent.channel.domain.services.channel_service.QuotaService.check_quota",
             new=AsyncMock(return_value=True),
         ) as mock_check,
         patch.object(

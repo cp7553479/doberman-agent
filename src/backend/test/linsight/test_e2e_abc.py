@@ -2,7 +2,7 @@
 
 These verify the integration points the unit suites cannot reach (which mock
 Redis/MinIO and use InMemorySaver), against the real infrastructure in
-``bisheng/config.yaml``:
+``doberman_agent/config.yaml``:
 
   - Track A (AC-1): ``create_linsight_agent`` assembles a real deepagents graph.
   - Track B (AC-5): ``PlainRedisCheckpointer`` round-trips through real Redis
@@ -11,7 +11,7 @@ Redis/MinIO and use InMemorySaver), against the real infrastructure in
     write-through cache + per-svid tenant isolation.
 
 Why a subprocess: the repo-wide ``test/conftest.py`` pre-mocks
-``bisheng.core.cache.redis_manager`` (MagicMock) at import time, which would
+``doberman_agent.core.cache.redis_manager`` (MagicMock) at import time, which would
 intercept Track B's checkpointer. The real logic therefore runs in a CLEAN child
 process (``_e2e_abc_runner.py``) with no premock; this wrapper parses its JSON
 result and asserts per-Track. Walk-through of the real-middleware checks lives in
@@ -47,7 +47,7 @@ def _redis_reachable() -> bool:
     try:
         import yaml
 
-        with open(os.path.join(_BACKEND_ROOT, "bisheng", "config.yaml")) as fh:
+        with open(os.path.join(_BACKEND_ROOT, "doberman_agent", "config.yaml")) as fh:
             cfg = yaml.safe_load(fh) or {}
         url = cfg.get("redis_url") or os.environ.get("REDIS_URL", "redis://localhost:6379")
         parsed = urlparse(url if "://" in url else f"redis://{url}")

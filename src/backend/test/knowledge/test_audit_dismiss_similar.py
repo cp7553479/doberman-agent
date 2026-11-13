@@ -1,8 +1,8 @@
 """Tests for the DISMISS_SIMILAR_FILE audit event."""
 from unittest.mock import patch, MagicMock
 
-from bisheng.api.services.audit_log import AuditLogService
-from bisheng.database.models.audit_log import EventType, ObjectType
+from doberman_agent.api.services.audit_log import AuditLogService
+from doberman_agent.database.models.audit_log import EventType, ObjectType
 
 
 def test_event_type_dismiss_similar_exists():

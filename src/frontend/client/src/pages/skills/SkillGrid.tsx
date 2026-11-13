@@ -1,4 +1,4 @@
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useLocalize } from "~/hooks";
 import type { SkillRecord } from "~/components/Skills/types";
 import { DemoTag } from "~/mock/demo/DemoTag";

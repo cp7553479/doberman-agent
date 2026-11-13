@@ -9,13 +9,13 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.knowledge.domain.models.knowledge_space_file import (
+from doberman_agent.knowledge.domain.models.knowledge_space_file import (
     SpaceFileDao,
     SpaceFileOrderField,
     SpaceFileOrderSort,
 )
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "bisheng"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent"
 
 
 @pytest.mark.parametrize("field", ["file_type", "file_name", "file_size", "update_time", "create_time"])

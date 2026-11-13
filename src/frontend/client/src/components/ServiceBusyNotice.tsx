@@ -3,12 +3,12 @@
  * (rate limit / network timeout / service unavailable).
  *
  * Deliberately calm: an upstream throttle is the model vendor's availability
- * hiccup, not a BiSheng fault, so it uses the app's neutral banner styling (grey,
+ * hiccup, not a DobermanAgent fault, so it uses the app's neutral banner styling (grey,
  * role="status") — never the red danger card reserved for genuine failures. Shared
  * by the Linsight task-mode failure card and the daily-mode chat error bubble so
  * both surfaces read identically.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { useState } from 'react';
 import { useLocalize } from '~/hooks';
 import { Button } from '~/components/ui/Button';

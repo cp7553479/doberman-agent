@@ -1,5 +1,5 @@
 import { ApiRequestFailure } from "~/components/ApiRequestFailure";
-import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@bisheng/ui';
+import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } from '@doberman-agent/ui';
 /**
  * KnowledgeAiBottomDock — bottom-anchored AI dock for a single knowledge space.
  *
@@ -22,7 +22,7 @@ import { Tooltip as SharedTooltip, TooltipProvider as SharedTooltipProvider } fr
  * inset-x-0 bottom-0` and overlays the bottom of that container.
  */
 import { useEffect, useRef, useState } from "react";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 import store from "~/store";

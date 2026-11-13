@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { getUserGroupsApi } from "@/controllers/API/user";
 import { useCallback, useEffect, useRef, useState } from "react";

@@ -18,7 +18,7 @@ from __future__ import annotations
 import pytest
 from loguru import logger as loguru_logger
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator", "fake_permission_projection")
 
@@ -69,7 +69,7 @@ async def test_state_transition_logged_for_all_five_actions(
     app_factory, app_owner, transition_events, action, source, target
 ):
     """Every action that moves the column leaves one event with the §7 fields."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     app, _ = await app_factory(state=source)
 
@@ -88,7 +88,7 @@ async def test_state_transition_logged_for_all_five_actions(
 
 async def test_publish_and_resume_are_distinguishable_in_the_log(app_factory, app_owner, transition_events):
     """Three actions land on ``online``; only ``reason`` says which one ran."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     published, _ = await app_factory(state=AppState.DRAFT.value)
     resumed, _ = await app_factory(state=AppState.STOPPED.value)
@@ -107,10 +107,10 @@ async def test_a_lost_compare_and_set_is_logged_as_such(app_db, app_factory, app
     16102 — and without this event the only trace is the exception in the
     caller's response.
     """
-    from bisheng.app_runtime.domain.services import app_state_service
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.common.errcode.app_factory import AppStateConflictError
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.app_runtime.domain.services import app_state_service
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.common.errcode.app_factory import AppStateConflictError
+    from doberman_agent.database.models.app import AppDao
 
     app, _ = await app_factory(state=AppState.ONLINE.value)
     original = AppStateService._transition
@@ -140,8 +140,8 @@ async def test_a_refused_edge_is_logged_and_writes_nothing(app_db, app_factory, 
     It is a programming error surfaced as a no-op, which means the log line is
     the only place it can be seen at all.
     """
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.database.models.app import AppDao
 
     app, _ = await app_factory(state=AppState.ONLINE.value)
 
@@ -166,7 +166,7 @@ async def test_parking_a_failed_publish_is_logged_with_the_cause(
     app_factory, app_owner, fake_orchestrator, transition_events
 ):
     """AC-65's 「待上线 · 资源不足」 has a matching line on the operator's side."""
-    from bisheng.app_runtime.domain.services.app_state_service import AppStateService
+    from doberman_agent.app_runtime.domain.services.app_state_service import AppStateService
 
     fake_orchestrator.responses["admission"] = {
         "admitted": False,

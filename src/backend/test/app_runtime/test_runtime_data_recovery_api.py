@@ -2,13 +2,13 @@
 
 import pytest
 
-from bisheng.app_runtime.domain.constants import AppState
+from doberman_agent.app_runtime.domain.constants import AppState
 
 pytestmark = pytest.mark.usefixtures("app_db", "fake_orchestrator")
 
 
 async def test_owner_gets_a_streamed_csv_and_cache_is_removed(api_app, app_factory, app_owner, tmp_path, monkeypatch):
-    from bisheng.app_runtime.domain.services.app_data_service import AppDataService
+    from doberman_agent.app_runtime.domain.services.app_data_service import AppDataService
 
     app, _ = await app_factory(state=AppState.ONLINE.value)
     root = tmp_path / "export-one"
@@ -30,7 +30,7 @@ async def test_owner_gets_a_streamed_csv_and_cache_is_removed(api_app, app_facto
 
 
 async def test_result_lookup_uses_current_natural_owner(api_app, app_factory, app_owner, normal_user, monkeypatch):
-    from bisheng.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
+    from doberman_agent.app_runtime.domain.services.runtime_data_session_service import RuntimeDataSessionService
 
     app, _ = await app_factory(state=AppState.ONLINE.value)
     seen = []

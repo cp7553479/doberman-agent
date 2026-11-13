@@ -24,28 +24,28 @@ if str(_BACKEND_ROOT) not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.api.services.f048_system_resource_bootstrap import (  # noqa: E402
+from doberman_agent.api.services.f048_system_resource_bootstrap import (  # noqa: E402
     load_system_owned_resource_inventory,
 )
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     app_context,
     close_app_context,
     initialize_app_context,
 )
-from bisheng.core.context.tenant import bypass_tenant_filter  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
-from bisheng.permission.application.system_resource_reconcile import (  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
+from doberman_agent.permission.application.system_resource_reconcile import (  # noqa: E402
     reconcile_system_owned_resources,
 )
-from bisheng.tool.domain.models.gpts_tools import GptsTools, GptsToolsType  # noqa: E402
+from doberman_agent.tool.domain.models.gpts_tools import GptsTools, GptsToolsType  # noqa: E402
 
-TOOL_KEY = "bisheng_knowledge_search"
+TOOL_KEY = "doberman_agent_knowledge_search"
 
 
 def seed_records() -> tuple[dict, dict]:
-    data_dir = _BACKEND_ROOT / "bisheng/database/data"
+    data_dir = _BACKEND_ROOT / "doberman_agent/database/data"
     tools = json.loads((data_dir / "t_gpts_tools.json").read_text())
     categories = json.loads((data_dir / "t_gpts_tools_type.json").read_text())
     tool = next(item for item in tools if item["tool_key"] == TOOL_KEY)

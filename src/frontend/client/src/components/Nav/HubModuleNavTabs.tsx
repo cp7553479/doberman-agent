@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { matchPath, NavLink, useLocation } from 'react-router-dom';
 import GlobeIcon from '~/components/ui/icon/Globe';
 import HomeIcon from '~/components/ui/icon/Home';

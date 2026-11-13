@@ -10,9 +10,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-_KS = "bisheng.knowledge.domain.services.knowledge_space_service"
+_KS = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 class _User:

@@ -9,7 +9,7 @@ result-layer ``view_file`` post-filter to leave at least top_k chunks. The
 
 from __future__ import annotations
 
-from bisheng.core.config.settings import KnowledgeQAFilterConf
+from doberman_agent.core.config.settings import KnowledgeQAFilterConf
 
 
 def test_expansion_multiplier_default_is_six():

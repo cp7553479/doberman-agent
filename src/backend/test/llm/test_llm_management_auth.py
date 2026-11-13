@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.common.dependencies.user_deps import UserPayload
+from doberman_agent.common.dependencies.user_deps import UserPayload
 
 
 @pytest.mark.asyncio

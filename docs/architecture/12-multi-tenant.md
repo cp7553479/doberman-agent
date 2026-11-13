@@ -3,7 +3,7 @@
 > **核实基准**：本文依据 `feat/3.0.0-beta1` 分支代码逐条核实（2026-08-05）。
 > v2.5.0 建立扁平多租户基线，v2.5.1 重写为两层租户树并废弃用户手工切换，v2.6.0-beta2 撤销业务资源跨租户共享。本文描述**当前实现**，不是设计意图——凡实现与 v2.5 PRD 不符处均以代码为准并显式标注。
 
-BiSheng 多租户采用**逻辑隔离**：所有租户共享同一数据库实例，通过 `tenant_id` 列区分数据。租户上下文经 `ContextVar` 在请求作用域传播，SQLAlchemy 事件钩子自动完成 SELECT 过滤与 INSERT 填充。
+doberman-agent 多租户采用**逻辑隔离**：所有租户共享同一数据库实例，通过 `tenant_id` 列区分数据。租户上下文经 `ContextVar` 在请求作用域传播，SQLAlchemy 事件钩子自动完成 SELECT 过滤与 INSERT 填充。
 
 **隔离强度的真实边界**（务必先读这一条）：
 
@@ -283,7 +283,7 @@ WebSocket 走 `WebSocketLoggingMiddleware`，从 ASGI headers 解 Cookie 后调�
 | `task_prerun` | 从 headers 恢复 ContextVar，无值回退 `DEFAULT_TENANT_ID` |
 | `task_postrun` | 重置为 None，防线程池复用泄露 |
 
-注册靠 `worker/main.py` 中 `import bisheng.worker.tenant_context` 触发模块级绑定。
+注册靠 `worker/main.py` 中 `import doberman_agent.worker.tenant_context` 触发模块级绑定。
 
 **Beat × 多租户**：Beat 调度只触发一次，任务体需自行遍历租户——每轮 `set_current_tenant_id()`，且跨租户枚举查询本身要包在 `bypass_tenant_filter()` 里。
 
@@ -523,7 +523,7 @@ SUPPORTED_SHAREABLE_TYPES: set[str] = {'llm_server'}
 
 ## 19. 源码索引
 
-路径相对 `src/backend/bisheng/`。
+路径相对 `src/backend/doberman_agent/`。
 
 | 功能 | 文件 |
 |------|------|

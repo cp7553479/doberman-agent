@@ -7,18 +7,18 @@ from unittest.mock import AsyncMock
 import pytest
 from pydantic import ValidationError
 
-from bisheng.common.errcode.dsh import DshUnsupportedParameterError
-from bisheng.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
-from bisheng.dsh.domain.services.profile import profile_scope
-from bisheng.dsh.domain.services.vision import VisionSetting, configure_vision, repository
-from bisheng.dsh.infrastructure.chat_adapter import DshChatAdapter
+from doberman_agent.common.errcode.dsh import DshUnsupportedParameterError
+from doberman_agent.dsh.domain.schemas.chat import ChatCapabilities, DshChatRequest
+from doberman_agent.dsh.domain.services.profile import profile_scope
+from doberman_agent.dsh.domain.services.vision import VisionSetting, configure_vision, repository
+from doberman_agent.dsh.infrastructure.chat_adapter import DshChatAdapter
 
 PNG = "data:image/png;base64," + base64.b64encode(b"\x89PNG\r\n\x1a\n" + b"image").decode()
 
 
 def body(url=PNG):
     return DshChatRequest(
-        model="bisheng:1",
+        model="doberman_agent:1",
         messages=[
             {
                 "role": "user",
@@ -62,7 +62,7 @@ def test_image_count_is_not_limited_within_size_budget(count, separate_messages)
         if separate_messages
         else [{"role": "user", "content": [image] * count}]
     )
-    request = DshChatRequest(model="bisheng:1", messages=messages)
+    request = DshChatRequest(model="doberman_agent:1", messages=messages)
     prepared = DshChatAdapter().prepare(request, object(), ChatCapabilities(vision=True))
     forwarded = [part for message in prepared.messages for part in message.content]
     assert len(forwarded) == count
@@ -73,7 +73,7 @@ def test_total_image_size_is_still_limited_across_messages():
     url = "data:image/png;base64," + base64.b64encode(b"\x89PNG\r\n\x1a\n" + b"x" * (4 * 1024 * 1024)).decode()
     with pytest.raises(ValidationError, match="total request size limit"):
         DshChatRequest(
-            model="bisheng:1",
+            model="doberman_agent:1",
             messages=[
                 {"role": "user", "content": [{"type": "image_url", "image_url": {"url": url}}]} for _ in range(6)
             ],
@@ -95,8 +95,8 @@ def test_setting_is_scoped_to_current_tenant():
 
 
 async def test_configuration_checks_governed_model_before_saving(monkeypatch):
-    from bisheng.dsh.domain.services import vision
-    from bisheng.llm.domain.services.llm import LLMService
+    from doberman_agent.dsh.domain.services import vision
+    from doberman_agent.llm.domain.services.llm import LLMService
 
     store = SimpleNamespace(read=AsyncMock(return_value='{"vision":true}'), save=AsyncMock())
     snapshot = AsyncMock()

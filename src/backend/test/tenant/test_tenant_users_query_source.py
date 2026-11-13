@@ -35,11 +35,11 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.context.tenant import bypass_tenant_filter
 
 
 # ── Real User SQLModel (replaces the conftest pre-mock for THIS file) ─────
-# The DAO under test does ``from bisheng.user.domain.models.user import User``
+# The DAO under test does ``from doberman_agent.user.domain.models.user import User``
 # inside its body. The conftest pre-mocks that module path with MagicMock,
 # which doesn't satisfy SQLAlchemy's ``select(User.user_id)``.
 #
@@ -59,10 +59,10 @@ class _TestUser(SQLModel, table=True):
     password: str = Field(default="hashed", sa_column=Column(String(255), nullable=False))
 
 
-_existing = sys.modules.get("bisheng.user.domain.models.user")
+_existing = sys.modules.get("doberman_agent.user.domain.models.user")
 if _existing is None:
-    _existing = ModuleType("bisheng.user.domain.models.user")
-    sys.modules["bisheng.user.domain.models.user"] = _existing
+    _existing = ModuleType("doberman_agent.user.domain.models.user")
+    sys.modules["doberman_agent.user.domain.models.user"] = _existing
 # Always set real User class; preserve any other attrs (UserDao etc. from
 # the conftest MagicMock) untouched.
 _existing.User = _TestUser
@@ -188,18 +188,18 @@ async def patched_dao(db_engine, monkeypatch, request):
         async with AsyncSession(bind=db_engine) as s:
             yield s
 
-    from bisheng.database import models as models_pkg  # noqa: F401
+    from doberman_agent.database import models as models_pkg  # noqa: F401
 
     monkeypatch.setattr(
-        "bisheng.database.models.department.get_async_db_session",
+        "doberman_agent.database.models.department.get_async_db_session",
         _factory,
     )
     if request.param == "management":
-        from bisheng.database.models.department import UserDepartmentDao
-        from bisheng.tenant.domain.repositories.management_search_repository import ManagementSearchRepository
+        from doberman_agent.database.models.department import UserDepartmentDao
+        from doberman_agent.tenant.domain.repositories.management_search_repository import ManagementSearchRepository
 
         monkeypatch.setattr(
-            "bisheng.tenant.domain.repositories.management_search_repository.get_async_db_session",
+            "doberman_agent.tenant.domain.repositories.management_search_repository.get_async_db_session",
             _factory,
         )
         monkeypatch.setattr(UserDepartmentDao, "aget_users_by_tenant_subtree", ManagementSearchRepository.tenant_users)
@@ -309,7 +309,7 @@ async def test_returns_users_with_primary_dept_in_subtree(
     await _insert_user_dept(session, uid=103, dept_id=40, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -332,7 +332,7 @@ async def test_secondary_membership_does_not_surface(session, patched_dao):
     await _insert_user_dept(session, uid=201, dept_id=30, is_primary=0)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -357,7 +357,7 @@ async def test_legacy_user_tenant_phantom_rows_excluded(session, patched_dao):
     await _insert_user_tenant(session, uid=301, tid=5, is_active=None)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -384,7 +384,7 @@ async def test_user_tenant_left_join_decorates_join_time(session, patched_dao):
     await _insert_user_dept(session, uid=402, dept_id=30, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -408,7 +408,7 @@ async def test_keyword_filter(session, patched_dao):
     await _insert_user_dept(session, uid=502, dept_id=20, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -430,7 +430,7 @@ async def test_pagination(session, patched_dao):
         await _insert_user_dept(session, uid=600 + i, dept_id=20, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows1, total1 = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -463,7 +463,7 @@ async def test_fallback_when_tenant_has_no_root_dept_id(session, patched_dao):
     await _insert_user_dept(session, uid=701, dept_id=70, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     rows, total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=7,
@@ -492,7 +492,7 @@ async def test_count_subtree_matches_list_total(session, patched_dao):
     await _insert_user_dept(session, uid=802, dept_id=30, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     _, list_total = await UserDepartmentDao.aget_users_by_tenant_subtree(
         tenant_id=5,
@@ -514,7 +514,7 @@ async def test_count_subtree_excludes_phantom_user_tenant(session, patched_dao):
     await _insert_user_tenant(session, uid=901, tid=5, is_active=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     count = await UserDepartmentDao.acount_users_by_tenant_subtree(tenant_id=5)
     assert count == 0
@@ -531,7 +531,7 @@ async def test_count_subtree_batch_matches_singles(session, patched_dao):
     await _insert_user_dept(session, uid=1002, dept_id=40, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     batch = await UserDepartmentDao.acount_users_by_tenant_subtree_batch(
         [1, 5, 9999],
@@ -554,7 +554,7 @@ async def test_count_subtree_fallback_no_root_dept_id(session, patched_dao):
     await _insert_user_dept(session, uid=1101, dept_id=80, is_primary=1)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     count = await UserDepartmentDao.acount_users_by_tenant_subtree(8)
     batch = await UserDepartmentDao.acount_users_by_tenant_subtree_batch([8])
@@ -571,14 +571,14 @@ async def test_count_subtree_secondary_membership_excluded(session, patched_dao)
     await _insert_user_dept(session, uid=1201, dept_id=30, is_primary=0)
     await session.commit()
 
-    from bisheng.database.models.department import UserDepartmentDao
+    from doberman_agent.database.models.department import UserDepartmentDao
 
     count = await UserDepartmentDao.acount_users_by_tenant_subtree(tenant_id=5)
     assert count == 0
 
 
 async def test_management_external_id_order_case_pagination_and_primary_scope(session, db_engine, monkeypatch):
-    from bisheng.tenant.domain.repositories.management_search_repository import ManagementSearchRepository
+    from doberman_agent.tenant.domain.repositories.management_search_repository import ManagementSearchRepository
 
     @asynccontextmanager
     async def factory():
@@ -586,7 +586,7 @@ async def test_management_external_id_order_case_pagination_and_primary_scope(se
             yield query_session
 
     monkeypatch.setattr(
-        "bisheng.tenant.domain.repositories.management_search_repository.get_async_db_session",
+        "doberman_agent.tenant.domain.repositories.management_search_repository.get_async_db_session",
         factory,
     )
     await _setup_two_tenant_world(session)
@@ -611,7 +611,7 @@ async def test_management_external_id_order_case_pagination_and_primary_scope(se
 
 
 async def test_existing_group_members_identity_hydration_is_batched(session, db_engine, monkeypatch):
-    from bisheng.user_group.domain.repositories.member_identity_repository import MemberIdentityRepository
+    from doberman_agent.user_group.domain.repositories.member_identity_repository import MemberIdentityRepository
 
     calls = 0
 
@@ -623,7 +623,7 @@ async def test_existing_group_members_identity_hydration_is_batched(session, db_
             yield query_session
 
     monkeypatch.setattr(
-        "bisheng.user_group.domain.repositories.member_identity_repository.get_async_db_session",
+        "doberman_agent.user_group.domain.repositories.member_identity_repository.get_async_db_session",
         factory,
     )
     await _insert_user(session, uid=801, name="existing-one")

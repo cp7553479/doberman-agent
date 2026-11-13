@@ -38,13 +38,13 @@ SCENARIO_CODE = "app_publish_request"
 
 
 def _handler():
-    from bisheng.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
+    from doberman_agent.app_publish.domain.services.app_publish_scenario_handler import AppPublishScenarioHandler
 
     return AppPublishScenarioHandler()
 
 
 async def _scene(app_factory, deployment_factory, *, state: str = "draft"):
-    from bisheng.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
+    from doberman_agent.app_publish.domain.models.app_deployment import STAGE_APPROVAL_CREATED, STATUS_WAITING_APPROVAL
 
     app, version = await app_factory(state=state, with_version=True)
     deployment = await deployment_factory(
@@ -67,21 +67,21 @@ async def _scene(app_factory, deployment_factory, *, state: str = "draft"):
 
 
 async def _version(publish_db, app_id: str, version_id: str):
-    from bisheng.database.models.app_version import AppVersionDao
+    from doberman_agent.database.models.app_version import AppVersionDao
 
     async with publish_db() as session:
         return await AppVersionDao.aget(session, app_id, version_id)
 
 
 async def _app(publish_db, app_id: str):
-    from bisheng.database.models.app import AppDao
+    from doberman_agent.database.models.app import AppDao
 
     async with publish_db() as session:
         return await AppDao.aget(session, app_id)
 
 
 async def _deployment(publish_db, deployment_id: str):
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
 
     async with publish_db() as session:
         return await AppDeploymentDao.aget(session, deployment_id)
@@ -155,7 +155,7 @@ async def test_reject_closes_the_deployment_with_a_codeless_failure(
 
 async def test_resubmit_after_reject_is_allowed(publish_db, app_factory, deployment_factory, audit_sink):
     """Nothing is left in flight, so the next ``deploy`` passes both AC-03 gates."""
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     app, _, _, payload = await _scene(app_factory, deployment_factory)
 
@@ -189,7 +189,7 @@ async def test_withdraw_cannot_overwrite_an_online_version(publish_db, app_facto
     idempotent by construction rather than by a guard somebody has to remember.
     """
     app, version, _, payload = await _scene(app_factory, deployment_factory)
-    from bisheng.app_publish.domain.services.version_service import VersionService
+    from doberman_agent.app_publish.domain.services.version_service import VersionService
 
     await VersionService.mark_terminal_state(app.id, version.id, "online")
 
@@ -199,7 +199,7 @@ async def test_withdraw_cannot_overwrite_an_online_version(publish_db, app_facto
 
 
 async def test_withdraw_then_resubmit_is_allowed(publish_db, app_factory, deployment_factory, audit_sink):
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     app, _, _, payload = await _scene(app_factory, deployment_factory)
 
@@ -251,10 +251,10 @@ async def test_app_deleted_cancels_active_instance_and_notifies_approvers(
     exception record and notifies the applicant — who is the person that just
     pressed delete, while the approvers keep a task pointing at nothing.
     """
-    from bisheng.app_publish.composition import on_app_deleted
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.models.approval_instance import ApprovalInstanceStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.app_publish.composition import on_app_deleted
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalInstanceStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, _, deployment, _ = await _scene(app_factory, deployment_factory)
     result = await publish_approval_service.submit(deployment)
@@ -280,10 +280,10 @@ async def test_cancelling_pending_tasks_closes_them(
     super_admin_user,
 ):
     """An approver's inbox must not keep an item for an application that is gone."""
-    from bisheng.app_publish.composition import on_app_deleted
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.models.approval_instance import ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.app_publish.composition import on_app_deleted
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
 
     app, _, deployment, _ = await _scene(app_factory, deployment_factory)
     result = await publish_approval_service.submit(deployment)
@@ -299,7 +299,7 @@ async def test_deleting_an_app_without_a_release_is_a_no_op(
     publish_db, app_factory, approval_env, audit_sink, approval_notifications
 ):
     """The ordinary case. Nothing open, nothing to cancel, no error."""
-    from bisheng.app_publish.composition import on_app_deleted
+    from doberman_agent.app_publish.composition import on_app_deleted
 
     app, _ = await app_factory(with_version=False)
 
@@ -322,8 +322,8 @@ async def test_cancel_is_idempotent(
     A business handler cannot tell a repeat from the first call, so the guard
     belongs in the approval module where the instance status is known.
     """
-    from bisheng.app_publish.composition import on_app_deleted
-    from bisheng.app_publish.domain.services import publish_approval_service
+    from doberman_agent.app_publish.composition import on_app_deleted
+    from doberman_agent.app_publish.domain.services import publish_approval_service
 
     app, _, deployment, _ = await _scene(app_factory, deployment_factory)
     await publish_approval_service.submit(deployment)
@@ -343,7 +343,7 @@ async def test_hook_failure_does_not_rollback_delete(publish_db, monkeypatch):
     side therefore judges "was this cancelled" from the application's own state
     rather than trusting the hook arrived (design D10).
     """
-    from bisheng.app_runtime.domain.services import lifecycle_hooks
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks
 
     lifecycle_hooks.clear_app_deleted_hooks()
 
@@ -374,9 +374,9 @@ async def test_register_is_idempotent():
     mint a real credential against a database that is not there, which is
     invisible here and a wall of red in a combined run.
     """
-    from bisheng.app_publish.composition import on_app_deleted, register
-    from bisheng.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
-    from bisheng.open_api.domain.services import model_range_policy
+    from doberman_agent.app_publish.composition import on_app_deleted, register
+    from doberman_agent.app_runtime.domain.services import lifecycle_hooks, runtime_env_ports
+    from doberman_agent.open_api.domain.services import model_range_policy
 
     previous_ports = (
         model_range_policy.get_hosted_app_declaration_port(),
@@ -395,7 +395,7 @@ async def test_register_is_idempotent():
 
 
 def _function_body(relative_path: str, function_name: str) -> ast.AST:
-    """Parse one function out of a source file under ``bisheng/``.
+    """Parse one function out of a source file under ``doberman_agent/``.
 
     Reads the file rather than using ``inspect``: ``on_worker_init`` is
     decorated with a Celery signal's ``connect``, and under the test session
@@ -403,9 +403,9 @@ def _function_body(relative_path: str, function_name: str) -> ast.AST:
     recovered. Parsing what is on disk also asserts what actually ships, which
     is the point of a wiring guard.
     """
-    import bisheng
+    import doberman_agent
 
-    path = pathlib.Path(bisheng.__file__).parent / relative_path
+    path = pathlib.Path(doberman_agent.__file__).parent / relative_path
     tree = ast.parse(path.read_text())
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name:
@@ -432,10 +432,10 @@ async def test_composition_root_registered_in_both_api_and_worker():
     production, leaving one ``_record_outbox_task_failure`` line behind.
     """
     assert _calls_register(_function_body("main.py", "lifespan")), (
-        "bisheng/main.py lifespan does not register the app_publish composition root"
+        "doberman_agent/main.py lifespan does not register the app_publish composition root"
     )
     assert _calls_register(_function_body("worker/main.py", "on_worker_init")), (
-        "bisheng/worker/main.py on_worker_init does not register the app_publish composition root"
+        "doberman_agent/worker/main.py on_worker_init does not register the app_publish composition root"
     )
 
 

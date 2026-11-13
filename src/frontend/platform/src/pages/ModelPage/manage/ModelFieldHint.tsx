@@ -1,5 +1,5 @@
-import { Button, Tooltip } from '@bisheng/ui'
-import { Outlined } from 'bisheng-icons'
+import { Button, Tooltip } from '@doberman-agent/ui'
+import { Outlined } from '@doberman-agent/icons'
 
 interface ModelFieldHintProps {
     content: string

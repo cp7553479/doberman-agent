@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.finetune.api import finetune as finetune_api
+from doberman_agent.finetune.api import finetune as finetune_api
 
 
 @pytest.mark.asyncio

@@ -13,7 +13,7 @@
 
 import { useMessageSelection } from '~/hooks/useMessageSelection';
 import { useSelectionMessages } from './SelectionMessagesContext';
-import { Checkbox } from '@bisheng/ui';
+import { Checkbox } from '@doberman-agent/ui';
 
 interface MessageCheckboxProps {
     /** The chat this message belongs to (currently unused — Context-scoped). */

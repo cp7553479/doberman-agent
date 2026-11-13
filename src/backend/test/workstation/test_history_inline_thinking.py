@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from bisheng.database.models.message import ChatMessage
-from bisheng.workstation.domain.services.chat_helpers import _convert_legacy_message, _format_new_message
+from doberman_agent.database.models.message import ChatMessage
+from doberman_agent.workstation.domain.services.chat_helpers import _convert_legacy_message, _format_new_message
 
 
 @pytest.mark.parametrize("legacy", [False, True])

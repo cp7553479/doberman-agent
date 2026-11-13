@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Textarea, notification } from '@bisheng/ui';
+import { Textarea, notification } from '@doberman-agent/ui';
 
 import { Label } from "@/components/bs-ui/label";
 
@@ -9,8 +9,8 @@ import {
     type SensitiveWordType,
 } from "@/controllers/API/sensitiveWordPolicy";
 import { showApiError } from "@/controllers/request";
-import { Checkbox, Switch } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Checkbox, Switch } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import type { ChangeEvent } from "react";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
@@ -161,7 +161,7 @@ export const KnowledgeSpaceSensitivePolicy = forwardRef<KnowledgeSpaceSensitiveP
                     {form.isCheck && (
                         <div className="mt-4 w-full max-w-[560px] rounded-lg border border-[#ECECEC] bg-[#FAFBFC] p-4">
                             <div>
-                                <span className="bisheng-label">{t("build.wordListType")}</span>
+                                <span className="doberman_agent-label">{t("build.wordListType")}</span>
                                 <div className="mt-4 mb-6 space-y-3">
                                     <div className="space-x-2 flex items-center">
                                         <Checkbox

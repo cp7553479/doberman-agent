@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
 
 
 def test_session_version_enum_has_waiting_for_user_input():
@@ -37,7 +37,7 @@ async def test_handle_need_user_input_parks_session_as_waiting():
     Guards root cause #2: a parked session left at IN_PROGRESS is swept to FAILED
     by the worker-startup crash check.
     """
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     exec_task = te.LinsightWorkflowTask()
     sm = MagicMock()
@@ -71,7 +71,7 @@ async def test_resume_workflow_resets_session_in_progress():
     work), so making ``_get_llm`` raise short-circuits the heavy body right after
     the status flip we want to assert.
     """
-    from bisheng.linsight.domain import task_exec as te
+    from doberman_agent.linsight.domain import task_exec as te
 
     exec_task = te.LinsightWorkflowTask()
     sm = MagicMock()

@@ -8,7 +8,7 @@ from langchain_core.callbacks import (
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 
-from bisheng_langchain.chains.retrieval.retrieval_chain import RetrievalChain
+from doberman_agent_langchain.chains.retrieval.retrieval_chain import RetrievalChain
 
 
 class RunnableOnlyRetriever(BaseRetriever):

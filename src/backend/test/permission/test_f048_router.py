@@ -5,13 +5,13 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from bisheng.common.dependencies.user_deps import UserPayload
-from bisheng.permission.api.dependencies import (
+from doberman_agent.common.dependencies.user_deps import UserPayload
+from doberman_agent.permission.api.dependencies import (
     get_catalog_api,
     get_permission_decision_api,
     get_resource_permission_api,
 )
-from bisheng.permission.api.router import router
+from doberman_agent.permission.api.router import router
 
 
 class _Catalog:

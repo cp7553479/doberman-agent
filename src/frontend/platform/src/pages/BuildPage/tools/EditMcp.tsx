@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Textarea, toast } from '@bisheng/ui';
-import { Outlined } from "bisheng-icons";
+import { Button, Dropdown, DropdownChevron, DropdownItem, Input, Textarea, toast } from '@doberman-agent/ui';
+import { Outlined } from "@doberman-agent/icons";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 

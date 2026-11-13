@@ -27,17 +27,17 @@ _BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _BACKEND_ROOT not in sys.path:
     sys.path.insert(0, _BACKEND_ROOT)
 
-from bisheng.api.services.f048_system_resource_bootstrap import (  # noqa: E402
+from doberman_agent.api.services.f048_system_resource_bootstrap import (  # noqa: E402
     load_system_owned_resource_inventory,
 )
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import (  # noqa: E402
     app_context,
     close_app_context,
     initialize_app_context,
 )
-from bisheng.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
-from bisheng.permission.application.system_resource_reconcile import (  # noqa: E402
+from doberman_agent.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
+from doberman_agent.permission.application.system_resource_reconcile import (  # noqa: E402
     reconcile_system_owned_resources,
 )
 

@@ -82,11 +82,11 @@ class AssistantStopLifecycle(unittest.IsolatedAsyncioTestCase):
             "AsyncCallbackHandler": object,
             "extract_reasoning_content": lambda chunk: chunk or "",
         }
-        load_classes("bisheng/utils/threadpool.py", {"ThreadPoolManager"}, namespace)
+        load_classes("doberman_agent/utils/threadpool.py", {"ThreadPoolManager"}, namespace)
         self.pool = namespace["ThreadPoolManager"](1)
         namespace["thread_pool"] = self.pool
         load_classes(
-            "bisheng/api/v1/callback.py",
+            "doberman_agent/api/v1/callback.py",
             {
                 "AsyncStreamingLLMCallbackHandler",
                 "AsyncGptsLLMCallbackHandler",
@@ -94,7 +94,7 @@ class AssistantStopLifecycle(unittest.IsolatedAsyncioTestCase):
             },
             namespace,
         )
-        load_classes("bisheng/common/chat/client.py", {"ChatClient"}, namespace)
+        load_classes("doberman_agent/common/chat/client.py", {"ChatClient"}, namespace)
         self.client_class = namespace["ChatClient"]
 
         def insert(row):

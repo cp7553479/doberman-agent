@@ -21,7 +21,7 @@ from __future__ import annotations
 import hashlib
 import os
 
-from bisheng.linsight.domain.utils import (
+from doberman_agent.linsight.domain.utils import (
     read_file_directory,
     select_deliverables,
     snapshot_file_fingerprints,
@@ -73,7 +73,7 @@ def test_deepagents_spill_never_becomes_the_result():
     Worse, an offloaded file is named after a tool_call_id and usually has NO
     extension, which sorts it AHEAD of any real .png chart."""
     details = [
-        _detail("large_tool_results/bisheng_code_interpreter:0", mtime=9.0),
+        _detail("large_tool_results/doberman_agent_code_interpreter:0", mtime=9.0),
         _detail("conversation_history/db2b91b9d14d492da265e75715aa65bd.md", mtime=8.0),
     ]
     assert select_deliverables(details, baseline_paths=set()) == []

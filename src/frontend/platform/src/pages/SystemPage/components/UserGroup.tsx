@@ -1,7 +1,7 @@
 // @ts-strict-ignore
-import { Pagination, Button, SearchInput, toast } from '@bisheng/ui';
-import { Tag } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { Pagination, Button, SearchInput, toast } from '@doberman-agent/ui';
+import { Tag } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 import { useTranslation } from "react-i18next";
 
 
@@ -253,7 +253,7 @@ export default function UserGroups() {
                 )}
             </div>
         </div>
-        <div className="bisheng-table-footer px-6 bg-background-login">
+        <div className="doberman_agent-table-footer px-6 bg-background-login">
             <div className="flex items-center gap-2">
                 <p className="desc">{t('system.userGroupList')}.</p>
             </div>

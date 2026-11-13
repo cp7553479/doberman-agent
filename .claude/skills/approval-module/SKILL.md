@@ -1,7 +1,7 @@
 ---
 name: approval-module
 description: >-
-  BiSheng 审批模块（审批中心 F025）的架构与代码参考。
+  DobermanAgent 审批模块（审批中心 F025）的架构与代码参考。
   覆盖统一审批网关、多场景引擎、多节点流转、outbox 业务执行、站内信通知、异常处理。
   迭代审批功能或修复审批相关 Bug 前先读本 skill，可直接定位架构与代码锚点，无需全仓搜索。
   TRIGGER when: 用户要改动/修复"审批""审批中心""approval"相关功能（菜单权限申请、频道订阅审批、
@@ -93,7 +93,7 @@ ApprovalCenterService.decide_task()
 
 ## 3. 代码锚点
 
-> 路径相对 `src/backend/bisheng/`。这些是定位问题的第一入口。
+> 路径相对 `src/backend/doberman_agent/`。这些是定位问题的第一入口。
 
 ### 后端服务
 
@@ -190,7 +190,7 @@ ApprovalCenterService.decide_task()
 - **不变量：先过网关、再落 membership。** `subscribe_space` 对 APPROVAL 空间必须先 `await gate.request_or_pass()`，按 gate 结果（pass→ACTIVE / pending·exception→PENDING）才通过 `_persist_space_member()` 写 `space_channel_member`。**严禁在调网关前预写 PENDING membership**——否则场景未配置/未启用时网关 `raise ApprovalScenarioDisabledError`，但 PENDING 行已落库，下次点"关注"会被 `subscribe_space` 顶部"已 PENDING 直接返回 pending"的早退分支短路，掩盖错误（首次报错、二次假成功）。无场景时每次点击都应一致报错。
 
 ### 4.4 应用发布审批 (`app_publish_request`) — F055，2026-08-19 新增
-- **入口**：`app_publish/domain/services/publish_approval_service.py`（`bisheng deploy` 管线的审批节点；**每次发布必审，无免审分支**，故 preset 的 `condition_fields=[]`）
+- **入口**：`app_publish/domain/services/publish_approval_service.py`（`doberman-agent deploy` 管线的审批节点；**每次发布必审，无免审分支**，故 preset 的 `condition_fields=[]`）
 - **Handler**：`AppPublishScenarioHandler`（`app_publish/domain/services/app_publish_scenario_handler.py`，**不在 `approval/` 下**）
 - **审批人来源**：`department_admin`（owner 的**主部门**管理员）**∪** `tenant_admin`，同一 OR 节点或签；preset 另放行 `direct_user`，否则管理员改配后再也放不回一个具名审批人（管理页的来源下拉就是从 `approver_source_types` 建的）
 - **`business_key` = `deployment_id`**：一次发布尝试 = 一个审批单
@@ -248,13 +248,13 @@ ApprovalCenterService.decide_task()
 - `approval_center_service.py::_dispatch_outbox(outbox_id)` — `decide_task` 最后节点通过 / skip_node
 - `approval_gate.py` PASS 分支 — 调 `execute_approval_outbox.delay(outbox_id)`
 
-**Celery 队列：走默认 `celery` 队列。** `worker/config.py` **不**为 `bisheng.worker.approval.*` 配路由，任务自然 fall through 到默认队列。`workflow_celery` 专供工作流 DAG 执行，审批任务不占用。
+**Celery 队列：走默认 `celery` 队列。** `worker/config.py` **不**为 `doberman_agent.worker.approval.*` 配路由，任务自然 fall through 到默认队列。`workflow_celery` 专供工作流 DAG 执行，审批任务不占用。
 
 > ⚠️ 部署时必须有 worker 消费默认 `celery` 队列（`run_celery.py` 的 `all` / `file` 模式都含），否则审批通过后业务不执行。站内信发送是同步写库，不依赖 Celery。
 
 启动消费默认队列的 worker：
 ```bash
-uv run celery -A bisheng.worker.main worker -l info -c 100 -P threads -n default@%h
+uv run celery -A doberman_agent.worker.main worker -l info -c 100 -P threads -n default@%h
 ```
 
 ---

@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { SearchInput } from '@bisheng/ui';
+import { SearchInput } from '@doberman-agent/ui';
 import { FlowIcon, HelperIcon } from "@/components/bs-icons/app";
 import { readTempsDatabase } from "@/controllers/API";
 import { showApiError } from "@/controllers/request";
@@ -39,8 +39,8 @@ export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
 
     useEffect(() => {
         const reset = () => { ++generation.current; setTemplates([]); setOpen(false); };
-        window.addEventListener('bisheng:management-scope-changed', reset);
-        return () => window.removeEventListener('bisheng:management-scope-changed', reset);
+        window.addEventListener('doberman_agent:management-scope-changed', reset);
+        return () => window.removeEventListener('doberman_agent:management-scope-changed', reset);
     }, []);
 
     useEffect(() => {

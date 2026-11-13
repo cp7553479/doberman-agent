@@ -2,7 +2,7 @@ import { useRecoilState } from 'recoil';
 import HoverCardSettings from '../HoverCardSettings';
 import { ForkOptions } from '~/types/chat';
 import { Dropdown } from '~/components/ui';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import store from '~/store';
 

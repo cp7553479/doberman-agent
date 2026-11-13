@@ -8,9 +8,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.app_runtime.domain.services.runtime_offline_package import validate_offline_package
-from bisheng.app_runtime.domain.services.runtime_profile_service import require_natural_owner
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.app_runtime.domain.services.runtime_offline_package import validate_offline_package
+from doberman_agent.app_runtime.domain.services.runtime_profile_service import require_natural_owner
 
 
 @pytest.mark.parametrize(

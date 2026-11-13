@@ -1,7 +1,7 @@
 """Every beat-scheduled task must be reachable from the worker's task registry.
 
 A beat entry only carries a task *name*. Celery resolves that name against the
-tasks registered when ``bisheng.worker`` is imported, so a task whose module is
+tasks registered when ``doberman_agent.worker`` is imported, so a task whose module is
 never imported there is scheduled forever and never runs: the worker just logs
 ``Received unregistered task`` every period and the periodic work silently does
 not happen.
@@ -16,9 +16,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from bisheng.core.config.settings import CeleryConf
+from doberman_agent.core.config.settings import CeleryConf
 
-_WORKER_ROOT = Path(__file__).resolve().parents[2] / "bisheng" / "worker"
+_WORKER_ROOT = Path(__file__).resolve().parents[2] / "doberman_agent" / "worker"
 
 
 def _registered_modules() -> set[str]:
@@ -35,7 +35,7 @@ def test_every_beat_scheduled_task_module_is_imported_by_the_worker_package():
     registered = _registered_modules()
     missing = {task_name for task_name in _scheduled_task_names() if task_name.rsplit(".", 1)[0] not in registered}
     assert not missing, (
-        f"beat schedules tasks whose modules are never imported in bisheng/worker/__init__.py: {sorted(missing)}"
+        f"beat schedules tasks whose modules are never imported in doberman_agent/worker/__init__.py: {sorted(missing)}"
     )
 
 

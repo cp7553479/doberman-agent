@@ -15,17 +15,17 @@
 | base URL | `{平台地址}/api/v2/model/v1`，**末尾的 `/v1` 是 base 的一部分**，官方客户端只会在其后拼 `/chat/completions` 与 `/models` |
 | 鉴权 | `Authorization: Bearer bs-sak-…`（服务账号密钥）；托管应用用平台注入的应用运行期凭据 |
 | 权限位 | `model:invoke`，**仅模式 S**（不承载委托） |
-| 地址从哪来 | 持密钥调用的一方读 `GET /api/v2/auth/whoami` 的 `model_base_url` 字段（`bisheng dev`、技能包走这条）；服务账号详情页的接入信息区读 `GET /api/v1/dev-toolkit/versions` 的 `model.base_url`，值同上 |
+| 地址从哪来 | 持密钥调用的一方读 `GET /api/v2/auth/whoami` 的 `model_base_url` 字段（`doberman-agent dev`、技能包走这条）；服务账号详情页的接入信息区读 `GET /api/v1/dev-toolkit/versions` 的 `model.base_url`，值同上 |
 
 **地址只有一个生产者。** 上面两个字段都由后端的 `model_gateway_base_url()` 算出，没有第二份拼法：页面、CLI、技能包都不许自己用 `location.origin` 或配置里的主机名拼——平台前端在开发期跑在另一个端口，拼出来的地址在客户机器上是死链。
 
-环境变量名（`bisheng dev` 与托管运行期**同名注入**，应用代码本地线上零差异）：
+环境变量名（`doberman-agent dev` 与托管运行期**同名注入**，应用代码本地线上零差异）：
 
 | 变量 | 值 |
 |---|---|
 | `OPENAI_BASE_URL` | base URL。官方 `openai` 客户端直读 |
 | `OPENAI_API_KEY` | 凭据明文 |
-| `BISHENG_MODEL_BASE_URL` | 同 base URL 的平台保留名，供不读 OpenAI 惯例变量的引擎使用 |
+| `DOBERMAN_AGENT_MODEL_BASE_URL` | 同 base URL 的平台保留名，供不读 OpenAI 惯例变量的引擎使用 |
 
 **未部署开放能力层的环境上这条路径不存在**（404，与任何不存在的路径无差别），接入信息区也不展示地址。翻 `open_platform.enabled` 需要重启后端。
 
@@ -43,7 +43,7 @@
 4. 仍未命中 → 只分两种：模型**已下线** `26512`，其余一律 `26511`——不存在、不属于本租户、不是对话类、服务商已被删除（删服务商会连它的模型行一起删，与「从未存在过」无从分辨），**「没有」与「不归你」不区分**，否则这条接口就成了模型清单的探测器。
    `26513`「服务商已删除」不来自这一步：名称解析走一层模型目录缓存（`open_api.model_catalog_ttl_seconds`，默认 30 秒、上限 60 秒），窗口内名字还解析得出、真去取模型时行已经没了，那一次才答 `26513`。模型被管理员下线同样最多滞后这一个窗口。
 
-`GET /models` 只列**当前可调用**的对话类模型：`id` 在名称唯一时是裸名、歧义时只给限定名；`owned_by` 是服务商名；另有两个扩展键 `bisheng_model_type`、`bisheng_qualified_name`（恒为限定名，想写稳定名的取它）。
+`GET /models` 只列**当前可调用**的对话类模型：`id` 在名称唯一时是裸名、歧义时只给限定名；`owned_by` 是服务商名；另有两个扩展键 `doberman_agent_model_type`、`doberman_agent_qualified_name`（恒为限定名，想写稳定名的取它）。
 
 ---
 
@@ -72,12 +72,12 @@
 本面**不用平台信封**，用 OpenAI 错误体 + 真实 HTTP 状态，官方客户端才能 `except` 到正确的异常类：
 
 ```json
-{"error": {"message": "…", "type": "invalid_request_error", "code": "model_not_found", "param": null, "bisheng_code": 26511}}
+{"error": {"message": "…", "type": "invalid_request_error", "code": "model_not_found", "param": null, "doberman_agent_code": 26511}}
 ```
 
-`bisheng_code` 是 OpenAI 体之外的扩展键，官方客户端忽略它，平台侧脚本据它精确分类。流式途中出错：先发一条 `data: {"error":{…}}`，再 `data: [DONE]`。
+`doberman_agent_code` 是 OpenAI 体之外的扩展键，官方客户端忽略它，平台侧脚本据它精确分类。流式途中出错：先发一条 `data: {"error":{…}}`，再 `data: [DONE]`。
 
-| `bisheng_code` | 含义 | HTTP | `type` / `code` |
+| `doberman_agent_code` | 含义 | HTTP | `type` / `code` |
 |---|---|---|---|
 | 26001 / 26002 / 26027 / 26043 | 没带凭据 / 凭据无效 / 服务账号已停用 / 个人令牌持有人已失效 | 401 | `authentication_error` · `invalid_api_key` |
 | 26003 | 缺 `model:invoke` 位 | 403 | `permission_error` · `insufficient_scope` |
@@ -104,7 +104,7 @@
 - **一律以密钥主体自身的身份执行**：服务账号不继承它的资源归属人，可调用范围 = 该主体在本租户可见的、已上线的对话类模型。
 - **不承载委托**：持 `delegate` 位的密钥在入口即被拒（`26051`），不静默降级。
 - **不接受任何身份传递请求头**（`X-On-Behalf-Of` / `X-End-User` 及其变体）与 `user_id` 入参：收下再忽略，会让调用方误以为调用跑在别人的身份下。
-- **托管应用**走同一条面，Bearer 换成平台注入的 `BISHENG_APP_TOKEN`，可调用范围额外 ∩ **该应用当前生效能力声明**里的模型——声明外的模型答 `26515`，应用不能自报范围。
+- **托管应用**走同一条面，Bearer 换成平台注入的 `DOBERMAN_AGENT_APP_TOKEN`，可调用范围额外 ∩ **该应用当前生效能力声明**里的模型——声明外的模型答 `26515`，应用不能自报范围。
 - **不在这条面上做配额与账单**：本版只逐条记录调用（模型、token 数、时延、结果、归属人），不做聚合、不加上限；服务商自身的日调用上限照旧生效（`26517`）。
 
 ---

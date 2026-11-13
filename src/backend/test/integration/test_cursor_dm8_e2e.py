@@ -1,6 +1,6 @@
 """T021 — DM8 end-to-end cursor smoke (AC-01..06 on a live DM8 connection).
 
-Skipped unless a DM8 connection is reachable (env var ``BISHENG_DM8_DSN`` or
+Skipped unless a DM8 connection is reachable (env var ``DOBERMAN_AGENT_DM8_DSN`` or
 the standard local-dev DM8 fixture). T001's dialect smoke test (no DB) has
 already validated that SQLAlchemy ``tuple_()`` row-value comparison compiles
 under the DM stub dialect — this file proves the *runtime* path also works on
@@ -33,13 +33,13 @@ pytestmark = pytest.mark.dm8
 
 
 def _dm8_available() -> bool:
-    return bool(os.environ.get("BISHENG_DM8_DSN"))
+    return bool(os.environ.get("DOBERMAN_AGENT_DM8_DSN"))
 
 
 @pytest.fixture
 def dm8_app_client():
     if not _dm8_available():
-        pytest.skip("DM8 not configured (set BISHENG_DM8_DSN to run)")
+        pytest.skip("DM8 not configured (set DOBERMAN_AGENT_DM8_DSN to run)")
     # TODO: wire FastAPI TestClient against a DM8-backed engine.
     raise NotImplementedError("DM8 TestClient fixture pending")
 

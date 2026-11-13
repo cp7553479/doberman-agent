@@ -3,9 +3,9 @@ import inspect
 import uuid
 from contextlib import asynccontextmanager
 
-from bisheng.mcp_manage.clients.base import BaseMcpClient
-from bisheng.mcp_manage.langchain import tool as mcp_tool_module
-from bisheng.workflow.callback.llm_callback import LLMNodeCallbackHandler
+from doberman_agent.mcp_manage.clients.base import BaseMcpClient
+from doberman_agent.mcp_manage.langchain import tool as mcp_tool_module
+from doberman_agent.workflow.callback.llm_callback import LLMNodeCallbackHandler
 
 
 class DummyMcpClient(BaseMcpClient):

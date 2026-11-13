@@ -4,14 +4,14 @@ metadata:
   name: {{ printf "%s-runtime" .Values.execution.installationId }}
 webhooks:
 {{- range $name := list "resources" "status" }}
-  - name: {{ printf "%s.%s.runtime.bisheng.io" $name $.Values.execution.installationId }}
+  - name: {{ printf "%s.%s.runtime.doberman-agent.io" $name $.Values.execution.installationId }}
     admissionReviewVersions: [v1]
     sideEffects: None
     failurePolicy: Fail
     matchPolicy: Equivalent
     timeoutSeconds: {{ $.Values.admission.timeoutSeconds }}
     namespaceSelector:
-      matchLabels: {runtime.bisheng.io/installation: {{ $.Values.execution.installationId }}}
+      matchLabels: {runtime.doberman-agent.io/installation: {{ $.Values.execution.installationId }}}
     clientConfig:
       caBundle: {{ $.Values.admission.caBundle | quote }}
       service:

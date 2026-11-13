@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.testclient import TestClient
 from pydantic import BaseModel, field_validator
 
-from bisheng.main import handle_request_validation_error
+from doberman_agent.main import handle_request_validation_error
 
 
 class _Body(BaseModel):

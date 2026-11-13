@@ -11,16 +11,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from bisheng.common.errcode.knowledge_space import (
+from doberman_agent.common.errcode.knowledge_space import (
     SpaceFileSizeLimitError,
     SpaceFolderDepthError,
     SpaceFolderDuplicateError,
     SpaceFolderUploadCountExceededError,
 )
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import FolderUploadItem
-from bisheng.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import FolderUploadItem
+from doberman_agent.knowledge.domain.services.knowledge_space_service import KnowledgeSpaceService
 
-_SVC = "bisheng.knowledge.domain.services.knowledge_space_service"
+_SVC = "doberman_agent.knowledge.domain.services.knowledge_space_service"
 
 
 def _items(*paths, size=10):

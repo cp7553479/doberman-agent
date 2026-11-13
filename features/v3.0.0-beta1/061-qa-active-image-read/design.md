@@ -47,7 +47,7 @@
 ### 决策 1：共享能力放 `common/image_view/`，三场景只接线
 
 - **备选**：
-  - A. 新建 `bisheng/common/image_view/`（标注、注册表、取图、缩放、工具、两轮循环、image 角色搬迁）。三场景各自调用。
+  - A. 新建 `doberman-agent/common/image_view/`（标注、注册表、取图、缩放、工具、两轮循环、image 角色搬迁）。三场景各自调用。
   - B. 放进 `knowledge/` domain，频道 / 日常再 import knowledge。
   - C. 把知识空间 / 频道改成日常那种**完整产品 Agent**（联网、按需 `search_knowledge_bases`、`agent_*` SSE）。
 - **选定**：A。
@@ -167,7 +167,7 @@ sequenceDiagram
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `bisheng/common/image_view/` | 标注、注册表、取图、缩放、`view_image`、`VisionToolBindWrapper`、`run_react_vision_stream`、`relocate_images_to_human` | 不 import 任何 `domain/`；不做业务鉴权；不写盘给别的进程；不 yield `ChatResponse` |
+| `doberman-agent/common/image_view/` | 标注、注册表、取图、缩放、`view_image`、`VisionToolBindWrapper`、`run_react_vision_stream`、`relocate_images_to_human` | 不 import 任何 `domain/`；不做业务鉴权；不写盘给别的进程；不 yield `ChatResponse` |
 | `workstation/.../chat_service.py` | 日常：检索结果 annotate；`VisionToolBindWrapper` 从 `common.image_view` import；每次模型调用前 relocate + `pop_viewed`，按 `len(registry)` 动态 `bind_tools` | 不把 `view_image` 加进 `_prepare_tools`；不把读图规则写进 `create_react_agent(prompt=sys_prompt)` |
 | `DailyChatCitationToolWrapper._dump_knowledge_chunks` | `format_retrieved_chunk` 之后 annotate（legacy 包装路径） | 不取像素 |
 | `_build_knowledge_search_tool` / `_format_chunk` | 日常主检索路径：format 之后 annotate，写入同一 `ImageRegistry` | 不取像素；不接到知识空间 / 频道 |
@@ -193,7 +193,7 @@ sequenceDiagram
 |---|---|---|---|
 | 知识库内部路径 | `/{bucket}/knowledge/images/{kb_id}/{doc_id}/{file}` | MinIO `get_object`（拆 bucket + object key） | 前缀必须是 `/{public_bucket}/knowledge/images/` |
 | MinIO 公网 / 签名链 | `http(s)://{sharepoint}/...` 或带 `X-Amz-Algorithm` 的相对路径 | `async_file_download` | host 等于 `settings.minio.sharepoint`（含 `share_schema` 的 http/https） |
-| 情报中心外链 | 文章 markdown 里的 `http(s)://...` | `async_file_download` | host 等于 `IntelligenceCenterConf.base_url` 的 host（`core/external/bisheng_information_client`） |
+| 情报中心外链 | 文章 markdown 里的 `http(s)://...` | `async_file_download` | host 等于 `IntelligenceCenterConf.base_url` 的 host（`core/external/doberman_agent_information_client`） |
 
 其它 host → 取图失败，按 AC-15 告知模型、不中断会话。不跟随后续 3xx 到白名单外。缩放用进程内 PIL，长边 512，不写共享本地盘（C8）。
 
@@ -204,7 +204,7 @@ sequenceDiagram
 | # | 反直觉事实 | 如果不知道会怎样 | 在哪处理 |
 |---|---|---|---|
 | 1 | 部分模型（Kimi）只接受 **user** 角色的 `image_url`，ToolMessage 里放图会 400 杀掉整轮 | 日常 ReAct 默认把工具结果放 ToolMessage → 一调 `view_image` 会话失败 | 决策 4：ack 用文本，像素进 HumanMessage；日常 `relocate_images_to_human` |
-| 2 | 日常 `create_react_agent(bisheng_llm, tool_node)` **编译期**会 `bind_tools` ToolNode 里全部工具；`prompt=sys_prompt` 同样是一次注入。图却出现在 **`search_knowledge_bases` 返回之后** | 把 `view_image` 加进 `_prepare_tools`，或一开场把读图规则拼进 `sys_prompt` → 第一次请求就看见工具 / 被提示去调，AC-03 复燃；若永不 bind → 检索后仍读不了图 | 决策 3/5：`_prepare_tools` 不动；LLM 外包 / `pre_model_hook` 每次调用前按 `len(registry)` 重绑并按需追加规则 |
+| 2 | 日常 `create_react_agent(doberman_agent_llm, tool_node)` **编译期**会 `bind_tools` ToolNode 里全部工具；`prompt=sys_prompt` 同样是一次注入。图却出现在 **`search_knowledge_bases` 返回之后** | 把 `view_image` 加进 `_prepare_tools`，或一开场把读图规则拼进 `sys_prompt` → 第一次请求就看见工具 / 被提示去调，AC-03 复燃；若永不 bind → 检索后仍读不了图 | 决策 3/5：`_prepare_tools` 不动；LLM 外包 / `pre_model_hook` 每次调用前按 `len(registry)` 重绑并按需追加规则 |
 | 3 | 知识空间 / 频道若把 tool_call 轮次的 token 当答案流给前端 | 用户看到一截工具 JSON 或弱模型编造的字段清单 | `run_react_vision_stream` 不对外 yield tool 轮次；注入轮次关掉 inner callbacks（增量坑 R3） |
 | 4 | `view_image` 若允许模型传 URL，等于开放 SSRF | 模型（或提示注入）可打内网 / metadata | 只查 `ImageRegistry`；HTTP 仅 MinIO sharepoint + 已配置信息源主机 |
 | 5 | 知识库图是 **内部路径** `/{bucket}/knowledge/images/...`，不是可匿名打开的 http | 误当 URL 去 fetch 会 404，模型永远读不到图 | `/{bucket}/...` 走 MinIO `get_object`；http(s) / share 链才走 `async_file_download` |
@@ -267,8 +267,8 @@ sequenceDiagram
   - 日常 `_prepare_tools` 返回值不含 `view_image`；`VisionToolBindWrapper` 在 `len(registry)>0` 时 bind，且 `pop_viewed` 后带 HumanMessage 像素。
 - **日常接线**：`_prepare_tools` 返回值不含 `view_image`；检索结果字符串含 `⟦img#1⟧` 后，后续轮次经 LLM 外包才 bind；`visual=true` 但检索无图时，模型侧看不到该工具、也看不到读图规则。
 - **手工验证一遍**（本地后端 + client；中间件连本机 / 测试环境 MinIO）：
-  1. 后端（`src/backend/`）：`export config=config.yaml; uv run uvicorn bisheng.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log`
-  2. Client（`src/frontend/`）：`pnpm --filter bishengchat start -- --host 0.0.0.0`（:4001，base `/workspace`）。用已开启「视觉」的工作台模型账号登录。
+  1. 后端（`src/backend/`）：`export config=config.yaml; uv run uvicorn doberman_agent.main:app --host 0.0.0.0 --port 7860 --workers 1 --no-access-log`
+  2. Client（`src/frontend/`）：`pnpm --filter doberman-agentchat start -- --host 0.0.0.0`（:4001，base `/workspace`）。用已开启「视觉」的工作台模型账号登录。
   3. 日常：打开 `/workspace` 首页日常对话，勾选含图知识库，问「这张图的走势」——应先出现已有 `agent_tool_call`（查看图片），再出带原 `![]()` 的答案。
   4. 知识空间：打开某空间含图文件 / 文件夹问答。联调题「开户申请表单上有哪些字段？」应读 `img#10` / `img#9` 量级。SSE 仍是 `stream`，**没有** `agent_tool_call`。
   5. 频道：打开 `/workspace/channel/{channelId}/article/{articleId}`，对正文含 markdown 图的文章问「图里写了什么」。SSE 同样只有 `stream`。

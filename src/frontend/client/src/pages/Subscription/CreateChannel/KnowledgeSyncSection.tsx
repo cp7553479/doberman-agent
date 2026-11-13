@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 /**
  * KnowledgeSyncSection — v2.5 Module D configuration UI.
  *
@@ -19,7 +19,7 @@ import { Tooltip as SharedTooltip } from '@bisheng/ui';
 import { ChevronDown, ChevronUp, PlusSquare } from "lucide-react";
 import { useMemo, useState, type RefObject } from "react";
 
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import type {
     KnowledgeSyncConfig,
     KnowledgeSyncSpaceItem,

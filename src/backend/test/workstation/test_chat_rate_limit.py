@@ -11,8 +11,8 @@ import json
 
 import openai
 
-from bisheng.common.errcode.workstation import LLMRateLimitError
-from bisheng.common.services.llm_error_classifier import ErrorType, label_error, unwrap
+from doberman_agent.common.errcode.workstation import LLMRateLimitError
+from doberman_agent.common.services.llm_error_classifier import ErrorType, label_error, unwrap
 
 # The exact provider strings the product flagged as throttling.
 _THROTTLING_STRINGS = (
@@ -66,7 +66,7 @@ def test_genuine_billing_not_misrouted_to_rate_limit():
 
 def test_platform_credit_rejection_labels_credit_exhausted():
     """chat_service tags this BaseErrorCode so the bubble shows the credit card."""
-    from bisheng.common.errcode.dsh import DshMonthlyTokenLimitExceededError
+    from doberman_agent.common.errcode.dsh import DshMonthlyTokenLimitExceededError
 
     exc = DshMonthlyTokenLimitExceededError()
     assert label_error(exc) is ErrorType.CREDIT_EXHAUSTED

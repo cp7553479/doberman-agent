@@ -14,14 +14,14 @@ from pathlib import Path
 
 import pytest
 
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_PROMPT_RULES,
     ensure_citation_rules,
     prompt_has_citation_rules,
 )
 
 _BACKEND_ROOT = Path(__file__).resolve().parents[2]
-_CITATION_YAML = _BACKEND_ROOT / "bisheng" / "core" / "prompts" / "yaml" / "citation.yaml"
+_CITATION_YAML = _BACKEND_ROOT / "doberman_agent" / "core" / "prompts" / "yaml" / "citation.yaml"
 _LOCALES_DIR = _BACKEND_ROOT.parent / "frontend" / "platform" / "public" / "locales"
 _PUA = (chr(0xE200), chr(0xE201), chr(0xE202))
 

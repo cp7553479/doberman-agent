@@ -1,4 +1,4 @@
-from bisheng.knowledge.domain.schemas.knowledge_space_schema import KnowledgeSpaceListItemResp
+from doberman_agent.knowledge.domain.schemas.knowledge_space_schema import KnowledgeSpaceListItemResp
 
 
 def test_knowledge_space_list_item_declares_enrichment_fields():

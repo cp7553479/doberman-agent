@@ -5,14 +5,14 @@ from sqlalchemy import text
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.common.models.space_channel_member import (
+from doberman_agent.common.models.space_channel_member import (
     BusinessTypeEnum,
     ChannelRelationEnum,
     MembershipStatusEnum,
     SpaceChannelMember,
     UserRoleEnum,
 )
-from bisheng.common.repositories.implementations.space_channel_member_repository_impl import (
+from doberman_agent.common.repositories.implementations.space_channel_member_repository_impl import (
     SpaceChannelMemberRepositoryImpl,
 )
 

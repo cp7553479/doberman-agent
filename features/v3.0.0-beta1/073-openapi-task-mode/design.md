@@ -12,7 +12,7 @@
 **版本**: v3.0.0-beta1（发版线 `feat/3.0.0-beta2`）
 **最后更新**: 2026-09-30（已评审，未实现）
 
-> 本文锚点均于 2026-09-30 在 `feat/3.0.0-beta2` 上核对，路径相对 `src/backend/bisheng/`。
+> 本文锚点均于 2026-09-30 在 `feat/3.0.0-beta2` 上核对，路径相对 `src/backend/doberman_agent/`。
 
 ---
 
@@ -104,7 +104,7 @@
 
 | 入参 | 判定 | 入口 |
 |---|---|---|
-| 模型 | 在执行身份的工作台模型列表内，且存在、为 LLM、提供方存在、在线 | `WorkStationService.get_open_api_daily_config` 的 `models` + `OpenTaskModeService.model_is_usable`（`BishengBase.get_model_server_info`，不构造客户端）；失败 `26066`。配置查询的模型列表经同一 `model_is_usable` 过滤（`usable_models`） |
+| 模型 | 在执行身份的工作台模型列表内，且存在、为 LLM、提供方存在、在线 | `WorkStationService.get_open_api_daily_config` 的 `models` + `OpenTaskModeService.model_is_usable`（`DobermanAgentBase.get_model_server_info`，不构造客户端）；失败 `26066`。配置查询的模型列表经同一 `model_is_usable` 过滤（`usable_models`） |
 | 技能 | 在本租户已启用集合内（`LinsightSkillDao.list_enabled`，`strict_tenant_filter`） | 任一不在即 `26062`，`data.unavailable` 列出全部技能名 |
 | 平台工具 | 工具组 `use` 动作 | `WorkStationService.afilter_tools_by_use_permission`（`workstation_service.py:556`）；不可用 `26067` |
 | 文档知识库 | `Knowledge.type == 0`，`knowledge_library` 的 `use` 动作 | `KnowledgeService` 批量动作判定（与 `GET /api/v2/filelib/` 同一实现）；沿用知识模块既有 403 / 404 码 |
@@ -255,7 +255,7 @@
 | 19 | `KnowledgeSpaceService.alist_mine_and_joined_cursor` 的「我创建的」按 `login_user.user_id` 查，自身身份下是资源归属人 | 配置查询列出归属人的空间，提交时却按服务账号判可见被拒（违反 AC-05） | 知识空间列表改为按 permission actor 的 `list_visible_objects` 枚举 |
 | 20 | 提交端点为按 `run_mode` 分派改收原始 dict，FastAPI 不再为它生成请求体 schema | 对外接口文档显示成无类型对象 | `open_api/api/openapi_schema.py` `_publish_chat_completion_request` 注入 `oneOf`（日常 / 任务两个模型）；两个分支用 `validate_body` 复现 FastAPI 的校验错误形状（`loc` 前缀 `body`、无 `url`），日常模式错误响应不变 |
 | 22 | v1 `GET /sop/showcase/result` 直接返回原始版本模型、不做归属校验 | 同租户拿到任务 id 即可读到 `api_meta`（调用方指令、凭据 id） | 该端点显式 `exclude={"api_meta"}`；越权问题本身属既有、另行处理 |
-| 21 | `open_endpoints` 各端点从 `bisheng.open_api.api.dependencies` 导入 v2 鉴权依赖，arch-guard 报 RULE-5 | 误以为本 Feature 引入 | F053 既有接入方式，改动前即报；本期不动 |
+| 21 | `open_endpoints` 各端点从 `doberman_agent.open_api.api.dependencies` 导入 v2 鉴权依赖，arch-guard 报 RULE-5 | 误以为本 Feature 引入 | F053 既有接入方式，改动前即报；本期不动 |
 | 17 | v1 终止相关测试原先 patch 的是端点模块上的依赖 | 抽出共享函数后测试失败或空跑 | 终止主体已移到 `LinsightWorkbenchImpl.terminate`，测试改 patch 新位置 |
 
 ---

@@ -33,18 +33,18 @@ def test_full_image_preparation_keeps_frozen_digest_command_and_platform(runtime
 def test_runtime_port_database_and_base_path_are_platform_owned(runtime):
     executor, _, cluster, operation, _, _ = runtime
     operation["payload"].update(port=8765, slug="fixture", base_path="/apps/fixture", health={})
-    operation["payload"]["runtime_env"].update(PORT="1", BISHENG_APP_DB_URL="wrong", BISHENG_APP_TOKEN="app-token")
+    operation["payload"]["runtime_env"].update(PORT="1", DOBERMAN_AGENT_APP_DB_URL="wrong", DOBERMAN_AGENT_APP_TOKEN="app-token")
     result = executor.launch(operation)
     row = executor.platform.resource(result["exec_ref"])
     pod = cluster.objects["pods", row["name"]]
     app = next(c for c in pod["spec"]["containers"] if c["name"] == "app")
     literals = {e["name"]: e["value"] for e in app["env"] if "value" in e}
-    assert literals["PORT"] == literals["BISHENG_APP_PORT"] == "8765"
-    assert literals["BISHENG_APP_DB_URL"] == "sqlite:////data/app.db"
-    assert literals["BISHENG_APP_BASE_PATH"] == "/apps/fixture"
+    assert literals["PORT"] == literals["DOBERMAN_AGENT_APP_PORT"] == "8765"
+    assert literals["DOBERMAN_AGENT_APP_DB_URL"] == "sqlite:////data/app.db"
+    assert literals["DOBERMAN_AGENT_APP_BASE_PATH"] == "/apps/fixture"
     assert app["readinessProbe"]["httpGet"]["path"] == "/"
     assert not any(e["name"] in literals and "valueFrom" in e for e in app["env"])
-    token = next(e for e in app["env"] if e["name"] == "BISHENG_APP_TOKEN")
+    token = next(e for e in app["env"] if e["name"] == "DOBERMAN_AGENT_APP_TOKEN")
     assert "valueFrom" in token
 
 
@@ -56,7 +56,7 @@ def test_runtime_and_preparer_receive_distinct_scoped_proxy_credentials(runtime)
     app = next(c for c in pod["spec"]["containers"] if c["name"] == "app")
     assert any(e["name"] == "HTTPS_PROXY" and "valueFrom" in e for e in app["env"])
     assert not any(
-        e["name"] in {"HTTPS_PROXY", "BISHENG_APP_TOKEN"} for c in pod["spec"]["initContainers"] for e in c["env"]
+        e["name"] in {"HTTPS_PROXY", "DOBERMAN_AGENT_APP_TOKEN"} for c in pod["spec"]["initContainers"] for e in c["env"]
     )
 
 
@@ -177,18 +177,18 @@ def test_shared_environment_is_used_by_kubernetes_without_putting_secrets_in_lit
     body = operation["payload"]
     body.update(slug="fixture", base_path="/apps/fixture/_preview/session", version_no=9)
     body["resolved_delivery"]["profile"]["language"] = language
-    body["runtime_env"].update(BISHENG_APP_SLUG="wrong", BISHENG_APP_VERSION="1")
+    body["runtime_env"].update(DOBERMAN_AGENT_APP_SLUG="wrong", DOBERMAN_AGENT_APP_VERSION="1")
     plan = executor._plan(operation, "probe")
-    assert plan.env["BISHENG_APP_SLUG"] == "fixture"
-    assert plan.env["BISHENG_APP_VERSION"] == "9"
-    assert plan.env["BISHENG_APP_VERSION_ID"] == operation["version_id"]
-    assert plan.env["BISHENG_APP_DB_PATH"] == "/data/app.db"
-    assert plan.env["BISHENG_APP_HEALTH_PATH"] == body["health"]["path"]
-    assert "BISHENG_APP_TOKEN" not in plan.env
-    assert "BISHENG_APP_SLUG" not in plan.secret_env
+    assert plan.env["DOBERMAN_AGENT_APP_SLUG"] == "fixture"
+    assert plan.env["DOBERMAN_AGENT_APP_VERSION"] == "9"
+    assert plan.env["DOBERMAN_AGENT_APP_VERSION_ID"] == operation["version_id"]
+    assert plan.env["DOBERMAN_AGENT_APP_DB_PATH"] == "/data/app.db"
+    assert plan.env["DOBERMAN_AGENT_APP_HEALTH_PATH"] == body["health"]["path"]
+    assert "DOBERMAN_AGENT_APP_TOKEN" not in plan.env
+    assert "DOBERMAN_AGENT_APP_SLUG" not in plan.secret_env
     if language == "node20":
         assert plan.env["BASE_PATH"] == "/apps/fixture/_preview/session"
     if language == "python3.11":
         assert plan.env["UVICORN_ROOT_PATH"] == "/apps/fixture/_preview/session"
     del body["version_no"]
-    assert executor._plan(operation, "probe").env["BISHENG_APP_VERSION"] == ""
+    assert executor._plan(operation, "probe").env["DOBERMAN_AGENT_APP_VERSION"] == ""

@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Button, SearchInput, notification } from '@bisheng/ui';
-import { Radio,RadioGroup } from "@bisheng/ui";
+import { Button, SearchInput, notification } from '@doberman-agent/ui';
+import { Radio,RadioGroup } from "@doberman-agent/ui";
 import { SubjectBusinessId,SubjectSearchStatus } from "@/components/bs-comp/selectComponent/SubjectSearchStatus";
 import { useSubjectSearch } from "@/components/bs-comp/selectComponent/useSubjectSearch";
 
@@ -17,7 +17,7 @@ import { Label } from "@/components/bs-ui/label";
 import { addDepartmentMembersApi } from "@/controllers/API/department";
 import { getUsersApi } from "@/controllers/API/user";
 import { showApiError } from "@/controllers/request";
-import { Checkbox } from "@bisheng/ui";
+import { Checkbox } from "@doberman-agent/ui";
 import { useCallback,useState } from "react";
 import { useTranslation } from "react-i18next";
 

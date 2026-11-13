@@ -17,10 +17,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.linsight import worker as worker_mod
-from bisheng.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
-from bisheng.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
-from bisheng.linsight.worker import ScheduleCenterProcess
+from doberman_agent.linsight import worker as worker_mod
+from doberman_agent.linsight.domain.models.linsight_execute_task import ExecuteTaskStatusEnum
+from doberman_agent.linsight.domain.models.linsight_session_version import SessionVersionStatusEnum
+from doberman_agent.linsight.worker import ScheduleCenterProcess
 
 
 def make_proc():
@@ -151,7 +151,7 @@ async def test_write_failure_never_escapes(patch_dao):
 async def test_classifier_failure_still_writes_terminal_status(patch_dao, monkeypatch):
     """Classification is a nicety; the terminal write is the whole point."""
     dao = patch_dao(FakeDao(session_with(SessionVersionStatusEnum.IN_PROGRESS)))
-    import bisheng.common.services.llm_error_classifier as classifier
+    import doberman_agent.common.services.llm_error_classifier as classifier
 
     calls = []
 

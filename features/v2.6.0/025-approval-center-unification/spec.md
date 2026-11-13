@@ -251,7 +251,7 @@ class ApprovalTask(SQLModelSerializable, table=True):
 
 ### 5.5 双库设计约束（MySQL + 达梦）
 
-- 审批中心新增模型继续复用 `bisheng.core.database.dialect_helpers`，其中 JSON 类字段统一使用 `JsonType`，避免直接声明 MySQL 原生 `JSON`。
+- 审批中心新增模型继续复用 `doberman_agent.core.database.dialect_helpers`，其中 JSON 类字段统一使用 `JsonType`，避免直接声明 MySQL 原生 `JSON`。
 - `update_time` 统一使用 `UPDATE_TIME_SERVER_DEFAULT`，不能在审批中心模型或迁移里手写 MySQL 专属 `ON UPDATE CURRENT_TIMESTAMP`。
 - 迁移脚本与建表守卫统一走 SQLAlchemy `inspect()` / `dialect_helpers`，不得直接依赖 `information_schema`。
 - 审批中心的查询与筛选不得依赖 MySQL 原生 JSON 函数；若后续需要基于 JSON 字段做过滤，必须同时提供达梦兼容分支。
@@ -458,8 +458,8 @@ PRD §5 的“我的审批”“我的申请”“消息提醒”都属于工作
 **入口归属**
 
 - `我的审批`、`我的申请`、`消息提醒` 入口挂在 Client 工作台左下角用户菜单。
-- 现有 [UserPopMenu.tsx](/Users/zhangguoqing/works/bisheng/src/frontend/client/src/layouts/UserPopMenu.tsx:1) 已承载“消息提醒”入口；F025 在同一菜单体系内新增“我的审批”“我的申请”入口，交互与消息提醒保持一致。
-- 现有 [NotificationsDialog.tsx](/Users/zhangguoqing/works/bisheng/src/frontend/client/src/components/NotificationsDialog.tsx:1) 已有审批消息和 `decideApprovalRequestApi` 基础；F025 应在此基础上把“提醒入口”与“审批事实详情”解耦，而不是另起一套消息中心。
+- 现有 [UserPopMenu.tsx](/Users/zhangguoqing/works/doberman-agent/src/frontend/client/src/layouts/UserPopMenu.tsx:1) 已承载“消息提醒”入口；F025 在同一菜单体系内新增“我的审批”“我的申请”入口，交互与消息提醒保持一致。
+- 现有 [NotificationsDialog.tsx](/Users/zhangguoqing/works/doberman-agent/src/frontend/client/src/components/NotificationsDialog.tsx:1) 已有审批消息和 `decideApprovalRequestApi` 基础；F025 应在此基础上把“提醒入口”与“审批事实详情”解耦，而不是另起一套消息中心。
 
 **推荐实现形态**
 
@@ -488,11 +488,11 @@ client approval module
 - `menu_approval_mode` 相关占位入口属于 Client 工作台。
 - 只有 `menu_approval_mode=true` 时，前台才展示对应“无权限/待申请”页面与“提交申请”入口。
 - `menu_approval_mode=false` 时，维持现有逻辑：无权限菜单不展示，也没有申请入口、占位页和审批提示。
-- Platform 里的 [MenuPermissionPlaceholder.tsx](/Users/zhangguoqing/works/bisheng/src/frontend/platform/src/pages/MenuPermissionPlaceholder.tsx:1) 仅覆盖后台 `/admin` 路由占位，不应承担工作台“我的审批/我的申请”模块。
+- Platform 里的 [MenuPermissionPlaceholder.tsx](/Users/zhangguoqing/works/doberman-agent/src/frontend/platform/src/pages/MenuPermissionPlaceholder.tsx:1) 仅覆盖后台 `/admin` 路由占位，不应承担工作台“我的审批/我的申请”模块。
 
 **Client API 封装**
 
-- 扩展 [src/frontend/client/src/api/approval.ts](/Users/zhangguoqing/works/bisheng/src/frontend/client/src/api/approval.ts:1)
+- 扩展 [src/frontend/client/src/api/approval.ts](/Users/zhangguoqing/works/doberman-agent/src/frontend/client/src/api/approval.ts:1)
 - 新增：
   - `listMyApprovalTasksApi`
   - `getApprovalTaskDetailApi`
@@ -576,26 +576,26 @@ platform approval admin
 
 | 文件 | 说明 |
 |------|------|
-| `src/backend/bisheng/approval/domain/models/approval_scenario.py` | 场景、分支、流程、版本、节点 ORM 实体 |
-| `src/backend/bisheng/approval/domain/models/approval_instance.py` | 实例、任务、异常、outbox、action_log ORM 实体 |
-| `src/backend/bisheng/approval/domain/models/user_menu_access.py` | 用户菜单授权 ORM 实体 |
-| `src/backend/bisheng/approval/domain/repositories/approval_scenario_repository.py` | 场景、分支、流程配置 repository |
-| `src/backend/bisheng/approval/domain/repositories/approval_instance_repository.py` | 实例、任务、异常、outbox repository |
-| `src/backend/bisheng/approval/domain/repositories/approval_query_repository.py` | 列表、详情、聚合查询 repository |
-| `src/backend/bisheng/approval/domain/repositories/user_menu_access_repository.py` | 用户菜单授权 repository |
-| `src/backend/bisheng/approval/domain/schemas/approval_center_schema.py` | 新中心 DTO |
-| `src/backend/bisheng/approval/domain/services/approval_gate.py` | 审批网关 |
-| `src/backend/bisheng/approval/domain/services/approval_center_service.py` | 用户端审批服务 |
-| `src/backend/bisheng/approval/domain/services/approval_scenario_admin_service.py` | 管理端配置服务 |
-| `src/backend/bisheng/approval/domain/services/approval_exception_service.py` | 异常处理服务 |
-| `src/backend/bisheng/approval/domain/services/approval_outbox_service.py` | outbox 执行与重试 |
-| `src/backend/bisheng/approval/domain/services/approval_registry.py` | 预置场景目录 |
-| `src/backend/bisheng/approval/domain/services/menu_access_handler.py` | 菜单权限审批 handler |
-| `src/backend/bisheng/approval/domain/services/channel_subscribe_scenario_handler.py` | 频道审批 handler 适配器 |
-| `src/backend/bisheng/approval/domain/services/knowledge_space_subscribe_scenario_handler.py` | 知识空间审批 handler 适配器 |
-| `src/backend/bisheng/approval/api/endpoints/approval_admin.py` | 管理端接口 |
-| `src/backend/bisheng/approval/api/endpoints/approval_user.py` | 用户端接口 |
-| `src/backend/bisheng/worker/approval/tasks.py` | outbox / 异常 worker 任务 |
+| `src/backend/doberman_agent/approval/domain/models/approval_scenario.py` | 场景、分支、流程、版本、节点 ORM 实体 |
+| `src/backend/doberman_agent/approval/domain/models/approval_instance.py` | 实例、任务、异常、outbox、action_log ORM 实体 |
+| `src/backend/doberman_agent/approval/domain/models/user_menu_access.py` | 用户菜单授权 ORM 实体 |
+| `src/backend/doberman_agent/approval/domain/repositories/approval_scenario_repository.py` | 场景、分支、流程配置 repository |
+| `src/backend/doberman_agent/approval/domain/repositories/approval_instance_repository.py` | 实例、任务、异常、outbox repository |
+| `src/backend/doberman_agent/approval/domain/repositories/approval_query_repository.py` | 列表、详情、聚合查询 repository |
+| `src/backend/doberman_agent/approval/domain/repositories/user_menu_access_repository.py` | 用户菜单授权 repository |
+| `src/backend/doberman_agent/approval/domain/schemas/approval_center_schema.py` | 新中心 DTO |
+| `src/backend/doberman_agent/approval/domain/services/approval_gate.py` | 审批网关 |
+| `src/backend/doberman_agent/approval/domain/services/approval_center_service.py` | 用户端审批服务 |
+| `src/backend/doberman_agent/approval/domain/services/approval_scenario_admin_service.py` | 管理端配置服务 |
+| `src/backend/doberman_agent/approval/domain/services/approval_exception_service.py` | 异常处理服务 |
+| `src/backend/doberman_agent/approval/domain/services/approval_outbox_service.py` | outbox 执行与重试 |
+| `src/backend/doberman_agent/approval/domain/services/approval_registry.py` | 预置场景目录 |
+| `src/backend/doberman_agent/approval/domain/services/menu_access_handler.py` | 菜单权限审批 handler |
+| `src/backend/doberman_agent/approval/domain/services/channel_subscribe_scenario_handler.py` | 频道审批 handler 适配器 |
+| `src/backend/doberman_agent/approval/domain/services/knowledge_space_subscribe_scenario_handler.py` | 知识空间审批 handler 适配器 |
+| `src/backend/doberman_agent/approval/api/endpoints/approval_admin.py` | 管理端接口 |
+| `src/backend/doberman_agent/approval/api/endpoints/approval_user.py` | 用户端接口 |
+| `src/backend/doberman_agent/worker/approval/tasks.py` | outbox / 异常 worker 任务 |
 | `src/backend/test/approval/test_approval_gate.py` | 审批网关单测 |
 | `src/backend/test/approval/test_approval_flow_runtime.py` | 流程流转单测 |
 | `src/backend/test/approval/test_approval_exception_service.py` | 异常处理单测 |
@@ -612,20 +612,20 @@ platform approval admin
 
 | 文件 | 变更内容 |
 |------|---------|
-| `src/backend/bisheng/approval/api/router.py` | 注册新用户端/管理端路由 |
-| `src/backend/bisheng/api/router.py` | 确保 approval 模块路由纳入全局 |
-| `src/backend/bisheng/common/errcode/approval.py` | 扩展 18105+ 错误码 |
-| `src/backend/bisheng/message/domain/services/approval_handler.py` | 标记 legacy，并补迁移注释 |
-| `src/backend/bisheng/channel/domain/services/channel_service.py` | 订阅入口切到 `ApprovalGate` |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_space_service.py` | 加入/订阅入口切到 `ApprovalGate` |
-| `src/backend/bisheng/database/models/audit_log.py` | 审计 action/module 白名单扩展 `approval.*` |
+| `src/backend/doberman_agent/approval/api/router.py` | 注册新用户端/管理端路由 |
+| `src/backend/doberman_agent/api/router.py` | 确保 approval 模块路由纳入全局 |
+| `src/backend/doberman_agent/common/errcode/approval.py` | 扩展 18105+ 错误码 |
+| `src/backend/doberman_agent/message/domain/services/approval_handler.py` | 标记 legacy，并补迁移注释 |
+| `src/backend/doberman_agent/channel/domain/services/channel_service.py` | 订阅入口切到 `ApprovalGate` |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_space_service.py` | 加入/订阅入口切到 `ApprovalGate` |
+| `src/backend/doberman_agent/database/models/audit_log.py` | 审计 action/module 白名单扩展 `approval.*` |
 | `src/frontend/client/src/layouts/UserPopMenu.tsx` | 工作台用户菜单增加“我的审批”“我的申请”入口 |
 | `src/frontend/client/src/components/NotificationsDialog.tsx` | 消息提醒与审批详情跳转联动 |
 | `src/frontend/client/src/api/approval.ts` | 扩展前台审批 API |
 | `src/frontend/client/src/api/channels.ts` | 频道订阅接口兼容审批返回结果 |
 | `src/frontend/client/src/api/knowledge.ts` | 知识空间加入接口兼容审批返回结果 |
-| `src/backend/bisheng/knowledge/domain/services/knowledge_service.py` | 移除部门知识空间文件上传审批，回归 ReBAC 上传权限校验 |
-| `src/backend/bisheng/approval/domain/models/approval_request.py` | 标记为历史只读兼容对象，不再承载新上传审批 |
+| `src/backend/doberman_agent/knowledge/domain/services/knowledge_service.py` | 移除部门知识空间文件上传审批，回归 ReBAC 上传权限校验 |
+| `src/backend/doberman_agent/approval/domain/models/approval_request.py` | 标记为历史只读兼容对象，不再承载新上传审批 |
 | `src/frontend/client/src/locales/{zh-Hans,en,ja}/translation.json` | 前台审批、消息提醒文案 |
 | `src/frontend/platform/src/pages/MenuPermissionPlaceholder.tsx` | 若后台 `/admin` 侧也需申请入口，占位页改为可申请页面 |
 | `src/frontend/platform/public/locales/{zh-Hans,en-US,ja}/bs.json` | 审批管理、异常流程、审计文案 |

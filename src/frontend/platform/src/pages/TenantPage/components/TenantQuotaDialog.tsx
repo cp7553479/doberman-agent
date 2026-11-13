@@ -1,5 +1,5 @@
-import { Button, notification } from '@bisheng/ui';
-import { Input } from "@bisheng/ui";
+import { Button, notification } from '@doberman-agent/ui';
+import { Input } from "@doberman-agent/ui";
 
 
 import { getTenantQuotaApi, setTenantQuotaApi } from "@/controllers/API/tenant";

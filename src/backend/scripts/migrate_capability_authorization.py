@@ -19,23 +19,23 @@ if _BACKEND_ROOT not in sys.path:
 
 from sqlmodel import select  # noqa: E402
 
-from bisheng.common.services.config_service import settings  # noqa: E402
-from bisheng.core.context.manager import app_context, close_app_context, initialize_app_context  # noqa: E402
-from bisheng.core.context.tenant import bypass_tenant_filter, current_tenant_id, set_current_tenant_id  # noqa: E402
-from bisheng.core.database import get_async_db_session  # noqa: E402
-from bisheng.core.openfga.runtime_heartbeat import list_runtime_heartbeats  # noqa: E402
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill  # noqa: E402
-from bisheng.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
-from bisheng.permission.domain.models import (  # noqa: E402
+from doberman_agent.common.services.config_service import settings  # noqa: E402
+from doberman_agent.core.context.manager import app_context, close_app_context, initialize_app_context  # noqa: E402
+from doberman_agent.core.context.tenant import bypass_tenant_filter, current_tenant_id, set_current_tenant_id  # noqa: E402
+from doberman_agent.core.database import get_async_db_session  # noqa: E402
+from doberman_agent.core.openfga.runtime_heartbeat import list_runtime_heartbeats  # noqa: E402
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill  # noqa: E402
+from doberman_agent.permission.application.runtime import build_f048_permission_runtime  # noqa: E402
+from doberman_agent.permission.domain.models import (  # noqa: E402
     PermissionGrant,
     PermissionGrantAssignee,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.projection_repository import ProjectionRepository  # noqa: E402
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget  # noqa: E402
-from bisheng.permission.domain.services.permission_action_service import PermissionActor  # noqa: E402
-from bisheng.tool.domain.const import ToolPresetType  # noqa: E402
-from bisheng.tool.domain.models.gpts_tools import GptsToolsType  # noqa: E402
+from doberman_agent.permission.domain.repositories.projection_repository import ProjectionRepository  # noqa: E402
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget  # noqa: E402
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor  # noqa: E402
+from doberman_agent.tool.domain.const import ToolPresetType  # noqa: E402
+from doberman_agent.tool.domain.models.gpts_tools import GptsToolsType  # noqa: E402
 
 
 def migration_state(mode, operation, has_tenant_source):

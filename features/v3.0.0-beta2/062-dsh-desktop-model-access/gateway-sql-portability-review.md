@@ -2,11 +2,11 @@
 
 > 历史记录：2026-09-09 用户后续取消 UNKNOWN 冻结及部门同步/筛选；当前语义以 [0.3.0 修订](./usage-and-search-revision.md) 和 design.md 为准。本页旧测试结果不代表修订后的验证结果。
 
-日期：2026-09-09。Gateway 工作区 `/Users/zhangguoqing/works/bisheng-gateway`，分支 `feat/dsh-access`。范围为新增 DSH Mapper、Repository、MyBatis 分页与 MySQL / DM 建表脚本；沿用 gateway 既有 Mapper SQL 风格。本轮按用户要求不连接 DM 实机。
+日期：2026-09-09。Gateway 工作区 `/Users/zhangguoqing/works/doberman-agent-gateway`，分支 `feat/dsh-access`。范围为新增 DSH Mapper、Repository、MyBatis 分页与 MySQL / DM 建表脚本；沿用 gateway 既有 Mapper SQL 风格。本轮按用户要求不连接 DM 实机。
 
 ## 结论与本次修复
 
-复核发现并修复两处具体差异，没有把毕昇侧“新增业务禁止手写 SQL”的要求扩展成 gateway 全面改写。
+复核发现并修复两处具体差异，没有把doberman-agent侧“新增业务禁止手写 SQL”的要求扩展成 gateway 全面改写。
 
 ### 1. DM 设备名称容量
 
@@ -54,7 +54,7 @@ Java 17、本地 Maven 3.9.9 / 缓存依赖离线执行：
 
 ```sh
 mvn -o -Dmaven.repo.local=/private/tmp/f062-m2 \
--Ddsh.test.contractDirectory=/Users/zhangguoqing/works/bisheng/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts \
+-Ddsh.test.contractDirectory=/Users/zhangguoqing/works/doberman-agent/.worktrees/feat-3.0.0-beta2-pre/features/v3.0.0-beta2/062-dsh-desktop-model-access/contracts \
 -Dtest=DshSqlPortabilityTest,DshCompletionContractTest,DshSeatOperationTest,DshSessionRepositoryTest test
 ```
 

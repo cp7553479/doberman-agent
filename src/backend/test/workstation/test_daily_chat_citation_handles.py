@@ -23,23 +23,23 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from bisheng.api.v1.schema.chat_schema import APIChatCompletion
-from bisheng.citation.domain.schemas.citation_schema import (
+from doberman_agent.api.v1.schema.chat_schema import APIChatCompletion
+from doberman_agent.citation.domain.schemas.citation_schema import (
     CitationRegistryItemSchema,
     CitationType,
     RagCitationItemSchema,
     RagCitationPayloadSchema,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER as E,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_SEPARATOR_MARKER as SEP,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_START_MARKER as S,
 )
-from bisheng.workstation.domain.services import chat_service, daily_citation
+from doberman_agent.workstation.domain.services import chat_service, daily_citation
 
 K1 = "knowledgesearch_aaaa1111:0"
 K2 = "websearch_bbbb2222:1"
@@ -109,7 +109,7 @@ def env(monkeypatch: pytest.MonkeyPatch):
         AsyncMock(return_value=(ws_config, conversation, message, _LLM(), model_info, False)),
     )
     monkeypatch.setattr(chat_service, "_resolve_user_kb_selection", AsyncMock(return_value=[]))
-    monkeypatch.setattr("bisheng.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
+    monkeypatch.setattr("doberman_agent.common.image_view.loop.image_view_configured", AsyncMock(return_value=False))
     monkeypatch.setattr(chat_service.DailyCitationScope, "load", _load)
     monkeypatch.setattr(chat_service, "_prepare_tools", AsyncMock(return_value=([], [])))
     monkeypatch.setattr(chat_service, "_process_agent_files", AsyncMock(return_value=("", [], [])))

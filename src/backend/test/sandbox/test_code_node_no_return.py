@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.sandbox import SandboxCodeNodeNoResultError
-from bisheng.workflow.nodes.code.code import CodeNode
+from doberman_agent.common.errcode.sandbox import SandboxCodeNodeNoResultError
+from doberman_agent.workflow.nodes.code.code import CodeNode
 
 
 def _bare_node(outputs: list[dict]) -> CodeNode:

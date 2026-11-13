@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { generateUUID } from "@/components/bs-ui/utils";
 import Loading from "@/components/ui/loading";
@@ -8,7 +8,7 @@ import { uploadChatFile } from "@/controllers/API/flow";
 import { showApiError } from '@/controllers/request';
 import { MAX_MEDIA_FILES,isMediaFileName } from "@/util/fileAcceptUtils";
 import { getFileExtension } from "@/util/utils";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 
 import { forwardRef,useContext,useImperativeHandle,useRef,useState } from "react";
 import { useTranslation } from "react-i18next";

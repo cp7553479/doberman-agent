@@ -28,7 +28,7 @@ RESOLVE_PATH = '/api/v1/internal/departments/relink/resolve-conflict'
 
 
 def _mount_app() -> FastAPI:
-    from bisheng.org_sync.api.endpoints.relink import router as relink_router
+    from doberman_agent.org_sync.api.endpoints.relink import router as relink_router
 
     app = FastAPI()
     api = APIRouter(prefix='/api/v1')
@@ -40,8 +40,8 @@ def _mount_app() -> FastAPI:
 @pytest.fixture()
 def mocked_service(monkeypatch):
     """Patch DepartmentRelinkService at the endpoints import site."""
-    import bisheng.org_sync.api.endpoints.relink as ep
-    from bisheng.org_sync.domain.schemas.relink import (
+    import doberman_agent.org_sync.api.endpoints.relink as ep
+    from doberman_agent.org_sync.domain.schemas.relink import (
         RelinkAppliedItem, RelinkResponse,
     )
 
@@ -97,7 +97,7 @@ class TestRelinkRoute:
         self, configure_sso_secret, hmac_signer, mocked_service,
     ):
         """AC-07 — HTTP entry point still honours dry_run."""
-        from bisheng.org_sync.domain.schemas.relink import (
+        from doberman_agent.org_sync.domain.schemas.relink import (
             RelinkAppliedItem, RelinkResponse,
         )
         mocked_service.relink.return_value = RelinkResponse(
@@ -188,7 +188,7 @@ class TestExemptPathWhitelist:
         """Both relink endpoints must be exempt from the tenant-context
         middleware — they are HMAC-signed internal entrypoints with no
         JWT."""
-        from bisheng.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
+        from doberman_agent.utils.http_middleware import TENANT_CHECK_EXEMPT_PATHS
 
         assert RELINK_PATH in TENANT_CHECK_EXEMPT_PATHS
         assert RESOLVE_PATH in TENANT_CHECK_EXEMPT_PATHS

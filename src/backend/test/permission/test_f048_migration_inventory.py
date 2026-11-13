@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from bisheng.permission.migration.f048_source_inventory import (
+from doberman_agent.permission.migration.f048_source_inventory import (
     LegacyConfigSource,
     LegacyFailedTupleSource,
     LegacyTupleSource,

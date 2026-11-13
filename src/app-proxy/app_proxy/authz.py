@@ -85,7 +85,7 @@ class Verdict:
     #: Set only on an approval-time preview (F055 AC-26): the upstream is then
     #: resolved by session rather than by ``app_id``, because a preview has no
     #: desired-state record in the manager. ``app_id`` is still the application
-    #: under review — it is what gets injected as ``X-BiSheng-App-Id``.
+    #: under review — it is what gets injected as ``X-Doberman-Agent-App-Id``.
     preview_session: str | None = None
 
     @property
@@ -95,7 +95,7 @@ class Verdict:
     @property
     def visitor_id(self) -> str | None:
         """Who this verdict is about, allow or not — the ``user_id`` of §7."""
-        return self.material.get("X-BiSheng-User-Id") or self.user_id
+        return self.material.get("X-Doberman-Agent-User-Id") or self.user_id
 
 
 def is_valid_slug(slug: str) -> bool:
@@ -103,7 +103,7 @@ def is_valid_slug(slug: str) -> bool:
 
 
 def extract_access_token(connection: HTTPConnection) -> str | None:
-    """Mirror of ``_extract_http_access_token`` (``bisheng/utils/http_middleware.py``).
+    """Mirror of ``_extract_http_access_token`` (``doberman-agent/utils/http_middleware.py``).
 
     Cookie first — that is what a browser navigating to ``/apps/{slug}`` sends,
     and the whole no-second-login promise (AC-26) rides on it being host-only
@@ -191,7 +191,7 @@ def _verdict_from(payload: dict[str, Any], *, label: str, request_id: str) -> Ve
         return Verdict(decision=DECISION_UNAVAILABLE, reason=f"unknown decision {decision!r}")
 
     material = _coerce_material(payload)
-    app_id = payload.get("app_id") or material.get("X-BiSheng-App-Id")
+    app_id = payload.get("app_id") or material.get("X-Doberman-Agent-App-Id")
     user_id = payload.get("user_id")
     return Verdict(
         decision=decision,

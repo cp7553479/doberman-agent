@@ -1,11 +1,11 @@
 // @ts-strict-ignore
-import { Button, SearchInput, Select } from '@bisheng/ui';
+import { Button, SearchInput, Select } from '@doberman-agent/ui';
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
-import { Segmented } from "@bisheng/ui";
+import { Segmented } from "@doberman-agent/ui";
 import { getAllServicesApi } from "../../../controllers/API";
 import { useDebounce } from "../../../util/hook";
 

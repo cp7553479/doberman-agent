@@ -1,7 +1,7 @@
 [project]
-name = "bisheng-app-proxy"
+name = "doberman-agent-app-proxy"
 version = "3.0.0"
-description = "BiSheng hosted-app entry proxy — session check, header normalisation/injection, fallback pages and HTTP reverse proxy for /apps/{slug}"
+description = "DobermanAgent hosted-app entry proxy — session check, header normalisation/injection, fallback pages and HTTP reverse proxy for /apps/{slug}"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 dependencies = [

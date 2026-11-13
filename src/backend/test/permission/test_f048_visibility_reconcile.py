@@ -7,20 +7,20 @@ from __future__ import annotations
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionPublishNotReadyError,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.model_policy import (
+from doberman_agent.permission.domain.services.model_policy import (
     DerivedPermissionModel,
     ModelReferenceSummary,
     ensure_model_deletable,
 )
-from bisheng.permission.domain.services.visibility_projection_service import (
+from doberman_agent.permission.domain.services.visibility_projection_service import (
     VisibilityProjectionCompiler,
     VisibilityProjectionReconciler,
 )

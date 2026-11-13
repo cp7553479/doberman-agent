@@ -5,7 +5,7 @@ import hashlib
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-MODULE = "bisheng.app_runtime.domain.services.runtime_material_protocol"
+MODULE = "doberman_agent.app_runtime.domain.services.runtime_material_protocol"
 P = "/internal/app-runtime/v2/material-access"
 TARGET = P + "/transfers/33333333-3333-4333-8333-333333333333/content?length=1048576&offset=0"
 NOW = 1792531200
@@ -38,8 +38,8 @@ def headers(codec, signer):
 
 def test_fixed_eleven_line_encoding_vector(codec):
     raw = codec.canonical_message("GET", TARGET, b"", **IDENTITY)
-    assert len(raw) == 414 and len(raw.split(b"\n")) == 11 and not raw.endswith(b"\n")
-    assert hashlib.sha256(raw).hexdigest() == "206cf7e08bc12e23245980c45989fe8165233183e18bed03b99a8c17c6050167"
+    assert len(raw) == 421 and len(raw.split(b"\n")) == 11 and not raw.endswith(b"\n")
+    assert hashlib.sha256(raw).hexdigest() == "0f6eb0b2f3351cc03df188725e12b53609df2db1e3a352700c1a1a89dd552221"
 
 
 def test_real_ed25519_signature_and_public_key(codec, signer, headers):
@@ -212,7 +212,7 @@ def test_json_unsigned_integers_are_not_booleans_or_strings(codec, value):
 
 
 def test_material_key_id_database_length_matches_wire(codec, signer):
-    from bisheng.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
+    from doberman_agent.app_runtime.domain.models.runtime_kubernetes import RuntimeMaterialDelegation
 
     assert RuntimeMaterialDelegation.__table__.c.key_id.type.length == 64
     identity = {**IDENTITY, "key_id": "a" * 64}

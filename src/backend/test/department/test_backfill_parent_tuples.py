@@ -16,7 +16,7 @@ import scripts.backfill_department_parent_tuples as mod
 @pytest.fixture(autouse=True)
 def _stub_tenant_filter():
     with patch(
-        "bisheng.core.context.tenant.bypass_tenant_filter",
+        "doberman_agent.core.context.tenant.bypass_tenant_filter",
         new=lambda: contextlib.nullcontext(),
     ):
         yield
@@ -35,7 +35,7 @@ def _patch_writer():
     permissions = AsyncMock()
     permissions.apply_changes = AsyncMock()
     return patch(
-        "bisheng.permission.application.get_permission_relation_api",
+        "doberman_agent.permission.application.get_permission_relation_api",
         new=AsyncMock(return_value=permissions),
     )
 

@@ -6,9 +6,9 @@ load and group branches.
 
 from langchain_core.documents import Document
 
-from bisheng.citation.domain.schemas.citation_schema import CitationType, TempCitationPayloadSchema
-from bisheng.citation.domain.services.citation_prompt_helper import _is_citable_rag_document
-from bisheng.citation.domain.services.citation_registry_service import CitationRegistryService
+from doberman_agent.citation.domain.schemas.citation_schema import CitationType, TempCitationPayloadSchema
+from doberman_agent.citation.domain.services.citation_prompt_helper import _is_citable_rag_document
+from doberman_agent.citation.domain.services.citation_registry_service import CitationRegistryService
 
 
 def _temp_doc(document_id: str = "3f2a1c9e8b7d4f6a", name: str = "报价单.pdf") -> Document:

@@ -68,7 +68,7 @@ def test_docker_adapter_stop_does_not_treat_running_or_missing_as_proven(tmp_pat
             raise SimpleError()
         return {
             "Config": {
-                "Labels": {"bisheng.managed": "v2", "bisheng.runtime.node": "node-a", "bisheng.app.id": "app-a"}
+                "Labels": {"doberman-agent.managed": "v2", "doberman-agent.runtime.node": "node-a", "doberman-agent.app.id": "app-a"}
             },
             "State": {"Running": running["value"]},
         }
@@ -88,7 +88,7 @@ def test_docker_adapter_stop_does_not_treat_running_or_missing_as_proven(tmp_pat
 def test_docker_adapter_refuses_foreign_execution_before_stop(tmp_path):
     executor = adapter(tmp_path)
     executor.docker.inspect_container = lambda ref: {
-        "Config": {"Labels": {"bisheng.managed": "v2", "bisheng.runtime.node": "other", "bisheng.app.id": "app-a"}}
+        "Config": {"Labels": {"doberman-agent.managed": "v2", "doberman-agent.runtime.node": "other", "doberman-agent.app.id": "app-a"}}
     }
     executor.docker.stop_container = lambda *args, **kwargs: pytest.fail("foreign execution")
     with pytest.raises(ExecutionError):

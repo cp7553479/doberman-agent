@@ -4,7 +4,7 @@ import { MessageCircleDashed } from 'lucide-react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Constants, getConfigDefaults } from '~/types/chat';
 import { useGetStartupConfig } from '~/hooks/queries/data-provider';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import store from '~/store';

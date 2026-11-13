@@ -74,12 +74,12 @@
 ### 5.1 API 端点
 
 ```python
-# src/backend/bisheng/admin/api/endpoints/tenant_scope.py
+# src/backend/doberman_agent/admin/api/endpoints/tenant_scope.py
 
 from fastapi import APIRouter, Depends, HTTPException
-from bisheng.common.dependencies import UserPayload
-from bisheng.common.schemas import resp_200
-from bisheng.admin.domain.services.tenant_scope import TenantScopeService
+from doberman_agent.common.dependencies import UserPayload
+from doberman_agent.common.schemas import resp_200
+from doberman_agent.admin.domain.services.tenant_scope import TenantScopeService
 
 router = APIRouter(prefix="/admin", tags=["admin-scope"])
 
@@ -112,7 +112,7 @@ async def get_tenant_scope(
 ### 5.2 Service 层
 
 ```python
-# src/backend/bisheng/admin/domain/services/tenant_scope.py
+# src/backend/doberman_agent/admin/domain/services/tenant_scope.py
 
 class TenantScopeService:
 
@@ -181,7 +181,7 @@ class TenantScopeService:
 ### 5.3 中间件
 
 ```python
-# src/backend/bisheng/common/middleware/admin_scope.py
+# src/backend/doberman_agent/common/middleware/admin_scope.py
 
 MANAGEMENT_API_PREFIXES = (
     "/api/v1/llm",
@@ -214,9 +214,9 @@ class AdminScopeMiddleware(BaseHTTPMiddleware):
 ### 5.4 Celery 巡检任务
 
 ```python
-# src/backend/bisheng/worker/tenant/tasks.py
+# src/backend/doberman_agent/worker/tenant/tasks.py
 
-from bisheng.core.context.tenant import bypass_tenant_filter
+from doberman_agent.core.context.tenant import bypass_tenant_filter
 
 
 @celery_app.task(queue="celery", name="tasks.admin_scope_cleanup")
@@ -281,18 +281,18 @@ multi_tenant:
 
 | 类别 | 文件 | 改动 |
 |------|------|------|
-| API | `src/backend/bisheng/admin/api/endpoints/tenant_scope.py` | 新建；POST/GET 两个端点 |
-| API 注册 | `src/backend/bisheng/admin/api/router.py` | 新建（或挂到现有 admin 路由） |
-| Service | `src/backend/bisheng/admin/domain/services/tenant_scope.py` | 新建 |
-| 中间件 | `src/backend/bisheng/common/middleware/admin_scope.py` | 新建 |
-| 中间件注册 | `src/backend/bisheng/main.py` | 在 `TenantContextMiddleware` 之后注册 `AdminScopeMiddleware` |
-| ContextVar | `src/backend/bisheng/core/context/tenant.py` | **由 F012 §5.4 负责定义** `_admin_scope_tenant_id` / `_is_management_api` 两个 ContextVar（统一在 tenant-resolver feature 集中管理）；本 Feature 中间件**消费**而非定义 |
-| 钩子 | `src/backend/bisheng/user/domain/services/auth.py` | logout 钩子调 `TenantScopeService.clear_on_logout` |
-| 钩子 | `src/backend/bisheng/tenant/domain/services/user_tenant_sync.py` | `sync_user` 中 `token_version` +1 后调 `clear_on_token_version_bump` |
-| 钩子 | `src/backend/bisheng/permission/domain/services/role.py` | 撤销 super_admin 角色时调 `clear_on_role_revoke` |
-| Celery | `src/backend/bisheng/worker/tenant/tasks.py` | 新增 `admin_scope_cleanup` 任务 |
-| 配置 | `src/backend/bisheng/core/config/settings.py` | 新增 `multi_tenant.admin_scope_ttl_seconds` |
-| 错误码 | `src/backend/bisheng/common/errcode/admin_scope.py` | 新建；19701 `admin_scope_forbidden` / 19702 `tenant_not_found` |
+| API | `src/backend/doberman_agent/admin/api/endpoints/tenant_scope.py` | 新建；POST/GET 两个端点 |
+| API 注册 | `src/backend/doberman_agent/admin/api/router.py` | 新建（或挂到现有 admin 路由） |
+| Service | `src/backend/doberman_agent/admin/domain/services/tenant_scope.py` | 新建 |
+| 中间件 | `src/backend/doberman_agent/common/middleware/admin_scope.py` | 新建 |
+| 中间件注册 | `src/backend/doberman_agent/main.py` | 在 `TenantContextMiddleware` 之后注册 `AdminScopeMiddleware` |
+| ContextVar | `src/backend/doberman_agent/core/context/tenant.py` | **由 F012 §5.4 负责定义** `_admin_scope_tenant_id` / `_is_management_api` 两个 ContextVar（统一在 tenant-resolver feature 集中管理）；本 Feature 中间件**消费**而非定义 |
+| 钩子 | `src/backend/doberman_agent/user/domain/services/auth.py` | logout 钩子调 `TenantScopeService.clear_on_logout` |
+| 钩子 | `src/backend/doberman_agent/tenant/domain/services/user_tenant_sync.py` | `sync_user` 中 `token_version` +1 后调 `clear_on_token_version_bump` |
+| 钩子 | `src/backend/doberman_agent/permission/domain/services/role.py` | 撤销 super_admin 角色时调 `clear_on_role_revoke` |
+| Celery | `src/backend/doberman_agent/worker/tenant/tasks.py` | 新增 `admin_scope_cleanup` 任务 |
+| 配置 | `src/backend/doberman_agent/core/config/settings.py` | 新增 `multi_tenant.admin_scope_ttl_seconds` |
+| 错误码 | `src/backend/doberman_agent/common/errcode/admin_scope.py` | 新建；19701 `admin_scope_forbidden` / 19702 `tenant_not_found` |
 | 前端 API 封装（本 Feature） | `src/frontend/platform/src/controllers/API/admin.ts` | 新增 `setTenantScope / getTenantScope` axios 调用；本 Feature 负责，供 F020 的 `useAdminScope` hook 依赖 |
 | 前端组件（F020 拥有） | `src/frontend/platform/src/components/AdminScopeSelector.tsx` | **不在本 Feature 范围**（见 §9）；本 Feature 仅声明组件存在的契约，源码由 F020 实施 |
 
@@ -303,7 +303,7 @@ multi_tenant:
 - **前端 Scope 切换器组件本身**：由 F020 抽取为 `src/frontend/platform/src/components/AdminScopeSelector.tsx` 公共组件，供 ModelPage / 未来 RolesPage / QuotaPage / AuditLogPage 等管理页复用；本 Feature **仅提供后端 API**（POST/GET `/admin/tenant-scope`）+ `useAdminScope` hook（由 F020 编写在 `src/frontend/platform/src/hooks/useAdminScope.ts` 供复用）。**归属明确**：组件源码在 F020 分支实施；本 Feature 不包含任何 `.tsx` 代码
 - Redis key 的可观测性仪表盘
 - Scope 历史查询 API（audit_log 已含，MVP 不单独建表）
-- 跨实例的 scope 同步（bisheng 仅私有化部署，单实例即可）
+- 跨实例的 scope 同步（doberman-agent 仅私有化部署，单实例即可）
 - 自动根据"用户上次操作的 Child"预置 scope（避免魔法行为）
 
 ---

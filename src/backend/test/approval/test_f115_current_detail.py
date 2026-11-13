@@ -9,7 +9,7 @@ import pytest
 
 @pytest.fixture
 def detail(monkeypatch):
-    from bisheng.approval.domain.services import approval_center_service as module
+    from doberman_agent.approval.domain.services import approval_center_service as module
 
     instance = SimpleNamespace(
         id=1,
@@ -51,7 +51,7 @@ async def test_authorized_task_gets_current_decoration_without_changing_snapshot
 
 
 async def test_tenant_denial_precedes_current_scope_read(detail):
-    from bisheng.common.errcode.approval import ApprovalRequestPermissionDeniedError
+    from doberman_agent.common.errcode.approval import ApprovalRequestPermissionDeniedError
 
     module, _, viewer, current = detail
     viewer.tenant_id = 61
@@ -69,7 +69,7 @@ async def test_personal_instance_uses_same_current_decoration(detail):
 
 
 async def test_management_reader_can_read_current_scope_without_app_management(detail, monkeypatch):
-    from bisheng.permission import application
+    from doberman_agent.permission import application
 
     module, _, viewer, current = detail
     monkeypatch.setattr(application, "is_tenant_admin", AsyncMock(return_value=True))
@@ -79,7 +79,7 @@ async def test_management_reader_can_read_current_scope_without_app_management(d
 
 
 async def test_nonparticipant_instance_never_queries_current_roster(detail):
-    from bisheng.common.errcode.approval import ApprovalRequestPermissionDeniedError
+    from doberman_agent.common.errcode.approval import ApprovalRequestPermissionDeniedError
 
     module, _, viewer, current = detail
     with pytest.raises(ApprovalRequestPermissionDeniedError):
@@ -91,7 +91,7 @@ async def test_nonparticipant_instance_never_queries_current_roster(detail):
     "scenario", ["menu_access_request", "channel_subscribe_request", "knowledge_space_subscribe_request"]
 )
 async def test_other_scenarios_do_not_create_dynamic_queries(scenario, monkeypatch):
-    from bisheng.approval.domain.services import approval_runtime_handler_factory as factory
+    from doberman_agent.approval.domain.services import approval_runtime_handler_factory as factory
 
     builder = AsyncMock()
     monkeypatch.setattr(factory, "build_runtime_handler", builder)

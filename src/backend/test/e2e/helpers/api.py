@@ -1,4 +1,4 @@
-"""E2E API helpers for BiSheng.
+"""E2E API helpers for DobermanAgent.
 
 Provides base URL, response assertion, and generic CRUD helpers.
 """

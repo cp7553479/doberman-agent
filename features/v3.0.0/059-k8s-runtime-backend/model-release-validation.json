@@ -33,7 +33,7 @@
         "image_id": "sha256:207635908c895ce0cfe2b201d86175d6d7955d42ace79ecc1c0a2555f8569865",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-node:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-node:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "app-node-preparer": {
@@ -41,7 +41,7 @@
         "image_id": "sha256:b6c8306c12169950b3c901518d14e24b03b42b8290798f8c56e6112f0844cbf4",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-node-preparer:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-node-preparer:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "app-proxy": {
@@ -49,7 +49,7 @@
         "image_id": "sha256:d9ce7740c6c2495153de0deb2409258e5e5e465f0105e16ebbb9d67f8509c119",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-proxy:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-proxy:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "app-python": {
@@ -57,7 +57,7 @@
         "image_id": "sha256:1392fe7b352881893c382f2fd3338797de7cbd2a077feb60b0ea4b3aab2fc4cf",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-python:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-python:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "app-python-preparer": {
@@ -65,7 +65,7 @@
         "image_id": "sha256:3180d7c32e4d56104054a71f0f8a64015c12e03c6a42b2956fb203b5b78aec7f",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-python-preparer:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-python-preparer:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "app-static": {
@@ -73,7 +73,7 @@
         "image_id": "sha256:4a144f3784b989b886929123da9a457b1127779cba9e18a04a8889367ec2fdff",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-app-static:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-app-static:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "runtime-assembler": {
@@ -81,13 +81,13 @@
         "image_id": "sha256:7a04e0c7303198a1a393eaccb51603ba84f51021e22669c7821b50697895b4ae",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {
           "crane": "v0.22.1",
           "go-builder": "1.27.3",
           "licenses": "/usr/share/licenses/crane",
           "python-abi": "3.11",
-          "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+          "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
           "runtime-package": "3.0.0"
         }
       },
@@ -96,10 +96,10 @@
         "image_id": "sha256:23337409a59b4d6d19f3b74fabdb9f31feb42532277872eb491fe9c37f4d6bcc",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {
           "python-abi": "3.11",
-          "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+          "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
           "runtime-package": "3.0.0"
         }
       },
@@ -108,7 +108,7 @@
         "image_id": "sha256:3bb2eb2268c33da48f1ff1b6912e2e0da2cf8c9bd962a530ba69c806be8d9a90",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       }
     },
@@ -178,7 +178,7 @@
         "image_id": "sha256:3bb2eb2268c33da48f1ff1b6912e2e0da2cf8c9bd962a530ba69c806be8d9a90",
         "native_smoke": true,
         "platform": "linux/arm64",
-        "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261022-0e493c07a-arm64",
+        "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261022-0e493c07a-arm64",
         "tools": {}
       },
       "main_database_unchanged": true,
@@ -236,7 +236,7 @@
         "image_id": "sha256:de7f22f64af2059c5acb4b465ab5d7608929007bd1949be05ed91ea5e5918df9",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-node:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-node:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "app-node-preparer": {
@@ -244,7 +244,7 @@
         "image_id": "sha256:a35a4a88f2848be7f3eb603f938d0de6de39802d06acc53d6e0739885b033aee",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-node-preparer:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-node-preparer:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "app-proxy": {
@@ -252,7 +252,7 @@
         "image_id": "sha256:a6ebc02e783ddcd5622646352fcbfc1685135d91e4e3e3ae8eab4a90ecffc7d9",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-proxy:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-proxy:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "app-python": {
@@ -260,7 +260,7 @@
         "image_id": "sha256:81bfb337c68c318aa550fcd3a60b62335845e1881200dc35f4095db9a380f3b6",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-python:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-python:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "app-python-preparer": {
@@ -268,7 +268,7 @@
         "image_id": "sha256:55cdac5ab14824096f9dbc595953fe2e9c86b0d817df51f521084cea4f375468",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-python-preparer:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-python-preparer:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "app-static": {
@@ -276,7 +276,7 @@
         "image_id": "sha256:8b121fbd253e93af9913df5cac15f286fa4933bc09c850494ffa86c02ad24906",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-app-static:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-app-static:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       },
       "runtime-assembler": {
@@ -284,13 +284,13 @@
         "image_id": "sha256:70db78b647519f63735681355fe7d65de20bf338357e33f2a7667ca926a50ce5",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {
           "crane": "v0.22.1",
           "go-builder": "1.27.3",
           "licenses": "/usr/share/licenses/crane",
           "python-abi": "3.11",
-          "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+          "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
           "runtime-package": "3.0.0"
         }
       },
@@ -299,10 +299,10 @@
         "image_id": "sha256:9ca04c1b7213dde0c8177976a708d5c8d8bed512a28f74092b7ba93d7aa77599",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {
           "python-abi": "3.11",
-          "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+          "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
           "runtime-package": "3.0.0"
         }
       },
@@ -311,7 +311,7 @@
         "image_id": "sha256:28f34e7a857af6d89bd34cf1cf4794c04fb4b41ee189e9b3c0ad19d424d85e6f",
         "native_smoke": true,
         "platform": "linux/amd64",
-        "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261022-0e493c07a-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261022-0e493c07a-amd64",
         "tools": {}
       }
     },
@@ -457,7 +457,7 @@
           "image_id": "sha256:a6961a25eb82d295d39905fa8856d5f5b0ffb0642c3e057fed87a1e5c3d61f66",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-node:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-node:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "app-node-preparer": {
@@ -465,7 +465,7 @@
           "image_id": "sha256:acb84d03f9496b98fe666a1cd326694d2aded1f40e82b026e190c152683e8db3",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-node-preparer:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-node-preparer:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "app-proxy": {
@@ -473,7 +473,7 @@
           "image_id": "sha256:f2a6835d076fbdaf10a06d64bbb5eb431bffa614564c34aebe074889b22c3e1a",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-proxy:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-proxy:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "app-python": {
@@ -481,7 +481,7 @@
           "image_id": "sha256:63410cb4c796b935fb8fbc3d8f9853fd477e800dcbe910e77eb3aa7e5dca9dec",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-python:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-python:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "app-python-preparer": {
@@ -489,7 +489,7 @@
           "image_id": "sha256:a3111cc39b6be9e3736511fe4e9a0401528d712947791c63eb294275e5d0eeab",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-python-preparer:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-python-preparer:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "app-static": {
@@ -497,7 +497,7 @@
           "image_id": "sha256:04023626cb44e1d27970df8694fdde6aa1774fe4999a5a3e72ccf5430bf8c1da",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-app-static:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-app-static:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         },
         "runtime-assembler": {
@@ -505,13 +505,13 @@
           "image_id": "sha256:47989dfc2fec98b142e1440773bd6ce31fff5cd76832a334f3808d321492d7bd",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {
             "crane": "v0.22.1",
             "go-builder": "1.27.3",
             "licenses": "/usr/share/licenses/crane",
             "python-abi": "3.11",
-            "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+            "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
             "runtime-package": "3.0.0"
           }
         },
@@ -520,10 +520,10 @@
           "image_id": "sha256:eb81d65c6de6681f9a2b1f350342b40c3505543d5395838be46f9d46594d8f73",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {
             "python-abi": "3.11",
-            "python-packages": "/usr/share/licenses/bisheng/python-packages.json",
+            "python-packages": "/usr/share/licenses/doberman-agent/python-packages.json",
             "runtime-package": "3.0.0"
           }
         },
@@ -532,7 +532,7 @@
           "image_id": "sha256:73853b58bf9fcd33b6945b41fd6c612646d39ada57cabfacb6ce751f14ee5184",
           "native_smoke": true,
           "platform": "linux/amd64",
-          "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261022-709821ecb-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261022-709821ecb-amd64",
           "tools": {}
         }
       },
@@ -644,12 +644,12 @@
     "helper_null_lock_smoke_exit": 0,
     "images": {
       "manager": {
-        "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-143606851-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-143606851-amd64",
         "image_id": "sha256:727a725ed148acede43aaf4052f923eda229498d5e4a83db2cd6946562140b18",
         "native_smoke": true
       },
       "helper": {
-        "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261023-143606851-amd64",
+        "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261023-143606851-amd64",
         "image_id": "sha256:63c1243998c8ca303e59f2bed080ca70b4e7938914849dc77c7b0cef85d6ff35",
         "native_smoke": true
       }
@@ -824,25 +824,25 @@
       "platform": "linux/amd64",
       "images": {
         "manager": {
-          "tag": "e2e-f059/bisheng-runtime-manager:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-manager:e2e-f059-native-20261023-0d5ef7b2b-amd64",
           "image_id": "sha256:c3a5255e893973935e26c7f48adcc218f0bb14bd4b522fd8eaea75a35aabc659",
           "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
           "variant": null
         },
         "helper": {
-          "tag": "e2e-f059/bisheng-runtime-helper:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-helper:e2e-f059-native-20261023-0d5ef7b2b-amd64",
           "image_id": "sha256:9cd5d3e1331f4b8c81c6335c4e3034e1eb9c63b94f1968e9dc4357180c2296a9",
           "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
           "variant": null
         },
         "assembler": {
-          "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-amd64",
           "image_id": "sha256:ccd89b540e02611fe1b7b24e7b7b991197b8f29d3462e1bb47962c2aca58f2d9",
           "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
           "variant": null
         },
         "assembler-public-ca": {
-          "tag": "e2e-f059/bisheng-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-public-ca-amd64",
+          "tag": "e2e-f059/doberman-agent-runtime-assembler:e2e-f059-native-20261023-0d5ef7b2b-public-ca-amd64",
           "image_id": "sha256:ddc11511399ae6f3f9689a076a8cc6bb5c6b8db34bb194d892603fe20264f19e",
           "source_revision": "0d5ef7b2b8c12ff9a4c1ef48a1b8ba37a373a92c",
           "variant": "registry-public-ca"

@@ -1,4 +1,4 @@
-import { notification } from '@bisheng/ui';
+import { notification } from '@doberman-agent/ui';
 
 import { getAssistantOptimizeTaskApi } from "@/controllers/API/assistant";
 import { useAssistantStore } from "@/store/assistantStore";

@@ -1,75 +1,29 @@
 x-runtime-platform-env: &runtime-platform-env
-  BISHENG_RUNTIME_PROTOCOL_VERSION: ${BISHENG_RUNTIME_PROTOCOL_VERSION:-2}
-  BISHENG_RUNTIME_NODE_ID: ${BISHENG_RUNTIME_NODE_ID:-docker-node-1}
-  BISHENG_RUNTIME_PLATFORM_BASE_URL: 'http://backend:7860'
-  BISHENG_RUNTIME_AUDIT_SOURCE_TIMEZONE: '${BISHENG_RUNTIME_AUDIT_SOURCE_TIMEZONE:-}'
-  BISHENG_RUNTIME_OFFLINE: ${BISHENG_RUNTIME_OFFLINE:-true}
-  BISHENG_RUNTIME_TASK_TIMEOUT_SECONDS: ${BISHENG_RUNTIME_TASK_TIMEOUT_SECONDS:-1800}
-  BISHENG_RUNTIME_PAYLOAD_KEY: ${BISHENG_RUNTIME_PAYLOAD_KEY:-}
-  BISHENG_APP_PROXY_HMAC_SECRET: ${BISHENG_APP_PROXY_HMAC_SECRET:-}
-  BISHENG_APP_OBO_SECRET: ${BISHENG_APP_OBO_SECRET:-}
-  BISHENG_RUNTIME_CONTROL_KEY_ID: platform-control
-  BISHENG_RUNTIME_CONTROL_SECRET: ${BISHENG_RUNTIME_CONTROL_SECRET:-}
+  DOBERMAN_AGENT_RUNTIME_PROTOCOL_VERSION: ${DOBERMAN_AGENT_RUNTIME_PROTOCOL_VERSION:-2}
+  DOBERMAN_AGENT_RUNTIME_NODE_ID: ${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}
+  DOBERMAN_AGENT_RUNTIME_PLATFORM_BASE_URL: 'http://backend:7860'
+  DOBERMAN_AGENT_RUNTIME_AUDIT_SOURCE_TIMEZONE: '${DOBERMAN_AGENT_RUNTIME_AUDIT_SOURCE_TIMEZONE:-}'
+  DOBERMAN_AGENT_RUNTIME_OFFLINE: ${DOBERMAN_AGENT_RUNTIME_OFFLINE:-true}
+  DOBERMAN_AGENT_RUNTIME_TASK_TIMEOUT_SECONDS: ${DOBERMAN_AGENT_RUNTIME_TASK_TIMEOUT_SECONDS:-1800}
+  DOBERMAN_AGENT_RUNTIME_PAYLOAD_KEY: ${DOBERMAN_AGENT_RUNTIME_PAYLOAD_KEY:-}
+  DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET: ${DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET:-}
+  DOBERMAN_AGENT_APP_OBO_SECRET: ${DOBERMAN_AGENT_APP_OBO_SECRET:-}
+  DOBERMAN_AGENT_RUNTIME_CONTROL_KEY_ID: platform-control
+  DOBERMAN_AGENT_RUNTIME_CONTROL_SECRET: ${DOBERMAN_AGENT_RUNTIME_CONTROL_SECRET:-}
   # Generate this node descriptor on the Docker host; see deploy/runtime-manager/README.md.
-  BISHENG_RUNTIME_HOST_ISOLATION_NODES: '${BISHENG_RUNTIME_HOST_ISOLATION_NODES:-}'
-  BISHENG_RUNTIME_SERVICE_KEYS: '{"manager-node-1":{"secret":"${BISHENG_RUNTIME_MANAGER_SECRET:-}","node_id":"${BISHENG_RUNTIME_NODE_ID:-docker-node-1}","roles":["manager"]},"egress-node-1":{"secret":"${BISHENG_RUNTIME_EGRESS_SECRET:-}","node_id":"${BISHENG_RUNTIME_NODE_ID:-docker-node-1}","roles":["egress"]},"host-isolation-node-1":{"secret":"${BISHENG_RUNTIME_HOST_ISOLATION_SECRET:-}","node_id":"${BISHENG_RUNTIME_NODE_ID:-docker-node-1}","roles":["host-isolation"]},"entry-reader":{"secret":"${BISHENG_RUNTIME_ENTRY_SECRET:-}","roles":["entry"]}}'
+  DOBERMAN_AGENT_RUNTIME_HOST_ISOLATION_NODES: '${DOBERMAN_AGENT_RUNTIME_HOST_ISOLATION_NODES:-}'
+  DOBERMAN_AGENT_RUNTIME_SERVICE_KEYS: '{"manager-node-1":{"secret":"${DOBERMAN_AGENT_RUNTIME_MANAGER_SECRET:-}","node_id":"${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}","roles":["manager"]},"egress-node-1":{"secret":"${DOBERMAN_AGENT_RUNTIME_EGRESS_SECRET:-}","node_id":"${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}","roles":["egress"]},"host-isolation-node-1":{"secret":"${DOBERMAN_AGENT_RUNTIME_HOST_ISOLATION_SECRET:-}","node_id":"${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}","roles":["host-isolation"]},"entry-reader":{"secret":"${DOBERMAN_AGENT_RUNTIME_ENTRY_SECRET:-}","roles":["entry"]}}'
 
 services:
-  gateway-db-init:
-    profiles: [gateway]
-    image: ${MYSQL_IMAGE:?set MYSQL_IMAGE in docker/.env (see .env.example)}
-    environment:
-      MYSQL_PWD: "1234"
-      GATEWAY_DATABASE_PASSWORD: ${BISHENG_GATEWAY_DB_PASSWORD:-}
-    volumes:
-      - ./gateway/init.sql:/schema.sql:ro
-      - ./gateway/init.sh:/init.sh:ro
-    entrypoint: ["bash", "/init.sh"]
-    depends_on:
-      mysql:
-        condition: service_healthy
-
-  gateway:
-    profiles: [gateway]
-    image: ${BISHENG_GATEWAY_IMAGE:?run bash docker/install.sh to create docker/.env}
-    container_name: bisheng-gateway
-    environment:
-      TZ: Asia/Shanghai
-      LANG: C.UTF-8
-      LC_ALL: C.UTF-8
-      # install.sh validates these values only when the gateway profile is enabled.
-      BISHENG_LICENSE: ${BISHENG_GATEWAY_LICENSE:-}
-      BISHENG_GATEWAY_HMAC_SECRET: ${BISHENG_GATEWAY_HMAC_SECRET:-}
-      BISHENG_PUBLIC_URL: ${BISHENG_PUBLIC_URL:-}
-      GATEWAY_DATABASE_PASSWORD: ${BISHENG_GATEWAY_DB_PASSWORD:-}
-      SPRING_CONFIG_LOCATION: file:/application.yml
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/gateway/config/application.yml:/application.yml:ro
-      # A real user-provided file is required even with direct Compose commands.
-      - type: bind
-        source: ${BISHENG_GATEWAY_LICENSE_FILE:-./gateway/license.required}
-        target: /run/secrets/bisheng-license
-        read_only: true
-        bind:
-          create_host_path: false
-    depends_on:
-      gateway-db-init:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-    restart: on-failure
-
   mysql:
-    container_name: bisheng-mysql
+    container_name: doberman-agent-mysql
     image: ${MYSQL_IMAGE:?set MYSQL_IMAGE in docker/.env (see .env.example)}
     
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: "1234"  # 数据库密码，如果修改需要同步修改bisheng/congfig/config.yaml配置database_url的mysql连接密码
-      MYSQL_DATABASE: bisheng
+      MYSQL_ROOT_PASSWORD: "1234"  # 数据库密码，如果修改需要同步修改doberman-agent/congfig/config.yaml配置database_url的mysql连接密码
+      MYSQL_DATABASE: doberman-agent
       TZ: Asia/Shanghai
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/mysql/conf/my.cnf:/etc/mysql/my.cnf
@@ -83,7 +37,7 @@ services:
     restart: on-failure
 
   openfga-migrate:
-    container_name: bisheng-openfga-migrate
+    container_name: doberman-agent-openfga-migrate
     image: ${OPENFGA_IMAGE:?set OPENFGA_IMAGE in docker/.env (see .env.example)}
     command: migrate
     environment:
@@ -94,7 +48,7 @@ services:
         condition: service_healthy
 
   openfga:
-    container_name: bisheng-openfga
+    container_name: doberman-agent-openfga
     image: ${OPENFGA_IMAGE:?set OPENFGA_IMAGE in docker/.env (see .env.example)}
     command: run
     environment:
@@ -127,7 +81,7 @@ services:
     restart: unless-stopped
 
   redis:
-    container_name: bisheng-redis
+    container_name: doberman-agent-redis
     image: ${REDIS_IMAGE:?set REDIS_IMAGE in docker/.env (see .env.example)}
     ports:
       - "6379:6379"
@@ -145,15 +99,15 @@ services:
     restart: on-failure
 
   backend:
-    container_name: bisheng-backend
-    image: ${BISHENG_BACKEND_IMAGE:?set BISHENG_BACKEND_IMAGE in docker/.env (see .env.example)}
+    container_name: doberman-agent-backend
+    image: ${DOBERMAN_AGENT_BACKEND_IMAGE:?set DOBERMAN_AGENT_BACKEND_IMAGE in docker/.env (see .env.example)}
     ports:
       - "7860:7860"
     environment:
       <<: *runtime-platform-env
       TZ: Asia/Shanghai
-      BISHENG_PRO: ${BISHENG_PRO:-false}
-      BISHENG_GATEWAY_HMAC_SECRET: ${BISHENG_GATEWAY_HMAC_SECRET:-}
+      DOBERMAN_AGENT_PRO: ${DOBERMAN_AGENT_PRO:-false}
+      DOBERMAN_AGENT_GATEWAY_HMAC_SECRET: ${DOBERMAN_AGENT_GATEWAY_HMAC_SECRET:-}
       BS_MILVUS_CONNECTION_ARGS: '{"host":"milvus","port":"19530","user":"","password":"","secure":false}'
       BS_MILVUS_IS_PARTITION: 'true'
       BS_MILVUS_PARTITION_SUFFIX: '1'
@@ -166,15 +120,15 @@ services:
       BS_MINIO_ACCESS_KEY: '${MINIO_ROOT_USER:?set MINIO_ROOT_USER and MINIO_ROOT_PASSWORD in docker/.env (see .env.example)}'
       BS_MINIO_SECRET_KEY: '${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_USER and MINIO_ROOT_PASSWORD in docker/.env (see .env.example)}'
       # Shared with code-runner-*; editor "run once" executes in this process.
-      BS_SANDBOX_CONF__TOKEN: ${SANDBOX_TOKEN:-bisheng-sandbox-local}
+      BS_SANDBOX_CONF__TOKEN: ${SANDBOX_TOKEN:-doberman-agent-sandbox-local}
       # One URL per replica. Adding code-runner-3 means appending its URL here.
       BS_SANDBOX_CONF__ENDPOINTS: '["http://code-runner-1:8080","http://code-runner-2:8080"]'
       # Run local code execution under a throwaway uid; set LOCAL_ISOLATION=off in .env to disable.
       BS_SANDBOX_CONF__LOCAL_ISOLATION: ${LOCAL_ISOLATION:-uid}
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/bisheng/config/config.yaml:/app/bisheng/config.yaml:ro
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/bisheng/entrypoint.sh:/app/entrypoint.sh:ro
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/data/bisheng:/app/data
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/doberman-agent/config/config.yaml:/app/doberman_agent/config.yaml:ro
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/doberman-agent/entrypoint.sh:/app/entrypoint.sh:ro
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/data/doberman-agent:/app/data
     security_opt:
       - seccomp:unconfined
     command: sh entrypoint.sh api  # 启动api服务
@@ -201,13 +155,13 @@ services:
         condition: service_started
 
   backend_worker:
-    container_name: bisheng-backend-worker
-    image: ${BISHENG_BACKEND_IMAGE:?set BISHENG_BACKEND_IMAGE in docker/.env (see .env.example)}
+    container_name: doberman-agent-backend-worker
+    image: ${DOBERMAN_AGENT_BACKEND_IMAGE:?set DOBERMAN_AGENT_BACKEND_IMAGE in docker/.env (see .env.example)}
     environment:
       <<: *runtime-platform-env
       TZ: Asia/Shanghai
-      BISHENG_PRO: ${BISHENG_PRO:-false}
-      BISHENG_GATEWAY_HMAC_SECRET: ${BISHENG_GATEWAY_HMAC_SECRET:-}
+      DOBERMAN_AGENT_PRO: ${DOBERMAN_AGENT_PRO:-false}
+      DOBERMAN_AGENT_GATEWAY_HMAC_SECRET: ${DOBERMAN_AGENT_GATEWAY_HMAC_SECRET:-}
       BS_MILVUS_CONNECTION_ARGS: '{"host":"milvus","port":"19530","user":"","password":"","secure":false}'
       BS_MILVUS_IS_PARTITION: 'true'
       BS_MILVUS_PARTITION_SUFFIX: '1'
@@ -220,15 +174,15 @@ services:
       BS_MINIO_ACCESS_KEY: '${MINIO_ROOT_USER:?set MINIO_ROOT_USER and MINIO_ROOT_PASSWORD in docker/.env (see .env.example)}'
       BS_MINIO_SECRET_KEY: '${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_USER and MINIO_ROOT_PASSWORD in docker/.env (see .env.example)}'
       # Shared with code-runner-*; override SANDBOX_TOKEN in .env for non-dev.
-      BS_SANDBOX_CONF__TOKEN: ${SANDBOX_TOKEN:-bisheng-sandbox-local}
+      BS_SANDBOX_CONF__TOKEN: ${SANDBOX_TOKEN:-doberman-agent-sandbox-local}
       # One URL per replica. Adding code-runner-3 means appending its URL here.
       BS_SANDBOX_CONF__ENDPOINTS: '["http://code-runner-1:8080","http://code-runner-2:8080"]'
       # Run local code execution under a throwaway uid; set LOCAL_ISOLATION=off in .env to disable.
       BS_SANDBOX_CONF__LOCAL_ISOLATION: ${LOCAL_ISOLATION:-uid}
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/bisheng/config/config.yaml:/app/bisheng/config.yaml:ro
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/bisheng/entrypoint.sh:/app/entrypoint.sh:ro
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/data/bisheng:/app/data
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/doberman-agent/config/config.yaml:/app/doberman_agent/config.yaml:ro
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/doberman-agent/entrypoint.sh:/app/entrypoint.sh:ro
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/data/doberman-agent:/app/data
     security_opt:
       - seccomp:unconfined
     command: sh entrypoint.sh worker  # 启动celery的异步worker服务，用来处理一些耗时的任务
@@ -250,21 +204,21 @@ services:
       # not a blocked mysql/redis healthcheck.
 
   frontend:
-    container_name: bisheng-frontend
-    image: ${BISHENG_FRONTEND_IMAGE:?set BISHENG_FRONTEND_IMAGE in docker/.env (see .env.example)}
+    container_name: doberman-agent-frontend
+    image: ${DOBERMAN_AGENT_FRONTEND_IMAGE:?set DOBERMAN_AGENT_FRONTEND_IMAGE in docker/.env (see .env.example)}
     ports:
       - "3001:3001"
     environment:
       TZ: Asia/Shanghai
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${BISHENG_NGINX_CONF_DIR:-./nginx/conf.d}:/etc/nginx/conf.d
+      - ${DOBERMAN_AGENT_NGINX_CONF_DIR:-./nginx/conf.d}:/etc/nginx/conf.d
     restart: on-failure
     depends_on:
       - backend
 
   elasticsearch:
-    container_name: bisheng-es
+    container_name: doberman-agent-es
     image: ${ELASTICSEARCH_IMAGE:?set ELASTICSEARCH_IMAGE in docker/.env (see .env.example)}
     user: root
     ports:
@@ -277,7 +231,7 @@ services:
     restart: on-failure
 
   etcd:
-    container_name: bisheng-milvus-etcd
+    container_name: doberman-agent-milvus-etcd
     image: ${ETCD_IMAGE:?set ETCD_IMAGE in docker/.env (see .env.example)}
     environment:
       ETCD_AUTO_COMPACTION_MODE: revision
@@ -296,7 +250,7 @@ services:
       retries: 3
 
   minio:
-    container_name: bisheng-milvus-minio
+    container_name: doberman-agent-milvus-minio
     image: ${MINIO_IMAGE:?set MINIO_IMAGE in docker/.env (see .env.example)}
     environment:
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER and MINIO_ROOT_PASSWORD in docker/.env (see .env.example)}
@@ -324,7 +278,7 @@ services:
       retries: 3
 
   milvus:
-    container_name: bisheng-milvus-standalone
+    container_name: doberman-agent-milvus-standalone
     image: ${MILVUS_IMAGE:?set MILVUS_IMAGE in docker/.env (see .env.example)}
     command: ["milvus", "run", "standalone"]
     security_opt:
@@ -362,37 +316,37 @@ services:
   # 四者都**不 publish 端口**：外部流量一律经 frontend 的 nginx 进来；
   # docker-socket-proxy 与 egress-proxy 更是连内网都只对本层可见。
   runtime-manager:
-    container_name: bisheng-runtime-manager
+    container_name: doberman-agent-runtime-manager
     profiles: [app-runtime]
-    image: ${BISHENG_RUNTIME_MANAGER_IMAGE:?set BISHENG_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
+    image: ${DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE:?set DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
     environment:
       TZ: Asia/Shanghai
       RTM_HOST: '0.0.0.0'
       RTM_PORT: '8091'
       RTM_PROTOCOL_VERSION: '2'
       RTM_RECONCILE_INTERVAL_SECONDS: '5'
-      RTM_NODE_ID: ${BISHENG_RUNTIME_NODE_ID:-docker-node-1}
+      RTM_NODE_ID: ${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}
       RTM_PLATFORM_KEY_ID: manager-node-1
-      RTM_PLATFORM_SECRET: ${BISHENG_RUNTIME_MANAGER_SECRET:-}
+      RTM_PLATFORM_SECRET: ${DOBERMAN_AGENT_RUNTIME_MANAGER_SECRET:-}
       RTM_INBOUND_KEY_ID: platform-control
-      RTM_INBOUND_SECRET: ${BISHENG_RUNTIME_CONTROL_SECRET:-}
+      RTM_INBOUND_SECRET: ${DOBERMAN_AGENT_RUNTIME_CONTROL_SECRET:-}
       RTM_PLATFORM_BASE_URL: 'http://backend:7860'
       RTM_DATA_ROOT: /app-data
-      RTM_HOST_DATA_ROOT: ${BISHENG_APP_DATA_ROOT:-/opt/bisheng/app-data}
+      RTM_HOST_DATA_ROOT: ${DOBERMAN_AGENT_APP_DATA_ROOT:-/opt/doberman-agent/app-data}
       RTM_DOCKER_HOST: 'tcp://docker-socket-proxy:2375'
-      RTM_NETWORK: bisheng-apps
-      RTM_DATA_HELPER_IMAGE: ${BISHENG_RUNTIME_MANAGER_IMAGE:?set BISHENG_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
+      RTM_NETWORK: doberman-agent-apps
+      RTM_DATA_HELPER_IMAGE: ${DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE:?set DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
       RTM_EGRESS_PROXY: 'egress-proxy:3128'
-      RTM_BUILD_NETWORK: bisheng-build
-      RTM_RESERVE_MB: ${BISHENG_RTM_RESERVE_MB:-2048}
-      RTM_OVERCOMMIT_RATIO: ${BISHENG_RTM_OVERCOMMIT_RATIO:-0.8}
-      RTM_BUILD_RESERVE_MB: ${BISHENG_RTM_BUILD_RESERVE_MB:-2048}
-      RTM_BUILD_INDEX_URL: ${BISHENG_RTM_BUILD_INDEX_URL:-}
-      RTM_BUILD_NPM_REGISTRY: ${BISHENG_RTM_BUILD_NPM_REGISTRY:-}
+      RTM_BUILD_NETWORK: doberman-agent-build
+      RTM_RESERVE_MB: ${DOBERMAN_AGENT_RTM_RESERVE_MB:-2048}
+      RTM_OVERCOMMIT_RATIO: ${DOBERMAN_AGENT_RTM_OVERCOMMIT_RATIO:-0.8}
+      RTM_BUILD_RESERVE_MB: ${DOBERMAN_AGENT_RTM_BUILD_RESERVE_MB:-2048}
+      RTM_BUILD_INDEX_URL: ${DOBERMAN_AGENT_RTM_BUILD_INDEX_URL:-}
+      RTM_BUILD_NPM_REGISTRY: ${DOBERMAN_AGENT_RTM_BUILD_NPM_REGISTRY:-}
       RTM_BUILD_EXTRA_INDEX_URL: 'http://backend:7860/api/v1/dev-toolkit/simple/'
       RTM_BUILD_EXTRA_TRUSTED_HOST: backend
-      RTM_IMAGE_PULL_POLICY: ${BISHENG_RUNTIME_IMAGE_PULL_POLICY:-never}
-      RTM_TASK_TIMEOUT_SECONDS: ${BISHENG_RUNTIME_TASK_TIMEOUT_SECONDS:-1800}
+      RTM_IMAGE_PULL_POLICY: ${DOBERMAN_AGENT_RUNTIME_IMAGE_PULL_POLICY:-never}
+      RTM_TASK_TIMEOUT_SECONDS: ${DOBERMAN_AGENT_RUNTIME_TASK_TIMEOUT_SECONDS:-1800}
       RTM_CLEANUP_SECONDS: '900'
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -402,14 +356,14 @@ services:
       # 源路径写成与 RTM_HOST_DATA_ROOT **逐字相同的表达式**，这样两者不可能漂移。
       # 不能沿用 ${DOCKER_VOLUME_DIRECTORY:-.}：它默认是相对路径 `.`，compose 自己
       # 会相对本文件解析，但作为环境变量原样传进去后 dockerd 只接受绝对路径。
-      - ${BISHENG_APP_DATA_ROOT:-/opt/bisheng/app-data}:/app-data
+      - ${DOBERMAN_AGENT_APP_DATA_ROOT:-/opt/doberman-agent/app-data}:/app-data
     networks:
       # default：backend reaches the authenticated manager API.
-      # bisheng-apps：启动探活是 manager 进程**直接 HTTP 访问应用容器在该网络上的
+      # doberman-agent-apps：启动探活是 manager 进程**直接 HTTP 访问应用容器在该网络上的
       # bridge IP**（probe.py:95），不在这张网上就永远探不通。
       - default
       - runtime-control
-      - bisheng-apps
+      - doberman-agent-apps
     depends_on:
       - docker-socket-proxy
     restart: on-failure
@@ -419,7 +373,7 @@ services:
   # tests/test_socket_proxy.py 逐字比对本段——改一边不改另一边测试就红。
   # **绝不 publish 端口**：谁够得到 2375 谁就是这台机器的 root。
   docker-socket-proxy:
-    container_name: bisheng-docker-socket-proxy
+    container_name: doberman-agent-docker-socket-proxy
     profiles: [app-runtime]
     image: ${DOCKER_SOCKET_PROXY_IMAGE:?set DOCKER_SOCKET_PROXY_IMAGE in docker/.env (see .env.example)}
     environment:
@@ -459,31 +413,31 @@ services:
 
   # D12 L2：托管应用出站的唯一出口。它自己就是 runtime-manager 那个镜像，跑
   # separate entry point; v2 reads bounded policies from backend.
-  # 它**同时**接在 bisheng-apps（--internal，应用只够得到它）与 default
+  # 它**同时**接在 doberman-agent-apps（--internal，应用只够得到它）与 default
   #（有默认路由，能真的出网）上——「内网 + 唯一出口」这句话的字面落点。
   egress-proxy:
-    container_name: bisheng-egress-proxy
+    container_name: doberman-agent-egress-proxy
     profiles: [app-runtime]
-    image: ${BISHENG_RUNTIME_MANAGER_IMAGE:?set BISHENG_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
+    image: ${DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE:?set DOBERMAN_AGENT_RUNTIME_MANAGER_IMAGE in docker/.env (see .env.example)}
     command: ["python", "-m", "runtime_manager.egress_proxy"]
     user: '10001:10001'
     read_only: true
     environment:
       TZ: Asia/Shanghai
       RTM_PROTOCOL_VERSION: '2'
-      RTM_NODE_ID: ${BISHENG_RUNTIME_NODE_ID:-docker-node-1}
+      RTM_NODE_ID: ${DOBERMAN_AGENT_RUNTIME_NODE_ID:-docker-node-1}
       RTM_PLATFORM_KEY_ID: egress-node-1
-      RTM_PLATFORM_SECRET: ${BISHENG_RUNTIME_EGRESS_SECRET:-}
+      RTM_PLATFORM_SECRET: ${DOBERMAN_AGENT_RUNTIME_EGRESS_SECRET:-}
       RTM_PLATFORM_BASE_URL: 'http://backend:7860'
       RTM_EGRESS_PROXY: 'egress-proxy:3128'
       RTM_EGRESS_LISTEN: '0.0.0.0:3128'
-    networks: [default, bisheng-apps, bisheng-build]
+    networks: [default, doberman-agent-apps, doberman-agent-build]
     restart: on-failure
 
   app-proxy:
-    container_name: bisheng-app-proxy
+    container_name: doberman-agent-app-proxy
     profiles: [app-runtime]
-    image: ${BISHENG_APP_PROXY_IMAGE:?set BISHENG_APP_PROXY_IMAGE in docker/.env (see .env.example)}
+    image: ${DOBERMAN_AGENT_APP_PROXY_IMAGE:?set DOBERMAN_AGENT_APP_PROXY_IMAGE in docker/.env (see .env.example)}
     environment:
       TZ: Asia/Shanghai
       APP_PROXY_HOST: '0.0.0.0'
@@ -491,24 +445,24 @@ services:
       APP_PROXY_PROTOCOL_VERSION: '2'
       APP_PROXY_WS_REAUTHORIZE_INTERVAL_SECONDS: '2'
       APP_PROXY_BACKEND_BASE: 'http://backend:7860'
-      APP_PROXY_BACKEND_SECRET: ${BISHENG_APP_PROXY_HMAC_SECRET:-}
+      APP_PROXY_BACKEND_SECRET: ${DOBERMAN_AGENT_APP_PROXY_HMAC_SECRET:-}
       APP_PROXY_ROUTE_KEY_ID: entry-reader
-      APP_PROXY_ROUTE_SECRET: ${BISHENG_RUNTIME_ENTRY_SECRET:-}
+      APP_PROXY_ROUTE_SECRET: ${DOBERMAN_AGENT_RUNTIME_ENTRY_SECRET:-}
     networks:
       # default：nginx 用 `app-proxy` 这个服务名做变量式 upstream 解析
       #（docker/nginx/conf.d/default.conf:65-67），backend 也在这张网上。
-      # bisheng-apps：它拿到的 upstream 是应用容器的 bridge IP（design D5.1），
+      # doberman-agent-apps：它拿到的 upstream 是应用容器的 bridge IP（design D5.1），
       # 跨 bridge 网络会被 docker 的隔离规则丢包，必须同网。
       - default
-      - bisheng-apps
+      - doberman-agent-apps
     depends_on: [backend]
     restart: on-failure
 
   # Named replicas (not deploy.replicas). Platform endpoints list each of these.
   # No ports: — isolation is network unreachability, not hiding a host port.
   code-runner-1: &code_runner
-    image: ${BISHENG_SANDBOX_IMAGE:?set BISHENG_SANDBOX_IMAGE in docker/.env (see .env.example)}
-    container_name: bisheng-code-runner-1
+    image: ${DOBERMAN_AGENT_SANDBOX_IMAGE:?set DOBERMAN_AGENT_SANDBOX_IMAGE in docker/.env (see .env.example)}
+    container_name: doberman-agent-code-runner-1
     # Isolation mode (sessions > 1): the runner is root so it can chown/setuid per session.
     # User code still drops via SETUID. DAC_OVERRIDE is required while the runner
     # chowns the session dir at lease create (copy-in into 0700/uid 10000).
@@ -550,7 +504,7 @@ services:
       - "find /sessions -mindepth 1 -delete || echo 'sandbox: stale session cleanup failed' >&2; exec python serve.py"
     environment:
       TZ: Asia/Shanghai
-      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-bisheng-sandbox-local}
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-doberman-agent-sandbox-local}
       SANDBOX_SESSIONS_ROOT: /sessions
       SANDBOX_MAX_SESSIONS: "50"
       # Total bytes copied into one session (512 MiB); files past it are skipped and reported.
@@ -563,7 +517,7 @@ services:
 
   code-runner-2:
     <<: *code_runner
-    container_name: bisheng-code-runner-2
+    container_name: doberman-agent-code-runner-2
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/data/sandbox/code-runner-2:/sessions
 
@@ -572,9 +526,9 @@ services:
 # 它绝不自己建——一个会偷偷建网的编排器会把"新机器上第一次发布必挂"这件事藏起来。
 # 那么 compose 形态下的"部署方"就是这个文件。
 #
-# `name:` 必须显式写死：compose 默认会加项目名前缀（docker_bisheng-apps），而
+# `name:` 必须显式写死：compose 默认会加项目名前缀（docker_doberman-agent-apps），而
 # runtime-manager 是用裸 Docker API 建应用容器的，NetworkMode 取的是
-# RTM_NETWORK / DEFAULT_NETWORK = `bisheng-apps` 这个真名，对不上就 404 network
+# RTM_NETWORK / DEFAULT_NETWORK = `doberman-agent-apps` 这个真名，对不上就 404 network
 # not found，每次 deploy 都失败。
 #
 # 两个 service 都显式列了 `networks:`，这是有意的：一旦给 service 写了 networks，
@@ -583,27 +537,27 @@ services:
 #
 # `internal: true` = D12 的 L1（AC-16）。接在这张网上的容器**没有默认路由**，
 # 所以托管应用连不上外网；唯一出口是同时接了 default 的 egress-proxy。
-# ⚠️ 这个属性只在建网时生效：升级到本版本的环境里 `bisheng-apps` 已经存在且
+# ⚠️ 这个属性只在建网时生效：升级到本版本的环境里 `doberman-agent-apps` 已经存在且
 # 不是 internal，compose 不会去改它，`runtime/status` 的
 # `application_network_internal` 会判红并给出重建命令。删网前要先停掉全部
 # 托管应用（网络在用时删不掉）。
 networks:
   default:
-    name: ${BISHENG_NETWORK_NAME:-bisheng-network}
+    name: ${DOBERMAN_AGENT_NETWORK_NAME:-doberman-agent-network}
     driver: bridge
   runtime-control:
-    name: bisheng-runtime-control
+    name: doberman-agent-runtime-control
     driver: bridge
     internal: true
-  bisheng-apps:
-    name: bisheng-apps
+  doberman-agent-apps:
+    name: doberman-agent-apps
     driver: bridge
     internal: true
   # 构建期专用（RTM_BUILD_NETWORK）。同样 --internal：`docker build` 拿到的
   # HTTP_PROXY build arg 因此不是「建议」——忽略它的 Dockerfile 根本没有路由。
   # 只有 egress-proxy 在这张网上，构建容器连 runtime-manager 都够不到。
-  bisheng-build:
-    name: bisheng-build
+  doberman-agent-build:
+    name: doberman-agent-build
     driver: bridge
     internal: true
   # User code shares the runner network namespace. Not internal, so the
@@ -612,6 +566,6 @@ networks:
   # `internal` only when the network is created; an existing internal
   # sandbox_net stays closed until it is recreated.
   sandbox_net:
-    name: bisheng-sandbox
+    name: doberman-agent-sandbox
     driver: bridge
     internal: false

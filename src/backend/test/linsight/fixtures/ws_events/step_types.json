@@ -7,7 +7,7 @@
     {
       "event_type": "task_execute_step",
       "data": {
-        "call_id": "call_tool_01", "task_id": "a1b2c3d4", "name": "bisheng_code_interpreter",
+        "call_id": "call_tool_01", "task_id": "a1b2c3d4", "name": "doberman_agent_code_interpreter",
         "step_type": "tool", "status": "start", "call_reason": "运行 Python 计算同比增长率",
         "params": {"code": "import pandas as pd; ...", "required_files": ["scratch/raw_metrics.csv"]},
         "output": null, "extra_info": {"truncated": false}
@@ -17,7 +17,7 @@
     {
       "event_type": "task_execute_step",
       "data": {
-        "call_id": "call_tool_01", "task_id": "a1b2c3d4", "name": "bisheng_code_interpreter",
+        "call_id": "call_tool_01", "task_id": "a1b2c3d4", "name": "doberman_agent_code_interpreter",
         "step_type": "tool", "status": "end", "call_reason": "运行 Python 计算同比增长率",
         "params": {"code": "import pandas as pd; ...", "required_files": ["scratch/raw_metrics.csv"]},
         "output": "yoy=18.2%\nnew_files=[{\"path\":\"output/chart.png\",\"size\":51200,\"is_product\":true}]",

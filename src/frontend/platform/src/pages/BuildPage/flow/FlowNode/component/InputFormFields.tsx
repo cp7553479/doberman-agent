@@ -1,10 +1,10 @@
-import { Input, Select } from '@bisheng/ui';
+import { Input, Select } from '@doberman-agent/ui';
 import type { UploadFileKind } from "@/util/fileAcceptUtils";
 
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { AppHint as QuestionTooltip } from "@/pages/BuildPage/components/AppHint";
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 import { useTranslation } from "react-i18next";
 import DragOptions from "./DragOptions";
 import FileTypeSelect from "./FileTypeSelect";
@@ -34,7 +34,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
     const selectLabels = useSelectLabels();
     const InputForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -61,7 +61,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
             {errors.displayName && <p className="text-red-500 text-sm">{errors.displayName}</p>}
         </div>
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("variableName")}
                 <QuestionTooltip content={t("variableNameTooltip")} />
             </Label>
@@ -69,7 +69,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
             {errors.variableName && <p className="text-red-500 text-sm">{errors.variableName}</p>}
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -79,7 +79,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
     // select from
     const SelectForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -87,7 +87,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
             {errors.displayName && <p className="text-red-500 text-sm">{errors.displayName}</p>}
         </div>
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("variableName")}
                 <QuestionTooltip content={t("variableNameTooltip")} />
             </Label>
@@ -95,19 +95,19 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
             {errors.variableName && <p className="text-red-500 text-sm">{errors.variableName}</p>}
         </div>
         <div>
-            <Label className="bisheng-label">{t("options")}</Label>
+            <Label className="doberman_agent-label">{t("options")}</Label>
             <DragOptions edit scroll options={formData.options} onChange={updateOptions} />
             {errors.options && <p className="text-red-500 text-sm">{errors.options}</p>}
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('allowMultipleSelect')}</Label>
+            <Label className="doberman_agent-label">{t('allowMultipleSelect')}</Label>
             <Switch
                 checked={formData.allowMultiple}
                 onCheckedChange={(checked) => setFormData({ ...formData, allowMultiple: checked })}
             />
         </div>
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -117,7 +117,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
     // file form
     const FileForm = <div className="space-y-4">
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("displayName")}
                 <QuestionTooltip content={t("displayNameTooltip")} />
             </Label>
@@ -126,7 +126,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
         </div>
 
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('isRequired')}</Label>
+            <Label className="doberman_agent-label">{t('isRequired')}</Label>
             <Switch
                 checked={formData.isRequired}
                 onCheckedChange={(checked) => setFormData({ ...formData, isRequired: checked })}
@@ -134,7 +134,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
         </div>
 
         <div className="flex items-center space-x-2">
-            <Label className="bisheng-label">{t('allowUploadMultipleFiles')}</Label>
+            <Label className="doberman_agent-label">{t('allowUploadMultipleFiles')}</Label>
             <Switch
                 checked={formData.isMultiple}
                 onCheckedChange={(checked) => setFormData({ ...formData, isMultiple: checked })}
@@ -151,7 +151,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
 
         {}
         <div>
-            <Label className="flex items-center bisheng-label">
+            <Label className="flex items-center doberman_agent-label">
                 {t("fileProcessingStrategy")}
                 <QuestionTooltip
                     content={
@@ -178,7 +178,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
         {}
         {shouldShowField('tempKnowledge') && (
             <div>
-                <Label className="flex items-center bisheng-label">
+                <Label className="flex items-center doberman_agent-label">
                     {t('tempKnowledgeBaseName')}
 
                     <QuestionTooltip content={t('tempKnowledgeBaseNameTip')} />
@@ -203,7 +203,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
                     onChange={(fileContentSize: number) => setFormData({ ...formData, fileContentSize })}
                 />
                 <div>
-                    <Label className="flex items-center bisheng-label">
+                    <Label className="flex items-center doberman_agent-label">
                         {t("parseResultName")}
                         <QuestionTooltip content={t("storeVariableName")} />
                     </Label>
@@ -217,7 +217,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
         {}
         {shouldShowField('imageFile') && (
             <div>
-                <Label className="flex items-center bisheng-label">
+                <Label className="flex items-center doberman_agent-label">
                     {t("imageVariableName")}
                     <QuestionTooltip content={t('extractImages')} />
                 </Label>
@@ -229,7 +229,7 @@ export function InputFormFields({ formData, setFormData, errors, nodeId, nodeDat
         {}
         {shouldShowField('filePath') && (
             <div>
-                <Label className="flex items-center bisheng-label">
+                <Label className="flex items-center doberman_agent-label">
                     {t("filePathName")}
                     <QuestionTooltip content={t('storeUploadFiles')} />
                 </Label>

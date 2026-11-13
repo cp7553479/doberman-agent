@@ -1,6 +1,6 @@
 import { useRecoilState } from 'recoil';
 import HoverCardSettings from '~/components/Nav/SettingsTabs/HoverCardSettings';
-import { Switch } from '@bisheng/ui';
+import { Switch } from '@doberman-agent/ui';
 import { useLocalize } from '~/hooks';
 import store from '~/store';
 

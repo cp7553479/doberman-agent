@@ -1,4 +1,4 @@
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table";
 import { getDshAuditRecords } from "@/controllers/API/dshAudit";
@@ -10,7 +10,7 @@ import {
   type DshAuditRecord,
   type DshAuditValues,
 } from "@/types/dshAudit";
-import { Tag } from "@bisheng/ui";
+import { Tag } from "@doberman-agent/ui";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DshChoice, DshPager } from "./common";

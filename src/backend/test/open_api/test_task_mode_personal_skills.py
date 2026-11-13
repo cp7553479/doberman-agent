@@ -7,13 +7,13 @@ from contextlib import asynccontextmanager
 
 import pytest
 
-import bisheng.linsight.domain.models.linsight_skill as model_module
-from bisheng.common.errcode.open_api import OpenApiTaskSkillUnavailableError
-from bisheng.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
-from bisheng.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
-from bisheng.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
-from bisheng.open_api.domain.services.task_mode_service import OpenTaskModeService
+import doberman_agent.linsight.domain.models.linsight_skill as model_module
+from doberman_agent.common.errcode.open_api import OpenApiTaskSkillUnavailableError
+from doberman_agent.core.context.tenant import bypass_tenant_filter, set_current_tenant_id
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill, LinsightSkillDao
+from doberman_agent.open_api.domain.schemas.task_mode import OpenTaskSubmitReq
+from doberman_agent.open_api.domain.schemas.workstation import OpenDailyChatCompletionReq
+from doberman_agent.open_api.domain.services.task_mode_service import OpenTaskModeService
 
 TENANT = 5
 USER = 11
@@ -42,7 +42,7 @@ async def skills(monkeypatch):
     from sqlalchemy.pool import StaticPool
     from sqlmodel.ext.asyncio.session import AsyncSession
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     engine = create_async_engine(
         "sqlite+aiosqlite://",
@@ -69,14 +69,14 @@ async def skills(monkeypatch):
     tenant_filter.register_tenant_filter_events()
     set_current_tenant_id(TENANT)
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
+        "doberman_agent.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
         AsyncMock(return_value=set()),
     )
 
     async def permitted(_user, *, resource_ids, **kwargs):
         return {str(skill_id): {"use"} for skill_id in resource_ids}
 
-    monkeypatch.setattr("bisheng.permission.application.business_authorization.batch_check_business_actions", permitted)
+    monkeypatch.setattr("doberman_agent.permission.application.business_authorization.batch_check_business_actions", permitted)
     with bypass_tenant_filter():
         await LinsightSkillDao.create(_row("pdf", 0, display="企业报告"))
         await LinsightSkillDao.create(_row("he-tong", 0, display="合同审阅"))
@@ -137,7 +137,7 @@ class TestTaskModePersonalSkills:
 async def test_open_api_honors_per_account_availability(skills, monkeypatch):
     personal = await LinsightSkillDao.get_by_name("pdf", owner_user_id=USER)
     monkeypatch.setattr(
-        "bisheng.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
+        "doberman_agent.linsight.domain.services.user_skills.SkillAvailabilityRepository.disabled_ids",
         AsyncMock(return_value={personal.id}),
     )
     rows = await OpenTaskModeService.enabled_skill_rows(SimpleNamespace(user_id=USER))
@@ -146,6 +146,6 @@ async def test_open_api_honors_per_account_availability(skills, monkeypatch):
 
 async def test_open_api_filters_revoked_personal_permission(skills, monkeypatch):
     monkeypatch.setattr(
-        "bisheng.permission.application.business_authorization.batch_check_business_actions", AsyncMock(return_value={})
+        "doberman_agent.permission.application.business_authorization.batch_check_business_actions", AsyncMock(return_value={})
     )
     assert await OpenTaskModeService.enabled_skill_rows(SimpleNamespace(user_id=USER)) == []

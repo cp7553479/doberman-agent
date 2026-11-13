@@ -43,7 +43,7 @@ body {
 }
 
 /**
- * Docs content typography = the BiSheng type spec, applied to itself.
+ * Docs content typography = the DobermanAgent type spec, applied to itself.
  *
  * This spec site must render by its own rules, so the doc body pulls the SAME
  * semantic type tokens (defined in src/style.css :root, driven by
@@ -282,7 +282,7 @@ body {
 
 /**
  * Site chrome (top nav / left sidebar / right TOC) — drive rspress's own
- * theme tokens (--rp-*) from the BiSheng design tokens instead of rspress
+ * theme tokens (--rp-*) from the DobermanAgent design tokens instead of rspress
  * defaults (#213547 text, #0095ff brand, Inter, #fff bg).
  *
  * `!important` because rspress redeclares --rp-* under its dark theme; our
@@ -321,7 +321,7 @@ body {
   --rp-c-brand-lighter: rgb(var(--brand-300)) !important;
   --rp-c-brand-tint: rgb(var(--brand-500) / 0.12) !important;
 
-  /* Type stacks = BiSheng font-family tokens (system + CJK).
+  /* Type stacks = DobermanAgent font-family tokens (system + CJK).
      --bs-font-mono is the SINGLE SOURCE for the mono stack (font-family-mono in
      the type spec): --rp-font-family-mono below, the .rspress-doc code rule, and
      the spec pages' inline code blocks all reference it — change the stack here
@@ -335,7 +335,7 @@ body {
   --rp-font-family-mono: var(--bs-font-mono) !important;
 }
 
-/* Chrome font sizes → BiSheng type scale (rspress hardcodes 16px). Containers
+/* Chrome font sizes → DobermanAgent type scale (rspress hardcodes 16px). Containers
    + the stable rspress link classes; sizes flow to inner text that inherits. */
 .rspress-nav,
 .rspress-nav a,

@@ -7,19 +7,19 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.core.context.tenant import (
+from doberman_agent.core.context.tenant import (
     current_tenant_id,
     get_current_tenant_id,
 )
-from bisheng.linsight.domain import task_exec
-from bisheng.linsight.domain.models.linsight_skill import LinsightSkill
-from bisheng.linsight.domain.schemas.skill_schema import SkillCreateForm
-from bisheng.linsight.domain.services import skill_service as skill_module
-from bisheng.linsight.domain.services.skill_service import SkillService
+from doberman_agent.linsight.domain import task_exec
+from doberman_agent.linsight.domain.models.linsight_skill import LinsightSkill
+from doberman_agent.linsight.domain.schemas.skill_schema import SkillCreateForm
+from doberman_agent.linsight.domain.services import skill_service as skill_module
+from doberman_agent.linsight.domain.services.skill_service import SkillService
 from test.linsight.fixtures.fake_minio import FakeMinioStorage
 
-from bisheng.linsight.domain.services.skill_store import SkillStore
-from bisheng.linsight.worker import encode_queue_item, parse_queue_item
+from doberman_agent.linsight.domain.services.skill_store import SkillStore
+from doberman_agent.linsight.worker import encode_queue_item, parse_queue_item
 
 
 class _RuntimeManager:

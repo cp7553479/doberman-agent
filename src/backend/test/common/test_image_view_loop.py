@@ -11,43 +11,43 @@ from unittest.mock import AsyncMock
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
-from bisheng.common.image_view.loop import (
+from doberman_agent.common.image_view.loop import (
     IMAGE_VIEW_PROMPT_RULES,
     image_view_configured,
     prepare_vision_messages,
     resolve_image_view_llm,
     suggest_image_ids,
 )
-from bisheng.common.image_view.relocate import relocate_images_to_human
+from doberman_agent.common.image_view.relocate import relocate_images_to_human
 
 _DATA_URI = "data:image/png;base64,aaa"
 
 _OPENING_HANDBOOK = """
 首钢集团司库系统账户管理模块用户操作手册
-![cover](/bisheng/knowledge/images/1/6/image_1_3.jpeg)⟦img#1⟧
-![logo](/bisheng/knowledge/images/1/6/image_1_1.jpeg)⟦img#2⟧
+![cover](/doberman_agent/knowledge/images/1/6/image_1_3.jpeg)⟦img#1⟧
+![logo](/doberman_agent/knowledge/images/1/6/image_1_1.jpeg)⟦img#2⟧
 目录
 1.1.1 开户申请..................................................................1
 
 1.1.1.开户申请
 成员单位去合作金融机构开立账户前，需提交账户申请。经办人在账户开户申请界面可查询单据。
 管控要点：
-![ctrl](/bisheng/knowledge/images/1/6/image_3_4.jpeg)⟦img#4⟧
+![ctrl](/doberman_agent/knowledge/images/1/6/image_3_4.jpeg)⟦img#4⟧
 操作路径：司库管理 事项申请
-![path](/bisheng/knowledge/images/1/6/image_4_9.jpeg)⟦img#6⟧
+![path](/doberman_agent/knowledge/images/1/6/image_4_9.jpeg)⟦img#6⟧
 操作路径：司库管理 银行账户 开户申请（查看已审批的账户开户申请单）
-![list](/bisheng/knowledge/images/1/6/image_4_10.jpeg)⟦img#9⟧
+![list](/doberman_agent/knowledge/images/1/6/image_4_10.jpeg)⟦img#9⟧
 点击单据号可查看开户申请详情：
-![form](/bisheng/knowledge/images/1/6/image_4_8.jpeg)⟦img#10⟧
+![form](/doberman_agent/knowledge/images/1/6/image_4_8.jpeg)⟦img#10⟧
 
 1.1.2.开户登记
 选中单据点击待登记，检查登记表单信息，点击保存并提交：
-![register](/bisheng/knowledge/images/1/6/image_6_14.jpeg)⟦img#14⟧
+![register](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)⟦img#14⟧
 
 1.3.1.销户申请
 经办人在账户销户申请界面可查询单据。
 操作路径：司库管理 银行账户 销户申请
-![close](/bisheng/knowledge/images/1/6/image_10_28.jpeg)⟦img#28⟧
+![close](/doberman_agent/knowledge/images/1/6/image_10_28.jpeg)⟦img#28⟧
 """
 
 
@@ -145,8 +145,8 @@ def test_viewed_images_human_does_not_poison_pick_toward_last_url():
     context = (
         _OPENING_HANDBOOK
         + "\n2.3 U盾注销\n操作路径：司库管理 银行账户 网银U盾注销\n"
-        + "![usb](/bisheng/knowledge/images/1/6/image_20_69.jpeg)⟦img#65⟧\n"
-        + "![usb2](/bisheng/knowledge/images/1/6/image_20_70.jpeg)⟦img#66⟧\n"
+        + "![usb](/doberman_agent/knowledge/images/1/6/image_20_69.jpeg)⟦img#65⟧\n"
+        + "![usb2](/doberman_agent/knowledge/images/1/6/image_20_70.jpeg)⟦img#66⟧\n"
     )
     messages = [
         SystemMessage(content="base system"),
@@ -169,7 +169,7 @@ def test_viewed_images_human_does_not_poison_pick_toward_last_url():
 
 
 def test_failed_view_observation_is_not_treated_as_pixels_seen():
-    from bisheng.common.image_view.loop import pixels_were_viewed
+    from doberman_agent.common.image_view.loop import pixels_were_viewed
 
     failed = [
         HumanMessage(content="把开户登记界面说明相关的图片显示出来"),
@@ -186,19 +186,19 @@ def test_failed_view_observation_is_not_treated_as_pixels_seen():
 _REGISTER_VS_USB = """
 1.1.2.开户登记
 待登记或已经登记的单据信息，经办人对开户登记单据进行查看、删除、退回、提交。
-![a](/bisheng/knowledge/images/1/6/image_5_11.jpeg)⟦img#5⟧
-![b](/bisheng/knowledge/images/1/6/image_5_12.jpeg)⟦img#6⟧
+![a](/doberman_agent/knowledge/images/1/6/image_5_11.jpeg)⟦img#5⟧
+![b](/doberman_agent/knowledge/images/1/6/image_5_12.jpeg)⟦img#6⟧
 操作路径：司库管理 银行账户 开户登记
-![c](/bisheng/knowledge/images/1/6/image_6_13.jpeg)⟦img#7⟧
+![c](/doberman_agent/knowledge/images/1/6/image_6_13.jpeg)⟦img#7⟧
 选中单据点击待登记，检查登记表单信息，点击保存并提交：
-![d](/bisheng/knowledge/images/1/6/image_6_14.jpeg)⟦img#8⟧
+![d](/doberman_agent/knowledge/images/1/6/image_6_14.jpeg)⟦img#8⟧
 1.6 账户可视状态管理
 账户银行开户登记完成后，由财务公司系统办理账户可视状态变更。
-![vis](/bisheng/knowledge/images/1/6/image_15_46.jpeg)⟦img#27⟧
+![vis](/doberman_agent/knowledge/images/1/6/image_15_46.jpeg)⟦img#27⟧
 2.1 U盾登记
 经办人在网银U盾登记界面，可查询当前经办人操作的登记单记录。
-![usb1](/bisheng/knowledge/images/1/6/image_18_59.jpeg)⟦img#32⟧
-![usb2](/bisheng/knowledge/images/1/6/image_18_60.jpeg)⟦img#33⟧
+![usb1](/doberman_agent/knowledge/images/1/6/image_18_59.jpeg)⟦img#32⟧
+![usb2](/doberman_agent/knowledge/images/1/6/image_18_60.jpeg)⟦img#33⟧
 操作路径：司库管理 银行账户 网银U盾登记
 """
 
@@ -224,12 +224,12 @@ def test_suggest_skips_already_failed_too_small_ids():
 async def test_image_view_configured_reads_workbench_image_read_model(monkeypatch):
     workbench = SimpleNamespace(image_read_model=SimpleNamespace(id="6"))
     monkeypatch.setattr(
-        "bisheng.llm.domain.services.llm.LLMService.get_workbench_llm",
+        "doberman_agent.llm.domain.services.llm.LLMService.get_workbench_llm",
         AsyncMock(return_value=workbench),
     )
     llm_factory = AsyncMock(return_value="vision-llm")
     monkeypatch.setattr(
-        "bisheng.llm.domain.services.llm.LLMService.get_bisheng_llm",
+        "doberman_agent.llm.domain.services.llm.LLMService.get_doberman_agent_llm",
         llm_factory,
     )
     assert await image_view_configured() is True

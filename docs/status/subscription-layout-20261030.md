@@ -12,7 +12,7 @@
 ## 版本与验证
 
 - 初始基线：`1954f60c4acba5de5cca5e9385b76fc6b21effc0`。
-- 提交基线：`dataelement/bisheng:feat/bisheng-work-120-main@250fdce4cdc2ad7f0ba85c1d4ae18d9fdebba183`。两版基线的订阅首页与共享模块框架一致。
+- 提交基线：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main@250fdce4cdc2ad7f0ba85c1d4ae18d9fdebba183`。两版基线的订阅首页与共享模块框架一致。
 - macOS Electron 43.0.0 中渲染实际 `ChannelHomePage`、共享组件与项目 Tailwind 样式；业务 Hook 和日期服务使用固定示例。
 - 内容窗口 960 / 720 / 480 / 320px × zoom 100% / 125% / 150% × 示例频道 / 多频道长标题 / 空列表：原版与调整版共 72 组采样，调整版 36 组边界和交互回调检查通过。
 - 每组校验实际视口宽度；调整版与原版的字体、字号、字重、行高、编号和分隔线计算样式一致。
@@ -23,8 +23,6 @@
 
 原版：
 
-![原版](assets/subscription-layout-20261030/baseline-960.png)
+
 
 调整版：
-
-![调整版](assets/subscription-layout-20261030/fixed-960.png)

@@ -10,8 +10,8 @@ from dataclasses import replace
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionModelStateConflictError
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.common.errcode.permission import PermissionModelStateConflictError
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,

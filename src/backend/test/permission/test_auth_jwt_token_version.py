@@ -23,12 +23,12 @@ def auth_jwt_instance(monkeypatch):
     ``config_service.settings`` alone is not enough — we patch the auth
     module's own binding too.
     """
-    from bisheng.common.services import config_service as cs
-    from bisheng.user.domain.services import auth as auth_mod
+    from doberman_agent.common.services import config_service as cs
+    from doberman_agent.user.domain.services import auth as auth_mod
 
     mock_cookie = MagicMock()
     mock_cookie.jwt_token_expire_time = 3600
-    mock_cookie.jwt_iss = 'bisheng-test'
+    mock_cookie.jwt_iss = 'doberman-agent-test'
     mock_settings = SimpleNamespace(
         jwt_secret='unit-test-secret',
         cookie_conf=mock_cookie,
@@ -50,7 +50,7 @@ class TestJWTPayload:
         token = auth_jwt_instance.create_access_token(subject=payload)
         decoded = jwt.decode(
             token, 'unit-test-secret',
-            issuer='bisheng-test', algorithms=['HS256'],
+            issuer='doberman-agent-test', algorithms=['HS256'],
         )
         subject = json.loads(decoded['sub'])
         assert subject['token_version'] == 3
@@ -71,7 +71,7 @@ class TestLoginUserField:
 
     def test_defaults_zero_when_absent(self, monkeypatch):
         # Stub UserRoleDao so __init__ does not touch the DB.
-        from bisheng.user.domain.services import auth as auth_mod
+        from doberman_agent.user.domain.services import auth as auth_mod
         monkeypatch.setattr(
             auth_mod.UserRoleDao,
             'get_user_roles',
@@ -81,7 +81,7 @@ class TestLoginUserField:
         assert user.token_version == 0
 
     def test_reads_explicit_value(self, monkeypatch):
-        from bisheng.user.domain.services import auth as auth_mod
+        from doberman_agent.user.domain.services import auth as auth_mod
         monkeypatch.setattr(
             auth_mod.UserRoleDao,
             'get_user_roles',
@@ -98,7 +98,7 @@ class TestCreateAccessTokenClassmethod:
     """Verify the classmethod helper injects token_version correctly."""
 
     def test_reads_token_version_from_user(self, auth_jwt_instance, monkeypatch):
-        from bisheng.user.domain.services import auth as auth_mod
+        from doberman_agent.user.domain.services import auth as auth_mod
         monkeypatch.setattr(
             auth_mod.UserRoleDao, 'get_user_roles', lambda uid: [],
         )
@@ -110,7 +110,7 @@ class TestCreateAccessTokenClassmethod:
         )
         subject = json.loads(jwt.decode(
             token, 'unit-test-secret',
-            issuer='bisheng-test', algorithms=['HS256'],
+            issuer='doberman-agent-test', algorithms=['HS256'],
         )['sub'])
         assert subject['token_version'] == 7
         assert subject['tenant_id'] == 5
@@ -119,7 +119,7 @@ class TestCreateAccessTokenClassmethod:
         self, auth_jwt_instance, monkeypatch,
     ):
         """v2.5.0 User objects without ``token_version`` → payload carries 0."""
-        from bisheng.user.domain.services import auth as auth_mod
+        from doberman_agent.user.domain.services import auth as auth_mod
         monkeypatch.setattr(
             auth_mod.UserRoleDao, 'get_user_roles', lambda uid: [],
         )
@@ -129,14 +129,14 @@ class TestCreateAccessTokenClassmethod:
         )
         subject = json.loads(jwt.decode(
             token, 'unit-test-secret',
-            issuer='bisheng-test', algorithms=['HS256'],
+            issuer='doberman-agent-test', algorithms=['HS256'],
         )['sub'])
         assert subject['token_version'] == 0
 
     def test_explicit_token_version_overrides_user_attr(
         self, auth_jwt_instance, monkeypatch,
     ):
-        from bisheng.user.domain.services import auth as auth_mod
+        from doberman_agent.user.domain.services import auth as auth_mod
         monkeypatch.setattr(
             auth_mod.UserRoleDao, 'get_user_roles', lambda uid: [],
         )
@@ -149,6 +149,6 @@ class TestCreateAccessTokenClassmethod:
         )
         subject = json.loads(jwt.decode(
             token, 'unit-test-secret',
-            issuer='bisheng-test', algorithms=['HS256'],
+            issuer='doberman-agent-test', algorithms=['HS256'],
         )['sub'])
         assert subject['token_version'] == 99

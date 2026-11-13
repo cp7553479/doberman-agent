@@ -27,7 +27,7 @@ class TestLargeText:
     def test_mysql_returns_longtext(self):
         from sqlalchemy.dialects.mysql import LONGTEXT
 
-        from bisheng.core.database.dialect_helpers import LargeText
+        from doberman_agent.core.database.dialect_helpers import LargeText
 
         lt = LargeText()
         result = lt.load_dialect_impl(self._make_dialect("mysql"))
@@ -36,7 +36,7 @@ class TestLargeText:
     def test_dm_returns_clob(self):
         from sqlalchemy import CLOB
 
-        from bisheng.core.database.dialect_helpers import LargeText
+        from doberman_agent.core.database.dialect_helpers import LargeText
 
         lt = LargeText()
         result = lt.load_dialect_impl(self._make_dialect("dm"))
@@ -45,14 +45,14 @@ class TestLargeText:
     def test_sqlite_returns_text(self):
         from sqlalchemy import Text
 
-        from bisheng.core.database.dialect_helpers import LargeText
+        from doberman_agent.core.database.dialect_helpers import LargeText
 
         lt = LargeText()
         result = lt.load_dialect_impl(self._make_dialect("sqlite"))
         assert isinstance(result, Text)
 
     def test_cache_ok_is_true(self):
-        from bisheng.core.database.dialect_helpers import LargeText
+        from doberman_agent.core.database.dialect_helpers import LargeText
 
         assert LargeText.cache_ok is True
 
@@ -70,25 +70,25 @@ class TestTableExists:
         return conn, insp
 
     def test_returns_true_when_table_found(self):
-        from bisheng.core.database.dialect_helpers import table_exists
+        from doberman_agent.core.database.dialect_helpers import table_exists
 
         conn, insp = self._make_conn(True)
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert table_exists(conn, "my_table") is True
             insp.has_table.assert_called_once_with("my_table")
 
     def test_returns_false_when_table_missing(self):
-        from bisheng.core.database.dialect_helpers import table_exists
+        from doberman_agent.core.database.dialect_helpers import table_exists
 
         conn, insp = self._make_conn(False)
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert table_exists(conn, "no_table") is False
 
     def test_raises_when_all_case_candidates_fail(self):
-        from bisheng.core.database.dialect_helpers import table_exists
+        from doberman_agent.core.database.dialect_helpers import table_exists
 
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", side_effect=Exception("boom")):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", side_effect=Exception("boom")):
             with pytest.raises(Exception, match="boom"):
                 table_exists(conn, "any")
 
@@ -106,39 +106,39 @@ class TestColumnExists:
         return conn, insp
 
     def test_returns_true_when_column_found(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn, insp = self._make_conn([{"name": "id"}, {"name": "tenant_id"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert column_exists(conn, "flow", "tenant_id") is True
 
     def test_case_insensitive(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn, insp = self._make_conn([{"name": "TenantId"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert column_exists(conn, "flow", "tenantid") is True
 
     def test_returns_false_when_column_missing(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn, insp = self._make_conn([{"name": "id"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert column_exists(conn, "flow", "visibility") is False
 
     def test_raises_when_reflection_fails(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn = MagicMock()
         with patch(
-            "bisheng.core.database.dialect_helpers.inspect",
+            "doberman_agent.core.database.dialect_helpers.inspect",
             side_effect=Exception("reflection denied"),
         ):
             with pytest.raises(Exception, match="reflection denied"):
                 column_exists(conn, "flow", "col")
 
     def test_dm_reads_visible_catalog_without_inspector(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn = _make_dm_conn(
             {
@@ -149,7 +149,7 @@ class TestColumnExists:
                 "NULLABLE": "Y",
             }
         )
-        with patch("bisheng.core.database.dialect_helpers.inspect") as inspector:
+        with patch("doberman_agent.core.database.dialect_helpers.inspect") as inspector:
             assert column_exists(conn, "knowledge", "metadata_fields") is True
 
         inspector.assert_not_called()
@@ -161,7 +161,7 @@ class TestColumnExists:
         assert params == {"table_name": "knowledge", "column_name": "metadata_fields"}
 
     def test_dm_returns_false_when_visible_catalog_has_no_column(self):
-        from bisheng.core.database.dialect_helpers import column_exists
+        from doberman_agent.core.database.dialect_helpers import column_exists
 
         conn = _make_dm_conn(None)
         assert column_exists(conn, "knowledge", "missing") is False
@@ -180,24 +180,24 @@ class TestIndexExists:
         return conn, insp
 
     def test_returns_true_when_index_found(self):
-        from bisheng.core.database.dialect_helpers import index_exists
+        from doberman_agent.core.database.dialect_helpers import index_exists
 
         conn, insp = self._make_conn([{"name": "ix_flow_tenant"}, {"name": "ix_other"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert index_exists(conn, "flow", "ix_flow_tenant") is True
 
     def test_case_insensitive(self):
-        from bisheng.core.database.dialect_helpers import index_exists
+        from doberman_agent.core.database.dialect_helpers import index_exists
 
         conn, insp = self._make_conn([{"name": "IX_FLOW_TENANT"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert index_exists(conn, "flow", "ix_flow_tenant") is True
 
     def test_returns_false_when_index_missing(self):
-        from bisheng.core.database.dialect_helpers import index_exists
+        from doberman_agent.core.database.dialect_helpers import index_exists
 
         conn, insp = self._make_conn([{"name": "ix_other"}])
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert index_exists(conn, "flow", "ix_flow_tenant") is False
 
 
@@ -210,26 +210,26 @@ class TestGetColumnType:
     def test_returns_lowercased_type_name(self):
         from sqlalchemy.dialects.mysql import LONGTEXT as LT
 
-        from bisheng.core.database.dialect_helpers import get_column_type
+        from doberman_agent.core.database.dialect_helpers import get_column_type
 
         insp = MagicMock()
         insp.get_columns.return_value = [{"name": "body", "type": LT()}]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             result = get_column_type(conn, "msg", "body")
         assert result == "longtext"
 
     def test_returns_none_when_column_missing(self):
-        from bisheng.core.database.dialect_helpers import get_column_type
+        from doberman_agent.core.database.dialect_helpers import get_column_type
 
         insp = MagicMock()
         insp.get_columns.return_value = [{"name": "id", "type": MagicMock()}]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert get_column_type(conn, "tbl", "missing") is None
 
     def test_dm_uses_catalog_data_type(self):
-        from bisheng.core.database.dialect_helpers import get_column_type
+        from doberman_agent.core.database.dialect_helpers import get_column_type
 
         conn = _make_dm_conn(
             {
@@ -250,35 +250,35 @@ class TestGetColumnType:
 
 class TestIsColumnNullable:
     def test_returns_true_when_nullable(self):
-        from bisheng.core.database.dialect_helpers import is_column_nullable
+        from doberman_agent.core.database.dialect_helpers import is_column_nullable
 
         insp = MagicMock()
         insp.get_columns.return_value = [{"name": "tenant_id", "nullable": True}]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert is_column_nullable(conn, "auditlog", "tenant_id") is True
 
     def test_returns_false_when_not_nullable(self):
-        from bisheng.core.database.dialect_helpers import is_column_nullable
+        from doberman_agent.core.database.dialect_helpers import is_column_nullable
 
         insp = MagicMock()
         insp.get_columns.return_value = [{"name": "tenant_id", "nullable": False}]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert is_column_nullable(conn, "auditlog", "tenant_id") is False
 
     def test_returns_false_when_column_not_found(self):
-        from bisheng.core.database.dialect_helpers import is_column_nullable
+        from doberman_agent.core.database.dialect_helpers import is_column_nullable
 
         insp = MagicMock()
         insp.get_columns.return_value = []
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert is_column_nullable(conn, "tbl", "no_col") is False
 
     @pytest.mark.parametrize(("nullable", "expected"), [("Y", True), ("N", False)])
     def test_dm_uses_catalog_nullable_flag(self, nullable, expected):
-        from bisheng.core.database.dialect_helpers import is_column_nullable
+        from doberman_agent.core.database.dialect_helpers import is_column_nullable
 
         conn = _make_dm_conn(
             {
@@ -299,23 +299,23 @@ class TestIsColumnNullable:
 
 class TestConstraintExists:
     def test_returns_true_when_found(self):
-        from bisheng.core.database.dialect_helpers import constraint_exists
+        from doberman_agent.core.database.dialect_helpers import constraint_exists
 
         insp = MagicMock()
         insp.get_unique_constraints.return_value = [
             {"name": "uk_tenant_roletype_rolename", "column_names": ["tenant_id", "role_type", "role_name"]}
         ]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert constraint_exists(conn, "role", "uk_tenant_roletype_rolename") is True
 
     def test_returns_false_when_not_found(self):
-        from bisheng.core.database.dialect_helpers import constraint_exists
+        from doberman_agent.core.database.dialect_helpers import constraint_exists
 
         insp = MagicMock()
         insp.get_unique_constraints.return_value = []
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert constraint_exists(conn, "role", "uk_missing") is False
 
 
@@ -326,7 +326,7 @@ class TestConstraintExists:
 
 class TestGetIndexesForColumn:
     def test_returns_matching_indexes(self):
-        from bisheng.core.database.dialect_helpers import get_indexes_for_column
+        from doberman_agent.core.database.dialect_helpers import get_indexes_for_column
 
         insp = MagicMock()
         insp.get_indexes.return_value = [
@@ -334,21 +334,21 @@ class TestGetIndexesForColumn:
             {"name": "ix_user_email", "unique": False, "column_names": ["email"]},
         ]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             result = get_indexes_for_column(conn, "user", "user_name")
         assert len(result) == 1
         assert result[0]["name"] == "ix_user_name"
         assert result[0]["unique"] is True
 
     def test_returns_empty_when_no_match(self):
-        from bisheng.core.database.dialect_helpers import get_indexes_for_column
+        from doberman_agent.core.database.dialect_helpers import get_indexes_for_column
 
         insp = MagicMock()
         insp.get_indexes.return_value = [
             {"name": "ix_other", "unique": False, "column_names": ["other_col"]},
         ]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             result = get_indexes_for_column(conn, "user", "user_name")
         assert result == []
 
@@ -362,25 +362,25 @@ class TestGetVersionNumLength:
     def test_returns_length(self):
         from sqlalchemy import String
 
-        from bisheng.core.database.dialect_helpers import get_version_num_length
+        from doberman_agent.core.database.dialect_helpers import get_version_num_length
 
         insp = MagicMock()
         insp.get_columns.return_value = [{"name": "version_num", "type": String(255)}]
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert get_version_num_length(conn) == 255
 
     def test_returns_none_when_column_missing(self):
-        from bisheng.core.database.dialect_helpers import get_version_num_length
+        from doberman_agent.core.database.dialect_helpers import get_version_num_length
 
         insp = MagicMock()
         insp.get_columns.return_value = []
         conn = MagicMock()
-        with patch("bisheng.core.database.dialect_helpers.inspect", return_value=insp):
+        with patch("doberman_agent.core.database.dialect_helpers.inspect", return_value=insp):
             assert get_version_num_length(conn) is None
 
     def test_dm_uses_catalog_character_length(self):
-        from bisheng.core.database.dialect_helpers import get_version_num_length
+        from doberman_agent.core.database.dialect_helpers import get_version_num_length
 
         conn = _make_dm_conn(
             {
@@ -406,13 +406,13 @@ class TestUpdateTimeServerDefault:
         return conn
 
     def test_mysql_returns_on_update(self):
-        from bisheng.core.database.dialect_helpers import update_time_server_default
+        from doberman_agent.core.database.dialect_helpers import update_time_server_default
 
         result = update_time_server_default(self._make_conn("mysql"))
         assert "ON UPDATE" in str(result)
 
     def test_dm_returns_current_timestamp_only(self):
-        from bisheng.core.database.dialect_helpers import update_time_server_default
+        from doberman_agent.core.database.dialect_helpers import update_time_server_default
 
         result = update_time_server_default(self._make_conn("dm"))
         assert "ON UPDATE" not in str(result)
@@ -434,7 +434,7 @@ class TestJsonType:
     def test_mysql_load_dialect_returns_json(self):
         from sqlalchemy import JSON
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         result = JsonType().load_dialect_impl(self._make_dialect("mysql"))
         assert isinstance(result, JSON)
@@ -442,7 +442,7 @@ class TestJsonType:
     def test_dm_load_dialect_returns_clob(self):
         from sqlalchemy import CLOB
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         result = JsonType().load_dialect_impl(self._make_dialect("dm"))
         assert isinstance(result, CLOB)
@@ -450,20 +450,20 @@ class TestJsonType:
     def test_sqlite_load_dialect_returns_text(self):
         from sqlalchemy import Text
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         result = JsonType().load_dialect_impl(self._make_dialect("sqlite"))
         assert isinstance(result, Text)
 
     def test_cache_ok_is_true(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         assert JsonType.cache_ok is True
 
     def test_dm_bind_param_serializes_dict(self):
         import json
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "dm"
@@ -473,7 +473,7 @@ class TestJsonType:
     def test_dm_bind_param_serializes_list(self):
         import json
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "dm"
@@ -481,14 +481,14 @@ class TestJsonType:
         assert json.loads(result) == [1, 2, 3]
 
     def test_dm_bind_param_none_returns_none(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "dm"
         assert JsonType().process_bind_param(None, dialect) is None
 
     def test_dm_result_value_deserializes_dict(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "dm"
@@ -496,14 +496,14 @@ class TestJsonType:
         assert result == {"k": "v"}
 
     def test_dm_result_value_none_returns_none(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "dm"
         assert JsonType().process_result_value(None, dialect) is None
 
     def test_mysql_bind_param_passthrough(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "mysql"
@@ -511,7 +511,7 @@ class TestJsonType:
         assert JsonType().process_bind_param(data, dialect) is data
 
     def test_mysql_result_value_passthrough(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "mysql"
@@ -521,7 +521,7 @@ class TestJsonType:
     def test_sqlite_bind_param_serializes(self):
         import json
 
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "sqlite"
@@ -529,7 +529,7 @@ class TestJsonType:
         assert json.loads(result) == {"k": "v"}
 
     def test_sqlite_result_value_deserializes(self):
-        from bisheng.core.database.dialect_helpers import JsonType
+        from doberman_agent.core.database.dialect_helpers import JsonType
 
         dialect = MagicMock()
         dialect.name = "sqlite"
@@ -544,24 +544,24 @@ class TestJsonType:
 
 class TestConnectionManagerUrlConversion:
     def test_pymysql_converts_to_aiomysql(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         mgr = DatabaseConnectionManager.__new__(DatabaseConnectionManager)
         result = mgr._convert_to_async_url("mysql+pymysql://user:pass@host/db")
         assert result == "mysql+aiomysql://user:pass@host/db"
 
     def test_dmPython_converts_to_dmAsync(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         mgr = DatabaseConnectionManager.__new__(DatabaseConnectionManager)
-        result = mgr._convert_to_async_url("dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG")
-        assert result == "dm+dmAsync://SYSDBA:pass@192.168.107.9:5236/BISHENG"
+        result = mgr._convert_to_async_url("dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT")
+        assert result == "dm+dmAsync://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT"
 
     def test_unknown_url_unchanged(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         mgr = DatabaseConnectionManager.__new__(DatabaseConnectionManager)
-        url = "sqlite:///./bisheng.db"
+        url = "sqlite:///./doberman_agent.db"
         assert mgr._convert_to_async_url(url) == url
 
     def test_dm_normalize_moves_path_schema_to_query(self):
@@ -569,17 +569,17 @@ class TestConnectionManagerUrlConversion:
         # `database` kwarg the path maps to, but accepts `schema` from the query.
         from sqlalchemy.engine.url import make_url
 
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG"
+        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT"
         result = make_url(DatabaseConnectionManager._normalize_dm_url(url))
         assert result.database is None
-        assert result.query.get("schema") == "BISHENG"
+        assert result.query.get("schema") == "DOBERMAN_AGENT"
 
     def test_dm_normalize_no_schema_clears_path_only(self):
         from sqlalchemy.engine.url import make_url
 
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236"
         result = make_url(DatabaseConnectionManager._normalize_dm_url(url))
@@ -590,17 +590,17 @@ class TestConnectionManagerUrlConversion:
         # An explicit ?schema= takes precedence over a path-specified schema.
         from sqlalchemy.engine.url import make_url
 
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG?schema=OPENFGA"
+        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT?schema=OPENFGA"
         result = make_url(DatabaseConnectionManager._normalize_dm_url(url))
         assert result.database is None
         assert result.query.get("schema") == "OPENFGA"
 
     def test_dm_normalize_is_idempotent(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG"
+        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT"
         once = DatabaseConnectionManager._normalize_dm_url(url)
         twice = DatabaseConnectionManager._normalize_dm_url(once)
         assert once == twice
@@ -612,9 +612,9 @@ class TestConnectionManagerUrlConversion:
         # every DM deployment is safe without per-deployment URL tuning.
         from sqlalchemy.engine.url import make_url
 
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG"
+        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT"
         result = make_url(DatabaseConnectionManager._normalize_dm_url(url))
         assert result.query.get("login_timeout") == "30"
         assert result.query.get("connection_timeout") == "30"
@@ -624,9 +624,9 @@ class TestConnectionManagerUrlConversion:
         # the injected default (only the missing one gets filled in).
         from sqlalchemy.engine.url import make_url
 
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
-        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/BISHENG?login_timeout=10"
+        url = "dm+dmPython://SYSDBA:pass@192.168.107.9:5236/DOBERMAN_AGENT?login_timeout=10"
         result = make_url(DatabaseConnectionManager._normalize_dm_url(url))
         assert result.query.get("login_timeout") == "10"
         assert result.query.get("connection_timeout") == "30"
@@ -634,7 +634,7 @@ class TestConnectionManagerUrlConversion:
 
 class TestConnectionManagerDialectSchemaObjects:
     def test_runs_dm_schema_hooks(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         mgr = DatabaseConnectionManager("sqlite://")
         mgr._ensure_dm_triggers = MagicMock()
@@ -645,7 +645,7 @@ class TestConnectionManagerDialectSchemaObjects:
         mgr._ensure_dm_computed_triggers.assert_called_once_with()
 
     def test_skips_schema_hooks_for_non_dm(self):
-        from bisheng.core.database.connection import DatabaseConnectionManager
+        from doberman_agent.core.database.connection import DatabaseConnectionManager
 
         mgr = DatabaseConnectionManager("sqlite://")
         mgr._ensure_dm_triggers = MagicMock()
@@ -667,7 +667,7 @@ class TestStrJoinKey:
     def _compile(self, dialect):
         from sqlmodel import Column, Integer
 
-        from bisheng.core.database.dialect_helpers import StrJoinKey
+        from doberman_agent.core.database.dialect_helpers import StrJoinKey
 
         return str(StrJoinKey(Column("id", Integer)).compile(dialect=dialect))
 

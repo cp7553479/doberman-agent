@@ -5,8 +5,8 @@ from sqlalchemy import Column, Integer, MetaData, String, Table, case, create_en
 from sqlalchemy.dialects import mysql
 from sqlalchemy.engine.default import DefaultDialect
 
-from bisheng.common.subject_search import normalize_keyword, numeric_prefix_ranges
-from bisheng.core.database.subject_search import (
+from doberman_agent.common.subject_search import normalize_keyword, numeric_prefix_ranges
+from doberman_agent.core.database.subject_search import (
     case_sensitive_prefix,
     exact_id_priority,
     numeric_id_priority,

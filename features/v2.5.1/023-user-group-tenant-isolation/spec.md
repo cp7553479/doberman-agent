@@ -14,7 +14,7 @@
 
 同日 commit 把「用户组管理」tab 对 Child Admin 显示，并放行 `_can_open_user_group_management` 让 tenant admin 能进入用户组接口。但**用户组实体本身仍是全局表，没有 tenant_id**：
 
-- `group` 表（`bisheng/database/models/group.py`）无 `tenant_id` 字段
+- `group` 表（`doberman-agent/database/models/group.py`）无 `tenant_id` 字段
 - `UserGroupService.alist_groups` / `aget_group` / `acreate_group` 不按 tenant 过滤/写入
 - 跨 tenant 资源授权（用户组 → app/knowledge/...）目前由资源侧 tenant 隔离兜底，但用户组列表仍可见全部组
 
@@ -44,8 +44,8 @@
 2. **Service 改造**：`alist_groups` / `aget_group` 过滤；`acreate_group` 从 `login_user.tenant_id`（或 `get_current_tenant_id()` 兼容 admin-scope）写入；`aupdate_group` / `adelete_group` 跨 tenant 拦截。
 3. **跨租户加成员拦截**：`UserGroupService.aadd_member` 校验 `target_user.tenant_id == group.tenant_id`（或允许 Root 用户加入任何组，待决策）。
 4. **Root 共享语义**：参考 F011 `share_default_to_children`、F022 `tenant_system_model_config` 的"Root 默认 + Child 覆盖"模式，决定 Root 创建的组是否对所有 Child 可见。
-5. **网关侧**：`_sync_user_group_delete_side_effects` 中的 Redis 通知（`bisheng/user_group/domain/services/user_group_service.py:65-68`）需要带 tenant 上下文，确认网关订阅端如何处理。
-6. **错误码**：在 `bisheng/common/errcode/user_group.py` 新增 `UserGroupCrossTenantError`（19xxx，待分配）。
+5. **网关侧**：`_sync_user_group_delete_side_effects` 中的 Redis 通知（`doberman-agent/user_group/domain/services/user_group_service.py:65-68`）需要带 tenant 上下文，确认网关订阅端如何处理。
+6. **错误码**：在 `doberman-agent/common/errcode/user_group.py` 新增 `UserGroupCrossTenantError`（19xxx，待分配）。
 
 ---
 

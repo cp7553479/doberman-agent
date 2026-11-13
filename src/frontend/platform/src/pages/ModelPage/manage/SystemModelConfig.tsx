@@ -1,6 +1,6 @@
 // @ts-strict-ignore
-import { Outlined } from "bisheng-icons";
-import { Button, Tabs, Tooltip } from "@bisheng/ui";
+import { Outlined } from "@doberman-agent/icons";
+import { Button, Tabs, Tooltip } from "@doberman-agent/ui";
 import { userContext } from "@/contexts/userContext";
 import { getTenantsApi } from "@/controllers/API/tenant";
 import { useAdminScope } from "@/hooks/useAdminScope";

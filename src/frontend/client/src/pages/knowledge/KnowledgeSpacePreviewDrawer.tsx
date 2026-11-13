@@ -1,4 +1,4 @@
-import { Tooltip as SharedTooltip } from '@bisheng/ui';
+import { Tooltip as SharedTooltip } from '@doberman-agent/ui';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EmptyStateIllustration, NoPermissionIllustration } from "~/components/illustrations";
 import { KnowledgePreviewNavigation } from "./KnowledgePreviewNavigation";

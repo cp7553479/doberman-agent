@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui';
-import { Dropdown, DropdownItem } from '@bisheng/ui';
+import { Dropdown, DropdownItem } from '@doberman-agent/ui';
 import { useDeleteFilesFromTable } from '~/hooks/Files';
 import { TrashIcon, Spinner } from '~/components/svg';
 import useLocalize from '~/hooks/useLocalize';

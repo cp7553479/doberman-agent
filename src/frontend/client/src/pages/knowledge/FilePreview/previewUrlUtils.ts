@@ -24,7 +24,7 @@ export function resolveKnowledgePreviewUrl(url: string): string {
         objectPath = objectPath.slice(base.length);
     }
 
-    if (/^\/(?:bisheng|tmp-dir)\//.test(objectPath)) {
+    if (/^\/(?:doberman_agent|tmp-dir)\//.test(objectPath)) {
         return objectPath;
     }
 

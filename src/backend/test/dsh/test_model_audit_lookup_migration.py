@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects.mysql import dialect
 from sqlalchemy.schema import CreateIndex
 
-from bisheng.dsh.domain.models.model_audit_request import DshModelAuditRequest
+from doberman_agent.dsh.domain.models.model_audit_request import DshModelAuditRequest
 
 INDEXES = {
     "ix_dma_request_model": ["tenant_id", "model_id", "started_at", "request_id"],

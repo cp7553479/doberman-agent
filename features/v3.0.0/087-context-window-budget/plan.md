@@ -9,7 +9,7 @@
 
 ## 0. 结论
 
-任务模式里没有"上下文预算"这个概念。BiSheng 不知道模型的上下文窗口有多大，所有大小限制都是写死的数字。这些数字是按 200K 左右的窗口、按英文"4 个字符约等于 1 个 token"设计的。窗口一旦小于 170K，或者内容以中文为主，触发压缩、限制单次输入、处理超窗这三个环节会一起失效。
+任务模式里没有"上下文预算"这个概念。doberman-agent 不知道模型的上下文窗口有多大，所有大小限制都是写死的数字。这些数字是按 200K 左右的窗口、按英文"4 个字符约等于 1 个 token"设计的。窗口一旦小于 170K，或者内容以中文为主，触发压缩、限制单次输入、处理超窗这三个环节会一起失效。
 
 本方案的做法是：每个模型确定一个上下文窗口，其余预算全部从这个窗口推导；同时补上"压缩失败"和"超窗之后"两处缺失的处理，让异常对用户和运维可见。
 
@@ -32,9 +32,9 @@
 
 这次报错由两处缺陷叠加造成。
 
-**第一，压缩阈值大于上下文窗口。** deepagents 0.6.12 先读模型的 `profile["max_input_tokens"]`。读到时，压缩在输入达到 85% 时触发；读不到时，压缩阈值固定为 170000 tokens（`deepagents/middleware/summarization.py:261-298`）。BiSheng 没有给任何模型设置 `profile`，所以一律使用 170000。客户的窗口是 133120，小于 170000，所以压缩永远不会在超窗之前触发。
+**第一，压缩阈值大于上下文窗口。** deepagents 0.6.12 先读模型的 `profile["max_input_tokens"]`。读到时，压缩在输入达到 85% 时触发；读不到时，压缩阈值固定为 170000 tokens（`deepagents/middleware/summarization.py:261-298`）。doberman-agent 没有给任何模型设置 `profile`，所以一律使用 170000。客户的窗口是 133120，小于 170000，所以压缩永远不会在超窗之前触发。
 
-**第二，超窗报错没有被识别。** deepagents 有一层兜底：模型抛出 `ContextOverflowError` 时，它当场压缩历史并重试一次（`summarization.py:1435`）。但 `langchain_openai` 只把三种文本识别为超窗：`context_length_exceeded`、`Input tokens exceed the configured limit`、`prompt is too long`（`langchain_openai/chat_models/base.py:520`）。vLLM 的文本是 `This model's maximum context length is ...`，不在其中。已用这段原文在本地验证：它没有被转换成 `ContextOverflowError`。之后 BiSheng 的 resilience 中间件把这个 400 归为 DEGRADABLE（`common/services/llm_error_classifier.py:324`），主图直接失败，错误标签是 UNKNOWN。
+**第二，超窗报错没有被识别。** deepagents 有一层兜底：模型抛出 `ContextOverflowError` 时，它当场压缩历史并重试一次（`summarization.py:1435`）。但 `langchain_openai` 只把三种文本识别为超窗：`context_length_exceeded`、`Input tokens exceed the configured limit`、`prompt is too long`（`langchain_openai/chat_models/base.py:520`）。vLLM 的文本是 `This model's maximum context length is ...`，不在其中。已用这段原文在本地验证：它没有被转换成 `ContextOverflowError`。之后 doberman-agent 的 resilience 中间件把这个 400 归为 DEGRADABLE（`common/services/llm_error_classifier.py:324`），主图直接失败，错误标签是 UNKNOWN。
 
 ---
 
@@ -47,7 +47,7 @@
 | 项 | 现状 |
 |---|---|
 | 模型配置 | 没有"上下文窗口"字段。全仓没有任何 `profile` 赋值 |
-| 服务商接口 | vLLM 等服务商的接口能返回窗口（见 §3.1），BiSheng 没有读取 |
+| 服务商接口 | vLLM 等服务商的接口能返回窗口（见 §3.1），doberman-agent 没有读取 |
 | `max_tokens` 一词两义 | Ollama 把它改名为 `num_ctx`，含义是上下文窗口（`llm/domain/llm/llm.py:96`）；其他服务商把它当输出预留发出（`llm.py:367`）。前端 `ModelItem.tsx` 按服务商切换标签，管理员容易把窗口大小填进"最大输出" |
 
 ### B. 压缩时机：阈值和计数都不准
@@ -65,9 +65,9 @@
 |---|---|---|
 | 框架转存阈值、`read_file` 单次截断 | 80000 字符（`4 × 20000`） | `deepagents/middleware/filesystem.py:2040`、`:1061` |
 | `ls` / `glob` / `grep` 输出 | 80000 字符 | `deepagents/backends/utils.py:68` |
-| 代码执行输出 | 成功 30000 字符，失败 8000 字符 | `bisheng_langchain/gpts/tools/code_interpreter/base_executor.py:199` |
-| 自定义 API 工具 | 10000 字符 | `bisheng_langchain/gpts/tools/api_tools/base.py:68` |
-| 网页读取（F085） | 默认 20000 字符，可配 1000–200000 | `bisheng_langchain/gpts/tools/web_fetch/tool.py` |
+| 代码执行输出 | 成功 30000 字符，失败 8000 字符 | `doberman_agent_langchain/gpts/tools/code_interpreter/base_executor.py:199` |
+| 自定义 API 工具 | 10000 字符 | `doberman_agent_langchain/gpts/tools/api_tools/base.py:68` |
+| 网页读取（F085） | 默认 20000 字符，可配 1000–200000 | `doberman_agent_langchain/gpts/tools/web_fetch/tool.py` |
 | 知识库检索 | 条数由模型传入，没有上界；单个分段不截断 | `tool/domain/langchain/linsight_knowledge.py` |
 | 联网搜索、MCP 工具 | 没有上限 | — |
 | 图片 | 单张不超过 500KB，张数不限 | `linsight/domain/services/workspace_backend.py` |
@@ -105,9 +105,9 @@
 
 ### 3.1 确定上下文窗口
 
-BiSheng 按以下优先级确定每个模型的上下文窗口：
+doberman-agent 按以下优先级确定每个模型的上下文窗口：
 
-1. **手动配置。** 管理员在模型配置的"高级配置"JSON 里填写 `{"context_window": 133120}`。不新增前端字段（决策 D8）。高级配置的内容会原样传给模型客户端的构造参数（`llm/domain/llm/llm.py:51` `_get_user_kwargs`），所以 BiSheng 必须在构造客户端之前取出 `context_window`，否则它会被当成未知参数发给服务商。
+1. **手动配置。** 管理员在模型配置的"高级配置"JSON 里填写 `{"context_window": 133120}`。不新增前端字段（决策 D8）。高级配置的内容会原样传给模型客户端的构造参数（`llm/domain/llm/llm.py:51` `_get_user_kwargs`），所以 doberman-agent 必须在构造客户端之前取出 `context_window`，否则它会被当成未知参数发给服务商。
 2. **Ollama 的 `num_ctx`。** Ollama 的"上下文长度"字段（存为 `max_tokens`）会作为 `num_ctx` 随每次请求发出（`llm.py:96`），它就是 Ollama 实际生效的窗口。所以 Ollama 填了这个字段时，直接用它作为上下文窗口。
 3. **服务商接口。** 前两步都没有时，调用该服务商的模型信息接口读取。
 4. **保持现状。** 以上都拿不到时，不设置 profile，deepagents 使用 170000 的默认阈值。
@@ -116,11 +116,11 @@ BiSheng 按以下优先级确定每个模型的上下文窗口：
 
 #### 缓存（决策 D2）
 
-BiSheng 在任务开始时读取上下文窗口，结果存进 Redis，所有节点共享。读取成功的结果缓存 1 小时；读取失败的结果缓存 5 分钟，这 5 分钟内按"读不到"处理，不重复请求。管理员保存模型配置时，BiSheng 清除该模型的缓存。部署变化（例如重启 vLLM 时改了 `--max-model-len`）最多 1 小时后自动生效。
+doberman-agent 在任务开始时读取上下文窗口，结果存进 Redis，所有节点共享。读取成功的结果缓存 1 小时；读取失败的结果缓存 5 分钟，这 5 分钟内按"读不到"处理，不重复请求。管理员保存模型配置时，doberman-agent 清除该模型的缓存。部署变化（例如重启 vLLM 时改了 `--max-model-len`）最多 1 小时后自动生效。
 
 #### 服务商接口调研（2026-10-21）
 
-BiSheng 的 19 种服务商类型中，有 8 种能用对话接口的同一个 API key 读取上下文窗口。读到的值分为两种。**部署值**是推理服务启动时实际生效的上限，例如 vLLM 的 `--max-model-len`。**理论值**是模型或平台公布的上限，可能大于实际部署的上限。
+doberman-agent 的 19 种服务商类型中，有 8 种能用对话接口的同一个 API key 读取上下文窗口。读到的值分为两种。**部署值**是推理服务启动时实际生效的上限，例如 vLLM 的 `--max-model-len`。**理论值**是模型或平台公布的上限，可能大于实际部署的上限。
 
 | 服务商类型 | 能否读取 | 接口 | 字段 | 值的性质 | 证据 |
 |---|---|---|---|---|---|
@@ -137,7 +137,7 @@ BiSheng 的 19 种服务商类型中，有 8 种能用对话接口的同一个 A
 | azure_openai | 不能 | 数据面接口没有 token 上限；控制面需要 Entra ID 鉴权 | — | — | 官方文档 |
 | zhipu、minimax、silicon | 不能 | 没有模型列表接口，或列表里没有窗口字段 | — | — | 官方文档 |
 | volcengine、qianfan、tencent、spark | 未核实 | 火山方舟、千帆只有控制面接口，需要 AK/SK，不是对话 key | — | — | 文档无法读取或无公开资料 |
-| bisheng_rt | 跳过 | 无公开资料 | — | — | — |
+| doberman_agent_rt | 跳过 | 无公开资料 | — | — | — |
 
 另外，以下几种推理服务常被配置成 openai 类型接入。它们也能读取上下文窗口：SGLang（`/v1/models` 的 `data[].max_model_len`，部署值）、LM Studio（`/api/v1/models` 的 `loaded_instances[].config.context_length`）、OpenRouter（`/api/v1/models` 的 `data[].context_length`）、LiteLLM proxy（`/model/info` 的 `model_info.max_input_tokens`）。
 
@@ -146,7 +146,7 @@ BiSheng 的 19 种服务商类型中，有 8 种能用对话接口的同一个 A
 1. **按服务商类型分别实现读取逻辑**，每种只用对话接口已有的 base_url 和 API key，不新增凭据。P0 覆盖 7 种：vllm、openai 类型的 `/v1/models` 探测、llamacpp、ollama、xinference、anthropic、deepseek、moonshot（决策 D1）。qwen（百炼）放到 P1，MindIE 在真实环境验证后再定。
 2. **openai 类型配了自定义 base_url 时，探测 `GET /v1/models`。** 现场常把 vLLM、SGLang 配成 openai 类型。返回里有 `max_model_len` 就按部署值使用；有 `context_length` 就按平台公布值使用。
 3. **优先使用部署值。** Ollama 先读 `/api/ps`；模型未加载时再读 `/api/show` 的 `parameters` 里有没有 `num_ctx`；最后才用 `model_info` 里的理论值。
-4. **理论值可以使用，但要记录来源。** 理论值可能大于实际部署的上限，例如 Xinference 用 vLLM 引擎时手动调小了 `max_model_len`。这种情况由 §3.5 的超窗识别兜底：超窗后先压缩再重试。每次任务开始时，BiSheng 在日志里记录窗口大小和来源（手动配置 / Ollama num_ctx / 部署值 / 理论值），方便现场排查。
+4. **理论值可以使用，但要记录来源。** 理论值可能大于实际部署的上限，例如 Xinference 用 vLLM 引擎时手动调小了 `max_model_len`。这种情况由 §3.5 的超窗识别兜底：超窗后先压缩再重试。每次任务开始时，doberman-agent 在日志里记录窗口大小和来源（手动配置 / Ollama num_ctx / 部署值 / 理论值），方便现场排查。
 5. **读不到时不猜。** 不能读取、未核实的服务商类型，或接口调用失败时，按 §3.1 第 4 步保持现状。
 6. **百炼需要推导原生接口地址。** 模型配置里通常只有 `/compatible-mode/v1` 的 base_url。原生接口的 host 要从它推导，北京区域还需要 WorkspaceId。推导不出来时按读不到处理。
 7. **MindIE 先在真实环境验证再实现。** 现有证据只有搜索摘要，接口已被标为计划弃用，P0 不包含它。
@@ -196,16 +196,16 @@ BiSheng 的 19 种服务商类型中，有 8 种能用对话接口的同一个 A
 
 ### 3.5 压缩失败与超窗必须可见
 
-1. **识别超窗。** `BishengLLM` 识别 vLLM、OpenAI 及其他常见服务商的超窗报错，统一转换为 `ContextOverflowError`，让 deepagents 执行压缩后重试。（P0）
+1. **识别超窗。** `DobermanAgentLLM` 识别 vLLM、OpenAI 及其他常见服务商的超窗报错，统一转换为 `ContextOverflowError`，让 deepagents 执行压缩后重试。（P0）
 2. **超窗收尾（决策 D4）。** resilience 中间件把超窗单独分为一类：不重试，交给压缩处理。压缩后重试仍然超窗时，任务以新增的错误码失败。前端显示三种语言的文案，大意是"任务内容超出了模型一次能处理的长度，请拆分任务或换用上下文更长的模型"。日志记录窗口大小、窗口来源和实际 token 数。已生成的文件保留。（P0）
-3. **摘要失败（决策 D5）。** 摘要调用失败时，BiSheng 重试一次，重试时交给模型的内容不超过"摘要调用的输入上限"。仍然失败时，记错误级别日志，任务以明确的错误码失败。`Error generating summary` 不能被当成摘要继续使用。这一项要接管框架的压缩中间件，依赖 §3.6，所以放在 P1。
+3. **摘要失败（决策 D5）。** 摘要调用失败时，doberman-agent 重试一次，重试时交给模型的内容不超过"摘要调用的输入上限"。仍然失败时，记错误级别日志，任务以明确的错误码失败。`Error generating summary` 不能被当成摘要继续使用。这一项要接管框架的压缩中间件，依赖 §3.6，所以放在 P1。
 
 ### 3.6 框架约束与技术路线（决策 D7）
 
 `create_deep_agent` 只暴露了 `profile` 这一个入口。计数函数、摘要截断、摘要失败处理、转存阈值都是框架内部创建中间件时写死的，`FilesystemMiddleware` 还不允许被排除。本方案采用框架允许的替换方式，不修改框架源码。P1 第一步先做技术验证，确认可行后再实现：
 
-1. **替换压缩中间件。** 用 harness profile 的 `excluded_middleware` 按名字排除框架自带的 `SummarizationMiddleware`，再通过 `middleware=` 传入 BiSheng 的子类实例。子类必须改 `name`，否则会被同一条排除规则一起去掉。这样计数函数、摘要截断、保留比例都由 BiSheng 控制。
-2. **在内层先转存。** BiSheng 新增一个 `wrap_tool_call` 中间件。它位于框架 `FilesystemMiddleware` 的内层，先拿到工具结果，按"单条工具结果上限"转存。框架 80000 字符的阈值因此不再起作用。主图和研究员子代理都要挂。
+1. **替换压缩中间件。** 用 harness profile 的 `excluded_middleware` 按名字排除框架自带的 `SummarizationMiddleware`，再通过 `middleware=` 传入 doberman-agent 的子类实例。子类必须改 `name`，否则会被同一条排除规则一起去掉。这样计数函数、摘要截断、保留比例都由 doberman-agent 控制。
+2. **在内层先转存。** doberman-agent 新增一个 `wrap_tool_call` 中间件。它位于框架 `FilesystemMiddleware` 的内层，先拿到工具结果，按"单条工具结果上限"转存。框架 80000 字符的阈值因此不再起作用。主图和研究员子代理都要挂。
 
 升级 deepagents 时，需要复查这两处依赖的接口：`excluded_middleware` 的匹配规则，以及中间件的嵌套顺序。
 

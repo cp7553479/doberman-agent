@@ -32,7 +32,7 @@
 - **C8 无本地共享状态**：编号表与本 run 见过的来源都在 Redis；进程内只是镜像，恢复与追问从 Redis 水化。
 - **不动 `wrap_tool_call`**（仓库记忆：卸载结果不动点循环）：所有软提示走 `awrap_model_call` 的临时 HumanMessage。
 - **不进 L3 连续失败计数**（`tool_loop_middleware.py` 的 `_trailing_tool_failure_run`，工具循环熔断器）：写文件缺引用绝不返回 `status=error`。
-- **config.yaml 新键**：shipped `docker/bisheng/config/config.yaml` 目前没有 `linsight:` 段，示例须连父键一起注释（`# linsight:\n#   citation_handles_enabled: true`），避免老镜像因新顶级键拒启（仓库 §Config & Packaging Contracts）。开关走系统配置 `get_linsight_conf()` 叠加，可在管理后台改。
+- **config.yaml 新键**：shipped `docker/doberman-agent/config/config.yaml` 目前没有 `linsight:` 段，示例须连父键一起注释（`# linsight:\n#   citation_handles_enabled: true`），避免老镜像因新顶级键拒启（仓库 §Config & Packaging Contracts）。开关走系统配置 `get_linsight_conf()` 叠加，可在管理后台改。
 - **Redis 键名**：与既有 linsight 键一致不用花括号（`linsight:cite_handles:<session_id>`、`linsight:cite_seen:<svid>`）；每个键是单个 HASH，cluster 下无需 hash tag。
 - **前端文案**：零引用提示三语 i18n，不在源码硬编码中文；只加一行文字，不加组件，不需设计师签字。
 
@@ -241,10 +241,10 @@ html（P2）：写盘边界 [Sn] → <sup>[n]</sup> + 页尾附录（编号表�
 - **手动验证（116 测试环境，入口 `http://192.168.106.120:3002`，用自己的测试账号）**：
   ```bash
   ssh root@192.168.106.116
-  docker logs --since 2h bisheng-test-backend-worker 2>&1 | grep -E "linsight-citation-(audit|nudge)"
-  docker exec bisheng-test-backend sh -c "cd /app && export config=\${config:-config.yaml} PYTHONPATH=./ && .venv/bin/python - <<'PY'
+  docker logs --since 2h doberman-agent-test-backend-worker 2>&1 | grep -E "linsight-citation-(audit|nudge)"
+  docker exec doberman-agent-test-backend sh -c "cd /app && export config=\${config:-config.yaml} PYTHONPATH=./ && .venv/bin/python - <<'PY'
   import asyncio
-  from bisheng.core.cache.redis_conn import get_redis_client
+  from doberman_agent.core.cache.redis_conn import get_redis_client
   async def main():
       r = await get_redis_client()
       print(await r.ahgetall('linsight:cite_handles:<session_id>'))

@@ -8,12 +8,12 @@
 
 ## 基线与范围
 
-- 仓库：`dataelement/bisheng`；PR 目标：`feat/bisheng-work-120-main`。
+- 仓库：`cp7553479/doberman-agent`；PR 目标：`feat/doberman-agent-work-120-main`。
 - 初始远端基线：`d3d832a0e0f8299e2497734e7b72da6072c13937`。
 - 组合验证基线：`b872e4775b4fabf84cefd75fbdabaa419897647a`。
-- 工作目录：`.worktrees/bisheng-app-pin-state`；分支：`codex/app-pin-state`。
-- 本机应用包：`BISHENG 1.2.0-test.2`；包内 Harness：`0.2.1-rc.2`。
-- 交付位置：毕昇后端及 Client 网页资源。
+- 工作目录：`.worktrees/doberman-agent-app-pin-state`；分支：`codex/app-pin-state`。
+- 本机应用包：`doberman-agent 1.2.0-test.2`；包内 Harness：`0.2.1-rc.2`。
+- 交付位置：doberman-agent后端及 Client 网页资源。
 
 ## 自动验证
 

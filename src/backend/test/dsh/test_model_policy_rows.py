@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import Session
 
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.policy import DshPolicyRepository
-from bisheng.dsh.domain.schemas.contracts import DshUserPolicyInput
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.policy import DshPolicyRepository
+from doberman_agent.dsh.domain.schemas.contracts import DshUserPolicyInput
 from test.dsh.test_policy_service import service_factory, sql_store  # noqa: F401
 from test.dsh.test_quota_admission import quota as real_quota  # noqa: F401
 from test.dsh.test_quota_admission import running
@@ -77,14 +77,14 @@ async def test_a_sync_block_for_one_model_does_not_block_another(real_quota):  #
         2, 20, model_id=4, operation_id="four", lease_generation=1, epoch=1, expected_version=1
     )
     await real_quota.check_and_start(running(5))
-    from bisheng.dsh.infrastructure.quota_redis import QuotaRejected
+    from doberman_agent.dsh.infrastructure.quota_redis import QuotaRejected
 
     with pytest.raises(QuotaRejected, match="blocked"):
         await real_quota.check_and_start(running(4))
 
 
 def test_two_models_have_independent_sql_intents_and_database_uniqueness(sql_store):  # noqa: F811
-    from bisheng.common.errcode.dsh import DshOperationInProgressError
+    from doberman_agent.common.errcode.dsh import DshOperationInProgressError
 
     with Session(sql_store) as session, session.begin():
         repository = DshPolicyRepository(session)

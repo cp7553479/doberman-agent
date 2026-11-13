@@ -1,24 +1,24 @@
 import pytest
 from sqlmodel import Session, select
 
-from bisheng.common.errcode.dsh import DshOperationConflictError
-from bisheng.core.context.tenant import current_tenant_id, set_current_tenant_id
-from bisheng.database.models.tenant import Tenant
-from bisheng.dsh.domain.models.unified_policy import (
+from doberman_agent.common.errcode.dsh import DshOperationConflictError
+from doberman_agent.core.context.tenant import current_tenant_id, set_current_tenant_id
+from doberman_agent.database.models.tenant import Tenant
+from doberman_agent.dsh.domain.models.unified_policy import (
     CreditRule,
     ModelVisibility,
     PersonalLedgerState,
     UnifiedPolicyAudit,
 )
-from bisheng.dsh.domain.models.user_policy import DshUserPolicy
-from bisheng.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
-from bisheng.dsh.domain.schemas.unified_policy import (
+from doberman_agent.dsh.domain.models.user_policy import DshUserPolicy
+from doberman_agent.dsh.domain.repositories.unified_policy import UnifiedPolicyRepository
+from doberman_agent.dsh.domain.schemas.unified_policy import (
     UNLIMITED_TOKEN_LIMIT,
     CreditRuleInput,
     ModelVisibilityInput,
     PolicySubject,
 )
-from bisheng.dsh.domain.services.legacy_credit_migration import migrate_legacy_credits
+from doberman_agent.dsh.domain.services.legacy_credit_migration import migrate_legacy_credits
 from test.dsh.test_subject_policy import subject_store as subject_store
 
 
@@ -26,7 +26,7 @@ from test.dsh.test_subject_policy import subject_store as subject_store
 def store(subject_store):
     for model in (CreditRule, ModelVisibility, PersonalLedgerState, UnifiedPolicyAudit):
         model.__table__.create(subject_store)
-    from bisheng.core.database.tenant_filter import register_tenant_filter_events
+    from doberman_agent.core.database.tenant_filter import register_tenant_filter_events
 
     register_tenant_filter_events()
     return subject_store

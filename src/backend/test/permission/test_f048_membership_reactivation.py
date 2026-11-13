@@ -7,28 +7,28 @@ from unittest.mock import AsyncMock
 import pytest
 from sqlmodel import select
 
-from bisheng.common.errcode.permission import PermissionVersionConflictError
-from bisheng.permission.application import control_state
-from bisheng.permission.application.control_state import SqlGrantMutationState, SqlPermissionControlState
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.application.sql_runtime import SqlProjectionFinalizer, SqlProjectionScopeGuard
-from bisheng.permission.domain.models import (
+from doberman_agent.common.errcode.permission import PermissionVersionConflictError
+from doberman_agent.permission.application import control_state
+from doberman_agent.permission.application.control_state import SqlGrantMutationState, SqlPermissionControlState
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.application.sql_runtime import SqlProjectionFinalizer, SqlProjectionScopeGuard
+from doberman_agent.permission.domain.models import (
     PermissionGrant,
     PermissionGrantAssignee,
     PermissionVisibleSourceProjection,
     ResourcePermissionMode,
 )
-from bisheng.permission.domain.repositories.projection_repository import ProjectionRepository
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
-from bisheng.permission.domain.services.grant_service import GrantService
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.repositories.projection_repository import ProjectionRepository
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.domain.services.grant_service import GrantService
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantModelSnapshot,
     GrantSnapshot,
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import PermissionActor
-from bisheng.permission.domain.services.projection_service import ProjectionService
-from bisheng.permission.domain.services.visibility_projection_service import VisibilityProjectionCompiler
+from doberman_agent.permission.domain.services.permission_action_service import PermissionActor
+from doberman_agent.permission.domain.services.projection_service import ProjectionService
+from doberman_agent.permission.domain.services.visibility_projection_service import VisibilityProjectionCompiler
 from test.permission.test_f048_projection_service import FakeFGAProjection, FakeRecentMarker
 from test.permission.test_f048_projection_sql_runtime import session_factory as session_factory
 from test.permission.test_f048_projection_sql_runtime import tenant_context as tenant_context

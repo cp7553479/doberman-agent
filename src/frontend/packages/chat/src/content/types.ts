@@ -14,7 +14,7 @@ export interface ChatCitationPayload {
 export interface ChatCitation { citationId: string; type: string; itemId?: string | null; sourcePayload?: ChatCitationPayload }
 export interface CitationDisplayData { label: number; ref: string; type: string; groupKey: string; chunkId: string; citationId: string; itemId: string }
 export interface CitationPreview { title: string; snippet: string; sourceName: string; sourceMeta: string; link?: string; type: string }
-export type { PreviewPdfBBox as CitationPdfBBox } from '@bisheng/file-viewers/types';
+export type { PreviewPdfBBox as CitationPdfBBox } from '@doberman-agent/file-viewers/types';
 export type CitationDetailLoader = (id: string) => Promise<ChatCitation | null>;
 export interface CitationDocumentPreviewState { detail: ChatCitation; itemId?: string; itemIds?: string[]; locateChunk?: boolean }
 export type { CitationReferencesDesktopPayload } from '../citations/types';

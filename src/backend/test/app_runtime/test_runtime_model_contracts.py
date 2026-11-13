@@ -8,20 +8,20 @@ from sqlalchemy.dialects.mysql import dialect as mysql_dialect
 from sqlalchemy.engine.default import DefaultDialect
 from sqlalchemy.schema import CreateIndex, CreateTable
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RUNTIME_TABLES,
     RuntimeArtifact,
     RuntimeAssignment,
     RuntimeTransfer,
     ScopedRuntimeRecord,
 )
-from bisheng.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES, RuntimeExecutionResource
-from bisheng.core.database.dialect_helpers import JsonType, is_update_time_server_default
-from bisheng.core.database.model_discovery import discover_sqlmodel_module_names
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES, RuntimeExecutionResource
+from doberman_agent.core.database.dialect_helpers import JsonType, is_update_time_server_default
+from doberman_agent.core.database.model_discovery import discover_sqlmodel_module_names
 
 
 def test_runtime_tables_follow_discovery_scope_and_constraints():
-    assert "bisheng.app_runtime.domain.models.runtime_delivery" in discover_sqlmodel_module_names()
+    assert "doberman_agent.app_runtime.domain.models.runtime_delivery" in discover_sqlmodel_module_names()
     assert len(RUNTIME_TABLES) == 15
     assert len(KUBERNETES_TABLES) == 2
     constraint_names = set()
@@ -91,7 +91,7 @@ def test_byte_counters_hold_the_documented_snapshot_limit(model, field):
 
 
 def migration(monkeypatch, kind="integer", present=True):
-    module = import_module("bisheng.core.database.alembic.versions.f086_runtime_byte_counters")
+    module = import_module("doberman_agent.core.database.alembic.versions.f086_runtime_byte_counters")
     calls = []
     monkeypatch.setattr(module.op, "get_bind", lambda: object())
     monkeypatch.setattr(module, "table_exists", lambda table: present)
@@ -141,7 +141,7 @@ def runtime_tenant_session(mock_settings, monkeypatch):
     from sqlalchemy import create_engine
     from sqlmodel import Session
 
-    from bisheng.core.database import tenant_filter
+    from doberman_agent.core.database import tenant_filter
 
     class RuntimeTenantSession(Session):
         pass
@@ -165,7 +165,7 @@ def runtime_tenant_session(mock_settings, monkeypatch):
     [({}, 37), ({"tenant_id": None}, 37), ({"tenant_id": 0}, 37), ({"tenant_id": 37}, 37), ({"tenant_id": 91}, 91)],
 )
 def test_runtime_tenant_autofill_and_explicit_identity_are_preserved(runtime_tenant_session, declaration, expected):
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     token = current_tenant_id.set(37)
     try:
@@ -182,7 +182,7 @@ def test_runtime_tenant_autofill_and_explicit_identity_are_preserved(runtime_ten
 def test_unscoped_runtime_insert_without_context_fails_closed(runtime_tenant_session, mock_settings):
     from sqlalchemy.exc import IntegrityError
 
-    from bisheng.core.context.tenant import current_tenant_id
+    from doberman_agent.core.context.tenant import current_tenant_id
 
     mock_settings.multi_tenant.enabled = True
     token = current_tenant_id.set(None)

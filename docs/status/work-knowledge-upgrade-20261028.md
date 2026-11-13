@@ -2,7 +2,7 @@
 
 ## 问题与证据
 
-TC-120-KSP-042 的已有执行记录显示：macOS test3 中可选 K1/K2，两次知识检索均返回通用错误，同一资料在云端 Chat 可检索。本轮通过测试环境的已登录管理员只读核对目录，内置工具接口返回 17 类 / 38 个工具，知识检索键 `bisheng_knowledge_search` 缺失。本机 test2 通过原有宿主接口执行两次单选和一次多选，均复现通用错误。
+TC-120-KSP-042 的已有执行记录显示：macOS test3 中可选 K1/K2，两次知识检索均返回通用错误，同一资料在云端 Chat 可检索。本轮通过测试环境的已登录管理员只读核对目录，内置工具接口返回 17 类 / 38 个工具，知识检索键 `doberman_agent_knowledge_search` 缺失。本机 test2 通过原有宿主接口执行两次单选和一次多选，均复现通用错误。
 
 Work 在检索前检查知识工具的可用权限。目录缺项会在这一阶段产生 403；桌面适配器将业务错误转为通用提示。实际报错账号及 test3 仍以部署后的原用例验收为准。
 
@@ -18,7 +18,7 @@ Work 在检索前检查知识工具的可用权限。目录缺项会在这一阶
 
 ## 基线与验证
 
-- 目标：`dataelement/bisheng:feat/bisheng-work-120-main`，起始基线 `b872e4775`。
+- 目标：`cp7553479/doberman-agent:feat/doberman-agent-work-120-main`，起始基线 `b872e4775`。
 - 提交前同步目标 `502edc33b`，状态文档保留同期应用置顶修复记录。
 - 分支：`codex/work-knowledge-registration`。
 - 本轮修改后端升级操作和部署入口，Desktop/Harness 沿用原版本。

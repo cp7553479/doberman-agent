@@ -1,7 +1,7 @@
 # Direct shared UI imports — 2026-10-20
 
 User explicitly supersedes the compatibility-path requirement: all platform
-button/input/notice primitives must import @bisheng/ui directly. Shared styles
+button/input/notice primitives must import @doberman-agent/ui directly. Shared styles
 and APIs remain unchanged. Input limits follow the shared soft-limit design;
 business submission validation remains required. Existing unrelated changes
 and the Vite process are preserved. No commit or push.
@@ -33,7 +33,7 @@ code; preserve that unrelated work and report separately.
 
 - Removed platform primitive entry points: bs-ui/button/index,
   bs-ui/input/index, bs-ui/toast/index and toast/use-toast. Primitive callsites,
-  including HTTP interceptors, import @bisheng/ui directly. Production
+  including HTTP interceptors, import @doberman-agent/ui directly. Production
   useToast/LoadButton calls are gone; literal button variants/sizes use the
   canonical shared axes. InputGroup/action/upload/title-edit compositions are
   business controls, not compatibility entry points, and use shared primitives.

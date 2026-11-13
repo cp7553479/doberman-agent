@@ -4,7 +4,7 @@ The single most important file in this package. CVE-2025-64484 (oauth2-proxy,
 CVSS 8.5) was an incomplete version of exactly this code: it stripped the
 hyphenated spelling only, and an authenticated user could re-assert identity
 with the underscore variant because WSGI-style frameworks fold both onto the
-same key. What we host is uncontrolled Python that trusts ``X-BiSheng-*``
+same key. What we host is uncontrolled Python that trusts ``X-Doberman-Agent-*``
 unconditionally, so "strip the ten names we know" is not a defence.
 """
 
@@ -26,16 +26,16 @@ from tests.fakes import DEFAULT_HEADER_MATERIAL
 #: Every spelling a client might use to smuggle an identity header in. The
 #: middle four are the CVE: same header as far as the application is concerned.
 FORGED_VARIANTS = [
-    ("X-BiSheng-User-Id", "1"),
-    ("X_BiSheng_User_Id", "1"),
-    ("x-bisheng-user-id", "1"),
-    ("X-BISHENG-USER-ID", "1"),
-    ("x_bisheng_USER_name", "root"),
-    ("X-BiSheng_Tenant-Id", "999"),
-    ("x-bisheng-subject-kind", "service_account"),
-    ("X_BISHENG_ACCESS_TOKEN", "forged.jwt"),
-    ("x-BiSheng-Dept-Path", "/root"),
-    ("X-Bisheng-Anything-New-We-Add-Later", "boom"),
+    ("X-Doberman-Agent-User-Id", "1"),
+    ("X_Doberman_Agent_User_Id", "1"),
+    ("x-doberman-agent-user-id", "1"),
+    ("X-DOBERMAN_AGENT-USER-ID", "1"),
+    ("x_doberman_agent_USER_name", "root"),
+    ("X-Doberman-Agent_Tenant-Id", "999"),
+    ("x-doberman-agent-subject-kind", "service_account"),
+    ("X_DOBERMAN_AGENT_ACCESS_TOKEN", "forged.jwt"),
+    ("X-Doberman-Agent-Dept-Path", "/root"),
+    ("X-Doberman-Agent-Anything-New-We-Add-Later", "boom"),
 ]
 
 
@@ -47,10 +47,10 @@ class TestNormalisation:
     @pytest.mark.parametrize(
         ("raw", "expected"),
         [
-            ("X-BiSheng-User-Id", "x-bisheng-user-id"),
-            ("X_BiSheng_User_Id", "x-bisheng-user-id"),
-            ("x_bisheng_user_id", "x-bisheng-user-id"),
-            ("X-BISHENG-USER-ID", "x-bisheng-user-id"),
+            ("X-Doberman-Agent-User-Id", "x-doberman-agent-user-id"),
+            ("X_Doberman_Agent_User_Id", "x-doberman-agent-user-id"),
+            ("x_doberman_agent_user_id", "x-doberman-agent-user-id"),
+            ("X-DOBERMAN_AGENT-USER-ID", "x-doberman-agent-user-id"),
         ],
     )
     def test_underscore_hyphen_case_collapse_to_one_name(self, raw, expected):
@@ -58,7 +58,7 @@ class TestNormalisation:
 
 
 class TestStrip:
-    def test_strip_all_x_bisheng_equivalence_class(self):
+    def test_strip_all_x_doberman_agent_equivalence_class(self):
         """AC-32: prefix match **after** normalisation, not a name allow-list.
 
         The last variant is a header name that does not exist today. It must
@@ -84,21 +84,21 @@ class TestStrip:
 
     def test_forged_header_has_no_effect_on_upstream(self):
         """Forge + inject: the real visitor's values are the only ones left."""
-        inbound = [("X_BiSheng_User_Id", "1"), ("x-bisheng-user-name", "root"), ("Accept", "*/*")]
+        inbound = [("X_Doberman_Agent_User_Id", "1"), ("x-doberman-agent-user-name", "root"), ("Accept", "*/*")]
         upstream = strip_platform_headers(inbound) + build_injected_headers(
             DEFAULT_HEADER_MATERIAL,
             slug="foo",
             request_id="req-1",
             obo_token="obo.jwt",
             proto="https",
-            host="bisheng.example.com",
+            host="doberman-agent.example.com",
         )
         by_name = {}
         for name, value in upstream:
             by_name.setdefault(name.lower(), []).append(value)
 
-        assert by_name["x-bisheng-user-id"] == ["42"], "forged value must not survive, and must not duplicate"
-        assert unquote(by_name["x-bisheng-user-name"][0]) == "张三"
+        assert by_name["x-doberman-agent-user-id"] == ["42"], "forged value must not survive, and must not duplicate"
+        assert unquote(by_name["x-doberman-agent-user-name"][0]) == "张三"
 
     def test_forwarded_headers_rewritten_not_passthrough(self):
         """D5.2: a hosted app that trusts Host builds its links from it."""
@@ -119,12 +119,12 @@ class TestStrip:
                 request_id="req-1",
                 obo_token="obo.jwt",
                 proto="https",
-                host="bisheng.example.com",
+                host="doberman-agent.example.com",
             )
         }
         assert injected["x-forwarded-prefix"] == "/apps/foo"
         assert injected["x-forwarded-proto"] == "https"
-        assert injected["x-forwarded-host"] == "bisheng.example.com"
+        assert injected["x-forwarded-host"] == "doberman-agent.example.com"
 
     def test_hop_by_hop_and_framing_headers_dropped(self):
         """A proxy that forwards ``Transfer-Encoding`` desyncs the upstream parser."""
@@ -135,7 +135,7 @@ class TestStrip:
             ("TE", "trailers"),
             ("Proxy-Authorization", "Basic x"),
             ("Upgrade", "websocket"),
-            ("Host", "bisheng.example.com"),
+            ("Host", "doberman-agent.example.com"),
             ("Content-Length", "12"),
         ]
         assert strip_platform_headers(inbound) == []
@@ -168,28 +168,28 @@ class TestInject:
             request_id="req-42",
             obo_token="obo.jwt",
             proto="https",
-            host="bisheng.example.com",
+            host="doberman-agent.example.com",
         )
         names = _names(injected)
         for expected in INJECTED_HEADER_NAMES:
             assert expected.lower() in names, f"missing injected header {expected}"
         assert len(INJECTED_HEADER_NAMES) == 10
         by_name = {name.lower(): value for name, value in injected}
-        assert by_name["x-bisheng-subject-kind"] == "human"
-        assert by_name["x-bisheng-request-id"] == "req-42"
-        assert by_name["x-bisheng-access-token"] == "obo.jwt"
-        assert by_name["x-bisheng-app-id"] == "app-0001"
+        assert by_name["x-doberman-agent-subject-kind"] == "human"
+        assert by_name["x-doberman-agent-request-id"] == "req-42"
+        assert by_name["x-doberman-agent-access-token"] == "obo.jwt"
+        assert by_name["x-doberman-agent-app-id"] == "app-0001"
 
     def test_request_id_is_ours_not_the_backends(self):
         """Correlation only works if one hop owns the id (D14 log contract)."""
-        material = {**DEFAULT_HEADER_MATERIAL, "X-BiSheng-Request-Id": "stale-from-backend"}
+        material = {**DEFAULT_HEADER_MATERIAL, "X-Doberman-Agent-Request-Id": "stale-from-backend"}
         injected = {
             n.lower(): v
             for n, v in build_injected_headers(
                 material, slug="foo", request_id="req-live", obo_token=None, proto="http", host="h"
             )
         }
-        assert injected["x-bisheng-request-id"] == "req-live"
+        assert injected["x-doberman-agent-request-id"] == "req-live"
 
     def test_backend_cannot_inject_outside_our_namespace(self):
         """Defence in depth: the material dict is data, not a header allow-list."""
@@ -202,13 +202,13 @@ class TestInject:
 
     def test_missing_optional_material_is_omitted_not_empty(self):
         """An app checking ``if header:`` must not see a department that isn't there."""
-        material = {"X-BiSheng-User-Id": "7", "X-BiSheng-Tenant-Id": "1", "X-BiSheng-Subject-Kind": "service_account"}
+        material = {"X-Doberman-Agent-User-Id": "7", "X-Doberman-Agent-Tenant-Id": "1", "X-Doberman-Agent-Subject-Kind": "service_account"}
         names = _names(
             build_injected_headers(material, slug="foo", request_id="r", obo_token=None, proto="http", host="h")
         )
-        assert "x-bisheng-dept-id" not in names
-        assert "x-bisheng-access-token" not in names
-        assert "x-bisheng-user-id" in names
+        assert "x-doberman-agent-dept-id" not in names
+        assert "x-doberman-agent-access-token" not in names
+        assert "x-doberman-agent-user-id" in names
 
 
 class TestLatin1Safety:
@@ -232,9 +232,9 @@ class TestLatin1Safety:
             value.encode("latin-1")  # would raise UnicodeEncodeError on raw 中文
 
         by_name = {n.lower(): v for n, v in injected}
-        assert unquote(by_name["x-bisheng-user-name"]) == "张三"
-        assert unquote(by_name["x-bisheng-dept-name"]) == "研发中心"
-        assert unquote(by_name["x-bisheng-dept-path"]) == "毕昇科技/研发中心"
+        assert unquote(by_name["x-doberman-agent-user-name"]) == "张三"
+        assert unquote(by_name["x-doberman-agent-dept-name"]) == "研发中心"
+        assert unquote(by_name["x-doberman-agent-dept-path"]) == "doberman-agent科技/研发中心"
 
     def test_encoding_is_idempotent_for_already_encoded_material(self):
         """The backend may percent-encode too (T032). Double-encoding would

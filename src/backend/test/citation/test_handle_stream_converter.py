@@ -13,17 +13,17 @@ import random
 
 import pytest
 
-from bisheng.citation.domain.services.citation_handle_service import convert_handles_to_markers
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_handle_service import convert_handles_to_markers
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_END_MARKER as E,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_SEPARATOR_MARKER as SEP,
 )
-from bisheng.citation.domain.services.citation_prompt_helper import (
+from doberman_agent.citation.domain.services.citation_prompt_helper import (
     CITATION_START_MARKER as S,
 )
-from bisheng.citation.domain.services.daily_citation_handles import (
+from doberman_agent.citation.domain.services.daily_citation_handles import (
     STREAM_HOLD_LIMIT,
     HandleStreamConverter,
     _convert_streaming,

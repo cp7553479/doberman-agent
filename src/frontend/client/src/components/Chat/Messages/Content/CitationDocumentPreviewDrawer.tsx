@@ -1,11 +1,11 @@
-import { CitationDocumentPreviewDrawer as SharedDrawer, CitationDocumentPreview, type CitationFileProps } from '@bisheng/chat/citation-views';
-import type { CitationDocumentPreviewState } from '@bisheng/chat/citations';
+import { CitationDocumentPreviewDrawer as SharedDrawer, CitationDocumentPreview, type CitationFileProps } from '@doberman-agent/chat/citation-views';
+import type { CitationDocumentPreviewState } from '@doberman-agent/chat/citations';
 import { useSetRecoilState } from 'recoil';
 import store from '~/store';
 import FilePreview from '~/pages/knowledge/FilePreview';
 import { usePrefersMobileLayout } from '~/hooks';
 import { useClientCitationServices } from './useClientCitationServices';
-export type { CitationDocumentPreviewState } from '@bisheng/chat/citations';
+export type { CitationDocumentPreviewState } from '@doberman-agent/chat/citations';
 export function renderClientCitationFile(props:CitationFileProps){return <FilePreview {...props}/>;}
 interface ContentProps {preview:CitationDocumentPreviewState|null;compactMode?:boolean;className?:string}
 export function CitationDocumentPreviewContent(props:ContentProps){

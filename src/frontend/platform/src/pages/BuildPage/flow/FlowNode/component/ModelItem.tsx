@@ -2,7 +2,7 @@
 import { Label } from "@/components/bs-ui/label";
 import { useSelectLabels } from "@/components/bs-comp/formFields/useSelectLabels";
 import { filterModelOption, toGroupedModelOptions, toModelSelectValue } from "@/components/bs-comp/formFields/modelOptions";
-import { Select } from "@bisheng/ui";
+import { Select } from "@doberman-agent/ui";
 import { getLlmDefaultModel } from "@/controllers/API/finetune";
 import { useModel } from "@/pages/ModelPage/manage";
 import { useEffect,useMemo,useState } from "react";
@@ -59,7 +59,7 @@ export default function ModelItem({ agent = false, data, onChange, onValidate, i
 
     return (
         <div className='node-item mb-4'>
-            <Label className="flex items-center bisheng-label mb-2">
+            <Label className="flex items-center doberman_agent-label mb-2">
                 {data.required && <span className="text-red-500">*</span>}
                 {t(`${i18nPrefix}label`)}
             </Label>

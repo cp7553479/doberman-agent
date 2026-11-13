@@ -152,12 +152,12 @@
 
 | 模块 / 文件 | 职责 | 不做什么 |
 |---|---|---|
-| `bisheng_langchain/gpts/tools/web_fetch/tool.py`（新） | `FetchTool` 引擎基类与注册表、`DeepSeekFetch`、`WebFetchTool`；网址校验、去转义、截断 | 不做引用标注 |
-| `bisheng_langchain/gpts/load_tools.py` | 注册 `web_fetch` → `_get_web_fetch` | — |
-| `bisheng/citation/domain/services/citation_prompt_helper.py` | 新增 `is_web_citation_tool`、`annotate_fetched_page_with_citation` | 不关心是哪个场景 |
+| `doberman_agent_langchain/gpts/tools/web_fetch/tool.py`（新） | `FetchTool` 引擎基类与注册表、`DeepSeekFetch`、`WebFetchTool`；网址校验、去转义、截断 | 不做引用标注 |
+| `doberman_agent_langchain/gpts/load_tools.py` | 注册 `web_fetch` → `_get_web_fetch` | — |
+| `doberman-agent/citation/domain/services/citation_prompt_helper.py` | 新增 `is_web_citation_tool`、`annotate_fetched_page_with_citation` | 不关心是哪个场景 |
 | 各场景包装层：`assistant_agent.py`、`workflow/nodes/agent/agent.py`、`workflow/nodes/tool/tool.py`、`workstation/.../chat_service.py`、`linsight/.../agent_factory.py` | 识别网页读取、透传参数、调用标注、交出注册条目 | 不各自实现标注逻辑 |
-| `bisheng/citation/domain/services/citation_handle_service.py` | `rewrite_web_results_with_handles`、`drop_web_citation_keys` 除列表外也接受单个网页对象（日常模式和任务模式的短句柄） | 不分配句柄以外的事 |
-| `bisheng/common/init_data.py` | `_ensure_web_fetch_tool` 及升级后的投影和子租户复制 | — |
+| `doberman-agent/citation/domain/services/citation_handle_service.py` | `rewrite_web_results_with_handles`、`drop_web_citation_keys` 除列表外也接受单个网页对象（日常模式和任务模式的短句柄） | 不分配句柄以外的事 |
+| `doberman-agent/common/init_data.py` | `_ensure_web_fetch_tool` 及升级后的投影和子租户复制 | — |
 | platform `tools/builtInTool/WebFetchForm.tsx`（新） | 引擎选择、秘钥、Base URL、长度上限的表单与校验 | — |
 | client `ToolCallDisplay.tsx`、`Linsight/Execution/*` | 网页读取的本地化名称、网页条目展示、任务模式动作文案与统计分类 | — |
 
@@ -213,11 +213,11 @@
 ## 7. 测试与可观测
 
 - **单元测试**：引擎实现（请求参数、错误体解析、超时）、去转义（含代码块）、截断边界（等于上限不截断）、网址校验、未配置；引用标注（单条目、去重复用、空正文不注册）；五个包装层的识别和参数透传；`_ensure_web_fetch_tool` 的幂等。放在 `test/tool/` 和 `test/citation/`。
-- **真实接口自测**：用本地环境变量 `DEEPSEEK_API_KEY` 走 `load_tools` → 调用 → 标注全链路，覆盖成功、站点拒绝、超长截断三种网页。三个参考网址：`https://github.com/dataelement/bisheng`（成功，含大量转义）、`https://en.wikipedia.org/wiki/Taiwan`（站点拒绝）、`https://docs.python.org/3/whatsnew/3.14.html`（约 13 万字，触发截断）。
+- **真实接口自测**：用本地环境变量 `DEEPSEEK_API_KEY` 走 `load_tools` → 调用 → 标注全链路，覆盖成功、站点拒绝、超长截断三种网页。三个参考网址：`https://github.com/cp7553479/doberman-agent`（成功，含大量转义）、`https://en.wikipedia.org/wiki/Taiwan`（站点拒绝）、`https://docs.python.org/3/whatsnew/3.14.html`（约 13 万字，触发截断）。
 - **手动验证一遍**：
   1. 在 `src/backend` 下执行 `env -u ALL_PROXY -u all_proxy .venv/bin/python -m pytest -q test/tool test/citation`（本地需清掉 SOCKS 代理变量，否则整批误报）。
   2. 以超级管理员登录 platform → 构建 → 工具 → 内置工具 →「网页读取」→ 设置，选 DeepSeek 并填秘钥。
-  3. 新建助手，勾选「网页读取」，提问「读一下 https://github.com/dataelement/bisheng 并总结」，确认运行日志标题、回答角标、角标卡片和点击跳转。
+  3. 新建助手，勾选「网页读取」，提问「读一下 https://github.com/cp7553479/doberman-agent 并总结」，确认运行日志标题、回答角标、角标卡片和点击跳转。
   4. 刷新页面重新打开该会话，确认角标卡片仍可显示。
   5. 在工作台配置里把「网页读取」加入日常模式和任务模式的可用工具，在 client 各发一次同样的问题，确认工具卡片和任务步骤的名称是「网页读取」。
 - **端到端**：`/e2e-test` 按 AC 生成 API 测试和页面验证清单。页面重点看设置弹窗、日常模式工具卡片、任务模式步骤、角标卡片和历史回放。

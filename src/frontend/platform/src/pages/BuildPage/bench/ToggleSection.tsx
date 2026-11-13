@@ -1,4 +1,4 @@
-import { Switch } from "@bisheng/ui";
+import { Switch } from "@doberman-agent/ui";
 // src/features/chat-config/components/ToggleSection.tsx
 import { ReactNode } from "react";
 

@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from bisheng.sso_sync.domain.schemas.payloads import TenantMappingItem
+from doberman_agent.sso_sync.domain.schemas.payloads import TenantMappingItem
 
 
 def _dept(ext='D1', *, id=11, path='/', is_deleted=0,
@@ -43,14 +43,14 @@ def _item(dept_ext='D1', code='child1', name='Child 1'):
     )
 
 
-MODULE = 'bisheng.sso_sync.domain.services.tenant_mapping_handler'
+MODULE = 'doberman_agent.sso_sync.domain.services.tenant_mapping_handler'
 
 
 @pytest.mark.asyncio
 class TestTenantMappingHandler:
 
     async def test_first_time_mount_creates_tenant_and_audit(self):
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
         dept = _dept('D1', id=11)  # not yet a mount point
@@ -88,7 +88,7 @@ class TestTenantMappingHandler:
 
     async def test_already_mounted_is_idempotent_skip(self):
         """Second payload referencing the same dept → no new tenant, no audit."""
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
         mounted = _dept('D1', id=11, is_tenant_root=1, mounted_tenant_id=50)
@@ -114,8 +114,8 @@ class TestTenantMappingHandler:
 
     async def test_parent_already_mounted_raises_19302(self):
         """INV-T1 two-level lock: parent already a mount → forbid."""
-        from bisheng.common.errcode.sso_sync import SsoDeptMountConflictError
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.common.errcode.sso_sync import SsoDeptMountConflictError
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
         dept = _dept('D1', id=11)
@@ -142,7 +142,7 @@ class TestTenantMappingHandler:
         """Race: tenant_mapping arrives before the matching department
         ``/departments/sync`` batch. Handler logs and moves on; the next
         login retries. Must not raise."""
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
 
@@ -158,7 +158,7 @@ class TestTenantMappingHandler:
         create_tenant.assert_not_awaited()
 
     async def test_empty_mapping_list_is_noop(self):
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
         with patch(
@@ -169,7 +169,7 @@ class TestTenantMappingHandler:
             dao.assert_not_awaited()
 
     async def test_deleted_dept_is_skipped(self):
-        from bisheng.sso_sync.domain.services.tenant_mapping_handler import (
+        from doberman_agent.sso_sync.domain.services.tenant_mapping_handler import (
             TenantMappingHandler,
         )
         soft_deleted = _dept('D1', id=11, is_deleted=1)

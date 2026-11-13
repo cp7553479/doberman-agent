@@ -3,7 +3,7 @@
  * fig.11). Expanded: hit entries (icon + title) best-effort parsed from
  * extra_info.file_info / output; plain output text as fallback.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { cn } from '~/utils';
 import { ACCENT, BODY, INK, MUTED } from './execTokens';
 import { detailTextCls, StepRow } from './StepRow';

@@ -1,9 +1,9 @@
 import modelDefaults from "../../../../../public/locales/zh-Hans/model.json";
 import { useDshBrowserConfig } from "@/hooks/useDshBrowserConfig";
 // @ts-strict-ignore
-import { shouldRetryApiError } from "@bisheng/api-client";
-import { Button, Cascader, toast } from "@bisheng/ui";
-import { Outlined } from "bisheng-icons";
+import { shouldRetryApiError } from "@doberman-agent/api-client";
+import { Button, Cascader, toast } from "@doberman-agent/ui";
+import { Outlined } from "@doberman-agent/icons";
 
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 
@@ -44,7 +44,7 @@ export const ModelSelect = ({
 
   return (
     <div className="min-w-0">
-      <Label className="bisheng-label inline-flex items-center">
+      <Label className="doberman_agent-label inline-flex items-center">
         <span>{label}</span>
         {required && <span className="text-red-500 text-xs">*</span>}
         {tooltipText && <ModelFieldHint className="ml-1" content={tooltipText}></ModelFieldHint>}
@@ -322,7 +322,7 @@ export default function WorkbenchModel({ data, onBack }) {
             onChange={(val) => setForm({ ...form, sourceModelId: val })}
             required
           />
-          <h3 className="bisheng-label">{t("model.workbenchVoiceModel")}</h3>
+          <h3 className="doberman_agent-label">{t("model.workbenchVoiceModel")}</h3>
           <div className="border rounded-lg p-4 -mt-3 space-y-4">
             <ModelSelect
               close

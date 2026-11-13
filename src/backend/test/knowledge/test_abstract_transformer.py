@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 from langchain_core.documents import Document
 
-from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile
-from bisheng.knowledge.rag.pipeline.transformer.abstract import AbstractTransformer
+from doberman_agent.knowledge.domain.models.knowledge_file import KnowledgeFile
+from doberman_agent.knowledge.rag.pipeline.transformer.abstract import AbstractTransformer
 
 
 class _StubLLM:

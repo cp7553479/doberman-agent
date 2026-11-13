@@ -6,7 +6,7 @@
  * identical content (md / txt / image / docx·pdf·xls·xlsx·csv viewer / download
  * fallback) from a single source of truth.
  */
-import { Outlined } from 'bisheng-icons';
+import { Outlined } from '@doberman-agent/icons';
 import { ChevronLeft } from 'lucide-react';
 import type { ChatCitation } from '~/api/chatApi';
 import FileIcon from '~/components/ui/icon/File';
@@ -49,7 +49,7 @@ export function FilePreviewPanel({
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            {/* hideClose: the built-in lucide X is replaced by a bisheng-icon close
+            {/* hideClose: the built-in lucide X is replaced by a doberman_agent-icon close
                 in the toolbar so it matches the download button's icon/size/color. */}
             <SheetContent hideClose className="w-[800px] sm:max-w-[800px]">
                 {/* toolbar */}

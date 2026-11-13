@@ -44,12 +44,12 @@ from pathlib import Path
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8091
-DEFAULT_NETWORK = "bisheng-apps"
-DEFAULT_DATA_ROOT = "/opt/bisheng/app-data"
-DEFAULT_IMAGE_PREFIX = "bisheng-app"
-#: Attachment bucket. A *separate* bucket from the platform's ``bisheng``
+DEFAULT_NETWORK = "doberman-agent-apps"
+DEFAULT_DATA_ROOT = "/opt/doberman-agent/app-data"
+DEFAULT_IMAGE_PREFIX = "doberman-agent-app"
+#: Attachment bucket. A *separate* bucket from the platform's ``doberman-agent``
 #: (pit 20): no nginx location, no anonymous policy, ever.
-DEFAULT_STORAGE_BUCKET = "bisheng-apps"
+DEFAULT_STORAGE_BUCKET = "doberman-agent-apps"
 DEFAULT_STORAGE_MAX_FILE_MB = 20
 #: Where ``python -m runtime_manager.egress_proxy`` binds by default. It must be
 #: reachable from the application network, so loopback is wrong here in both
@@ -59,44 +59,44 @@ DEFAULT_EGRESS_LISTEN = "0.0.0.0:3128"
 #: Container name prefix. Also the orphan-reclaim selector (T029) and the
 #: "managed by us" marker that keeps the reconciler away from foreign
 #: containers running on the same daemon (114 also runs onlyoffice etc.).
-CONTAINER_NAME_PREFIX = "bisheng-app-"
+CONTAINER_NAME_PREFIX = "doberman-agent-app-"
 
 #: Approval-time preview instances (F055 AC-26). A separate name space *and* a
-#: separate ``bisheng.managed`` value: the reconciler filters on
-#: ``bisheng.managed=true``, so a preview is invisible to it — it is neither
+#: separate ``doberman-agent.managed`` value: the reconciler filters on
+#: ``doberman-agent.managed=true``, so a preview is invisible to it — it is neither
 #: adopted into the desired state nor reclaimed as an orphan, which is what
 #: makes "a preview consumes no instance slot" true rather than merely intended.
-PREVIEW_NAME_PREFIX = "bisheng-preview-"
+PREVIEW_NAME_PREFIX = "doberman-agent-preview-"
 PREVIEW_MANAGED_VALUE = "preview"
 
 #: Label namespace written on every managed container. Labels are the disaster
 #: recovery source of truth for the desired-state store (AC-50).
-LABEL_MANAGED = "bisheng.managed"
-LABEL_APP_ID = "bisheng.app.id"
-LABEL_APP_SLUG = "bisheng.app.slug"
-LABEL_VERSION_ID = "bisheng.version.id"
-LABEL_VERSION_NO = "bisheng.version.no"
-LABEL_TIER_CPU = "bisheng.tier.cpu"
-LABEL_TIER_MEM_MB = "bisheng.tier.mem_mb"
-LABEL_PORT = "bisheng.port"
-LABEL_HEALTH_PATH = "bisheng.health.path"
-LABEL_GENERATION = "bisheng.generation"
+LABEL_MANAGED = "doberman-agent.managed"
+LABEL_APP_ID = "doberman-agent.app.id"
+LABEL_APP_SLUG = "doberman-agent.app.slug"
+LABEL_VERSION_ID = "doberman-agent.version.id"
+LABEL_VERSION_NO = "doberman-agent.version.no"
+LABEL_TIER_CPU = "doberman-agent.tier.cpu"
+LABEL_TIER_MEM_MB = "doberman-agent.tier.mem_mb"
+LABEL_PORT = "doberman-agent.port"
+LABEL_HEALTH_PATH = "doberman-agent.health.path"
+LABEL_GENERATION = "doberman-agent.generation"
 #: The application's declared outbound domains (AC-16). Labelled for the same
 #: reason the tier is: after a lost state file the reconciler rebuilds the
 #: instance from labels alone, and an instance rebuilt without its declarations
 #: would come back with a *narrower* whitelist than its owner published — an
 #: application that silently stops reaching its own API, with nothing anywhere
 #: saying why.
-LABEL_EGRESS_DOMAINS = "bisheng.egress.domains"
+LABEL_EGRESS_DOMAINS = "doberman-agent.egress.domains"
 #: Preview session this container belongs to — the only way back from a
 #: container to its session after a manager restart (there is no state file).
-LABEL_PREVIEW_SESSION = "bisheng.preview.session"
+LABEL_PREVIEW_SESSION = "doberman-agent.preview.session"
 #: Unix epoch seconds after which the preview may be reclaimed. The deadline
 #: rides on the container rather than in a platform timer because this process
 #: is the one that has to be alive for the container to exist at all — and
 #: because the platform image is not allowed a resident worker for the app
 #: factory (F054 AC-59).
-LABEL_PREVIEW_EXPIRES_AT = "bisheng.preview.expires_at"
+LABEL_PREVIEW_EXPIRES_AT = "doberman-agent.preview.expires_at"
 
 #: Variables a deployment must set explicitly — the dataclass defaults below are
 #: development conveniences, not deployment values. ``scripts/tests/compose/verify-app-runtime-compose.sh`` asserts the compose file provides every one of them, which is the
@@ -211,7 +211,7 @@ class Config:
     #: configured package index and the platform's own distribution endpoint.
     egress_build_allow: tuple[str, ...] = ()
     #: Platform base URL used by the *build* phase — where ``pip install
-    #: bisheng-sdk`` fetches the platform's own wheel from (AC-16 "平台自身的分
+    #: doberman-agent-sdk`` fetches the platform's own wheel from (AC-16 "平台自身的分
     #: 发端点"). The run phase learns the platform address from the deploy
     #: intent instead, which is the value the backend actually advertises.
     platform_base_url: str = ""
@@ -246,7 +246,7 @@ class Config:
     build_index_url: str = ""
     build_trusted_host: str = ""
     #: Secondary pip index, in practice the platform's own PEP 503 index at
-    #: ``{platform}/api/v1/dev-toolkit/simple/`` — where ``bisheng-sdk`` comes
+    #: ``{platform}/api/v1/dev-toolkit/simple/`` — where ``doberman-agent-sdk`` comes
     #: from (F057 AC-02). It is a *second* index rather than a replacement
     #: because an application's third-party dependencies still resolve from the
     #: deployment's mirror above; only this one package lives on the platform.
@@ -284,15 +284,15 @@ class Config:
     minio_access_key: str = ""
     minio_secret_key: str = ""
     minio_secure: bool = False
-    #: Never the platform's public ``bisheng`` bucket: nginx forwards any key
-    #: under ``/bisheng/`` to MinIO, so the only thing between an attachment
+    #: Never the platform's public ``doberman-agent`` bucket: nginx forwards any key
+    #: under ``/doberman-agent/`` to MinIO, so the only thing between an attachment
     #: and the internet there is the bucket policy (design pit 20).
     storage_bucket: str = DEFAULT_STORAGE_BUCKET
     #: Single-file cap, a deployment setting (AC-45). Injected as
-    #: ``BISHENG_APP_STORAGE_MAX_FILE_MB`` so the SDK can refuse before sending.
+    #: ``DOBERMAN_AGENT_APP_STORAGE_MAX_FILE_MB`` so the SDK can refuse before sending.
     storage_max_file_mb: int = DEFAULT_STORAGE_MAX_FILE_MB
     #: Base URL at which *hosted app containers* reach this process — the value
-    #: behind ``BISHENG_APP_STORAGE_ENDPOINT``. Empty = derived from
+    #: behind ``DOBERMAN_AGENT_APP_STORAGE_ENDPOINT``. Empty = derived from
     #: ``host``/``port``, which is right for compose (``0.0.0.0`` is replaced
     #: by the service name there) and wrong for the systemd shape, where
     #: ``127.0.0.1`` is unreachable from the bridge; the pre-flight says so.

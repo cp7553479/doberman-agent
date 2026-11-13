@@ -8,15 +8,15 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from bisheng.app_runtime.domain.models.runtime_delivery import (
+from doberman_agent.app_runtime.domain.models.runtime_delivery import (
     RUNTIME_TABLES,
     RuntimeCapacityReservation,
     RuntimeNode,
     RuntimeOperation,
 )
-from bisheng.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES, RuntimeExecutionResource
-from bisheng.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
-from bisheng.core.context.tenant import current_tenant_id
+from doberman_agent.app_runtime.domain.models.runtime_kubernetes import KUBERNETES_TABLES, RuntimeExecutionResource
+from doberman_agent.app_runtime.domain.repositories.runtime_delivery_repository import RuntimeConflict
+from doberman_agent.core.context.tenant import current_tenant_id
 
 NOW = datetime(2026, 10, 21, 6, 0)
 UID = "22222222-2222-4222-8222-222222222222"
@@ -24,7 +24,7 @@ UID = "22222222-2222-4222-8222-222222222222"
 
 @pytest.fixture
 async def repo():
-    from bisheng.app_runtime.domain.repositories.runtime_kubernetes_repository import RuntimeKubernetesRepository
+    from doberman_agent.app_runtime.domain.repositories.runtime_kubernetes_repository import RuntimeKubernetesRepository
 
     token = current_tenant_id.set(1)
     engine = create_async_engine("sqlite+aiosqlite://")

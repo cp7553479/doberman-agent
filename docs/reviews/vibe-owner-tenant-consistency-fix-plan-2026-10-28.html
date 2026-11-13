@@ -213,13 +213,13 @@
 <h2 id="7-源码依据与文档检查边界">7. 源码依据与文档检查边界</h2>
 <p>本地核对基线：release@1a56cd5c6db087c672c543ce0b90336bc19cc9db。116事实来自同日先前只读核查；不以镜像标签推断源码SHA。</p>
 <ul>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/credential_validator.py">服务账号与缓存准入</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/access_context.py">HTTP/MCP公共访问上下文</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/repositories/owner_repository.py">归属人查询</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/open_api/domain/services/service_account_service.py">服务账号创建与固定租户逻辑</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/backend/bisheng/common/middleware/admin_scope.py">已有管理范围中间件</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/frontend/platform/src/hooks/useAdminScope.ts">已有管理范围Hook</a></li>
-<li><a href="https://github.com/dataelement/bisheng/blob/1a56cd5c6db087c672c543ce0b90336bc19cc9db/src/frontend/platform/src/pages/SystemPage/components/ServiceAccount/index.tsx">服务账号管理页</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/credential_validator.py">服务账号与缓存准入</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/access_context.py">HTTP/MCP公共访问上下文</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/repositories/owner_repository.py">归属人查询</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/open_api/domain/services/service_account_service.py">服务账号创建与固定租户逻辑</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/backend/doberman_agent/common/middleware/admin_scope.py">已有管理范围中间件</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/hooks/useAdminScope.ts">已有管理范围Hook</a></li>
+<li><a href="https://github.com/cp7553479/doberman-agent/blob/main/src/frontend/platform/src/pages/SystemPage/components/ServiceAccount/index.tsx">服务账号管理页</a></li>
 </ul>
 <p>本简化版取代上一版迁移方案，旧版独立架构复审结论不适用于本版。本轮完成静态方案自检；未执行业务测试、部署、迁移或新的独立代理复审。</p>
 <p>Markdown和HTML由同一源生成，检查目录锚点、表格数量、源摘要及无外部资源依赖。自动浏览器此前因file协议安全策略拒绝预览，本轮不绕过该限制；未完成宽屏、500px或打印实测，CSS配置不作为视觉验收结果。</p>

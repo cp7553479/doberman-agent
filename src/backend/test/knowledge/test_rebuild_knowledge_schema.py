@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from bisheng.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
-from bisheng.worker.knowledge import rebuild_knowledge_worker
+from doberman_agent.common.constants.vectorstore_metadata import KNOWLEDGE_RAG_METADATA_SCHEMA
+from doberman_agent.worker.knowledge import rebuild_knowledge_worker
 
 
 def test_rebuild_uses_explicit_milvus_metadata_schema(monkeypatch):
@@ -20,7 +20,7 @@ def test_rebuild_uses_explicit_milvus_metadata_schema(monkeypatch):
     )
     monkeypatch.setattr(
         rebuild_knowledge_worker.LLMService,
-        "get_bisheng_knowledge_embedding_sync",
+        "get_doberman_agent_knowledge_embedding_sync",
         lambda model_id, invoke_user_id: embeddings,
     )
     monkeypatch.setattr(

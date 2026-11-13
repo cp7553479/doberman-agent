@@ -6,21 +6,21 @@ from types import SimpleNamespace
 
 import pytest
 
-from bisheng.common.errcode.permission import PermissionVersionConflictError
-from bisheng.permission.application.resource_api import (
+from doberman_agent.common.errcode.permission import PermissionVersionConflictError
+from doberman_agent.permission.application.resource_api import (
     F048ResourcePermissionApi,
 )
-from bisheng.permission.domain.schemas import (
+from doberman_agent.permission.domain.schemas import (
     GrantMutationRequest,
     VerifiedPermissionTarget,
 )
-from bisheng.permission.domain.services.grant_source_service import (
+from doberman_agent.permission.domain.services.grant_source_service import (
     GrantSourceService,
 )
-from bisheng.permission.domain.services.permission_action_service import (
+from doberman_agent.permission.domain.services.permission_action_service import (
     PermissionActor,
 )
-from bisheng.permission.domain.services.permission_explain_service import (
+from doberman_agent.permission.domain.services.permission_explain_service import (
     PermissionSourceExplanation,
 )
 
@@ -340,7 +340,7 @@ async def test_tenant_admin_reads_context_for_own_tenant_without_visible_tuple()
 
 @pytest.mark.asyncio
 async def test_ordinary_user_context_still_requires_a_visible_tuple() -> None:
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     runtime = _OrdinaryContextRuntime()
     api = F048ResourcePermissionApi(
@@ -385,7 +385,7 @@ async def test_super_admin_my_permissions_returns_full_effective_actions() -> No
 
 @pytest.mark.asyncio
 async def test_revoked_user_my_permissions_for_preset_tool_requires_visibility() -> None:
-    from bisheng.common.errcode.permission import PermissionDeniedError
+    from doberman_agent.common.errcode.permission import PermissionDeniedError
 
     runtime = _ContextRuntime()
     api = F048ResourcePermissionApi(resources=_ToolResources(), runtime=runtime, subjects=_Subjects())

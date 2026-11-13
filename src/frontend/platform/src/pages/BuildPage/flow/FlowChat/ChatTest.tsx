@@ -1,9 +1,9 @@
 // @ts-strict-ignore
-import { Button } from '@bisheng/ui';
+import { Button } from '@doberman-agent/ui';
 
 import { generateUUID } from "@/components/bs-ui/utils";
 import { locationContext } from "@/contexts/locationContext";
-import { Outlined } from "bisheng-icons";
+import { Outlined } from "@doberman-agent/icons";
 import { cloneDeep } from "lodash-es";
 import { GripVertical,Minus } from "lucide-react";
 import { forwardRef,useContext,useEffect,useImperativeHandle,useRef,useState } from "react";

@@ -40,11 +40,11 @@ class DataExecutor:
             "Env": ["PYTHONDONTWRITEBYTECODE=1"],
             "WorkingDir": "/app",
             "Labels": {
-                "bisheng.managed": "data-helper",
-                "bisheng.runtime.node": self.config.node_id,
-                "bisheng.app.id": app_id,
-                "bisheng.runtime.operation": ident,
-                "bisheng.runtime.deadline": str(int(self.clock.time()) + 30),
+                "doberman-agent.managed": "data-helper",
+                "doberman-agent.runtime.node": self.config.node_id,
+                "doberman-agent.app.id": app_id,
+                "doberman-agent.runtime.operation": ident,
+                "doberman-agent.runtime.deadline": str(int(self.clock.time()) + 30),
             },
             "HostConfig": {
                 "NetworkMode": "none",
@@ -88,11 +88,11 @@ class DataExecutor:
             with _create_lock:
                 existing = self.docker.list_containers(
                     all_states=True,
-                    filters={"label": ["bisheng.managed=data-helper", f"bisheng.runtime.node={self.config.node_id}"]},
+                    filters={"label": ["doberman-agent.managed=data-helper", f"doberman-agent.runtime.node={self.config.node_id}"]},
                 )
                 if len(existing) >= 2:
                     raise DataBusyError("Data maintenance cleanup is pending")
-                ref = self.docker.create_container("bisheng-data-" + ident, payload)
+                ref = self.docker.create_container("doberman-agent-data-" + ident, payload)
             self.docker.start_container(ref)
             deadline = self.clock.monotonic() + 30
             while self.docker.inspect_container(ref).get("State", {}).get("Running"):

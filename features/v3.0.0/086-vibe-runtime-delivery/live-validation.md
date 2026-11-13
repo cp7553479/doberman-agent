@@ -157,7 +157,7 @@ K8s仍归F059；189未新增任何资源。当前不是完整Feature可合并声
 
 ## 10. 2026-10-21 GitHub测试发行与公开镜像验证
 
-用户要求测试v3.0.0-test-vibe并明确授权更新该Tag。首轮失败仅因runner缺少rg，755d4456e5将两处改成系统grep，保留已有镜像拒绝和注册表异常拒绝。随后[Runtime delivery images](https://github.com/dataelement/bisheng/actions/runs/39567381522)三job全部成功（6m25s）；原backend/frontend CI同时成功（7m34s）。两原生架构各7镜像、原生禁网/复用/SQLite/前端/扩展集成、服务多架构索引及runtime-profiles artifact已发布。
+用户要求测试v3.0.0-test-vibe并明确授权更新该Tag。首轮失败仅因runner缺少rg，755d4456e5将两处改成系统grep，保留已有镜像拒绝和注册表异常拒绝。随后[Runtime delivery images](https://github.com/cp7553479/doberman-agent/actions/runs/39567381522)三job全部成功（6m25s）；原backend/frontend CI同时成功（7m34s）。两原生架构各7镜像、原生禁网/复用/SQLite/前端/扩展集成、服务多架构索引及runtime-profiles artifact已发布。
 
 109通过准备机代理下载及docker load验证本次公开amd64镜像默认CMD；manager/proxy健康200，代理UID10001，manager经socket proxy读Engine成功，未授权控制403/旧入口410、平台不可达入口503。无服务host端口及socket挂载。测试资源回收，原27容器完整ID不变。T053关闭，当前92/94；T055/T056仍未完成。
 

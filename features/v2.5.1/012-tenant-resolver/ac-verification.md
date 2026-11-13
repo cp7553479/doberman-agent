@@ -60,7 +60,7 @@
 | `TenantRelocateBlockedError` 被吞掉，不中断其他用户 | `test_blocked_errors_swallowed` |
 | 其他未知异常日志 + 继续 | `test_generic_errors_swallowed_with_logging` |
 | 空表无副作用 | `test_empty_user_table_noop` |
-| Beat schedule 注册 | `src/backend/bisheng/core/config/settings.py::CeleryConf.validate` 追加 `reconcile_user_tenant_assignments`（cron `0 */6 * * *`）+ `task_routers` 加 `bisheng.worker.tenant_reconcile.*` → `knowledge_celery` |
+| Beat schedule 注册 | `src/backend/doberman_agent/core/config/settings.py::CeleryConf.validate` 追加 `reconcile_user_tenant_assignments`（cron `0 */6 * * *`）+ `task_routers` 加 `doberman_agent.worker.tenant_reconcile.*` → `knowledge_celery` |
 
 ---
 
@@ -106,9 +106,9 @@
 
 | 偏差 | 原因 |
 |------|-----|
-| **T02 DAO-method 测试精简**：spec/tasks.md 原计划 4 个 async DAO 测试（含 Redis mock），实际因 conftest 的 `premock_import_chain` 对 `bisheng.user.domain.models.user` 的预 Mock 与 SQLModel metadata 重注册冲突，改为 6 个 SQL 级行为测试（ORM 默认值、NOT NULL 约束、原子 UPDATE 语义、幂等性）；DAO 方法的 Redis 缓存路径由 T06 `UserTenantSyncService` 集成调用链间接验证 | 避免与 F000 conftest 的预 Mock 结构冲突；实际覆盖仍包含 DAO 读写路径的核心 SQL 语义 |
-| **T10 current-tenant 实现位置**：原计划直接在 `user/api/user.py` 添加；实际抽到 `user/api/current_tenant.py` 作为独立 handler 再由 user.py 薄包装 | `user.py` 导入链过重（`bisheng.api.services.assistant` → `bisheng.common.services.base`）导致单测无法 import；抽出后单测可直接调 handler |
-| **T11 Celery 任务单测 import 路径**：原计划直接 `from bisheng.worker.tenant_reconcile import tasks`；实际通过 `importlib.util.spec_from_file_location` 旁路加载 | `bisheng.worker/__init__.py` 会引入大量生产级 Celery 任务及 celery.signals 等，测试无法走常规 import |
+| **T02 DAO-method 测试精简**：spec/tasks.md 原计划 4 个 async DAO 测试（含 Redis mock），实际因 conftest 的 `premock_import_chain` 对 `doberman_agent.user.domain.models.user` 的预 Mock 与 SQLModel metadata 重注册冲突，改为 6 个 SQL 级行为测试（ORM 默认值、NOT NULL 约束、原子 UPDATE 语义、幂等性）；DAO 方法的 Redis 缓存路径由 T06 `UserTenantSyncService` 集成调用链间接验证 | 避免与 F000 conftest 的预 Mock 结构冲突；实际覆盖仍包含 DAO 读写路径的核心 SQL 语义 |
+| **T10 current-tenant 实现位置**：原计划直接在 `user/api/user.py` 添加；实际抽到 `user/api/current_tenant.py` 作为独立 handler 再由 user.py 薄包装 | `user.py` 导入链过重（`doberman_agent.api.services.assistant` → `doberman_agent.common.services.base`）导致单测无法 import；抽出后单测可直接调 handler |
+| **T11 Celery 任务单测 import 路径**：原计划直接 `from doberman_agent.worker.tenant_reconcile import tasks`；实际通过 `importlib.util.spec_from_file_location` 旁路加载 | `doberman_agent.worker/__init__.py` 会引入大量生产级 Celery 任务及 celery.signals 等，测试无法走常规 import |
 | **T08 Middleware 改造方式**：原计划提取为独立 `TenantContextMiddleware`；实际在现有 `CustomMiddleware` 中原地增强 | 与 plan §3 Q2 锁定一致——避免破坏 v2.5.0 的 middleware 注册顺序 |
 
 ---
@@ -116,27 +116,27 @@
 ## 产物清单
 
 **新建 11 个文件**：
-- `src/backend/bisheng/common/errcode/tenant_resolver.py`
-- `src/backend/bisheng/core/config/user_tenant_sync.py`
-- `src/backend/bisheng/core/database/alembic/versions/v2_5_1_f012_user_token_version.py`
-- `src/backend/bisheng/tenant/domain/services/tenant_resolver.py`
-- `src/backend/bisheng/tenant/domain/services/user_tenant_sync_service.py`
-- `src/backend/bisheng/user/domain/services/user_department_service.py`
-- `src/backend/bisheng/user/api/current_tenant.py`
-- `src/backend/bisheng/worker/tenant_reconcile/__init__.py`
-- `src/backend/bisheng/worker/tenant_reconcile/tasks.py`
+- `src/backend/doberman_agent/common/errcode/tenant_resolver.py`
+- `src/backend/doberman_agent/core/config/user_tenant_sync.py`
+- `src/backend/doberman_agent/core/database/alembic/versions/v2_5_1_f012_user_token_version.py`
+- `src/backend/doberman_agent/tenant/domain/services/tenant_resolver.py`
+- `src/backend/doberman_agent/tenant/domain/services/user_tenant_sync_service.py`
+- `src/backend/doberman_agent/user/domain/services/user_department_service.py`
+- `src/backend/doberman_agent/user/api/current_tenant.py`
+- `src/backend/doberman_agent/worker/tenant_reconcile/__init__.py`
+- `src/backend/doberman_agent/worker/tenant_reconcile/tasks.py`
 - `features/v2.5.1/012-tenant-resolver/tasks.md`（本文件所在目录同级）
 - `features/v2.5.1/012-tenant-resolver/ac-verification.md`（本文件）
 
 **修改 9 个文件**：
-- `src/backend/bisheng/user/domain/models/user.py`（+token_version 字段 + `aget_token_version` / `aincrement_token_version` / `alist_users_paginated` 3 个 classmethod）
-- `src/backend/bisheng/core/context/tenant.py`（+4 ContextVar、+3 context manager/setter、`get_current_tenant_id` 优先级规则）
-- `src/backend/bisheng/utils/http_middleware.py`（+`_validate_token_version`、`_check_is_global_super`、`_compute_visible_tenant_ids`、`_apply_token_version_and_visible`；`CustomMiddleware.dispatch` 集成）
-- `src/backend/bisheng/user/domain/services/auth.py`（`LoginUser.token_version` 字段、`create_access_token` classmethod + `init_login_user(_sync)` + `get_login_user(_from_ws)` 全部 token_version 传递）
-- `src/backend/bisheng/user/domain/services/user.py`（login 流程集成 `UserTenantSyncService.sync_user` + `UserDao.aget_token_version` 获取最新版本）
-- `src/backend/bisheng/user/api/user.py`（追加 `GET /user/current-tenant` 路由）
-- `src/backend/bisheng/tenant/domain/constants.py`（+2 audit action 枚举值 + 新 `UserTenantSyncTrigger` 枚举）
-- `src/backend/bisheng/core/config/settings.py`（注册 `UserTenantSyncConf` 字段 + `CeleryConf.validate` 追加 reconcile 任务）
+- `src/backend/doberman_agent/user/domain/models/user.py`（+token_version 字段 + `aget_token_version` / `aincrement_token_version` / `alist_users_paginated` 3 个 classmethod）
+- `src/backend/doberman_agent/core/context/tenant.py`（+4 ContextVar、+3 context manager/setter、`get_current_tenant_id` 优先级规则）
+- `src/backend/doberman_agent/utils/http_middleware.py`（+`_validate_token_version`、`_check_is_global_super`、`_compute_visible_tenant_ids`、`_apply_token_version_and_visible`；`CustomMiddleware.dispatch` 集成）
+- `src/backend/doberman_agent/user/domain/services/auth.py`（`LoginUser.token_version` 字段、`create_access_token` classmethod + `init_login_user(_sync)` + `get_login_user(_from_ws)` 全部 token_version 传递）
+- `src/backend/doberman_agent/user/domain/services/user.py`（login 流程集成 `UserTenantSyncService.sync_user` + `UserDao.aget_token_version` 获取最新版本）
+- `src/backend/doberman_agent/user/api/user.py`（追加 `GET /user/current-tenant` 路由）
+- `src/backend/doberman_agent/tenant/domain/constants.py`（+2 audit action 枚举值 + 新 `UserTenantSyncTrigger` 枚举）
+- `src/backend/doberman_agent/core/config/settings.py`（注册 `UserTenantSyncConf` 字段 + `CeleryConf.validate` 追加 reconcile 任务）
 - `src/backend/test/fixtures/table_definitions.py`（TABLE_USER 补 source/external_id/token_version 字段）
 
 **新建 9 个测试文件（77 tests passed）**：
@@ -154,7 +154,7 @@
 
 ## 下游 Feature 解锁
 
-- **F013-tenant-fga-tree**：读 `visible_tenant_ids` 做 IN-list FGA check（`bisheng.core.context.tenant.get_visible_tenant_ids`）
+- **F013-tenant-fga-tree**：读 `visible_tenant_ids` 做 IN-list FGA check（`doberman_agent.core.context.tenant.get_visible_tenant_ids`）
 - **F016-tenant-quota-hierarchy**：用 `strict_tenant_filter()` 做精确配额计数
 - **F019-admin-tenant-scope**：写 `_admin_scope_tenant_id` + `_is_management_api`；`get_current_tenant_id()` 优先级已就位
 - **F020-llm-tenant-isolation**：LLMDao 查询读 `visible_tenant_ids`

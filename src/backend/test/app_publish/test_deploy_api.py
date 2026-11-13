@@ -1,4 +1,4 @@
-"""T038 — the ``/api/v2/apps`` endpoints ``bisheng deploy`` talks to (AC-01 / AC-03 / AC-04 / AC-11).
+"""T038 — the ``/api/v2/apps`` endpoints ``doberman-agent deploy`` talks to (AC-01 / AC-03 / AC-04 / AC-11).
 
 This is the demo path's front door, so the tests are about the guards rather
 than the happy path (which the pipeline suite already owns end to end).
@@ -16,7 +16,7 @@ Four guards, in the order the endpoints apply them:
    authentication so an anonymous caller cannot fingerprint the deployment
    shape, and deliberately before ownership because on a plain installation
    there are no applications to own. Without it, ``deploy`` against a normal
-   BiSheng walks all the way to an orchestrator RPC and dies on a timeout.
+   doberman-agent walks all the way to an orchestrator RPC and dies on a timeout.
 3. **Ownership**, read from ``resource_owner_user_id`` — the natural person the
    key creates resources for (伴生 PRD §4.5 定义 6). Reading ``actor_id`` instead
    would compare against the service account, which owns nothing; a principal
@@ -99,7 +99,7 @@ async def test_first_deploy_creates_a_draft_owned_by_the_resource_owner(
     F054's ``create_draft`` is the only way an application row may be created
     (决议-8), so the assertion is on what F055 asked *it* for.
     """
-    from bisheng.app_publish.domain.services import publish_pipeline_service
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service
 
     fake_f054_services.responses["create_draft"] = "app-new"
     monkeypatch.setattr(publish_pipeline_service, "enqueue_pipeline", _noop)
@@ -137,9 +137,9 @@ async def test_deploy_records_the_submitting_service_account_separately(
     records it for every v2 call — on the audit row, as operator name plus
     ``actor_kind`` / ``actor_id`` / ``credential_id`` metadata.
     """
-    from bisheng.app_publish.domain.constants import AppReleaseAuditAction
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_pipeline_service
+    from doberman_agent.app_publish.domain.constants import AppReleaseAuditAction
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_pipeline_service
 
     fake_f054_services.responses["create_draft"] = "app-new"
     monkeypatch.setattr(publish_pipeline_service, "enqueue_pipeline", _noop)
@@ -178,7 +178,7 @@ async def test_iteration_deploy_of_another_owners_app_is_rejected_16205(
 
 
 async def test_app_runtime_disabled_returns_16207(publish_db, api_app, service_account_principal, tarball_factory):
-    """A plain BiSheng answers "this feature is not installed", not a socket timeout."""
+    """A plain doberman-agent answers "this feature is not installed", not a socket timeout."""
     async with api_app(principal=service_account_principal(), app_runtime_enabled=False) as client:
         payload = _refusal(await _upload(client, tarball_factory()))
 
@@ -246,9 +246,9 @@ async def test_deployment_polling_returns_failure_tuple(
     failure = {
         "stage": "precheck_manifest",
         "code": 16221,
-        "message": "bisheng-app.yaml 校验失败",
+        "message": "doberman-agent-app.yaml 校验失败",
         "details": {"errors": [{"field": "runtime", "reason": "missing"}]},
-        "hints": ["在 bisheng-app.yaml 中补上 runtime: python3.11"],
+        "hints": ["在 doberman-agent-app.yaml 中补上 runtime: python3.11"],
     }
     app, version = await app_factory(with_version=True)
     deployment = await deployment_factory(
@@ -289,11 +289,11 @@ async def test_deployment_polling_carries_the_approval_outcome(
     CLI as a failure with no code (exit 19, no reason), and an approval parked
     as an exception never reached it at all until the wait timed out.
     """
-    from bisheng.app_publish.domain.models.app_deployment import AppDeploymentDao
-    from bisheng.app_publish.domain.services import publish_approval_service
-    from bisheng.approval.domain.models.approval_instance import ApprovalTaskStatus
-    from bisheng.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
-    from bisheng.core.database import get_async_db_session
+    from doberman_agent.app_publish.domain.models.app_deployment import AppDeploymentDao
+    from doberman_agent.app_publish.domain.services import publish_approval_service
+    from doberman_agent.approval.domain.models.approval_instance import ApprovalTaskStatus
+    from doberman_agent.approval.domain.repositories.approval_instance_repository import ApprovalInstanceRepository
+    from doberman_agent.core.database import get_async_db_session
 
     app, version = await app_factory(with_version=True)
     deployment = await deployment_factory(
@@ -402,7 +402,7 @@ async def test_polling_inside_the_credential_tenant_still_returns_the_attempt(
 def _v2_routes():
     from fastapi.routing import APIRoute
 
-    from bisheng.app_publish.api.router import v2_router
+    from doberman_agent.app_publish.api.router import v2_router
 
     routes = [route for route in v2_router.routes if isinstance(route, APIRoute)]
     assert len(routes) == 4, "the four CLI endpoints: deploy-limits, deploy, deployments/{id}, {app_id}/logs"
@@ -418,7 +418,7 @@ async def test_every_v2_endpoint_carries_the_app_manage_marker_mode_s_only():
     is asserted too because the decorator's default admits mode D, and a
     delegating key must not publish in somebody else's name.
     """
-    from bisheng.open_api.domain.scopes import get_open_api_scope_marker
+    from doberman_agent.open_api.domain.scopes import get_open_api_scope_marker
 
     for route in _v2_routes():
         marker = get_open_api_scope_marker(route.endpoint)
@@ -432,11 +432,11 @@ async def test_runtime_gate_resolves_after_the_router_level_credential(publish_d
 
     Asserted on the *mounted* app: FastAPI inserts router-level dependencies
     ahead of an endpoint's own in its ``Dependant``, so the order is a property
-    of how ``bisheng/api/router.py`` mounts ``v2_router``, not of argument
+    of how ``doberman_agent/api/router.py`` mounts ``v2_router``, not of argument
     order in ``deploy.py``. The fixture mounts it the same way.
     """
-    from bisheng.app_publish.api.endpoints.deploy import require_app_runtime_enabled
-    from bisheng.open_api.api.dependencies import verify_open_api_access
+    from doberman_agent.app_publish.api.endpoints.deploy import require_app_runtime_enabled
+    from doberman_agent.open_api.api.dependencies import verify_open_api_access
 
     async with api_app() as client:
         routes = [route for route in client._transport.app.routes if route.path.startswith("/api/v2/apps")]
@@ -458,8 +458,8 @@ async def test_scope_name_is_validated_when_the_marker_is_applied():
     """
     import pytest as _pytest
 
-    from bisheng.app_publish.api.endpoints import deploy
-    from bisheng.open_api.domain.scopes import OPEN_API_SCOPE_CODES, open_api_scope
+    from doberman_agent.app_publish.api.endpoints import deploy
+    from doberman_agent.open_api.domain.scopes import OPEN_API_SCOPE_CODES, open_api_scope
 
     assert deploy._SCOPE == "app:manage"
     assert deploy._SCOPE in OPEN_API_SCOPE_CODES
@@ -569,13 +569,13 @@ async def test_key_without_resource_owner_cannot_poll_an_ownerless_deployment(
 
 
 async def test_logs_endpoint_is_owner_scoped(publish_db, api_app, service_account_principal, app_factory, monkeypatch):
-    """``bisheng logs`` reads through the same service method as the detail page, entry="cli".
+    """``doberman-agent logs`` reads through the same service method as the detail page, entry="cli".
 
     That entry narrows it to the credential's resource owner: a tenant
     administrator's key must not read every application's logs in the tenant,
     which would widen the open API past what the key holder was granted.
     """
-    from bisheng.app_runtime.domain.services import app_query_service
+    from doberman_agent.app_runtime.domain.services import app_query_service
 
     seen: dict = {}
 

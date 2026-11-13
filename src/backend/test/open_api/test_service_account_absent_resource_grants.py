@@ -12,20 +12,20 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from bisheng.common.errcode.permission import (
+from doberman_agent.common.errcode.permission import (
     PermissionInvalidResourceError,
     PermissionPublishNotReadyError,
 )
-from bisheng.permission.application.control_state import SqlPermissionControlState
-from bisheng.permission.application.resource_api import F048ResourcePermissionApi
-from bisheng.permission.application.resource_authorization import (
+from doberman_agent.permission.application.control_state import SqlPermissionControlState
+from doberman_agent.permission.application.resource_api import F048ResourcePermissionApi
+from doberman_agent.permission.application.resource_authorization import (
     BoundResourceAuthorizationPort,
     ResourceAuthorizationRegistry,
 )
-from bisheng.permission.application.runtime import F048PermissionRuntime
-from bisheng.permission.domain.models import PermissionGrant, PermissionGrantAssignee
-from bisheng.permission.domain.repositories.grant_repository import GrantRepository
-from bisheng.permission.domain.schemas import VerifiedPermissionTarget
+from doberman_agent.permission.application.runtime import F048PermissionRuntime
+from doberman_agent.permission.domain.models import PermissionGrant, PermissionGrantAssignee
+from doberman_agent.permission.domain.repositories.grant_repository import GrantRepository
+from doberman_agent.permission.domain.schemas import VerifiedPermissionTarget
 
 
 def _grant(resource_id: str, assignee_id: int, *, version: int = 1, source_type: str = "CREATOR_GRANT") -> dict:
@@ -334,7 +334,7 @@ class _Session:
 
 
 async def test_absent_target_comes_from_the_current_permission_mirror(monkeypatch):
-    from bisheng.permission.application import control_state
+    from doberman_agent.permission.application import control_state
 
     row = SimpleNamespace(
         tenant_id=1,

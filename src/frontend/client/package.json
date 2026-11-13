@@ -1,5 +1,5 @@
 {
-  "name": "bishengchat",
+  "name": "doberman-agent-client",
   "version": "3.0.0",
   "description": "",
   "type": "module",
@@ -9,7 +9,7 @@
     "lint:fix": "eslint . --suppressions-location eslint-suppressions.json --fix",
     "lint:prune": "eslint . --suppressions-location eslint-suppressions.json --prune-suppressions",
     "typecheck": "tsc-strict",
-    "gen:locales": "pnpm --filter @bisheng/locales build",
+    "gen:locales": "pnpm --filter @doberman-agent/locales build",
     "predev": "pnpm gen:locales",
     "prestart": "pnpm gen:locales",
     "prebuild": "pnpm gen:locales",
@@ -36,9 +36,9 @@
     "@hello-pangea/dnd": "catalog:",
     "@ariakit/react": "^0.4.15",
     "@ariakit/react-core": "^0.4.15",
-    "@bisheng/file-viewers": "workspace:*",
-    "@bisheng/ui": "workspace:*",
-    "@bisheng/diagram-runtime": "workspace:*",
+    "@doberman-agent/file-viewers": "workspace:*",
+    "@doberman-agent/ui": "workspace:*",
+    "@doberman-agent/diagram-runtime": "workspace:*",
     "@codesandbox/sandpack-react": "^2.19.10",
     "@dicebear/collection": "^7.0.4",
     "@dicebear/core": "^7.0.4",
@@ -69,7 +69,7 @@
     "@tanstack/react-table": "^8.11.7",
     "@tanstack/react-virtual": "^3",
     "axios": "catalog:",
-    "bisheng-icons": "^0.2.36",
+    "@doberman-agent/icons": "workspace:*",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "copy-to-clipboard": "^3.3.3",
@@ -139,8 +139,8 @@
     "xlsx": "catalog:",
     "xlsx-populate": "^1.21.0",
     "zod": "^3.22.4",
-    "@bisheng/chat": "workspace:*",
-    "@bisheng/api-client": "workspace:*"
+    "@doberman-agent/chat": "workspace:*",
+    "@doberman-agent/api-client": "workspace:*"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.22.15",

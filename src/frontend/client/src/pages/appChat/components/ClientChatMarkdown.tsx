@@ -1,6 +1,6 @@
 import { getCitationAccessScope } from '~/api/citationScope';
-import { splitMessageContent } from '@bisheng/chat/core';
-import { ChatMarkdown, type ChatMarkdownProps, type MarkdownCodeProps } from '@bisheng/chat';
+import { splitMessageContent } from '@doberman-agent/chat/core';
+import { ChatMarkdown, type ChatMarkdownProps, type MarkdownCodeProps } from '@doberman-agent/chat';
 import { useRef, type ComponentProps } from 'react';
 import { getCitationDetail, getCitationUnresolvedReason, resolveCitationDetails } from '~/api/chatApi';
 import { getFileDownload } from '~/api/chat/data-service';
